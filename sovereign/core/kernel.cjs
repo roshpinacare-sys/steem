@@ -612,7 +612,12 @@ function applyTx(st, tx) {
       const debit = (acc, sym, amt) => { if (sym === 'SAOS') acc.saos -= amt; else if (sym === 'STEEM') acc.steem -= amt; else acc.wrapped[sym] = (acc.wrapped[sym] || 0) - amt; };
       if (bal(o, A) < inA || bal(o, B) < inB) return { ok: false, gas, err: 'insufficient' };
       const ps = st.poolsX = st.poolsX || {};
-      const p = ps[pair] = ps[pair] || { a: 0, b: 0, lpSupply: 0, feeBps: 30, symA: A, symB: B };
+      /* 117c — תקנת-הריבונות: עמלת-בריכה-ניתנת-להצהרה בעת-היצירה (tx.feeBps 0..100).
+       * המנדט (המפעיל): "להשתחרר-מהתלות של עמלות" — בריכת-אמת על-הרשת-שלנו יכולה
+       * להיוולד אפס-עמלה מלאה (feeBps:0) · ברירת-מחדל 30bps כמו-תמיד (וקטורי-קודש
+       * לא-נוגעים — בלי-tx.feeBps ההתנהגות-זהה בית). בריכה-קיימת שומרת-על העמלה-שלה. */
+      const feeBps0 = Number.isInteger(tx.feeBps) && tx.feeBps >= 0 && tx.feeBps <= 100 ? tx.feeBps : 30;
+      const p = ps[pair] = ps[pair] || { a: 0, b: 0, lpSupply: 0, feeBps: feeBps0, symA: A, symB: B };
       let shares;
       if (p.lpSupply <= 0) { shares = Math.round((inA + inB) * 1000); }
       else if (inA > 0) { shares = Math.floor((inA / Math.max(p.a, 1)) * p.lpSupply); if (!(shares > 0)) shares = 1; }
