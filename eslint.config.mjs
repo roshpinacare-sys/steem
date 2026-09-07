@@ -7,6 +7,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
+  // 116 — GLOBAL ignores: the sandbox is more than the Next.js app — the sovereign
+  // fleet (agent/, sovereign/) is Node CJS infrastructure, download/ holds the
+  // Task-115 research archives, docs/ holds screenshots, tests/ is out of scope.
+  // A flat-config global ignore MUST be a standalone {ignores} object — attached
+  // to a rules entry it only scopes THAT entry (the 6912-problem lesson).
+  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts", "examples/**", "skills/**", "agent/**", "sovereign/**", ".zscripts/**", "public/**", ".steem-engeiner-live/**", "download/**", "docs/**", "mini-services/**", "tool-results/**", "upload/**", "db/**", "prisma/**", "scripts/**", "tests/**", ".github/**"],
+}, {
   rules: {
     // TypeScript rules
     "@typescript-eslint/no-explicit-any": "off",
@@ -43,8 +50,6 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     "no-unreachable": "off",
     "no-useless-escape": "off",
   },
-}, {
-  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts", "examples/**", "skills", "agent/**", "sovereign/**", ".zscripts/**", "public/**", ".steem-engeiner-live/**"]
 }];
 
 export default eslintConfig;
