@@ -742,7 +742,9 @@ export type VaultData = {
     validity?: {
       evmChecksumOk: boolean;
       evmChecksummed: string;
+      evmComputed: boolean;
       tronOk: boolean;
+      tronComputed: boolean;
       solBytesOk: boolean;
       btcFormatOk: boolean;
     };

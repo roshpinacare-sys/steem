@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
+import { keccak_256 } from "js-sha3";
 
 export const dynamic = "force-dynamic";
 
@@ -45,34 +47,42 @@ function readJson<T>(p: string): T | null {
 
 /**
  * 117e — תוויות-התקינות של-כתובות-הראש (אפס-סודות: כתובות-פומביות-בלבד).
- * EVM: חישוב-EIP-55 (keccak-256 — דרך-ה-ethersUtils המובנה-של-tronweb)
- * והשוואה-לכתובת-מהרישום · TRON: base58check · SOL: base58→32בייט (ed25519) ·
- * BTC: פורמט-bech32. fail-open-כנה: אם-הבדיקה-עצמה-נכשלת, הדגל-שקר — לא-שקר-מנומס.
+ * EVM: חישוב-EIP-55 (keccak-256 דרך-js-sha3) והשוואה-לכתובת-מהרישום ·
+ * TRON: base58check מקומי (sha256d + בייט-ראש 0x41) · SOL: base58→32בייט (ed25519) ·
+ * BTC: פורמט-bech32. כנות: אם-הבדיקה-עצמה-לא-יכולה-לרוץ — computed=false והדגל-שקר.
  */
 type HeadValidity = {
   evmChecksumOk: boolean;
   evmChecksummed: string;
+  evmComputed: boolean;
   tronOk: boolean;
+  tronComputed: boolean;
   solBytesOk: boolean;
   btcFormatOk: boolean;
 };
 
 const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
+function b58ToBuffer(s: string): Buffer {
+  let n = BigInt(0);
+  for (const c of s) {
+    const i = B58.indexOf(c);
+    if (i < 0) throw new Error("bad-base58-char");
+    n = n * 58n + BigInt(i);
+  }
+  let hex = n.toString(16);
+  if (hex.length % 2) hex = "0" + hex;
+  const leadZeros = s.length - s.replace(/^1+/, "").length;
+  return Buffer.concat([Buffer.alloc(leadZeros), Buffer.from(hex, "hex")]);
+}
+
 function headValidity(head: { evm: string; tron: string; sol: string; btc: string }): HeadValidity {
-  const out: HeadValidity = { evmChecksumOk: false, evmChecksummed: "", tronOk: false, solBytesOk: false, btcFormatOk: false };
+  const out: HeadValidity = { evmChecksumOk: false, evmChecksummed: "", evmComputed: false, tronOk: false, tronComputed: true, solBytesOk: false, btcFormatOk: false };
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const TW = require("tronweb") as {
-      utils?: {
-        ethersUtils?: { keccak256?: (h: string) => string };
-        crypto?: { isAddressValid?: (a: string) => boolean };
-      };
-    };
-    const eu = TW.utils?.ethersUtils;
-    if (eu?.keccak256 && /^0x[0-9a-fA-F]{40}$/.test(head.evm)) {
+    if (/^0x[0-9a-fA-F]{40}$/.test(head.evm)) {
+      out.evmComputed = true;
       const lower = head.evm.toLowerCase().slice(2);
-      const hash = eu.keccak256(lower);
+      const hash = keccak_256(lower);
       let cs = "";
       for (let i = 0; i < 40; i++) {
         const nib = Number.parseInt(hash[i], 16);
@@ -81,23 +91,26 @@ function headValidity(head: { evm: string; tron: string; sol: string; btc: strin
       out.evmChecksummed = "0x" + cs;
       out.evmChecksumOk = "0x" + cs === head.evm;
     }
-    out.tronOk = !!TW.utils?.crypto?.isAddressValid?.(head.tron);
   } catch (_) {
-    /* דגלים-נשארים-false — כנות */
+    /* כנות */
   }
   try {
-    let n = BigInt(0);
-    for (const c of head.sol) {
-      const i = B58.indexOf(c);
-      if (i < 0) throw new Error("bad-char");
-      n = n * 58n + BigInt(i);
+    // TRON base58check: 25 בייטים = 0x41+20-גוף + 4-ביקורת sha256d
+    const raw = b58ToBuffer(head.tron);
+    if (raw.length === 25 && raw[0] === 0x41) {
+      const body = raw.subarray(0, 21);
+      const sum = raw.subarray(21);
+      const h = crypto.createHash("sha256").update(crypto.createHash("sha256").update(body).digest()).digest();
+      out.tronOk = h.subarray(0, 4).equals(sum);
     }
-    let hex = n.toString(16);
-    if (hex.length % 2) hex = "0" + hex;
-    const leadZeros = head.sol.length - head.sol.replace(/^1+/, "").length;
-    out.solBytesOk = leadZeros + hex.length / 2 === 32;
   } catch (_) {
-    /* דגלים-כנים */
+    out.tronComputed = false;
+  }
+  try {
+    const raw = b58ToBuffer(head.sol);
+    out.solBytesOk = raw.length === 32;
+  } catch (_) {
+    /* כנות */
   }
   out.btcFormatOk = /^bc1[a-z0-9]{20,71}$/.test(head.btc);
   return out;
