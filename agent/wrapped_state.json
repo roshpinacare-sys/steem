@@ -1,10 +1,10 @@
 {
-  "at": "2026-09-07T12:39:28.307Z",
+  "at": "2026-09-07T13:04:28.271Z",
   "mode": "live",
   "booted": true,
   "bootedAt": "2026-09-04T19:27:05.321Z",
   "day": "2026-09-07",
-  "opsToday": 3,
+  "opsToday": 4,
   "assets": {
     "WSBD": {
       "minted": 0.26,
@@ -34,7 +34,7 @@
       "minted": 0.051,
       "lockedHive": 0.051,
       "lockRef": "44be4de1e510cf50dd1d5e7a828000b043815d11",
-      "fair": 2.054658,
+      "fair": 2.049009,
       "asks": [
         2.362417
       ],
@@ -118,8 +118,8 @@
       ]
     },
     "WDOGE": {
-      "minted": 0.13103901,
-      "lockedSteem": 0.12,
+      "minted": 0.14162128,
+      "lockedSteem": 0.13,
       "lockRef": "08882b0a7eb7271119e1c8a41222da5c444a2a1a",
       "coin": "DOGE",
       "oraclePrice": 0.08471000000000001,
@@ -157,8 +157,22 @@
   },
   "ops": [],
   "lastBeat": {
-    "at": "2026-09-07T12:39:28.307Z",
-    "steps": [],
+    "at": "2026-09-07T13:04:28.271Z",
+    "steps": [
+      {
+        "step": "collat-topup:WDOGE",
+        "ok": true,
+        "txid": "d2401b3b87289295d5c97be39c53ad071a6a95b8",
+        "amount": 0.01,
+        "ratio": 0.969
+      },
+      {
+        "step": "collat-topup-mint:WDOGE",
+        "ok": true,
+        "txid": "8b0d113fd2e2ad21cfb1d92931f8001a9db75cb8",
+        "ops": 1
+      }
+    ],
     "measured": {
       "steem": 0.702,
       "sbd": 0.26,
@@ -166,30 +180,30 @@
       "swapHive": 1.59670163,
       "bee": 3.53548942,
       "book": 0.09679605072113058,
-      "cross": 2.0546575033071983
+      "cross": 2.0490094697205663
     },
-    "opsToday": 3
+    "opsToday": 4
   },
   "errors": [],
   "oracle": {
-    "at": "2026-09-07T12:39:35.021Z",
+    "at": "2026-09-07T13:04:35.577Z",
     "sources": {
       "binance": {
         "ok": true,
-        "at": "2026-09-07T12:39:35.021Z"
+        "at": "2026-09-07T13:04:35.577Z"
       },
       "coinbase": {
         "ok": true,
-        "at": "2026-09-07T12:39:35.021Z"
+        "at": "2026-09-07T13:04:35.577Z"
       }
     },
     "prices": {
-      "BTC": 79483.08499987327,
-      "ETH": 2493.9099999998925,
-      "XRP": 1.40515,
-      "DOGE": 0.09057499999999999
+      "BTC": 79560.1549999074,
+      "ETH": 2504.850000000083,
+      "XRP": 1.411,
+      "DOGE": 0.09147
     },
-    "divergencePct": 0.04982915717539314,
+    "divergencePct": 0.37239868565170536,
     "ok": true
   },
   "t64": true,
