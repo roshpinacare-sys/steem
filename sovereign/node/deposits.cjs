@@ -154,10 +154,10 @@ function mintWraps(confirmed, state) {
   const txs = [];
   for (const c of confirmed) {
     if (wrapRefs[c.sym] && wrapRefs[c.sym][c.ref]) continue; // dedupe-קשוח-מול-הספר
-    /* 117f — תיקון-באג-המינט: היה amount=c.human (צף-אנושי → הספר-מעגל-לאפס → המינט-הראשון-בהיסטוריה-נבלע).
-     * עתה: יחידות-ספר-שלמות (אנושי × bookScale) — אותה-מתמטיקה-שהוכחה-בסנדבוקס-117 (0.00033 ETH→330000... כאן-ננו). */
-    const units = Math.max(1, Math.round(Number(c.human) * scaleOf(c.sym)));
-    txs.push({ type: 'wrap_mint', symbol: c.sym, issuer: ACCOUNT, to: c.agent, amount: units, lockedDelta: units, ref: c.ref, at: new Date().toISOString() });
+    /* 117f — חוזה-הקרנל: wrap_mint מקבל-כמות-אנושית ומכפיל-בעצמו ב-bookScaleOf(st,sym)
+     * (מדד-חי: 0.004009816 אנושי → 4,009,816 ננו ✓ · הזרקת-יחידות-שלמות = כפל-מיליארד — התיקון-הראשון-שלי-היה-טעות).
+     * המינט-הראשון-נבלע-מסיבה-אחרת (בלוק-יתום-במרוץ-הbeat) — הדדופ-מול-refs-מבטיח-מינט-חוזר-בטיק-הבא. */
+    txs.push({ type: 'wrap_mint', symbol: c.sym, issuer: ACCOUNT, to: c.agent, amount: c.human, lockedDelta: c.human, ref: c.ref, at: new Date().toISOString() });
   }
   if (!txs.length) return { minted: 0, pools: [] };
   const r = inject(txs, 'deposits:' + txs.length);
@@ -176,7 +176,9 @@ function mintWraps(confirmed, state) {
     const haveSym = Math.round(Number(c.human) * scale); // יחידות-ספר-שלמות של הסמל
     if (haveSym <= 0) continue;
     if ((me.wrapped && (me.wrapped[c.sym] || 0)) + haveSym < haveSym) { /* המינט-לעיל-הגיע-לסוכן — הבריכה-תיפתח-בטיק-הבא-כשהיתרה-נראית-על-הספר */ continue; }
-    poolTxs.push({ type: 'pool_xAdd', owner: ACCOUNT, pair: c.sym + '/WSTEEM', amountA: haveSym, amountB: SEED_WSTEEM, at: new Date().toISOString() });
+    poolTxs.push({ type: 'pool_xAdd', owner: ACCOUNT, pair: c.sym + '/WSTEEM', amountA: haveSym, amountB: SEED_WSTEEM, raw: true, at: new Date().toISOString() });
+    /* 117f — raw:true: תיקון-השארית-של-117c — בלי-זה pool_xAdd כופל-×1000-את-שני-הצדדים
+     * (10000 → 10Mµ-נדרש מול-462Kµ-ביתרה = REJECT-insufficient, נמדד-חי-בטיק-103). */
     pools.push(c.sym + '/WSTEEM(' + haveSym + '+' + SEED_WSTEEM + 'µ)');
   }
   if (poolTxs.length) {
