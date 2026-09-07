@@ -20,6 +20,7 @@ import type { ReactNode } from "react";
 import { Panel, SectionHead, Stat, HashText, LiveDot, EmptyState, fmtClock } from "./primitives";
 import { useSaosEconomy, useRelayDoors, useTruthPath, useTronDex, useHarvest, useDexQuality, useWallets, useVault } from "@/hooks/use-weave";
 import { useRoshpina } from "@/hooks/use-roshpina";
+import { useSwap } from "@/hooks/use-swap";
 import { cn } from "@/lib/utils";
 
 type WrappedRow = { supply: number; locked: number; holders?: number };
@@ -300,6 +301,8 @@ export function Sovereign() {
   const { data: vt } = useVault();
   /* 116 — THE-BRIDGE: גשר-רושפינה — הקונסולה-הפרטית מדברת אל-השרשרת-הריבונית */
   const { data: rb } = useRoshpina();
+  /* 117 — THE-SWAP: ניסוי-ההמרה TRX ⇄ ETH/SOL-אמת — הסקר-החי הכן */
+  const { data: sw } = useSwap();
 
   if (loading && !data) {
     return (
