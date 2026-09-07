@@ -20,6 +20,7 @@ const VERIFY_LAST = path.join(NODE, "vault-verify-last.json");
 const PUB = path.join(NODE, "wallets-public.json");
 const DEP = path.join(NODE, "deposits-state.json");
 const DEP_LOG = path.join(NODE, "deposits.log");
+const PREFLIGHT = path.join(NODE, "deposits-preflight.json");
 
 const CHAIN_LABELS: Record<string, string> = {
   ethereum: "Ethereum",
@@ -82,6 +83,15 @@ export async function GET() {
   const ageMs = lastTickAt ? Date.now() - new Date(lastTickAt).getTime() : Infinity;
   const watcherAlive = ageMs < 12 * 60 * 1000;
 
+  // 117 — מוכנות-הקבלה למשימת-$1-אמת (המפעיל-מפקיד ETH+SOL אמת)
+  const preflight = readJson<{
+    at?: string;
+    ready?: boolean;
+    mission?: string;
+    addresses?: { evm?: string; sol?: string };
+    checks?: { name: string; ok: boolean; detail: string }[];
+  }>(PREFLIGHT);
+
   // כתובות-ההפקדה של-הראש (headcorner) — לאן-המפעיל-שולח-את-האיתריום-והסולנה
   const head = pub?.agents?.find((a) => a.agent === "headcorner") || null;
 
@@ -123,6 +133,16 @@ export async function GET() {
       chains,
       pending: dep?.pending || [],
       events: (dep?.events || []).slice(0, 24),
+      preflight: preflight
+        ? {
+            at: preflight.at || null,
+            ready: !!preflight.ready,
+            mission: preflight.mission || null,
+            checksOk: (preflight.checks || []).filter((c) => c.ok).length,
+            checksTotal: (preflight.checks || []).length,
+            checks: preflight.checks || [],
+          }
+        : null,
     },
     sendTo: head
       ? {
