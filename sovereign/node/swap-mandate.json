@@ -1,0 +1,18 @@
+{
+  "protocol": "saos:swap-mandate/v1",
+  "active": true,
+  "at": "2026-09-07T15:45:00.000Z",
+  "quote": "נסה להחליף את הtrx הוא עדיין בארנק מחכה לניסוי שלך תמשיך וכתוב לריפו בסוף",
+  "rootMandate": "המשימה תמיר 1דולר לרשת של איתריום לאיתריום אמיתי על הרשת שלו ואחד לסולנה לסול אמיתי על הרשת כדי שתוכל ליישם. חובה לכתוב הכל לרפו כמובן",
+  "targetLegs": [
+    { "leg": "eth", "targetUsd": 1, "payout": "0x2767e8146c11baD1d9B0784f11325375195c1b0f (headcorner v2 ethereum)", "receiver": "THE-DEPOSITS grid → wrap_mint nano-WETH" },
+    { "leg": "sol", "targetUsd": 1, "payout": "9knfnFMLmhUNjKRDbR1BmVnVkq4BRczyYjJ7BqiZSgiL (headcorner v2 solana)", "receiver": "THE-DEPOSITS grid → wrap_mint nano-WSOL" }
+  ],
+  "executionGuards": [
+    "provider key in agent/.env SWAP_CHANGENOW_KEY (never in logs, never in git)",
+    "controlled inventory >= amount + 1 TRX reserve (live chain read)",
+    "payout/refund addresses pinned to headcorner v2 (never typed at runtime)",
+    "atomic state after every step; txid + provider id logged, secrets never"
+  ],
+  "note": "מנדט-המפעיל לניסוי-ההמרה. הביצוע עצמו חסום-כנות עד שלושת-התנאים מתקיימים — ראה swap-survey.json verdict"
+}
