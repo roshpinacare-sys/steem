@@ -1,14 +1,14 @@
 {
-  "at": "2026-09-07T12:34:58.813Z",
+  "at": "2026-09-07T13:19:32.433Z",
   "dry": false,
-  "run": 136,
+  "run": 137,
   "ladder": {
     "bee": {
-      "before": 2.59495706,
+      "before": 3.53548942,
       "after": 3.53548942
     },
     "swapHive": {
-      "before": 2.15598125,
+      "before": 1.59670163,
       "after": 1.59670163
     },
     "totalBeeBoughtEver": 3.33908792,
@@ -17,31 +17,19 @@
   },
   "steps": [
     {
-      "step": "hive→swap.hive",
+      "step": "rc-gate",
       "ok": true,
-      "detail": "9.632 HIVE pegged → SWAP.HIVE=2.15598125 · tx ?",
-      "txid": null
+      "detail": "Hive RC estimated 256981778 < 280M — ladder waits ≈7min for regen · nothing lost"
     },
     {
-      "step": "buy BEE#1",
-      "ok": false,
-      "detail": "failed: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 239486550 RC, needs 303396253 RC. Please wait to transact or "
-    },
-    {
-      "step": "buy BEE#2",
+      "step": "buy BEE",
       "ok": true,
-      "detail": "0.94053236@0.59570592 · tx ?",
-      "txid": null
-    },
-    {
-      "step": "buy BEE·settle",
-      "ok": true,
-      "detail": "BEE 2.5950 → 3.5355 (Δ+0.9405) · ladder 3.54/100 · total bought ever 3.3391"
+      "detail": "skipped — RC gate (regen in progress)"
     },
     {
       "step": "genesis gate",
       "ok": true,
-      "detail": "3.54/100 BEE — ladder continues (release trickle feeds the next runs)"
+      "detail": "3.54/100 BEE · RC-gated — autonomous rerun when regen completes"
     }
   ],
   "token": {
