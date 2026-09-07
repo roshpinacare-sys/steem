@@ -143,26 +143,29 @@ function mintWraps(confirmed, state) {
   if (!confirmed.length) return { minted: 0, pools: [] };
   const snap = (() => { try { return JSON.parse(fs.readFileSync(SNAPSHOT, 'utf8')); } catch (_) { return {}; } })();
   const st = snap.st || snap;
+  // 117f — scaleOf למעלה: גם-המינט וגם-הבריכה ביחידות-ספר-שלמות (bookScale: µ=1000 מורשת · ננו=1e9 למטבעות-רשת-אמת)
+  const scaleOf = (sym) => {
+    const m = (st.assetMeta || {})[sym];
+    return (m && Number.isInteger(m.bookScale) && m.bookScale >= 1) ? m.bookScale : 1000;
+  };
   const wrapRefs = {};
   for (const [sym, w] of Object.entries(st.wrapped || {})) wrapRefs[sym] = w.refs || {};
   const me = (st.accounts || {})[ACCOUNT] || { wrapped: {} };
   const txs = [];
   for (const c of confirmed) {
     if (wrapRefs[c.sym] && wrapRefs[c.sym][c.ref]) continue; // dedupe-קשוח-מול-הספר
-    txs.push({ type: 'wrap_mint', symbol: c.sym, issuer: ACCOUNT, to: c.agent, amount: c.human, lockedDelta: c.human, ref: c.ref, at: new Date().toISOString() });
+    /* 117f — תיקון-באג-המינט: היה amount=c.human (צף-אנושי → הספר-מעגל-לאפס → המינט-הראשון-בהיסטוריה-נבלע).
+     * עתה: יחידות-ספר-שלמות (אנושי × bookScale) — אותה-מתמטיקה-שהוכחה-בסנדבוקס-117 (0.00033 ETH→330000... כאן-ננו). */
+    const units = Math.max(1, Math.round(Number(c.human) * scaleOf(c.sym)));
+    txs.push({ type: 'wrap_mint', symbol: c.sym, issuer: ACCOUNT, to: c.agent, amount: units, lockedDelta: units, ref: c.ref, at: new Date().toISOString() });
   }
   if (!txs.length) return { minted: 0, pools: [] };
   const r = inject(txs, 'deposits:' + txs.length);
   if (!r.done) { dlog('mint: inject not applied — will retry next tick (הדדופ-שומר-עלינו-מכפילויות)'); return { minted: 0, pools: [] }; }
   state.minted = (state.minted || 0) + txs.length;
   // בריכה-ראשונה-לסמל-חדש: WSTEEM-מול-הסמל (headcorner עשיר-WSTEEM — נזילות-מיידית-לכל-הפקדה)
-  // 117 — amountA תמיד-ביחידות-הספר-של-הסמל (bookScale: µ=1000 מורשת · ננו=1e9 למטבעות-רשת-אמת)
   const pools = [];
   const SEED_WSTEEM = 10000; // µ
-  const scaleOf = (sym) => {
-    const m = (st.assetMeta || {})[sym];
-    return (m && Number.isInteger(m.bookScale) && m.bookScale >= 1) ? m.bookScale : 1000;
-  };
   const fresh = confirmed.filter((c) => !(st.poolsX || {})[c.sym + '/WSTEEM'] && !(c.sym + '/WSTEEM').match(/^WSTEEM\//) && c.sym !== 'WSTEEM');
   const seenPool = new Set();
   const poolTxs = [];
