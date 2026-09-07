@@ -17,10 +17,12 @@
 import { motion } from "framer-motion";
 import { ArrowLeftRight, Boxes, Coins, DoorOpen, ExternalLink, Flame, KeyRound, ArrowDownToLine, Landmark, Network, Radio, Scale, ShieldCheck, Sprout, Swords, TriangleAlert, Users, Wallet, Activity, Cable } from "lucide-react";
 import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, SectionHead, Stat, HashText, LiveDot, EmptyState, fmtClock } from "./primitives";
 import { useSaosEconomy, useRelayDoors, useTruthPath, useTronDex, useHarvest, useDexQuality, useWallets, useVault } from "@/hooks/use-weave";
 import { useRoshpina } from "@/hooks/use-roshpina";
 import { useSwap } from "@/hooks/use-swap";
+import { useTheswap, type OnnetQuote } from "@/hooks/use-theswap";
 import { cn } from "@/lib/utils";
 
 type WrappedRow = { supply: number; locked: number; holders?: number };
@@ -303,6 +305,79 @@ export function Sovereign() {
   const { data: rb } = useRoshpina();
   /* 117 — THE-SWAP: ניסוי-ההמרה TRX ⇄ ETH/SOL-אמת — הסקר-החי הכן */
   const { data: sw } = useSwap();
+  /* 117c — THE-SWAP-ONNET: הבורסה-שלנו על הרשת-שלנו — בריכות-אפס-עמלה · עדות-גיבוי-חיה · סוואפים-אמת */
+  const { data: ts, act: tsAct } = useTheswap();
+
+  /* ── THE-SWAP-ONNET · מנוע-הסוואפ-האינטראקטיבי (מקומי-לגמרי — הקרנל הוא-המבצע) ── */
+  const tsRoutes = useMemo(() => {
+    const out: { pair: string; side: "A2B" | "B2A"; from: string; to: string; feeBps: number; scale: number; depthUsd: number | null }[] = [];
+    for (const p of ts?.pools ?? []) {
+      const sA = ts?.scales?.[p.symA] ?? 1000;
+      const sB = ts?.scales?.[p.symB] ?? 1000;
+      out.push({ pair: p.pair, side: "A2B", from: p.symA, to: p.symB, feeBps: p.feeBps, scale: sA, depthUsd: p.depthUsd });
+      out.push({ pair: p.pair, side: "B2A", from: p.symB, to: p.symA, feeBps: p.feeBps, scale: sB, depthUsd: p.depthUsd });
+    }
+    out.sort((x, y) => (x.feeBps - y.feeBps) || ((y.depthUsd ?? 0) - (x.depthUsd ?? 0)));
+    return out.slice(0, 10);
+  }, [ts]);
+
+  const [tsSel, setTsSel] = useState(0); // אינדקס-מסלול
+  const [tsAmt, setTsAmt] = useState(""); // יחידות-אנוש
+  const [tsQuote, setTsQuote] = useState<OnnetQuote | null>(null);
+  const [tsBusy, setTsBusy] = useState(false);
+  const [tsMsg, setTsMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [tsAttesting, setTsAttesting] = useState(false);
+  const tsDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* ברירת-מחדל: המסלול הראשון (בריכת-אפס-העמלה-העמוקה) — פעם-אחת כשהנתונים מגיעים */
+  const tsInited = useRef(false);
+  useEffect(() => {
+    if (!tsInited.current && tsRoutes.length > 0) {
+      tsInited.current = true;
+      setTsSel(tsRoutes.findIndex((r) => r.feeBps === 0) >= 0 ? tsRoutes.findIndex((r) => r.feeBps === 0) : 0);
+    }
+  }, [tsRoutes]);
+
+  const tsRoute = tsRoutes[tsSel] ?? null;
+  const tsHouseBal = useMemo(() => {
+    if (!ts?.house || !tsRoute) return null;
+    if (tsRoute.from === "WTRX") return ts.house.WTRX;
+    if (tsRoute.from === "WSTEEM") return ts.house.WSTEEM;
+    if (tsRoute.from === "SAOS") return ts.house.saos;
+    if (tsRoute.from === "STEEM") return ts.house.steem;
+    return null;
+  }, [ts, tsRoute]);
+
+  /* ציטוט-חי בהקלדה (debounce 400ms) — אותו-חוזה כמו-הקרנל, יחידות-ספר */
+  useEffect(() => {
+    if (tsDebounce.current) clearTimeout(tsDebounce.current);
+    const amt = parseFloat(tsAmt);
+    if (!tsRoute || !(amt > 0)) { setTsQuote(null); return; }
+    const units = Math.round(amt * tsRoute.scale);
+    tsDebounce.current = setTimeout(async () => {
+      const r = await tsAct({ action: "quote", pair: tsRoute.pair, side: tsRoute.side, in: units });
+      setTsQuote(r.quote ?? null);
+    }, 400);
+    return () => { if (tsDebounce.current) clearTimeout(tsDebounce.current); };
+  }, [tsAmt, tsRoute, tsAct]);
+
+  const tsDoSwap = useCallback(async () => {
+    if (!tsRoute || !tsQuote?.ok || !tsQuote.capOk || tsBusy) return;
+    const amt = parseFloat(tsAmt);
+    const units = Math.round(amt * tsRoute.scale);
+    setTsBusy(true);
+    setTsMsg(null);
+    const r = await tsAct({ action: "swap", pair: tsRoute.pair, side: tsRoute.side, in: units, taker: "headcorner" });
+    setTsBusy(false);
+    setTsMsg(r.ok ? { ok: true, text: r.out?.includes("APPLIED") ? "בוצע-על-הספר ✓ (בלוק-חדש בשרשרת)" : "נשלח-לספר ✓" } : { ok: false, text: (r.out || r.err || "נכשל").slice(0, 160) });
+  }, [tsRoute, tsQuote, tsAmt, tsBusy, tsAct]);
+
+  const tsDoAttest = useCallback(async () => {
+    if (tsAttesting) return;
+    setTsAttesting(true);
+    await tsAct({ action: "attest" });
+    setTsAttesting(false);
+  }, [tsAttesting, tsAct]);
 
   if (loading && !data) {
     return (
@@ -1299,6 +1374,181 @@ export function Sovereign() {
               </div>
             </div>
           ) : null}
+        </Panel>
+      ) : null}
+
+      {/* 117c — THE-SWAP-ONNET: הבורסה-שלנו על-הרשת-שלנו. המנדט: ״שנוכל להחזיק מטבע אמיתי
+          אחר על הרשת שלנו וגם להחליף אותו על הרשת שלנו, גם אם זה לא STEEM״. התשובה חיה:
+          WTRX (מגובה-חי מול TRX-אמת-נמדד) ⇄ WSTEEM בבריכת-AMM אפס-עמלה — אפס-מינימום,
+          אפס-אנרגיה, אפס-ספק-חוץ. כל-מספר-מהספר; הקרנל הוא-המבצע. */}
+      {ts?.ok ? (
+        <Panel className="mb-6" glow>
+          <div className="flex items-center gap-2 flex-wrap mb-3">
+            <ArrowLeftRight className="size-4 text-emerald" />
+            <h3 className="font-display font-bold text-ink">THE-SWAP-ONNET — הבורסה שלנו על הרשת שלנו</h3>
+            <LiveDot tone={ts.attest && Date.now() - new Date(ts.attest.at).getTime() < 15 * 60 * 1000 ? "green" : "gold"} />
+            <span className="text-[10px] px-1.5 rounded font-bold text-emerald bg-emerald/10">אפס-עמלה · אפס-מינימום · אפס-אנרגיה</span>
+            <span className="hash text-[10px] text-ink-2 ms-auto">h{ts.height?.toLocaleString() ?? "—"} · {ts.swapsTotal ?? "—"} סוואפים-ספר</span>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-3">
+            {/* ── מנוע-הסוואפ ── */}
+            <div className="rounded-lg bg-emerald/5 border border-emerald/25 p-3">
+              <div className="text-[11px] font-bold text-ink mb-2">מנוע-הסוואפ — מטבע-אמת מול-מטבע-אמת</div>
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <label className="block">
+                  <span className="text-[9px] text-ink-2">מסלול (בריכה)</span>
+                  <select
+                    value={tsSel}
+                    onChange={(e) => { setTsSel(Number(e.target.value)); setTsQuote(null); setTsMsg(null); }}
+                    className="w-full mt-0.5 rounded bg-ink-2/30 border border-ink-2/20 px-2 py-1.5 text-xs text-ink focus:outline-none focus:border-emerald/50"
+                    aria-label="מסלול-החלפה"
+                  >
+                    {tsRoutes.map((r, i) => (
+                      <option key={r.pair + r.side} value={i} className="bg-background">
+                        {r.from} → {r.to} · {r.pair} {r.feeBps === 0 ? "· אפס-עמלה" : `· ${r.feeBps}bps`}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block">
+                  <span className="text-[9px] text-ink-2">כמות ({tsRoute?.from ?? "—"} {tsHouseBal !== null ? <>· יתרה <span className="hash">{tsHouseBal.toLocaleString()}</span> book</> : null})</span>
+                  <input
+                    value={tsAmt}
+                    onChange={(e) => { setTsAmt(e.target.value.replace(/[^0-9.]/g, "")); setTsMsg(null); }}
+                    inputMode="decimal"
+                    placeholder="0.0"
+                    className="w-full mt-0.5 rounded bg-ink-2/30 border border-ink-2/20 px-2 py-1.5 text-xs text-ink focus:outline-none focus:border-emerald/50"
+                    aria-label="כמות-להחלפה"
+                  />
+                </label>
+              </div>
+
+              {tsQuote?.ok ? (
+                <div className="rounded bg-ink-2/30 px-2 py-1.5 text-[11px] mb-2" dir="ltr">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="hash text-ink">{tsQuote.inUnits?.toLocaleString()} {tsRoute?.from} → <span className="font-bold text-emerald">{((tsQuote.outUnits ?? 0) / (ts?.scales?.[tsRoute?.to ?? ""] ?? 1000)).toLocaleString()} {tsRoute?.to}</span></span>
+                    <span className={cn("hash text-[10px] px-1 rounded", tsQuote.feeBps === 0 ? "text-emerald bg-emerald/10" : "text-gold bg-gold/10")}>fee {tsQuote.feeBps}bps</span>
+                    <span className="hash text-[10px] text-ink-2">impact {tsQuote.impactPct ?? "—"}%</span>
+                  </div>
+                  <div className="text-[9px] text-ink-2 mt-0.5">price {tsQuote.priceBefore} → {tsQuote.priceAfter} (out/in) · cap {tsQuote.cap?.toLocaleString()} book-units</div>
+                </div>
+              ) : tsAmt && parseFloat(tsAmt) > 0 ? (
+                <div className="text-[10px] text-ink-2 mb-2">מחשב-ציטוט…</div>
+              ) : null}
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={tsDoSwap}
+                  disabled={!tsQuote?.ok || !tsQuote?.capOk || tsBusy}
+                  className={cn(
+                    "rounded px-3 py-1.5 text-xs font-bold transition-colors",
+                    tsQuote?.ok && tsQuote?.capOk && !tsBusy
+                      ? "bg-emerald text-background hover:bg-emerald/85 cursor-pointer"
+                      : "bg-ink-2/30 text-ink-2 cursor-not-allowed"
+                  )}
+                >
+                  {tsBusy ? "מבצע-על-הספר…" : "החלף-על-הרשת-שלנו"}
+                </button>
+                {tsQuote?.ok && !tsQuote?.capOk ? <span className="text-[10px] text-rose">חורג-מתקרת-30% מהעתודה (מגן-מחיר)</span> : null}
+                {tsMsg ? <span className={cn("text-[10px]", tsMsg.ok ? "text-emerald" : "text-rose")}>{tsMsg.text}</span> : null}
+              </div>
+
+              {/* סוואפים-אמת-אחרונים על-הרשת */}
+              {ts.swaps.length > 0 ? (
+                <div className="mt-2 pt-2 border-t border-emerald/15">
+                  <div className="text-[9px] text-ink-2 mb-1">סוואפים-אמת-אחרונים (על-הספר-הריבוני):</div>
+                  <div className="space-y-0.5 max-h-20 overflow-y-auto pe-1">
+                    {ts.swaps.slice(0, 4).map((s, i) => (
+                      <div key={s.at + i} className="text-[10px] flex items-center gap-1.5 flex-wrap" dir="ltr">
+                        <span className="hash text-ink-2">{fmtClock(s.at)}</span>
+                        <span className="hash text-ink">{s.taker}</span>
+                        <span className="hash text-emerald">{s.inHuman} {s.inSym} → {s.outHuman} {s.outSym}</span>
+                        <span className="hash text-[9px] text-ink-2">fee {s.feeBps}bps</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+            {/* ── עדות-הגיבוי-החיה (כנות מעל הכל) ── */}
+            <div className="rounded-lg bg-gold/5 border border-gold/25 p-3">
+              <div className="flex items-center gap-2 flex-wrap mb-2">
+                <div className="text-[11px] font-bold text-ink">עדות-הגיבוי — TRX-אמת על-השרשרת</div>
+                <button
+                  onClick={tsDoAttest}
+                  disabled={tsAttesting}
+                  className={cn(
+                    "ms-auto rounded px-2 py-1 text-[10px] font-bold transition-colors",
+                    tsAttesting ? "bg-ink-2/30 text-ink-2 cursor-wait" : "bg-gold/15 text-gold hover:bg-gold/25 cursor-pointer"
+                  )}
+                >
+                  {tsAttesting ? "מודד-דלתות-חי (~דקה)…" : "מדוד-שוב-חי"}
+                </button>
+              </div>
+              {ts.attest ? (
+                <>
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="rounded bg-ink-2/30 px-2 py-1.5">
+                      <div className="text-[9px] text-ink-2">TRX-אמת-נמדד (פרוטוקול-קריאה-כפולה)</div>
+                      <div className="hash text-[11px] text-ink">{ts.attest.totalTrx} TRX ≈ ${ts.attest.totalUsd ?? "—"}</div>
+                      <div className="hash text-[9px] text-ink-2">{fmtClock(ts.attest.at)}</div>
+                    </div>
+                    <div className="rounded bg-ink-2/30 px-2 py-1.5">
+                      <div className="text-[9px] text-ink-2">אספקת-WTRX-על-הספר · יחס-גיבוי</div>
+                      <div className="hash text-[11px] text-ink">{ts.attest.bookSupplyTrx.toLocaleString()} TRX</div>
+                      <div className={cn("hash text-[10px]", (ts.attest.backing.ratio ?? 0) >= 0.99 ? "text-emerald" : "text-gold")}>ratio {ts.attest.backing.ratio ?? "—"}</div>
+                    </div>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-ink-2/30 overflow-hidden mb-1" role="progressbar" aria-valuenow={Math.round((ts.attest.backing.ratio ?? 0) * 100)} aria-valuemin={0} aria-valuemax={100}>
+                    <div className={cn("h-full rounded-full", (ts.attest.backing.ratio ?? 0) >= 0.99 ? "bg-emerald" : "bg-gold")} style={{ width: `${Math.min(100, Math.round((ts.attest.backing.ratio ?? 0) * 100))}%` }} />
+                  </div>
+                  <div className="space-y-0.5 mb-2 max-h-16 overflow-y-auto pe-1">
+                    {ts.attest.doors.map((d) => (
+                      <div key={d.address} className="text-[10px] flex items-center gap-1.5" dir="ltr">
+                        <span className={cn("hash text-[9px] px-1 rounded", d.honest === "ok" ? "text-emerald bg-emerald/10" : "text-rose bg-rose/10")}>{d.honest}</span>
+                        <span className="hash text-ink">{d.address.slice(0, 12)}…</span>
+                        <span className="hash text-ink-2 ms-auto">{d.trx} TRX {d.role ? `· ${d.role}` : ""}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[9px] text-ink-2 leading-relaxed">
+                    כנות: האספקה כוללת מימושים-מורשתים (ct94/95) שחלקם יושב על דלתות-נעולות (מנומניק אבד ברולבק-115 — גיבוי-טרום-רולבק של agent/keys/tron-mnemonic.txt מרפא). הפער מפורסם — לא מתחת-לשטיח. הפקדות-חדשות לדלתות-v2 מטופלות אוטומטית ב-THE-DEPOSITS.
+                  </p>
+                </>
+              ) : (
+                <div className="text-[10px] text-ink-2">אין-עדות-טרייה — לחץ ״מדוד-שוב-חי״</div>
+              )}
+            </div>
+          </div>
+
+          {/* ── הבריכות ── */}
+          <div className="mt-3">
+            <div className="text-[11px] text-ink-2 mb-1.5 flex items-center gap-1.5">
+              <Boxes className="size-3 text-emerald" /> בריכות-ה-AMM על-הספר (חיות-בלבד · ממוינות-לפי-עומק)
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 max-h-40 overflow-y-auto pe-1">
+              {ts.pools.slice(0, 9).map((p) => (
+                <div key={p.pair} className="rounded bg-ink-2/30 px-2 py-1.5 flex items-center gap-2 flex-wrap" dir="ltr">
+                  <span className="hash text-[11px] font-bold text-ink">{p.pair}</span>
+                  <span className={cn("hash text-[9px] px-1 rounded", p.feeBps === 0 ? "text-emerald bg-emerald/10" : "text-gold bg-gold/10")}>{p.feeBps}bps</span>
+                  <span className="hash text-[10px] text-ink-2">{p.reserveA} {p.symA} · {p.reserveB} {p.symB}</span>
+                  {p.depthUsd !== null ? <span className="hash text-[10px] text-ink ms-auto">${p.depthUsd}</span> : null}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── המהפכה-בשורה-אחת: מה-השתחררנו-ממנו ── */}
+          <div className="mt-3 rounded bg-emerald/5 border border-emerald/20 px-2.5 py-2 text-[10px] leading-relaxed">
+            <span className="font-bold text-ink">המהפכה-הריבונית (מדוד מול-החלופות):</span>{" "}
+            <span className="text-emerald">עמלה 0% (ספק-חוץ: 30bps+פיזור ~18% על רגל-$1)</span> ·{" "}
+            <span className="text-emerald">מינימום 0 (ספק-חוץ: ~$15-מדומה)</span> ·{" "}
+            <span className="text-emerald">התיישבות מיידית על הספר שלנו (ספק-חוץ: 10-60 דק׳)</span> ·{" "}
+            <span className="text-emerald">אפס-אנרגיה-טרון (שם: ~65k-אנרגיה להעברת-TRC20)</span> —{" "}
+            המערך מארח מטבע-אמת ומחליף אותו בבית. המפה-המלאה: docs/117-LIMITS.md
+          </div>
         </Panel>
       ) : null}
 
