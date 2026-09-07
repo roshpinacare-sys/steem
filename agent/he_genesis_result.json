@@ -1,42 +1,47 @@
 {
-  "at": "2026-09-07T11:50:22.360Z",
+  "at": "2026-09-07T12:34:58.813Z",
   "dry": false,
-  "run": 135,
+  "run": 136,
   "ladder": {
     "bee": {
-      "before": 2.44002555,
-      "after": 2.59495706
+      "before": 2.59495706,
+      "after": 3.53548942
     },
     "swapHive": {
-      "before": 2.24763279,
-      "after": 2.15598125
+      "before": 2.15598125,
+      "after": 1.59670163
     },
-    "totalBeeBoughtEver": 2.3985555599999997,
+    "totalBeeBoughtEver": 3.33908792,
     "createThreshold": 100,
-    "progressPct": 2.59495706
+    "progressPct": 3.53548942
   },
   "steps": [
     {
       "step": "hive→swap.hive",
       "ok": true,
-      "detail": "9.632 HIVE pegged → SWAP.HIVE=2.24763279 · tx ?",
+      "detail": "9.632 HIVE pegged → SWAP.HIVE=2.15598125 · tx ?",
       "txid": null
     },
     {
       "step": "buy BEE#1",
+      "ok": false,
+      "detail": "failed: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 239486550 RC, needs 303396253 RC. Please wait to transact or "
+    },
+    {
+      "step": "buy BEE#2",
       "ok": true,
-      "detail": "0.15493151@0.59156162 + 0.00290120@0.59157162 + 3.54677389@0.59328986 · tx ?",
+      "detail": "0.94053236@0.59570592 · tx ?",
       "txid": null
     },
     {
       "step": "buy BEE·settle",
       "ok": true,
-      "detail": "BEE 2.4400 → 2.5950 (Δ+0.1549) · ladder 2.59/100 · total bought ever 2.3986"
+      "detail": "BEE 2.5950 → 3.5355 (Δ+0.9405) · ladder 3.54/100 · total bought ever 3.3391"
     },
     {
       "step": "genesis gate",
       "ok": true,
-      "detail": "2.59/100 BEE — ladder continues (release trickle feeds the next runs)"
+      "detail": "3.54/100 BEE — ladder continues (release trickle feeds the next runs)"
     }
   ],
   "token": {
