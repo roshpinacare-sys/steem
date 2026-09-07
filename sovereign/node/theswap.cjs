@@ -145,7 +145,7 @@ function quote(pair, side, inAmt) {
   if (!(p.a > 0) || !(p.b > 0)) return { ok: false, err: 'empty-pool' };
   const s = side === 'A2B' ? 'A2B' : side === 'B2A' ? 'B2A' : null;
   if (!s) return { ok: false, err: 'bad-side' };
-  const inU = Math.round(Number(inAmt) * 1000); // µ
+  const inU = Math.floor(Number(inAmt)); // יחידות-ספר (µ לסמלי-µ) — אותו-חוזה כמו-swap
   if (!(inU > 0)) return { ok: false, err: 'amount' };
   const inRes = s === 'A2B' ? p.a : p.b, outRes = s === 'A2B' ? p.b : p.a;
   const fee = Math.floor(inU * p.feeBps / 10000);
@@ -154,14 +154,16 @@ function quote(pair, side, inAmt) {
   const A = p.symA, B = p.symB;
   const inSym = s === 'A2B' ? A : B, outSym = s === 'A2B' ? B : A;
   const scA = scaleOf(st, A), scB = scaleOf(st, B);
-  const priceAfter = (outRes - out) / (inRes + net) * (scB === scA ? 1 : 1); // יחידות-ספר ליחידות-ספר
+  // מחיר = outSym-ליחידת-inSym (יחס-עתודות) · הפרש-המחיר-הכנה = עלות-הביצוע-בפועל
+  const px0 = outRes / inRes;
+  const px1 = outRes > out ? (outRes - out) / (inRes + net) : null;
   return {
     ok: true, pair, side: s, feeBps: p.feeBps,
     in: { sym: inSym, units: inU, human: inU / (s === 'A2B' ? scA : scB) },
     out: { sym: outSym, units: out, human: out / (s === 'A2B' ? scB : scA) },
     reserves: { A: { sym: A, units: p.a, human: p.a / scA }, B: { sym: B, units: p.b, human: p.b / scB } },
-    priceBefore: inRes / outRes, priceAfter: outRes > out ? priceAfter : null,
-    impactPct: outRes > out ? +(((inRes / outRes) / priceAfter - 1) * 100).toFixed(4) : null,
+    priceBefore: +px0.toFixed(6), priceAfter: px1 !== null ? +px1.toFixed(6) : null,
+    impactPct: px1 !== null ? +((1 - px1 / px0) * 100).toFixed(3) : null,
     cap: Math.floor(inRes * 0.3), capOk: inU <= Math.floor(inRes * 0.3),
   };
 }
