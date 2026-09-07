@@ -212,7 +212,21 @@ async function tick({ forceSol } = {}) {
       const prevRaw = prev !== undefined ? BigInt(prev) : null;
       state.last[key] = cur.raw.toString();
       if (prevRaw === null) continue; // סקר-ראשון — בזלינה-בלבד
-      if (cur.raw <= prevRaw) continue;
+      if (cur.raw <= prevRaw) {
+        /* 117f — אישור-החזקה: אין-דלתא-חדשה, אבל-הפקדה-ממתינה-שעדיין-מוחזקת-ביתרה-החיה-שנסרקה-עכשיו-בחיים
+         * = ראיה-סריקה-טרייה → טיק-החזקה. בלי-זה-הבזלינה-מתעדכנת-מיד-והאישור-מעולם-לא-מגיע
+         * (הבאג-שתפס-את-ההפקדה-האמת-הראשונה: pending-נתקע-על-ticks:1-לנצח). */
+        for (const p of state.pending || []) {
+          if (p.chain === chain.key && p.agent === name && !p.confirmedAt && BigInt(p.raw) <= cur.raw) {
+            p.ticks = (p.ticks || 1) + 1;
+            if (p.ticks >= CONFIRM_TICKS) {
+              p.confirmedAt = new Date().toISOString();
+              confirmedNow.push({ ...p, ref: 'dep:' + chain.key + ':' + name + ':' + BigInt(p.raw).toString(16) });
+            }
+          }
+        }
+        continue;
+      }
       const delta = cur.raw - prevRaw;
       const human = Number(delta) / Math.pow(10, chain.decimals);
       const ev = { at: new Date().toISOString(), chain: chain.key, agent: name, sym: chain.sym, raw: delta.toString(), human, unit: cur.unit, addr: a[chain.family === 'evm' ? 'evm' : chain.family] };
