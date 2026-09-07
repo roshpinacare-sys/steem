@@ -380,10 +380,23 @@ function webAlive() {
   } catch (_) { return false; }
 }
 function pgrepAlive(pat) { try { return /\d/.test(sh('pgrep', ['-f', pat])); } catch (_) { return false; } }
+/* 117f — גיל-התהליך-הצעיר-ביותר (שניות): מודע-חימום. שרת-שזה-עתה-עלה מתקמפל-דפים 10-30 שניות
+ * וה-webAlive() נכשל-בחימום — הריגה-אז = מרוץ-מוות-מחזורי (הלקח-של-117f: שרת-מת-כל-4-דק').
+ * כלל-המלחמה: צעיר-<180 שניות = חימום → לעולם-לא-הורגים-ולא-מטילים-כפול. זקן-ותקוע בלבד = מפנים. */
+function youngestNextAgeSec() {
+  try {
+    const out = sh('bash', ['-c', "ps -eo etimes,args 2>/dev/null | grep -E 'next[- ](dev|server)' | grep -v grep | sort -n | head -1 | awk '{print $1}'"], { timeout: 6_000 });
+    const n = parseInt(String(out).trim(), 10);
+    return Number.isFinite(n) && n >= 0 ? n : -1;
+  } catch (_) { return -1; }
+}
 function healWeb(res) {
   try {
     if (webAlive()) { res.actions.push('web-ok(3000)'); return; }
-    // dead port but stuck process? clear it so the revival owns the port
+    // young process alive? it is compiling — never kill, never double-spawn (warming grace)
+    const age = youngestNextAgeSec();
+    if (age >= 0 && age < 180) { res.actions.push('web-warming(age ' + age + 's · no-kill)'); return; }
+    // dead port but stuck OLD process? clear it so the revival owns the port
     const stuck = pgrepAlive('next-server') || pgrepAlive('next dev');
     if (stuck) { try { sh('pkill', ['-f', 'next-server']); sh('pkill', ['-f', 'next dev']); } catch (_) {} }
     const out = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
