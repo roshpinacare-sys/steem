@@ -1,0 +1,402 @@
+{
+  "manifest": {
+    "payload": {
+      "version": "33.23",
+      "packageId": "offline-evidence-package-a7f6d92d-23c6-493b-bbbc-da42373fb0e6",
+      "sessionId": "evidence-intake-session-b70fcf58-4263-4e36-864b-895474dac8d0",
+      "challengeId": "postgres-ha-pitr-challenge-2a4f28a0-654d-4a37-b053-20d26f72c2bc",
+      "bundleId": "postgres-ha-pitr-bundle-03ffea06-dcc9-43de-a239-d046114c762d",
+      "bundleDigest": "acbba629cfccff8777151046e8d7c38811f3ccbde2bf9e2e9dcdd675f28f2bef",
+      "evidenceClass": "SYNTHETIC_CONTRACT_TEST",
+      "artifactManifest": [
+        {
+          "path": "facts/server.json",
+          "kind": "SERVER_FACTS",
+          "mediaType": "application/json",
+          "sizeBytes": 52,
+          "sha256": "5b9735e323e04a90f5955bc4079aaee811093e95a8c18c0bab528545aa2b8586",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "ha/failover.json",
+          "kind": "FAILOVER_TRANSCRIPT",
+          "mediaType": "application/json",
+          "sizeBytes": 51,
+          "sha256": "92be46bc551334b3689e00a633fe96f0d48fa3aeb5029e5b51d0ba14c5fd2916",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "ha/fence.json",
+          "kind": "FENCE_TRACE",
+          "mediaType": "application/json",
+          "sizeBytes": 48,
+          "sha256": "02ab1acff92cd264513a82f91fd7a7bc5d6dc6866d422a0d51a8f62bfea60497",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "ha/outbox.json",
+          "kind": "OUTBOX_TRACE",
+          "mediaType": "application/json",
+          "sizeBytes": 49,
+          "sha256": "f7110169369228af7134cfdc718488d71e45c0d202104a9ec24b554a46fd339c",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "metrics/rpo-rto.json",
+          "kind": "RPO_RTO_MEASUREMENT",
+          "mediaType": "application/json",
+          "sizeBytes": 55,
+          "sha256": "86341abeaa3c0276bc824cec629adaba81c41bdadfc2d42cccd6042103dd4aa2",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "tls/session.json",
+          "kind": "TLS_SESSION",
+          "mediaType": "application/json",
+          "sizeBytes": 51,
+          "sha256": "a9ef2fa25da7bc845e0af48e21916976dd9eb1f9a4f8650e47beedf94bbbe095",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        }
+      ],
+      "scanReportDigest": "35d5ded36a62788174bce9135f6ebbc2bfe6829adb77935eeaf910ebedb5ce3e",
+      "intakeReceiptDigest": "4f089c808b942bd2e7bf1038c8313dc33d86df30c6930032d9a928b6918bdcd9",
+      "exportedAt": "2026-07-21T20:36:29.608Z",
+      "networkAccessRequired": false,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "packageDigest": "911be75bec5a3d14c9a46ebbbe7bf7e1e07136bcd8f89fe54d8a67fb42507cbc"
+    },
+    "issuerKeyId": "v33.23-exporter",
+    "algorithm": "Ed25519",
+    "signature": "_Zi5d0BlwtLGH_GftYf5zfSF8vXwwsVraraIZOOLwQCCX8gyJTVvyKKlp8BAieRriicG8yYjGJ4JaXfNDkB3DQ"
+  },
+  "session": {
+    "payload": {
+      "version": "33.23",
+      "sessionId": "evidence-intake-session-b70fcf58-4263-4e36-864b-895474dac8d0",
+      "challengeId": "postgres-ha-pitr-challenge-2a4f28a0-654d-4a37-b053-20d26f72c2bc",
+      "operatorSignerId": "v33.23-operator",
+      "operatorRole": "HA_OPERATOR",
+      "issuedAt": "2026-07-21T20:36:29.608Z",
+      "expiresAt": "2026-07-21T21:36:29.608Z",
+      "maximumArtifactCount": 64,
+      "maximumTotalBytes": 16777216,
+      "allowedMediaTypes": [
+        "application/json",
+        "text/plain",
+        "application/sql",
+        "application/octet-stream"
+      ],
+      "oneBundleOnly": true,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "sessionDigest": "78e9a40ffc54dcc2904bf38977ffd378d6d220532a4c72e27cd16c4bf7199b0a"
+    },
+    "issuerKeyId": "v33.23-session",
+    "algorithm": "Ed25519",
+    "signature": "HmYh4GTvZ6ZZzrJKMKltHTKsBzWZxPRv6tCae_DCro0fCUmzJZteRdrkInyrbUh4_8zmSbsTlveek-GgQa1qBg"
+  },
+  "challenge": {
+    "payload": {
+      "version": "33.22",
+      "challengeId": "postgres-ha-pitr-challenge-2a4f28a0-654d-4a37-b053-20d26f72c2bc",
+      "issuedAt": "2026-07-21T20:36:29.608Z",
+      "expiresAt": "2026-08-04T20:36:29.608Z",
+      "migrationChainDigest": "535dbf9045ea14d51d645aef37d205d423f798906c5f7328f432d62b17a07b63",
+      "minimumServerVersionNum": 150000,
+      "maximumRtoMs": 300000,
+      "maximumRpoMs": 60000,
+      "requiredIndependentOperators": 2,
+      "requiredIndependentHosts": 2,
+      "requiredRoles": [
+        "HA_OPERATOR",
+        "PITR_OPERATOR"
+      ],
+      "requiredArtifactKinds": {
+        "HA_OPERATOR": [
+          "SERVER_FACTS",
+          "TLS_SESSION",
+          "FAILOVER_TRANSCRIPT",
+          "FENCE_TRACE",
+          "OUTBOX_TRACE",
+          "RPO_RTO_MEASUREMENT"
+        ],
+        "PITR_OPERATOR": [
+          "SERVER_FACTS",
+          "TLS_SESSION",
+          "BACKUP_MANIFEST",
+          "RESTORE_TRANSCRIPT",
+          "PITR_RECOVERY_TRACE",
+          "WITNESS_TRACE",
+          "RPO_RTO_MEASUREMENT"
+        ]
+      },
+      "syntheticEvidenceAccepted": false,
+      "sameHostEvidenceAccepted": false,
+      "maximumArtifactCountPerBundle": 20,
+      "maximumArtifactBytesPerBundle": 20971520,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "challengeDigest": "05175be9d1d6366b896daa0c1bda30659eb59c0e594f5963c8e7002176c2f3a7"
+    },
+    "issuerKeyId": "v33.23-challenge",
+    "algorithm": "Ed25519",
+    "signature": "YnCiSWcCkQyAAjo-U0VQWiEyZiN5hYSpCrpbllleB7h34cr4DbGEzK8FKI2nXqKidJJOhKVdJPw5sFZkKqBmCQ"
+  },
+  "bundle": {
+    "payload": {
+      "version": "33.22",
+      "bundleId": "postgres-ha-pitr-bundle-03ffea06-dcc9-43de-a239-d046114c762d",
+      "challengeId": "postgres-ha-pitr-challenge-2a4f28a0-654d-4a37-b053-20d26f72c2bc",
+      "evidenceClass": "SYNTHETIC_CONTRACT_TEST",
+      "operatorRole": "HA_OPERATOR",
+      "operatorOrganizationId": "synthetic-org",
+      "operatorSignerId": "v33.23-operator",
+      "operatorHostId": "synthetic-operator-host",
+      "sourceHostId": "synthetic-primary",
+      "targetHostId": "synthetic-standby",
+      "sourceClusterId": "synthetic-cluster",
+      "sourceDatabaseSystemIdentifier": "synthetic-system-id",
+      "serverVersionNum": 170000,
+      "migrationChainDigest": "535dbf9045ea14d51d645aef37d205d423f798906c5f7328f432d62b17a07b63",
+      "operationalReceipt": {
+        "version": "33.22",
+        "kind": "HA_FAILOVER",
+        "sourceTimelineId": 1,
+        "promotedTimelineId": 2,
+        "baselineFenceToken": 4,
+        "postFailoverFenceToken": 5,
+        "singleWriterCount": 1,
+        "oldPrimaryWriteRejected": true,
+        "outboxGapCount": 0,
+        "outboxDuplicateCount": 0,
+        "rtoMs": 20000,
+        "rpoMs": 1000,
+        "tlsVerifyFull": true,
+        "noEmbeddedSecrets": true,
+        "recordedAt": "2026-07-21T20:36:29.608Z",
+        "receiptDigest": "2fe3970b2e747fbaecd961f553a3ee83c68e5d4c2e7c980161cf1841345dc274"
+      },
+      "artifactManifest": [
+        {
+          "path": "facts/server.json",
+          "kind": "SERVER_FACTS",
+          "mediaType": "application/json",
+          "sizeBytes": 52,
+          "sha256": "5b9735e323e04a90f5955bc4079aaee811093e95a8c18c0bab528545aa2b8586",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "ha/failover.json",
+          "kind": "FAILOVER_TRANSCRIPT",
+          "mediaType": "application/json",
+          "sizeBytes": 51,
+          "sha256": "92be46bc551334b3689e00a633fe96f0d48fa3aeb5029e5b51d0ba14c5fd2916",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "ha/fence.json",
+          "kind": "FENCE_TRACE",
+          "mediaType": "application/json",
+          "sizeBytes": 48,
+          "sha256": "02ab1acff92cd264513a82f91fd7a7bc5d6dc6866d422a0d51a8f62bfea60497",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "ha/outbox.json",
+          "kind": "OUTBOX_TRACE",
+          "mediaType": "application/json",
+          "sizeBytes": 49,
+          "sha256": "f7110169369228af7134cfdc718488d71e45c0d202104a9ec24b554a46fd339c",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "metrics/rpo-rto.json",
+          "kind": "RPO_RTO_MEASUREMENT",
+          "mediaType": "application/json",
+          "sizeBytes": 55,
+          "sha256": "86341abeaa3c0276bc824cec629adaba81c41bdadfc2d42cccd6042103dd4aa2",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        },
+        {
+          "path": "tls/session.json",
+          "kind": "TLS_SESSION",
+          "mediaType": "application/json",
+          "sizeBytes": 51,
+          "sha256": "a9ef2fa25da7bc845e0af48e21916976dd9eb1f9a4f8650e47beedf94bbbe095",
+          "collectedAt": "2026-07-21T20:36:29.608Z"
+        }
+      ],
+      "artifactManifestDigest": "d08c5e0ca3e4981a3de64ac89166d12a03a497dc43843d7a94a012fce730066d",
+      "totalArtifactBytes": 306,
+      "collectedAt": "2026-07-21T20:36:29.608Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "bundleDigest": "acbba629cfccff8777151046e8d7c38811f3ccbde2bf9e2e9dcdd675f28f2bef"
+    },
+    "issuerKeyId": "v33.23-operator",
+    "algorithm": "Ed25519",
+    "signature": "WqBHAn2T0jQpUvWX6mo8_CXO2VGRKocZWqKNKYv9rtUuGFErrq0oQuxhMRJTujaUYOrMKcGiQZrlkifWt5m0Cw"
+  },
+  "scanReport": {
+    "payload": {
+      "version": "33.23",
+      "scanId": "evidence-scan-87e1f67f-d2ca-4b50-87f0-4798459a2a85",
+      "sessionId": "evidence-intake-session-b70fcf58-4263-4e36-864b-895474dac8d0",
+      "bundleId": "postgres-ha-pitr-bundle-03ffea06-dcc9-43de-a239-d046114c762d",
+      "bundleDigest": "acbba629cfccff8777151046e8d7c38811f3ccbde2bf9e2e9dcdd675f28f2bef",
+      "status": "BUILTIN_SCAN_PASSED",
+      "builtinScannerVersion": "33.23.1",
+      "externalMalwareScanner": "CLAMAV_UNAVAILABLE",
+      "externalMalwareQualification": "EXTERNAL_MALWARE_SCAN_REQUIRED",
+      "artifactScans": [
+        {
+          "path": "facts/server.json",
+          "expectedSha256": "5b9735e323e04a90f5955bc4079aaee811093e95a8c18c0bab528545aa2b8586",
+          "observedSha256": "5b9735e323e04a90f5955bc4079aaee811093e95a8c18c0bab528545aa2b8586",
+          "sizeBytes": 52,
+          "mediaType": "application/json",
+          "detectedType": "JSON",
+          "executableBit": false,
+          "findings": [],
+          "artifactScanDigest": "bbf1b4581b9efee1dc9101fd09e43cf4a21d0043f6719e7f64242aef94c14003"
+        },
+        {
+          "path": "ha/failover.json",
+          "expectedSha256": "92be46bc551334b3689e00a633fe96f0d48fa3aeb5029e5b51d0ba14c5fd2916",
+          "observedSha256": "92be46bc551334b3689e00a633fe96f0d48fa3aeb5029e5b51d0ba14c5fd2916",
+          "sizeBytes": 51,
+          "mediaType": "application/json",
+          "detectedType": "JSON",
+          "executableBit": false,
+          "findings": [],
+          "artifactScanDigest": "1f2df7b27bb93fa181ad356311b253e769f08ad708f1f0c9c8a75951ac4c4b07"
+        },
+        {
+          "path": "ha/fence.json",
+          "expectedSha256": "02ab1acff92cd264513a82f91fd7a7bc5d6dc6866d422a0d51a8f62bfea60497",
+          "observedSha256": "02ab1acff92cd264513a82f91fd7a7bc5d6dc6866d422a0d51a8f62bfea60497",
+          "sizeBytes": 48,
+          "mediaType": "application/json",
+          "detectedType": "JSON",
+          "executableBit": false,
+          "findings": [],
+          "artifactScanDigest": "f6ba913bce241525c44629f81a3e5b5b0b7a7db03b188e86db07472bce20297b"
+        },
+        {
+          "path": "ha/outbox.json",
+          "expectedSha256": "f7110169369228af7134cfdc718488d71e45c0d202104a9ec24b554a46fd339c",
+          "observedSha256": "f7110169369228af7134cfdc718488d71e45c0d202104a9ec24b554a46fd339c",
+          "sizeBytes": 49,
+          "mediaType": "application/json",
+          "detectedType": "JSON",
+          "executableBit": false,
+          "findings": [],
+          "artifactScanDigest": "8e1e2b85facfb0a379f1d057043401ba4bb6cb775187d301be9dde8a2ef1650e"
+        },
+        {
+          "path": "metrics/rpo-rto.json",
+          "expectedSha256": "86341abeaa3c0276bc824cec629adaba81c41bdadfc2d42cccd6042103dd4aa2",
+          "observedSha256": "86341abeaa3c0276bc824cec629adaba81c41bdadfc2d42cccd6042103dd4aa2",
+          "sizeBytes": 55,
+          "mediaType": "application/json",
+          "detectedType": "JSON",
+          "executableBit": false,
+          "findings": [],
+          "artifactScanDigest": "ca761f8c91abc41c882e1ad9f763a6d56fff932c4293b10a2789e18f1e9d2f2d"
+        },
+        {
+          "path": "tls/session.json",
+          "expectedSha256": "a9ef2fa25da7bc845e0af48e21916976dd9eb1f9a4f8650e47beedf94bbbe095",
+          "observedSha256": "a9ef2fa25da7bc845e0af48e21916976dd9eb1f9a4f8650e47beedf94bbbe095",
+          "sizeBytes": 51,
+          "mediaType": "application/json",
+          "detectedType": "JSON",
+          "executableBit": false,
+          "findings": [],
+          "artifactScanDigest": "3b17d703bd3db3a925b7436d705df120bf500fa5a2d0ddbfb6c5e697c35fce75"
+        }
+      ],
+      "findingCount": 0,
+      "scannedAt": "2026-07-21T20:36:29.645Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "reportDigest": "35d5ded36a62788174bce9135f6ebbc2bfe6829adb77935eeaf910ebedb5ce3e"
+    },
+    "issuerKeyId": "v33.23-scanner",
+    "algorithm": "Ed25519",
+    "signature": "MywEFHWed84vR4Evyb6qkWko5kZUioIv8i_ZZkyxJbEt-JquOciF57AKBpwJHW-yePRw1LcZrW9W7GvL7IgUBw"
+  },
+  "intakeReceipt": {
+    "payload": {
+      "version": "33.23",
+      "intakeId": "evidence-intake-c1cba3b6-7d76-43f8-aeab-d0dd9c1cd7c4",
+      "sessionId": "evidence-intake-session-b70fcf58-4263-4e36-864b-895474dac8d0",
+      "challengeId": "postgres-ha-pitr-challenge-2a4f28a0-654d-4a37-b053-20d26f72c2bc",
+      "bundleId": "postgres-ha-pitr-bundle-03ffea06-dcc9-43de-a239-d046114c762d",
+      "bundleDigest": "acbba629cfccff8777151046e8d7c38811f3ccbde2bf9e2e9dcdd675f28f2bef",
+      "evidenceClass": "SYNTHETIC_CONTRACT_TEST",
+      "operatorRole": "HA_OPERATOR",
+      "operatorSignerId": "v33.23-operator",
+      "artifactCount": 6,
+      "artifactBytes": 306,
+      "scanReportDigest": "35d5ded36a62788174bce9135f6ebbc2bfe6829adb77935eeaf910ebedb5ce3e",
+      "quarantineStatus": "SCAN_PASSED_QUARANTINED",
+      "eligibleForOfflineVerification": true,
+      "eligibleForExternalQualification": false,
+      "acceptedAt": "2026-07-21T20:36:29.645Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "receiptDigest": "4f089c808b942bd2e7bf1038c8313dc33d86df30c6930032d9a928b6918bdcd9"
+    },
+    "issuerKeyId": "v33.23-portal",
+    "algorithm": "Ed25519",
+    "signature": "YURoi9LwZ9LssjYQynMHkAOVz7tmbJz2BY34MxbHVCx5zYtduddApOVOtRTGM-dPH5Nz3dF31tX0k1nz4BQ7Cg"
+  },
+  "artifactBytesBase64ByPath": {
+    "facts/server.json": "eyJwYXRoIjoiZmFjdHMvc2VydmVyLmpzb24iLCJzdGF0dXMiOiJzeW50aGV0aWMtb2sifQ==",
+    "ha/failover.json": "eyJwYXRoIjoiaGEvZmFpbG92ZXIuanNvbiIsInN0YXR1cyI6InN5bnRoZXRpYy1vayJ9",
+    "ha/fence.json": "eyJwYXRoIjoiaGEvZmVuY2UuanNvbiIsInN0YXR1cyI6InN5bnRoZXRpYy1vayJ9",
+    "ha/outbox.json": "eyJwYXRoIjoiaGEvb3V0Ym94Lmpzb24iLCJzdGF0dXMiOiJzeW50aGV0aWMtb2sifQ==",
+    "metrics/rpo-rto.json": "eyJwYXRoIjoibWV0cmljcy9ycG8tcnRvLmpzb24iLCJzdGF0dXMiOiJzeW50aGV0aWMtb2sifQ==",
+    "tls/session.json": "eyJwYXRoIjoidGxzL3Nlc3Npb24uanNvbiIsInN0YXR1cyI6InN5bnRoZXRpYy1vayJ9"
+  },
+  "publicKeys": [
+    {
+      "keyId": "v33.23-challenge",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAv5LXuYbglDBUpx28uh4xqmKsW2M1ZgfQxyRNKh9rXKU=",
+      "fingerprint": "27bc807b1ae60f55d30d6ac80c3a70ae53c91539e5fcf315059a8f341fddf9e1",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.23-exporter",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAPNVKbdq/uzavLOjcQ9ppRwT9fBR3ktbJdhoNunY58RA=",
+      "fingerprint": "fd2bef60bac6f7e09b423f9b7ba41312c4fc9e0d5e4485f37678b571379b5c7c",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.23-operator",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAFU2WpaG839uAs0bc/mlqUh29ItZR0sn4INYugzo1k5o=",
+      "fingerprint": "796ca4af6e1858fbd4ef1615246005c3f5d576c9616e6ea9fe382c368a5f00a5",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.23-portal",
+      "spkiDerBase64": "MCowBQYDK2VwAyEATdPirmi6j5Geumn+jRnp21wnFJ+8VsdZ1rZhCJ9YULU=",
+      "fingerprint": "81a3ec73be8045c7a08d0f3c49a3a08cf69e9cd3e5b4bc5200302371e22be890",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.23-scanner",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAzCdhDa9NYKWPITS3J0Ozov4X6jrhSOgdE50Y8yJ8ff0=",
+      "fingerprint": "29cd0b18f4be652818103344ebbd0038cf4bd990da4f557e403b25c6c4716402",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.23-session",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAPIr6NTZ0SgxwEBvnESfXAY6rnP0qjjAUXbeDl5jQBcM=",
+      "fingerprint": "0e2b4a4d999f56f24ad6619559f22cb1ea8bfd44b6ecb876156d5c44eaf8efcf",
+      "revoked": false
+    }
+  ]
+}

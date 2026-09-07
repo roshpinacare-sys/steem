@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-11T09:22:20.391Z",
+  "databaseDriver": "node:sqlite",
+  "processCount": 4,
+  "leaseRace": {
+    "contenders": [
+      {
+        "ok": true,
+        "action": "claim",
+        "claimed": true,
+        "token": 1
+      },
+      {
+        "ok": true,
+        "action": "claim",
+        "claimed": false,
+        "token": null
+      }
+    ],
+    "winnerCount": 1
+  },
+  "takeover": {
+    "ok": true,
+    "action": "claim",
+    "claimed": true,
+    "token": 2
+  },
+  "staleCommit": {
+    "ok": false,
+    "action": "checkpoint",
+    "error": "lease_not_owned:v14-race-job"
+  },
+  "currentCommit": {
+    "ok": true,
+    "action": "checkpoint",
+    "committed": true
+  },
+  "passed": true
+}

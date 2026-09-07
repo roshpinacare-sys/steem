@@ -1,0 +1,112 @@
+{
+  "version": "32.6.1",
+  "mode": "quick",
+  "runId": "v32.7-final2",
+  "sourceDigest": "0ca74ca9cbcd3bddd5a0a246c1fd8efb40ac9c5bea55847b4dfa5fa0c618d1db",
+  "compiledArtifactDigest": "94d102bb2bac1934302d9d2e1a5479615fcb9d2ac7e584ca6581c01420ac1e0b",
+  "testManifestDigest": "aa1e9aeaa2eb9540ea03f16aec2f2897fe2ec2bba93147c96de16eaec43aa3de",
+  "testFilesDigest": "ba4d437389dbc0e1ac178b5a1fb6a8955cbc862c1496ea8b2b6a59939ba8ef56",
+  "packageLockDigest": "84f49a028d0ad67f09a9b663a7bda556440ec00a00753836c91bd927d9a18701",
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "environment": {
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64",
+    "ci": true,
+    "runnerOs": "",
+    "runnerArch": ""
+  },
+  "shardIndex": null,
+  "shardCount": 1,
+  "generatedAt": "2026-07-18T14:44:45.071833Z",
+  "inventory": {
+    "sourceTestFiles": 136,
+    "compiledTestFiles": 136,
+    "missing": [],
+    "extra": []
+  },
+  "selectedTestFiles": [
+    "governance-consistency",
+    "proof-integration-v32_7",
+    "test-execution-provenance",
+    "test-operations-v32_6",
+    "workspace-continuity-v32_1"
+  ],
+  "selectedCount": 5,
+  "estimatedSerialMs": 4839.008,
+  "tierCounts": {
+    "quick": 10,
+    "core": 103,
+    "deep": 16,
+    "qualification": 7
+  },
+  "shards": [
+    {
+      "index": 0,
+      "names": [
+        "governance-consistency",
+        "proof-integration-v32_7",
+        "test-execution-provenance",
+        "test-operations-v32_6",
+        "workspace-continuity-v32_1"
+      ],
+      "estimatedMs": 4839.008,
+      "resources": []
+    }
+  ],
+  "impact": {
+    "mode": "impacted",
+    "changedFiles": [],
+    "reasons": [
+      "dependency_intersection",
+      "mandatory_sentinels"
+    ],
+    "mandatorySentinelsRequired": [
+      "governance-consistency",
+      "proof-integration-v32_7",
+      "test-execution-provenance",
+      "test-operations-v32_6",
+      "workspace-continuity-v32_1"
+    ],
+    "mandatorySentinelsSelected": [
+      "governance-consistency",
+      "proof-integration-v32_7",
+      "test-execution-provenance",
+      "test-operations-v32_6",
+      "workspace-continuity-v32_1"
+    ]
+  },
+  "build": {
+    "status": "skipped",
+    "durationMs": 0.0
+  },
+  "concurrency": 4,
+  "classification": "developer-feedback",
+  "status": "passed",
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=4",
+    "--test-reporter=tap",
+    "--test-force-exit",
+    "dist/tests/governance-consistency.test.js",
+    "dist/tests/proof-integration-v32_7.test.js",
+    "dist/tests/test-execution-provenance.test.js",
+    "dist/tests/test-operations-v32_6.test.js",
+    "dist/tests/workspace-continuity-v32_1.test.js"
+  ],
+  "testFiles": 5,
+  "tests": 69,
+  "passed": 69,
+  "failed": 0,
+  "wallDurationMs": 1680.254,
+  "exitCode": 0,
+  "timedOut": false,
+  "forceExitEnabled": true,
+  "functionalRepeat": false,
+  "tapCompleted": true,
+  "reapedAfterCompleteTap": false,
+  "lifecycleLeakDetected": false,
+  "logPath": "evidence/runs/v32.7-final2/V32_6_QUICK_TESTS.tap.log"
+}

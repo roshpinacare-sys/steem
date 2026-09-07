@@ -1,0 +1,236 @@
+{
+  "version": "33.14",
+  "roleKeyIds": {
+    "control": "v33.14-control",
+    "wasm": "v33.14-wasm",
+    "authority": "v33.14-authority",
+    "operatorA": "v33.14-operatorA",
+    "operatorB": "v33.14-operatorB",
+    "executionA": "v33.14-executionA",
+    "executionB": "v33.14-executionB",
+    "verifier": "v33.14-verifier"
+  },
+  "controlAttestation": {
+    "payload": {
+      "version": "33.14",
+      "attestationId": "v33.14-local-host-controls",
+      "generatedAt": "2026-07-21T18:00:00.000Z",
+      "validUntil": "2026-07-21T19:00:00.000Z",
+      "hostFingerprint": "b8547956e18ce11bb7cf1121f1e7e8faddda3574063462673f0dcff55eade546",
+      "platform": "linux",
+      "architecture": "x64",
+      "kernelRelease": "4.4.0",
+      "openat2": {
+        "control": "openat2",
+        "state": "VERIFIED_UNAVAILABLE",
+        "method": "COMPILED_KERNEL_PROBE",
+        "compiler": "/usr/bin/gcc",
+        "exitCode": 2,
+        "signal": null,
+        "stdoutSha256": "5d963c21e1d795756198debeefe923ff9b40afd4df02069890c77e628b97a310",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "detail": "ERRNO=38:Function not implemented",
+        "sourceSha256": "74c862f88dd11fd8f78115eadd93d62284fd34352a6e65264106cecfd9f7c781",
+        "probeDigest": "96b4e61cf7e879fd588e43793eec3a02e6f6b549395a1ab8ba452d25213e270f"
+      },
+      "seccompStrict": {
+        "control": "seccomp_strict",
+        "state": "VERIFIED_UNAVAILABLE",
+        "method": "COMPILED_KERNEL_PROBE",
+        "compiler": "/usr/bin/gcc",
+        "exitCode": 2,
+        "signal": null,
+        "stdoutSha256": "d90fa535d19c06b4ed8d41ac85be765561e6c5a47bee8c8d2e30c9bfa2d17457",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "detail": "SECCOMP_ERRNO=22",
+        "sourceSha256": "30ff62dadf55dc6031f8e1588da8906269b95c889b5e24e06816ac451ebb7b95",
+        "probeDigest": "eb9dfc382fe349dc9084886e424d60bbeceaf4b8a95bf89157afb136dc59c90a"
+      },
+      "cgroupV2": {
+        "control": "cgroup_v2",
+        "state": "VERIFIED_UNAVAILABLE",
+        "method": "CGROUP_V2_FILESYSTEM_AND_DELEGATION_PROBE",
+        "compiler": null,
+        "exitCode": 2,
+        "signal": null,
+        "stdoutSha256": "a036f8ee2d8d3cbe52a4a58f414b229cf6315c50c24dfc212138894324f9d2b1",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "detail": "CGROUP_FS_TYPE=16914836;WRITABLE=false;CONTROLLERS=",
+        "sourceSha256": null,
+        "probeDigest": "67dd5c806408601e0812e971d8129c925b1f8b99aa927f1480624d51d3a4245b"
+      },
+      "externalWitness": "UNAVAILABLE_FAIL_CLOSED",
+      "productionPromotion": "blocked",
+      "limitations": [
+        "OPENAT2_NOT_QUALIFIED",
+        "SECCOMP_NOT_QUALIFIED",
+        "CGROUP_V2_NOT_QUALIFIED",
+        "LOCAL_SINGLE_HOST_EXECUTED_PROBES_ONLY",
+        "NO_EXTERNAL_INDEPENDENT_WITNESS",
+        "NO_MICROVM_OR_HARDWARE_ISOLATION"
+      ],
+      "attestationDigest": "b13e71187fb175cab23fcc8c3b54e50bdcb6bcba580aa71b13b41276a8582d6f"
+    },
+    "issuerKeyId": "v33.14-control",
+    "algorithm": "Ed25519",
+    "signature": "8E1B9DMhosaZHBG0-3IGG1hXWaQgDLyZlkRUHQEncafyo8DXOySPN59PN_2_3tncjFD4dGZsfVollTOa4hGcAg"
+  },
+  "secondRuntimeEvidence": {
+    "payload": {
+      "version": "33.14",
+      "evidenceId": "v33.14-portable-wasm-runtime",
+      "generatedAt": "2026-07-21T18:00:00.000Z",
+      "runtimeImplementation": "NODE_WEBASSEMBLY_WORKER",
+      "scope": "PORTABLE_WASM_CHALLENGES_ONLY",
+      "state": "SPECIALIZED_REFERENCE_QUALIFIED",
+      "moduleDigest": "5129cf62b9632f82d5af444b8b257a244cde303f5642d6245c3af3c9d7e24fd6",
+      "output": 15,
+      "memoryBytes": 131072,
+      "underlyingReportDigest": "ffd22c39d482dd54dbda934ef830e9e81c612d27b25cd47189f920400a10105c",
+      "generalRepositoryRuntimeQualified": false,
+      "productionPromotion": "blocked",
+      "limitations": [
+        "PORTABLE_WASM_CHALLENGES_ONLY",
+        "NOT_A_GENERAL_REPOSITORY_RUNTIME",
+        "NODE_WORKER_NOT_OS_SANDBOXED",
+        "NO_WASI_COMPONENT_MODEL",
+        "NO_EXTERNAL_SECURITY_REVIEW"
+      ],
+      "evidenceDigest": "a51bb9e199db9701f4414dd406b7eed6bf4893a75e6545a2cd48c17dfc334bb3"
+    },
+    "issuerKeyId": "v33.14-wasm",
+    "algorithm": "Ed25519",
+    "signature": "uIyfv40VIJ2TBM0b1TDm1JEpCPNHzhFlpxqfBSfprD3ODQB81EG3EoctcnYYuTEJd1Bn46X5g_hDzTgZZeuYAg"
+  },
+  "challenge": {
+    "payload": {
+      "version": "33.14",
+      "challengeId": "v33.14-external-isolation-challenge",
+      "issuedAt": "2026-07-21T18:00:00.000Z",
+      "validUntil": "2026-07-21T19:00:00.000Z",
+      "corpusDigest": "5b0e654cafbb350b5db4c7540eef2eadc542d4f1144f931ccb3f8a41b0c6f098",
+      "adapterContract": "ISOLATION_RUNTIME_ADAPTER_V33_13",
+      "requiredDistinctHosts": 2,
+      "requiredDistinctOrganizations": 2,
+      "requiredDistinctRuntimeImplementations": 2,
+      "requiredControls": [
+        "openat2",
+        "seccomp",
+        "cgroup_v2",
+        "network_isolation",
+        "filesystem_isolation",
+        "destruction_verification"
+      ],
+      "externalEffectsAllowed": 0,
+      "promotionCeiling": "shadow",
+      "productionPromotion": "blocked",
+      "challengeDigest": "4e9b23ed8cb365052705076ca38ec1ea7e16e58f930832782e364b3288118da3"
+    },
+    "issuerKeyId": "v33.14-authority",
+    "algorithm": "Ed25519",
+    "signature": "ZPEhLnJWJ6DHTM9Lzktin4wt4BD5gjP1wTAfCBXmMKZ-W3yETyChqdXwIMaDG1_EaMrmlZsMpBgd-e8WGVEiCw"
+  },
+  "syntheticObservations": [
+    {
+      "payload": {
+        "version": "33.14",
+        "observationId": "synthetic-a",
+        "challengeDigest": "4e9b23ed8cb365052705076ca38ec1ea7e16e58f930832782e364b3288118da3",
+        "observedAt": "2026-07-21T18:10:00.000Z",
+        "hostId": "synthetic-host-a",
+        "organizationId": "synthetic-org-a",
+        "runtimeImplementation": "synthetic-runtime-a",
+        "executionSignerId": "v33.14-executionA",
+        "evidenceClass": "SYNTHETIC_CONTRACT_TEST",
+        "openat2Verified": true,
+        "seccompVerified": true,
+        "cgroupV2Verified": true,
+        "networkIsolationVerified": true,
+        "filesystemIsolationVerified": true,
+        "destructionVerified": true,
+        "externalEffectsExecuted": 0,
+        "evidenceBundleDigest": "0a6c8fdcf335ccf110bffe8170af1b73233f809b4c029c30136f7e2e1ffb05a6",
+        "observationDigest": "e7afec4a69dc48243f418008b9f62cacce38784128da086f3c5651da216c7a4d"
+      },
+      "issuerKeyId": "v33.14-operatorA",
+      "algorithm": "Ed25519",
+      "signature": "fFtVzj49_URrfXtFhXVZd9wki_q_Z_Z7c9VchrTVBNmeQmtBmDwkOwtdQweUxSYsIxAcKyIsftaiB7CjJrVwAw"
+    },
+    {
+      "payload": {
+        "version": "33.14",
+        "observationId": "synthetic-b",
+        "challengeDigest": "4e9b23ed8cb365052705076ca38ec1ea7e16e58f930832782e364b3288118da3",
+        "observedAt": "2026-07-21T18:10:00.000Z",
+        "hostId": "synthetic-host-b",
+        "organizationId": "synthetic-org-b",
+        "runtimeImplementation": "synthetic-runtime-b",
+        "executionSignerId": "v33.14-executionB",
+        "evidenceClass": "SYNTHETIC_CONTRACT_TEST",
+        "openat2Verified": true,
+        "seccompVerified": true,
+        "cgroupV2Verified": true,
+        "networkIsolationVerified": true,
+        "filesystemIsolationVerified": true,
+        "destructionVerified": true,
+        "externalEffectsExecuted": 0,
+        "evidenceBundleDigest": "1453e09935ea6c946f75ab626170657faf5f08b4bc6e1f0eb8bd6608b57a661d",
+        "observationDigest": "5e61d88e7a11de3115501cbca126fe52be3ecf0f66e89febcf89e04158b1a0bd"
+      },
+      "issuerKeyId": "v33.14-operatorB",
+      "algorithm": "Ed25519",
+      "signature": "Up4JDLkKO7fgr8gQrQdTSTsiJnvZ7fLe6J7JUQ-lSGGQvkzPwDGYjsXCUNhv5d5nMaZgFK1clqmApeklX8jQDg"
+    }
+  ],
+  "emptyVerdict": {
+    "payload": {
+      "version": "33.14",
+      "verdictId": "v33.14-empty-external-verdict",
+      "evaluatedAt": "2026-07-21T18:10:00.000Z",
+      "challengeDigest": "4e9b23ed8cb365052705076ca38ec1ea7e16e58f930832782e364b3288118da3",
+      "status": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "acceptedObservationCount": 0,
+      "distinctHostCount": 0,
+      "distinctOrganizationCount": 0,
+      "distinctRuntimeImplementationCount": 0,
+      "syntheticObservationCount": 0,
+      "blockers": [
+        "TWO_DISTINCT_HOSTS_REQUIRED",
+        "TWO_DISTINCT_ORGANIZATIONS_REQUIRED",
+        "TWO_RUNTIME_IMPLEMENTATIONS_REQUIRED"
+      ],
+      "promotionCeiling": "research",
+      "productionPromotion": "blocked",
+      "verdictDigest": "f3b6a2d8a18c8168df3dc807f304e6f659edb19f16a58ca25ad5db0084bd26bd"
+    },
+    "issuerKeyId": "v33.14-verifier",
+    "algorithm": "Ed25519",
+    "signature": "6qAjucxW4mZxtR5r_5Ko5WR0khJ9kasTaes38vH75gLeTfP30RqlP-dYV59tGJAwqCKwxKo1asjygo7QmtTcDQ"
+  },
+  "syntheticVerdict": {
+    "payload": {
+      "version": "33.14",
+      "verdictId": "v33.14-synthetic-external-verdict",
+      "evaluatedAt": "2026-07-21T18:10:00.000Z",
+      "challengeDigest": "4e9b23ed8cb365052705076ca38ec1ea7e16e58f930832782e364b3288118da3",
+      "status": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "acceptedObservationCount": 0,
+      "distinctHostCount": 0,
+      "distinctOrganizationCount": 0,
+      "distinctRuntimeImplementationCount": 0,
+      "syntheticObservationCount": 2,
+      "blockers": [
+        "SYNTHETIC_OBSERVATIONS_DO_NOT_QUALIFY_EXTERNAL_GATE",
+        "TWO_DISTINCT_HOSTS_REQUIRED",
+        "TWO_DISTINCT_ORGANIZATIONS_REQUIRED",
+        "TWO_RUNTIME_IMPLEMENTATIONS_REQUIRED"
+      ],
+      "promotionCeiling": "research",
+      "productionPromotion": "blocked",
+      "verdictDigest": "5b172e33c7456fd02ee44f800d51f87aeae07856392647e0e93305d6668d76a5"
+    },
+    "issuerKeyId": "v33.14-verifier",
+    "algorithm": "Ed25519",
+    "signature": "GdIPfMMc46gXJ5iMRcxzzIh1bzGI9rocuabzCd9Yplp2Bothv8XeeyfuTX7l9xMKNj0tPuFa_jCDDRX5r7ZWDA"
+  }
+}

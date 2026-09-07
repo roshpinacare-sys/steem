@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ECOS Growth · Validator Lead",
+  "type": "object",
+  "required": [
+    "id",
+    "email",
+    "stage",
+    "captured_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "dedupe key (usually email-hash)"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "seniority": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string",
+      "description": "e.g. legal, finance, eng"
+    },
+    "company": {
+      "type": "string"
+    },
+    "geo": {
+      "type": "string"
+    },
+    "linkedin": {
+      "type": "string"
+    },
+    "stage": {
+      "enum": [
+        "new",
+        "contacted",
+        "signed",
+        "active"
+      ]
+    },
+    "referral_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "description": "apollo|brandfetch|manual"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

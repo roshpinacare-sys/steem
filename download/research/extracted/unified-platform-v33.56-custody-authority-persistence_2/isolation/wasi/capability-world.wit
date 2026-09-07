@@ -1,0 +1,16 @@
+package sovereign:capability@0.1.0;
+
+interface evidence {
+  record: func(kind: string, payload: list<u8>) -> result<string, string>;
+}
+
+interface repository-read {
+  read: func(relative-path: string) -> result<list<u8>, string>;
+  list: func(relative-path: string) -> result<list<string>, string>;
+}
+
+world read-only-capability {
+  import repository-read;
+  import evidence;
+  export run: func(request: list<u8>) -> result<list<u8>, string>;
+}

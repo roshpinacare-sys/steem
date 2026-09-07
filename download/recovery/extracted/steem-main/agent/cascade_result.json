@@ -1,0 +1,73 @@
+{
+  "at": "2026-09-04T05:53:45.121Z",
+  "mode": "live",
+  "legs": [
+    {
+      "leg": "steem-issuer",
+      "chain": "steem",
+      "signer": "headcorner",
+      "acceptedMs": 1432,
+      "block": 109277502,
+      "visibleMs": 4883
+    },
+    {
+      "leg": "steem-soldier",
+      "chain": "steem",
+      "signer": "cashmachine",
+      "acceptedMs": 1236,
+      "block": 109277502,
+      "visibleMs": 4698
+    },
+    {
+      "leg": "hive-soldier",
+      "chain": "hive",
+      "signer": "haran",
+      "acceptedMs": 1067,
+      "txid": "7eb79203d0090aff9df2036787ff7aaf1191431f",
+      "visibleMs": 3543
+    }
+  ],
+  "verify": [
+    {
+      "leg": "steem-issuer",
+      "pass": true,
+      "block": 109277502,
+      "witness": "blaze.apps",
+      "signer": "headcorner"
+    },
+    {
+      "leg": "steem-soldier",
+      "pass": true,
+      "block": 109277502,
+      "witness": "blaze.apps",
+      "signer": "cashmachine"
+    },
+    {
+      "leg": "hive-soldier",
+      "pass": true,
+      "block": 109611825,
+      "txid": "7eb79203d0090aff9df2036787ff7aaf1191431f",
+      "digest": "f4cf352d2ffd5aacd7a2da5fc5971651"
+    }
+  ],
+  "digest": "f4cf352d2ffd5aacd7a2da5fc5971651",
+  "payload": {
+    "protocol": "saos/v1",
+    "action": "cascade",
+    "account": "headcorner",
+    "digest": "f4cf352d2ffd5aacd7a2da5fc5971651",
+    "time": "2026-09-04T05:53:50.851Z",
+    "world": {
+      "pool": {
+        "saos": 15.305,
+        "steem": 0.159264,
+        "locked": 2.568392,
+        "lpSupply": 5.410773
+      },
+      "valueLocks": 2,
+      "checkpoints": 3
+    },
+    "note": "one local decision → three chain signatures · sovereign relay 53"
+  },
+  "allVerified": true
+}

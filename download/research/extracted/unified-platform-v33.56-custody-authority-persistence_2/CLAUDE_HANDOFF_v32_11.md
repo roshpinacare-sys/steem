@@ -1,0 +1,5 @@
+# v32.11 Handoff — Release Lineage and Execution Freshness Assurance
+
+v32.11 closes a local proof-chain gap discovered by adversarial revalidation of v32.10: coherent source and environment digests did not prove that every PASS artifact belonged to the current validation attempt. The release adds a clean run-scoped atomic execution ledger, ordered step and artifact binding, timeout/abort/nonzero rejection, hash and byte-size verification, modification-time freshness checks, safe-path enforcement, exact-version governance binding and an authentic mutation campaign against the new controls.
+
+Read order remains `CLAUDE.md` → `MASTER_DIRECTIVE.md` → `PROGRAM_CHARTER.md` → governance state. Historical `release-evidence` files are retained as archive evidence only; the authoritative local verdict is a completed `evidence/runs/<runId>/V32_11_EXECUTION_COMPLETION.json` bound to its ledger and final validation. Production promotion remains blocked and all external qualification gates remain unchanged.

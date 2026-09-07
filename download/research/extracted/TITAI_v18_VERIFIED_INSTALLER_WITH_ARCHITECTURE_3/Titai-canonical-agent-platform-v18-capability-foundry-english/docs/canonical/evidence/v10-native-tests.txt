@@ -1,0 +1,99 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/mnt/data/titai_v10_work[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/approval-expiry.test.ts[2m [ tests/approval-expiry.test.ts ][22m
+[31m[1mError[22m: Could not locate the bindings file. Tried:
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/compiled/22.16.0/linux/x64/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/lib/binding/node-v127-linux-x64/better_sqlite3.node[39m
+[90m [2m❯[22m bindings node_modules/bindings/bindings.js:[2m126:9[22m[39m
+[90m [2m❯[22m new Database node_modules/better-sqlite3/lib/database.js:[2m48:64[22m[39m
+[36m [2m❯[22m createDb src/lib/db/index.ts:[2m36:18[22m[39m
+    [90m 34| [39m    [34mmkdirSync[39m([34mdirname[39m(dbPath)[33m,[39m { recursive[33m:[39m [35mtrue[39m })[33m;[39m
+    [90m 35| [39m  }
+    [90m 36| [39m  [35mconst[39m sqlite [33m=[39m [35mnew[39m [33mDatabase[39m(dbPath)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m 37| [39m  sqlite[33m.[39m[34mpragma[39m([32m"journal_mode = WAL"[39m)[33m;[39m
+    [90m 38| [39m  sqlite[33m.[39m[34mpragma[39m([32m"busy_timeout = 5000"[39m)[33m;[39m
+[90m [2m❯[22m src/lib/db/index.ts:[2m56:54[22m[39m
+[90m [2m❯[22m tests/approval-expiry.test.ts:[2m3:1[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/audit.test.ts[2m [ tests/audit.test.ts ][22m
+[31m[1mError[22m: Could not locate the bindings file. Tried:
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/compiled/22.16.0/linux/x64/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/lib/binding/node-v127-linux-x64/better_sqlite3.node[39m
+[90m [2m❯[22m bindings node_modules/bindings/bindings.js:[2m126:9[22m[39m
+[90m [2m❯[22m new Database node_modules/better-sqlite3/lib/database.js:[2m48:64[22m[39m
+[36m [2m❯[22m createDb src/lib/db/index.ts:[2m36:18[22m[39m
+    [90m 34| [39m    [34mmkdirSync[39m([34mdirname[39m(dbPath)[33m,[39m { recursive[33m:[39m [35mtrue[39m })[33m;[39m
+    [90m 35| [39m  }
+    [90m 36| [39m  [35mconst[39m sqlite [33m=[39m [35mnew[39m [33mDatabase[39m(dbPath)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m 37| [39m  sqlite[33m.[39m[34mpragma[39m([32m"journal_mode = WAL"[39m)[33m;[39m
+    [90m 38| [39m  sqlite[33m.[39m[34mpragma[39m([32m"busy_timeout = 5000"[39m)[33m;[39m
+[90m [2m❯[22m src/lib/db/index.ts:[2m56:54[22m[39m
+[90m [2m❯[22m src/lib/engine/audit.ts:[2m4:1[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runner.integration.test.ts[2m [ tests/runner.integration.test.ts ][22m
+[31m[1mError[22m: Could not locate the bindings file. Tried:
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/compiled/22.16.0/linux/x64/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /mnt/data/titai_v10_work/node_modules/better-sqlite3/lib/binding/node-v127-linux-x64/better_sqlite3.node[39m
+[90m [2m❯[22m bindings node_modules/bindings/bindings.js:[2m126:9[22m[39m
+[90m [2m❯[22m new Database node_modules/better-sqlite3/lib/database.js:[2m48:64[22m[39m
+[36m [2m❯[22m createDb src/lib/db/index.ts:[2m36:18[22m[39m
+    [90m 34| [39m    [34mmkdirSync[39m([34mdirname[39m(dbPath)[33m,[39m { recursive[33m:[39m [35mtrue[39m })[33m;[39m
+    [90m 35| [39m  }
+    [90m 36| [39m  [35mconst[39m sqlite [33m=[39m [35mnew[39m [33mDatabase[39m(dbPath)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m 37| [39m  sqlite[33m.[39m[34mpragma[39m([32m"journal_mode = WAL"[39m)[33m;[39m
+    [90m 38| [39m  sqlite[33m.[39m[34mpragma[39m([32m"busy_timeout = 5000"[39m)[33m;[39m
+[90m [2m❯[22m src/lib/db/index.ts:[2m56:54[22m[39m
+[90m [2m❯[22m tests/runner.integration.test.ts:[2m3:1[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 21:24:03
+[2m   Duration [22m 6.53s[2m (transform 313ms, setup 0ms, collect 0ms, tests 0ms, environment 1ms, prepare 712ms)[22m
+

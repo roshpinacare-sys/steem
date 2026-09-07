@@ -1,0 +1,199 @@
+{
+  "version": "32.14",
+  "runId": "v32.15-authoritative-local-r1",
+  "generatedAt": "2026-07-20T17:36:13.030852Z",
+  "status": "passed",
+  "sourceDigest": "287223d3e47036d38200ea09539aa039bfd80af49299a5949304ca7aea257cac",
+  "compiledArtifactDigest": "32f177158296decd671bab7ec84ca7c915f888815900aaa309f742efd81d6df9",
+  "testManifestDigest": "92d64a687d59a9c484b1ded3355c531b25434af72f52eb2b5c6fc6ff3eacf433",
+  "testFilesDigest": "b5ad58f65cf3989ff3bede9df1fc11a93b77aded77a5d166bbd36a6e7af82d41",
+  "packageLockDigest": "8d2737746b24e8bd7255a9332a419c77094de65a39228b07da12801afa1e3f02",
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "environment": {
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64",
+    "ci": true,
+    "runnerOs": "",
+    "runnerArch": ""
+  },
+  "baseline": "passed",
+  "mutantsSpecified": 19,
+  "mutantsKilledAuthentically": 19,
+  "survivors": 0,
+  "invalidKills": 0,
+  "records": [
+    {
+      "mutantId": "unknown-format-fail-open",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: binary parser recognizes bounded image executable and CBOR structures\nnot ok 1 - binary parser recognizes bounded image executable and CBOR structures\n  ---\n  duration_ms: 5.177799\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:82:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'ACCEPT' !== 'REJECT'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECT'\n  actual: 'ACCEPT'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:97:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 86.033522\n"
+    },
+    {
+      "mutantId": "polyglot-fail-open",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: binary intake rejects traversal active PDF polyglots malformed structures and policy violations\nnot ok 1 - binary intake rejects traversal active PDF polyglots malformed structures and policy violations\n  ---\n  duration_ms: 4.731396\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:43:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'QUARANTINE'\n    - 'REJECT'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECT'\n  actual: 'QUARANTINE'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:51:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 85.069191\n"
+    },
+    {
+      "mutantId": "executable-policy-bypass",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: archive limits and executable policy are causal controls\nnot ok 1 - archive limits and executable policy are causal controls\n  ---\n  duration_ms: 4.183457\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:60:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'ACCEPT' !== 'REJECT'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECT'\n  actual: 'ACCEPT'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:68:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 85.991456\n"
+    },
+    {
+      "mutantId": "active-pdf-policy-bypass",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: binary intake rejects traversal active PDF polyglots malformed structures and policy violations\nnot ok 1 - binary intake rejects traversal active PDF polyglots malformed structures and policy violations\n  ---\n  duration_ms: 3.926851\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:43:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'QUARANTINE'\n    - 'REJECT'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECT'\n  actual: 'QUARANTINE'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:48:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 83.929572\n"
+    },
+    {
+      "mutantId": "archive-traversal-policy-bypass",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: binary intake rejects traversal active PDF polyglots malformed structures and policy violations\nnot ok 1 - binary intake rejects traversal active PDF polyglots malformed structures and policy violations\n  ---\n  duration_ms: 3.757271\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:43:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'QUARANTINE'\n    - 'REJECT'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECT'\n  actual: 'QUARANTINE'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:45:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 88.295359\n"
+    },
+    {
+      "mutantId": "archive-entry-limit-bypass",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: archive limits and executable policy are causal controls\nnot ok 1 - archive limits and executable policy are causal controls\n  ---\n  duration_ms: 3.755885\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:60:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'ACCEPT' !== 'REJECT'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECT'\n  actual: 'ACCEPT'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:65:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 84.963565\n"
+    },
+    {
+      "mutantId": "compression-ratio-bypass",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: archive limits and executable policy are causal controls\nnot ok 1 - archive limits and executable policy are causal controls\n  ---\n  duration_ms: 3.41574\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:60:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'ACCEPT'\n    - 'QUARANTINE'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'QUARANTINE'\n  actual: 'ACCEPT'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:62:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 89.226585\n"
+    },
+    {
+      "mutantId": "chunk-domain-index-removed",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: independent Python verifier agrees on content chunks Merkle root and kind\nnot ok 1 - independent Python verifier agrees on content chunks Merkle root and kind\n  ---\n  duration_ms: 1031.273694\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/independent-binary-verifier-v32_14.test.js:22:1'\n  failureType: 'testCodeFailure'\n  error: 'Command failed: python3 verifier-only/v32.14/independent_binary_verifier.py /tmp/upp-binary-verifier-EKGZlO/module.wasm /tmp/upp-binary-verifier-EKGZlO/manifest.json'\n  code: 'ERR_TEST_FAILURE'\n  stack: |-\n    genericNodeError (node:internal/errors:983:15)\n    wrappedFn (node:internal/errors:537:14)\n    checkExecSyncError (node:child_process:882:11)\n    execFileSync (node:child_process:918:15)\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/independent-binary-verifier-v32_14.test.js:25:24)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1116.124055\n"
+    },
+    {
+      "mutantId": "manifest-chunk-index-bypass",
+      "target": "dist/src/binary/proof-carrying-binary-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: binary delta is deterministic and identifies changed added and removed chunks\nnot ok 1 - binary delta is deterministic and identifies changed added and removed chunks\n  ---\n  duration_ms: 5.778205\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:70:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/proof-carrying-binary-v32_14.test.js:80:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 85.563977\n"
+    },
+    {
+      "mutantId": "binary-role-omitted",
+      "target": "dist/src/ai/frontier-execution-kernel-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: SOL frontier plan uses max reasoning diverse roles binary analysis and proof-driven stages\nnot ok 1 - SOL frontier plan uses max reasoning diverse roles binary analysis and proof-driven stages\n  ---\n  duration_ms: 8.412681\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:16:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(plan.assignments.some((item) => item.role === 'BINARY_ANALYST'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:20:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 93.602309\n"
+    },
+    {
+      "mutantId": "diverse-team-disabled",
+      "target": "dist/src/ai/frontier-execution-kernel-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: SOL frontier plan uses max reasoning diverse roles binary analysis and proof-driven stages\nnot ok 1 - SOL frontier plan uses max reasoning diverse roles binary analysis and proof-driven stages\n  ---\n  duration_ms: 2.592275\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:16:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'single'\n    - 'diverse-team'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'diverse-team'\n  actual: 'single'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:19:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 86.013432\n"
+    },
+    {
+      "mutantId": "refuting-oracle-ignored",
+      "target": "dist/src/ai/frontier-execution-kernel-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: claim adjudication requires causal diversity and fails closed on any refuting oracle\nnot ok 1 - claim adjudication requires causal diversity and fails closed on any refuting oracle\n  ---\n  duration_ms: 2.777921\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:35:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'SUPPORTED'\n    - 'REFUTED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REFUTED'\n  actual: 'SUPPORTED'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:51:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 85.877265\n"
+    },
+    {
+      "mutantId": "single-oracle-proven",
+      "target": "dist/src/ai/frontier-execution-kernel-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: claim adjudication requires causal diversity and fails closed on any refuting oracle\nnot ok 1 - claim adjudication requires causal diversity and fails closed on any refuting oracle\n  ---\n  duration_ms: 1.95655\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:35:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'PROVEN'\n    - 'SUPPORTED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'SUPPORTED'\n  actual: 'PROVEN'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:46:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 83.403574\n"
+    },
+    {
+      "mutantId": "external-blocker-packaged",
+      "target": "dist/src/ai/frontier-execution-kernel-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: counterexample-driven loop always resolves stronger evidence before packaging\nnot ok 1 - counterexample-driven loop always resolves stronger evidence before packaging\n  ---\n  duration_ms: 1.536798\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:54:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PACKAGE' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PACKAGE'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:62:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 82.20632\n"
+    },
+    {
+      "mutantId": "required-context-class-bypass",
+      "target": "dist/src/ai/frontier-execution-kernel-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: just-in-time context compiler reserves canonical classes deduplicates and binds selected content\nnot ok 1 - just-in-time context compiler reserves canonical classes deduplicates and binds selected content\n  ---\n  duration_ms: 9.45744\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:26:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-execution-kernel-v32_14.test.js:33:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 91.477678\n"
+    },
+    {
+      "mutantId": "marketing-evidence-accepted",
+      "target": "dist/src/validation/frontier-comparative-assurance-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: frontier comparison refuses best-in-world claims from official marketing or synthetic evidence\nnot ok 1 - frontier comparison refuses best-in-world claims from official marketing or synthetic evidence\n  ---\n  duration_ms: 2.181675\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-comparative-assurance-v32_14.test.js:9:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'FRONTIER_CANDIDATE'\n    - 'NOT_FRONTIER'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'NOT_FRONTIER'\n  actual: 'FRONTIER_CANDIDATE'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-comparative-assurance-v32_14.test.js:12:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 82.445612\n"
+    },
+    {
+      "mutantId": "score-threshold-bypass",
+      "target": "dist/src/validation/frontier-comparative-assurance-v32_14.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: comparative assurance validates evidence and requirement identity\nnot ok 1 - comparative assurance validates evidence and requirement identity\n  ---\n  duration_ms: 2.50695\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-comparative-assurance-v32_14.test.js:33:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'FAIL'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'FAIL'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/frontier-comparative-assurance-v32_14.test.js:37:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 81.665635\n"
+    },
+    {
+      "mutantId": "runtime-evidence-package-bypass",
+      "target": "scripts/archive_policy_v32.py",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: portable archive is deterministic, excludes generated trees and normalizes modes\nnot ok 1 - portable archive is deterministic, excludes generated trees and normalizes modes\n  ---\n  duration_ms: 1089.419058\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/supply-chain-portability-v26.test.js:21:1'\n  failureType: 'testCodeFailure'\n  error: 'Command failed: python3 scripts/archive-selftest-v32.py'\n  code: 'ERR_TEST_FAILURE'\n  stack: |-\n    genericNodeError (node:internal/errors:983:15)\n    wrappedFn (node:internal/errors:537:14)\n    checkExecSyncError (node:child_process:882:11)\n    execFileSync (node:child_process:918:15)\n    archiveSelftest (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/supply-chain-portability-v26.test.js:15:66)\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/supply-chain-portability-v26.test.js:21:108)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1178.462196\n"
+    },
+    {
+      "mutantId": "source-hardlink-package-bypass",
+      "target": "scripts/archive_policy_v32.py",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: archive builder rejects source symlinks instead of dereferencing them\nnot ok 1 - archive builder rejects source symlinks instead of dereferencing them\n  ---\n  duration_ms: 1069.951987\n  type: 'test'\n  location: '/tmp/v32-14-frontier-mut-_20swroh/dist/tests/supply-chain-portability-v26.test.js:22:1'\n  failureType: 'testCodeFailure'\n  error: 'Command failed: python3 scripts/archive-selftest-v32.py'\n  code: 'ERR_TEST_FAILURE'\n  stack: |-\n    genericNodeError (node:internal/errors:983:15)\n    wrappedFn (node:internal/errors:537:14)\n    checkExecSyncError (node:child_process:882:11)\n    execFileSync (node:child_process:918:15)\n    archiveSelftest (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/supply-chain-portability-v26.test.js:15:66)\n    TestContext.<anonymous> (file:///tmp/v32-14-frontier-mut-_20swroh/dist/tests/supply-chain-portability-v26.test.js:22:97)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1156.482015\n"
+    }
+  ]
+}

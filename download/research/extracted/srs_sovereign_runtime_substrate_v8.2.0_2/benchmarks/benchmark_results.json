@@ -1,0 +1,161 @@
+{
+  "per_primitive": {
+    "E": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 16,
+      "storage_bytes": 256,
+      "work_units": 4112,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 1.9353839998075273
+    },
+    "C": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 16,
+      "storage_bytes": 18,
+      "work_units": 4112,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 1.827986998250708
+    },
+    "A": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 8,
+      "storage_bytes": 161,
+      "work_units": 10455,
+      "depth": 8,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 4.838716002268484
+    },
+    "S": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 8,
+      "storage_bytes": 161,
+      "work_units": 10455,
+      "depth": 23,
+      "communication_bits": 512,
+      "verification_calls": 0,
+      "wall_time_ms": 4.860938999627251
+    },
+    "V": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 13,
+      "storage_bytes": 161,
+      "work_units": 10460,
+      "depth": 13,
+      "communication_bits": 0,
+      "verification_calls": 5,
+      "notes": {
+        "soundness_epsilon": 0.03125
+      },
+      "verified": true,
+      "wall_time_ms": 4.763950997585198
+    },
+    "Adv": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 0,
+      "storage_bytes": 20,
+      "work_units": 1,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "notes": {
+        "used_advice": true
+      },
+      "wall_time_ms": 0.01105199771700427
+    },
+    "Q": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 8,
+      "storage_bytes": 161,
+      "work_units": 10455,
+      "depth": 8,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "notes": {
+        "quantum_advantage": "none (BBBV lower bound)",
+        "quantum_queries_lower_bound": 16
+      },
+      "wall_time_ms": 4.791002000274602
+    }
+  },
+  "runtime_integration": {
+    "first_run": {
+      "task_id": "efd544a7aaa8",
+      "answer": 128,
+      "correct": true,
+      "verified": true,
+      "primitives_used": [
+        "E",
+        "C",
+        "A",
+        "V",
+        "Adv"
+      ],
+      "queries": 13,
+      "storage_bytes": 161,
+      "work_units": 10460,
+      "depth": 13,
+      "communication_bits": 0,
+      "verification_calls": 5,
+      "wall_time_ms": 4.880987998098135,
+      "notes": {
+        "soundness_epsilon": 0.03125
+      }
+    },
+    "second_run_advice_hit": {
+      "task_id": "b6b73b5ba815",
+      "answer": 128,
+      "correct": true,
+      "verified": null,
+      "primitives_used": [
+        "E",
+        "C",
+        "A",
+        "V",
+        "Adv"
+      ],
+      "queries": 0,
+      "storage_bytes": 20,
+      "work_units": 1,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 0.02574099972844124,
+      "notes": {
+        "used_advice": true,
+        "advice_hit": true
+      }
+    },
+    "advice_entries": 1
+  },
+  "five_vs_six_vs_seven": {
+    "standard_5prim": {
+      "correct": true,
+      "queries": 13
+    },
+    "adversarial_5prim": {
+      "correct": true,
+      "queries": 12
+    },
+    "adversarial_6prim": {
+      "correct": true,
+      "queries": 0
+    },
+    "adversarial_7prim": {
+      "correct": true,
+      "queries": 0
+    }
+  },
+  "timestamp": 1784308050.9178803
+}

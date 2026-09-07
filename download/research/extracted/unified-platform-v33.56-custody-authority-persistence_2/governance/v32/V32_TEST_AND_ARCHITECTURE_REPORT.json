@@ -1,0 +1,95 @@
+{
+  "version": "32.0",
+  "ownerRole": "Principal Test and Architecture Review Board",
+  "status": "passed",
+  "sourceDigest": "9710982bf54a3e259b7892fe397a5ed5409c78353504f4f6d9aa7492bf42fa9b",
+  "tests": {
+    "testFiles": 115,
+    "tests": 584,
+    "passed": 584,
+    "failed": 0,
+    "wallDurationMs": 18220.093
+  },
+  "testInventory": {
+    "sourceTestFiles": 115,
+    "compiledTestFiles": 115,
+    "missing": [],
+    "extra": []
+  },
+  "testQuality": {
+    "filesAudited": 115,
+    "testsDeclared": 584,
+    "assertCalls": 1991,
+    "criticalOrHighIssues": 0,
+    "mediumIssues": 0
+  },
+  "coverage": {
+    "file": "all files",
+    "linePercent": 99.42,
+    "branchPercent": 96.09,
+    "functionPercent": 98.57
+  },
+  "coverageThresholds": {
+    "linePercent": 99,
+    "branchPercent": 96,
+    "functionPercent": 98.5
+  },
+  "coverageLimitations": [
+    "Coverage is not proof of correctness; mutation, architecture, invariant and integration gates are required.",
+    "All-files percentages include test code because Node test coverage reports loaded JavaScript; source module rows are retained separately for review."
+  ],
+  "architecture": {
+    "nodeCount": 208,
+    "sourceCount": 74,
+    "testCount": 119,
+    "entrypointCount": 15,
+    "importEdgeCount": 577,
+    "sourceCycleCount": 0,
+    "untestedSourceCount": 0,
+    "capabilityPathCount": 14,
+    "closedCapabilityPathCount": 14,
+    "layerCount": 20
+  },
+  "mutations": {
+    "mutantsSpecified": 16,
+    "mutantsKilledAuthentically": 16,
+    "survivors": 0,
+    "invalidKills": 0
+  },
+  "integration": {
+    "edges": 14,
+    "closed": 14,
+    "externalMutationsExecuted": 0,
+    "capabilityPaths": 14,
+    "closedCapabilityPaths": 14
+  },
+  "stability": {
+    "medianWallMs": 17755.256,
+    "meanWallMs": 17835.666,
+    "minWallMs": 17745.164,
+    "maxWallMs": 18006.578,
+    "coefficientOfVariation": 0.0068
+  },
+  "supplyChain": {
+    "status": "passed",
+    "archiveVersion": 32,
+    "npmAuditStatus": "passed",
+    "vulnerabilities": 0
+  },
+  "incompleteCode": {
+    "status": "passed",
+    "filesScanned": 442,
+    "explicitIncompleteMarkers": 0,
+    "missingScriptTargets": 0,
+    "criticalIntegrationGaps": 0,
+    "manualExportCandidates": 38
+  },
+  "readiness": "Integrated Pilot",
+  "productionPromotion": "blocked",
+  "limitations": [
+    "Signatures prove authorization and material binding, not truth or legal independence.",
+    "The independent file anchor detects rollback of the bundle store alone; joint rollback of bundle and anchor remains unprotected without external monotonic storage, HSM or federation.",
+    "The proof is single-host and uses local test keys; PostgreSQL, KMS/HSM, live provider and human value are not qualified.",
+    "PostgreSQL, KMS/HSM, independent security, distributed custodians, live provider and human value remain externally unqualified."
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "generatedAt": "2026-07-11T10:30:00.000Z",
+  "operatingMode": "air_gapped",
+  "assessment": {
+    "vector": {
+      "compute": 84,
+      "model": 66,
+      "data": 91,
+      "memory": 86,
+      "identity": 82,
+      "tools": 88,
+      "network": 82,
+      "updates": 88,
+      "supplyChain": 78,
+      "recovery": 91,
+      "operations": 82,
+      "energy": 57,
+      "governance": 88
+    },
+    "fatalWeaknesses": [],
+    "mandatoryExternalDependencies": [],
+    "level": "sovereign_development_mode",
+    "evidenceUnknown": [
+      "browserAccessibility",
+      "hardwareEnergyMeasurement",
+      "hashBoundIndependentVerifier",
+      "operatingSystemKeyCustody",
+      "realLocalModelBenchmark"
+    ],
+    "explanation": "Sovereignty level sovereign_development_mode from 13 dimensions, 0 fatal weakness(es), 0 mandatory external dependency(ies), and 5 unknown evidence gate(s)."
+  },
+  "dependencies": {
+    "total": 526,
+    "mandatory": 521,
+    "mandatoryExternal": 0,
+    "remoteOptional": 2,
+    "localAuthoritative": 524
+  },
+  "modelLocality": {
+    "local": 1,
+    "remoteOptional": 3,
+    "remoteRequired": 0,
+    "unavailable": 0
+  },
+  "network": {
+    "attempts": 1,
+    "blocked": 1,
+    "allowedLocal": 0,
+    "allowedRemote": 0,
+    "unexpected": 0,
+    "recent": [
+      {
+        "id": "1783777617654-api.example.com-df1fc524",
+        "attemptedAt": "2026-07-11T13:46:57.654Z",
+        "mode": "air_gapped",
+        "url": "https://api.example.com/v1",
+        "hostname": "api.example.com",
+        "allowed": false,
+        "reason": "network_blocked_air_gap",
+        "actor": "sovereignty-proof",
+        "tenantId": "tenant-local",
+        "workspaceId": "workspace-local"
+      }
+    ]
+  },
+  "keys": {
+    "hierarchySeparated": true,
+    "backupKeySeparated": true,
+    "signingKeySeparated": true,
+    "rotationEvidenceKnown": false
+  },
+  "readiness": {
+    "zeroKeyWorkflow": "pass",
+    "signedHandoff": "pass",
+    "signedUpdate": "pass",
+    "updateRollback": "pass",
+    "realMigrationRehearsal": "pass",
+    "cleanRestore": "pass",
+    "localRetrievalFallback": "pass",
+    "portableKeyCustody": "pass",
+    "operatingSystemKeyCustody": "block",
+    "cleanOfflineInstall": "pass",
+    "processNetworkEvidence": "pass",
+    "realLocalModelBenchmark": "block",
+    "browserAccessibility": "block",
+    "multiNodeExecution": "pass",
+    "fullSuiteCleanExit": "pass",
+    "hardwareEnergyMeasurement": "block",
+    "hashBoundIndependentVerifier": "block"
+  },
+  "blockers": [
+    "browser_accessibility_not_proven",
+    "final_independent_verifier_missing",
+    "hardware_energy_measurement_missing",
+    "os_or_hardware_key_custody_missing",
+    "real_local_model_not_executed"
+  ]
+}

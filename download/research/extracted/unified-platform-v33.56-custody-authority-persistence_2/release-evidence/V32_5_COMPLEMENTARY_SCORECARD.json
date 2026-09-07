@@ -1,0 +1,194 @@
+{
+  "generatedAt": "2026-07-18T10:29:53.783Z",
+  "scoringMethod": "eight non-overlapping complementary metrics with explicit local-proof caps and external limitations",
+  "version": "32.5",
+  "status": "PASS_WITH_LIMITATIONS",
+  "metrics": {
+    "metricCount": 8,
+    "totalWeight": 100,
+    "projectWeightedScore": 92.9,
+    "cycleWeightedScore": 99.52,
+    "confidenceAdjustedProjectScore": 84.97,
+    "confidenceAdjustedCycleScore": 90.72,
+    "improvementCount": 8,
+    "regressionCount": 0,
+    "blockerCount": 0
+  },
+  "results": [
+    {
+      "metricId": "maintainability-evolvability",
+      "projectScore": 95,
+      "cycleScore": 100,
+      "confidence": 0.95,
+      "evidenceRefs": [
+        "V32_5_MAINTAINABILITY_ASSURANCE.json"
+      ],
+      "limitations": [
+        "repository_local_maintainability_observation"
+      ],
+      "blockers": [],
+      "weight": 16,
+      "floor": 82,
+      "productionFloor": 92,
+      "deltaProjectScore": 9,
+      "deltaCycleScore": 12,
+      "confidenceAdjustedProjectScore": 90.25,
+      "confidenceAdjustedCycleScore": 95,
+      "status": "WATCH"
+    },
+    {
+      "metricId": "observability-diagnosability",
+      "projectScore": 94,
+      "cycleScore": 100,
+      "confidence": 0.93,
+      "evidenceRefs": [
+        "V32_5_OBSERVABILITY_ASSURANCE.json"
+      ],
+      "limitations": [
+        "external_collector_and_alert_delivery_unqualified"
+      ],
+      "blockers": [],
+      "weight": 15,
+      "floor": 82,
+      "productionFloor": 94,
+      "deltaProjectScore": 18,
+      "deltaCycleScore": 18,
+      "confidenceAdjustedProjectScore": 87.42,
+      "confidenceAdjustedCycleScore": 93,
+      "status": "WATCH"
+    },
+    {
+      "metricId": "data-integrity-lifecycle",
+      "projectScore": 96,
+      "cycleScore": 100,
+      "confidence": 0.95,
+      "evidenceRefs": [
+        "V32_5_DATA_LIFECYCLE_ASSURANCE.json"
+      ],
+      "limitations": [
+        "external_storage_deletion_execution_unqualified"
+      ],
+      "blockers": [],
+      "weight": 15,
+      "floor": 85,
+      "productionFloor": 95,
+      "deltaProjectScore": 16,
+      "deltaCycleScore": 15,
+      "confidenceAdjustedProjectScore": 91.2,
+      "confidenceAdjustedCycleScore": 95,
+      "status": "WATCH"
+    },
+    {
+      "metricId": "dependency-upgrade-resilience",
+      "projectScore": 95,
+      "cycleScore": 100,
+      "confidence": 0.94,
+      "evidenceRefs": [
+        "V32_5_DEPENDENCY_RESILIENCE.json"
+      ],
+      "limitations": [
+        "continuous_external_advisory_monitoring_unqualified"
+      ],
+      "blockers": [],
+      "weight": 12,
+      "floor": 82,
+      "productionFloor": 93,
+      "deltaProjectScore": 16,
+      "deltaCycleScore": 16,
+      "confidenceAdjustedProjectScore": 89.3,
+      "confidenceAdjustedCycleScore": 94,
+      "status": "WATCH"
+    },
+    {
+      "metricId": "compatibility-migration-safety",
+      "projectScore": 96,
+      "cycleScore": 100,
+      "confidence": 0.95,
+      "evidenceRefs": [
+        "V32_5_MIGRATION_COMPATIBILITY.json"
+      ],
+      "limitations": [
+        "postgres_production_schema_migration_unqualified"
+      ],
+      "blockers": [],
+      "weight": 12,
+      "floor": 82,
+      "productionFloor": 95,
+      "deltaProjectScore": 24,
+      "deltaCycleScore": 20,
+      "confidenceAdjustedProjectScore": 91.2,
+      "confidenceAdjustedCycleScore": 95,
+      "status": "WATCH"
+    },
+    {
+      "metricId": "privacy-data-minimization",
+      "projectScore": 94,
+      "cycleScore": 100,
+      "confidence": 0.91,
+      "evidenceRefs": [
+        "V32_5_PRIVACY_MINIMIZATION.json"
+      ],
+      "limitations": [
+        "independent_privacy_legal_review_absent"
+      ],
+      "blockers": [],
+      "weight": 12,
+      "floor": 82,
+      "productionFloor": 95,
+      "deltaProjectScore": 26,
+      "deltaCycleScore": 22,
+      "confidenceAdjustedProjectScore": 85.54,
+      "confidenceAdjustedCycleScore": 91,
+      "status": "WATCH"
+    },
+    {
+      "metricId": "accessibility-human-factors",
+      "projectScore": 78,
+      "cycleScore": 96,
+      "confidence": 0.72,
+      "evidenceRefs": [
+        "V32_5_ACCESSIBILITY_HUMAN_FACTORS.json"
+      ],
+      "limitations": [
+        "consented_human_accessibility_study_absent"
+      ],
+      "blockers": [],
+      "weight": 10,
+      "floor": 65,
+      "productionFloor": 90,
+      "deltaProjectScore": 28,
+      "deltaCycleScore": 26,
+      "confidenceAdjustedProjectScore": 56.16,
+      "confidenceAdjustedCycleScore": 69.12,
+      "status": "WATCH"
+    },
+    {
+      "metricId": "cost-capacity-predictability",
+      "projectScore": 90,
+      "cycleScore": 99,
+      "confidence": 0.86,
+      "evidenceRefs": [
+        "V32_5_COST_CAPACITY_ASSURANCE.json"
+      ],
+      "limitations": [
+        "modeled_cost_not_provider_bill",
+        "single_host_capacity"
+      ],
+      "blockers": [],
+      "weight": 8,
+      "floor": 75,
+      "productionFloor": 90,
+      "deltaProjectScore": 24,
+      "deltaCycleScore": 21,
+      "confidenceAdjustedProjectScore": 77.4,
+      "confidenceAdjustedCycleScore": 85.14,
+      "status": "WATCH"
+    }
+  ],
+  "weakestMetrics": [
+    "accessibility-human-factors",
+    "cost-capacity-predictability",
+    "observability-diagnosability"
+  ],
+  "reportDigest": "82be48732bf261aa2e74c82b0a7e25592aecc2726af5ba25d996221cafc9255f"
+}

@@ -1,0 +1,61 @@
+{
+  "version": "32.1",
+  "generatedAt": "2026-07-18T03:20:00.000Z",
+  "records": [
+    {
+      "source": "Qodo semantic DAG and blast-radius controls",
+      "canonical": "semantic-change-dag",
+      "implementation": "src/repository/semantic-change-dag.ts",
+      "tests": "tests/semantic-change-dag-v32_1.test.ts",
+      "requirement": "V32.1-REQ-01"
+    },
+    {
+      "source": "ECOS audit completeness and identity receipt gates",
+      "canonical": "audit-completeness-probe",
+      "implementation": "src/platform/audit-completeness.ts",
+      "tests": "tests/audit-completeness-v32_1.test.ts",
+      "requirement": "V32.1-REQ-02"
+    },
+    {
+      "source": "Qodo model deprecation watchdog",
+      "canonical": "model-lifecycle-watchdog",
+      "implementation": "src/ai/model-lifecycle-watchdog.ts",
+      "tests": "tests/model-lifecycle-watchdog-v32_1.test.ts",
+      "requirement": "V32.1-REQ-03"
+    },
+    {
+      "source": "canonical handoff defect discovered in v32",
+      "canonical": "workspace-continuity-validator",
+      "implementation": "src/governance/workspace-continuity.ts",
+      "tests": "tests/workspace-continuity-v32_1.test.ts",
+      "requirement": "V32.1-REQ-04"
+    },
+    {
+      "source": "Yongzuan UQ and SRS scientific-honesty constraints",
+      "canonical": "uncertainty-assurance-gate",
+      "implementation": "src/platform/uncertainty-assurance.ts",
+      "tests": "tests/uncertainty-assurance-v32_1.test.ts",
+      "requirement": "V32.1-REQ-05"
+    },
+    {
+      "source": "SAE payment workflow and safety requirements",
+      "canonical": "payment-safety-ledger",
+      "implementation": "src/platform/payment-safety.ts",
+      "tests": "tests/payment-safety-v32_1.test.ts",
+      "requirement": "V32.1-REQ-06"
+    },
+    {
+      "source": "v32.1 adversarial full-suite concurrency finding",
+      "canonical": "atomic-file-store-publication",
+      "implementation": "src/operations/governed-automation.ts",
+      "tests": "tests/automation-concurrency-v29.test.ts",
+      "requirement": "V32.1-REQ-07"
+    }
+  ],
+  "nonDuplication": [
+    "TITAI durable execution remains the only canonical job/task/attempt/lease/checkpoint/outbox/receipt authority.",
+    "TFA passports and credential sovereignty remain in the existing canonical authority/evidence plane.",
+    "ECOS and SRS are not runtime dependencies.",
+    "SAE-derived payment logic cannot contact providers or move funds."
+  ]
+}

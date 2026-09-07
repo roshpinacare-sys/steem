@@ -1,0 +1,14 @@
+import { readFileSync } from 'node:fs';
+import { KeyRegistry, sha256 } from '../dist/src/contracts/crypto.js';
+const load=(name)=>JSON.parse(readFileSync(`release-evidence/v33.28/${name}`,'utf8'));
+const keys=load('V33_28_PROOF_PUBLIC_KEYS.json'); const registry=new KeyRegistry(); for(const k of keys)registry.registerExported(k);
+const proof=load('V33_28_OPERATOR_CEREMONY_WITNESS_NETWORK_PROOF.json'); const trace=load('V33_28_OPERATOR_CEREMONY_TRACE.json'); const ledger=load('V33_28_PARAMETER_LEDGER.json'); const network=load('V33_28_WITNESS_NETWORK_LEDGER.json'); const verdict=load('V33_28_NETWORK_QUALIFICATION_VERDICT.json'); const split=load('V33_28_SPLIT_VIEW_VERDICT.json');
+const errors=[]; const verify=(e,name)=>{if(!registry.verifyAt(e,new Date('2026-07-22T07:00:01.000Z')))errors.push(`${name}_signature_invalid`);};
+verify(proof,'proof');verify(trace,'trace');verify(ledger,'parameter_ledger');verify(network,'network_ledger');verify(verdict,'qualification');verify(split,'split_verdict');
+if(sha256(Object.fromEntries(Object.entries(proof.payload).filter(([k])=>k!=='proofDigest')))!==proof.payload.proofDigest)errors.push('proof_digest_invalid');
+if(proof.payload.parameterCount!==14||proof.payload.preservedParameters!==8||proof.payload.strengthenedParameters!==3||proof.payload.externalEvidencePendingParameters!==3)errors.push('parameter_counts_invalid');
+if(proof.payload.majorityVotingForbidden!==true||verdict.payload.majorityVotingUsed!==false)errors.push('majority_policy_invalid');
+if(verdict.payload.status!=='EXTERNAL_WITNESS_NETWORK_QUALIFICATION_REQUIRED'||verdict.payload.liveWitnessCount!==0)errors.push('synthetic_qualification_boundary_invalid');
+if(split.payload.status!=='SPLIT_VIEW_DETECTED_QUARANTINE'||split.payload.splitViewDetected!==true)errors.push('split_view_boundary_invalid');
+if(proof.payload.productionAuthority!=='NONE'||proof.payload.externalEffectsExecuted!==0||proof.payload.productionPromotion!=='blocked')errors.push('production_boundary_invalid');
+console.log(JSON.stringify({status:errors.length?'failed':'passed',errors,parameterCount:proof.payload.parameterCount,networkLedgerEvents:network.payload.eventCount,qualification:verdict.payload.status,productionPromotion:'blocked'},null,2)); if(errors.length)process.exit(1);

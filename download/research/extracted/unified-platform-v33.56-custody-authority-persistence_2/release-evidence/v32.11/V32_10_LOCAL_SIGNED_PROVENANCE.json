@@ -1,0 +1,135 @@
+{
+  "version": "32.10",
+  "generatedAt": "2026-07-19T09:30:43.232Z",
+  "compiledArtifactDigest": "f081dcd653d6fd66a7fadd7a705c0ffd809955663de4204cedc6080c2dbd96f2",
+  "environment": {
+    "ci": true,
+    "machine": "x86_64",
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "runnerArch": "",
+    "runnerOs": "",
+    "system": "Linux"
+  },
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "packageLockDigest": "af225b179455c27e134458f15726c13bd3230e534a0d4d4dd04f2b5c5174084d",
+  "sourceDigest": "0efb7118e728c0eec880575df81aa8a44c837e2ac5b38c326d6bea24a746b2be",
+  "testFilesDigest": "8bc184a86d9955952ac4dd5162aa76abda98dd7027662650382672fdf376f2c6",
+  "testManifestDigest": "79509e2cf2bdbc9939e551dc02578dc47f525574b9dd32ee118e5b89f44baf62",
+  "statement": {
+    "_type": "https://in-toto.io/Statement/v1",
+    "subject": [
+      {
+        "name": "dist",
+        "digest": {
+          "sha256": "f081dcd653d6fd66a7fadd7a705c0ffd809955663de4204cedc6080c2dbd96f2"
+        }
+      }
+    ],
+    "predicateType": "https://slsa.dev/provenance/v1",
+    "predicate": {
+      "builder": {
+        "id": "local://unified-platform/v32.10"
+      },
+      "buildType": "https://unified-platform.dev/build/v32.10",
+      "invocation": {
+        "configSource": {
+          "digest": {
+            "sha256": "0efb7118e728c0eec880575df81aa8a44c837e2ac5b38c326d6bea24a746b2be"
+          }
+        }
+      },
+      "materials": [
+        {
+          "uri": "file://package-lock.json",
+          "digest": {
+            "sha256": "af225b179455c27e134458f15726c13bd3230e534a0d4d4dd04f2b5c5174084d"
+          }
+        },
+        {
+          "uri": "source://workspace",
+          "digest": {
+            "sha256": "0efb7118e728c0eec880575df81aa8a44c837e2ac5b38c326d6bea24a746b2be"
+          }
+        },
+        {
+          "uri": "tests://manifest",
+          "digest": {
+            "sha256": "79509e2cf2bdbc9939e551dc02578dc47f525574b9dd32ee118e5b89f44baf62"
+          }
+        }
+      ],
+      "metadata": {
+        "buildStartedOn": "2026-07-19T09:30:42.262Z",
+        "buildFinishedOn": "2026-07-19T09:30:43.232Z",
+        "reproducible": true
+      }
+    }
+  },
+  "envelope": {
+    "payload": {
+      "_type": "https://in-toto.io/Statement/v1",
+      "subject": [
+        {
+          "name": "dist",
+          "digest": {
+            "sha256": "f081dcd653d6fd66a7fadd7a705c0ffd809955663de4204cedc6080c2dbd96f2"
+          }
+        }
+      ],
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "predicate": {
+        "builder": {
+          "id": "local://unified-platform/v32.10"
+        },
+        "buildType": "https://unified-platform.dev/build/v32.10",
+        "invocation": {
+          "configSource": {
+            "digest": {
+              "sha256": "0efb7118e728c0eec880575df81aa8a44c837e2ac5b38c326d6bea24a746b2be"
+            }
+          }
+        },
+        "materials": [
+          {
+            "uri": "file://package-lock.json",
+            "digest": {
+              "sha256": "af225b179455c27e134458f15726c13bd3230e534a0d4d4dd04f2b5c5174084d"
+            }
+          },
+          {
+            "uri": "source://workspace",
+            "digest": {
+              "sha256": "0efb7118e728c0eec880575df81aa8a44c837e2ac5b38c326d6bea24a746b2be"
+            }
+          },
+          {
+            "uri": "tests://manifest",
+            "digest": {
+              "sha256": "79509e2cf2bdbc9939e551dc02578dc47f525574b9dd32ee118e5b89f44baf62"
+            }
+          }
+        ],
+        "metadata": {
+          "buildStartedOn": "2026-07-19T09:30:42.262Z",
+          "buildFinishedOn": "2026-07-19T09:30:43.232Z",
+          "reproducible": true
+        }
+      }
+    },
+    "issuerKeyId": "local-release-c22dc4a9ef20bc2f",
+    "algorithm": "Ed25519",
+    "signature": "gMDR-Pzr9AKyikDcU9VkN4v2hP_c0XjV7p0-4VSPbI-S22CnhIsYoLtEUPdkElD0407o_q9nIyZhpW5q_8qoBA"
+  },
+  "publicKey": {
+    "keyId": "local-release-c22dc4a9ef20bc2f",
+    "spkiDerBase64": "MCowBQYDK2VwAyEA4FlyT+yIyJYfF5FTZerT4x+1GbBGMwVRxaYq/++731I=",
+    "fingerprint": "b3f40b31a10d59239174bfa86d619de4c82e8c76ef0cc05ae8bd20d1e5c430b1",
+    "revoked": false
+  },
+  "signatureVerified": true,
+  "privateKeyPersisted": false,
+  "transparencyVerified": false,
+  "classification": "LOCAL_SIGNED_PROVENANCE_EXTERNAL_TRANSPARENCY_REQUIRED",
+  "reportDigest": "d5beb1e66d73cb094b0a8b2dad13edb7ae01cc4984978810158537425099f82c"
+}

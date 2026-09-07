@@ -1,0 +1,238 @@
+{
+  "esr_id": "01921f4a-7c3e-7b2a-9c1f-4a5e6f7a8b9c",
+  "parent_esr_id": null,
+  "agent_id": "engineer-fpga-03",
+  "role": "Engineer",
+  "session_id": "session-power-rebal-2026q3",
+  "ts": 1755403200.0,
+  "version": 2,
+  "seq": 7,
+  "trajectory": {
+    "prompt": "Rebalance FPGA clock tree under NISQ cryo budget after ECR gate error spike on island 4",
+    "context_refs": [
+      "01921f40-1234-5678-9abc-def012345678"
+    ],
+    "steps": [
+      {
+        "step_id": 0,
+        "tool": "FILTER",
+        "tier": "LTM",
+        "content": "retrieve(last 4h, island=FPGA, signal=ECR_gate_error)",
+        "embedding": [0.21, -0.34, 0.88, 0.12, -0.55, 0.77, -0.09, 0.31, 0.66, -0.42, 0.18, 0.04, -0.91, 0.27, 0.50, -0.13],
+        "salience": 0.62,
+        "logprob": -1.4021,
+        "value": 0.5188,
+        "reward": 1.44,
+        "advantage": 0.83,
+        "ts": 1755403201.2
+      },
+      {
+        "step_id": 1,
+        "tool": "ADD",
+        "tier": "STM",
+        "content": "ECR spike 14:02Z island=FPGA rail=VCCINT magnitude=0.083",
+        "embedding": [0.45, 0.12, -0.71, 0.30, 0.88, -0.27, 0.59, 0.10, -0.44, 0.66, 0.21, -0.05, 0.79, -0.33, 0.42, 0.18],
+        "salience": 0.78,
+        "logprob": -1.1155,
+        "value": 0.6231,
+        "reward": 1.18,
+        "advantage": 0.57,
+        "ts": 1755403202.4
+      },
+      {
+        "step_id": 2,
+        "tool": "UPDATE",
+        "tier": "STM",
+        "content": "lower VCCINT weight 0.625 -> 0.410, raise VCCAUX weight 0.375 -> 0.590",
+        "embedding": [-0.12, 0.77, 0.33, -0.88, 0.41, 0.59, -0.20, 0.66, 0.05, -0.51, 0.74, 0.29, -0.42, 0.18, 0.81, -0.07],
+        "salience": 0.91,
+        "logprob": -0.9903,
+        "value": 0.7842,
+        "reward": 1.62,
+        "advantage": 1.10,
+        "ts": 1755403203.7
+      },
+      {
+        "step_id": 3,
+        "tool": "SUMMARY",
+        "tier": "LTM",
+        "content": "FPGA VCCINT reallocation reduced ECR magnitude by 47% within 1.8s; persists as mitigation playbook entry MPB-0042.",
+        "embedding": [0.33, 0.41, -0.55, 0.19, 0.72, -0.18, 0.61, 0.42, -0.27, 0.88, 0.09, 0.34, -0.66, 0.51, 0.23, -0.41],
+        "salience": 0.95,
+        "logprob": -0.7332,
+        "value": 0.8810,
+        "reward": 1.85,
+        "advantage": 1.34,
+        "ts": 1755403205.1
+      },
+      {
+        "step_id": 4,
+        "tool": "RETRIEVE",
+        "tier": "LTM",
+        "content": "retrieve(rid=01921f40-1234-5678-9abc-def012345678) — fetch the prior ECR-spike incident for cross-validation.",
+        "embedding": [0.41, -0.27, 0.66, 0.12, -0.55, 0.30, 0.88, -0.18, 0.45, 0.21, -0.71, 0.10, 0.59, 0.05, -0.44, 0.74],
+        "salience": 0.70,
+        "logprob": -1.0123,
+        "value": 0.7120,
+        "reward": 1.05,
+        "advantage": 0.61,
+        "ts": 1755403206.4
+      },
+      {
+        "step_id": 5,
+        "tool": "DELETE",
+        "tier": "STM",
+        "content": "tombstone obsolete scratch note rid=scratch-2026-07-13-1355Z (pre-reallocation hypothesis now contradicted by evidence).",
+        "embedding": [-0.18, 0.51, 0.42, -0.66, 0.21, 0.79, -0.13, 0.55, 0.36, -0.42, 0.71, 0.18, -0.30, 0.62, 0.07, 0.49],
+        "salience": 0.0,
+        "logprob": -1.2051,
+        "value": 0.6280,
+        "reward": 0.95,
+        "advantage": 0.42,
+        "ts": 1755403207.2,
+        "parent_rid": "scratch-2026-07-13-1355Z"
+      }
+    ],
+    "outcome": {
+      "status": "success",
+      "artifact_ref": "srs://artifacts/playbooks/MPB-0042.json",
+      "error_code": null,
+      "error_msg": null
+    }
+  },
+  "epistemic_state": {
+    "beliefs": [
+      {
+        "proposition": "Lowering VCCINT allocator weight from 0.625 to 0.410 reduces ECR gate-error magnitude on FPGA island by >=40% within 2s.",
+        "confidence": 0.92,
+        "evidence_refs": [
+          "01921f40-1234-5678-9abc-def012345678",
+          "01921f4a-7c3e-7b2a-9c1f-4a5e6f7a8b9c"
+        ]
+      },
+      {
+        "proposition": "VCCAUX has 0.59x slack capacity available to absorb the rerouted load without violating high(theta_FPGA)=0.75.",
+        "confidence": 0.85,
+        "evidence_refs": [
+          "01921f4a-7c3e-7b2a-9c1f-4a5e6f7a8b9c"
+        ]
+      }
+    ],
+    "uncertainties": [
+      {"topic": "Long-term VCCAUX thermal drift under sustained 0.59 weight", "magnitude": 0.34},
+      {"topic": "Cross-talk from VCCAUX reroute into Photonic island rail_VDD_OPT", "magnitude": 0.21}
+    ],
+    "open_questions": [
+      "Should the VCCINT/VCCAUX rebalance be promoted from STM scratch policy to LTM persistent playbook?",
+      "What is the steady-state ECR distribution under the new weight profile?"
+    ]
+  },
+  "quorum": {
+    "risk_class": "medium",
+    "threshold": 3,
+    "validators": [
+      {
+        "validator_id": "z3-prover-01",
+        "validator_type": "formal",
+        "verdict": "admit",
+        "rationale": "Reconfiguration satisfies low(theta_FPGA) <= F_FPGA <= high(theta_FPGA) under the witness model from z3_power_proof.py.",
+        "calibrated_assurance": 0.95,
+        "sig": "0xa1b2c3...formal-z3-sig-on-witness-hash"
+      },
+      {
+        "validator_id": "empirical-runner-02",
+        "validator_type": "empirical",
+        "verdict": "admit",
+        "rationale": "Replayed 50 traces via the SRS hardware-in-loop rig; 47/50 stayed within envelope.",
+        "calibrated_assurance": 0.88,
+        "sig": "0xd4e5f6...empirical-sig-on-witness-hash"
+      },
+      {
+        "validator_id": "heuristic-affinity-03",
+        "validator_type": "heuristic",
+        "verdict": "admit",
+        "rationale": "Affinity-matured antibody for ECR-spike-on-VCCINT matched the trajectory signature at 0.91 confidence.",
+        "calibrated_assurance": 0.81,
+        "sig": "0x789abc...heuristic-sig-on-witness-hash"
+      },
+      {
+        "validator_id": "human-reviewer-04",
+        "validator_type": "human",
+        "verdict": "abstain",
+        "rationale": "Human reviewer on PTO; abstention does not block medium-risk quorum.",
+        "calibrated_assurance": 0.0,
+        "sig": "0x000000...abstain"
+      }
+    ],
+    "aggregate_sig": "0xagg-bls-9f3e7c1d4a8b2e6f5c1d0a3b4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a",
+    "admissible": true,
+    "bls_evidence_binding": {
+      "z3_witness_hash": "sha256:9f3e7c1d4a8b2e6f5c1d0a3b4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a",
+      "binding_sig": "0xbind-bls-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+      "c_min": 2.0,
+      "c_sum": 2.64
+    }
+  },
+  "evidence_chain": {
+    "intent": "rebalance",
+    "context": {
+      "island": "FPGA",
+      "theta": 0.42,
+      "epistemic_ids": ["rid-ecr-spike-2026-07-13-1402Z", "rid-vccint-prior-weights"],
+      "tombstoned": [],
+      "risk_class": "medium"
+    },
+    "action": {
+      "op": "UPDATE",
+      "tier": "STM",
+      "parent_rid": "rid-vccint-prior-weights"
+    },
+    "reasoning": {
+      "logprob": -0.9903,
+      "value": 0.7842,
+      "advantage": 1.10,
+      "proof_refs": ["z3_sat", "sqa_quorum"],
+      "esr_evidence": ["01921f40-1234-5678-9abc-def012345678"]
+    },
+    "admissible": true,
+    "attempts": [
+      "attempt 0: REJECTED op=DELETE — R1_op_mismatch: intent=rebalance requires op ∈ { UPDATE, ADD, SUMMARY } but action.op=DELETE",
+      "attempt 1: ADMITTED op=UPDATE"
+    ],
+    "sqa_certificate_ref": "quorum:self#bls_evidence_binding",
+    "seq": 7
+  },
+  "telemetry_refs": [
+    {
+      "snapshot_id": "snap-2026-07-13-1402Z-fpga-ecr",
+      "source": "FPGA",
+      "ring_buffer_offset": 41984,
+      "ts": 1755403320.0
+    },
+    {
+      "snapshot_id": "snap-2026-07-13-1402Z-nisq-cryo",
+      "source": "NISQ",
+      "ring_buffer_offset": 8724,
+      "ts": 1755403321.4
+    }
+  ],
+  "formal_proof_refs": [
+    {
+      "proof_id": "proof-power-topology-2026-07-13",
+      "prover": "z3",
+      "claim": "low(theta_FPGA) <= F_FPGA <= high(theta_FPGA) AND sum_j F_j <= G AND sum_j F_j*(1-theta_j) <= Q_BAR",
+      "verdict": "sat"
+    }
+  ],
+  "replication": {
+    "primary": "replica-eu-west-1a",
+    "replicas": [
+      {"replica_id": "replica-eu-west-1b", "status": "replicated", "ts": 1755403322.1},
+      {"replica_id": "replica-us-east-2a", "status": "replicated", "ts": 1755403322.4},
+      {"replica_id": "replica-ap-south-1c", "status": "pending", "ts": 0}
+    ],
+    "lamport_ts": 8847291,
+    "staleness_bound_s": 5.0
+  },
+  "tags": ["power-rebalance", "FPGA", "ECR-spike", "playbook-MPB-0042", "medium-risk"]
+}

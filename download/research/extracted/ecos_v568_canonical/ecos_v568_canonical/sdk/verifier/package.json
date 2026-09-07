@@ -1,0 +1,39 @@
+{
+  "name": "@ecos/verifier",
+  "version": "374.0.0",
+  "description": "ECOS portable proof verifier — standalone, zero-dependency, offline integrity verification for ECOS economic proofs. Accepts proofs from GET /api/v1/proof/portable (V372+) and verifies proofHash, audit chain, conservation, and split without trusting the issuer.",
+  "main": "./index.cjs",
+  "module": "./index.mjs",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.cjs",
+      "default": "./index.cjs"
+    }
+  },
+  "types": "./index.d.ts",
+  "files": [
+    "index.cjs",
+    "index.mjs",
+    "index.d.ts",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "ecos",
+    "integrity",
+    "proof",
+    "verifier",
+    "audit",
+    "zero-trust",
+    "offline"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ecos-platform/ecos"
+  },
+  "dependencies": {}
+}

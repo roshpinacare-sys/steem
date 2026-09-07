@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Polyglot Studio — zip-to-pdf-polyglot v9.1.0</title>
+<style>
+  :root{--bg:#0d0d0d;--card:#161616;--border:#272727;--text:#ededed;--muted:#737373;--accent:#10b981;--accent2:#3b82f6;--red:#ef4444;--amber:#f59e0b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+  header{padding:20px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px}
+  header h1{font-size:20px;font-weight:700;letter-spacing:-.5px}
+  .badge{background:#1a2e24;color:var(--accent);border:1px solid #204030;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600}
+  .version{color:var(--muted);font-size:13px;margin-left:auto}
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1400px;margin:0 auto;padding:32px}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;padding:16px}}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:18px}
+  .panel-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .build-icon{background:#1a2e24;color:var(--accent)}
+  .extract-icon{background:#1a2335;color:var(--accent2)}
+  label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:4px;display:block}
+  select,input[type=text],input[type=password]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0d0d0d;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+  select:focus,input:focus{border-color:var(--accent)}
+  .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+  .drop-zone:hover,.drop-zone.over{border-color:var(--accent);background:#0d1f18}
+  .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .drop-zone .drop-icon{font-size:28px;margin-bottom:8px}
+  .drop-zone .drop-label{font-size:14px;color:var(--muted)}
+  .drop-zone .drop-name{font-size:13px;color:var(--accent);font-weight:600;margin-top:4px}
+  .btn{padding:12px 20px;border-radius:10px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;width:100%}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover:not(:disabled){background:#0d9668}
+  .btn-primary:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
+  .btn-secondary{background:transparent;color:var(--accent2);border:1px solid var(--accent2)}
+  .btn-secondary:hover:not(:disabled){background:#1a2335}
+  .btn-secondary:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  .log-panel{background:#0a0a0a;border:1px solid var(--border);border-radius:10px;padding:14px;font-family:'SF Mono',Menlo,monospace;font-size:12px;line-height:1.6;max-height:200px;overflow-y:auto;color:#9ca3af}
+  .log-ok{color:var(--accent)} .log-err{color:var(--red)}
+  .result-block{background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:16px}
+  .result-stat{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1a1a1a;font-size:13px}
+  .result-stat:last-child{border-bottom:none}
+  .result-stat .val{color:var(--accent);font-weight:600;font-family:'SF Mono',Menlo,monospace}
+  .result-stat .val.warn{color:var(--amber)} .result-stat .val.danger{color:var(--red)}
+  .strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media(max-width:600px){.strategy-grid{grid-template-columns:1fr}}
+  .strategy-card{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s;font-size:13px}
+  .strategy-card:hover{border-color:var(--accent);background:#0d1f18}
+  .strategy-card.selected{border-color:var(--accent);background:#0d1f18}
+  .strategy-card .s-name{font-weight:600;margin-bottom:2px}
+  .strategy-card .s-badge{font-size:11px;color:var(--accent);opacity:.8}
+  .strategy-card .s-lock{font-size:11px;color:var(--amber)}
+  .opt-row{display:flex;gap:8px;flex-wrap:wrap}
+  .toggle{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;user-select:none}
+  .toggle input{width:14px;height:14px;accent-color:var(--accent);cursor:pointer}
+  /* Passphrase row — hidden by default, shown via JS when needed */
+  .passphrase-row{display:none;flex-direction:column;gap:6px}
+  .passphrase-row.visible{display:flex}
+  .alert{padding:10px 14px;border-radius:8px;font-size:13px}
+  .alert-err{background:#2c0b0b;color:#fca5a5;border:1px solid #5c1414}
+  .alert-ok{background:#0d1f18;color:#6ee7b7;border:1px solid #204030}
+  .file-list{max-height:160px;overflow-y:auto;font-size:12px;font-family:'SF Mono',Menlo,monospace;color:#9ca3af}
+  .file-list .fi{padding:3px 0;border-bottom:1px solid #111;display:flex;justify-content:space-between}
+  .file-list .fi .fn{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:8px}
+  .file-list .fi .fs{color:var(--muted);flex-shrink:0}
+  .pkey{font-family:'SF Mono',Menlo,monospace;font-size:10px;white-space:pre-wrap;word-break:break-all;background:#1a0a0a;border:1px solid #3a1010;border-radius:6px;padding:8px;margin-top:6px;color:#fca5a5}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="icon build-icon">◈</div>
+  <h1>Polyglot Studio</h1>
+  <div class="badge">v9.1.0</div>
+  <div class="version">zip-to-pdf-polyglot — 10 strategies</div>
+</header>
+
+<div class="layout">
+
+  <!-- BUILD PANEL -->
+  <div class="panel">
+    <div class="panel-title"><div class="icon build-icon">⬆</div> Build — ZIP → PDF</div>
+
+    <div>
+      <label>Source ZIP file</label>
+      <div class="drop-zone" id="buildZone">
+        <input type="file" accept=".zip" id="buildFile" onchange="onBuildFile(this)"/>
+        <div class="drop-icon">📦</div>
+        <div class="drop-label">Drop a ZIP here or click to select</div>
+        <div class="drop-name" id="buildFileName"></div>
+      </div>
+    </div>
+
+    <div>
+      <label>Strategy</label>
+      <div class="strategy-grid" id="strategyGrid"></div>
+    </div>
+
+    <!-- Passphrase shown ONLY when an encrypted strategy is selected -->
+    <div class="passphrase-row" id="buildPassRow">
+      <label>Passphrase <span style="color:var(--red)">required</span></label>
+      <input type="password" id="passphrase" placeholder="Enter passphrase for encryption…"/>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">
+        There is no default — leaving this blank will fail. Store your passphrase safely.
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:8px">Options</div>
+      <div class="opt-row">
+        <label class="toggle"><input type="checkbox" id="optFont"    checked/> Embed font</label>
+        <label class="toggle"><input type="checkbox" id="optDiagram" checked/> Diagram page</label>
+        <label class="toggle"><input type="checkbox" id="optCruft"   checked/> Exclude cruft</label>
+        <label class="toggle"><input type="checkbox" id="optBrotli"/>           Brotli</label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="buildBtn" onclick="doBuild()" disabled>Build Polyglot PDF →</button>
+
+    <div id="buildLog"    class="log-panel" style="display:none"></div>
+    <div id="buildError"  style="display:none"></div>
+    <div id="buildResult" style="display:none"></div>
+  </div>
+
+  <!-- EXTRACT PANEL -->
+  <div class="panel">
+    <div class="panel-title"><div class="icon extract-icon">⬇</div> Extract / Verify — PDF</div>
+
+    <div>
+      <label>Polyglot PDF file</label>
+      <div class="drop-zone" id="extractZone">
+        <input type="file" accept=".pdf" id="extractFile" onchange="onExtractFile(this)"/>
+        <div class="drop-icon">📄</div>
+        <div class="drop-label">Drop a polyglot PDF here or click to select</div>
+        <div class="drop-name" id="extractFileName"></div>
+      </div>
+    </div>
+
+    <!-- Passphrase shown ONLY when detected strategy is encrypted -->
+    <div class="passphrase-row" id="extractPassRow">
+      <label>Passphrase (encrypted file detected)</label>
+      <input type="password" id="extractPass" placeholder="Enter decryption passphrase…"/>
+    </div>
+
+    <!-- "always available" passphrase toggle for manual override -->
+    <div style="font-size:12px;color:var(--muted);margin-top:-8px">
+      <span id="passToggleLink" onclick="togglePassphraseField()" style="cursor:pointer;text-decoration:underline;color:var(--accent2)">
+        + Enter passphrase manually
+      </span>
+      <span id="passToggleHide" onclick="togglePassphraseField()" style="cursor:pointer;text-decoration:underline;color:var(--accent2);display:none">
+        − Hide passphrase field
+      </span>
+    </div>
+    <div class="passphrase-row" id="extractPassManual" style="margin-top:-8px">
+      <input type="password" id="extractPassManualInput" placeholder="Passphrase for extract/stats…"/>
+    </div>
+
+    <div id="verifyBadge" style="display:none"></div>
+
+    <div class="row">
+      <button class="btn btn-secondary" id="verifyBtn" onclick="doVerify()" disabled>Verify</button>
+      <button class="btn btn-secondary" id="statsBtn"  onclick="doStats()"  disabled>Stats</button>
+    </div>
+    <button class="btn btn-primary" id="extractBtn" onclick="doExtract()" disabled>Extract ZIP →</button>
+
+    <div id="extractLog"    class="log-panel" style="display:none"></div>
+    <div id="extractError"  style="display:none"></div>
+    <div id="extractResult" style="display:none"></div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const API = '';
+let strategies = [];
+let selectedStrategy = 'agent-readable';
+let buildFileData = null, buildFileName2 = '';
+let extractFileData = null, extractFileName2 = '';
+let detectedStrategy = null; // filled after verify
+
+// ── Offline fallback strategy list ─────────────────────────────────────────
+const OFFLINE_STRATEGIES = [
+  { name: 'agent-readable',         badge: '⭐ Recommended', requiresPassphrase: false },
+  { name: 'raw-polyglot-patched',   badge: 'True Polyglot',  requiresPassphrase: false },
+  { name: 'raw-polyglot-unpatched', badge: 'Raw',            requiresPassphrase: false },
+  { name: 'pdf-attachment',         badge: 'Spec-compliant', requiresPassphrase: false },
+  { name: 'xmp-embedded',           badge: 'XMP',            requiresPassphrase: false },
+  { name: 'portfolio',              badge: 'Portfolio',      requiresPassphrase: false },
+  { name: 'raw-polyglot-signed',    badge: 'SHA-256 Signed', requiresPassphrase: false },
+  { name: 'encrypted',              badge: '🔒 AES-256-GCM', requiresPassphrase: true  },
+  { name: 'chacha20-poly1305',      badge: '🔒 ChaCha20',    requiresPassphrase: true  },
+  { name: 'rsa-signed',             badge: '🔑 RSA-2048',    requiresPassphrase: false },
+];
+
+// ── Init ───────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const r = await fetch(API + '/api/strategies', { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    if (Array.isArray(d.strategies)) strategies = d.strategies;
+  } catch { /* offline fallback */ }
+  if (!strategies.length) strategies = OFFLINE_STRATEGIES;
+  renderStrategyGrid();
+}
+
+function renderStrategyGrid() {
+  const grid = document.getElementById('strategyGrid');
+  grid.innerHTML = '';
+  for (const s of strategies) {
+    const card = document.createElement('div');
+    card.className = 'strategy-card' + (s.name === selectedStrategy ? ' selected' : '');
+    card.dataset.name = s.name;
+    card.dataset.lock = s.requiresPassphrase ? '1' : '0';
+    card.innerHTML =
+      `<div class="s-name">${s.name}</div>` +
+      `<div class="s-badge">${s.badge || ''}</div>` +
+      (s.requiresPassphrase ? `<div class="s-lock">🔒 passphrase required</div>` : '');
+    card.onclick = () => selectStrategy(s.name, !!s.requiresPassphrase);
+    grid.appendChild(card);
+  }
+}
+
+function selectStrategy(name, requiresPassphrase) {
+  selectedStrategy = name;
+  document.querySelectorAll('.strategy-card').forEach(c =>
+    c.classList.toggle('selected', c.dataset.name === name));
+  // Show passphrase field ONLY for encrypted strategies
+  document.getElementById('buildPassRow').classList.toggle('visible', requiresPassphrase);
+  if (!requiresPassphrase) document.getElementById('passphrase').value = '';
+}
+
+// ── File handlers ──────────────────────────────────────────────────────────
+function onBuildFile(input) {
+  const file = input.files[0]; if (!file) return;
+  buildFileName2 = file.name;
+  document.getElementById('buildFileName').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => { buildFileData = e.target.result; document.getElementById('buildBtn').disabled = false; };
+  reader.readAsArrayBuffer(file);
+}
+
+function onExtractFile(input) {
+  const file = input.files[0]; if (!file) return;
+  extractFileName2 = file.name;
+  document.getElementById('extractFileName').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    extractFileData = e.target.result;
+    document.getElementById('extractBtn').disabled  = false;
+    document.getElementById('verifyBtn').disabled   = false;
+    document.getElementById('statsBtn').disabled    = false;
+    // Auto-verify to detect if encrypted → show passphrase field if needed
+    await autoDetectStrategy();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function autoDetectStrategy() {
+  detectedStrategy = null;
+  try {
+    const fd = new FormData();
+    fd.append('file', new Blob([extractFileData], {type:'application/pdf'}), extractFileName2);
+    const r  = await fetch(API + '/api/verify', { method: 'POST', body: fd });
+    const d  = await r.json();
+    if (d.ok && d.recognized) {
+      detectedStrategy = d.strategy;
+      const isEnc = d.strategy === 'encrypted' || d.strategy === 'chacha20-poly1305';
+      document.getElementById('extractPassRow').classList.toggle('visible', isEnc);
+      const badge = document.getElementById('verifyBadge');
+      badge.style.display = 'block';
+      badge.className = 'alert ' + (d.recognized ? 'alert-ok' : 'alert-err');
+      badge.textContent = d.recognized
+        ? `✓ Detected: ${d.strategy}${isEnc ? ' (encrypted — passphrase required)' : ''}`
+        : '✗ Not recognized as a polyglot PDF';
+    }
+  } catch { /* server offline — skip auto-detect */ }
+}
+
+function getExtractPassphrase() {
+  const mainPass   = document.getElementById('extractPass').value;
+  const manualPass = document.getElementById('extractPassManualInput').value;
+  return mainPass || manualPass || undefined;
+}
+
+function togglePassphraseField() {
+  const row    = document.getElementById('extractPassManual');
+  const show   = document.getElementById('passToggleLink');
+  const hide   = document.getElementById('passToggleHide');
+  const visible = row.classList.toggle('visible');
+  show.style.display = visible ? 'none'  : 'inline';
+  hide.style.display = visible ? 'inline': 'none';
+  if (!visible) document.getElementById('extractPassManualInput').value = '';
+}
+
+// ── Drag & drop ────────────────────────────────────────────────────────────
+function setupDrop(zoneId, fileInputId, handler) {
+  const zone = document.getElementById(zoneId);
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('over');
+    const file = e.dataTransfer.files[0]; if (!file) return;
+    const dt = new DataTransfer(); dt.items.add(file);
+    const input = document.getElementById(fileInputId);
+    input.files = dt.files; handler(input);
+  });
+}
+setupDrop('buildZone',   'buildFile',   onBuildFile);
+setupDrop('extractZone', 'extractFile', onExtractFile);
+
+// ── Build ──────────────────────────────────────────────────────────────────
+async function doBuild() {
+  const logEl = document.getElementById('buildLog');
+  const errEl = document.getElementById('buildError');
+  const resEl = document.getElementById('buildResult');
+  logEl.style.display = 'block'; logEl.innerHTML = '';
+  errEl.style.display = 'none';
+  resEl.style.display = 'none';
+  document.getElementById('buildBtn').disabled = true;
+
+  const log = (msg, cls='') => {
+    const line = document.createElement('div'); line.className = cls; line.textContent = msg;
+    logEl.appendChild(line); logEl.scrollTop = logEl.scrollHeight;
+  };
+
+  log('Building polyglot PDF…');
+  try {
+    const pass = document.getElementById('passphrase').value;
+    const strat = strategies.find(s => s.name === selectedStrategy);
+    if (strat?.requiresPassphrase && !pass) {
+      throw new Error(`Strategy "${selectedStrategy}" requires a passphrase. Please fill in the passphrase field.`);
+    }
+
+    const fd = new FormData();
+    fd.append('file', new Blob([buildFileData], {type:'application/zip'}), buildFileName2);
+    fd.append('strategy', selectedStrategy);
+    fd.append('embedFont',          document.getElementById('optFont').checked    ? 'true' : 'false');
+    fd.append('embedDiagram',       document.getElementById('optDiagram').checked ? 'true' : 'false');
+    fd.append('excludeCruft',       document.getElementById('optCruft').checked   ? 'true' : 'false');
+    fd.append('contentCompression', document.getElementById('optBrotli').checked  ? 'brotli' : 'flate');
+    if (pass) fd.append('passphrase', pass);
+
+    const r = await fetch(API + '/api/build', { method: 'POST', body: fd });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error || 'Build failed');
+
+    for (const l of d.logs || []) log('  ' + l);
+    log('✓ Done!', 'log-ok');
+
+    resEl.style.display = 'block';
+    resEl.innerHTML =
+      `<div class="result-block">
+        ${stat('Strategy', d.strategy)}
+        ${stat('Entries', d.entryCount + ' (' + d.textFileCount + ' text, ' + d.binaryFileCount + ' binary)')}
+        ${stat('Original size', fmt(d.originalSize))}
+        ${stat('PDF size',      fmt(d.pdfSize))}
+        ${d.dedupCount > 0  ? stat('Deduped',  d.dedupCount  + ' files') : ''}
+        ${d.excludedCount > 0 ? stat('Excluded', d.excludedCount + ' cruft files') : ''}
+      </div>
+      <button class="btn btn-primary" style="margin-top:12px"
+        onclick="dl(${JSON.stringify(d.pdfBase64)},${JSON.stringify(d.fileName)},'application/pdf')">
+        ↓ Download PDF (${fmt(d.pdfSize)})
+      </button>` +
+      (d.privateKeyPem
+        ? `<div class="alert alert-err" style="margin-top:12px">
+             ⚠ RSA Private Key — store safely, NOT in the PDF:
+             <div class="pkey">${esc(d.privateKeyPem)}</div>
+           </div>`
+        : '');
+  } catch (err) {
+    log('✗ ' + err.message, 'log-err');
+    errEl.style.display = 'block'; errEl.className = 'alert alert-err';
+    errEl.textContent = err.message;
+  } finally {
+    document.getElementById('buildBtn').disabled = false;
+  }
+}
+
+// ── Verify ─────────────────────────────────────────────────────────────────
+async function doVerify() {
+  await runExtractOp('verify', '/api/verify', (d) =>
+    `<div class="result-block">
+      ${stat('PDF magic',   d.pdfMagic  ? '✓ Yes' : '✗ No')}
+      ${stat('Recognized',  d.recognized ? '✓ Yes' : '✗ No', d.recognized ? '' : 'danger')}
+      ${d.strategy    ? stat('Strategy', d.strategy) : ''}
+      ${d.entryCount !== null && d.entryCount !== undefined ? stat('Entries', d.entryCount) : ''}
+      ${(d.strategy === 'encrypted' || d.strategy === 'chacha20-poly1305')
+        ? `<div class="result-stat"><span>Note</span><span style="color:var(--amber);font-size:12px">Encrypted — passphrase needed to extract</span></div>` : ''}
+      ${d.errors?.length ? `<div class="alert alert-err" style="margin-top:8px">${d.errors.join('<br>')}</div>` : ''}
+    </div>`, false);
+}
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+async function doStats() {
+  await runExtractOp('stats', '/api/stats', (d) => {
+    const exts = (d.topExtensions || []).map(e => `${e.ext} (${e.count})`).join(', ');
+    return `<div class="result-block">
+      ${stat('Strategy',     d.strategy)}
+      ${stat('Entries',      d.entryCount)}
+      ${stat('Text files',   d.textFileCount)}
+      ${stat('Binary files', d.binaryFileCount)}
+      ${stat('Source size',  fmt(d.totalOriginalBytes))}
+      ${stat('ZIP size',     fmt(d.zipSize))}
+      ${stat('PDF size',     fmt(d.pdfSize))}
+      ${exts ? stat('Top extensions', exts) : ''}
+    </div>
+    ${d.files?.length ? `<div class="file-list" style="margin-top:10px">${
+      d.files.slice(0, 60).map(f => `<div class="fi"><span class="fn">${esc(f.name)}</span><span class="fs">${fmt(f.size)}</span></div>`).join('')
+    }</div>` : ''}`;
+  });
+}
+
+// ── Extract ────────────────────────────────────────────────────────────────
+async function doExtract() {
+  await runExtractOp('extract', '/api/extract', (d) =>
+    `<div class="result-block">
+      ${stat('Strategy',   d.strategy)}
+      ${stat('Entries',    d.entryCount)}
+      ${stat('ZIP size',   fmt(d.zipSize))}
+      ${d.signatureValid !== undefined && d.signatureValid !== null
+        ? stat('RSA sig', d.signatureValid ? 'VALID ✓' : 'INVALID ✗', d.signatureValid ? '' : 'danger')
+        : ''}
+    </div>
+    <button class="btn btn-secondary" style="margin-top:12px"
+      onclick="dl(${JSON.stringify(d.zipBase64)},'extracted.zip','application/zip')">
+      ↓ Download ZIP (${fmt(d.zipSize)})
+    </button>`, true);
+}
+
+// ── Shared extract helper ──────────────────────────────────────────────────
+async function runExtractOp(label, endpoint, renderResult, showLog) {
+  const logEl = document.getElementById('extractLog');
+  const errEl = document.getElementById('extractError');
+  const resEl = document.getElementById('extractResult');
+  if (showLog) { logEl.style.display = 'block'; logEl.innerHTML = ''; }
+  errEl.style.display = 'none'; resEl.style.display = 'none';
+  const log = (msg, cls='') => {
+    if (!showLog) return;
+    const line = document.createElement('div'); line.className = cls; line.textContent = msg;
+    logEl.appendChild(line); logEl.scrollTop = logEl.scrollHeight;
+  };
+  try {
+    const fd = new FormData();
+    fd.append('file', new Blob([extractFileData], {type:'application/pdf'}), extractFileName2);
+    const pass = getExtractPassphrase();
+    if (pass) fd.append('passphrase', pass);
+    log(`Running ${label}…`);
+    const r  = await fetch(API + endpoint, { method: 'POST', body: fd });
+    const d  = await r.json();
+    if (!d.ok) throw new Error(d.error || `${label} failed`);
+    for (const l of d.logs || []) log('  ' + l);
+    if (showLog) log('✓ Done!', 'log-ok');
+    resEl.style.display = 'block';
+    resEl.innerHTML = renderResult(d);
+  } catch (err) {
+    if (showLog) log('✗ ' + err.message, 'log-err');
+    errEl.style.display = 'block'; errEl.className = 'alert alert-err';
+    errEl.textContent = err.message;
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function stat(label, value, valClass='') {
+  if (value === undefined || value === null || value === '') return '';
+  return `<div class="result-stat"><span>${label}</span><span class="val ${valClass}">${value}</span></div>`;
+}
+function fmt(n) {
+  if (n == null) return '—';
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return (n/1024).toFixed(1) + ' KB';
+  return (n/1048576).toFixed(2) + ' MB';
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function dl(b64, filename, mime) {
+  const bin = atob(b64);
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([buf], {type:mime}));
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+init();
+</script>
+</body>
+</html>

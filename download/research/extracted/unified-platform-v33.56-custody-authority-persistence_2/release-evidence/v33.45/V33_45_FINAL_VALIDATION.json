@@ -1,0 +1,289 @@
+{
+  "version": "33.45",
+  "status": "PASS",
+  "checkCount": 15,
+  "passed": 15,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "required-artifacts",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "proof-summary",
+      "ok": true,
+      "detail": {
+        "newSignatureCount": 24,
+        "totalChainSignatureCount": 58,
+        "packageCount": 3,
+        "approvalCount": 3,
+        "canaryStageCount": 3,
+        "canaryMonitorCount": 3,
+        "reportCount": 9,
+        "retainedGenerationCount": 4
+      }
+    },
+    {
+      "name": "proof-execution",
+      "ok": true,
+      "detail": {
+        "offlineInstall": {
+          "command": "npm ci --offline",
+          "cacheInitiallyEmpty": true,
+          "networkRequestsObserved": 0,
+          "exitCode": 0,
+          "logDigest": "9c8c3a25071772965995f3448ab74fb7445998204d11bc2bed3d7945d11d8026"
+        },
+        "build": {
+          "command": "npm run build",
+          "exitCode": 0,
+          "logDigest": "dd1a987d8a47f53d92217ec5ce08dee43b77abcc27bf50ce13e6b20089a4e916"
+        },
+        "tests": {
+          "command": "node --test dist/tests/multi-package-update-transaction-v33_45.test.js",
+          "testCount": 34,
+          "passed": 34,
+          "failed": 0,
+          "exitCode": 0,
+          "logDigest": "06343e085e6905bc6be699cdd88d5c5dc326044c8bbd9cf76e47bc0e3145af44"
+        },
+        "packageMutationsClass": "LOCAL_VERSION_FIXTURES_ONLY",
+        "canaryMetricsClass": "LOCAL_DETERMINISTIC_FIXTURE_ONLY"
+      }
+    },
+    {
+      "name": "proof-attacks",
+      "ok": true,
+      "detail": {
+        "transactionManifestTamperBlocked": true,
+        "approvalQuorumBlocked": true,
+        "canaryStageMissingBlocked": true,
+        "promotionAggregateTamperBlocked": true,
+        "rollbackClassificationBlocked": true,
+        "recoveryTargetBlocked": true,
+        "retentionDropBlocked": true
+      }
+    },
+    {
+      "name": "proof-verdict",
+      "ok": true,
+      "detail": {
+        "version": "33.45",
+        "status": "LOCAL_MULTI_PACKAGE_UPDATE_TRANSACTION_PROVEN",
+        "basePlannerVerdictDigest": "46d25dd5178c1e67b0079da0d78ae418274422b884122673d89d9f64bd7d768b",
+        "policyDigest": "7ef5b21fa093f93ac5e6511b73d39bf3bcb9cd0b3a1016d63073de02d516aed2",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "resolutionDigest": "f9acf09b7e340f78d0a0efea7f229af94835c5d85ecee980bd3322a29d4a293f",
+        "rehearsalDigest": "4c400360a913d74176ea2c1e1c3720525997e73de8f0e61d26109ecc23b9b9e0",
+        "approvalCertificateDigest": "f1c59a32d06485750e615b5fda2f980f49f1c543c6dd38c65010c9372be23889",
+        "canaryPlanDigest": "d9eecbf9332aa6c23fcec6e0d937828de31e4466e734d861714549ef0d54b0e7",
+        "promotionDigest": "cf268146542bfb63197d68fd29069adc98a8677a876f9f4a08ab1d845af72fa3",
+        "partialRollbackDecisionDigest": "e66892cd0fd63ef98ecb99cc65926258dbaad0b1090a6d990165065dde55ced4",
+        "fullRollbackDecisionDigest": "7895a640117e6224983e97cbedb17be6233d79ab7582f9e5a6d8dea89aa1868d",
+        "interruptionRecoveryDigest": "7abb9b45884dc1eb0569b9832cd3226264094733b1cbf403ac9c0932db588146",
+        "retentionLedgerDigest": "206048272f9c1457108f20c84f43af4c817feeccebb952865952eaf411a4f6c2",
+        "packageCount": 3,
+        "approvalCount": 3,
+        "canaryStageCount": 3,
+        "canaryMonitorCount": 3,
+        "retainedGenerationCount": 4,
+        "atomicTransactionProven": true,
+        "conflictResolutionProven": true,
+        "stagedCanaryProven": true,
+        "promotionSuccessPathProven": true,
+        "rollbackClassificationProven": true,
+        "interruptionRecoveryProven": true,
+        "updatePromoted": false,
+        "externalPackageArtifactsObserved": false,
+        "externalCanaryTrafficObserved": false,
+        "externalHumanParticipants": 0,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "verifiedAt": "2026-07-23T20:00:14.000Z",
+        "verdictDigest": "54c07a28f89ec217d55b149303c5a3e06f2b12283f8b203da68d1b548e3d5bc0"
+      }
+    },
+    {
+      "name": "truth-boundary",
+      "ok": true,
+      "detail": {
+        "truthBoundary": {
+          "externalPackageArtifactsObserved": false,
+          "externalCanaryTrafficObserved": false,
+          "externalHumanParticipants": 0,
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0
+        },
+        "verdict": {
+          "version": "33.45",
+          "status": "LOCAL_MULTI_PACKAGE_UPDATE_TRANSACTION_PROVEN",
+          "basePlannerVerdictDigest": "46d25dd5178c1e67b0079da0d78ae418274422b884122673d89d9f64bd7d768b",
+          "policyDigest": "7ef5b21fa093f93ac5e6511b73d39bf3bcb9cd0b3a1016d63073de02d516aed2",
+          "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+          "resolutionDigest": "f9acf09b7e340f78d0a0efea7f229af94835c5d85ecee980bd3322a29d4a293f",
+          "rehearsalDigest": "4c400360a913d74176ea2c1e1c3720525997e73de8f0e61d26109ecc23b9b9e0",
+          "approvalCertificateDigest": "f1c59a32d06485750e615b5fda2f980f49f1c543c6dd38c65010c9372be23889",
+          "canaryPlanDigest": "d9eecbf9332aa6c23fcec6e0d937828de31e4466e734d861714549ef0d54b0e7",
+          "promotionDigest": "cf268146542bfb63197d68fd29069adc98a8677a876f9f4a08ab1d845af72fa3",
+          "partialRollbackDecisionDigest": "e66892cd0fd63ef98ecb99cc65926258dbaad0b1090a6d990165065dde55ced4",
+          "fullRollbackDecisionDigest": "7895a640117e6224983e97cbedb17be6233d79ab7582f9e5a6d8dea89aa1868d",
+          "interruptionRecoveryDigest": "7abb9b45884dc1eb0569b9832cd3226264094733b1cbf403ac9c0932db588146",
+          "retentionLedgerDigest": "206048272f9c1457108f20c84f43af4c817feeccebb952865952eaf411a4f6c2",
+          "packageCount": 3,
+          "approvalCount": 3,
+          "canaryStageCount": 3,
+          "canaryMonitorCount": 3,
+          "retainedGenerationCount": 4,
+          "atomicTransactionProven": true,
+          "conflictResolutionProven": true,
+          "stagedCanaryProven": true,
+          "promotionSuccessPathProven": true,
+          "rollbackClassificationProven": true,
+          "interruptionRecoveryProven": true,
+          "updatePromoted": false,
+          "externalPackageArtifactsObserved": false,
+          "externalCanaryTrafficObserved": false,
+          "externalHumanParticipants": 0,
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "verifiedAt": "2026-07-23T20:00:14.000Z",
+          "verdictDigest": "54c07a28f89ec217d55b149303c5a3e06f2b12283f8b203da68d1b548e3d5bc0"
+        }
+      }
+    },
+    {
+      "name": "independent-verification",
+      "ok": true,
+      "detail": {
+        "version": "33.45",
+        "generatedAt": "2026-07-23T01:06:09.259Z",
+        "status": "PASS",
+        "newSignatureCount": 24,
+        "totalChainSignatureCount": 58,
+        "packageCount": 3,
+        "approvalCount": 3,
+        "canaryStageCount": 3,
+        "canaryMonitorCount": 3,
+        "reportCount": 9,
+        "retainedGenerationCount": 4,
+        "finalStatus": "LOCAL_MULTI_PACKAGE_UPDATE_TRANSACTION_PROVEN",
+        "productionAuthority": "NONE",
+        "checks": {
+          "version": true,
+          "baseProofDigest": true,
+          "baseVerifierPassed": true,
+          "baseVerdictDigest": true,
+          "newSignaturesValid": true,
+          "newSignatureCount": true,
+          "totalChainSignatureCount": true,
+          "finalVerdictRecomputed": true,
+          "packageCount": true,
+          "approvalCount": true,
+          "stageCount": true,
+          "monitorCount": true,
+          "reportCount": true,
+          "retentionCount": true,
+          "offlineInstall": true,
+          "tests": true,
+          "attacks": true,
+          "truthBoundary": true
+        }
+      }
+    },
+    {
+      "name": "focused-regression",
+      "ok": true,
+      "detail": {
+        "version": "33.45",
+        "generatedAt": "2026-07-23T01:06:19.025Z",
+        "status": "passed",
+        "command": "/opt/nvm/versions/node/v22.16.0/bin/node --test --test-concurrency=1 dist/tests/controlled-human-ux-pilot-v33_30.test.js dist/tests/external-human-pilot-evidence-import-v33_31.test.js dist/tests/federated-human-pilot-checkpoint-v33_32.test.js dist/tests/federated-checkpoint-continuity-v33_33.test.js dist/tests/federated-recovery-drill-v33_34.test.js dist/tests/expired-coordinator-takeover-v33_35.test.js dist/tests/external-https-monitor-qualification-v33_36.test.js dist/tests/external-qualification-deployment-import-v33_37.test.js dist/tests/external-qualification-custody-ceremony-v33_38.test.js dist/tests/external-custody-hsm-threshold-recovery-v33_39.test.js dist/tests/hsm-interoperability-remote-attestation-v33_40.test.js dist/tests/external-provider-onboarding-conformance-v33_41.test.js dist/tests/hermetic-dependency-capsule-v33_42.test.js dist/tests/dependency-capsule-lifecycle-v33_43.test.js dist/tests/dependency-update-planner-v33_44.test.js dist/tests/multi-package-update-transaction-v33_45.test.js",
+        "testFiles": 16,
+        "totals": {
+          "tests": 545,
+          "passed": 545,
+          "failed": 0
+        },
+        "retry": false,
+        "forceExitDisabled": true
+      }
+    },
+    {
+      "name": "full-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 230,
+        "tests": 2370,
+        "passed": 2370,
+        "failed": 0
+      }
+    },
+    {
+      "name": "direct-v33-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 45,
+        "tests": 1203,
+        "passed": 1203,
+        "failed": 0
+      }
+    },
+    {
+      "name": "repository-truth-map",
+      "ok": true,
+      "detail": {
+        "sourceModules": 234,
+        "testFiles": 230,
+        "scripts": 574,
+        "packageScripts": 545,
+        "governanceFiles": 11,
+        "externalQualificationKits": 6,
+        "frontierBenchmarkKits": 1,
+        "sovereignInfraFiles": 30,
+        "independentVerifierFiles": 5,
+        "sovereignServices": 12
+      }
+    },
+    {
+      "name": "architecture-integrity",
+      "ok": true,
+      "detail": {
+        "nodeCount": 469,
+        "sourceCount": 217,
+        "testCount": 235,
+        "entrypointCount": 17,
+        "importEdgeCount": 1126,
+        "sourceCycleCount": 0,
+        "untestedSourceCount": 0,
+        "capabilityPathCount": 170,
+        "closedCapabilityPathCount": 170,
+        "layerCount": 23
+      }
+    },
+    {
+      "name": "regression-input-binding",
+      "ok": true,
+      "detail": {
+        "receipts": 230,
+        "buildDigest": "b1f551d5c6ee2f8bc4026ced70c18700afe3dbba9132ae3bb43ffbe978391cd5",
+        "runInputDigest": "be6fca13ede5844378d947e7b4ab0120623e1490c29b68320753c4d757a79b5e"
+      }
+    },
+    {
+      "name": "canonical-metadata",
+      "ok": true,
+      "detail": {
+        "packageVersion": "0.35.0",
+        "lockVersion": "0.35.0",
+        "canonicalGovernance": 11,
+        "mirrorGovernance": 17
+      }
+    },
+    {
+      "name": "offline-lockfile",
+      "ok": true,
+      "detail": null
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "version": "33.55",
+  "status": "PASS",
+  "checkCount": 17,
+  "passed": 17,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "required-artifacts",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "proof-summary",
+      "ok": true,
+      "detail": {
+        "newSignatureCount": 34,
+        "totalChainSignatureCount": 434,
+        "encryptedPackageCount": 10,
+        "custodyEventCount": 8,
+        "ciphertextFileCount": 10,
+        "processCount": 2,
+        "durableWriteCount": 36,
+        "threshold": "2-of-3",
+        "aesGcmVerified": true
+      }
+    },
+    {
+      "name": "proof-ciphertext-evidence",
+      "ok": true,
+      "detail": {
+        "ciphertextFiles": 10
+      }
+    },
+    {
+      "name": "proof-process-evidence",
+      "ok": true,
+      "detail": {
+        "decrypt": 18476,
+        "recovery": 18487
+      }
+    },
+    {
+      "name": "proof-attacks",
+      "ok": true,
+      "detail": {
+        "ciphertextTamperBlocked": true,
+        "aadTamperBlocked": true,
+        "insufficientSharesBlocked": true,
+        "shareCommitmentTamperBlocked": true,
+        "ledgerForkBlocked": true,
+        "witnessCollisionBlocked": true,
+        "dualControlCollapseBlocked": true,
+        "revocationQuorumCollapseBlocked": true,
+        "absolutePathBlocked": true,
+        "externalRelabelBlocked": true,
+        "productionAuthorityMutationBlocked": true
+      }
+    },
+    {
+      "name": "truth-boundary",
+      "ok": true,
+      "detail": {
+        "status": "LOCAL_EVIDENCE_CUSTODY_TRANSPORT_REHEARSAL_ONLY",
+        "externalTopologyObserved": false,
+        "externalCustodians": 0,
+        "externalHumanParticipants": 0,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "g3Blocked": true
+      }
+    },
+    {
+      "name": "independent-verification",
+      "ok": true,
+      "detail": {
+        "version": "33.55",
+        "status": "PASS",
+        "verifiedAt": "2026-07-23T23:57:03.426Z",
+        "proofSha256": "c0f509e91002f0ebe5c822790dbdb1c9e3ed79286a2ef51b36a19fe5726deeaf",
+        "baseProofVerified": true,
+        "newSignatureCount": 34,
+        "totalChainSignatureCount": 434,
+        "encryptedPackageCount": 10,
+        "custodyEventCount": 8,
+        "ciphertextFilesVerified": 10,
+        "processOutputsVerified": 2,
+        "aesGcmVerified": true,
+        "threshold": "2-of-3",
+        "portableEvidencePathsVerified": true,
+        "verdictDigest": "7e76c91242d6be80e8c8a4d42a0247187108f8be1d19c832adec9b9d73d827ac",
+        "truthBoundary": {
+          "status": "LOCAL_EVIDENCE_CUSTODY_TRANSPORT_REHEARSAL_ONLY",
+          "externalTopologyObserved": false,
+          "externalCustodians": 0,
+          "externalHumanParticipants": 0,
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "g3Blocked": true
+        }
+      }
+    },
+    {
+      "name": "focused-regression",
+      "ok": true,
+      "detail": {
+        "tests": 930,
+        "passed": 930,
+        "failed": 0
+      }
+    },
+    {
+      "name": "full-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 240,
+        "tests": 2755,
+        "passed": 2755,
+        "failed": 0
+      }
+    },
+    {
+      "name": "direct-v33-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 55,
+        "tests": 1588,
+        "passed": 1588,
+        "failed": 0
+      }
+    },
+    {
+      "name": "repository-truth-map",
+      "ok": true,
+      "detail": {
+        "sourceModules": 244,
+        "testFiles": 240,
+        "scripts": 668,
+        "packageScripts": 625,
+        "governanceFiles": 11,
+        "externalQualificationKits": 6,
+        "frontierBenchmarkKits": 1,
+        "sovereignInfraFiles": 30,
+        "independentVerifierFiles": 5,
+        "sovereignServices": 12
+      }
+    },
+    {
+      "name": "architecture-integrity",
+      "ok": true,
+      "detail": {
+        "nodeCount": 489,
+        "sourceCount": 227,
+        "testCount": 245,
+        "entrypointCount": 17,
+        "importEdgeCount": 1182,
+        "sourceCycleCount": 0,
+        "untestedSourceCount": 0,
+        "capabilityPathCount": 180,
+        "closedCapabilityPathCount": 180,
+        "layerCount": 23
+      }
+    },
+    {
+      "name": "regression-input-binding",
+      "ok": true,
+      "detail": {
+        "receipts": 240,
+        "buildDigest": "07d1082c70ff3ae037e483628d096303af8c5f7ffe76112e8dcf175f7a8ffd1e",
+        "runInputDigest": "7a46e3e5d9bfed17afc71dfe2b9f1a3f82274543d63459790db397f812d68fc9"
+      }
+    },
+    {
+      "name": "canonical-metadata",
+      "ok": true,
+      "detail": {
+        "canonical": 11,
+        "mirror": 17
+      }
+    },
+    {
+      "name": "offline-lockfile",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "governance-boundary",
+      "ok": true,
+      "detail": {
+        "phase": "External Evidence Custody, Per-Role Encryption, Monotonic Chain of Custody, Dual-Control Decryption, Revocation, Offline Transfer, and Custodian-Loss Recovery",
+        "status": "v33.55-external-evidence-custody-transport-local-rehearsal-production-blocked"
+      }
+    },
+    {
+      "name": "next-action-boundary",
+      "ok": true,
+      "detail": "NA33.55-EXECUTE-EXTERNAL-CUSTODY-TRANSPORT"
+    }
+  ]
+}

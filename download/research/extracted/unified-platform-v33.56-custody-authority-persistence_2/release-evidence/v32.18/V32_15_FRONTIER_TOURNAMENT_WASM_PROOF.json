@@ -1,0 +1,81 @@
+{
+  "version": "32.15",
+  "status": "passed",
+  "tournament": {
+    "schemaVersion": "32.15",
+    "runId": "v32.15-synthetic-tournament",
+    "verdict": "DRY_RUN_VALID",
+    "leaders": [
+      "frontier-peer-fixture"
+    ],
+    "standings": [
+      {
+        "entryId": "frontier-peer-fixture",
+        "blindLabel": "MODEL-002",
+        "normalizedScore": 0.92,
+        "lowerConfidenceBound": 0.482014,
+        "upperConfidenceBound": 0.993013,
+        "tasksScored": 5,
+        "judges": 2,
+        "totalCostMicros": 500
+      },
+      {
+        "entryId": "sol-5.6-fixture",
+        "blindLabel": "MODEL-001",
+        "normalizedScore": 0.81,
+        "lowerConfidenceBound": 0.383742,
+        "upperConfidenceBound": 0.966873,
+        "tasksScored": 5,
+        "judges": 2,
+        "totalCostMicros": 500
+      }
+    ],
+    "findings": [],
+    "worldBestClaim": "not-proven",
+    "reportDigest": "78773307d857bea858f73ac63c61ed6d6c9d4eeba38d971afd1c75bcaf607de7"
+  },
+  "wasmComponent": {
+    "schemaVersion": "32.15",
+    "componentId": "assurance-verifier",
+    "admission": "DRY_RUN_ONLY",
+    "findings": [],
+    "binaryDigest": "5129cf62b9632f82d5af444b8b257a244cde303f5642d6245c3af3c9d7e24fd6",
+    "interfaceDigest": "6a665425682d2489f81424a74db8e2f024caa7374b885dc16f939babea8e1ca8",
+    "manifestDigest": "27b0d604b4e5537fd72ccd2020881e7ffe0f85b5e38998dde495fbdae60032ea",
+    "proofDigest": "4a3650560590fdf6fafc567642c9315f863e642fddbe28131a92b88b14ca871c"
+  },
+  "multiHost": {
+    "schemaVersion": "32.15",
+    "qualificationId": "q-dry",
+    "state": "DRY_RUN_PASSED",
+    "productionQualified": false,
+    "hosts": 2,
+    "providers": 1,
+    "organizations": 1,
+    "findings": [],
+    "reportDigest": "9ccd489cee24d52789f6373d30c93072109281715fc8fbeaba27c606904412c1"
+  },
+  "composition": {
+    "valid": true,
+    "bindings": [
+      "consumer:upp:assurance/verify@1.0.0->assurance-verifier"
+    ],
+    "findings": [],
+    "graphDigest": "58119a8c9d0d599ff176cd1015581cbbcb467a0632d0b10ca0b9e9b3a255cace"
+  },
+  "independentVerifier": {
+    "bundleDigest": "64ba9af8db5325c5b31fedf530aa9d5c87994a172197aa94ec07d5dd86c10d9c",
+    "findings": [],
+    "limitations": [
+      "does-not-replay-provider-api-calls",
+      "does-not-verify-host-network-topology",
+      "validates-delivered-report-integrity-and-fail-closed-semantics"
+    ],
+    "schemaVersion": "32.15",
+    "status": "passed",
+    "verifierDigest": "0049778468e830d7c3545b0c92cbdb3e25b38ed2b1d9c2e024594fb904b1574f"
+  },
+  "productionQualified": false,
+  "worldBestClaim": "not-proven",
+  "reportDigest": "e67ea03dcc0d3c40299e7f9852d7b960c5a945faa2602d13cb16011904d02071"
+}

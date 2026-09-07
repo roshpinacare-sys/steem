@@ -1,0 +1,66 @@
+name: Qodo V24 Resume-Queue Drain
+
+# ADR-005 resume-loop consumer. Every 2 minutes, drains the trigger queue and
+# dispatches the agent pipeline for each queued trigger (/qodo proceed, webhook
+# PR/check-suite events), resuming the correct PR with the processing-list +
+# durable-ack + reaper reliability model. Runs here (GitHub Actions), never in
+# the Cloudflare Worker, because runPipeline needs Node fs and the Worker is a
+# dispatch-only boundary (D1, docs/INVARIANTS.md #12).
+#
+# SOVEREIGN by default: the queue is filesystem-backed (FileDurableStore, zero
+# external services). Upstash Redis is an OPTIONAL adapter, used only when its
+# secrets are present. With no secrets the drain runs reap-only and stays green
+# — no vendor, no credentials required. (Cross-tick durability via a Git ref is
+# the next step; see docs/SOVEREIGN-QUEUE.md.)
+
+on:
+  schedule:
+    - cron: "*/2 * * * *"
+  workflow_dispatch: {}
+
+# Only one drainer at a time (Invariant #12: single consumer of the queue).
+concurrency:
+  group: qodo-drain-trigger-queue
+  cancel-in-progress: false
+
+permissions:
+  contents: write # push the sovereign queue state to refs/qodo/trigger-queue
+  actions: write # needed to dispatch agent-pipeline.yml
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  drain:
+    name: Drain resume queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build agent
+        run: npm run build
+      - name: Drain the trigger queue
+        env:
+          UPSTASH_REDIS_REST_URL:   ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          GITHUB_TOKEN:             ${{ secrets.QODO_GITHUB_TOKEN }}
+          GROQ_API_KEY:             ${{ secrets.GROQ_API_KEY }}
+          REPO:                     ${{ github.repository }}
+          OBJECTIVE:                drain-trigger-queue
+          # Sovereign Step 2: durable queue state lives in a Git ref (no external
+          # service). Active when a token with contents+actions scope is present;
+          # otherwise the drain falls back to the ephemeral filesystem store.
+          QODO_QUEUE_GIT_REF:       refs/qodo/trigger-queue
+          # Optional drain tuning (empty repo vars fall back to code defaults;
+          # staleMs must stay above worst-case dispatch→first-checkpoint latency).
+          QODO_TRIGGER_STALE_MS:     ${{ vars.QODO_TRIGGER_STALE_MS }}
+          QODO_TRIGGER_MAX_ATTEMPTS: ${{ vars.QODO_TRIGGER_MAX_ATTEMPTS }}
+          QODO_TRIGGER_MAX_BATCH:    ${{ vars.QODO_TRIGGER_MAX_BATCH }}
+          NODE_ENV:                 production
+        run: node packages/agent/dist/cli.js --drain-trigger-queue

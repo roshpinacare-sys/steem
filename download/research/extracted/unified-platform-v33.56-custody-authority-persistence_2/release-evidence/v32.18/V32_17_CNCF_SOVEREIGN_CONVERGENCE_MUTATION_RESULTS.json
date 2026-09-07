@@ -1,0 +1,236 @@
+{
+  "version": "32.17",
+  "total": 25,
+  "killed": 25,
+  "survived": 0,
+  "invalid": 0,
+  "baselinePassed": true,
+  "mutants": [
+    {
+      "name": "policy-digest",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 153.951,
+      "causalTest": "causal v32.17 policy digest binding",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 policy digest binding\nnot ok 1 - causal v32.17 policy digest binding\n  ---\n  duration_ms: 2.982057\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:50:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-policy-digest-mismatch'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-policy-digest-mismatch'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:50:173)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 97.07471\n"
+    },
+    {
+      "name": "spiffe-trust-domain",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 154.186,
+      "causalTest": "causal v32.17 SPIFFE trust-domain binding",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 SPIFFE trust-domain binding\nnot ok 1 - causal v32.17 SPIFFE trust-domain binding\n  ---\n  duration_ms: 3.000766\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:51:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-spiffe-trust-domain-denied'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-spiffe-trust-domain-denied'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:51:201)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 98.745608\n"
+    },
+    {
+      "name": "private-uds",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 152.335,
+      "causalTest": "causal v32.17 private UDS transport requirement",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 private UDS transport requirement\nnot ok 1 - causal v32.17 private UDS transport requirement\n  ---\n  duration_ms: 3.092961\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:52:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-private-transport-not-uds'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-private-transport-not-uds'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:52:229)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 98.298058\n"
+    },
+    {
+      "name": "reviewer-independence",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 152.156,
+      "causalTest": "causal v32.17 reviewer independence",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 reviewer independence\nnot ok 1 - causal v32.17 reviewer independence\n  ---\n  duration_ms: 3.203475\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:53:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-independent-review-required'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-independent-review-required'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:53:174)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 96.8782\n"
+    },
+    {
+      "name": "external-runtime-evidence",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 151.357,
+      "causalTest": "causal v32.17 external runtime evidence",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 external runtime evidence\nnot ok 1 - causal v32.17 external runtime evidence\n  ---\n  duration_ms: 2.799395\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:54:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-external-evidence-invalid'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-external-evidence-invalid'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:54:230)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 96.242653\n"
+    },
+    {
+      "name": "production-trust-gate",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 152.928,
+      "causalTest": "causal v32.17 production trust gate",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 production trust gate\nnot ok 1 - causal v32.17 production trust gate\n  ---\n  duration_ms: 2.266369\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:55:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    true !== false\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: false\n  actual: true\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:55:250)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 98.946217\n"
+    },
+    {
+      "name": "publisher-authorization",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 157.435,
+      "causalTest": "causal v32.17 publisher authorization",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 publisher authorization\nnot ok 1 - causal v32.17 publisher authorization\n  ---\n  duration_ms: 5.869238\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:56:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-publisher-authorization-missing'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-publisher-authorization-missing'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:56:498)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 102.307784\n"
+    },
+    {
+      "name": "authorization-validity",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 159.541,
+      "causalTest": "causal v32.17 authorization validity",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 authorization validity\nnot ok 1 - causal v32.17 authorization validity\n  ---\n  duration_ms: 5.869644\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:57:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    false !== true\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:57:404)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 104.197442\n"
+    },
+    {
+      "name": "publisher-signature",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 157.621,
+      "causalTest": "causal v32.17 publisher signature",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 publisher signature\nnot ok 1 - causal v32.17 publisher signature\n  ---\n  duration_ms: 5.848073\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:58:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-publisher-signature-invalid'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-publisher-signature-invalid'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:58:484)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 103.288065\n"
+    },
+    {
+      "name": "reviewer-signature",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 157.171,
+      "causalTest": "causal v32.17 reviewer signature",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 reviewer signature\nnot ok 1 - causal v32.17 reviewer signature\n  ---\n  duration_ms: 6.121303\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:59:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-reviewer-signature-invalid'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-reviewer-signature-invalid'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:59:479)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 102.010687\n"
+    },
+    {
+      "name": "publisher-attestation-lineage",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 159.529,
+      "causalTest": "causal v32.17 publisher attestation lineage",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 publisher attestation lineage\nnot ok 1 - causal v32.17 publisher attestation lineage\n  ---\n  duration_ms: 6.66891\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:60:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-publisher-attestation-lineage-invalid'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-publisher-attestation-lineage-invalid'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:60:757)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 103.159437\n"
+    },
+    {
+      "name": "reviewer-attestation-lineage",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 157.457,
+      "causalTest": "causal v32.17 reviewer attestation lineage",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 reviewer attestation lineage\nnot ok 1 - causal v32.17 reviewer attestation lineage\n  ---\n  duration_ms: 6.273385\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:61:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-reviewer-attestation-lineage-invalid'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-reviewer-attestation-lineage-invalid'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:61:549)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 102.18246\n"
+    },
+    {
+      "name": "attestation-time-order",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 156.267,
+      "causalTest": "causal v32.17 attestation time order",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 attestation time order\nnot ok 1 - causal v32.17 attestation time order\n  ---\n  duration_ms: 6.133167\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:62:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-attestation-time-order-invalid'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-attestation-time-order-invalid'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:62:797)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 101.878726\n"
+    },
+    {
+      "name": "trust-actor-independence",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 154.878,
+      "causalTest": "causal v32.17 trust actor independence",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 trust actor independence\nnot ok 1 - causal v32.17 trust actor independence\n  ---\n  duration_ms: 6.23617\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:63:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   'component-trust-independence-invalid'\n    - ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'component-trust-independence-invalid'\n  actual:\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:63:507)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 101.01801\n"
+    },
+    {
+      "name": "required-block-coverage",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 159.915,
+      "causalTest": "causal v32.17 required-block coverage",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 required-block coverage\nnot ok 1 - causal v32.17 required-block coverage\n  ---\n  duration_ms: 3.041461\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:64:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'DRY_RUN_VALID'\n    - 'REJECTED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECTED'\n  actual: 'DRY_RUN_VALID'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:64:234)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 97.76461\n"
+    },
+    {
+      "name": "organization-diversity",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 157.331,
+      "causalTest": "causal v32.17 organization diversity",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 organization diversity\nnot ok 1 - causal v32.17 organization diversity\n  ---\n  duration_ms: 4.644606\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:65:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'DRY_RUN_VALID'\n    - 'REJECTED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECTED'\n  actual: 'DRY_RUN_VALID'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:65:388)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 101.440035\n"
+    },
+    {
+      "name": "concentration-ceiling",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 150.514,
+      "causalTest": "causal v32.17 concentration ceiling",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 concentration ceiling\nnot ok 1 - causal v32.17 concentration ceiling\n  ---\n  duration_ms: 3.130444\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:66:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'DRY_RUN_VALID'\n    - 'REJECTED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECTED'\n  actual: 'DRY_RUN_VALID'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:66:359)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 95.928107\n"
+    },
+    {
+      "name": "rejected-component-exclusion",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 151.135,
+      "causalTest": "causal v32.17 rejected components excluded",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 rejected components excluded\nnot ok 1 - causal v32.17 rejected components excluded\n  ---\n  duration_ms: 2.975696\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:67:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'DRY_RUN_VALID'\n    - 'REJECTED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'REJECTED'\n  actual: 'DRY_RUN_VALID'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:67:404)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 96.641639\n"
+    },
+    {
+      "name": "failed-conformance",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 152.649,
+      "causalTest": "causal v32.17 failed conformance report",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 failed conformance report\nnot ok 1 - causal v32.17 failed conformance report\n  ---\n  duration_ms: 1.782713\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:68:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    true !== false\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: false\n  actual: true\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:68:185)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 97.527974\n"
+    },
+    {
+      "name": "trace-equivalence",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 150.496,
+      "causalTest": "causal v32.17 conformance trace equivalence",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 conformance trace equivalence\nnot ok 1 - causal v32.17 conformance trace equivalence\n  ---\n  duration_ms: 1.787386\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:69:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    true !== false\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: false\n  actual: true\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:69:193)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 95.67237\n"
+    },
+    {
+      "name": "substitution-coverage",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 156.287,
+      "causalTest": "causal v32.17 substitution coverage",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 substitution coverage\nnot ok 1 - causal v32.17 substitution coverage\n  ---\n  duration_ms: 7.140333\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:70:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'DRY_RUN_PASSED'\n    - 'FAILED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'FAILED'\n  actual: 'DRY_RUN_PASSED'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:70:330)\n    async Test.run (node:internal/test_runner/test:1054:7)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 101.771391\n"
+    },
+    {
+      "name": "rejected-convergence-plan",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 203.984,
+      "causalTest": "causal v32.17 rejected convergence plan",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 rejected convergence plan\nnot ok 1 - causal v32.17 rejected convergence plan\n  ---\n  duration_ms: 56.383059\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:72:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        'building-block-plan-no-valid-topology',\n    -   'cncf-building-block-plan-rejected'\n      ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'building-block-plan-no-valid-topology'\n    1: 'cncf-building-block-plan-rejected'\n  actual:\n    0: 'building-block-plan-no-valid-topology'\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:72:515)\n    async Test.run (node:internal/test_runner/test:1054:7)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 150.036673\n"
+    },
+    {
+      "name": "independent-digest",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 1216.932,
+      "causalTest": "causal v32.17 independent verifier digest",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 independent verifier digest\nnot ok 1 - causal v32.17 independent verifier digest\n  ---\n  duration_ms: 1064.016787\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:82:1'\n  failureType: 'testCodeFailure'\n  error: 'Expected \"actual\" to be strictly unequal to: 0'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 0\n  actual: 0\n  operator: 'notStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:82:164)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1162.519168\n"
+    },
+    {
+      "name": "independent-substitution",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 1295.384,
+      "causalTest": "causal v32.17 independent verifier substitution",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 independent verifier substitution\nnot ok 1 - causal v32.17 independent verifier substitution\n  ---\n  duration_ms: 1139.29529\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:83:1'\n  failureType: 'testCodeFailure'\n  error: 'Expected \"actual\" to be strictly unequal to: 0'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 0\n  actual: 0\n  operator: 'notStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:83:274)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1239.624234\n"
+    },
+    {
+      "name": "independent-production-overclaim",
+      "status": "killed",
+      "returnCode": 1,
+      "durationMs": 1398.408,
+      "causalTest": "causal v32.17 independent verifier production overclaim",
+      "failureObserved": true,
+      "outputTail": "TAP version 13\n# Subtest: causal v32.17 independent verifier production overclaim\nnot ok 1 - causal v32.17 independent verifier production overclaim\n  ---\n  duration_ms: 1240.760609\n  type: 'test'\n  location: '/mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:84:1'\n  failureType: 'testCodeFailure'\n  error: 'Expected \"actual\" to be strictly unequal to: 0'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 0\n  actual: 0\n  operator: 'notStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///mnt/data/v32_18_extract/dist/tests/v32_17-causal-controls.test.js:84:308)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1342.077235\n"
+    }
+  ],
+  "status": "passed"
+}

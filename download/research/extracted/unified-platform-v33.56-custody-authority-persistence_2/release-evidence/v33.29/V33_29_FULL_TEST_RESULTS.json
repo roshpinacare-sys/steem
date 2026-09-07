@@ -1,0 +1,28 @@
+{
+  "version": "33.29",
+  "generatedAt": "2026-07-22T07:30:00.000Z",
+  "status": "passed",
+  "runner": "one-node-process-per-test-file-authoritative-exit-receipt",
+  "testTopologyReason": "Every test file runs in a separate Node process. Four stateless files run concurrently and nineteen stateful or isolation-sensitive files run sequentially. No retry or force-exit is used; a leaking file times out and fails independently.",
+  "totals": {
+    "testFiles": 214,
+    "tests": 1825,
+    "passed": 1825,
+    "failed": 0
+  },
+  "runnerExitCode": 0,
+  "timedOut": false,
+  "forceExitDisabled": true,
+  "retry": false,
+  "durationSeconds": 23.769,
+  "stdoutEvidence": "release-evidence/v33.29/V33_29_FULL_TEST_STDOUT.tap",
+  "stderrEvidence": "release-evidence/v33.29/V33_29_FULL_TEST_STDERR.log",
+  "exitEvidence": "release-evidence/v33.29/V33_29_FULL_TEST_EXIT.txt",
+  "metaEvidence": "release-evidence/v33.29/V33_29_FULL_TEST_META.json",
+  "stdoutSha256": "5401d9f049783e6bb67374d9f39d2109e83c8c5f9ca646717ea7a27f173f71ba",
+  "stderrSha256": "e9b2b0d832e0b5491d2e5e7bcda427c226846dff46d17b2bd8d9e2e416f9aa6c",
+  "topology": "one-node-process-per-test-file-four-parallel-workers-nineteen-sensitive-sequential",
+  "parallelWorkers": 4,
+  "sensitiveFileCount": 19,
+  "productionPromotion": "blocked"
+}

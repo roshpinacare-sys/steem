@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "release": "Titai v11 Adversarial",
+  "generatedAt": "2026-07-10T23:15:18+00:00",
+  "classification": "DEVELOPMENT ONLY",
+  "summary": {
+    "canonical": {
+      "passed": true,
+      "tasks": 57,
+      "claims": 58,
+      "sources": 28,
+      "adrs": 23,
+      "domains": 28,
+      "experiments": 15
+    },
+    "language": {
+      "passed": true,
+      "policy": "English-only and no unintended non-Latin writing systems"
+    },
+    "sourceLint": {
+      "passed": true
+    },
+    "typecheck": {
+      "passed": true
+    },
+    "migrations": {
+      "passed": true,
+      "files": 6,
+      "requiredTables": 12,
+      "method": "pure validator; native driver not loaded"
+    },
+    "safeTests": {
+      "passed": true,
+      "files": 31,
+      "tests": 113,
+      "groups": [
+        46,
+        28,
+        39
+      ]
+    },
+    "v11Focused": {
+      "passed": true,
+      "files": 8,
+      "tests": 32
+    },
+    "baselineEvaluation": {
+      "passed": true,
+      "cases": 8
+    },
+    "durableProof": {
+      "passed": true,
+      "injectedCrash": true,
+      "attempts": 2,
+      "sideEffects": 1,
+      "evidenceHash": "8b205f612c614307ea2e9932811be775b6f3b035dca920ff59eff23fafe0eaa0"
+    },
+    "staticRoast": {
+      "passed": false,
+      "checksPassed": 33,
+      "checksTotal": 34,
+      "open": 1
+    },
+    "roastFindings": {
+      "total": 50,
+      "severity": {
+        "critical": 6,
+        "high": 33,
+        "medium": 11
+      },
+      "status": {
+        "partially_mitigated": 25,
+        "fixed_in_v8": 13,
+        "fixed_in_v10": 6,
+        "open": 1,
+        "environment_blocked": 2,
+        "fixed_in_v11": 3
+      }
+    },
+    "nativeTests": {
+      "passed": false,
+      "blocked": true,
+      "suites": 3,
+      "testsCollected": 0,
+      "reason": "missing better_sqlite3.node binding"
+    },
+    "productionBuild": {
+      "passed": false,
+      "blocked": true,
+      "reason": "bounded 240-second timeout during optimized compilation; no success claim"
+    },
+    "browserE2E": {
+      "passed": false,
+      "blocked": true,
+      "reason": "application build/native binding unavailable"
+    },
+    "accessibilityAndVisualRegression": {
+      "passed": false,
+      "blocked": true,
+      "reason": "browser execution unavailable"
+    }
+  },
+  "evidence": {
+    "testsA": "docs/canonical/evidence/v11/tests-group-a.txt",
+    "testsB": "docs/canonical/evidence/v11/tests-group-b.txt",
+    "testsC": "docs/canonical/evidence/v11/tests-group-c.txt",
+    "native": "docs/canonical/evidence/v11/native-tests.txt",
+    "build": "docs/canonical/evidence/v11/build-final.txt",
+    "evaluation": "docs/canonical/evidence/v11/evaluation.txt",
+    "durable": "docs/canonical/evidence/durable-vertical-slice.json",
+    "traceability": "docs/canonical/evidence/v11-traceability.json",
+    "finalGates": "docs/canonical/evidence/v11/final/"
+  }
+}

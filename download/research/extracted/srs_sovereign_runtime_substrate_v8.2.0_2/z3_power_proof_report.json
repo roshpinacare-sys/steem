@@ -1,0 +1,39 @@
+{
+  "nominal": {
+    "verdict": "sat",
+    "F_total": 1.5,
+    "G_global": 2.0,
+    "risk": 0.5,
+    "Q_bar": 1.2,
+    "overall_safe": true,
+    "islands": [
+      {
+        "name": "APU",
+        "theta": 0.5,
+        "F": 1.0,
+        "ecr": 0.01,
+        "low": 0.0,
+        "high": 1.1,
+        "weights": {
+          "r1": 0.5
+        }
+      }
+    ]
+  },
+  "high_entropy": {
+    "verdict": "unsat",
+    "unsat_core": "ecr_max stress"
+  },
+  "thermal_derating": {
+    "verdict": "sat",
+    "derating": {
+      "f_rpu": 0.5
+    }
+  },
+  "contention_resolution": {
+    "verdict": "sat",
+    "contention_resolution": {
+      "margin": 0.06
+    }
+  }
+}

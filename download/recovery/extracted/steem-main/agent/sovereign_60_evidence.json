@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "startedAt": "2026-09-04T16:09:31.774Z",
+    "note": "Task 60 LIVE: curation-ON + DHF funding contract + Engine market execution"
+  },
+  "updatedAt": "2026-09-04T16:09:41.354Z",
+  "operator": "headcorner",
+  "curationVote": {
+    "status": "live-verified",
+    "author": "cjsdns",
+    "permlink": "2awsh2",
+    "ageMinAtVote": 136,
+    "weight": 10000,
+    "txid": "2dc9875c24710fc6e6a228a2bbc67730a36bf05d",
+    "verified": true,
+    "rshares": "105126576632",
+    "note": "first curation vote \u2014 flywheel ON (was measured 0 ops)"
+  },
+  "dhf": {
+    "createAttempted": true,
+    "feeWall": "Account headcorner does not have sufficient funds for balance adjustment. Required: {\"amount\":\"-39000\",\"nai\":\"@@000000013\",\"precision\":3}, Available: {\"amount\":\"0\",\"nai\":\"@@000000013\",\"precision\":3}",
+    "feeWallMeasured": "create_proposal requires ~39 HBD fee + ACTIVE authority (we hold 0 HBD) \u2014 funding-contract channel exists, wall measured",
+    "ballot": {
+      "status": "live-verified",
+      "proposalId": 0,
+      "subject": "Return Proposal",
+      "signedWith": "soldier:israelnews (fleet energy redistribution)",
+      "voter": "israelnews",
+      "verifiedInHistory": true,
+      "authorityMeasured": "update_proposal_votes on Hive requires ACTIVE authority (posting rejected \u2014 measured) + 234,309,764 RC (operator wall measured) \u2014 cast by the energy-rich soldier",
+      "error": null,
+      "verifiedVia": "condenser_api.list_proposal_votes(by_voter_proposal) \u2192 vote row id=228161 \u00b7 voter=israelnews \u00b7 proposal.id=0 (Return Proposal)"
+    },
+    "treasuryMeasured": {
+      "hiveFundHive": 28426486.719,
+      "hiveFundHbd": 23190472.992
+    },
+    "note": "funding-contract layer: fee wall measured (39 HBD + active), ballot layer LIVE-VERIFIED (fleet energy redistribution cast it)"
+  },
+  "engineBuy": {
+    "status": "filled-verified",
+    "customJsonId": "ssc-mainnet-hive",
+    "errors": [],
+    "symbol": "BEE",
+    "quantity": 0.1,
+    "priceSwaphive": 0.58094,
+    "costSwaphive": 0.0581,
+    "orderInBuyBook": false,
+    "filled": true,
+    "walletBefore": {
+      "swapHive": 2.531471,
+      "bee": 0.760898
+    },
+    "note": "Engine market contract = live smart-contract execution layer we can trade on today"
+  }
+}

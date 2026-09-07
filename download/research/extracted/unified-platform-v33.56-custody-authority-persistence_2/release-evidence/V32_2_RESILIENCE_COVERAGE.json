@@ -1,0 +1,93 @@
+{
+  "version": "32.2",
+  "generatedAt": "2026-07-18T04:10:16.978Z",
+  "status": "PASS",
+  "metrics": {
+    "capabilities": 6,
+    "requiredScenarios": 20,
+    "coveredScenarios": 20,
+    "coveragePercent": 100,
+    "qualifiedMultiHostPercent": 0
+  },
+  "capabilityResults": [
+    {
+      "capabilityId": "durable-runtime",
+      "critical": true,
+      "status": "COVERED",
+      "missingFailureModes": [],
+      "failedFailureModes": [],
+      "localOnlyFailureModes": [
+        "crash-before-commit",
+        "crash-after-commit",
+        "concurrent-duplicate",
+        "dependency-unavailable",
+        "rollback-or-replay"
+      ]
+    },
+    {
+      "capabilityId": "portable-credential-sovereignty",
+      "critical": true,
+      "status": "COVERED",
+      "missingFailureModes": [],
+      "failedFailureModes": [],
+      "localOnlyFailureModes": [
+        "crash-after-commit",
+        "concurrent-duplicate",
+        "stale-or-tampered-evidence",
+        "rollback-or-replay"
+      ]
+    },
+    {
+      "capabilityId": "governed-automation-value-delivery",
+      "critical": true,
+      "status": "COVERED",
+      "missingFailureModes": [],
+      "failedFailureModes": [],
+      "localOnlyFailureModes": [
+        "crash-after-commit",
+        "concurrent-duplicate",
+        "rollback-or-replay"
+      ]
+    },
+    {
+      "capabilityId": "governed-deliberation-campaign-completion",
+      "critical": true,
+      "status": "COVERED",
+      "missingFailureModes": [],
+      "failedFailureModes": [],
+      "localOnlyFailureModes": [
+        "crash-after-commit",
+        "concurrent-duplicate",
+        "rollback-or-replay"
+      ]
+    },
+    {
+      "capabilityId": "audit-completeness-probe",
+      "critical": true,
+      "status": "COVERED",
+      "missingFailureModes": [],
+      "failedFailureModes": [],
+      "localOnlyFailureModes": [
+        "stale-or-tampered-evidence",
+        "rollback-or-replay"
+      ]
+    },
+    {
+      "capabilityId": "payment-safety-ledger",
+      "critical": false,
+      "status": "COVERED",
+      "missingFailureModes": [],
+      "failedFailureModes": [],
+      "localOnlyFailureModes": [
+        "concurrent-duplicate",
+        "stale-or-tampered-evidence",
+        "dependency-unavailable"
+      ]
+    }
+  ],
+  "reportDigest": "bd0a49004ebd2eb82a390a86b71d286a323b2a4572f74815a258c91b091c2c0d",
+  "limitations": [
+    "Most evidence is local-single-host or simulation.",
+    "Qualified multi-host chaos remains a v33 external gate."
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "task": 86,
+  "title": "ynet-delegated-soldier: @ynet connected as army soldier #11 via chain-proven posting anchor",
+  "at": "2026-09-05T17:41:00Z",
+  "connect": {
+    "route": "POST /api/ops/vault/delegated {username:'ynet'}",
+    "verifiedOn": ["steem", "hive"],
+    "anchor": "posting.account_auths ∋ ['headcorner', 1] with weight_threshold 1 — read LIVE from both chains at connect time",
+    "secretsStored": 0,
+    "mode": "operator-delegated",
+    "sealReTaken": true,
+    "daemonRestarted": true,
+    "vaultAccounts": 11,
+    "daemonArmySize": 11,
+    "dryRun": false
+  },
+  "liveProof": {
+    "steem": {
+      "broadcast": "ok",
+      "txid": "ddd9875c1fa0f52c",
+      "chainVerified": true,
+      "block": 109320273,
+      "timestamp": "2026-09-05T17:41:00Z",
+      "rcPct": 99.9
+    },
+    "hive": {
+      "broadcast": "rejected — RC mana floor (deterministic, not a race)",
+      "rc": { "current": 161067163, "needed": 168455383, "max": 5082588664, "pct": 3.2 },
+      "lastLandedPing": { "block": 109621266, "txid": "a2ea7092614035be", "timestamp": "2026-09-04T13:47:06Z" },
+      "note": "mechanism proven live yesterday; voice returns automatically when RC mana recharges past the floor (~hours). Honest gate, not a defect."
+    },
+    "previousSteemPing": { "block": 109285769, "txid": "6b5dd598812a96ac", "timestamp": "2026-09-04T12:48:39Z" }
+  },
+  "mechanism": "Task 57 rescue anchor industrialized: soldier signs posting ops with the operator's posting WIF (required_posting_auths=['ynet'], signed by headcorner) — zero new secrets; owner/active stay unreachable until a future master paste derives 4/4×2 (auto-upgrade path live in vault/master)",
+  "tool": "agent/ynet_rescue_ping.cjs"
+}

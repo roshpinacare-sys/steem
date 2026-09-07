@@ -1,0 +1,30 @@
+{
+  "version": "33.33",
+  "fromEpoch": "<integer>",
+  "toEpoch": "<fromEpoch+1>",
+  "sequenceFloor": "<current-anchor-sequence>",
+  "predecessorAnchorDigest": "<sha256>",
+  "predecessorCheckpointDigest": "<sha256>",
+  "quorum": 3,
+  "retainedWitnessKeyIds": [
+    "<at-least-3-current-key-ids>"
+  ],
+  "replacedWitnessKeyIds": [
+    "<at-most-2-current-key-ids>"
+  ],
+  "nextWitnesses": [
+    {
+      "witnessId": "<id>",
+      "keyId": "<id>",
+      "keyFingerprint": "<sha256>",
+      "organizationId": "<independent-org>",
+      "hostId": "<protected-host>"
+    }
+  ],
+  "rotationAuthority": {
+    "keyId": "<id>",
+    "organizationId": "<independent-org>",
+    "hostId": "<protected-host>"
+  },
+  "productionAuthority": "NONE"
+}

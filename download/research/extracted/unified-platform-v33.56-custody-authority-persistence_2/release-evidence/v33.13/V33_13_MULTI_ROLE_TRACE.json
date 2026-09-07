@@ -1,0 +1,303 @@
+{
+  "version": "33.13",
+  "roleKeyIds": {
+    "admission": "admission-v33.13-proof",
+    "capability": "capability-v33.13-proof",
+    "runtime": "runtime-v33.13-proof",
+    "orchestrator": "orchestrator-v33.13-proof",
+    "verifier": "verifier-v33.13-proof"
+  },
+  "capabilityAttestation": {
+    "payload": {
+      "version": "33.13",
+      "attestationId": "host-proof",
+      "generatedAt": "2026-07-21T09:41:05.862Z",
+      "validUntil": "2026-07-21T09:42:06.862Z",
+      "platform": "linux",
+      "architecture": "x64",
+      "kernelRelease": "4.4.0",
+      "localNamespaceRuntime": "VERIFIED_AVAILABLE",
+      "openat2Snapshot": "UNAVAILABLE_FAIL_CLOSED",
+      "seccompFilter": "UNAVAILABLE_FAIL_CLOSED",
+      "cgroupV2": "UNAVAILABLE_FAIL_CLOSED",
+      "secondRuntimeImplementation": "UNAVAILABLE_FAIL_CLOSED",
+      "externalIndependentWitness": "UNAVAILABLE_FAIL_CLOSED",
+      "productionPromotion": "blocked",
+      "limitations": [
+        "HOST_CAPABILITY_ATTESTATION_IS_LOCAL_ONLY",
+        "OPENAT2_REQUIRES_SEPARATE_EXECUTED_PROBE",
+        "SECCOMP_REQUIRES_SEPARATE_EXECUTED_PROBE",
+        "CGROUP_V2_REQUIRES_WRITABLE_DELEGATED_SUBTREE",
+        "SECOND_RUNTIME_REQUIRES_EXTERNAL_QUALIFICATION",
+        "NO_EXTERNAL_INDEPENDENT_WITNESS"
+      ],
+      "attestationDigest": "3cd6d32c524bf740c2ed0830f3b181adce0f33212fb13a609d2039f94034c159"
+    },
+    "issuerKeyId": "capability-v33.13-proof",
+    "algorithm": "Ed25519",
+    "signature": "Jz42hA7P0PazehAXOIoetcCTqUAwdkBtJ7hpBjTLYqo9UiDDRAn74n4c6G8IEisMn0-YEz1iNGhubge9bAW-Bw"
+  },
+  "snapshotBefore": {
+    "version": "33.13",
+    "method": "POSIX_O_NOFOLLOW_FSTAT_DOUBLE_CHECK_REFERENCE",
+    "root": "/tmp/v33-13-proof-thjfDR",
+    "files": [
+      {
+        "path": "entry.sh",
+        "type": "file",
+        "device": 17,
+        "inode": 5697,
+        "mode": 33188,
+        "sizeBytes": 39,
+        "contentSha256": "6815548478caca350a9a9afa52697e6834ad8c38110587f9c456af70c6fbf94b"
+      },
+      {
+        "path": "package.json",
+        "type": "file",
+        "device": 17,
+        "inode": 5696,
+        "mode": 33188,
+        "sizeBytes": 95,
+        "contentSha256": "49fd34f97f579ae9b82ab0a5f9240f7bf8c704e1c81d6431d111819eb9825c92"
+      },
+      {
+        "path": "README.md",
+        "type": "file",
+        "device": 17,
+        "inode": 5695,
+        "mode": 33188,
+        "sizeBytes": 21,
+        "contentSha256": "52991cba530eb59f623ea323a03cb53d05fd335db57090fe41a488ac914b6d60"
+      }
+    ],
+    "fileCount": 3,
+    "totalBytes": 155,
+    "openat2Used": false,
+    "raceHardening": "PARTIAL_REFERENCE_ONLY",
+    "manifestDigest": "a7a5bd99cbbf824dacc9153bc9de41c776bf850a4ce328ed706216754212c580"
+  },
+  "snapshotAfter": {
+    "version": "33.13",
+    "method": "POSIX_O_NOFOLLOW_FSTAT_DOUBLE_CHECK_REFERENCE",
+    "root": "/tmp/v33-13-proof-thjfDR",
+    "files": [
+      {
+        "path": "entry.sh",
+        "type": "file",
+        "device": 17,
+        "inode": 5697,
+        "mode": 33188,
+        "sizeBytes": 39,
+        "contentSha256": "6815548478caca350a9a9afa52697e6834ad8c38110587f9c456af70c6fbf94b"
+      },
+      {
+        "path": "package.json",
+        "type": "file",
+        "device": 17,
+        "inode": 5696,
+        "mode": 33188,
+        "sizeBytes": 95,
+        "contentSha256": "49fd34f97f579ae9b82ab0a5f9240f7bf8c704e1c81d6431d111819eb9825c92"
+      },
+      {
+        "path": "README.md",
+        "type": "file",
+        "device": 17,
+        "inode": 5695,
+        "mode": 33188,
+        "sizeBytes": 21,
+        "contentSha256": "52991cba530eb59f623ea323a03cb53d05fd335db57090fe41a488ac914b6d60"
+      }
+    ],
+    "fileCount": 3,
+    "totalBytes": 155,
+    "openat2Used": false,
+    "raceHardening": "PARTIAL_REFERENCE_ONLY",
+    "manifestDigest": "a7a5bd99cbbf824dacc9153bc9de41c776bf850a4ce328ed706216754212c580"
+  },
+  "runtimeReceipt": {
+    "payload": {
+      "version": "33.12",
+      "receiptId": "receipt-v33.13-proof",
+      "tenantId": "tenant-proof",
+      "repositoryId": "repo-proof",
+      "admissionReportDigest": "482720a2c3ee283b9c9672249e81c0aab777d563e82fc720e8472bc151850493",
+      "policyDigest": "caa123f955ec67e08195ccf5f8639a08658e886f85c51552919e7b8f5b9f3f5c",
+      "entrypointPath": "entry.sh",
+      "entrypointDigest": "6815548478caca350a9a9afa52697e6834ad8c38110587f9c456af70c6fbf94b",
+      "argumentsDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "runtime": "LOCAL_LINUX_USER_MOUNT_NET_PID_NAMESPACE_REFERENCE",
+      "evidenceClass": "LOCAL_LINUX_NAMESPACE_ISOLATION_REFERENCE",
+      "startedAt": "2026-07-21T09:41:06.862Z",
+      "completedAt": "2026-07-21T09:41:08.438Z",
+      "durationMs": 866,
+      "termination": "COMPLETED",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "sourceDigestBefore": "ddfe733c18d6ef6f2aa8e2204f2f80f96e25e29858b610c688151746e4dff542",
+      "sourceDigestAfter": "ddfe733c18d6ef6f2aa8e2204f2f80f96e25e29858b610c688151746e4dff542",
+      "sourceUnchanged": true,
+      "namespaceProbePassed": true,
+      "networkDisabledObserved": true,
+      "hostFilesystemBlockedObserved": true,
+      "procRootEscapeBlockedObserved": true,
+      "inputReadOnlyObserved": true,
+      "workspaceWritableObserved": true,
+      "runtimeUidObserved": 65534,
+      "noNewPrivilegesObserved": true,
+      "capabilitiesDroppedObserved": true,
+      "environmentSanitizedObserved": true,
+      "processLimitObserved": false,
+      "fileSizeLimitObserved": false,
+      "memoryLimitObserved": false,
+      "stdoutSha256": "b7f81f02d2f0be40dea4d29defa81ae9c2dd57b6eb52cd0c6046f4d6467dd90d",
+      "stderrSha256": "56297d4a9e6048fc56404fbb55b0aaac0cda511e9507cafb5676424be9640bb0",
+      "stdoutBytes": 299,
+      "stderrBytes": 68,
+      "stdoutExcerpt": "V33_12_PROBE_UID=65534\nV33_12_PROBE_NO_NEW_PRIVS=1\nV33_12_PROBE_CAP_EFF=0000000000000000\nV33_12_PROBE_NETWORK=BLOCKED\nV33_12_PROBE_HOST_FS=BLOCKED\nV33_12_PROBE_PROC_ROOT=BLOCKED\nV33_12_PROBE_INPUT_WRITE=BLOCKED\nV33_12_PROBE_WORKSPACE_WRITE=ALLOWED\nV33_12_PROBE_ENVIRONMENT=SANITIZED\nV33_13_PROOF_OK\n",
+      "stderrExcerpt": "/bin/sh: can't create /input/.v33-12-write-probe: Permission denied\n",
+      "runtimeRootDestroyed": true,
+      "workspaceDestroyed": true,
+      "commandsExecuted": 1,
+      "externalEffectsExecuted": 0,
+      "secretsInjected": 0,
+      "productionPromotion": "blocked",
+      "externalQualification": "not_executed",
+      "limitations": [
+        "LOCAL_SINGLE_HOST_REFERENCE_ONLY",
+        "NO_SECCOMP_PROFILE",
+        "NO_CGROUP_V2_ENFORCEMENT",
+        "NO_MICROVM_OR_HARDWARE_ISOLATION",
+        "NO_INDEPENDENT_EXTERNAL_REVIEW",
+        "NO_PRODUCTION_AUTHORITY",
+        "SHELL_ENTRYPOINTS_ONLY",
+        "LOCAL_KERNEL_AND_HOST_TRUSTED",
+        "NETWORK_BLOCK_OBSERVED_IN_EMPTY_NAMESPACE_NOT_INDEPENDENTLY_WITNESSED",
+        "RLIMITS_NOT_CGROUP_ACCOUNTING"
+      ],
+      "receiptDigest": "0c42185b6c4763b83e2c4b0b8c73601d15126f9600d517bcced8787a2f29a9c7"
+    },
+    "issuerKeyId": "runtime-v33.13-proof",
+    "algorithm": "Ed25519",
+    "signature": "29h0LUsQUZRxIiqI8u5pjIiIXhb5RQuLa3zW_WCvOdfj1EGvXPNTv_B6Xsd_29-I9yjOyfETH7KUW0oy12wHAA"
+  },
+  "adapterEvidence": {
+    "payload": {
+      "version": "33.13",
+      "adapterId": "local-reference",
+      "adapterImplementation": "LOCAL_LINUX_NAMESPACE_V33_12_ADAPTER",
+      "capabilityAttestationDigest": "3cd6d32c524bf740c2ed0830f3b181adce0f33212fb13a609d2039f94034c159",
+      "runtimeReceiptDigest": "0c42185b6c4763b83e2c4b0b8c73601d15126f9600d517bcced8787a2f29a9c7",
+      "executedAt": "2026-07-21T09:41:08.438Z",
+      "externalEffectsExecuted": 0,
+      "productionPromotion": "blocked",
+      "evidenceDigest": "9636fd66c20bdabb60dc08ae4f1c5c03774c7ddf70c3535f791f80a507f37d6a"
+    },
+    "issuerKeyId": "runtime-v33.13-proof",
+    "algorithm": "Ed25519",
+    "signature": "0KoPWFjMUw20GEBbaLUY6P--_n7aBiz5uCTO9YxguCvzfm1EH8QjgvEPBCJSEA35F6AA61Eq3wG0E3tyEivdCA"
+  },
+  "bundle": {
+    "payload": {
+      "version": "33.13",
+      "bundleId": "bundle-v33.13-proof",
+      "tenantId": "tenant-proof",
+      "repositoryId": "repo-proof",
+      "capabilityAttestationDigest": "3cd6d32c524bf740c2ed0830f3b181adce0f33212fb13a609d2039f94034c159",
+      "snapshotManifestBeforeDigest": "a7a5bd99cbbf824dacc9153bc9de41c776bf850a4ce328ed706216754212c580",
+      "snapshotManifestAfterDigest": "a7a5bd99cbbf824dacc9153bc9de41c776bf850a4ce328ed706216754212c580",
+      "sourceStable": true,
+      "adapterEvidenceDigest": "9636fd66c20bdabb60dc08ae4f1c5c03774c7ddf70c3535f791f80a507f37d6a",
+      "runtimeReceiptDigest": "0c42185b6c4763b83e2c4b0b8c73601d15126f9600d517bcced8787a2f29a9c7",
+      "admissionSignerId": "admission-v33.13-proof",
+      "capabilitySignerId": "capability-v33.13-proof",
+      "runtimeSignerId": "runtime-v33.13-proof",
+      "orchestratorSignerId": "orchestrator-v33.13-proof",
+      "separationOfDutiesSatisfied": true,
+      "evidenceClass": "LOCAL_REFERENCE_MULTI_ROLE_QUALIFICATION",
+      "openat2Qualified": false,
+      "seccompQualified": false,
+      "cgroupV2Qualified": false,
+      "secondRuntimeQualified": false,
+      "multiHostQualified": false,
+      "productionPromotion": "blocked",
+      "externalQualification": "not_executed",
+      "limitations": [
+        "DESCRIPTOR_PINNING_IS_PARTIAL_WITHOUT_OPENAT2",
+        "LOCAL_NAMESPACE_RUNTIME_DELEGATES_TO_V33_12_REFERENCE",
+        "NO_SECCOMP_EXECUTED_PROOF",
+        "NO_CGROUP_V2_EXECUTED_PROOF",
+        "NO_SECOND_RUNTIME",
+        "NO_MULTI_HOST",
+        "NO_EXTERNAL_WITNESS"
+      ],
+      "bundleDigest": "68360b117967bc21ce084e029e999d937f770ccd104b8f3fa8375a94de912dcd"
+    },
+    "issuerKeyId": "orchestrator-v33.13-proof",
+    "algorithm": "Ed25519",
+    "signature": "L8AYYCDrjzEdijJd42tg1eZGqLlenFOom4IjtukdWhxI-Ae4tFeqvMKlvXypIA6QpsaHyehVCAUMEjJCN9UJCA"
+  },
+  "verdict": {
+    "payload": {
+      "version": "33.13",
+      "verdictId": "verdict-v33.13-proof",
+      "bundleDigest": "68360b117967bc21ce084e029e999d937f770ccd104b8f3fa8375a94de912dcd",
+      "runtimeReceiptDigest": "0c42185b6c4763b83e2c4b0b8c73601d15126f9600d517bcced8787a2f29a9c7",
+      "status": "REFERENCE_QUALIFIED",
+      "promotionCeiling": "research",
+      "verifierSignerId": "verifier-v33.13-proof",
+      "independentFromAdmission": true,
+      "independentFromChallenge": true,
+      "independentFromCapability": true,
+      "independentFromRuntime": true,
+      "independentFromOrchestrator": true,
+      "unsupportedControls": [
+        "OPENAT2",
+        "SECCOMP",
+        "CGROUP_V2",
+        "SECOND_RUNTIME",
+        "MULTI_HOST",
+        "EXTERNAL_WITNESS"
+      ],
+      "productionPromotion": "blocked",
+      "externalQualification": "not_executed",
+      "verifiedAt": "2026-07-21T09:41:07.862Z",
+      "verdictDigest": "a80f2d88faa13c0e85cba8a54f251a77115c34021df27e790f3274d45d014955"
+    },
+    "issuerKeyId": "verifier-v33.13-proof",
+    "algorithm": "Ed25519",
+    "signature": "QfCD85W1H-qYFJL1HQFNnAWuIweMnGE3vUxmASJMJu7j4m-0XvJ6s6DEhzX4Tlwn4aW2rp_bB6oQf1kSz8s6Dw"
+  },
+  "selfVerdict": {
+    "payload": {
+      "version": "33.13",
+      "verdictId": "self-verdict-v33.13-proof",
+      "bundleDigest": "68360b117967bc21ce084e029e999d937f770ccd104b8f3fa8375a94de912dcd",
+      "runtimeReceiptDigest": "0c42185b6c4763b83e2c4b0b8c73601d15126f9600d517bcced8787a2f29a9c7",
+      "status": "REJECTED",
+      "promotionCeiling": "research",
+      "verifierSignerId": "runtime-v33.13-proof",
+      "independentFromAdmission": true,
+      "independentFromChallenge": true,
+      "independentFromCapability": true,
+      "independentFromRuntime": false,
+      "independentFromOrchestrator": true,
+      "unsupportedControls": [
+        "OPENAT2",
+        "SECCOMP",
+        "CGROUP_V2",
+        "SECOND_RUNTIME",
+        "MULTI_HOST",
+        "EXTERNAL_WITNESS"
+      ],
+      "productionPromotion": "blocked",
+      "externalQualification": "not_executed",
+      "verifiedAt": "2026-07-21T09:41:07.862Z",
+      "verdictDigest": "8d9751e2db7b3ec78bc0b6e744841be179175180e7b09f3cd7773a9985f4a2bb"
+    },
+    "issuerKeyId": "runtime-v33.13-proof",
+    "algorithm": "Ed25519",
+    "signature": "VvDDDRTcaJviDL9OyBcuH0ytffRCmttORYORor2s8_OGOZrACgp7uJAjRnGACXsl4oLUzHV4DjBB_nqiE4AtAg"
+  }
+}

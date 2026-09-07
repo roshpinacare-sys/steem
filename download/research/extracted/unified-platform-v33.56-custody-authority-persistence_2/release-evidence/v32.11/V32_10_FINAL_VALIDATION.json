@@ -1,0 +1,91 @@
+{
+  "version": "32.10",
+  "generatedAt": "2026-07-19T09:31:01.324Z",
+  "status": "passed",
+  "classification": "local-execution-assurance-with-external-blockers",
+  "compiledArtifactDigest": "f081dcd653d6fd66a7fadd7a705c0ffd809955663de4204cedc6080c2dbd96f2",
+  "environment": {
+    "ci": true,
+    "machine": "x86_64",
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "runnerArch": "",
+    "runnerOs": "",
+    "system": "Linux"
+  },
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "packageLockDigest": "af225b179455c27e134458f15726c13bd3230e534a0d4d4dd04f2b5c5174084d",
+  "sourceDigest": "0efb7118e728c0eec880575df81aa8a44c837e2ac5b38c326d6bea24a746b2be",
+  "testFilesDigest": "8bc184a86d9955952ac4dd5162aa76abda98dd7027662650382672fdf376f2c6",
+  "testManifestDigest": "79509e2cf2bdbc9939e551dc02578dc47f525574b9dd32ee118e5b89f44baf62",
+  "assertions": {
+    "oneExecutionIdentity": true,
+    "fullRegressionPassed": true,
+    "coveragePreserved": true,
+    "qualityClean": true,
+    "architectureClosed": true,
+    "mutationsAuthentic": true,
+    "nativeSarifExecuted": true,
+    "localSignatureVerified": true,
+    "nativePolicyExecuted": true,
+    "boundedModelExecuted": true,
+    "localFuzzExecuted": true,
+    "localWitnessExecuted": true,
+    "truthBoundaryPreserved": true,
+    "administratorBoundaryExplicit": true
+  },
+  "results": {
+    "tests": {
+      "total": 899,
+      "passed": 899,
+      "failed": 0,
+      "wallDurationMs": 23495.634
+    },
+    "coverage": {
+      "file": "all files",
+      "linePercent": 99.49,
+      "branchPercent": 96.05,
+      "functionPercent": 98.66
+    },
+    "quality": {
+      "files": 144,
+      "testsDeclared": 899,
+      "assertCalls": 2755
+    },
+    "architecture": {
+      "nodeCount": 313,
+      "sourceCount": 149,
+      "testCount": 149,
+      "entrypointCount": 15,
+      "importEdgeCount": 764,
+      "sourceCycleCount": 0,
+      "untestedSourceCount": 0,
+      "capabilityPathCount": 81,
+      "closedCapabilityPathCount": 81,
+      "layerCount": 21
+    },
+    "mutations": 12,
+    "localExecution": {
+      "securityFindings": 0,
+      "signatureVerified": true,
+      "policy": "PASS",
+      "modelStates": 37,
+      "fuzzExecutions": 20000,
+      "fuzzPaths": 25,
+      "witnessEntries": 5,
+      "administratorInputsReady": 0
+    }
+  },
+  "readiness": "Validated Integrated Pilot — six local assurance lanes executed",
+  "productionPromotion": "blocked",
+  "externalQualification": "not executed",
+  "administratorActionsRequired": [
+    "external-transparency-log",
+    "independent-witness",
+    "postgresql-ha-pitr",
+    "hsm-kms",
+    "human-pilot",
+    "independent-review",
+    "multi-host-slo"
+  ]
+}

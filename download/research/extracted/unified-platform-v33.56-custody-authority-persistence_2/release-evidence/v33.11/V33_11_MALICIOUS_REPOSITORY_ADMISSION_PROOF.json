@@ -1,0 +1,39 @@
+{
+  "version": "33.11",
+  "status": "LOCAL_MALICIOUS_REPOSITORY_ADMISSION_CAMPAIGN_PASSED",
+  "evidenceClass": "LOCAL_MALICIOUS_REPOSITORY_ADMISSION",
+  "repositoryCount": 20,
+  "quarantinedRepositories": 20,
+  "signedReportsVerified": 20,
+  "sourceRepositoriesUnchanged": 20,
+  "findingKindsCovered": 11,
+  "coveredFindingKinds": [
+    "ACTIVE_GIT_HOOK",
+    "EXECUTABLE_SCRIPT",
+    "MALFORMED_MANIFEST",
+    "NATIVE_OR_BINARY_ARTIFACT",
+    "OVERSIZED_FILE",
+    "PROMPT_INJECTION",
+    "SECRET_CANDIDATE",
+    "SUBMODULE",
+    "SYMLINK",
+    "UNSAFE_DEPENDENCY_LOCATOR",
+    "UNSAFE_LIFECYCLE_SCRIPT"
+  ],
+  "commandsExecuted": 0,
+  "hooksExecuted": 0,
+  "filesModified": 0,
+  "externalEffectsExecuted": 0,
+  "qualifiedIsolationExecuted": false,
+  "maliciousCodeExecuted": false,
+  "g4Status": "in-progress-not-passed",
+  "productionPromotion": "blocked",
+  "limitations": [
+    "static-and-metadata-admission-only",
+    "no-qualified-runtime-isolation",
+    "no-container-or-microvm-execution",
+    "synthetic-malicious-corpus",
+    "no-independent-external-red-team"
+  ],
+  "proofDigest": "3c005b6763c7b243086fa86932c0f9956d73abe564d55f5e4dc55b01f10fa06f"
+}

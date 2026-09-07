@@ -1,0 +1,148 @@
+{
+  "at": "2026-09-06T18:39:06.280Z",
+  "task": "104",
+  "rootCause": "recon102 effects lost to ghost lineage — archive gaps (703-709 + slid blocks) make full replay reject the old ops; live state never carried them. Re-applied against LIVE measured state with fresh refs.",
+  "allMatch": true,
+  "retiredDormant": true,
+  "before": {
+    "WBTC": {
+      "sym": "WBTC",
+      "before": {
+        "supply": 59,
+        "locked": 60,
+        "hcBal": 52,
+        "poolA": 7,
+        "poolB": 9001,
+        "lpSupply": 13349
+      },
+      "pulls": [
+        {
+          "sharesµ": 6674,
+          "fracA": 3,
+          "fracB": 4500
+        },
+        {
+          "sharesµ": 3337,
+          "fracA": 1,
+          "fracB": 2250
+        }
+      ],
+      "burnµ": 56,
+      "supplyAfter": 3,
+      "releaseµ": 57
+    },
+    "WETH": {
+      "sym": "WETH",
+      "before": {
+        "supply": 59,
+        "locked": 60,
+        "hcBal": 52,
+        "poolA": 7,
+        "poolB": 7201,
+        "lpSupply": 12573
+      },
+      "pulls": [
+        {
+          "sharesµ": 6286,
+          "fracA": 3,
+          "fracB": 3600
+        },
+        {
+          "sharesµ": 3143,
+          "fracA": 1,
+          "fracB": 1800
+        }
+      ],
+      "burnµ": 56,
+      "supplyAfter": 3,
+      "releaseµ": 57
+    },
+    "WXRP": {
+      "sym": "WXRP",
+      "before": {
+        "supply": 39,
+        "locked": 40,
+        "hcBal": 37,
+        "poolA": 2,
+        "poolB": 2401,
+        "lpSupply": 3879
+      },
+      "pulls": [
+        {
+          "sharesµ": 1939,
+          "fracA": 0,
+          "fracB": 1200
+        },
+        {
+          "sharesµ": 970,
+          "fracA": 1,
+          "fracB": 600
+        }
+      ],
+      "burnµ": 38,
+      "supplyAfter": 1,
+      "releaseµ": 39
+    },
+    "WDOGE": {
+      "sym": "WDOGE",
+      "before": {
+        "supply": 40,
+        "locked": 40,
+        "hcBal": 27,
+        "poolA": 13,
+        "poolB": 901,
+        "lpSupply": 15287
+      },
+      "pulls": [
+        {
+          "sharesµ": 7643,
+          "fracA": 6,
+          "fracB": 450
+        },
+        {
+          "sharesµ": 3822,
+          "fracA": 3,
+          "fracB": 225
+        }
+      ],
+      "burnµ": 36,
+      "supplyAfter": 4,
+      "releaseµ": 36
+    }
+  },
+  "after": {
+    "WBTC": {
+      "supply": 3,
+      "locked": 3,
+      "dormant": true
+    },
+    "WETH": {
+      "supply": 3,
+      "locked": 3,
+      "dormant": true
+    },
+    "WXRP": {
+      "supply": 1,
+      "locked": 1,
+      "dormant": true
+    },
+    "WDOGE": {
+      "supply": 4,
+      "locked": 4,
+      "dormant": true
+    }
+  },
+  "missions": {
+    "RECON-104a": {
+      "status": "applied",
+      "ok": 8,
+      "total": 8
+    },
+    "RECON-104b": {
+      "status": "applied",
+      "ok": 8,
+      "total": 8
+    }
+  },
+  "summaryHe": "פיוס-יחידות שני (104): התגלה שהפיוס-הקודם (102) אבד-לליניאגת-רוח-רפאים — הארכיון אינו-עד-שלם (בלוקים-שהחליקו בתקופת-ה-heal) ולכן-replay-מלא דחה-את-ה-ops-הישנים והחזיר-את-הסינתטיקה לערכי-הניפוח. הפיוס-הזה רץ-נגד-המצב-החי-הנמדד-בפועל (refs-חדשים recon104:*) — ארבעת-הסינתטיקה (WBTC·WETH·WXRP·WDOGE) שרפו-ושוחררו-עד locked=supply=אבק-µ; האימות=מדידת-הספר-עצמו. חמשת-המטבעות-האמיתיים (WTRX·WBLURT·WSBD·PHIVE·ENERGY) אינם-נוגעים."
+}

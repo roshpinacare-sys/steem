@@ -1,0 +1,7 @@
+import { describe,expect,it } from "vitest";
+import { CapabilityRegistry } from "@/lib/capabilities/registry";
+import { packageFixture } from "./v18-fixtures";
+describe("v18 capability registry",()=>{
+ it("requires qualification evidence and separate approval",()=>{const f=packageFixture(),r=new CapabilityRegistry("2.2.0");r.trustPublisher(f.trust);const p=r.importPackage({manifest:f.manifest,files:f.files,tenantId:"tenant-a",workspaceId:"workspace-a",ownerId:"builder",actorId:"builder"});r.addEvidence(p.key,{id:"t",kind:"test",hash:"1".repeat(64),status:"passed"},"tester");r.addEvidence(p.key,{id:"e",kind:"evaluation",hash:"2".repeat(64),status:"passed"},"tester");r.addEvidence(p.key,{id:"s",kind:"security",hash:"3".repeat(64),status:"passed"},"critic");r.qualify(p.key,"verifier");expect(()=>r.install(p.key,"builder","builder")).toThrow("builder_approver_collision");r.install(p.key,"builder","operator");r.activate(p.key,"operator");expect(r.get(p.key)?.state).toBe("active");r.revoke(p.key,"operator","test");expect(r.get(p.key)?.state).toBe("revoked");});
+ it("revokes every package signed by a revoked publisher",()=>{const f=packageFixture(),r=new CapabilityRegistry("2.2.0");r.trustPublisher(f.trust);const p=r.importPackage({manifest:f.manifest,files:f.files,tenantId:"tenant-a",workspaceId:"workspace-a",ownerId:"a",actorId:"a"});r.revokePublisher(f.trust.publisherId,f.trust.keyId,"admin");expect(r.get(p.key)?.state).toBe("revoked");});
+});

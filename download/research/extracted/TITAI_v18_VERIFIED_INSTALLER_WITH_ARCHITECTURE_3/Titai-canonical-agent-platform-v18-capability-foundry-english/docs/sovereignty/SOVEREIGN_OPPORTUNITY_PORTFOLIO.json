@@ -1,0 +1,605 @@
+{
+  "generatedAt": "2026-07-11T10:30:00.000Z",
+  "candidates": [
+    {
+      "id": "SOV-OPP-001",
+      "title": "Zero-key deterministic core",
+      "currentLimitation": "Core startup previously depended on configured provider paths.",
+      "sovereignMechanism": "Preserve a local runtime contract and deterministic no-network adapter.",
+      "externalDependencyReduced": "Commercial model API key",
+      "newRisks": [
+        "Any generative quality claim would be false."
+      ],
+      "implementationEffort": "Low",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Low",
+      "experiment": "No key and no network attempt; complete artifact, verifier, backup, restore.",
+      "successCriteria": "No key and no network attempt; complete artifact, verifier, backup, restore.",
+      "killCriteria": "Remove if it encourages production use without a real model benchmark.",
+      "priorityScore": 8.4,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-002",
+      "title": "Local CPU model adapter",
+      "currentLimitation": "Local model profiles exist without a verified inference runtime.",
+      "sovereignMechanism": "Add a replaceable local inference adapter with artifact and hardware validation.",
+      "externalDependencyReduced": "Remote model provider",
+      "newRisks": [
+        "Model runtime binaries and licenses expand supply-chain risk."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Execute a bounded benchmark with a hashed model artifact.",
+      "successCriteria": "Execute a bounded benchmark with a hashed model artifact.",
+      "killCriteria": "Kill if target hardware cannot meet latency or quality floor.",
+      "priorityScore": 4.83,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-003",
+      "title": "Local GPU model adapter",
+      "currentLimitation": "GPU nodes are not first-class execution targets.",
+      "sovereignMechanism": "Add a GPU-capable adapter and VRAM feasibility gate.",
+      "externalDependencyReduced": "Remote provider and CPU latency",
+      "newRisks": [
+        "Driver and CUDA/ROCm dependencies may reduce portability."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Measured load, tokens/s, VRAM, failure behavior.",
+      "successCriteria": "Measured load, tokens/s, VRAM, failure behavior.",
+      "killCriteria": "Kill if driver/runtime provenance cannot be reproduced.",
+      "priorityScore": 4.76,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-004",
+      "title": "Local embedding adapter",
+      "currentLimitation": "Memory retrieval is lexical or dependent on optional external models.",
+      "sovereignMechanism": "Create local embedding adapter with rebuildable index.",
+      "externalDependencyReduced": "Remote embedding API",
+      "newRisks": [
+        "Embedding quality and model artifact governance."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Rebuild index from canonical memories and pass deletion tests.",
+      "successCriteria": "Rebuild index from canonical memories and pass deletion tests.",
+      "killCriteria": "Kill if index becomes authoritative or undeletable.",
+      "priorityScore": 6.7,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-005",
+      "title": "Local reranking",
+      "currentLimitation": "Semantic retrieval lacks a locally measured reranker.",
+      "sovereignMechanism": "Add local reranking behind a budgeted adapter.",
+      "externalDependencyReduced": "Remote reranking API",
+      "newRisks": [
+        "Additional latency and model storage."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Improve retrieval precision without unsafe-memory increase.",
+      "successCriteria": "Improve retrieval precision without unsafe-memory increase.",
+      "killCriteria": "Kill if quality gain is below threshold or latency doubles.",
+      "priorityScore": 6.6,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-006",
+      "title": "Memory portability bundle",
+      "currentLimitation": "Memory lifecycle was database-specific.",
+      "sovereignMechanism": "Open hash-bound export/import with scope and conflict detection.",
+      "externalDependencyReduced": "Proprietary memory service",
+      "newRisks": [
+        "Large exports may expose sensitive content."
+      ],
+      "implementationEffort": "Low",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Low",
+      "experiment": "Selective tenant restore with duplicates and conflicts detected.",
+      "successCriteria": "Selective tenant restore with duplicates and conflicts detected.",
+      "killCriteria": "Kill if export cannot preserve provenance and correction chains.",
+      "priorityScore": 7.8,
+      "selected": true
+    },
+    {
+      "id": "SOV-OPP-007",
+      "title": "Derived-index reconstruction",
+      "currentLimitation": "Vector and search indexes can become hidden authoritative state.",
+      "sovereignMechanism": "Make indexes disposable and rebuild from canonical memory.",
+      "externalDependencyReduced": "Proprietary vector database",
+      "newRisks": [
+        "Rebuild cost can be high."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Delete and reconstruct with identical source record coverage.",
+      "successCriteria": "Delete and reconstruct with identical source record coverage.",
+      "killCriteria": "Kill if restore requires vendor-specific index files.",
+      "priorityScore": 6.4,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-008",
+      "title": "Memory confidence decay",
+      "currentLimitation": "Old procedural memory retains excessive authority.",
+      "sovereignMechanism": "Decay confidence by age, contradiction, correction, and failure association.",
+      "externalDependencyReduced": "Manual memory cleanup",
+      "newRisks": [
+        "Incorrect decay can suppress valid long-lived knowledge."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Ablation shows lower unsafe use without material task loss.",
+      "successCriteria": "Ablation shows lower unsafe use without material task loss.",
+      "killCriteria": "Kill if false-negative rate exceeds declared limit.",
+      "priorityScore": 6.3,
+      "selected": true
+    },
+    {
+      "id": "SOV-OPP-009",
+      "title": "Context-separated key hierarchy",
+      "currentLimitation": "One application key increases blast radius.",
+      "sovereignMechanism": "Derive tenant, workspace, data, backup, and signing keys with HKDF.",
+      "externalDependencyReduced": "Provider-managed key custody",
+      "newRisks": [
+        "Root recovery-key operations become critical."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Cross-context keys differ and wrong-context restore fails.",
+      "successCriteria": "Cross-context keys differ and wrong-context restore fails.",
+      "killCriteria": "Kill if rotation and recovery cannot be documented.",
+      "priorityScore": 6.2,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-010",
+      "title": "TPM or OS keychain adapter",
+      "currentLimitation": "Software keys remain exposed to host compromise.",
+      "sovereignMechanism": "Optional hardware or OS custody adapter.",
+      "externalDependencyReduced": "Plain filesystem key storage",
+      "newRisks": [
+        "Platform-specific code and recovery complexity."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Key use works without export and has documented fallback.",
+      "successCriteria": "Key use works without export and has documented fallback.",
+      "killCriteria": "Kill if hardware lock-in prevents recovery.",
+      "priorityScore": 4.27,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-011",
+      "title": "Local tool pack",
+      "currentLimitation": "Core tools may implicitly require network or broad filesystem access.",
+      "sovereignMechanism": "Provide bounded local hashing, inspection, transformation, and repository tools.",
+      "externalDependencyReduced": "Remote tool services",
+      "newRisks": [
+        "Local file access must remain scoped."
+      ],
+      "implementationEffort": "Low",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Low",
+      "experiment": "No network, path containment, output limits, audit receipt.",
+      "successCriteria": "No network, path containment, output limits, audit receipt.",
+      "killCriteria": "Kill any tool that cannot be bounded or reconciled.",
+      "priorityScore": 7.2,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-012",
+      "title": "Restricted subprocess sandbox",
+      "currentLimitation": "In-process tools are insufficient for some workloads.",
+      "sovereignMechanism": "Add OS-level restricted subprocess execution without requiring Docker.",
+      "externalDependencyReduced": "Remote disposable sandbox",
+      "newRisks": [
+        "Cross-platform sandbox semantics differ."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Resource, path, environment, and network ceilings proven.",
+      "successCriteria": "Resource, path, environment, and network ceilings proven.",
+      "killCriteria": "Kill if host escape cannot be bounded.",
+      "priorityScore": 4.13,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-013",
+      "title": "Canonical protocol-independent tool contract",
+      "currentLimitation": "MCP or vendor function schemas can become internal authority.",
+      "sovereignMechanism": "Translate external protocols into one canonical capability contract.",
+      "externalDependencyReduced": "Single protocol lock-in",
+      "newRisks": [
+        "Adapters may lose protocol-specific features."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Same tool policy works across two adapters.",
+      "successCriteria": "Same tool policy works across two adapters.",
+      "killCriteria": "Kill if canonical contract cannot express required safety semantics.",
+      "priorityScore": 5.8,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-014",
+      "title": "Signed air-gap handoff",
+      "currentLimitation": "Disconnected agent work had no bounded portable authority.",
+      "sovereignMechanism": "Signed task and result envelopes with scope, expiry, evidence, and capabilities.",
+      "externalDependencyReduced": "Online coordination service",
+      "newRisks": [
+        "Key custody and replay prevention are critical."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Export, disconnected execution, signed import, escalation rejection.",
+      "successCriteria": "Export, disconnected execution, signed import, escalation rejection.",
+      "killCriteria": "Kill if result cannot bind to exact task hash.",
+      "priorityScore": 3.99,
+      "selected": true
+    },
+    {
+      "id": "SOV-OPP-015",
+      "title": "Durable local agent queue",
+      "currentLimitation": "Direct calls do not survive process loss.",
+      "sovereignMechanism": "Use durable local queue and canonical message records.",
+      "externalDependencyReduced": "Hosted queue service",
+      "newRisks": [
+        "Queue state adds operational complexity."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Restart and duplicate delivery remain safe.",
+      "successCriteria": "Restart and duplicate delivery remain safe.",
+      "killCriteria": "Kill if queue becomes a second source of truth.",
+      "priorityScore": 5.6,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-016",
+      "title": "Offline conflict-reporting sync",
+      "currentLimitation": "Long-disconnected nodes cannot exchange bounded state safely.",
+      "sovereignMechanism": "Append-only export/import with explicit conflicts and version vectors.",
+      "externalDependencyReduced": "Cloud synchronization",
+      "newRisks": [
+        "Deletion and audit merge semantics are difficult."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "No silent overwrite; tenant and key changes are respected.",
+      "successCriteria": "No silent overwrite; tenant and key changes are respected.",
+      "killCriteria": "Kill before implementation if conflict semantics remain ambiguous.",
+      "priorityScore": 3.85,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-017",
+      "title": "Node registry",
+      "currentLimitation": "Hardware, trust, and model locality are not unified.",
+      "sovereignMechanism": "Record node identity, trust, hardware, models, tools, load, and energy.",
+      "externalDependencyReduced": "Cloud scheduler inventory",
+      "newRisks": [
+        "Stale node data can misroute work."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Unavailable and revoked nodes are ineligible.",
+      "successCriteria": "Unavailable and revoked nodes are ineligible.",
+      "killCriteria": "Kill if node identity cannot be authenticated.",
+      "priorityScore": 5.4,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-018",
+      "title": "Hardware-aware placement",
+      "currentLimitation": "Router does not fully prove that selected models fit physical hardware.",
+      "sovereignMechanism": "Hard feasibility before utility scoring.",
+      "externalDependencyReduced": "Remote provider fallback",
+      "newRisks": [
+        "Hardware telemetry may be incomplete."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "RAM, VRAM, disk, thermal, trust, tenant gates precede score.",
+      "successCriteria": "RAM, VRAM, disk, thermal, trust, tenant gates precede score.",
+      "killCriteria": "Kill if infeasible models can still win.",
+      "priorityScore": 5.3,
+      "selected": true
+    },
+    {
+      "id": "SOV-OPP-019",
+      "title": "Energy-aware task scheduling",
+      "currentLimitation": "Energy is recorded but not an execution control.",
+      "sovereignMechanism": "Defer, batch, downsize, relocate, or reject under energy policies.",
+      "externalDependencyReduced": "Unlimited cloud or local compute",
+      "newRisks": [
+        "Estimated energy may be misleading."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Measured or confidence-labelled decisions with budgets.",
+      "successCriteria": "Measured or confidence-labelled decisions with budgets.",
+      "killCriteria": "Kill if energy estimate changes decisions without adequate confidence.",
+      "priorityScore": 3.64,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-020",
+      "title": "Local observability ledger",
+      "currentLimitation": "Operational visibility can rely on external telemetry.",
+      "sovereignMechanism": "Persist local metrics, dependency activity, network attempts, and violations.",
+      "externalDependencyReduced": "Hosted monitoring",
+      "newRisks": [
+        "Local metrics can be lost with the node."
+      ],
+      "implementationEffort": "Low",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Low",
+      "experiment": "Core diagnosis works offline and exports signed summaries.",
+      "successCriteria": "Core diagnosis works offline and exports signed summaries.",
+      "killCriteria": "Kill if observability leaks secrets or becomes mandatory remote.",
+      "priorityScore": 6.12,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-021",
+      "title": "Sovereignty control plane",
+      "currentLimitation": "Operators cannot see which capabilities are truly local.",
+      "sovereignMechanism": "Show locality, dependencies, network, keys, restore, updates, and blockers.",
+      "externalDependencyReduced": "Opaque cloud console",
+      "newRisks": [
+        "Decorative scores can mislead."
+      ],
+      "implementationEffort": "Low",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Low",
+      "experiment": "Fatal gates and unknown evidence precede classification.",
+      "successCriteria": "Fatal gates and unknown evidence precede classification.",
+      "killCriteria": "Kill any aggregate score that hides a fatal dependency.",
+      "priorityScore": 6.0,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-022",
+      "title": "Outbound network audit",
+      "currentLimitation": "Application-level guards do not prove absence of hidden traffic.",
+      "sovereignMechanism": "Run process-level network observation with outbound denied.",
+      "externalDependencyReduced": "Trust in documentation",
+      "newRisks": [
+        "Kernel/container visibility differs by environment."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Every attempted destination is classified and unexpected traffic is zero.",
+      "successCriteria": "Every attempted destination is classified and unexpected traffic is zero.",
+      "killCriteria": "Kill sovereign pilot classification if audit cannot run.",
+      "priorityScore": 3.43,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-023",
+      "title": "Offline dependency bundle",
+      "currentLimitation": "Initial install and rebuild depend on public registries.",
+      "sovereignMechanism": "Create signed package cache and dependency manifest.",
+      "externalDependencyReduced": "Public npm registry",
+      "newRisks": [
+        "Bundle size and license obligations grow."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Clean install succeeds with network unavailable.",
+      "successCriteria": "Clean install succeeds with network unavailable.",
+      "killCriteria": "Kill if artifact integrity cannot be tied to lockfile.",
+      "priorityScore": 4.8,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-024",
+      "title": "Local model artifact cache",
+      "currentLimitation": "Model acquisition can require a public model hub.",
+      "sovereignMechanism": "Signed model manifest and local artifact store.",
+      "externalDependencyReduced": "Public model registry",
+      "newRisks": [
+        "Large storage and license compliance."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Hash, license, source, format, and hardware compatibility verified offline.",
+      "successCriteria": "Hash, license, source, format, and hardware compatibility verified offline.",
+      "killCriteria": "Kill if model provenance is incomplete.",
+      "priorityScore": 4.7,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-025",
+      "title": "Signed offline update",
+      "currentLimitation": "Updates require live registry and can fail partially.",
+      "sovereignMechanism": "Signed changed-file bundle with dry run, compatibility, validation, rollback.",
+      "externalDependencyReduced": "Remote update service",
+      "newRisks": [
+        "File-level update does not itself prove migration safety."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Apply and rollback restore exact versions and file content.",
+      "successCriteria": "Apply and rollback restore exact versions and file content.",
+      "killCriteria": "Kill if downgrade or path traversal is possible.",
+      "priorityScore": 4.6,
+      "selected": true
+    },
+    {
+      "id": "SOV-OPP-026",
+      "title": "Offline migration rehearsal",
+      "currentLimitation": "Schema updates can make rollback impossible.",
+      "sovereignMechanism": "Apply migrations to a copy before touching authoritative state.",
+      "externalDependencyReduced": "Live production migration service",
+      "newRisks": [
+        "Copy cost and migration drift."
+      ],
+      "implementationEffort": "Medium",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "Medium",
+      "experiment": "Dry-run database integrity and rollback evidence.",
+      "successCriteria": "Dry-run database integrity and rollback evidence.",
+      "killCriteria": "Kill if irreversible migrations lack explicit operator decision.",
+      "priorityScore": 4.5,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-027",
+      "title": "Local verifier quorum",
+      "currentLimitation": "One verifier identity can be compromised.",
+      "sovereignMechanism": "Require multiple independent local verifier attestations for high-risk releases.",
+      "externalDependencyReduced": "Remote compliance service",
+      "newRisks": [
+        "More compute and governance overhead."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Quorum rejects shared identity, stale evidence, and hash mismatch.",
+      "successCriteria": "Quorum rejects shared identity, stale evidence, and hash mismatch.",
+      "killCriteria": "Kill if verifiers share mutable evidence context.",
+      "priorityScore": 3.08,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-028",
+      "title": "Recovery simulation before execution",
+      "currentLimitation": "Operators learn recovery only after failure.",
+      "sovereignMechanism": "Counterfactual simulation of receipts, reconciliation, and rollback before risky actions.",
+      "externalDependencyReduced": "External disaster-recovery advisor",
+      "newRisks": [
+        "Simulation may diverge from runtime."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Known injected failures match predicted terminal states.",
+      "successCriteria": "Known injected failures match predicted terminal states.",
+      "killCriteria": "Kill if simulation creates false confidence.",
+      "priorityScore": 3.01,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-029",
+      "title": "Offline plugin verification",
+      "currentLimitation": "Plugins can introduce hidden network and authority.",
+      "sovereignMechanism": "Signed plugin manifest, static permissions, and isolated validation.",
+      "externalDependencyReduced": "Remote plugin marketplace",
+      "newRisks": [
+        "Static analysis cannot prove runtime behavior."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Unsigned or over-privileged plugins are rejected.",
+      "successCriteria": "Unsigned or over-privileged plugins are rejected.",
+      "killCriteria": "Kill if plugins can bypass capability broker.",
+      "priorityScore": 2.94,
+      "selected": false
+    },
+    {
+      "id": "SOV-OPP-030",
+      "title": "Local speech and OCR adapters",
+      "currentLimitation": "Document and voice workflows may depend on hosted APIs.",
+      "sovereignMechanism": "Optional local adapters with artifact provenance and bounded files.",
+      "externalDependencyReduced": "Remote speech/OCR APIs",
+      "newRisks": [
+        "Model size, language quality, and native runtimes."
+      ],
+      "implementationEffort": "High",
+      "hardwareRequirement": "None for design; target hardware validation where model or sandbox execution is involved.",
+      "energyImpact": "Low for control-plane features; potentially material for model, OCR, speech, reranking, and multi-node execution.",
+      "performanceImpact": "Must be measured in the falsifiable experiment.",
+      "maintenanceBurden": "High",
+      "experiment": "Offline benchmark meets quality and resource floor.",
+      "successCriteria": "Offline benchmark meets quality and resource floor.",
+      "killCriteria": "Kill if generated binaries cannot be reproduced.",
+      "priorityScore": 2.87,
+      "selected": false
+    }
+  ]
+}

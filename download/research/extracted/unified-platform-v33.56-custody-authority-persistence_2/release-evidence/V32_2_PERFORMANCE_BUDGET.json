@@ -1,0 +1,27 @@
+{
+  "version": "32.2",
+  "generatedAt": "2026-07-18T04:10:16.978Z",
+  "normalization": {
+    "baselineTests": 619,
+    "currentTests": 654
+  },
+  "status": "PASS",
+  "results": [
+    {
+      "metric": "full_suite_ms_per_test",
+      "status": "PASS",
+      "baselineValue": 30.533757673667207,
+      "currentValue": 28.119798165137617,
+      "changePercent": -7.91,
+      "environment": "local-single-host",
+      "reasons": [
+        "environment_not_qualified_multi_host"
+      ]
+    }
+  ],
+  "reportDigest": "3ea8a83007da248d74862e92183faa53d609d1b94fbe5c6f2f0f062746492204",
+  "limitations": [
+    "The metric is local full-suite wall time per test, not product latency or throughput.",
+    "Production SLO qualification requires qualified multi-host measurements."
+  ]
+}

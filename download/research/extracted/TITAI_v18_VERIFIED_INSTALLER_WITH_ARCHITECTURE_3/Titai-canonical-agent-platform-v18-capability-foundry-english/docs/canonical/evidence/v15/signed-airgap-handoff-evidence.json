@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2026-07-11T10:30:00.000Z",
+  "task": {
+    "format": "titai-signed-payload",
+    "version": 1,
+    "keyId": "8ded4196192cc0ef7c65e3b9",
+    "algorithm": "ed25519",
+    "payload": {
+      "tenantId": "tenant-local",
+      "workspaceId": "workspace-local",
+      "senderIdentity": "local-admin",
+      "receiverIdentity": "offline-verifier-node",
+      "taskId": "handoff-v15-001",
+      "correlationId": "corr-v15-001",
+      "objective": "Verify the local artifact hash in a disconnected environment.",
+      "context": {
+        "artifactSha256": "c94002c08ec7b70669d5ecad75e2d949a7d00c4ecf143293b12080933dd62f21"
+      },
+      "memoryEvidence": [
+        {
+          "id": "memory-local-rule",
+          "content": "Use local data and local tools for restricted work.",
+          "hash": "75bdc2627451f56955fa722d3e872fc86c001da6cb946b82029fc01f1d013fcf"
+        }
+      ],
+      "evidenceRefs": [
+        "2a8d5a20e50f42bc3ddf5cd0fb67390a84aad0e4bb6a08c25e88c6eefc634fb7"
+      ],
+      "capabilities": [
+        {
+          "id": "local.hash",
+          "risk": "low",
+          "sideEffect": "none",
+          "maximumUses": 1
+        }
+      ],
+      "expiresAt": "2026-07-12T10:30:00.000Z",
+      "returnSchema": {
+        "type": "object",
+        "required": [
+          "verified"
+        ]
+      },
+      "bundleId": "handoff-9aca8b40681a09a2b1f6",
+      "createdAt": "2026-07-11T10:30:00.000Z"
+    },
+    "payloadSha256": "2f27e5fb8b3ee3846c56ce0d16a0f92af476af775e802054f673cbba6249c4f7",
+    "signedAt": "2026-07-11T10:30:00.000Z",
+    "signatureBase64": "O/PJ5HUqRuy2oVqXyD61J+yK1T3SWxpXbjsx+n6SocIxH6CJnfLDSXgXKoabFM2mGdvgX9Yv5cuGVLUZ7XEkDA=="
+  },
+  "result": {
+    "format": "titai-signed-payload",
+    "version": 1,
+    "keyId": "5e91bca05b2bfae366f6369c",
+    "algorithm": "ed25519",
+    "payload": {
+      "format": "titai-airgap-result",
+      "version": 1,
+      "bundleId": "handoff-9aca8b40681a09a2b1f6",
+      "taskId": "handoff-v15-001",
+      "tenantId": "tenant-local",
+      "workspaceId": "workspace-local",
+      "executorIdentity": "offline-verifier-node",
+      "status": "completed",
+      "output": {
+        "verified": true
+      },
+      "artifactHashes": [
+        "c94002c08ec7b70669d5ecad75e2d949a7d00c4ecf143293b12080933dd62f21"
+      ],
+      "evidenceHashes": [
+        "2a8d5a20e50f42bc3ddf5cd0fb67390a84aad0e4bb6a08c25e88c6eefc634fb7"
+      ],
+      "capabilitiesUsed": [
+        {
+          "id": "local.hash",
+          "uses": 1
+        }
+      ],
+      "completedAt": "2026-07-11T11:05:00.000Z",
+      "inputTaskHash": "2f27e5fb8b3ee3846c56ce0d16a0f92af476af775e802054f673cbba6249c4f7"
+    },
+    "payloadSha256": "7ee0f1136fcbb0738bfd9a8d9650fd801fd810c59694f33f71e1e8f710b28215",
+    "signedAt": "2026-07-11T11:05:00.000Z",
+    "signatureBase64": "5DadsoV1qzIuwy8NpFmhdUuLon2hHe2yNZwvN0bsYTwEd5KLnlZEysnADXKciGHo2zFOmMhygp9dG0UL44ewDw=="
+  },
+  "sender": {
+    "keyId": "8ded4196192cc0ef7c65e3b9",
+    "algorithm": "ed25519",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAuFj2m5u3zQM+BiqtCnF16dtDQow1qk3E2ujRUzF/r1c=\n-----END PUBLIC KEY-----\n"
+  },
+  "executor": {
+    "keyId": "5e91bca05b2bfae366f6369c",
+    "algorithm": "ed25519",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA3j7JCGoQ9oz9VKEXVvgYs9owyEbezo2PgmH5jQZs2N4=\n-----END PUBLIC KEY-----\n"
+  },
+  "importedResult": {
+    "format": "titai-airgap-result",
+    "version": 1,
+    "bundleId": "handoff-9aca8b40681a09a2b1f6",
+    "taskId": "handoff-v15-001",
+    "tenantId": "tenant-local",
+    "workspaceId": "workspace-local",
+    "executorIdentity": "offline-verifier-node",
+    "status": "completed",
+    "output": {
+      "verified": true
+    },
+    "artifactHashes": [
+      "c94002c08ec7b70669d5ecad75e2d949a7d00c4ecf143293b12080933dd62f21"
+    ],
+    "evidenceHashes": [
+      "2a8d5a20e50f42bc3ddf5cd0fb67390a84aad0e4bb6a08c25e88c6eefc634fb7"
+    ],
+    "capabilitiesUsed": [
+      {
+        "id": "local.hash",
+        "uses": 1
+      }
+    ],
+    "completedAt": "2026-07-11T11:05:00.000Z",
+    "inputTaskHash": "2f27e5fb8b3ee3846c56ce0d16a0f92af476af775e802054f673cbba6249c4f7"
+  },
+  "privateKeysIncluded": false
+}

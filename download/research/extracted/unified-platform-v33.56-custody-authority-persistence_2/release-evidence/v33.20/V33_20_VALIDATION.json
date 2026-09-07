@@ -1,0 +1,60 @@
+{
+  "version": "33.20",
+  "status": "passed",
+  "evidenceClass": "LOCAL_SUPERVISORD_TWO_DAEMON_SQLITE_WAL_REFERENCE",
+  "gates": {
+    "G0": "passed",
+    "G1": "passed",
+    "G2": "in-progress-not-passed",
+    "G3": "in-progress-not-passed",
+    "G4": "in-progress-not-passed",
+    "G5": "in-progress-not-passed",
+    "G6": "in-progress-not-passed"
+  },
+  "durableAuthority": {
+    "status": "EXTERNAL_DURABLE_AUTHORITY_REFERENCE_PROVEN_LOCALLY",
+    "evidenceClass": "LOCAL_SUPERVISORD_TWO_DAEMON_SQLITE_WAL_REFERENCE",
+    "managedAuthorityDaemonCount": 2,
+    "serviceManager": "SUPERVISORD",
+    "serviceManagerRestartProven": true,
+    "sharedDurableBackend": "SQLITE_WAL",
+    "separateDurableWitness": "SEPARATE_SQLITE_WAL_REFERENCE",
+    "controllerRaceSingleWinner": true,
+    "fenceBeforeRestart": 1,
+    "fenceAfterRestart": 2,
+    "enterpriseIdentityProvider": "LOCAL_ENTERPRISE_PKI_REFERENCE",
+    "workloadUriSanRequired": true,
+    "enterpriseIdentityRotationCount": 1,
+    "oldIdentityRejectedAfterRotation": true,
+    "authorityIntegrityVerified": true,
+    "externalQualificationAccepted": false,
+    "externalEffectsExecuted": 0,
+    "productionAuthority": "NONE",
+    "productionPromotion": "blocked"
+  },
+  "regression": {
+    "testFiles": 205,
+    "tests": 1514,
+    "passed": 1514,
+    "failed": 0
+  },
+  "directV33": {
+    "testFiles": 20,
+    "tests": 347,
+    "passed": 347,
+    "failed": 0
+  },
+  "truthMap": {
+    "sourceModules": 209,
+    "testFiles": 205,
+    "findings": 0
+  },
+  "architecture": {
+    "sourceCycleCount": 0,
+    "untestedSourceCount": 0,
+    "capabilityPathCount": 135,
+    "closedCapabilityPathCount": 135
+  },
+  "errors": [],
+  "productionPromotion": "blocked"
+}

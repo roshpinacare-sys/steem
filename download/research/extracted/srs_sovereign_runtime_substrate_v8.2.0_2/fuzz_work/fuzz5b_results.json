@@ -1,0 +1,54 @@
+{
+  "examples_tested": 4,
+  "failure_count": 4,
+  "hypothesis_failure": {
+    "exception": "ExceptionGroup",
+    "message": "Hypothesis found 2 distinct failures. (2 sub-exceptions)"
+  },
+  "failures": [
+    {
+      "kind": "identify",
+      "n_hyps": 1,
+      "target": 0,
+      "budget": 1,
+      "n_features": 127,
+      "exception": "OverflowError",
+      "module": "builtins",
+      "message": "int too big to convert",
+      "frame": "  File \"/home/z/my-project/download/srs/primitives/execution.py\", line 20, in hash_bit"
+    },
+    {
+      "kind": "compute",
+      "n_hyps": 0,
+      "target": 0,
+      "budget": 1,
+      "n_features": 0,
+      "exception": "IndexError",
+      "module": "builtins",
+      "message": "list index out of range",
+      "frame": "  File \"/home/z/my-project/download/srs/pipeline.py\", line 148, in execution_stage"
+    },
+    {
+      "kind": "compute",
+      "n_hyps": 0,
+      "target": 0,
+      "budget": 1,
+      "n_features": 0,
+      "exception": "IndexError",
+      "module": "builtins",
+      "message": "list index out of range",
+      "frame": "  File \"/home/z/my-project/download/srs/pipeline.py\", line 148, in execution_stage"
+    },
+    {
+      "kind": "identify",
+      "n_hyps": 1,
+      "target": 0,
+      "budget": 1,
+      "n_features": 127,
+      "exception": "OverflowError",
+      "module": "builtins",
+      "message": "int too big to convert",
+      "frame": "  File \"/home/z/my-project/download/srs/primitives/execution.py\", line 20, in hash_bit"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+name: canonical-proof-deep-assurance
+on:
+  schedule:
+    - cron: '17 1 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  V32_6_RUN_ID: deep-${{ github.run_id }}-${{ github.run_attempt }}
+  V32_6_RUN_DIR: ${{ github.workspace }}/evidence/runs/deep-${{ github.run_id }}-${{ github.run_attempt }}
+jobs:
+  deep-assurance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with: {node-version: 22.16.0, cache: npm}
+      - run: npm ci --ignore-scripts
+      - run: python3 scripts/validate-test-operations-v32_6.py --run-id "$V32_6_RUN_ID"
+      - run: bash scripts/prepare-linux-probes-v32.sh
+      - run: python3 scripts/run-credential-sovereignty-mutation-v32.py
+      - run: node scripts/supply-chain-report-v32.mjs
+      - run: node scripts/local-dr-rehearsal-v32.mjs
+      - run: python3 e2e/test_breakthrough_pilot_v32.py
+      - run: bash scripts/run-linux-isolation-v32.sh
+      - name: PostgreSQL qualification or honest environment block
+        run: |
+          set +e
+          node scripts/qualify-postgres-v32.mjs
+          code=$?
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: deep-assurance-evidence
+          path: |
+            evidence/runs/${{ env.V32_6_RUN_ID }}
+            evidence/generated
+          retention-days: 30

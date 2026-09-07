@@ -1,0 +1,148 @@
+{
+  "payload": {
+    "version": "33.29",
+    "ledgerId": "a1eb3f8c-e489-45f4-8f10-8610679f3b2b",
+    "previousVersion": "33.28",
+    "previousLedgerDigest": "02d06b198fb56157a43031c7b70274fca98324c82a0c34b6d1fa4d8334860d57",
+    "parameterCount": 14,
+    "parameters": [
+      {
+        "id": "CHAT_NATIVE_GOVERNED_ACTION",
+        "category": "PRODUCT",
+        "target": "Chat or voice intent becomes a governed action rather than a dashboard-only workflow.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "src/product/chat-mission.ts"
+        ]
+      },
+      {
+        "id": "ONE_CANONICAL_AUTHORITY",
+        "category": "AUTHORITY",
+        "target": "Exactly one canonical authority, policy and effect ledger; no competing production root.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "v33/governance-state/AUTHORITY_CONFLICT_MAP_V33.json"
+        ]
+      },
+      {
+        "id": "NO_LEARNED_AUTHORITY_EXPANSION",
+        "category": "AUTHORITY",
+        "target": "Adaptive shortcuts may preserve or reduce scopes but never learn or enlarge authority.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "src/repository/proof-carrying-adaptive-execution-v33_15.ts"
+        ]
+      },
+      {
+        "id": "EXTERNAL_EFFECTS_EXPLICITLY_GATED",
+        "category": "AUTHORITY",
+        "target": "External effects require explicit bound authority; current production effects remain blocked.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "v33/governance-state/PROOF_GATE_REGISTRY_V33.json"
+        ]
+      },
+      {
+        "id": "SIGNED_BYTE_BOUND_EVIDENCE",
+        "category": "EVIDENCE",
+        "target": "Evidence is signed, digest-linked, bound to exact bytes and independently verifiable.",
+        "status": "STRENGTHENED",
+        "evidenceRefs": [
+          "src/app/scanner-evidence-transparency-v33_26.ts",
+          "src/app/external-transparency-witness-v33_27.ts"
+        ]
+      },
+      {
+        "id": "FAIL_CLOSED_ON_UNCERTAINTY",
+        "category": "EVIDENCE",
+        "target": "Uncertainty, drift, expiry, disagreement, missing infrastructure or split-view fails closed.",
+        "status": "STRENGTHENED",
+        "evidenceRefs": [
+          "src/app/external-transparency-witness-v33_27.ts"
+        ]
+      },
+      {
+        "id": "RECOVERY_REVOCATION_FALLBACK",
+        "category": "EVIDENCE",
+        "target": "Revocation, rollback or compensation and full-workflow fallback must remain provable.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "src/app/continuous-adaptive-control-service-v33_17.ts"
+        ]
+      },
+      {
+        "id": "UX_REDUCTION_AND_COMPREHENSION_TARGETS",
+        "category": "UX",
+        "target": "At least 70% fewer user steps, median no more than one approval, approval understood in under 10 seconds.",
+        "status": "EXTERNAL_EVIDENCE_PENDING",
+        "evidenceRefs": [
+          "v33/governance-state/PROOF_GATE_REGISTRY_V33.json#G3"
+        ]
+      },
+      {
+        "id": "ENGINEERING_PRODUCT_PROOF_TARGETS",
+        "category": "QUALITY",
+        "target": "Three repositories, thirty missions, zero unauthorized effects and 100% evidence closure.",
+        "status": "EXTERNAL_EVIDENCE_PENDING",
+        "evidenceRefs": [
+          "v33/governance-state/PROOF_GATE_REGISTRY_V33.json#G4"
+        ]
+      },
+      {
+        "id": "CATEGORY_AND_BUYER_PROOF_TARGETS",
+        "category": "MARKET",
+        "target": "Fifteen interviews, five urgent funded confirmations, three design partners and two paid pilots.",
+        "status": "EXTERNAL_EVIDENCE_PENDING",
+        "evidenceRefs": [
+          "v33/governance-state/PROOF_GATE_REGISTRY_V33.json#G2"
+        ]
+      },
+      {
+        "id": "EXTERNAL_ROLE_HOST_ORG_SEPARATION",
+        "category": "EVIDENCE",
+        "target": "Collector, operator, verifier and witnesses must be separated across required keys, hosts and organizations.",
+        "status": "STRENGTHENED",
+        "evidenceRefs": [
+          "src/app/external-transparency-witness-v33_27.ts"
+        ]
+      },
+      {
+        "id": "RELEASE_REPRODUCIBILITY_AND_CLEAN_EXIT",
+        "category": "QUALITY",
+        "target": "All discovered tests pass with exit zero, no retry, no force-exit and a clean ZIP extraction validation.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "scripts/validate-v33_27.py"
+        ]
+      },
+      {
+        "id": "PROVIDER_NEUTRAL_SOVEREIGNTY",
+        "category": "SOVEREIGNTY",
+        "target": "Provider-neutral sovereign contracts; missing external services remain UNAVAILABLE_FAIL_CLOSED.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "MASTER_DIRECTIVE.md"
+        ]
+      },
+      {
+        "id": "LARGE_OUTCOME_VALUE_FILTER",
+        "category": "VALUE",
+        "target": "Each release must improve the path toward a high-value category product rather than merely increase code volume.",
+        "status": "PRESERVED",
+        "evidenceRefs": [
+          "v33/governance-state/VALUE_HYPOTHESIS_REGISTRY_V33.json"
+        ]
+      }
+    ],
+    "preservedParameterCount": 8,
+    "strengthenedParameterCount": 3,
+    "externalEvidencePendingParameterCount": 3,
+    "generatedAt": "2026-07-22T08:30:00.000Z",
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "ledgerDigest": "b8fb69fa704fff93477eaf6eaaeacecc4d3eb3590a050e8deda3ba660b03a9c1"
+  },
+  "issuerKeyId": "v33.29-parameter-ledger",
+  "algorithm": "Ed25519",
+  "signature": "hbozppSpVqLYlYigppVHOaTZIaivLrW_Dh5VNjaiDii1NzEazHgyYXt25LOBpRaVjQdWPFuCF1QGc9U_Yg96Cw"
+}

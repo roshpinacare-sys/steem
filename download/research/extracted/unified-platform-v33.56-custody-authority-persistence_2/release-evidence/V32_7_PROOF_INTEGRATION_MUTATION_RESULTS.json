@@ -1,0 +1,140 @@
+{
+  "version": "32.7",
+  "runId": "v32.7-final2",
+  "status": "passed",
+  "sourceDigest": "0ca74ca9cbcd3bddd5a0a246c1fd8efb40ac9c5bea55847b4dfa5fa0c618d1db",
+  "compiledArtifactDigest": "94d102bb2bac1934302d9d2e1a5479615fcb9d2ac7e584ca6581c01420ac1e0b",
+  "testManifestDigest": "aa1e9aeaa2eb9540ea03f16aec2f2897fe2ec2bba93147c96de16eaec43aa3de",
+  "testFilesDigest": "ba4d437389dbc0e1ac178b5a1fb6a8955cbc862c1496ea8b2b6a59939ba8ef56",
+  "packageLockDigest": "84f49a028d0ad67f09a9b663a7bda556440ec00a00753836c91bd927d9a18701",
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "environment": {
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64",
+    "ci": true,
+    "runnerOs": "",
+    "runnerArch": ""
+  },
+  "baseline": {
+    "status": "passed",
+    "exitCode": 0,
+    "timedOut": false,
+    "outputTail": "quires every semantic evidence obligation\n  ---\n  duration_ms: 0.815101\n  type: 'test'\n  ...\n# Subtest: release assurance requires verified rollback for critical change\nok 20 - release assurance requires verified rollback for critical change\n  ---\n  duration_ms: 0.696221\n  type: 'test'\n  ...\n# Subtest: release assurance blocks when integration fault proof is incomplete\nok 21 - release assurance blocks when integration fault proof is incomplete\n  ---\n  duration_ms: 0.765045\n  type: 'test'\n  ...\n# Subtest: proof and integration evaluators reject duplicate identities and unknown edges\nok 22 - proof and integration evaluators reject duplicate identities and unknown edges\n  ---\n  duration_ms: 1.243364\n  type: 'test'\n  ...\n# Subtest: integration contract edge matrix exposes every local closure obligation\nok 23 - integration contract edge matrix exposes every local closure obligation\n  ---\n  duration_ms: 0.286853\n  type: 'test'\n  ...\n# Subtest: normal and high integration contracts apply only their required obligations\nok 24 - normal and high integration contracts apply only their required obligations\n  ---\n  duration_ms: 0.182435\n  type: 'test'\n  ...\n# Subtest: integration contract normalization rejects empty edge and capability identities\nok 25 - integration contract normalization rejects empty edge and capability identities\n  ---\n  duration_ms: 0.159711\n  type: 'test'\n  ...\n# Subtest: fault campaign covers normal and high obligation sets independently\nok 26 - fault campaign covers normal and high obligation sets independently\n  ---\n  duration_ms: 0.197238\n  type: 'test'\n  ...\n# Subtest: tenant confusion on a non-cross-tenant edge must still block\nok 27 - tenant confusion on a non-cross-tenant edge must still block\n  ---\n  duration_ms: 0.184369\n  type: 'test'\n  ...\n# Subtest: fault campaign rejects malformed and duplicate contracts and scenarios\nok 28 - fault campaign rejects malformed and duplicate contracts and scenarios\n  ---\n  duration_ms: 0.255116\n  type: 'test'\n  ...\n# Subtest: governed release assurance reports every upstream and inventory failure\nok 29 - governed release assurance reports every upstream and inventory failure\n  ---\n  duration_ms: 0.687679\n  type: 'test'\n  ...\n# Subtest: proof normalization and empty proof paths fail closed\nok 30 - proof normalization and empty proof paths fail closed\n  ---\n  duration_ms: 0.39752\n  type: 'test'\n  ...\n1..30\n# tests 30\n# suites 0\n# pass 30\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 158.74016\n"
+  },
+  "mutantsSpecified": 12,
+  "mutantsKilledAuthentically": 12,
+  "survivors": 0,
+  "invalidKills": 0,
+  "records": [
+    {
+      "mutantId": "stale-proof-bypass",
+      "target": "dist/src/validation/proof-diversity.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "st: proof diversity rejects stale or inauthentic proof instead of counting volume\nnot ok 1 - proof diversity rejects stale or inauthentic proof instead of counting volume\n  ---\n  duration_ms: 2.856995\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:69:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:72:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 120.153178\n"
+    },
+    {
+      "mutantId": "critical-technique-floor-bypass",
+      "target": "dist/src/validation/proof-diversity.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "ersity floor rejects six-less set even without explicit techniques\nnot ok 1 - critical proof minimum diversity floor rejects six-less set even without explicit techniques\n  ---\n  duration_ms: 3.053932\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:80:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:84:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.715842\n"
+    },
+    {
+      "mutantId": "observed-proof-bypass",
+      "target": "dist/src/validation/proof-diversity.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "version 13\n# Subtest: proof diversity requires observed evidence when the claim demands it\nnot ok 1 - proof diversity requires observed evidence when the claim demands it\n  ---\n  duration_ms: 2.702361\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:87:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:89:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 111.548268\n"
+    },
+    {
+      "mutantId": "owner-review-conflict-bypass",
+      "target": "dist/src/validation/integration-contract-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: integration owner reviewer conflicts fail closed\nnot ok 1 - integration owner reviewer conflicts fail closed\n  ---\n  duration_ms: 2.699036\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:116:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:118:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 128.973934\n"
+    },
+    {
+      "mutantId": "timeout-proof-bypass",
+      "target": "dist/src/validation/integration-contract-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "l edges\n  ---\n  duration_ms: 2.943335\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:111:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        'replay_test_missing',\n    -   'timeout_test_missing'\n      ]\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n    0: 'replay_test_missing'\n    1: 'timeout_test_missing'\n  actual:\n    0: 'replay_test_missing'\n  operator: 'deepStrictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:114:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.651379\n"
+    },
+    {
+      "mutantId": "authority-cycle-bypass",
+      "target": "dist/src/validation/integration-contract-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: authority cycles across integration edges are rejected\nnot ok 1 - authority cycles across integration edges are rejected\n  ---\n  duration_ms: 10.974524\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:121:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:125:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 122.929786\n"
+    },
+    {
+      "mutantId": "fault-disposition-bypass",
+      "target": "dist/src/validation/integration-fault-campaign.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: integration fault disposition mismatch is rejected\nnot ok 1 - integration fault disposition mismatch is rejected\n  ---\n  duration_ms: 2.554048\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:135:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:138:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 114.442567\n"
+    },
+    {
+      "mutantId": "fault-side-effect-bypass",
+      "target": "dist/src/validation/integration-fault-campaign.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: integration fault residual side effects are rejected\nnot ok 1 - integration fault residual side effects are rejected\n  ---\n  duration_ms: 2.877966\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:141:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:144:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 119.375813\n"
+    },
+    {
+      "mutantId": "tenant-leak-bypass",
+      "target": "dist/src/validation/integration-fault-campaign.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: integration fault tenant leaks are rejected\nnot ok 1 - integration fault tenant leaks are rejected\n  ---\n  duration_ms: 3.056466\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:147:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'PASS' !== 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:150:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 116.048525\n"
+    },
+    {
+      "mutantId": "evidence-identity-bypass",
+      "target": "dist/src/validation/governed-release-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "ck cannot be bypassed\nnot ok 1 - release assurance evidence identity check cannot be bypassed\n  ---\n  duration_ms: 13.185799\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:166:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'PASS_WITH_EXTERNAL_BLOCKERS'\n    - 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS_WITH_EXTERNAL_BLOCKERS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:169:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 128.046701\n"
+    },
+    {
+      "mutantId": "rollback-verification-bypass",
+      "target": "dist/src/validation/governed-release-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "r critical change\nnot ok 1 - release assurance requires verified rollback for critical change\n  ---\n  duration_ms: 13.150206\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:178:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'PASS_WITH_EXTERNAL_BLOCKERS'\n    - 'BLOCK'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCK'\n  actual: 'PASS_WITH_EXTERNAL_BLOCKERS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:181:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 131.421368\n"
+    },
+    {
+      "mutantId": "production-promotion-bypass",
+      "target": "dist/src/validation/governed-release-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": " proofs but never promotes production\nnot ok 1 - governed release assurance integrates local proofs but never promotes production\n  ---\n  duration_ms: 12.721087\n  type: 'test'\n  location: '/tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:159:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'ALLOWED'\n    - 'BLOCKED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCKED'\n  actual: 'ALLOWED'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-7-mut-2wz5nf90/dist/tests/proof-integration-v32_7.test.js:164:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 131.812984\n"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "srs-sovereign-runtime-substrate"
+version = "8.2.0"
+description = "H3-Tier Sovereign Runtime Substrate — a self-evolving, post-deterministic hyper-kernel with unified 7-primitive runtime (v7.1: cost-model planner, pipeline architecture, truly adversarial benchmark)"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Z.ai", email = "sovereign@srs.z.ai"}]
+requires-python = ">=3.10"
+keywords = ["hypervisor", "formal-verification", "multi-agent", "quantum", "photonic", "self-healing"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: System :: Operating System Kernels",
+]
+# Pinned for reproducibility + CVE avoidance (see requirements.txt header
+# for the full rationale). The pin set here must mirror requirements.txt.
+dependencies = [
+    "numpy==1.26.4",
+    "torch==2.2.2",
+    "z3-solver==4.13.0.0",
+    "pypdf==4.2.0",
+    "Pillow==10.3.0",
+    "matplotlib==3.8.4",
+    # D2 fix: api/ imports these but they were previously UNDECLARED.
+    "fastapi==0.111.0",
+    "uvicorn==0.30.1",
+    "psycopg2-binary==2.9.9",
+]
+
+[project.optional-dependencies]
+# D14 fix: align [dev] extras with requirements-dev.txt so that
+# `pip install -e ".[dev]"` and `pip install -r requirements-dev.txt`
+# produce the same environment.
+dev = [
+    "pytest==8.2.1",
+    "pytest-cov==5.0.0",
+    "pytest-xdist==3.6.1",
+    "ruff==0.4.7",
+    "mypy==1.10.0",
+    "bandit==1.7.9",
+    "hypothesis==6.103.0",
+]
+docs = [
+    "sphinx>=7.0",
+    "sphinx-rtd-theme>=2.0",
+]
+
+[project.scripts]
+# D3 fix: removed the two broken entry points.
+#   - srs-smoke-test pointed to srs.scripts.smoke_test (no such package;
+#     real file is tests/smoke_test.py, not exposed as a console script).
+#   - srs-z3-proof pointed to srs.verification.z3_power_proof (no such
+#     package; real file is verification/z3_power_proof.py, not under srs/).
+# Kept the working entry points and added srs-bench.
+srs-runtime = "srs.cli:main"
+srs-bench = "benchmarks.srs.run_benchmarks:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kernel*", "cognition*", "verification*", "simulation*", "governance*", "self_healing*", "srs*", "benchmarks*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks integration tests",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "C4", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true

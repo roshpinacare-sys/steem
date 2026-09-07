@@ -1,0 +1,36 @@
+=== typecheck ===
+
+> titai@1.2.0-canonical-v7 typecheck
+> tsc --noEmit
+
+=== safe tests ===
+
+> titai@1.2.0-canonical-v7 test:safe
+> vitest run tests/calculator.test.ts tests/policy.test.ts tests/build-graph.test.ts tests/rate-limit.test.ts tests/crypto.test.ts tests/relative-time.test.ts tests/skills.test.ts tests/gateway.test.ts tests/lifecycle.test.ts tests/evidence-summary.test.ts tests/evaluation-baseline.test.ts --maxWorkers=2
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/mnt/data/titai_v8_roast_work/Titai-canonical-agent-platform-v7-english[39m
+
+ [32m✓[39m tests/evidence-summary.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/policy.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/build-graph.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/gateway.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/lifecycle.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/skills.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m tests/rate-limit.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/calculator.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/crypto.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/relative-time.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m tests/evaluation-baseline.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 26[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[32m47 passed[39m[22m[90m (47)[39m
+[2m   Start at [22m 19:45:32
+[2m   Duration [22m 6.02s[2m (transform 753ms, setup 0ms, collect 1.40s, tests 206ms, environment 5ms, prepare 3.15s)[22m
+
+=== baseline evaluation ===
+
+> titai@1.2.0-canonical-v7 eval:baseline
+> tsx --tsconfig tsconfig.scripts.json scripts/evaluate-baseline.ts
+
+Baseline evaluation: 8/8 passed.

@@ -1,0 +1,6 @@
+import { describe,expect,it } from "vitest";
+import { EvidenceKnowledgeGraph } from "@/lib/knowledge/graph";
+describe("v18 evidence knowledge graph",()=>{
+ it("links scoped evidence without granting authority",()=>{const g=new EvidenceKnowledgeGraph();g.addNode({id:"m",type:"mission",label:"Mission",tenantId:"t",workspaceId:"w",provenance:"canonical",authority:"canonical",confidence:1,evidenceRefs:[]});g.addNode({id:"c",type:"capability",label:"Capability",tenantId:"t",workspaceId:"w",provenance:"registry",authority:"evidence",confidence:.9,evidenceRefs:["e"]});g.addEdge({from:"m",to:"c",relation:"requires",derived:true});const out=g.export({tenantId:"t",workspaceId:"w"});expect(out.nodes).toHaveLength(2);expect(out.note).toContain("do not grant authority");});
+ it("rejects cross-tenant edges",()=>{const g=new EvidenceKnowledgeGraph();g.addNode({id:"a",type:"mission",label:"a",tenantId:"a",workspaceId:"w",provenance:"x",authority:"canonical",confidence:1,evidenceRefs:[]});g.addNode({id:"b",type:"capability",label:"b",tenantId:"b",workspaceId:"w",provenance:"x",authority:"evidence",confidence:1,evidenceRefs:[]});expect(()=>g.addEdge({from:"a",to:"b",relation:"x",derived:true})).toThrow("knowledge_scope_mismatch");});
+});

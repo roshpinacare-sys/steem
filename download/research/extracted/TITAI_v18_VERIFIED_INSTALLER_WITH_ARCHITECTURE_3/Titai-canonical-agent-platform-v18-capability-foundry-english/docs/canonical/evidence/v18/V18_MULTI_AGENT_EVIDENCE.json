@@ -1,0 +1,59 @@
+{
+  "builder": {
+    "id": "builder-8f377145026e0f98",
+    "role": "builder",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAa5i71GYID6sxNfd8vYlHtSaM90kksAK9Qvv7XzWNDVU=\n-----END PUBLIC KEY-----\n"
+  },
+  "verifier": {
+    "id": "verifier-8fa575d193ddc322",
+    "role": "verifier",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqb/P/n6mzkGUxUX9Ed/VOTOs4B1tdIoFng3Qv++cC2E=\n-----END PUBLIC KEY-----\n"
+  },
+  "handoff": {
+    "id": "handoff-8ac0fbff-a9d6-4565-8437-af76a2df5804",
+    "teamId": "team-v18",
+    "missionHash": "0c492578a564c4f50559ce0561b5d4319a587d17ec20809e50a417b50664f656",
+    "tenantId": "tenant-v18",
+    "workspaceId": "workspace-v18",
+    "senderId": "builder-8f377145026e0f98",
+    "receiverId": "verifier-8fa575d193ddc322",
+    "senderRole": "builder",
+    "receiverRole": "verifier",
+    "sequence": 1,
+    "payload": {
+      "artifactHash": "47fe8a0f692c3d21bfeb739c6561520ab92aa701c26dc93875700ae32ecf7f80",
+      "packageHash": "26042bc7f2c1b20cba037108872b1e7058cb1e515c8f64b0dcd4e5349c398251"
+    },
+    "evidenceHashes": [
+      "47fe8a0f692c3d21bfeb739c6561520ab92aa701c26dc93875700ae32ecf7f80"
+    ],
+    "deadline": "2026-07-11T18:10:19.052Z",
+    "signature": "Uez4hXyxrpD6NMtC4/LrBaRmNMHV2HA7cEPVIp7okuAA1/oWtfxTRbfTjlU1goQVAmv6nc93DsrJLpuSyzUpAw=="
+  },
+  "report": {
+    "id": "report-e3461b7b-cfcd-464b-adb4-16cfc2f86f6d",
+    "handoffId": "handoff-8ac0fbff-a9d6-4565-8437-af76a2df5804",
+    "authorId": "verifier-8fa575d193ddc322",
+    "role": "verifier",
+    "status": "completed",
+    "outputHash": "11a49f853eb8befe94fef278d487125cd20930b9e41c4c0934394443e7f00878",
+    "evidenceHashes": [
+      "47fe8a0f692c3d21bfeb739c6561520ab92aa701c26dc93875700ae32ecf7f80",
+      "26042bc7f2c1b20cba037108872b1e7058cb1e515c8f64b0dcd4e5349c398251"
+    ],
+    "claims": [
+      "Signature valid",
+      "Scope bounded",
+      "Receipt present"
+    ],
+    "limitations": [
+      "Physical TITAI gates remain blocked"
+    ],
+    "signature": "ZYeWe/MHuwg+Y01fswawjavAorVqdsXxQbNNxcpa011aoFZcXp6g78XHMRqZ3n2pGSUv9WlbjUbnXXUA+NyWAg=="
+  },
+  "decision": {
+    "accepted": true,
+    "hash": "ac791eb782cbf4b6bc6cfcd2fae4a8635d6e21dd1a586750c2992435d09d2bfc",
+    "minorityReports": []
+  }
+}

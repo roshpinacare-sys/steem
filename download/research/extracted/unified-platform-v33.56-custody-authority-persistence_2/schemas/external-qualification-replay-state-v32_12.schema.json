@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sovereign-foundry.invalid/schemas/external-qualification-replay-state-v32_12.schema.json",
+  "title": "v32.12 Durable Replay and Witness Checkpoint State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "stateId",
+    "generation",
+    "updatedAt",
+    "previousStateDigest",
+    "consumedNonces",
+    "witnessCheckpoints",
+    "stateDigest"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "32.12"
+    },
+    "stateId": {
+      "$ref": "#/$defs/identifier"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAt": {
+      "$ref": "#/$defs/canonicalInstant"
+    },
+    "previousStateDigest": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/digest"
+        }
+      ]
+    },
+    "consumedNonces": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonce"
+      }
+    },
+    "witnessCheckpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "witnessKeyId",
+          "checkpointSequence",
+          "statementDigest"
+        ],
+        "properties": {
+          "witnessKeyId": {
+            "$ref": "#/$defs/identifier"
+          },
+          "checkpointSequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "statementDigest": {
+            "$ref": "#/$defs/digest"
+          }
+        }
+      }
+    },
+    "stateDigest": {
+      "$ref": "#/$defs/digest"
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}$"
+    },
+    "canonicalInstant": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{32,256}$"
+    }
+  }
+}

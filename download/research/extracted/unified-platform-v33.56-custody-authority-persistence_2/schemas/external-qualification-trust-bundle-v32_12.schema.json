@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sovereign-foundry.invalid/schemas/external-qualification-trust-bundle-v32_12.schema.json",
+  "title": "v32.12 Root-Signed External Qualification Trust Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "payload",
+    "issuerKeyId",
+    "algorithm",
+    "signature"
+  ],
+  "properties": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "trustBundleId",
+        "purpose",
+        "issuedAt",
+        "expiresAt",
+        "policy",
+        "authorizedKeys"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "32.12"
+        },
+        "trustBundleId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "purpose": {
+          "enum": [
+            "production",
+            "diagnostic"
+          ]
+        },
+        "issuedAt": {
+          "$ref": "#/$defs/canonicalInstant"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/canonicalInstant"
+        },
+        "policy": {
+          "$ref": "#/$defs/policy"
+        },
+        "authorizedKeys": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "$ref": "#/$defs/authorization"
+          }
+        }
+      }
+    },
+    "issuerKeyId": {
+      "$ref": "#/$defs/identifier"
+    },
+    "algorithm": {
+      "const": "Ed25519"
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}$"
+    },
+    "canonicalInstant": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "gateId": {
+      "enum": [
+        "hsm-kms-custody",
+        "external-monotonic-witness",
+        "postgres-ha-pitr",
+        "consented-comparative-human-pilot",
+        "independent-security-isolation-license-review",
+        "multi-host-slo-revocation-recovery"
+      ]
+    },
+    "publicKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "keyId",
+        "spkiDerBase64",
+        "fingerprint",
+        "revoked"
+      ],
+      "properties": {
+        "keyId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "spkiDerBase64": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "revoked": {
+          "type": "boolean"
+        },
+        "revokedAt": {
+          "$ref": "#/$defs/canonicalInstant"
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "policyId",
+        "policyDigest",
+        "expectedRunId",
+        "expectedSourceDigest",
+        "expectedArtifactDigest",
+        "expectedToolchainDigest",
+        "maximumEvidenceAgeMs",
+        "maximumClockSkewMs",
+        "minimumExecutionMode",
+        "requireWitness",
+        "requiredGateIds"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "32.12"
+        },
+        "policyId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "policyDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "expectedRunId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "expectedSourceDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "expectedArtifactDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "expectedToolchainDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "maximumEvidenceAgeMs": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maximumClockSkewMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60000
+        },
+        "minimumExecutionMode": {
+          "enum": [
+            "local-dry-run",
+            "independent-process",
+            "independent-host",
+            "independent-organization"
+          ]
+        },
+        "requireWitness": {
+          "type": "boolean"
+        },
+        "requiredGateIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/gateId"
+          }
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "actorId",
+        "keyId",
+        "keyFingerprint",
+        "organizationId",
+        "allowedGateIds",
+        "credentialValidFrom",
+        "credentialValidUntil",
+        "publicKey"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "collector",
+            "reviewer",
+            "witness"
+          ]
+        },
+        "actorId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "keyId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "keyFingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "organizationId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "allowedGateIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/gateId"
+          }
+        },
+        "credentialValidFrom": {
+          "$ref": "#/$defs/canonicalInstant"
+        },
+        "credentialValidUntil": {
+          "$ref": "#/$defs/canonicalInstant"
+        },
+        "publicKey": {
+          "$ref": "#/$defs/publicKey"
+        }
+      }
+    }
+  }
+}

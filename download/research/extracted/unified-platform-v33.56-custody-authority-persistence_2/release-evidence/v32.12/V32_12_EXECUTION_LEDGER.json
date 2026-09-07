@@ -1,0 +1,246 @@
+{
+  "version": "32.12",
+  "runId": "v32.12-authoritative-local-r3",
+  "status": "passed",
+  "startedAt": "2026-07-19T11:42:01.149508Z",
+  "updatedAt": "2026-07-19T11:44:45.996217Z",
+  "sourceDigest": "cb4f945d4c89021649eb1ae9e21811336072ea53b729c4e04bfef41aed7c9149",
+  "steps": [
+    {
+      "id": "repository-truth-map",
+      "sequence": 1,
+      "command": [
+        "node",
+        "scripts/repository-truth-map-v32_12.mjs"
+      ],
+      "startedAt": "2026-07-19T11:42:01.221062Z",
+      "finishedAt": "2026-07-19T11:42:02.696413Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_12_REPOSITORY_TRUTH_MAP.json",
+          "sha256": "4a5dad94578ecae8beb4051698a99ea5e7dd33ad9fd39eb53c41bc22da97d4d9",
+          "bytes": 17309
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/01-repository-truth-map.log"
+    },
+    {
+      "id": "clean-build",
+      "sequence": 2,
+      "command": [
+        "npm",
+        "run",
+        "build:clean:v32"
+      ],
+      "startedAt": "2026-07-19T11:42:02.697316Z",
+      "finishedAt": "2026-07-19T11:42:08.674191Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_12_BUILD_IDENTITY.json",
+          "sha256": "76b9831e7767cd6c87984b95ca7089ec8120824b56c5b5e7c0f3a7183a447f9b",
+          "bytes": 925
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/02-clean-build.log"
+    },
+    {
+      "id": "full-regression",
+      "sequence": 3,
+      "command": [
+        "python3",
+        "scripts/run-tests-v32_6.py",
+        "--mode",
+        "full",
+        "--no-build"
+      ],
+      "startedAt": "2026-07-19T11:42:20.907055Z",
+      "finishedAt": "2026-07-19T11:42:46.945644Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_6_FULL_TEST_RESULTS.json",
+          "sha256": "36618aa74ce6506cf8939b0afa01008aed7414a8a38d7c72c5357ed113a1f738",
+          "bytes": 20102
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/03-full-regression.log"
+    },
+    {
+      "id": "local-assurance-mutation-v32.10",
+      "sequence": 4,
+      "command": [
+        "python3",
+        "scripts/run-local-assurance-mutation-v32_10.py"
+      ],
+      "startedAt": "2026-07-19T11:42:58.103262Z",
+      "finishedAt": "2026-07-19T11:43:03.972011Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_10_LOCAL_ASSURANCE_MUTATION_RESULTS.json",
+          "sha256": "31a37e038e7e65a5237c1bce6bf7e5e9d1c9733286b993703e25295d91a41b81",
+          "bytes": 18605
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/04-local-assurance-mutation-v32.10.log"
+    },
+    {
+      "id": "execution-ledger-mutation-v32.11",
+      "sequence": 5,
+      "command": [
+        "python3",
+        "scripts/run-execution-ledger-mutation-v32_11.py"
+      ],
+      "startedAt": "2026-07-19T11:43:15.548561Z",
+      "finishedAt": "2026-07-19T11:43:25.346067Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_11_EXECUTION_LEDGER_MUTATION_RESULTS.json",
+          "sha256": "f5993753bb740b816f0db71ead7be1919b34793025c6cf81fa2f45c10484adbb",
+          "bytes": 15612
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/05-execution-ledger-mutation-v32.11.log"
+    },
+    {
+      "id": "external-integrity-mutation-v32.12",
+      "sequence": 6,
+      "command": [
+        "python3",
+        "scripts/run-external-integrity-mutation-v32_12.py"
+      ],
+      "startedAt": "2026-07-19T11:43:33.000007Z",
+      "finishedAt": "2026-07-19T11:43:49.048178Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_12_EXTERNAL_INTEGRITY_MUTATION_RESULTS.json",
+          "sha256": "6245569e2bbbe9b41dcf9eb649535201460f9eea92ccff0817db88284de5daa1",
+          "bytes": 43156
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/06-external-integrity-mutation-v32.12.log"
+    },
+    {
+      "id": "coverage",
+      "sequence": 7,
+      "command": [
+        "node",
+        "scripts/run-coverage-v32.mjs"
+      ],
+      "startedAt": "2026-07-19T11:44:02.163790Z",
+      "finishedAt": "2026-07-19T11:44:20.752348Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_COVERAGE_REPORT.json",
+          "sha256": "d4f32dc519048cfbc167026dfa59baef4fee553df7b1d7321742d812ec740892",
+          "bytes": 3872
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/07-coverage.log"
+    },
+    {
+      "id": "test-quality",
+      "sequence": 8,
+      "command": [
+        "node",
+        "scripts/test-quality-audit-v32.mjs"
+      ],
+      "startedAt": "2026-07-19T11:44:28.976792Z",
+      "finishedAt": "2026-07-19T11:44:31.098317Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_TEST_QUALITY_AUDIT.json",
+          "sha256": "a969daf37b6fae8e00eb653531b404cc1644f80aa6ada8a7229f8da3b65aa45e",
+          "bytes": 27449
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/08-test-quality.log"
+    },
+    {
+      "id": "architecture",
+      "sequence": 9,
+      "command": [
+        "node",
+        "scripts/architecture-validation-v32.mjs"
+      ],
+      "startedAt": "2026-07-19T11:44:31.099249Z",
+      "finishedAt": "2026-07-19T11:44:33.399279Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_ARCHITECTURE_INTEGRITY.json",
+          "sha256": "65803ffd63a40f83ef547b8afb09e59783bec95dcbbbe44e3e21116154800fe3",
+          "bytes": 19785
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/09-architecture.log"
+    },
+    {
+      "id": "external-readiness",
+      "sequence": 10,
+      "command": [
+        "node",
+        "scripts/external-qualification-readiness-cycle-v32_12.mjs"
+      ],
+      "startedAt": "2026-07-19T11:44:33.400147Z",
+      "finishedAt": "2026-07-19T11:44:33.519000Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_12_EXTERNAL_QUALIFICATION_READINESS.json",
+          "sha256": "3dfa473095549ab2d5e165116e70abfbc272e25fb515983c6a6d2e6f691e118f",
+          "bytes": 2842
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/10-external-readiness.log"
+    },
+    {
+      "id": "release-final",
+      "sequence": 11,
+      "command": [
+        "node",
+        "scripts/validate-v32_12.mjs"
+      ],
+      "startedAt": "2026-07-19T11:44:44.526495Z",
+      "finishedAt": "2026-07-19T11:44:45.995366Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.12-authoritative-local-r3/V32_12_FINAL_VALIDATION.json",
+          "sha256": "76bbf1a349733d01bf9bd0260653c66c929fed3aee9fa5f5ba885c4ed62ae6e7",
+          "bytes": 3601
+        }
+      ],
+      "logPath": "evidence/runs/v32.12-authoritative-local-r3/logs/11-release-final.log"
+    }
+  ],
+  "productionPromotion": "blocked"
+}

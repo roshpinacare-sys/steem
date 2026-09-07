@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ecos_db
+      POSTGRES_USER: ecos
+      POSTGRES_PASSWORD: ecos_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/setup-db.sh:/docker-entrypoint-initdb.d/setup.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ecos-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://ecos:ecos_dev_password@postgres:5432/ecos_db
+      NODE_ENV: production
+      LOG_LEVEL: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./monitor/alerts.ndjson:/app/monitor/alerts.ndjson
+
+  ecos-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    ports:
+      - "3099:3099"
+    environment:
+      ECOS_BASE_URL: http://ecos-api:3000
+      MONITOR_INTERVAL_MS: 30000
+      MONITOR_QUEUE_THRESHOLD: 10
+    depends_on:
+      - ecos-api
+
+volumes:
+  postgres_data:

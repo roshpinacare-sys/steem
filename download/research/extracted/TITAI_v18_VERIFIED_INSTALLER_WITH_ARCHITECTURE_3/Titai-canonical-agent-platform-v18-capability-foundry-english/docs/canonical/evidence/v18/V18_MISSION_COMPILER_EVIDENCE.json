@@ -1,0 +1,164 @@
+{
+  "intent": {
+    "desiredOutcome": "Inspect local documents and create an evidence-bound report",
+    "inputs": [
+      "local document files"
+    ],
+    "outputs": [
+      "report artifact"
+    ],
+    "constraints": [
+      "No external network"
+    ],
+    "successCriteria": [
+      "Every output has a hash"
+    ],
+    "tenantId": "tenant-v18",
+    "workspaceId": "workspace-v18",
+    "ownerId": "operator-v18",
+    "privacy": "local_only",
+    "networkPolicy": "deny_all",
+    "approvals": [
+      "artifact write"
+    ],
+    "requiredEvidence": [
+      "package hash",
+      "output hash",
+      "receipt"
+    ],
+    "failureBehavior": "fail_closed"
+  },
+  "mission": {
+    "id": "mission-94b9419c-59ff-44d9-b58d-3cc31b30cf78",
+    "revision": 1,
+    "tenantId": "tenant-v18",
+    "workspaceId": "workspace-v18",
+    "ownerId": "operator-v18",
+    "intent": {
+      "desiredOutcome": "Inspect local documents and create an evidence-bound report",
+      "inputs": [
+        "local document files"
+      ],
+      "outputs": [
+        "report artifact"
+      ],
+      "constraints": [
+        "No external network"
+      ],
+      "successCriteria": [
+        "Every output has a hash"
+      ],
+      "tenantId": "tenant-v18",
+      "workspaceId": "workspace-v18",
+      "ownerId": "operator-v18",
+      "privacy": "local_only",
+      "networkPolicy": "deny_all",
+      "approvals": [
+        "artifact write"
+      ],
+      "requiredEvidence": [
+        "package hash",
+        "output hash",
+        "receipt"
+      ],
+      "failureBehavior": "fail_closed"
+    },
+    "steps": [
+      {
+        "id": "step-1-plan",
+        "kind": "plan",
+        "dependsOn": [],
+        "capabilityRequirements": [
+          "titai.local.document-toolpack"
+        ],
+        "authority": [
+          "workspace.read"
+        ],
+        "approvalRequired": false,
+        "idempotencyKey": "692783d91e8fe19884d985bb69699d679e3efa536f177e2af554f7e2b2e52f65",
+        "retry": {
+          "maxAttempts": 2
+        },
+        "reconciliation": "not_applicable",
+        "evidence": [
+          "package hash",
+          "output hash",
+          "receipt"
+        ]
+      },
+      {
+        "id": "step-2-execute",
+        "kind": "capability",
+        "dependsOn": [
+          "step-1-plan"
+        ],
+        "capabilityRequirements": [
+          "titai.local.document-toolpack"
+        ],
+        "authority": [
+          "workspace.read",
+          "workspace.write"
+        ],
+        "approvalRequired": true,
+        "idempotencyKey": "7a4a6886c21c463251d60afe59a144a1b0786be5f5e29c5bf5638f9b07eb5a85",
+        "retry": {
+          "maxAttempts": 3
+        },
+        "reconciliation": "receipt_required",
+        "evidence": [
+          "package hash",
+          "output hash",
+          "receipt"
+        ]
+      }
+    ],
+    "findings": [],
+    "gaps": [
+      {
+        "requirement": "file-inspection",
+        "resolution": "use",
+        "capabilities": [
+          "titai.local.document-toolpack"
+        ],
+        "reason": "Highest-confidence scoped capability selected."
+      },
+      {
+        "requirement": "report-generation",
+        "resolution": "use",
+        "capabilities": [
+          "titai.local.document-toolpack"
+        ],
+        "reason": "Highest-confidence scoped capability selected."
+      }
+    ],
+    "semanticDiff": [
+      {
+        "label": "Outcome",
+        "requested": "Inspect local documents and create an evidence-bound report",
+        "compiled": "2 typed steps"
+      },
+      {
+        "label": "Data movement",
+        "requested": "No external network",
+        "compiled": "deny_all"
+      },
+      {
+        "label": "Capabilities",
+        "requested": "Inferred from intent",
+        "compiled": "titai.local.document-toolpack"
+      },
+      {
+        "label": "Approvals",
+        "requested": "artifact write",
+        "compiled": "Human approval before write"
+      },
+      {
+        "label": "Rollback",
+        "requested": "fail_closed",
+        "compiled": "Receipt-bound reversible output"
+      }
+    ],
+    "missionHash": "0c492578a564c4f50559ce0561b5d4319a587d17ec20809e50a417b50664f656",
+    "status": "draft"
+  }
+}

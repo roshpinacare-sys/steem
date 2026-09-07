@@ -1,0 +1,718 @@
+TAP version 13
+# Subtest: protocol binds the canonical UX thresholds and shadow ceiling
+ok 1 - protocol binds the canonical UX thresholds and shadow ceiling
+  ---
+  duration_ms: 6.782018
+  type: 'test'
+  ...
+# Subtest: protocol requires three distinct scenarios
+ok 2 - protocol requires three distinct scenarios
+  ---
+  duration_ms: 4.189848
+  type: 'test'
+  ...
+# Subtest: protocol rejects retention over ninety days
+ok 3 - protocol rejects retention over ninety days
+  ---
+  duration_ms: 2.581945
+  type: 'test'
+  ...
+# Subtest: protocol rejects duplicate scenarios
+ok 4 - protocol rejects duplicate scenarios
+  ---
+  duration_ms: 2.63859
+  type: 'test'
+  ...
+# Subtest: consent rejects a non digest participant alias
+ok 5 - consent rejects a non digest participant alias
+  ---
+  duration_ms: 3.113523
+  type: 'test'
+  ...
+# Subtest: consent cannot outlive the protocol
+ok 6 - consent cannot outlive the protocol
+  ---
+  duration_ms: 3.0169
+  type: 'test'
+  ...
+# Subtest: tampered protocol cannot issue consent
+ok 7 - tampered protocol cannot issue consent
+  ---
+  duration_ms: 2.984462
+  type: 'test'
+  ...
+# Subtest: baseline flow forbids approval events
+ok 8 - baseline flow forbids approval events
+  ---
+  duration_ms: 4.095528
+  type: 'test'
+  ...
+# Subtest: governed flow requires comprehension and approval view
+ok 9 - governed flow requires comprehension and approval view
+  ---
+  duration_ms: 3.390814
+  type: 'test'
+  ...
+# Subtest: event sequence gaps are rejected
+ok 10 - event sequence gaps are rejected
+  ---
+  duration_ms: 3.538052
+  type: 'test'
+  ...
+# Subtest: duplicate event ids are rejected
+ok 11 - duplicate event ids are rejected
+  ---
+  duration_ms: 3.346398
+  type: 'test'
+  ...
+# Subtest: nonmonotonic event time is rejected
+ok 12 - nonmonotonic event time is rejected
+  ---
+  duration_ms: 3.0305
+  type: 'test'
+  ...
+# Subtest: governed participant attestation requires answer digest
+ok 13 - governed participant attestation requires answer digest
+  ---
+  duration_ms: 5.160616
+  type: 'test'
+  ...
+# Subtest: baseline participant attestation forbids answer digest
+ok 14 - baseline participant attestation forbids answer digest
+  ---
+  duration_ms: 5.559947
+  type: 'test'
+  ...
+# Subtest: governed observer requires comprehension assessment
+ok 15 - governed observer requires comprehension assessment
+  ---
+  duration_ms: 4.204058
+  type: 'test'
+  ...
+# Subtest: baseline observer forbids comprehension assessment
+ok 16 - baseline observer forbids comprehension assessment
+  ---
+  duration_ms: 4.868723
+  type: 'test'
+  ...
+# Subtest: excellent simulated metrics never pass G3
+ok 17 - excellent simulated metrics never pass G3
+  ---
+  duration_ms: 27.211276
+  type: 'test'
+  ...
+# Subtest: external label alone requires v33.31 provenance and cannot pass
+ok 18 - external label alone requires v33.31 provenance and cannot pass
+  ---
+  duration_ms: 24.921464
+  type: 'test'
+  ...
+# Subtest: fewer than five humans stays insufficient
+ok 19 - fewer than five humans stays insufficient
+  ---
+  duration_ms: 18.593538
+  type: 'test'
+  ...
+# Subtest: fewer than three scenarios blocks the gate
+ok 20 - fewer than three scenarios blocks the gate
+  ---
+  duration_ms: 37.270129
+  type: 'test'
+  ...
+# Subtest: step reduction below seventy percent blocks the gate
+ok 21 - step reduction below seventy percent blocks the gate
+  ---
+  duration_ms: 32.674961
+  type: 'test'
+  ...
+# Subtest: median above one approval blocks the gate
+ok 22 - median above one approval blocks the gate
+  ---
+  duration_ms: 27.461627
+  type: 'test'
+  ...
+# Subtest: median comprehension above ten seconds blocks the gate
+ok 23 - median comprehension above ten seconds blocks the gate
+  ---
+  duration_ms: 26.885734
+  type: 'test'
+  ...
+# Subtest: one accessibility failure blocks the one hundred percent target
+ok 24 - one accessibility failure blocks the one hundred percent target
+  ---
+  duration_ms: 26.727229
+  type: 'test'
+  ...
+# Subtest: one task failure blocks task success target
+ok 25 - one task failure blocks task success target
+  ---
+  duration_ms: 26.526272
+  type: 'test'
+  ...
+# Subtest: incorrect comprehension blocks the gate
+ok 26 - incorrect comprehension blocks the gate
+  ---
+  duration_ms: 28.05082
+  type: 'test'
+  ...
+# Subtest: mixed simulated and human evidence cannot pass
+ok 27 - mixed simulated and human evidence cannot pass
+  ---
+  duration_ms: 17.968852
+  type: 'test'
+  ...
+# Subtest: participant withdrawal excludes evidence and blocks minimum count
+ok 28 - participant withdrawal excludes evidence and blocks minimum count
+  ---
+  duration_ms: 21.590549
+  type: 'test'
+  ...
+# Subtest: duplicate consent for a participant is rejected
+ok 29 - duplicate consent for a participant is rejected
+  ---
+  duration_ms: 16.134305
+  type: 'test'
+  ...
+# Subtest: duplicate baseline session is rejected
+ok 30 - duplicate baseline session is rejected
+  ---
+  duration_ms: 24.038115
+  type: 'test'
+  ...
+# Subtest: paired baseline and governed scenarios must match
+ok 31 - paired baseline and governed scenarios must match
+  ---
+  duration_ms: 26.232336
+  type: 'test'
+  ...
+# Subtest: observer cannot be in the researcher organization
+ok 32 - observer cannot be in the researcher organization
+  ---
+  duration_ms: 15.863504
+  type: 'test'
+  ...
+# Subtest: verifier must be on a different organization and host from researcher
+ok 33 - verifier must be on a different organization and host from researcher
+  ---
+  duration_ms: 15.149236
+  type: 'test'
+  ...
+# Subtest: participant key cannot overlap a staff key
+ok 34 - participant key cannot overlap a staff key
+  ---
+  duration_ms: 16.016721
+  type: 'test'
+  ...
+# Subtest: evidence artifact cannot be reused across baseline and governed flow
+ok 35 - evidence artifact cannot be reused across baseline and governed flow
+  ---
+  duration_ms: 31.453501
+  type: 'test'
+  ...
+# Subtest: session signed by an untrusted instrumentation key is rejected
+ok 36 - session signed by an untrusted instrumentation key is rejected
+  ---
+  duration_ms: 22.101065
+  type: 'test'
+  ...
+# Subtest: observer signed by an untrusted key is rejected
+ok 37 - observer signed by an untrusted key is rejected
+  ---
+  duration_ms: 23.898559
+  type: 'test'
+  ...
+# Subtest: participant attestation cannot be rebound to a different session
+ok 38 - participant attestation cannot be rebound to a different session
+  ---
+  duration_ms: 24.880132
+  type: 'test'
+  ...
+# Subtest: tampered raw event breaks the session signature
+ok 39 - tampered raw event breaks the session signature
+  ---
+  duration_ms: 22.526595
+  type: 'test'
+  ...
+# Subtest: verdict signature and protocol binding verify
+ok 40 - verdict signature and protocol binding verify
+  ---
+  duration_ms: 20.956248
+  type: 'test'
+  ...
+# Subtest: tampered verdict is rejected
+ok 41 - tampered verdict is rejected
+  ---
+  duration_ms: 21.453625
+  type: 'test'
+  ...
+# Subtest: untrusted verifier is rejected
+ok 42 - untrusted verifier is rejected
+  ---
+  duration_ms: 20.45074
+  type: 'test'
+  ...
+# Subtest: all pilot artifacts remain shadow-only with zero effects
+ok 43 - all pilot artifacts remain shadow-only with zero effects
+  ---
+  duration_ms: 20.667801
+  type: 'test'
+  ...
+# Subtest: v33.30 external label alone no longer authoritatively passes
+ok 44 - v33.30 external label alone no longer authoritatively passes
+  ---
+  duration_ms: 52.440156
+  type: 'test'
+  ...
+# Subtest: live external contract fixture passes only through signed provenance import
+ok 45 - live external contract fixture passes only through signed provenance import
+  ---
+  duration_ms: 42.607978
+  type: 'test'
+  ...
+# Subtest: synthetic reference remains blocked after structurally valid import
+ok 46 - synthetic reference remains blocked after structurally valid import
+  ---
+  duration_ms: 44.313815
+  type: 'test'
+  ...
+# Subtest: fewer than five live participants remains insufficient
+ok 47 - fewer than five live participants remains insufficient
+  ---
+  duration_ms: 32.060611
+  type: 'test'
+  ...
+# Subtest: threshold failure remains failed even with valid external provenance
+ok 48 - threshold failure remains failed even with valid external provenance
+  ---
+  duration_ms: 36.765141
+  type: 'test'
+  ...
+# Subtest: role challenge rejects a short nonce
+ok 49 - role challenge rejects a short nonce
+  ---
+  duration_ms: 23.803567
+  type: 'test'
+  ...
+# Subtest: export challenge rejects a short nonce
+ok 50 - export challenge rejects a short nonce
+  ---
+  duration_ms: 23.942954
+  type: 'test'
+  ...
+# Subtest: untrusted registrar proof is rejected
+ok 51 - untrusted registrar proof is rejected
+  ---
+  duration_ms: 26.294908
+  type: 'test'
+  ...
+# Subtest: untrusted exporter manifest is rejected
+ok 52 - untrusted exporter manifest is rejected
+  ---
+  duration_ms: 25.022123
+  type: 'test'
+  ...
+# Subtest: unsigned role-binding alteration breaks manifest binding
+ok 53 - unsigned role-binding alteration breaks manifest binding
+  ---
+  duration_ms: 24.384958
+  type: 'test'
+  ...
+# Subtest: externally attested role binding must match enrollment
+ok 54 - externally attested role binding must match enrollment
+  ---
+  duration_ms: 31.615401
+  type: 'test'
+  ...
+# Subtest: observer cannot share organization with instrumentation
+ok 55 - observer cannot share organization with instrumentation
+  ---
+  duration_ms: 28.040044
+  type: 'test'
+  ...
+# Subtest: missing participant enrollment is rejected
+ok 56 - missing participant enrollment is rejected
+  ---
+  duration_ms: 30.071074
+  type: 'test'
+  ...
+# Subtest: exporter enrollment must match manifest source identity
+ok 57 - exporter enrollment must match manifest source identity
+  ---
+  duration_ms: 31.382386
+  type: 'test'
+  ...
+# Subtest: manifest tamper is rejected
+ok 58 - manifest tamper is rejected
+  ---
+  duration_ms: 24.241787
+  type: 'test'
+  ...
+# Subtest: artifact byte tamper is rejected
+ok 59 - artifact byte tamper is rejected
+  ---
+  duration_ms: 29.194114
+  type: 'test'
+  ...
+# Subtest: missing artifact is rejected
+ok 60 - missing artifact is rejected
+  ---
+  duration_ms: 29.440038
+  type: 'test'
+  ...
+# Subtest: extra artifact is rejected
+ok 61 - extra artifact is rejected
+  ---
+  duration_ms: 29.709348
+  type: 'test'
+  ...
+# Subtest: observation artifacts reject noncanonical JSON
+ok 62 - observation artifacts reject noncanonical JSON
+  ---
+  duration_ms: 31.05487
+  type: 'test'
+  ...
+# Subtest: artifact record path traversal is rejected before signing
+ok 63 - artifact record path traversal is rejected before signing
+  ---
+  duration_ms: 22.98171
+  type: 'test'
+  ...
+# Subtest: opaque artifact not referenced by observer assessment is rejected
+ok 64 - opaque artifact not referenced by observer assessment is rejected
+  ---
+  duration_ms: 33.086551
+  type: 'test'
+  ...
+# Subtest: challenge replay is rejected by monotonic checkpoint
+ok 65 - challenge replay is rejected by monotonic checkpoint
+  ---
+  duration_ms: 53.599884
+  type: 'test'
+  ...
+# Subtest: package replay is rejected even if checkpoint lists only package digest
+ok 66 - package replay is rejected even if checkpoint lists only package digest
+  ---
+  duration_ms: 24.226544
+  type: 'test'
+  ...
+# Subtest: tampered checkpoint is rejected
+ok 67 - tampered checkpoint is rejected
+  ---
+  duration_ms: 24.930898
+  type: 'test'
+  ...
+# Subtest: expired export challenge is rejected
+ok 68 - expired export challenge is rejected
+  ---
+  duration_ms: 24.83822
+  type: 'test'
+  ...
+# Subtest: importer identity must match the signed challenge
+ok 69 - importer identity must match the signed challenge
+  ---
+  duration_ms: 24.69674
+  type: 'test'
+  ...
+# Subtest: verifier must match externally enrolled verifier key
+ok 70 - verifier must match externally enrolled verifier key
+  ---
+  duration_ms: 29.807743
+  type: 'test'
+  ...
+# Subtest: withdrawal evidence is excluded and blocks minimum count
+ok 71 - withdrawal evidence is excluded and blocks minimum count
+  ---
+  duration_ms: 39.114132
+  type: 'test'
+  ...
+# Subtest: qualification verdict signature and bindings verify
+ok 72 - qualification verdict signature and bindings verify
+  ---
+  duration_ms: 36.405088
+  type: 'test'
+  ...
+# Subtest: tampered qualification verdict is rejected
+ok 73 - tampered qualification verdict is rejected
+  ---
+  duration_ms: 37.859823
+  type: 'test'
+  ...
+# Subtest: all import outputs remain shadow-only with zero effects
+ok 74 - all import outputs remain shadow-only with zero effects
+  ---
+  duration_ms: 38.991951
+  type: 'test'
+  ...
+# Subtest: valid three-of-five witness transition verifies
+ok 75 - valid three-of-five witness transition verifies
+  ---
+  duration_ms: 17.748576
+  type: 'test'
+  ...
+# Subtest: two witness votes fail quorum
+ok 76 - two witness votes fail quorum
+  ---
+  duration_ms: 5.720065
+  type: 'test'
+  ...
+# Subtest: policy rejects fewer than three witnesses
+ok 77 - policy rejects fewer than three witnesses
+  ---
+  duration_ms: 4.367511
+  type: 'test'
+  ...
+# Subtest: policy rejects duplicate witness organization
+ok 78 - policy rejects duplicate witness organization
+  ---
+  duration_ms: 4.789997
+  type: 'test'
+  ...
+# Subtest: policy rejects duplicate witness host
+ok 79 - policy rejects duplicate witness host
+  ---
+  duration_ms: 5.734366
+  type: 'test'
+  ...
+# Subtest: policy rejects witness overlap with importer
+ok 80 - policy rejects witness overlap with importer
+  ---
+  duration_ms: 4.092333
+  type: 'test'
+  ...
+# Subtest: policy rejects importer coordinator overlap
+ok 81 - policy rejects importer coordinator overlap
+  ---
+  duration_ms: 4.08989
+  type: 'test'
+  ...
+# Subtest: expired policy fails transition verification
+ok 82 - expired policy fails transition verification
+  ---
+  duration_ms: 5.107097
+  type: 'test'
+  ...
+# Subtest: tampered policy signature fails
+ok 83 - tampered policy signature fails
+  ---
+  duration_ms: 4.539616
+  type: 'test'
+  ...
+# Subtest: untrusted policy signer fails
+ok 84 - untrusted policy signer fails
+  ---
+  duration_ms: 4.271709
+  type: 'test'
+  ...
+# Subtest: rollback sequence is rejected
+ok 85 - rollback sequence is rejected
+  ---
+  duration_ms: 4.26586
+  type: 'test'
+  ...
+# Subtest: skipped sequence is rejected
+ok 86 - skipped sequence is rejected
+  ---
+  duration_ms: 4.140505
+  type: 'test'
+  ...
+# Subtest: wrong previous checkpoint digest is rejected
+ok 87 - wrong previous checkpoint digest is rejected
+  ---
+  duration_ms: 4.367541
+  type: 'test'
+  ...
+# Subtest: challenge consumption must be exact append
+ok 88 - challenge consumption must be exact append
+  ---
+  duration_ms: 3.976021
+  type: 'test'
+  ...
+# Subtest: package consumption must be exact append
+ok 89 - package consumption must be exact append
+  ---
+  duration_ms: 3.880299
+  type: 'test'
+  ...
+# Subtest: tampered proposal signature fails
+ok 90 - tampered proposal signature fails
+  ---
+  duration_ms: 4.530993
+  type: 'test'
+  ...
+# Subtest: untrusted importer proposal fails
+ok 91 - untrusted importer proposal fails
+  ---
+  duration_ms: 4.987439
+  type: 'test'
+  ...
+# Subtest: tampered witness vote fails
+ok 92 - tampered witness vote fails
+  ---
+  duration_ms: 4.924917
+  type: 'test'
+  ...
+# Subtest: untrusted witness fails
+ok 93 - untrusted witness fails
+  ---
+  duration_ms: 4.147935
+  type: 'test'
+  ...
+# Subtest: duplicate witness vote cannot satisfy quorum
+ok 94 - duplicate witness vote cannot satisfy quorum
+  ---
+  duration_ms: 5.489524
+  type: 'test'
+  ...
+# Subtest: vote bound to wrong proposal is rejected
+ok 95 - vote bound to wrong proposal is rejected
+  ---
+  duration_ms: 4.962442
+  type: 'test'
+  ...
+# Subtest: equivocation detector finds conflicting witness votes
+ok 96 - equivocation detector finds conflicting witness votes
+  ---
+  duration_ms: 3.892397
+  type: 'test'
+  ...
+# Subtest: equivocation blocks transition
+ok 97 - equivocation blocks transition
+  ---
+  duration_ms: 5.206735
+  type: 'test'
+  ...
+# Subtest: tampered certificate signature fails
+ok 98 - tampered certificate signature fails
+  ---
+  duration_ms: 5.455603
+  type: 'test'
+  ...
+# Subtest: untrusted coordinator fails
+ok 99 - untrusted coordinator fails
+  ---
+  duration_ms: 4.993007
+  type: 'test'
+  ...
+# Subtest: certificate vote inventory tamper is rejected even when resigned
+ok 100 - certificate vote inventory tamper is rejected even when resigned
+  ---
+  duration_ms: 5.209238
+  type: 'test'
+  ...
+# Subtest: tampered next anchor signature fails
+ok 101 - tampered next anchor signature fails
+  ---
+  duration_ms: 5.582802
+  type: 'test'
+  ...
+# Subtest: resigned next anchor with wrong certificate is rejected
+ok 102 - resigned next anchor with wrong certificate is rejected
+  ---
+  duration_ms: 5.337558
+  type: 'test'
+  ...
+# Subtest: execution kit verifies as structural only
+ok 103 - execution kit verifies as structural only
+  ---
+  duration_ms: 4.5964
+  type: 'test'
+  ...
+# Subtest: execution kit rejects missing required role
+ok 104 - execution kit rejects missing required role
+  ---
+  duration_ms: 3.760502
+  type: 'test'
+  ...
+# Subtest: execution kit rejects overlapping organizations
+ok 105 - execution kit rejects overlapping organizations
+  ---
+  duration_ms: 4.081117
+  type: 'test'
+  ...
+# Subtest: execution kit rejects retention beyond 30 days
+ok 106 - execution kit rejects retention beyond 30 days
+  ---
+  duration_ms: 3.67217
+  type: 'test'
+  ...
+# Subtest: tampered execution kit signature fails
+ok 107 - tampered execution kit signature fails
+  ---
+  duration_ms: 4.120335
+  type: 'test'
+  ...
+# Subtest: execution kit binding mismatch fails
+ok 108 - execution kit binding mismatch fails
+  ---
+  duration_ms: 4.169627
+  type: 'test'
+  ...
+# Subtest: expired execution kit fails
+ok 109 - expired execution kit fails
+  ---
+  duration_ms: 4.669599
+  type: 'test'
+  ...
+# Subtest: live external base verdict can pass only with federated transition
+ok 110 - live external base verdict can pass only with federated transition
+  ---
+  duration_ms: 6.313584
+  type: 'test'
+  ...
+# Subtest: synthetic base verdict remains blocked despite witness quorum
+ok 111 - synthetic base verdict remains blocked despite witness quorum
+  ---
+  duration_ms: 6.000791
+  type: 'test'
+  ...
+# Subtest: receipt checkpoint mismatch blocks final verdict
+ok 112 - receipt checkpoint mismatch blocks final verdict
+  ---
+  duration_ms: 6.436116
+  type: 'test'
+  ...
+# Subtest: all v33.32 outputs preserve shadow-only zero-effect boundary
+ok 113 - all v33.32 outputs preserve shadow-only zero-effect boundary
+  ---
+  duration_ms: 6.003845
+  type: 'test'
+  ...
+# Subtest: policy witness fingerprint must match trusted registry
+ok 114 - policy witness fingerprint must match trusted registry
+  ---
+  duration_ms: 4.125232
+  type: 'test'
+  ...
+# Subtest: next anchor must be signed by coordinator
+ok 115 - next anchor must be signed by coordinator
+  ---
+  duration_ms: 5.755598
+  type: 'test'
+  ...
+# Subtest: independent kit verifier rejects resigned missing role
+ok 116 - independent kit verifier rejects resigned missing role
+  ---
+  duration_ms: 4.489722
+  type: 'test'
+  ...
+# Subtest: receipt evidence class cannot contradict base verdict
+ok 117 - receipt evidence class cannot contradict base verdict
+  ---
+  duration_ms: 5.889105
+  type: 'test'
+  ...
+# Subtest: synthetic receipt cannot claim external participant count
+ok 118 - synthetic receipt cannot claim external participant count
+  ---
+  duration_ms: 6.425009
+  type: 'test'
+  ...
+1..118
+# tests 118
+# suites 0
+# pass 118
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2099.824975

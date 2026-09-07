@@ -1,0 +1,167 @@
+{
+  "version": "32.6.1",
+  "generatedAt": "2026-07-18T14:02:03.615218Z",
+  "status": "passed",
+  "classification": "coherent-scalable-test-operations-validated-integrated-pilot",
+  "runId": "v32.6.1-coherent-final",
+  "sourceDigest": "301b48139f7ffcb357c0a27fd57bf2c690c2c5e1a89377d827f5e4f4ca407386",
+  "compiledArtifactDigest": "4220aa493f6f2fbffd2e76d4a0be3ed93ca667b317dbf94a6cde41ef073a6b4f",
+  "testManifestDigest": "44283ef7a1aac6529db8015249f63482a286a637771d73dbc80c58de58664790",
+  "testFilesDigest": "214281a40c3493ddda91b0b3c61f76baa3b8863fc301c3c195523708c74935af",
+  "packageLockDigest": "48b2f8b2aa143a66055a2cd416e7daf976141752516dd949b5392472835cd755",
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "checks": {
+    "isolatedEvidenceRun": true,
+    "oneExecutionIdentity": true,
+    "quickMandatorySentinels": true,
+    "fullAuthoritativeClean": true,
+    "mutationBaselineGreen": true,
+    "mutationAuthentic": true,
+    "distributedExactInventory": true,
+    "credentialMutation": true,
+    "supplyChain": true,
+    "localDR": true,
+    "browserE2E": true,
+    "linuxIsolationResearchProof": true,
+    "postgresHonestBlock": true
+  },
+  "testOperations": {
+    "tests": {
+      "full": 758,
+      "core": 641,
+      "quick": 39,
+      "qualification": 36
+    },
+    "wallMs": {
+      "full": 22306.777,
+      "core": 8548.202,
+      "quick": 1776.034,
+      "qualification": 3890.804
+    },
+    "coverage": {
+      "file": "all files",
+      "linePercent": 99.44,
+      "branchPercent": 96.02,
+      "functionPercent": 98.82
+    },
+    "mutations": {
+      "mutantsSpecified": 13,
+      "mutantsKilledAuthentically": 13,
+      "survivors": 0,
+      "invalidKills": 0
+    },
+    "stability": {
+      "meanWallMs": 21930.041,
+      "coefficientOfVariation": 0.0124,
+      "minWallMs": 21680.402,
+      "maxWallMs": 22306.777
+    },
+    "architecture": {
+      "nodeCount": 282,
+      "sourceCount": 127,
+      "testCount": 140,
+      "entrypointCount": 15,
+      "importEdgeCount": 714,
+      "sourceCycleCount": 0,
+      "untestedSourceCount": 0,
+      "capabilityPathCount": 57,
+      "closedCapabilityPathCount": 57,
+      "layerCount": 21
+    },
+    "improvements": {
+      "quickFeedbackReductionPercent": 87.92,
+      "coreFeedbackReductionPercent": 63.11,
+      "fullFeedbackReductionPercent": 12.71
+    }
+  },
+  "profile": {
+    "files": 135,
+    "samplesPerFile": 1,
+    "workers": 4,
+    "profileWallMs": 25695.204,
+    "timingSemantics": {
+      "queueWaitExcludedFromTestCost": true,
+      "planningField": "executionWallMs"
+    }
+  },
+  "distributed": {
+    "shards": 4,
+    "tests": 758,
+    "passed": 758,
+    "failed": 0,
+    "criticalPathWallMs": 5919.995,
+    "checks": {
+      "indexesComplete": true,
+      "inventoryComplete": true,
+      "inventoryUnique": true,
+      "noUnexpectedFiles": true,
+      "everyShardPassed": true,
+      "sourceDigestConsistent": true,
+      "compiledArtifactDigestConsistent": true,
+      "testManifestDigestConsistent": true,
+      "testFilesDigestConsistent": true,
+      "packageLockDigestConsistent": true,
+      "environmentDigestConsistent": true
+    }
+  },
+  "deepAssurance": {
+    "credentialMutation": {
+      "status": "passed",
+      "killed": 16,
+      "specified": 16
+    },
+    "supplyChain": {
+      "status": "passed",
+      "packages": 3,
+      "vulnerabilities": 0
+    },
+    "localDR": {
+      "status": "passed-local-rehearsal",
+      "tamperRejected": true,
+      "limitations": [
+        "single-host file-level rehearsal",
+        "not PostgreSQL PITR",
+        "not multi-region disaster recovery"
+      ]
+    },
+    "browserE2E": {
+      "status": "passed",
+      "checks": 15
+    },
+    "linuxIsolation": {
+      "status": "passed-single-host-research-proof",
+      "checks": 12,
+      "limitations": [
+        "kernel-4.4-no-landlock",
+        "cgroup-v1-environment-no-delegated-v2",
+        "no-container-image",
+        "no-independent-security-review",
+        "single-host-research-proof"
+      ]
+    },
+    "postgres": {
+      "status": "environment-blocked",
+      "blocker": "spawnSync psql ENOENT",
+      "productionQualified": false,
+      "nextAction": "Provide V32_POSTGRES_URL for a disposable PostgreSQL 16.x database, then provide a secondary endpoint for failover qualification."
+    }
+  },
+  "truthBoundary": {
+    "productionPromotion": "BLOCKED",
+    "externalQualification": "NOT_EXECUTED",
+    "postgresHA_PITR": "NOT_QUALIFIED",
+    "multiHostSLO": "NOT_MEASURED",
+    "independentSecurityReview": "NOT_EXECUTED"
+  },
+  "closedAuditFindings": [
+    "Evidence is isolated by run ID and every report is bound to one six-part execution identity.",
+    "Mutation sandbox requires a green baseline, full fixtures, process-group cleanup and never counts timeouts as kills.",
+    "Quick impact selection tracks static imports and subprocess/string worker dependencies; Quick cannot advance the authoritative baseline.",
+    "Mandatory sentinels override tier classification and all four sentinels are present in Quick.",
+    "Profiler separates queue wait from execution time and uses execution cost for planning.",
+    "Every shard binds source, compiled artifact, test manifest, test files, package lock and environment digests.",
+    "Aggregator proves exact, unique test inventory and same identity across all shards.",
+    "Volatile evidence directories are excluded from source manifests.",
+    "WASM execution timeout starts only after the worker becomes online; startup and execution budgets are separated."
+  ]
+}

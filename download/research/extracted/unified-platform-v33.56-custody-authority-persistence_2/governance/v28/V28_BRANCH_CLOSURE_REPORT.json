@@ -1,0 +1,39 @@
+{
+  "version": "28.0",
+  "status": "Implemented and exercised",
+  "ownerRole": "Principal Test Architect",
+  "provenance": [
+    "v27 canonical proof",
+    "v28 clean staged validator"
+  ],
+  "evidence": [
+    "V28_TEST_RESULTS.json",
+    "V28_COVERAGE_REPORT.json",
+    "V28_BRANCH_MUTATION_RESULTS.json",
+    "V28_ARCHITECTURE_INTEGRITY.json"
+  ],
+  "assumptions": [
+    "The declared in-process scope is representative of source branch logic while external processes are separately exercised."
+  ],
+  "limitations": [
+    "External-process paths are not included in the percentage.",
+    "External production qualification is absent."
+  ],
+  "confidence": "high for repository-local branch closure",
+  "independentVerificationStatus": "internal role-separated adversarial review; external certification pending",
+  "nextAction": "Preserve the v28 branch and policy gates during v29 external qualification.",
+  "result": {
+    "tests": "448/448",
+    "testFiles": 93,
+    "assertions": 1471,
+    "coverage": {
+      "lines": 99.56,
+      "branches": 96.36,
+      "functions": 98.84
+    },
+    "deltaVsV27Branches": 3.89,
+    "targetedMutations": "7/7 authentic",
+    "architecture": "167 nodes, 411 edges, 0 source cycles, 0 untested source modules, 9/9 capability paths"
+  },
+  "materialRepair": "Directly reject policy, security, test and dependency lockfile targets in governed-agent policy."
+}

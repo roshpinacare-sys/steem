@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#020617" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="description" content="Qodo V24 — Self-healing AI agent for autonomous software delivery. Real-time neural command centre with live telemetry, mission dispatch, and mentor gate." />
+    <meta property="og:title" content="Qodo V24 · Neural Command" />
+    <meta property="og:description" content="Autonomous software delivery agent — living dependency graph, real-time telemetry, predictive dispatch." />
+    <meta property="og:type" content="website" />
+    <title>Qodo V24 — Mission Control</title>
+    <style>
+      /* Prevent flash of unstyled content — matches the Platform Shell ground */
+      html, body { margin: 0; padding: 0; background: #0D1015; overflow-x: hidden; }
+      /* Base font on <body> so portaled overlays (sheets, toasts) inherit it. */
+      body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      /* App-like feel in the WebView: no rubber-band scroll chaining, no
+         tap flash, no accidental text-size inflation in landscape. */
+      html { overscroll-behavior: none; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+      body { -webkit-tap-highlight-color: transparent; }
+      * { -webkit-touch-callout: none; }
+      input, textarea { -webkit-user-select: text; user-select: text; }
+      /* Safe-area contract. Capacitor 8's SystemBars plugin injects
+         --safe-area-inset-* inline on <html> under Android 15 edge-to-edge
+         (WebView ≥ 140 + viewport-fit=cover); browsers/iOS expose env().
+         --sa* resolves both so the chrome reads ONE source of truth. */
+      :root {
+        --sa-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+        --sa-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+        --sa-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+        --sa-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

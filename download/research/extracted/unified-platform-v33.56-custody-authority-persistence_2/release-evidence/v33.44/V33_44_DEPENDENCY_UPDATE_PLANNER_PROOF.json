@@ -1,0 +1,580 @@
+{
+  "version": "33.44",
+  "generatedAt": "2026-07-23T00:30:08.112Z",
+  "base": {
+    "proofPath": "release-evidence/v33.43/V33_43_DEPENDENCY_CAPSULE_LIFECYCLE_PROOF.json",
+    "proofSha256": "c3461a2fe42cfe04df54081b1fa32eb66294b415fb14686fa90c40cfdef4d393",
+    "verdict": {
+      "version": "33.43",
+      "status": "LOCAL_DEPENDENCY_CAPSULE_LIFECYCLE_PROVEN",
+      "baseManifestDigest": "f042188ca05fefb92c00f1b239ac6b6f0f2614ad1a568b7422c02b8141b7a7cc",
+      "revokedManifestDigest": "5d65ef77a4c7102ad65aa58f7c0622156b5970b3ee3ce30c28b8160af49343dc",
+      "rollbackManifestDigest": "f042188ca05fefb92c00f1b239ac6b6f0f2614ad1a568b7422c02b8141b7a7cc",
+      "activeManifestDigest": "6b49a8443ad472849329fa050b33f685f8416948ca48773f9dd471a169be46a3",
+      "vulnerabilityAdvisoryDigest": "9dd3fa77e314e13fc4da5c936d597ee3502164b7736b2353014296c0eaeab746",
+      "revocationCertificateDigest": "4129b9b07bbae70a3864f93ec79885c8023f3efe095a96f4ba7c7bf19dd4e74c",
+      "rollbackCertificateDigest": "1e6b4b236e13c5e923a5b0e0c733b18343d801fd41acbb0d7a76397c1f1e419e",
+      "replacementInstallReceiptDigest": "366c924bc190a3f32fd92d6bdb9476ff1d0a19f44a5f36a19817c872bfb76dda",
+      "packageCount": 3,
+      "provenanceRebound": true,
+      "rollbackProven": true,
+      "replacementOfflineInstallProven": true,
+      "vulnerabilityIntelligenceExternalObserved": false,
+      "externalHumanParticipants": 0,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "verifiedAt": "2026-07-23T15:00:11.000Z",
+      "verdictDigest": "59f2f7a9dc48522459311327565b3e0bb23806eaec91a2bd67f95aa1f7a880df"
+    }
+  },
+  "publicKeys": [
+    {
+      "keyId": "v33.44-update-policy",
+      "spkiDerBase64": "MCowBQYDK2VwAyEABZptzK0au/8oiaCTsq0Zdnrf/yqyvQhpxlWmreV4CaE=",
+      "fingerprint": "15566c4cfc56b3c699af1899b0dd6fd9827a25ff731c22098c6cdde29ab4aae4",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-candidate-catalog",
+      "spkiDerBase64": "MCowBQYDK2VwAyEANMESeVEtWXvLCpIZduGuH7CtzNutn2g17l3Sgo0UgAI=",
+      "fingerprint": "f6a5279db8e29954f47c005d8a4e8df892aa7ca12d6cc2b05895cd160ca7612c",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-graph-analyzer",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAKeeMh+xHvoSMNjcMr9pinDl7yZHH3f6hL7+kulrcDok=",
+      "fingerprint": "fc3b28310337bd1fbb57b9b297cce51f9a45fa55070d28721e288fa8c962706f",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-compatibility-lab",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAbswMkG+eMwRMoS/XIp14y9yLa3PomAqdBbliR/Bvsos=",
+      "fingerprint": "960e484c8961525290f02f204b86910ecfec6d19fc6c1c605db39fd1dec717be",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-security-approver",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAyIPGTIs2c9sByiIIQZ7tMjEwCZZrLGP1lSLVaDodviM=",
+      "fingerprint": "c35a45ca3c0dc302fb37f08de7e8c398a5a062153d4308a9e789a71ecf3b7d84",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-release-approver",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAPsmllZiGHqHa3Cr6mAil4WXz7tTAZpggzrE2M94PkuY=",
+      "fingerprint": "a0db1c72279d9da3abed9f9d951e9ce9f86446f864193fceb48c28546a2bac9e",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-operations-approver",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAuHW8ukOX+ND5aAPbnAsuylEz+Lit3ZpVnXyaSZ8Swak=",
+      "fingerprint": "0a820a6de6579c292302a62cc845429973c751db7b9d1bea5f2bf87c07ad6488",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-approval-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAGDdnX1XAilM4HDIoCS7mkNICtM7R7wfxhpUjW4CnfkY=",
+      "fingerprint": "0a55f28006caa3567d2b335fba1a993e2a580e1804f67885ae3a38b4b6bdf689",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-canary-planner",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAJO0okmKFh5HhsQLJG7ExFAQos/RvAhMefJETeW40nDM=",
+      "fingerprint": "f605db97dbc45203dc8d2ef5635691fcecd79da068641ada18ad1422d04d4c9a",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-canary-monitor-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAno3uq+cqWxvVcHvNZ3IU/XmKECUool/ctVTFSjffljY=",
+      "fingerprint": "846a03e5a0db9bb4db33fd3c64589b5bcfbd9e2f4211ffae2ed73088b1777333",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-canary-monitor-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAvdB86RxV1sX+f7BqMpIcCs99EyqIQDrZrnNMeeLX94M=",
+      "fingerprint": "29e3b4e215beb2e51f257326e3bcf0f7a403cfeb02e09e3174d3e120a74114ba",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-canary-monitor-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAsWOdp0Cdd3iQNav+QAA/3oci3/xxQ3kCwWbgLwy7Jis=",
+      "fingerprint": "260cbbf9ff25490fe688641f243182708872d0c9cdf8ce4f5988e936c2cc9a69",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-canary-verdict",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAF+cmk9EATs2MMK8kv6EBwkCzc4mj9OUIVQ95ZWtQyPc=",
+      "fingerprint": "d36c21def46964ee809ce058e2f5518f844166092ed9976affffd6f6609e0dab",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-rollback-controller",
+      "spkiDerBase64": "MCowBQYDK2VwAyEApluJgMy4av/8ioJEdad+K0zzs2BA56gzigNnD9pbIWE=",
+      "fingerprint": "7e249d2479c549b12ab0360ab685058f4ea5af7f11e1e818f7688fd128960a84",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.44-retention-ledger",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAwiMMjQNTRrlfLZBJH9e1ejjKS7H2mE2GekzCdAhFXh8=",
+      "fingerprint": "811e060b5142461f633c51b6e3cec24f7132653862c4e55424f3bfd19a640c94",
+      "revoked": false
+    }
+  ],
+  "trustedIds": {
+    "policy": [
+      "v33.44-update-policy"
+    ],
+    "candidate": [
+      "v33.44-candidate-catalog"
+    ],
+    "impact": [
+      "v33.44-graph-analyzer"
+    ],
+    "rehearsal": [
+      "v33.44-compatibility-lab"
+    ],
+    "approvalVoters": [
+      "v33.44-security-approver",
+      "v33.44-release-approver",
+      "v33.44-operations-approver"
+    ],
+    "approvalCertificate": [
+      "v33.44-approval-authority"
+    ],
+    "canaryPlan": [
+      "v33.44-canary-planner"
+    ],
+    "canaryReports": [
+      "v33.44-canary-monitor-1",
+      "v33.44-canary-monitor-2",
+      "v33.44-canary-monitor-3"
+    ],
+    "canaryVerdict": [
+      "v33.44-canary-verdict"
+    ],
+    "rollback": [
+      "v33.44-rollback-controller"
+    ],
+    "retention": [
+      "v33.44-retention-ledger"
+    ]
+  },
+  "policy": {
+    "payload": {
+      "version": "33.44",
+      "policyId": "v33.44-local-safe-update-policy",
+      "sequence": 1,
+      "predecessorPolicyDigest": null,
+      "allowedChangeClasses": [
+        "MINOR",
+        "PATCH"
+      ],
+      "maxRiskScore": 40,
+      "maxDirectChanges": 1,
+      "maxTransitiveImpact": 4,
+      "minRehearsalTests": 30,
+      "requiredApprovalRoles": [
+        "OPERATIONS",
+        "RELEASE",
+        "SECURITY"
+      ],
+      "canaryMinSamples": 300,
+      "canaryMaxErrorRateBps": 100,
+      "canaryMaxRegressionCount": 0,
+      "minRetainedGenerations": 3,
+      "generatedAt": "2026-07-23T18:00:01.000Z",
+      "policyDigest": "45f1974775e69de70f114a89d8d136d7c87cdba0ec61c6d93f488465c8163443"
+    },
+    "issuerKeyId": "v33.44-update-policy",
+    "algorithm": "Ed25519",
+    "signature": "Goby4Mnw2xgS6CBXeiAbh_N8zGdfo8SRKzfiRV4-b3BFsVDXI369ljeCq9bnedrOwN-dYDqsknfyTyOrjCR9Bw"
+  },
+  "candidates": [
+    {
+      "payload": {
+        "version": "33.44",
+        "candidateId": "typescript-5.8.4-local-fixture",
+        "packageName": "typescript",
+        "currentVersion": "5.8.3",
+        "targetVersion": "5.8.4",
+        "changeClass": "PATCH",
+        "candidateManifestDigest": "c49e643200e456ec5bd9af67d3deb1943c42864180441d80e3ade6f1fc5f0601",
+        "provenanceDigest": "a471d257c3dc98196f86b27810e8c0b7bcbf62fdf06ced6537b1a91ca5d6d973",
+        "riskScore": 10,
+        "directChanges": 1,
+        "transitiveImpact": 2,
+        "advisoryBlocked": false,
+        "sourceAuthorityOrganization": "Local Candidate Source A",
+        "discoveredAt": "2026-07-23T18:00:02.000Z",
+        "candidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549"
+      },
+      "issuerKeyId": "v33.44-candidate-catalog",
+      "algorithm": "Ed25519",
+      "signature": "C6RVwnA9dXlv880e9QhiTDtmUmktQddqwOPjHwg1VRNnNAybw9Ov6NHbFN4yjczFbSaEGor86Ux9V_g4OYSrBw"
+    },
+    {
+      "payload": {
+        "version": "33.44",
+        "candidateId": "typescript-5.9.0-local-fixture",
+        "packageName": "typescript",
+        "currentVersion": "5.8.3",
+        "targetVersion": "5.9.0",
+        "changeClass": "MINOR",
+        "candidateManifestDigest": "6c5ce896146473974716ee2534a43891cee5b5bda97fcec46ff58403fd2c3b9a",
+        "provenanceDigest": "6ce7825771cecb88a3b0498339678206eb9296e46eb7246a1101a61984b47e9b",
+        "riskScore": 30,
+        "directChanges": 1,
+        "transitiveImpact": 4,
+        "advisoryBlocked": false,
+        "sourceAuthorityOrganization": "Local Candidate Source B",
+        "discoveredAt": "2026-07-23T18:00:02.001Z",
+        "candidateDigest": "4b03d090e9a4ac09dfaef25c33ccdc850a5a647005c4ad0dca580b11cb3da1fc"
+      },
+      "issuerKeyId": "v33.44-candidate-catalog",
+      "algorithm": "Ed25519",
+      "signature": "4Z15X7fmPhQE1zKBS5f-rJT2rmVLfqPiU708MnSNP-A0Zh0HrvlgfDt1jK-MNQIwFbxdqad3nMJ4LB9jMWLGAA"
+    },
+    {
+      "payload": {
+        "version": "33.44",
+        "candidateId": "typescript-6.0.0-local-fixture",
+        "packageName": "typescript",
+        "currentVersion": "5.8.3",
+        "targetVersion": "6.0.0",
+        "changeClass": "MAJOR",
+        "candidateManifestDigest": "9f9c15e412f035b7e1063a845889d6c6bd60d0f7dbd1c8e924c96e01b918a1b4",
+        "provenanceDigest": "4132c13ffbcf3bddea17222e797b13167ef4e39eccb1ecedb1314c33a20d8e76",
+        "riskScore": 5,
+        "directChanges": 1,
+        "transitiveImpact": 1,
+        "advisoryBlocked": false,
+        "sourceAuthorityOrganization": "Local Candidate Source C",
+        "discoveredAt": "2026-07-23T18:00:02.002Z",
+        "candidateDigest": "229805ff4cfc6855507cf2141b9a573002c2fa8de8b5aaac217628c8a6c93e56"
+      },
+      "issuerKeyId": "v33.44-candidate-catalog",
+      "algorithm": "Ed25519",
+      "signature": "OxVLwkHXADr0MPWZfa7touT-gGA1Tiug4RphwDZv9S-J1ixKllX2Ge9ZAchqnRBJlIDX4CN4WMS045tc9GasBA"
+    }
+  ],
+  "graphImpact": {
+    "payload": {
+      "version": "33.44",
+      "policyDigest": "45f1974775e69de70f114a89d8d136d7c87cdba0ec61c6d93f488465c8163443",
+      "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+      "directChangedPackages": [
+        "typescript"
+      ],
+      "transitiveImpactedPackages": [
+        "@types/node",
+        "undici-types"
+      ],
+      "cycleCount": 0,
+      "compatibilityPlanDigest": "57e27d06d5a171a1f62b07c96b76db20f656b34f4f1a23fd189d51f2ce937ca1",
+      "analyzedAt": "2026-07-23T18:00:03.000Z",
+      "impactDigest": "def104065248f6dc137e7b42a407b63b16c60a7f33f1e3edf9abd0ea3f8709d1"
+    },
+    "issuerKeyId": "v33.44-graph-analyzer",
+    "algorithm": "Ed25519",
+    "signature": "5mPlgUuy9ivLWwoIrvlbXVdaUpcbZKwOAHPbr4hGm7cnJ5Dv2-43ozDAKONOxMXNegaWVVp3OwDNE4Z5JnLPBQ"
+  },
+  "rehearsal": {
+    "payload": {
+      "version": "33.44",
+      "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+      "impactDigest": "def104065248f6dc137e7b42a407b63b16c60a7f33f1e3edf9abd0ea3f8709d1",
+      "command": "npm ci --offline && npm run build && node --test",
+      "cacheInitiallyEmpty": true,
+      "networkRequestsObserved": 0,
+      "installExitCode": 0,
+      "buildExitCode": 0,
+      "testCount": 33,
+      "testFailures": 0,
+      "abiBreaks": 0,
+      "apiBreaks": 0,
+      "rehearsalLogDigest": "4e035253648aa5a582f8b11de4aa477f6d9afe2fabd202de4ae527dae573837d",
+      "completedAt": "2026-07-23T18:00:04.000Z",
+      "rehearsalDigest": "4aa833915cbe371f85bcb77b165d2e5836f46cef9941ae826cb9ea4878e16688"
+    },
+    "issuerKeyId": "v33.44-compatibility-lab",
+    "algorithm": "Ed25519",
+    "signature": "mNwGmmYUgOKEGyr_ZHNKtKmpx1iQCtVMnMrojju_8ngHrwYINT2WSoGRi7E4bdzVFyU0AhvZrQthgl6ykzfGBA"
+  },
+  "approvalVotes": [
+    {
+      "payload": {
+        "version": "33.44",
+        "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+        "impactDigest": "def104065248f6dc137e7b42a407b63b16c60a7f33f1e3edf9abd0ea3f8709d1",
+        "rehearsalDigest": "4aa833915cbe371f85bcb77b165d2e5836f46cef9941ae826cb9ea4878e16688",
+        "role": "SECURITY",
+        "organization": "Independent SECURITY Approval Org",
+        "decision": "APPROVE",
+        "votedAt": "2026-07-23T18:00:05.000Z",
+        "voteDigest": "efc383c611a65b65a35ba9069b18b3f0364079809ce693b26be8e68ea4c35f30"
+      },
+      "issuerKeyId": "v33.44-security-approver",
+      "algorithm": "Ed25519",
+      "signature": "4y5Atz8r2zm9EdTw1Hhmhoj9LzB5LSBMCij8p4qr-z9DITQk2-t-X0bdfjdhZ9IqfaVz_BEtzhNMwNhJDOO3AA"
+    },
+    {
+      "payload": {
+        "version": "33.44",
+        "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+        "impactDigest": "def104065248f6dc137e7b42a407b63b16c60a7f33f1e3edf9abd0ea3f8709d1",
+        "rehearsalDigest": "4aa833915cbe371f85bcb77b165d2e5836f46cef9941ae826cb9ea4878e16688",
+        "role": "RELEASE",
+        "organization": "Independent RELEASE Approval Org",
+        "decision": "APPROVE",
+        "votedAt": "2026-07-23T18:00:05.001Z",
+        "voteDigest": "b08db181368bef1b21e6cc47d18ad6402652978a0a7187884c640ac5217f63a8"
+      },
+      "issuerKeyId": "v33.44-release-approver",
+      "algorithm": "Ed25519",
+      "signature": "5MtfYj-bh6G74N39p77XkS6tWwf_fovjO1o9CBX0CBt5EZUfWg-qLSkkCvQ65iH7pWwDpVQU2G_sbzSG0SFWBQ"
+    },
+    {
+      "payload": {
+        "version": "33.44",
+        "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+        "impactDigest": "def104065248f6dc137e7b42a407b63b16c60a7f33f1e3edf9abd0ea3f8709d1",
+        "rehearsalDigest": "4aa833915cbe371f85bcb77b165d2e5836f46cef9941ae826cb9ea4878e16688",
+        "role": "OPERATIONS",
+        "organization": "Independent OPERATIONS Approval Org",
+        "decision": "APPROVE",
+        "votedAt": "2026-07-23T18:00:05.002Z",
+        "voteDigest": "28b6da32e08d9c55869cb35cee93e275c10d08bd39c00c40a2a09301ce204266"
+      },
+      "issuerKeyId": "v33.44-operations-approver",
+      "algorithm": "Ed25519",
+      "signature": "l72tr9OvvEWNdFmE9LNEbL46WJOZ32k73uJw0gWG2VD1xxjY68ffFIoUjIL2KI0ZnCJgk1Rg_axp4-ANXOGUAQ"
+    }
+  ],
+  "approvalCertificate": {
+    "payload": {
+      "version": "33.44",
+      "policyDigest": "45f1974775e69de70f114a89d8d136d7c87cdba0ec61c6d93f488465c8163443",
+      "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+      "rehearsalDigest": "4aa833915cbe371f85bcb77b165d2e5836f46cef9941ae826cb9ea4878e16688",
+      "voteDigests": [
+        "28b6da32e08d9c55869cb35cee93e275c10d08bd39c00c40a2a09301ce204266",
+        "b08db181368bef1b21e6cc47d18ad6402652978a0a7187884c640ac5217f63a8",
+        "efc383c611a65b65a35ba9069b18b3f0364079809ce693b26be8e68ea4c35f30"
+      ],
+      "issuedAt": "2026-07-23T18:00:06.000Z",
+      "certificateDigest": "04139ac959745abb42a6c105e9f10e526c92c91733093a60fe235bb8534edbfe"
+    },
+    "issuerKeyId": "v33.44-approval-authority",
+    "algorithm": "Ed25519",
+    "signature": "8cZ1kxJR7n01-ps3CJcnhlzs32lI8sjwhLO8YU4oyDyN7UQY78IbA1HauTVpOoJzlXFB7XS3oY8DkHWDfgOQBQ"
+  },
+  "canaryPlan": {
+    "payload": {
+      "version": "33.44",
+      "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+      "approvalCertificateDigest": "04139ac959745abb42a6c105e9f10e526c92c91733093a60fe235bb8534edbfe",
+      "cohortDigest": "c31128635dcc8149f0ecf7b7f55f00db3f5d6c2eb3e2dece0864cb156c996179",
+      "minimumSamples": 300,
+      "maximumErrorRateBps": 100,
+      "maximumRegressionCount": 0,
+      "durationMinutes": 30,
+      "startedAt": "2026-07-23T18:00:07.000Z",
+      "planDigest": "8d9c63599f7fa6e7bdaf424e5be82b8d1edd622712f30fe2b812e4416102330c"
+    },
+    "issuerKeyId": "v33.44-canary-planner",
+    "algorithm": "Ed25519",
+    "signature": "mE1RwWahuewlcJCTDuoUXX90CWr5D9AVOBejN89vzevtYOV8gQO045VgLzw_yFMQfT5jsh_p7by0K3C2tkMtDA"
+  },
+  "canaryReports": [
+    {
+      "payload": {
+        "version": "33.44",
+        "planDigest": "8d9c63599f7fa6e7bdaf424e5be82b8d1edd622712f30fe2b812e4416102330c",
+        "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+        "monitorOrganization": "Local Canary Monitor Org 1",
+        "sampleCount": 100,
+        "errorCount": 2,
+        "regressionCount": 1,
+        "observedAt": "2026-07-23T18:00:08.000Z",
+        "reportDigest": "2b3d6866d48a7d04df6f7fe753258e9ed106106c6b080a45ddaa1769a25aa533"
+      },
+      "issuerKeyId": "v33.44-canary-monitor-1",
+      "algorithm": "Ed25519",
+      "signature": "KyUksAZMcxd_si-PTBVXuT5Fgq_tJ7rZ7IkOZUWaMYP3UYDfrmzaGMVotw8LxuDPFTvDESaZnM-4jAqtWdiBAg"
+    },
+    {
+      "payload": {
+        "version": "33.44",
+        "planDigest": "8d9c63599f7fa6e7bdaf424e5be82b8d1edd622712f30fe2b812e4416102330c",
+        "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+        "monitorOrganization": "Local Canary Monitor Org 2",
+        "sampleCount": 100,
+        "errorCount": 2,
+        "regressionCount": 0,
+        "observedAt": "2026-07-23T18:00:08.001Z",
+        "reportDigest": "493f0c59c6575c780a000d3dc351e9a642e263ae5611645f7c202e2f7776a33a"
+      },
+      "issuerKeyId": "v33.44-canary-monitor-2",
+      "algorithm": "Ed25519",
+      "signature": "B4Y5faydKODnuaCFVY_NaT_rFicrbmuUopxQjAjPD9uUMEeObrVbsojfzNHic3qzLrA7UdJQUPoGpHmasQo-BA"
+    },
+    {
+      "payload": {
+        "version": "33.44",
+        "planDigest": "8d9c63599f7fa6e7bdaf424e5be82b8d1edd622712f30fe2b812e4416102330c",
+        "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+        "monitorOrganization": "Local Canary Monitor Org 3",
+        "sampleCount": 100,
+        "errorCount": 2,
+        "regressionCount": 0,
+        "observedAt": "2026-07-23T18:00:08.002Z",
+        "reportDigest": "f1108ede19a86a5b392da193b96555ddda28aff857412dc923f7decc44395104"
+      },
+      "issuerKeyId": "v33.44-canary-monitor-3",
+      "algorithm": "Ed25519",
+      "signature": "_9B1Z70UnIGGgyXdwsvCGfqPYrm3w78itD-3-Bcg9jygvU_AS7zfsdlqhbD6OzfPzzfl5ayowoKyk5J7WW8uBw"
+    }
+  ],
+  "canaryVerdict": {
+    "payload": {
+      "version": "33.44",
+      "planDigest": "8d9c63599f7fa6e7bdaf424e5be82b8d1edd622712f30fe2b812e4416102330c",
+      "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+      "reportDigests": [
+        "2b3d6866d48a7d04df6f7fe753258e9ed106106c6b080a45ddaa1769a25aa533",
+        "493f0c59c6575c780a000d3dc351e9a642e263ae5611645f7c202e2f7776a33a",
+        "f1108ede19a86a5b392da193b96555ddda28aff857412dc923f7decc44395104"
+      ],
+      "totalSamples": 300,
+      "totalErrors": 6,
+      "totalRegressions": 1,
+      "errorRateBps": 200,
+      "decision": "ROLLBACK_REQUIRED",
+      "decidedAt": "2026-07-23T18:00:09.000Z",
+      "verdictDigest": "f8723f42f050bdfa4abb65cc87c3ebac61e05cf1573ff6bfc883ed8184e9848e"
+    },
+    "issuerKeyId": "v33.44-canary-verdict",
+    "algorithm": "Ed25519",
+    "signature": "XAwOxEa2WamQDYCL-tcvCobPNgDuUhuxvkguXeFotMg32yUvaIIw9N94OpECpFrrsa8eM-Er6ZZdVTlT-vVTBw"
+  },
+  "rollback": {
+    "payload": {
+      "version": "33.44",
+      "fromManifestDigest": "c49e643200e456ec5bd9af67d3deb1943c42864180441d80e3ade6f1fc5f0601",
+      "toManifestDigest": "6b49a8443ad472849329fa050b33f685f8416948ca48773f9dd471a169be46a3",
+      "canaryVerdictDigest": "f8723f42f050bdfa4abb65cc87c3ebac61e05cf1573ff6bfc883ed8184e9848e",
+      "reason": "CANARY_THRESHOLD_EXCEEDED",
+      "executedAt": "2026-07-23T18:00:10.000Z",
+      "rollbackDigest": "5c7bd9b36251768f653ed641c663d93efe810af9ea7691cab63ee9089f336dd0"
+    },
+    "issuerKeyId": "v33.44-rollback-controller",
+    "algorithm": "Ed25519",
+    "signature": "_MPqDy1nNwTu297k12Y6l5zEXBm34PgWRtcqVs_ZcZz28-Pz50qr6cbTDGKzcc-vJgEMDvwYtzhWFi9CV49eBg"
+  },
+  "retentionLedger": {
+    "payload": {
+      "version": "33.44",
+      "sequence": 1,
+      "predecessorLedgerDigest": null,
+      "activeManifestDigest": "6b49a8443ad472849329fa050b33f685f8416948ca48773f9dd471a169be46a3",
+      "generations": [
+        {
+          "sequence": 1,
+          "manifestDigest": "f042188ca05fefb92c00f1b239ac6b6f0f2614ad1a568b7422c02b8141b7a7cc",
+          "artifactDigest": "197b42ff44c0dba62fdca50eda141681dbd0361eeb4c77eb075ab11a7dc1e75b",
+          "status": "ROLLBACK_READY"
+        },
+        {
+          "sequence": 2,
+          "manifestDigest": "6b49a8443ad472849329fa050b33f685f8416948ca48773f9dd471a169be46a3",
+          "artifactDigest": "af385d27b566d06fa74dc74a41185a87e44f3b4da8f427e510c7fa21565fcec2",
+          "status": "ACTIVE"
+        },
+        {
+          "sequence": 3,
+          "manifestDigest": "c49e643200e456ec5bd9af67d3deb1943c42864180441d80e3ade6f1fc5f0601",
+          "artifactDigest": "ab123914b7be595243faa1da438132aa3521fffd6c5ffb7d45b377b085e36311",
+          "status": "QUARANTINED"
+        }
+      ],
+      "recordedAt": "2026-07-23T18:00:11.000Z",
+      "ledgerDigest": "2dc4eb203e7496ae279077ff9b9e062e7bd43e3fb47b07e6ab994dad4037e7d9"
+    },
+    "issuerKeyId": "v33.44-retention-ledger",
+    "algorithm": "Ed25519",
+    "signature": "s6uGVbT7DeraswfhyGZ0k84iPF4jrGDVLsMb2oylHC95t0lRAJZDgs5uXxkXORhhNhwnJA2EMsTWtCdAoRGBAw"
+  },
+  "executionEvidence": {
+    "offlineInstall": {
+      "command": "npm ci --offline",
+      "cacheInitiallyEmpty": true,
+      "networkRequestsObserved": 0,
+      "exitCode": 0,
+      "logDigest": "9f0932d6cf8896161b5d67af1711148b4951a369c499ca72b126e1d0f27b9d4e"
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "logDigest": "22d5ffd2bb0dd82381f736a37577e4c6656b2c3fdc85024e7240f7e90ac42068"
+    },
+    "tests": {
+      "command": "node --test dist/tests/dependency-update-planner-v33_44.test.js",
+      "testCount": 33,
+      "passed": 33,
+      "failed": 0,
+      "exitCode": 0,
+      "logDigest": "b17ab5bf88f66b959f6c38d91cf864fb460f488833e3d88f3bf944255581ad5b"
+    },
+    "canaryMetricsClass": "LOCAL_DETERMINISTIC_FIXTURE_ONLY"
+  },
+  "attacks": {
+    "policyTamperBlocked": true,
+    "candidateRelabelBlocked": true,
+    "approvalQuorumBlocked": true,
+    "canaryAggregateTamperBlocked": true,
+    "rollbackTargetBlocked": true,
+    "retentionDropBlocked": true
+  },
+  "finalVerdict": {
+    "version": "33.44",
+    "status": "LOCAL_DEPENDENCY_UPDATE_PLANNER_PROVEN",
+    "baseLifecycleVerdictDigest": "59f2f7a9dc48522459311327565b3e0bb23806eaec91a2bd67f95aa1f7a880df",
+    "policyDigest": "45f1974775e69de70f114a89d8d136d7c87cdba0ec61c6d93f488465c8163443",
+    "selectedCandidateDigest": "0539fd4e607ec494a5d39664d04179d78cd8b4c1d5786e6df921342cfe269549",
+    "graphImpactDigest": "def104065248f6dc137e7b42a407b63b16c60a7f33f1e3edf9abd0ea3f8709d1",
+    "rehearsalDigest": "4aa833915cbe371f85bcb77b165d2e5836f46cef9941ae826cb9ea4878e16688",
+    "approvalCertificateDigest": "04139ac959745abb42a6c105e9f10e526c92c91733093a60fe235bb8534edbfe",
+    "canaryVerdictDigest": "f8723f42f050bdfa4abb65cc87c3ebac61e05cf1573ff6bfc883ed8184e9848e",
+    "rollbackDigest": "5c7bd9b36251768f653ed641c663d93efe810af9ea7691cab63ee9089f336dd0",
+    "retentionLedgerDigest": "2dc4eb203e7496ae279077ff9b9e062e7bd43e3fb47b07e6ab994dad4037e7d9",
+    "candidateCount": 3,
+    "approvalCount": 3,
+    "canaryMonitorCount": 3,
+    "retainedGenerationCount": 3,
+    "deterministicSelectionProven": true,
+    "compatibilityRehearsalProven": true,
+    "automaticRollbackProven": true,
+    "updatePromoted": false,
+    "externalVulnerabilityIntelligenceObserved": false,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "verifiedAt": "2026-07-23T18:00:12.000Z",
+    "verdictDigest": "46d25dd5178c1e67b0079da0d78ae418274422b884122673d89d9f64bd7d768b"
+  },
+  "summary": {
+    "newSignatureCount": 17,
+    "totalChainSignatureCount": 34,
+    "candidateCount": 3,
+    "approvalCount": 3,
+    "canaryMonitorCount": 3,
+    "retainedGenerationCount": 3
+  },
+  "truthBoundary": {
+    "candidateVersionsExternallyFetched": false,
+    "externalCanaryTrafficObserved": false,
+    "externalVulnerabilityIntelligenceObserved": false,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0
+  }
+}

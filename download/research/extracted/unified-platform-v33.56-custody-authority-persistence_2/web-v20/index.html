@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sovereign Private Pilot v24</title>
+  <link rel="stylesheet" href="/pilot.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="hero">
+    <div><p class="eyebrow">Sovereign Evidence-Carrying Execution Fabric · v24</p><h1>Private Governed Change Pilot</h1><p>Authenticated, tenant-bound, independently reviewed and reversible repository change.</p></div>
+    <pre id="health" aria-live="polite">Loading environment boundaries…</pre>
+  </header>
+  <main id="main">
+    <section class="panel" aria-labelledby="login-heading">
+      <h2 id="login-heading">1. Private pilot sign-in</h2>
+      <form id="login-form">
+        <label for="user">Pilot identity</label>
+        <select id="user"><option value="operator-1">Operator</option><option value="reviewer-1">Independent reviewer</option><option value="admin-1">Administrator</option></select>
+        <label for="tenant">Tenant</label><input id="tenant" value="tenant-1" required>
+        <label for="bootstrap">Bootstrap token</label><input id="bootstrap" type="password" autocomplete="off" required>
+        <button type="submit">Sign in</button><button id="logout" type="button" disabled>Sign out</button>
+      </form>
+      <p id="identity" aria-live="polite">Not signed in.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="commitment-heading">
+      <div class="heading"><h2 id="commitment-heading">2. Bounded engineering commitment</h2><button id="load-fixture" type="button" disabled>Load trusted fixture</button></div>
+      <form id="commitment-form">
+        <label for="repository">Allowlisted repository</label><input id="repository" required>
+        <label for="objective">Objective</label><textarea id="objective" rows="2" required></textarea>
+        <label for="target">Allowed file</label><input id="target" required>
+        <label for="before">Exact current text</label><textarea id="before" rows="2" required></textarea>
+        <label for="after">Exact replacement</label><textarea id="after" rows="2" required></textarea>
+        <button id="intake" type="submit" disabled>Inspect and create commitment</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>3. Mission controls</h2>
+      <ol id="timeline"><li>Intake</li><li>Security findings</li><li>Bounded execution</li><li>Tests and evidence</li><li>Independent review</li><li>Shadow Passport</li><li>Exact rollback</li></ol>
+      <div class="actions"><button id="execute" disabled>Execute as operator</button><button id="review" disabled>Approve as independent reviewer</button><button id="rollback" disabled>Rollback as operator</button></div>
+    </section>
+
+    <div class="grid">
+      <section class="panel"><h2>Permissions</h2><pre id="permissions">No session.</pre></section>
+      <section class="panel"><h2>Security findings</h2><pre id="security">No scan.</pre></section>
+      <section class="panel"><h2>Tests and evidence</h2><pre id="evidence">No execution.</pre></section>
+      <section class="panel"><h2>Decision brief</h2><pre id="decision-brief">No decision evidence.</pre></section>
+      <section class="panel"><h2>Action Passport</h2><pre id="passport">No passport.</pre></section>
+    </div>
+    <section class="panel"><h2>Operational action center</h2><pre id="operations">Sign in to load prioritized actions and blocked dependencies.</pre></section>
+    <section class="panel"><h2>Audit and recovery</h2><pre id="audit">External mutation and production promotion remain disabled.</pre></section>
+  </main>
+  <div id="announcer" class="sr-only" aria-live="assertive"></div>
+  <script src="/pilot.js" defer></script>
+</body>
+</html>

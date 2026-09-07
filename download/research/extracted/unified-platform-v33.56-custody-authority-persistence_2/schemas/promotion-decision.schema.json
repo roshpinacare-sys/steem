@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sovereign-foundry.local/schemas/promotion-decision-v0.1.json",
+  "title": "PromotionDecision v0.1",
+  "type": "object",
+  "required": ["candidateId", "tenantId", "fromState", "toState", "builderId", "reviewerIds", "evidenceRoot", "residualRisk", "rollbackRef", "expectedRevision"],
+  "properties": {
+    "candidateId": {"type": "string", "minLength": 1},
+    "tenantId": {"type": "string", "minLength": 1},
+    "fromState": {"enum": ["research", "shadow", "production"]},
+    "toState": {"const": "shadow"},
+    "builderId": {"type": "string", "minLength": 1},
+    "reviewerIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidenceRoot": {"type": "string", "minLength": 1},
+    "residualRisk": {"type": "array", "items": {"type": "string"}},
+    "rollbackRef": {"type": "string", "minLength": 1},
+    "expectedRevision": {"type": "integer", "minimum": 0}
+  },
+  "additionalProperties": false
+}

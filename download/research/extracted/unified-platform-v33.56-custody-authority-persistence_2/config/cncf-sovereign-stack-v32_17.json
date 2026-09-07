@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "32.17",
+  "classification": "external-runtime-profile-not-vendored",
+  "center": {
+    "project": "Dapr",
+    "version": "1.18.1",
+    "role": "portable building-block and durable-agent runtime",
+    "executionStatus": "not_executed_offline"
+  },
+  "complements": [
+    {"project":"SPIRE","version":"1.15.2","role":"attested workload identity","executionStatus":"not_executed_offline"},
+    {"project":"OPA","version":"1.18.0","role":"decoupled policy decisions","executionStatus":"not_executed_offline"},
+    {"project":"OpenTelemetry Collector","version":"0.156.0","role":"vendor-neutral telemetry pipeline","executionStatus":"not_executed_offline"},
+    {"project":"Wasmtime","version":"47.0.0","role":"qualified WASM component runtime candidate","executionStatus":"not_executed_offline"},
+    {"project":"CloudNativePG","version":"1.30.0","role":"PostgreSQL HA, backup and PITR candidate","executionStatus":"not_executed_offline"}
+  ],
+  "requiredBuildingBlocks": ["service-invocation","state","pubsub","workflow","bindings","secrets","configuration","distributed-lock"],
+  "trustRules": {
+    "privateComponentTransport": "unix-domain-socket",
+    "workloadIdentity": "spiffe-id-required",
+    "policyDecision": "out-of-process-or-independently-recomputed",
+    "telemetry": "otlp-compatible-and-tenant-bound",
+    "externalEvidence": "pinned-authority-required",
+    "productionPromotion": "blocked-until-real-runtime-and-multi-host-qualification"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "version": "32.8",
+  "runId": "v32.8-release2",
+  "status": "passed",
+  "sourceDigest": "11a832112b404024fc35664fbd37cebb7342a8af5cc42d814e68cfa3f6944597",
+  "compiledArtifactDigest": "398b70b836fd8edd4ad4c1d15f510c7932967986831d94ee676b4b0f105fa3ea",
+  "testManifestDigest": "a5e1c5518c979600dd884e6edf38defe00e975fb53399c5f1f6787e82bcb8c8f",
+  "testFilesDigest": "ee674ed3af9752d3267420fba0f53923746a94a7d7f18c566af5d57e0546b19e",
+  "packageLockDigest": "51cc9e1ebcdf8e45c05cb3c848f8e42a7a3e4b4db56613870e52af533c6d8c1c",
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "environment": {
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64",
+    "ci": true,
+    "runnerOs": "",
+    "runnerArch": ""
+  },
+  "baseline": {
+    "status": "passed",
+    "exitCode": 0,
+    "timedOut": false,
+    "outputTail": "viving independent negative counterexample attack\n  ---\n  duration_ms: 0.472203\n  type: 'test'\n  ...\n# Subtest: claim roast refutes self-review digest drift and concentrated metadata proof\nok 17 - claim roast refutes self-review digest drift and concentrated metadata proof\n  ---\n  duration_ms: 0.186232\n  type: 'test'\n  ...\n# Subtest: external and human claims cannot be closed by repository-local evidence\nok 18 - external and human claims cannot be closed by repository-local evidence\n  ---\n  duration_ms: 0.201635\n  type: 'test'\n  ...\n# Subtest: claim roast rejects duplicate and unknown evidence identities\nok 19 - claim roast rejects duplicate and unknown evidence identities\n  ---\n  duration_ms: 0.163427\n  type: 'test'\n  ...\n# Subtest: strategic assurance aggregates all vetted gates but never promotes production\nok 20 - strategic assurance aggregates all vetted gates but never promotes production\n  ---\n  duration_ms: 2.086031\n  type: 'test'\n  ...\n# Subtest: strategic assurance blocks when any imported proof lane fails\nok 21 - strategic assurance blocks when any imported proof lane fails\n  ---\n  duration_ms: 0.378742\n  type: 'test'\n  ...\n# Subtest: strategic assurance distinguishes unexecuted external tools from failure\nok 22 - strategic assurance distinguishes unexecuted external tools from failure\n  ---\n  duration_ms: 0.209707\n  type: 'test'\n  ...\n# Subtest: workflow assurance accepts minimal pinned read-only workflow\nok 23 - workflow assurance accepts minimal pinned read-only workflow\n  ---\n  duration_ms: 2.079811\n  type: 'test'\n  ...\n# Subtest: workflow assurance rejects mutable actions and persisted checkout credentials\nok 24 - workflow assurance rejects mutable actions and persisted checkout credentials\n  ---\n  duration_ms: 7.160425\n  type: 'test'\n  ...\n# Subtest: workflow assurance rejects pull_request_target secrets and write permissions\nok 25 - workflow assurance rejects pull_request_target secrets and write permissions\n  ---\n  duration_ms: 0.27795\n  type: 'test'\n  ...\n# Subtest: workflow assurance rejects unsafe npm install and excessive artifact retention\nok 26 - workflow assurance rejects unsafe npm install and excessive artifact retention\n  ---\n  duration_ms: 0.336448\n  type: 'test'\n  ...\n# Subtest: workflow assurance rejects empty inventory\nok 27 - workflow assurance rejects empty inventory\n  ---\n  duration_ms: 0.60941\n  type: 'test'\n  ...\n1..27\n# tests 27\n# suites 0\n# pass 27\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 158.527221\n"
+  },
+  "mutantsSpecified": 14,
+  "mutantsKilledAuthentically": 14,
+  "survivors": 0,
+  "invalidKills": 0,
+  "records": [
+    {
+      "mutantId": "mutable-commit-bypass",
+      "target": "dist/src/validation/vetted-tool-intake.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "est'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:12:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.rejected[0].reasons.includes('commit_not_immutable'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:12:418)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 81.355245\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 123.904306\n"
+    },
+    {
+      "mutantId": "automatic-execution-bypass",
+      "target": "dist/src/validation/vetted-tool-intake.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "ation: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:12:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.rejected[0].reasons.includes('automatic_execution_forbidden'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:12:342)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 101.368088\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 122.482351\n"
+    },
+    {
+      "mutantId": "sarif-error-bypass",
+      "target": "dist/src/validation/security-evidence-import.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:16:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.failures.includes('security_error_findings'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:16:482)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 79.946536\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 122.536187\n"
+    },
+    {
+      "mutantId": "attestation-signature-bypass",
+      "target": "dist/src/validation/security-evidence-import.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:19:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.failures.includes('signature_unverified'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:19:530)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 81.892099\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 124.394634\n"
+    },
+    {
+      "mutantId": "policy-determinism-bypass",
+      "target": "dist/src/validation/policy-formal-fuzz-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "efined and stale input\n  ---\n  duration_ms: 1.951938\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:21:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    5 !== 6\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 6\n  actual: 5\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:21:403)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 99.938999\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 119.153624\n"
+    },
+    {
+      "mutantId": "formal-deadlock-bypass",
+      "target": "dist/src/validation/policy-formal-fuzz-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "70052\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:23:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.failures.includes('deadlock_found'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:23:543)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 100.616056\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 126.801723\n"
+    },
+    {
+      "mutantId": "fuzz-failure-bypass",
+      "target": "dist/src/validation/policy-formal-fuzz-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "84\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:25:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.failures.includes('fuzz_failures_found'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:25:464)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 85.02542\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 128.066329\n"
+    },
+    {
+      "mutantId": "self-review-bypass",
+      "target": "dist/src/validation/adversarial-claim-roast.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "tion_ms: 11.085562\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:29:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(a.includes('self_review'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:29:374)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 82.001839\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 128.047516\n"
+    },
+    {
+      "mutantId": "external-claim-bypass",
+      "target": "dist/src/validation/adversarial-claim-roast.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:30:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.results[0].attacks.includes('external_evidence_missing'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:30:326)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 82.554288\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 124.083969\n"
+    },
+    {
+      "mutantId": "production-promotion-bypass",
+      "target": "dist/src/validation/strategic-upgrade-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": ": 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:32:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'ALLOWED'\n    - 'BLOCKED'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'BLOCKED'\n  actual: 'ALLOWED'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:32:507)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 83.299709\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 111.37482\n"
+    },
+    {
+      "mutantId": "unexecuted-as-pass-bypass",
+      "target": "dist/src/validation/strategic-upgrade-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "2_8.test.js:34:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'PASS_WITH_EXTERNAL_BLOCKERS'\n    - 'READY_WITH_UNEXECUTED_GATES'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'READY_WITH_UNEXECUTED_GATES'\n  actual: 'PASS_WITH_EXTERNAL_BLOCKERS'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/strategic-adversarial-v32_8.test.js:34:453)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..0\n# Subtest: dist/tests/workflow-security-v32_8.test.js\nok 2 - dist/tests/workflow-security-v32_8.test.js\n  ---\n  duration_ms: 76.614879\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 112.231035\n"
+    },
+    {
+      "mutantId": "workflow-pin-bypass",
+      "target": "dist/src/validation/workflow-security-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": " persisted checkout credentials\nnot ok 2 - workflow assurance rejects mutable actions and persisted checkout credentials\n  ---\n  duration_ms: 11.730421\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/workflow-security-v32_8.test.js:7:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.findings.some(x => x.rule === 'action_not_pinned_to_full_sha'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/workflow-security-v32_8.test.js:7:314)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 121.71947\n"
+    },
+    {
+      "mutantId": "workflow-credential-bypass",
+      "target": "dist/src/validation/workflow-security-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "persisted checkout credentials\nnot ok 2 - workflow assurance rejects mutable actions and persisted checkout credentials\n  ---\n  duration_ms: 17.362332\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/workflow-security-v32_8.test.js:7:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.findings.some(x => x.rule === 'checkout_persists_credentials'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/workflow-security-v32_8.test.js:7:391)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.427062\n"
+    },
+    {
+      "mutantId": "workflow-write-permission-bypass",
+      "target": "dist/src/validation/workflow-security-assurance.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "e rejects pull_request_target secrets and write permissions\nnot ok 2 - workflow assurance rejects pull_request_target secrets and write permissions\n  ---\n  duration_ms: 15.882046\n  type: 'test'\n  location: '/tmp/v32-8-mut-y8cvaq73/dist/tests/workflow-security-v32_8.test.js:8:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(r.findings.some(x => x.rule === rule))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-8-mut-y8cvaq73/dist/tests/workflow-security-v32_8.test.js:9:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 113.695261\n"
+    }
+  ]
+}

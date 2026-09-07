@@ -1,0 +1,437 @@
+name: Qodo V24 Agent Pipeline
+
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      objective:
+        description: "Mission objective"
+        required: true
+      issue_number:
+        description: "PR number to resume (maps to PR_NUMBER; blank opens a new PR)"
+        required: false
+      dry_run:
+        description: "Dry-run mode (no commits)"
+        required: false
+        default: "false"
+      task_id:
+        description: "Trigger-queue task id (ADR-005 resume loop; writes the ack key)"
+        required: false
+      trigger:
+        description: "Trigger provenance, e.g. webhook:issue_comment:proceed"
+        required: false
+      mode:
+        description: "Autonomous mode (blank = normal delivery)"
+        required: false
+        default: ""
+        type: choice
+        options: ["", "janitor", "evolve", "compliance", "support", "drain"]
+
+# Cancel in-flight runs for the same PR/branch to save Actions minutes
+concurrency:
+  group: qodo-${{ github.event.pull_request.number || github.ref || github.run_id }}
+  cancel-in-progress: true
+
+# Read-only by default; only the dispatch-gated agent job escalates.
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  # ── Type-check (same command as `npm run typecheck` locally) ──────────────
+  typecheck:
+    name: TypeScript strict check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type-check all workspaces
+        run: npm run typecheck
+
+  # ── Unit + property + snapshot tests with coverage ────────────────────────
+  test:
+    name: Unit / Property / Snapshot tests
+    runs-on: ubuntu-latest
+    needs: typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Check dead integrations
+        run: node scripts/check-dead-integrations.mjs
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+        working-directory: packages/agent
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.run_id }}
+          path: packages/agent/coverage/
+          retention-days: 7
+
+  # ── Local simulator (mock-only standalone harness) ────────────────────────
+  simulator:
+    name: Standalone simulator tests
+    runs-on: ubuntu-latest
+    needs: typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install and test
+        working-directory: examples/local-simulator
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+
+  # ── Live-mode E2E (Mission Control) ───────────────────────────────────────
+  # Drives the REAL app against a faithful in-memory GitHub + LLM (Playwright
+  # request interception) to prove the connected experience works: the connect
+  # wizard, live pages, keyless chat commands, and the agentic tool loop with
+  # its confirmation gate. Secretless — the "connections" are mocked fixtures.
+  live-mode-e2e:
+    name: Live-mode E2E (Mission Control)
+    runs-on: ubuntu-latest
+    needs: typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/mission-control
+      - name: Run live-mode E2E
+        run: npm run test:e2e
+        working-directory: apps/mission-control
+
+  # ── Android APK (Capacitor wrap of Mission Control) ───────────────────────
+  # Secretless. The native project is generated fresh here (`cap add android`)
+  # so ~100 Gradle files stay out of git — capacitor.config.ts is the source
+  # of truth. Download the APK from this run's artifacts:
+  # qodo-mission-control-apk.
+  android-apk:
+    name: Android APK (Mission Control)
+    runs-on: ubuntu-latest
+    needs: typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build web bundle
+        working-directory: apps/mission-control
+        env:
+          # Optional repo variable; when unset the app shows its built-in
+          # first-run setup panel instead of live telemetry.
+          VITE_TELEMETRY_PROXY_URL: ${{ vars.QODO_TELEMETRY_PROXY_URL }}
+        run: npm run build
+      - name: Generate Android project
+        working-directory: apps/mission-control
+        run: |
+          npx cap add android
+          npx cap sync android
+      - name: Pin WebView textZoom to 100
+        working-directory: apps/mission-control
+        # System font scaling otherwise inflates the fixed-px layout and clips
+        # content off-screen; the script hard-fails on Capacitor template drift.
+        run: node ../../scripts/pin-textzoom.mjs
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21" # Capacitor 8 generates JavaVersion.VERSION_21 projects
+      - name: Build debug APK
+        working-directory: apps/mission-control/android
+        run: ./gradlew assembleDebug --no-daemon
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qodo-mission-control-apk
+          path: apps/mission-control/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+  # ── Security scans: Secret scan + SBOM + License ───────────────────────────
+  security:
+    name: Security scan (Secrets / SBOM / License)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Secret scan with TruffleHog
+        # Pinned to an exact release (no floating v3 tag exists; @main is a
+        # mutable ref and a supply-chain risk for an action that reads the
+        # full tree). 3.94.0 verified against ghcr.io/trufflesecurity/
+        # trufflehog's published tags at pin time.
+        uses: trufflesecurity/trufflehog@v3.94.0
+        with:
+          path: ./
+          extra_args: --only-verified
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install production deps only
+        run: npm ci --omit=dev
+      - uses: actions/download-artifact@v4
+        with:
+          name: agent-dist
+          path: packages/agent/dist/
+      - name: Generate SBOM
+        run: |
+          node -e "
+            import('./packages/agent/dist/services/sbom-generator.js')
+              .then(m => { const s = m.generateSbom('.'); m.saveSbom(s, 'sbom.json'); })
+          "
+      - name: Check licenses
+        run: |
+          node -e "
+            import('./packages/agent/dist/services/license-checker.js').then(m => {
+              const r = m.checkLicenses('.');
+              if (!r.passed) { console.error('License violations', r.violations); process.exit(1); }
+            })
+          "
+      - name: Upload SBOM artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ github.run_id }}
+          path: sbom.json
+          retention-days: 30
+
+  # ── Build (same command as `npm run build` locally) ───────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build all workspaces
+        run: npm run build
+      - name: Lint repo policy (.qodo/policy.yml)
+        # Exits non-zero if a committed policy is malformed, so a broken
+        # control file fails the PR instead of silently defaulting at run time.
+        run: node packages/agent/dist/cli.js --policy
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agent-dist
+          path: packages/agent/dist/
+          retention-days: 1
+
+  # ── Audit log chain verification ──────────────────────────────────────────
+  audit-verify:
+    name: Verify audit chain integrity
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install production deps only
+        run: npm ci --omit=dev
+      - uses: actions/download-artifact@v4
+        with:
+          name: agent-dist
+          path: packages/agent/dist/
+      - name: Verify audit chain
+        run: |
+          node -e "
+            import('./packages/agent/dist/services/audit-log.js').then(m => {
+              const r = m.verifyAuditChain('.');
+              if (!r.valid) { console.error('Audit chain broken at seq', r.brokenAt); process.exit(1); }
+              console.log('Audit chain OK');
+            })
+          "
+
+  # ── SLO compliance report (informational) ─────────────────────────────────
+  slo-report:
+    name: SLO compliance report
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install production deps only
+        run: npm ci --omit=dev
+      - uses: actions/download-artifact@v4
+        with:
+          name: agent-dist
+          path: packages/agent/dist/
+      - name: Compute SLO report
+        run: |
+          node -e "
+            import('./packages/agent/dist/services/slo-tracker.js').then(m => {
+              const r = m.computeSloReport('.');
+              console.log(JSON.stringify(r, null, 2));
+              if (!r.slo1.met) console.warn('WARNING: SLO-1 breached');
+              if (!r.slo2.met) console.warn('WARNING: SLO-2 breached');
+            })
+          "
+
+  # ── Environment pre-flight (needs secrets → dispatch only) ────────────────
+  preflight:
+    name: Pre-flight env validation
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install production deps only
+        run: npm ci --omit=dev
+      - uses: actions/download-artifact@v4
+        with:
+          name: agent-dist
+          path: packages/agent/dist/
+      - name: Validate environment secrets
+        env:
+          GITHUB_TOKEN:             ${{ secrets.QODO_GITHUB_TOKEN }}
+          GROQ_API_KEY:             ${{ secrets.GROQ_API_KEY }}
+          UPSTASH_REDIS_REST_URL:   ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          REPO:                     ${{ github.repository }}
+          OBJECTIVE:                validate-preflight
+        run: node -e "import('./packages/agent/dist/services/env-validator.js').then(m => m.validateAndCoerce())"
+
+  # ── Run agent pipeline ─────────────────────────────────────────────────────
+  # Write-capable and secret-loaded, so it NEVER runs automatically on
+  # pull_request events (untrusted branch content driving an autonomous
+  # self-modifying agent with contents:write). Manual dispatch only.
+  agent:
+    name: Run agent
+    runs-on: ubuntu-latest
+    needs: [test, security, preflight, audit-verify]
+    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install production deps only
+        run: npm ci --omit=dev
+      - uses: actions/download-artifact@v4
+        with:
+          name: agent-dist
+          path: packages/agent/dist/
+      - name: Run agent pipeline
+        env:
+          GITHUB_TOKEN:             ${{ secrets.QODO_GITHUB_TOKEN }}
+          GROQ_API_KEY:             ${{ secrets.GROQ_API_KEY }}
+          UPSTASH_REDIS_REST_URL:   ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          OPENROUTER_API_KEY:       ${{ secrets.OPENROUTER_API_KEY }}
+          R2_ACCOUNT_ID:            ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID:         ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY:     ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET:                ${{ secrets.R2_BUCKET }}
+          VERCEL_TOKEN:             ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_EDGE_CONFIG_ID:    ${{ secrets.VERCEL_EDGE_CONFIG_ID }}
+          QODO_DISPATCH_SECRET:     ${{ secrets.QODO_DISPATCH_SECRET }}
+          EDGE_FRAGMENT_WORKER_URL: ${{ secrets.EDGE_FRAGMENT_WORKER_URL }}
+          QODO_TEST_COMMAND:        ${{ secrets.QODO_TEST_COMMAND }}
+          VERCEL_PRODUCTION_URL:    ${{ secrets.VERCEL_PRODUCTION_URL }}
+          QODO_SKILL_ID:            ${{ secrets.QODO_SKILL_ID }}
+          QODO_PRIVACY_MODE:        ${{ secrets.QODO_PRIVACY_MODE }}
+          QODO_HIVE_SHARE:          ${{ secrets.QODO_HIVE_SHARE }}
+          HF_API_KEY:               ${{ secrets.HF_API_KEY }}
+          ALERT_WEBHOOK_URL:        ${{ secrets.ALERT_WEBHOOK_URL }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_SERVICE_NAME:        qodo-agent
+          # Verifiable Autonomy Receipts: HMAC signing key (optional — an
+          # absent secret produces unsigned, chain-anchored receipts).
+          QODO_RECEIPT_KEY:         ${{ secrets.QODO_RECEIPT_KEY }}
+          REPO:                     ${{ github.repository }}
+          OBJECTIVE:                ${{ github.event.inputs.objective }}
+          DRY_RUN:                  ${{ github.event.inputs.dry_run || 'false' }}
+          # ADR-005 resume loop: issue_number resumes the existing PR (instead
+          # of run-pipeline.ts opening a new one when PR_NUMBER=0); task_id lets
+          # the resumed run write its durable ack key.
+          PR_NUMBER:                ${{ github.event.inputs.issue_number }}
+          TRIGGER_TASK_ID:          ${{ github.event.inputs.task_id }}
+          TRIGGER_SOURCE:           ${{ github.event.inputs.trigger }}
+          NODE_ENV:                 production
+          # Autonomous mode selector (blank = normal delivery). Mapped to the
+          # real CLI flag below so the app's Automations page can trigger a
+          # janitor/evolve/compliance/support/drain run via workflow_dispatch.
+          AGENT_MODE:               ${{ github.event.inputs.mode }}
+        run: |
+          MODE_FLAG=""
+          case "$AGENT_MODE" in
+            janitor)    MODE_FLAG="--janitor-mode" ;;
+            evolve)     MODE_FLAG="--evolve" ;;
+            compliance) MODE_FLAG="--compliance-mode" ;;
+            support)    MODE_FLAG="--support-ticket-discovery" ;;
+            drain)      MODE_FLAG="--drain-trigger-queue" ;;
+          esac
+          DRY_FLAG=""
+          [ "$DRY_RUN" = "true" ] && DRY_FLAG="--dry-run"
+          echo "Running agent: node cli.js $DRY_FLAG $MODE_FLAG"
+          node packages/agent/dist/cli.js $DRY_FLAG $MODE_FLAG
+      - name: Upload structured logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qodo-logs-${{ github.run_id }}
+          path: /tmp/qodo-*.jsonl
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload audit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-log-${{ github.run_id }}
+          path: .audit-log.ndjson
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Upload autonomy receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: receipt-${{ github.run_id }}
+          path: receipt.json
+          if-no-files-found: ignore
+          retention-days: 90

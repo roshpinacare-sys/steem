@@ -1,0 +1,42 @@
+{
+  "version": "32.4",
+  "generatedAt": "2026-07-18T09:54:00.359Z",
+  "status": "PASS",
+  "metrics": {
+    "targets": 3,
+    "observedTargets": 1,
+    "passedObservedTargets": 1,
+    "plannedTargets": 2
+  },
+  "results": [
+    {
+      "targetId": "linux-x64-v22.16.0",
+      "qualified": true,
+      "reasons": []
+    },
+    {
+      "targetId": "windows-x64-node22",
+      "qualified": false,
+      "reasons": [
+        "build_not_run",
+        "tests_not_run",
+        "archive_not_run",
+        "not_observed"
+      ]
+    },
+    {
+      "targetId": "macos-arm64-node22",
+      "qualified": false,
+      "reasons": [
+        "build_not_run",
+        "tests_not_run",
+        "archive_not_run",
+        "not_observed"
+      ]
+    }
+  ],
+  "reportDigest": "9974083c942044e61bb0ad70881f72250a382b75a34f5638fdb34794403863c1",
+  "limitations": [
+    "Windows and macOS targets are planned, not observed; independent isolation review remains pending."
+  ]
+}

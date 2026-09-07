@@ -1,0 +1,152 @@
+{
+  "generatedAt": "2026-07-11T10:30:00.000Z",
+  "node": {
+    "id": "local-mini-pc",
+    "displayName": "Local Mini-PC",
+    "trustLevel": "root",
+    "hardware": {
+      "id": "local-mini-pc",
+      "displayName": "Local Mini-PC reference node",
+      "cpuArchitecture": "x64",
+      "logicalCores": 8,
+      "ramBytes": 17179869184,
+      "diskFreeBytes": 107374182400,
+      "thermalState": "nominal",
+      "powerSource": "mains",
+      "maximumPowerWatts": 65,
+      "networkAvailable": false
+    },
+    "modelIds": [
+      "deterministic-local-v1"
+    ],
+    "toolIds": [
+      "local.hash",
+      "local.transform_json",
+      "local.inspect_file"
+    ],
+    "tenantIds": [
+      "tenant-local"
+    ],
+    "storageFreeBytes": 107374182400,
+    "currentLoad": 0.1,
+    "health": "healthy",
+    "lastSynchronizedAt": "2026-07-11T10:30:00.000Z",
+    "energyProfile": {
+      "idleWatts": 12,
+      "estimatedInferenceWatts": 45,
+      "confidence": "estimated"
+    }
+  },
+  "placement": {
+    "selected": {
+      "id": "local-mini-pc",
+      "displayName": "Local Mini-PC",
+      "trustLevel": "root",
+      "hardware": {
+        "id": "local-mini-pc",
+        "displayName": "Local Mini-PC reference node",
+        "cpuArchitecture": "x64",
+        "logicalCores": 8,
+        "ramBytes": 17179869184,
+        "diskFreeBytes": 107374182400,
+        "thermalState": "nominal",
+        "powerSource": "mains",
+        "maximumPowerWatts": 65,
+        "networkAvailable": false
+      },
+      "modelIds": [
+        "deterministic-local-v1"
+      ],
+      "toolIds": [
+        "local.hash",
+        "local.transform_json",
+        "local.inspect_file"
+      ],
+      "tenantIds": [
+        "tenant-local"
+      ],
+      "storageFreeBytes": 107374182400,
+      "currentLoad": 0.1,
+      "health": "healthy",
+      "lastSynchronizedAt": "2026-07-11T10:30:00.000Z",
+      "energyProfile": {
+        "idleWatts": 12,
+        "estimatedInferenceWatts": 45,
+        "confidence": "estimated"
+      }
+    },
+    "selectedModelId": "deterministic-local-v1",
+    "candidates": [
+      {
+        "node": {
+          "id": "local-mini-pc",
+          "displayName": "Local Mini-PC",
+          "trustLevel": "root",
+          "hardware": {
+            "id": "local-mini-pc",
+            "displayName": "Local Mini-PC reference node",
+            "cpuArchitecture": "x64",
+            "logicalCores": 8,
+            "ramBytes": 17179869184,
+            "diskFreeBytes": 107374182400,
+            "thermalState": "nominal",
+            "powerSource": "mains",
+            "maximumPowerWatts": 65,
+            "networkAvailable": false
+          },
+          "modelIds": [
+            "deterministic-local-v1"
+          ],
+          "toolIds": [
+            "local.hash",
+            "local.transform_json",
+            "local.inspect_file"
+          ],
+          "tenantIds": [
+            "tenant-local"
+          ],
+          "storageFreeBytes": 107374182400,
+          "currentLoad": 0.1,
+          "health": "healthy",
+          "lastSynchronizedAt": "2026-07-11T10:30:00.000Z",
+          "energyProfile": {
+            "idleWatts": 12,
+            "estimatedInferenceWatts": 45,
+            "confidence": "estimated"
+          }
+        },
+        "eligible": true,
+        "score": 0.703756,
+        "reasons": [],
+        "selectedModelId": "deterministic-local-v1",
+        "estimatedEnergyWh": 0.001018,
+        "contributions": {
+          "capabilityFit": 0.14,
+          "dataLocality": 0.15000000000000002,
+          "privacy": 0.16,
+          "availability": 0.14,
+          "energyEfficiency": 0.11975567999999999,
+          "loadPenalty": -0.006,
+          "transferPenalty": 0,
+          "trustPenalty": 0
+        }
+      }
+    ],
+    "reason": "Selected local-mini-pc with model deterministic-local-v1 after hard feasibility, trust, tenant, locality, load, and energy checks."
+  },
+  "estimatesOnly": true,
+  "measurementRequiredOnTargetHardware": true,
+  "breakEvenModel": {
+    "assumptions": {
+      "localCapitalCostUsd": 900,
+      "usefulLifeYears": 4,
+      "electricityUsdPerKwh": 0.2,
+      "localAverageWatts": 45,
+      "remoteCostPerMillionTokensUsd": 10,
+      "tokensPerTask": 8000
+    },
+    "estimatedLocalEnergyCostPerTaskUsd": 0.00004,
+    "estimatedRemoteVariableCostPerTaskUsd": 0.08,
+    "caveat": "Hardware depreciation, quality differences, operator time, and measured throughput materially change the break-even point."
+  }
+}

@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://srs.omnivisor.dev/schemas/esr/v2.0.json",
+  "title": "Epistemic State Replication (ESR) Persistence Schema v2.0",
+  "description": "Cross-agent knowledge visibility record for the H3-Tier Sovereign Runtime Substrate. v2.0 adds: (1) BLS evidence binding that cryptographically binds each validator's calibrated assurance score (c_i) to the specific Z3 safety witness; (2) sequence epoch (seq) for SEG verification; (3) SQA certificate reference inside the evidence chain. Every reasoning trajectory emitted by Manager / Researcher / Engineer / Reviewer agents is persisted as an ESR entry. Guarantees: Semantic Linearizability (every read reflects the latest committed write OR a strictly-ordered prefix) and Eventual Coherence (replicas converge within the bounded staleness window Δ).",
+
+  "type": "object",
+  "required": ["esr_id", "agent_id", "role", "session_id", "trajectory", "epistemic_state", "quorum", "evidence_chain", "seq", "ts", "version"],
+  "properties": {
+
+    "esr_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique ESR entry identifier (UUIDv7 for time-ordered)."
+    },
+
+    "parent_esr_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "If this entry is a continuation/refinement, points to the predecessor; null for seeds."
+    },
+
+    "agent_id": {
+      "type": "string",
+      "description": "Identifier of the agent that produced this trajectory (e.g. 'manager-01', 'engineer-fpga-03')."
+    },
+
+    "role": {
+      "type": "string",
+      "enum": ["Manager", "Researcher", "Engineer", "Reviewer", "Arbiter"],
+      "description": "Specialised role of the producing agent."
+    },
+
+    "session_id": {
+      "type": "string",
+      "description": "Logical session / task identifier; all ESR entries in a session form a partial order."
+    },
+
+    "ts": {
+      "type": "number",
+      "description": "Epoch-seconds timestamp of commit. Used for linearizability arbitration."
+    },
+
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Schema version. v2 is the current release (adds BLS evidence binding, seq epoch, SQA certificate reference)."
+    },
+
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sequence epoch — monotonically increasing counter scoped to the session_id. The Sovereign Execution Gate rejects any mutation whose evidence_chain.seq does not match the active epoch for the session. Incremented on every epoch rotation (e.g. after a quorum reconfiguration or a Byzantine eviction)."
+    },
+
+    "trajectory": {
+      "type": "object",
+      "description": "The full reasoning trajectory that produced this epistemic state.",
+      "required": ["prompt", "steps", "outcome"],
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "The original task prompt given to the agent."
+        },
+        "context_refs": {
+          "type": "array",
+          "items": {"type": "string", "format": "uuid"},
+          "description": "ESR IDs of upstream trajectories that provided context."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["step_id", "tool", "tier", "content", "logprob", "value", "reward", "ts"],
+            "properties": {
+              "step_id": {"type": "integer", "minimum": 0},
+              "tool": {
+                "type": "string",
+                "enum": ["ADD", "UPDATE", "DELETE", "RETRIEVE", "FILTER", "SUMMARY", "NOOP"],
+                "description": "AgeMem tool invoked at this step. ADD inserts a record; UPDATE mutates the parent_rid record; DELETE tombstones the parent_rid record (soft-delete preserving ESR linearizability); RETRIEVE performs a point lookup by rid; FILTER retrieves records matching a predicate; SUMMARY condenses a window of records into a single LTM-promoted summary record; NOOP is the terminaliser."
+              },
+              "tier": {
+                "type": "string",
+                "enum": ["STM", "LTM"],
+                "description": "Memory tier targeted by the tool invocation."
+              },
+              "content": {
+                "type": "string",
+                "description": "Semantic content of the memory record produced/consumed."
+              },
+              "embedding": {
+                "type": "array",
+                "items": {"type": "number"},
+                "description": "Vector embedding used for retrieval (typically 16-dim in v1)."
+              },
+              "salience": {
+                "type": "number",
+                "minimum": 0, "maximum": 1,
+                "description": "Importance weight assigned to this record."
+              },
+              "logprob": {"type": "number", "description": "log pi(a|s) under the emitting policy."},
+              "value": {"type": "number", "description": "V(s) baseline estimate."},
+              "reward": {"type": "number", "description": "Immediate reward (post tier-weight shaping)."},
+              "advantage": {"type": ["number", "null"], "description": "Group-relative advantage after GRPO update; null before the update."},
+              "ts": {"type": "number", "description": "Step timestamp (epoch-seconds)."}
+            }
+          }
+        },
+        "outcome": {
+          "type": "object",
+          "required": ["status", "artifact_ref"],
+          "properties": {
+            "status": {"type": "string", "enum": ["success", "failure", "aborted", "pending_quorum"]},
+            "artifact_ref": {"type": ["string", "null"], "description": "URI of any artifact produced (RTL, script, report, etc.)."},
+            "error_code": {"type": ["string", "null"]},
+            "error_msg":  {"type": ["string", "null"]}
+          }
+        }
+      }
+    },
+
+    "epistemic_state": {
+      "type": "object",
+      "description": "The post-trajectory knowledge state of the agent — what it now believes to be true.",
+      "required": ["beliefs", "uncertainties", "open_questions"],
+      "properties": {
+        "beliefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["proposition", "confidence", "evidence_refs"],
+            "properties": {
+              "proposition": {"type": "string"},
+              "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+              "evidence_refs": {
+                "type": "array",
+                "items": {"type": "string", "format": "uuid"},
+                "description": "ESR IDs of trajectories that provide evidence for this belief."
+              }
+            }
+          }
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["topic", "magnitude"],
+            "properties": {
+              "topic": {"type": "string"},
+              "magnitude": {"type": "number", "minimum": 0, "maximum": 1}
+            }
+          }
+        },
+        "open_questions": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+
+    "quorum": {
+      "type": "object",
+      "description": "Semantic Quorum Assurance (SQA) certificate for this trajectory. v2.0 adds the bls_evidence_binding block that cryptographically binds each validator's calibrated assurance score (c_i) to the specific Z3 safety witness being certified.",
+      "required": ["threshold", "validators", "aggregate_sig", "admissible", "bls_evidence_binding"],
+      "properties": {
+        "risk_class": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "Risk classification — determines the quorum threshold function."
+        },
+        "threshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minimum number of heterogeneous validators required for this risk class."
+        },
+        "validators": {
+          "type": "array",
+          "description": "List of validators that signed off on the Semantic Admissibility of this trajectory.",
+          "items": {
+            "type": "object",
+            "required": ["validator_id", "validator_type", "verdict", "calibrated_assurance", "sig"],
+            "properties": {
+              "validator_id": {"type": "string"},
+              "validator_type": {
+                "type": "string",
+                "enum": ["formal", "empirical", "heuristic", "human"],
+                "description": "Heterogeneous validator type — required for quorum diversity."
+              },
+              "verdict": {"type": "string", "enum": ["admit", "reject", "abstain"]},
+              "rationale": {"type": "string"},
+              "calibrated_assurance": {
+                "type": "number",
+                "minimum": 0, "maximum": 1,
+                "description": "Validator's calibrated assurance score c_i ∈ [0,1]. Cryptographically bound to the Z3 witness via bls_evidence_binding."
+              },
+              "sig": {"type": "string", "description": "BLS signature on (esr_id, verdict, validator_id, c_i, z3_witness_hash)."}
+            }
+          }
+        },
+        "aggregate_sig": {
+          "type": "string",
+          "description": "BLS aggregate signature combining all 'admit' validators' individual signatures."
+        },
+        "admissible": {
+          "type": "boolean",
+          "description": "True iff #admit >= threshold AND at least one validator of each required type signed 'admit' AND sum(c_i for admit validators) >= C_MIN (calibrated assurance floor)."
+        },
+        "bls_evidence_binding": {
+          "type": "object",
+          "description": "Cryptographic binding between the validator assurance scores and the Z3 safety witness. Prevents evidence fabrication: a validator cannot sign off on a mutation without also signing the specific Z3 witness that certifies it.",
+          "required": ["z3_witness_hash", "binding_sig", "c_min", "c_sum"],
+          "properties": {
+            "z3_witness_hash": {
+              "type": "string",
+              "description": "SHA-256 hash of the Z3 witness model (the sat assignment) being certified. Bind to this hash prevents a validator from reusing a signature on a different witness."
+            },
+            "binding_sig": {
+              "type": "string",
+              "description": "BLS aggregate signature over (z3_witness_hash, [(validator_id, c_i) for admit validators]). Verifying this signature proves that the listed validators attested to the listed assurance scores for the listed witness."
+            },
+            "c_min": {
+              "type": "number",
+              "minimum": 0, "maximum": 1,
+              "description": "Minimum total calibrated assurance required for this risk class. The quorum is admissible only if c_sum >= c_min."
+            },
+            "c_sum": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Sum of c_i over all 'admit' validators. Must be >= c_min for the quorum to be admissible."
+            }
+          }
+        }
+      }
+    },
+
+    "evidence_chain": {
+      "type": "object",
+      "description": "Intent-to-execution evidence chain carried by every Adm-gated mutation. v2.0 adds the sqa_certificate_ref and seq fields: the Sovereign Execution Gate rejects any mutation unless evidence_chain.admissible is verified against the SQA certificate (quorum.admissible) AND evidence_chain.seq matches the active sequence epoch for the session.",
+      "required": ["intent", "context", "action", "reasoning", "admissible", "sqa_certificate_ref", "seq"],
+      "properties": {
+        "intent": {
+          "type": "string",
+          "enum": ["diagnose", "rebalance", "promote", "quorum_validate", "refactor", "retire"],
+          "description": "The agent intent that produced this mutation."
+        },
+        "context": {
+          "type": "object",
+          "description": "The execution context at decision time.",
+          "required": ["island", "theta", "epistemic_ids", "tombstoned", "risk_class"],
+          "properties": {
+            "island": {"type": "string", "description": "Target power island (APU/RPU/FPGA/Photonic/NISQ/IO) or 'global'."},
+            "theta": {"type": "number", "description": "Current thermal coordinate snapshot."},
+            "epistemic_ids": {"type": "array", "items": {"type": "string"}, "description": "rids currently believed-to-exist in the epistemic state."},
+            "tombstoned": {"type": "array", "items": {"type": "string"}, "description": "rids that have been soft-deleted via DELETE."},
+            "risk_class": {"type": "string", "enum": ["low", "medium", "high", "critical"]}
+          }
+        },
+        "action": {
+          "type": "object",
+          "required": ["op", "tier"],
+          "properties": {
+            "op": {"type": "string", "enum": ["ADD", "UPDATE", "DELETE", "RETRIEVE", "FILTER", "SUMMARY", "NOOP"]},
+            "tier": {"type": "string", "enum": ["STM", "LTM"]},
+            "parent_rid": {"type": ["string", "null"], "description": "Target rid for UPDATE/DELETE/RETRIEVE ops."}
+          }
+        },
+        "reasoning": {
+          "type": "object",
+          "required": ["logprob", "value", "proof_refs"],
+          "properties": {
+            "logprob": {"type": "number", "description": "log pi(a|s) under the emitting policy."},
+            "value": {"type": "number", "description": "V(s) baseline estimate."},
+            "advantage": {"type": ["number", "null"], "description": "Group-relative advantage after GRPO update; null before the update."},
+            "proof_refs": {
+              "type": "array",
+              "items": {"type": "string", "enum": ["z3_sat", "z3_unsat", "saarthi", "sqa_quorum", "empirical"]},
+              "description": "Proof kinds carried by this reasoning trace. Must cover all kinds required by the intent (see Adm intent→proof table)."
+            },
+            "esr_evidence": {"type": "array", "items": {"type": "string", "format": "uuid"}, "description": "ESR IDs of upstream trajectories that provide evidence."}
+          }
+        },
+        "admissible": {"type": "boolean", "description": "True iff the (intent, context, action, reasoning) tuple passed the Adm evaluator's 4-rule check. The Sovereign Execution Gate cross-verifies this flag against quorum.admissible before committing the mutation."},
+        "attempts": {"type": "array", "items": {"type": "string"}, "description": "Diagnostic log of the Adm-gated re-sampling loop. Each entry is 'attempt N: ADMITTED op=X' or 'attempt N: REJECTED op=X — <rule_violation>'."},
+        "sqa_certificate_ref": {
+          "type": "string",
+          "description": "Reference to the SQA certificate (quorum block of this ESR entry) that certifies the admissibility of this evidence chain. The SEG verifies that (1) this ref points to a valid quorum block, (2) quorum.admissible is true, and (3) quorum.bls_evidence_binding.z3_witness_hash matches the Z3 witness being certified."
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sequence epoch at the time this evidence chain was constructed. The SEG rejects the mutation if this seq does not match the active epoch for the session (top-level seq field). This prevents replay of stale evidence chains from prior epochs."
+        }
+      }
+    },
+
+    "telemetry_refs": {
+      "type": "array",
+      "description": "References to Unified Telemetry Bus snapshots that informed this trajectory.",
+      "items": {
+        "type": "object",
+        "required": ["snapshot_id", "source"],
+        "properties": {
+          "snapshot_id": {"type": "string"},
+          "source": {
+            "type": "string",
+            "enum": ["APU", "RPU", "FPGA", "Photonic", "NISQ", "IO"],
+            "description": "Power island the telemetry originated from."
+          },
+          "ring_buffer_offset": {"type": "integer", "description": "eBPF ring-buffer offset for replay."},
+          "ts": {"type": "number"}
+        }
+      }
+    },
+
+    "formal_proof_refs": {
+      "type": "array",
+      "description": "References to Z3 / Saarthi proof artifacts that certify any safety claims made.",
+      "items": {
+        "type": "object",
+        "required": ["proof_id", "prover", "claim", "verdict"],
+        "properties": {
+          "proof_id": {"type": "string"},
+          "prover": {"type": "string", "enum": ["z3", "saarthi", "coq", "lean"]},
+          "claim": {"type": "string", "description": "Declarative invariant being proven."},
+          "verdict": {"type": "string", "enum": ["sat", "unsat", "unknown"]}
+        }
+      }
+    },
+
+    "replication": {
+      "type": "object",
+      "description": "Eventual-coherence bookkeeping for the ESR replication layer.",
+      "required": ["primary", "replicas", "lamport_ts", "staleness_bound_s"],
+      "properties": {
+        "primary": {"type": "string", "description": "Primary replica that first committed this entry."},
+        "replicas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["replica_id", "status"],
+            "properties": {
+              "replica_id": {"type": "string"},
+              "status": {"type": "string", "enum": ["pending", "replicated", "diverged"]},
+              "ts": {"type": "number"}
+            }
+          }
+        },
+        "lamport_ts": {
+          "type": "integer",
+          "description": "Lamport timestamp used for the Semantic Linearizability arbitration order."
+        },
+        "staleness_bound_s": {
+          "type": "number",
+          "description": "Maximum allowed staleness for replicas to be considered coherent (the Δ parameter)."
+        }
+      }
+    },
+
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Free-form tags for retrieval and filtering."
+    }
+  }
+}

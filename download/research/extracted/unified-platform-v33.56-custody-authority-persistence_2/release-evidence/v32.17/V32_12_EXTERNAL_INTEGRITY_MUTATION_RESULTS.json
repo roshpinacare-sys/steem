@@ -1,0 +1,273 @@
+{
+  "version": "32.12",
+  "runId": "v32.17-authoritative-local-r2",
+  "generatedAt": "2026-07-20T23:37:00.556008Z",
+  "status": "passed",
+  "sourceDigest": "a51414ffcda75a4688493b44aa05a8885f8735c5c3d32b89e3729c3c84ca3d5d",
+  "compiledArtifactDigest": "9cec2a36083db3af04bc36ebe3b308229e173b7e56533d10efe1effd07403148",
+  "testManifestDigest": "2ffcd6fd07f96559c118013ba0f5785b7d8664308c81a0fee010325735267a98",
+  "testFilesDigest": "b0892c2e89f54d8e8c5a5d4a074851d3fb821140152510d6938eba6ecfdf780b",
+  "packageLockDigest": "d8ad748d299b1eefa17a11852a352d222426e7cb39ada487a3714f9cdc09d7be",
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "environment": {
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64",
+    "ci": true,
+    "runnerOs": "",
+    "runnerArch": ""
+  },
+  "baseline": {
+    "status": "passed",
+    "results": [
+      {
+        "exitCode": 0,
+        "timedOut": false,
+        "outputTail": "  duration_ms: 6.391575\n  type: 'test'\n  ...\n# Subtest: witness checkpoints must advance monotonically from verifier-owned prior state\nok 16 - witness checkpoints must advance monotonically from verifier-owned prior state\n  ---\n  duration_ms: 6.361566\n  type: 'test'\n  ...\n# Subtest: actor credentials, fingerprints and signer identities are validated independently\nok 17 - actor credentials, fingerprints and signer identities are validated independently\n  ---\n  duration_ms: 5.835371\n  type: 'test'\n  ...\n# Subtest: time ordering, nonce binding, reviewer verdict and witness checkpoint branches fail closed\nok 18 - time ordering, nonce binding, reviewer verdict and witness checkpoint branches fail closed\n  ---\n  duration_ms: 6.712187\n  type: 'test'\n  ...\n# Subtest: raw evidence schema, safe path and observation uniqueness are enforced\nok 19 - raw evidence schema, safe path and observation uniqueness are enforced\n  ---\n  duration_ms: 6.659062\n  type: 'test'\n  ...\n# Subtest: diagnostic independent-process mode can validate a subset but can never become production eligible\nok 20 - diagnostic independent-process mode can validate a subset but can never become production eligible\n  ---\n  duration_ms: 3.043639\n  type: 'test'\n  ...\n# Subtest: malformed identity tuple, key fingerprint and observation timestamp branches fail explicitly\nok 21 - malformed identity tuple, key fingerprint and observation timestamp branches fail explicitly\n  ---\n  duration_ms: 6.33468\n  type: 'test'\n  ...\n1..21\n# tests 21\n# suites 0\n# pass 21\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 254.81016\n"
+      },
+      {
+        "exitCode": 0,
+        "timedOut": false,
+        "outputTail": "r trust bundle cannot replace the out-of-band trust root\n  ---\n  duration_ms: 2.443259\n  type: 'test'\n  ...\n# Subtest: an allowed trust-bundle signer still requires a valid cryptographic signature\nok 3 - an allowed trust-bundle signer still requires a valid cryptographic signature\n  ---\n  duration_ms: 2.078045\n  type: 'test'\n  ...\n# Subtest: expired, tampered and non-independent production trust bundles fail closed\nok 4 - expired, tampered and non-independent production trust bundles fail closed\n  ---\n  duration_ms: 4.809284\n  type: 'test'\n  ...\n# Subtest: root signing key cannot also be authorized as collector, reviewer or witness\nok 5 - root signing key cannot also be authorized as collector, reviewer or witness\n  ---\n  duration_ms: 2.210983\n  type: 'test'\n  ...\n# Subtest: trust anchor, bundle identity and validity interval branches fail closed\nok 6 - trust anchor, bundle identity and validity interval branches fail closed\n  ---\n  duration_ms: 4.121843\n  type: 'test'\n  ...\n# Subtest: trust-bundle actor authorization structure covers duplicate, identity, scope and interval failures\nok 7 - trust-bundle actor authorization structure covers duplicate, identity, scope and interval failures\n  ---\n  duration_ms: 5.603929\n  type: 'test'\n  ...\n# Subtest: diagnostic trust may share organizations but remains bound to a signed scoped policy\nok 8 - diagnostic trust may share organizations but remains bound to a signed scoped policy\n  ---\n  duration_ms: 3.105152\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 130.441747\n"
+      },
+      {
+        "exitCode": 0,
+        "timedOut": false,
+        "outputTail": "substitution\n  ---\n  duration_ms: 105.704257\n  type: 'test'\n  ...\n# Subtest: verifier rejects symlink evidence and tampered replay state before evaluation\nok 3 - verifier rejects symlink evidence and tampered replay state before evaluation\n  ---\n  duration_ms: 269.390317\n  type: 'test'\n  ...\n# Subtest: self-contained attacker keys, policy, observations and evaluation time are rejected as unexpected fields\nok 4 - self-contained attacker keys, policy, observations and evaluation time are rejected as unexpected fields\n  ---\n  duration_ms: 75.756298\n  type: 'test'\n  ...\n# Subtest: verifier rejects signed but uninterpreted nested fields in evidence and trust payloads\nok 5 - verifier rejects signed but uninterpreted nested fields in evidence and trust payloads\n  ---\n  duration_ms: 161.771715\n  type: 'test'\n  ...\n# Subtest: verifier preserves a lock it does not own and blocks concurrent state mutation\nok 6 - verifier preserves a lock it does not own and blocks concurrent state mutation\n  ---\n  duration_ms: 87.464443\n  type: 'test'\n  ...\n# Subtest: verifier-only CLI rejects duplicate JSON keys before evidence evaluation\nok 7 - verifier-only CLI rejects duplicate JSON keys before evidence evaluation\n  ---\n  duration_ms: 72.702938\n  type: 'test'\n  ...\n# Subtest: verifier-only CLI rejects incomplete invocation before reading any trust material\nok 8 - verifier-only CLI rejects incomplete invocation before reading any trust material\n  ---\n  duration_ms: 62.060431\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1143.71615\n"
+      },
+      {
+        "exitCode": 0,
+        "timedOut": false,
+        "outputTail": "TAP version 13\n# Subtest: strict JSON parser accepts nested valid JSON without changing data\nok 1 - strict JSON parser accepts nested valid JSON without changing data\n  ---\n  duration_ms: 2.912334\n  type: 'test'\n  ...\n# Subtest: strict JSON parser rejects duplicate keys at every nesting level\nok 2 - strict JSON parser rejects duplicate keys at every nesting level\n  ---\n  duration_ms: 0.503075\n  type: 'test'\n  ...\n# Subtest: strict JSON parser rejects trailing content, malformed numbers and unterminated strings\nok 3 - strict JSON parser rejects trailing content, malformed numbers and unterminated strings\n  ---\n  duration_ms: 0.201493\n  type: 'test'\n  ...\n# Subtest: strict JSON parser rejects control characters and non-finite numeric overflow\nok 4 - strict JSON parser rejects control characters and non-finite numeric overflow\n  ---\n  duration_ms: 0.151673\n  type: 'test'\n  ...\n# Subtest: strict JSON parser covers empty containers, escaped strings and all primitive literals\nok 5 - strict JSON parser covers empty containers, escaped strings and all primitive literals\n  ---\n  duration_ms: 0.228373\n  type: 'test'\n  ...\n# Subtest: strict JSON parser rejects invalid entry tokens, object keys, literals, escapes and bare minus\nok 6 - strict JSON parser rejects invalid entry tokens, object keys, literals, escapes and bare minus\n  ---\n  duration_ms: 0.237776\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 88.481647\n"
+      },
+      {
+        "exitCode": 0,
+        "timedOut": false,
+        "outputTail": "TAP version 13\n# Subtest: source manifest automatically binds every versioned handoff\nok 1 - source manifest automatically binds every versioned handoff\n  ---\n  duration_ms: 1143.821558\n  type: 'test'\n  ...\n# Subtest: source identity changes when the current handoff changes\nok 2 - source identity changes when the current handoff changes\n  ---\n  duration_ms: 1084.166595\n  type: 'test'\n  ...\n# Subtest: source identity binds external qualification manifests and runbooks\nok 3 - source identity binds external qualification manifests and runbooks\n  ---\n  duration_ms: 1090.334382\n  type: 'test'\n  ...\n# Subtest: source identity binds independent verifier-only implementations\nok 4 - source identity binds independent verifier-only implementations\n  ---\n  duration_ms: 1100.434753\n  type: 'test'\n  ...\n# Subtest: source identity binds blinded frontier benchmark manifests\nok 5 - source identity binds blinded frontier benchmark manifests\n  ---\n  duration_ms: 1191.781924\n  type: 'test'\n  ...\n1..5\n# tests 5\n# suites 0\n# pass 5\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 5697.391223\n"
+      }
+    ]
+  },
+  "mutantsSpecified": 24,
+  "mutantsKilledAuthentically": 24,
+  "survivors": 0,
+  "invalidKills": 0,
+  "records": [
+    {
+      "mutantId": "synthetic-evidence-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: synthetic, simulated, incomplete and dry-run evidence cannot satisfy production policy even when signed\nnot ok 1 - synthetic, simulated, incomplete and dry-run evidence cannot satisfy production policy even when signed\n  ---\n  duration_ms: 22.92428\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:112:1'\n  failureType: 'testCodeFailure'\n  error: 'synthetic_evidence_forbidden: [\"collector_state_not_passed:incomplete\",\"evidence_not_observed\",\"execution_mode_below_policy\"]'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:118:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 115.897294\n"
+    },
+    {
+      "mutantId": "execution-mode-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: synthetic, simulated, incomplete and dry-run evidence cannot satisfy production policy even when signed\nnot ok 1 - synthetic, simulated, incomplete and dry-run evidence cannot satisfy production policy even when signed\n  ---\n  duration_ms: 23.355246\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:112:1'\n  failureType: 'testCodeFailure'\n  error: 'execution_mode_below_policy: [\"collector_state_not_passed:incomplete\",\"evidence_not_observed\",\"synthetic_evidence_forbidden\"]'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:118:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 118.580864\n"
+    },
+    {
+      "mutantId": "nonce-replay-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: replayed and duplicated challenge nonces are rejected\nnot ok 1 - replayed and duplicated challenge nonces are rejected\n  ---\n  duration_ms: 29.121396\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:128:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(gateFailures(replayed, REQUIRED_EXTERNAL_GATE_IDS[0]).includes('challenge_nonce_replayed'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:131:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 125.138387\n"
+    },
+    {
+      "mutantId": "reviewer-signature-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: tampered signature and raw evidence substitution are independently rejected\nnot ok 1 - tampered signature and raw evidence substitution are independently rejected\n  ---\n  duration_ms: 27.359478\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:150:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(failures.includes('reviewer_signature_invalid'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:156:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 121.414804\n"
+    },
+    {
+      "mutantId": "source-binding-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: source, artifact, toolchain, policy and run identity drift fail closed\nnot ok 1 - source, artifact, toolchain, policy and run identity drift fail closed\n  ---\n  duration_ms: 23.345525\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:121:1'\n  failureType: 'testCodeFailure'\n  error: 'collector_source_digest_mismatch: [\"collector_artifact_digest_mismatch\",\"collector_policy_digest_mismatch\",\"collector_run_id_mismatch\",\"collector_toolchain_digest_mismatch\",\"identity_tuple_drift\"]'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:126:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.195156\n"
+    },
+    {
+      "mutantId": "key-independence-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: renaming the same signing identity does not create reviewer or witness independence\nnot ok 1 - renaming the same signing identity does not create reviewer or witness independence\n  ---\n  duration_ms: 28.783907\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:136:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(failures.includes('signing_key_not_independent'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:145:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 128.0404\n"
+    },
+    {
+      "mutantId": "review-binding-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: review copied from another qualification and witness equivocation are rejected\nnot ok 1 - review copied from another qualification and witness equivocation are rejected\n  ---\n  duration_ms: 29.84532\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:159:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(failures.includes('reviewer_collector_digest_mismatch'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:168:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 128.31877\n"
+    },
+    {
+      "mutantId": "raw-evidence-binding-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: tampered signature and raw evidence substitution are independently rejected\nnot ok 1 - tampered signature and raw evidence substitution are independently rejected\n  ---\n  duration_ms: 32.840846\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:150:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(failures.includes('raw_evidence_digest_or_size_mismatch'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:157:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 145.034544\n"
+    },
+    {
+      "mutantId": "required-gate-set-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: missing, duplicate and unexpected gate topology cannot be aggregated\nnot ok 1 - missing, duplicate and unexpected gate topology cannot be aggregated\n  ---\n  duration_ms: 32.612625\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:194:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(missing.failures.includes('required_gate_set_mismatch'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:197:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 143.37647\n"
+    },
+    {
+      "mutantId": "policy-digest-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: policy validation rejects malformed identity, digest, age, skew and gate configuration\nnot ok 1 - policy validation rejects malformed identity, digest, age, skew and gate configuration\n  ---\n  duration_ms: 27.110627\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:210:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:227:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 142.780347\n"
+    },
+    {
+      "mutantId": "production-all-gates-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: production purpose independently requires the exact six-gate witness-backed organization policy\nnot ok 1 - production purpose independently requires the exact six-gate witness-backed organization policy\n  ---\n  duration_ms: 25.432596\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:230:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:246:16\n    Array.forEach (<anonymous>)\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:242:11)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 140.505289\n"
+    },
+    {
+      "mutantId": "production-mode-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: production purpose independently requires the exact six-gate witness-backed organization policy\nnot ok 1 - production purpose independently requires the exact six-gate witness-backed organization policy\n  ---\n  duration_ms: 26.232581\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:230:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:246:16\n    Array.forEach (<anonymous>)\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:242:11)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 140.562094\n"
+    },
+    {
+      "mutantId": "production-witness-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: production purpose independently requires the exact six-gate witness-backed organization policy\nnot ok 1 - production purpose independently requires the exact six-gate witness-backed organization policy\n  ---\n  duration_ms: 25.025936\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:230:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:246:16\n    Array.forEach (<anonymous>)\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:242:11)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 140.994442\n"
+    },
+    {
+      "mutantId": "authorization-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: a signed actor without an out-of-band authorization is rejected\nnot ok 1 - a signed actor without an out-of-band authorization is rejected\n  ---\n  duration_ms: 11.350891\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:249:1'\n  failureType: 'testCodeFailure'\n  error: \"Cannot read properties of undefined (reading 'actorId')\"\n  code: 'ERR_TEST_FAILURE'\n  name: 'TypeError'\n  stack: |-\n    validateActor (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/src/qualification/external-qualification-integrity-v32_12.js:225:27)\n    verifyGateBundle (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/src/qualification/external-qualification-integrity-v32_12.js:122:5)\n    evaluateExternalQualificationIntegrityV32_12 (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/src/qualification/external-qualification-integrity-v32_12.js:37:24)\n    evaluate (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:78:12)\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:252:35)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 124.957116\n"
+    },
+    {
+      "mutantId": "checkpoint-monotonicity-bypass",
+      "target": "dist/src/qualification/external-qualification-integrity-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: witness checkpoints must advance monotonically from verifier-owned prior state\nnot ok 1 - witness checkpoints must advance monotonically from verifier-owned prior state\n  ---\n  duration_ms: 24.883384\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:255:1'\n  failureType: 'testCodeFailure'\n  error: '[\"witness_previous_checkpoint_mismatch\"]'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-integrity-v32_12.test.js:260:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 136.185036\n"
+    },
+    {
+      "mutantId": "trust-signature-bypass",
+      "target": "dist/src/qualification/external-qualification-trust-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: an allowed trust-bundle signer still requires a valid cryptographic signature\nnot ok 1 - an allowed trust-bundle signer still requires a valid cryptographic signature\n  ---\n  duration_ms: 11.097299\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-trust-v32_12.test.js:45:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-trust-v32_12.test.js:48:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 121.656538\n"
+    },
+    {
+      "mutantId": "root-key-actor-bypass",
+      "target": "dist/src/qualification/external-qualification-trust-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: root signing key cannot also be authorized as collector, reviewer or witness\nnot ok 1 - root signing key cannot also be authorized as collector, reviewer or witness\n  ---\n  duration_ms: 9.6199\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-trust-v32_12.test.js:61:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-trust-v32_12.test.js:66:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.646544\n"
+    },
+    {
+      "mutantId": "organization-independence-bypass",
+      "target": "dist/src/qualification/external-qualification-trust-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: expired, tampered and non-independent production trust bundles fail closed\nnot ok 1 - expired, tampered and non-independent production trust bundles fail closed\n  ---\n  duration_ms: 11.856054\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-trust-v32_12.test.js:50:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-trust-v32_12.test.js:59:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.881049\n"
+    },
+    {
+      "mutantId": "self-contained-document-bypass",
+      "target": "scripts/verify-external-qualification-v32_12.mjs",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: self-contained attacker keys, policy, observations and evaluation time are rejected as unexpected fields\nnot ok 1 - self-contained attacker keys, policy, observations and evaluation time are rejected as unexpected fields\n  ---\n  duration_ms: 105.006019\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:162:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The input did not match the regular expression /verification_document_unexpected_fields/. Input:\n    \n    '{\\n' +\n      '  \"version\": \"32.12\",\\n' +\n      '  \"status\": \"BLOCKED\",\\n' +\n      '  \"productionPromotion\": \"blocked\",\\n' +\n      '  \"failures\": [\\n' +\n      '    \"verifier_error:verification_document_invalid\"\\n' +\n      '  ]\\n' +\n      '}\\n'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  actual: |-\n    {\n      \"version\": \"32.12\",\n      \"status\": \"BLOCKED\",\n      \"productionPromotion\": \"blocked\",\n      \"failures\": [\n        \"verifier_error:verification_document_invalid\"\n      ]\n    }\n    \n  operator: 'match'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:169:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 220.325454\n"
+    },
+    {
+      "mutantId": "filesystem-observation-bypass",
+      "target": "scripts/verify-external-qualification-v32_12.mjs",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: verifier hashes current filesystem bytes and rejects post-signing evidence substitution\nnot ok 1 - verifier hashes current filesystem bytes and rejects post-signing evidence substitution\n  ---\n  duration_ms: 140.415569\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:120:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    0 !== 2\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 2\n  actual: 0\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:131:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 254.499368\n"
+    },
+    {
+      "mutantId": "replay-state-bypass",
+      "target": "scripts/verify-external-qualification-v32_12.mjs",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: verifier-only CLI requires out-of-band trust, hashes real files and persists replay state\nnot ok 1 - verifier-only CLI requires out-of-band trust, hashes real files and persists replay state\n  ---\n  duration_ms: 260.493744\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:99:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    0 !== 2\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 2\n  actual: 0\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:113:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 372.381039\n"
+    },
+    {
+      "mutantId": "foreign-lock-deletion-bypass",
+      "target": "scripts/verify-external-qualification-v32_12.mjs",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: verifier preserves a lock it does not own and blocks concurrent state mutation\nnot ok 1 - verifier preserves a lock it does not own and blocks concurrent state mutation\n  ---\n  duration_ms: 115.750383\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:197:1'\n  failureType: 'testCodeFailure'\n  error: \"ENOENT: no such file or directory, open '/tmp/v32-12-verifier-Oi0NUm/state.json.lock'\"\n  code: 'ENOENT'\n  stack: |-\n    readFileSync (node:fs:442:20)\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/external-qualification-verifier-cli-v32_12.test.js:206:22)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 224.621949\n"
+    },
+    {
+      "mutantId": "duplicate-json-key-bypass",
+      "target": "dist/src/validation/strict-json-v32_12.js",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: strict JSON parser rejects duplicate keys at every nesting level\nnot ok 1 - strict JSON parser rejects duplicate keys at every nesting level\n  ---\n  duration_ms: 3.451087\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/strict-json-v32_12.test.js:9:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/strict-json-v32_12.test.js:11:16)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 100.731725\n"
+    },
+    {
+      "mutantId": "qualification-source-boundary-bypass",
+      "target": "scripts/test_ops_context_v32_6.py",
+      "status": "killed-authentic",
+      "markerObserved": true,
+      "exitCode": 1,
+      "timedOut": false,
+      "outputTail": "TAP version 13\n# Subtest: source identity binds external qualification manifests and runbooks\nnot ok 1 - source identity binds external qualification manifests and runbooks\n  ---\n  duration_ms: 1178.960869\n  type: 'test'\n  location: '/tmp/v32-12-external-mut-kdh_uuw3/dist/tests/source-identity-v32_11.test.js:39:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(probe.items.includes('external-qualification'))\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: true\n  actual: false\n  operator: '=='\n  stack: |-\n    TestContext.<anonymous> (file:///tmp/v32-12-external-mut-kdh_uuw3/dist/tests/source-identity-v32_11.test.js:55:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1276.2986\n"
+    }
+  ]
+}

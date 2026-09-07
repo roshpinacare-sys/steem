@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0.0",
+  "version": "33.30",
+  "generatedAt": "2026-07-22T11:00:00.000Z",
+  "status": "accepted-bounded-convergence",
+  "rule": "Every authority-like function has exactly one canonical owner. Source systems may adapt, advise, verify or provide evidence, but cannot create a second root of authority.",
+  "domains": [
+    {
+      "domain": "identity-root",
+      "canonicalOwner": "src/security/private-identity.ts + canonical signed grants",
+      "sourceCandidates": [
+        "TITAI identity",
+        "SRS OIDC placeholders",
+        "TFA identities"
+      ],
+      "decision": "canonical-kernel-only",
+      "conflictRisk": "critical",
+      "migrationRule": "adapters may map external principals to canonical subject IDs; no external source self-registers trust"
+    },
+    {
+      "domain": "authority-grants",
+      "canonicalOwner": "src/contracts/canonical.ts::AuthorityGrant",
+      "sourceCandidates": [
+        "TFA capability tokens",
+        "TITAI grants",
+        "domain-pack requested scopes"
+      ],
+      "decision": "canonical-kernel-only",
+      "conflictRisk": "critical",
+      "migrationRule": "all foreign grants are translated then re-authorized by canonical policy; wildcard scopes remain forbidden"
+    },
+    {
+      "domain": "policy-decision",
+      "canonicalOwner": "canonical policy and capability trust contracts",
+      "sourceCandidates": [
+        "SRS risk policy",
+        "Qodo workflow policy",
+        "SAE payment policy"
+      ],
+      "decision": "kernel decision / domain advice",
+      "conflictRisk": "critical",
+      "migrationRule": "domain policies may request stricter controls but cannot relax kernel constraints"
+    },
+    {
+      "domain": "effect-ownership",
+      "canonicalOwner": "src/runtime/types.ts::EffectReceipt + durable outbox/store",
+      "sourceCandidates": [
+        "TFA ledgers",
+        "SAE ledgers",
+        "ECOS action histories",
+        "SRS runtime events"
+      ],
+      "decision": "one canonical effect ledger",
+      "conflictRisk": "critical",
+      "migrationRule": "foreign ledgers import as evidence or reconciliation inputs, never as authoritative effect truth"
+    },
+    {
+      "domain": "evidence-vocabulary",
+      "canonicalOwner": "src/contracts/canonical.ts::EvidenceRecord",
+      "sourceCandidates": [
+        "Yongzuan digital thread",
+        "S-AOS experiments",
+        "SRS proofs",
+        "Qodo test artifacts"
+      ],
+      "decision": "one canonical evidence vocabulary",
+      "conflictRisk": "high",
+      "migrationRule": "preserve measured/simulated/observed/attested distinctions; adapters must declare limitations"
+    },
+    {
+      "domain": "promotion",
+      "canonicalOwner": "src/contracts/canonical.ts::PromotionDecision and external qualification gates",
+      "sourceCandidates": [
+        "Yongzuan certification",
+        "SRS shortcut promotion",
+        "Qodo release decisions"
+      ],
+      "decision": "independent canonical promotion only",
+      "conflictRisk": "critical",
+      "migrationRule": "source systems produce candidates and recommendations; they cannot promote their own outputs"
+    },
+    {
+      "domain": "reviewer-trust",
+      "canonicalOwner": "src/security/reviewer-trust.ts and credential issuer trust",
+      "sourceCandidates": [
+        "SRS request-provided validators",
+        "model tournament judges",
+        "human reviewers"
+      ],
+      "decision": "pre-registered independent reviewers",
+      "conflictRisk": "critical",
+      "migrationRule": "review identities and keys must pre-exist the request and be tenant-bound"
+    },
+    {
+      "domain": "research",
+      "canonicalOwner": "no production owner; research-lab boundary",
+      "sourceCandidates": [
+        "SRS",
+        "S-AOS",
+        "tournaments",
+        "optimizers"
+      ],
+      "decision": "proposal-only shadow-only",
+      "conflictRisk": "high",
+      "migrationRule": "research has no production credentials, effect rights or self-promotion path"
+    },
+    {
+      "domain": "domain-pack",
+      "canonicalOwner": "src/contracts/system.ts::DomainPackManifest",
+      "sourceCandidates": [
+        "SAE",
+        "engineering pack",
+        "research pack",
+        "operations pack"
+      ],
+      "decision": "domain semantics outside kernel",
+      "conflictRisk": "high",
+      "migrationRule": "packs cannot request kernel-reserved scopes or hidden cross-pack state"
+    }
+  ],
+  "unresolvedConflicts": [],
+  "productionPromotion": "blocked"
+}

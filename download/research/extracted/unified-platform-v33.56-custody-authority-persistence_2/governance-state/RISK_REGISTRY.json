@@ -1,0 +1,579 @@
+{
+  "version": "33.56",
+  "status": "updated",
+  "generatedAt": "2026-07-24T07:30:00.000Z",
+  "provenance": [
+    "canonical/proof-v32",
+    "v32.1-source-remine",
+    "v32.2-fourteen-axis-excellence-cycle",
+    "v32.3-external-qualification-readiness-and-internal-debt-closure",
+    "v32.4-fourteen-axis-system-optimization",
+    "v32.5-twenty-two-lens-holistic-assurance",
+    "v32.12-external-qualification-execution-readiness"
+  ],
+  "assumptions": [
+    "Local execution environment and recorded versions are accurate."
+  ],
+  "limitations": [
+    "External runtime, security, legal and human qualification remain outside this package."
+  ],
+  "confidence": "high for repository-local exercised evidence; low for external production qualification",
+  "independentVerificationStatus": "internal role-separated adversarial validation; external certification pending",
+  "schemaVersion": "2.0.0",
+  "ownerRole": "Risk Authority",
+  "evidence": [
+    "V32_2_14_AXIS_SCORECARD.json",
+    "V32_2_PERFORMANCE_BUDGET.json",
+    "V32_2_VALUE_HYPOTHESIS_REPORT.json",
+    "V32_5_COMPLEMENTARY_SCORECARD.json",
+    "V32_5_EVIDENCE_FRESHNESS.json",
+    "release-evidence/v33.45/V33_45_MULTI_PACKAGE_UPDATE_TRANSACTION_PROOF.json",
+    "release-evidence/v33.45/V33_45_INDEPENDENT_VERIFICATION.json",
+    "release-evidence/v33.47/V33_47_EXTERNAL_COORDINATOR_JOURNAL_QUALIFICATION_PROOF.json",
+    "release-evidence/v33.47/V33_47_INDEPENDENT_VERIFICATION.json",
+    "release-evidence/v33.48/V33_48_EXTERNAL_COORDINATOR_DEPLOYMENT_EVIDENCE_IMPORT_PROOF.json",
+    "release-evidence/v33.48/V33_48_INDEPENDENT_VERIFICATION.json",
+    "release-evidence/v33.49/V33_49_EXTERNAL_CEREMONY_EXECUTOR_PROOF.json",
+    "release-evidence/v33.49/V33_49_INDEPENDENT_VERIFICATION.json"
+  ],
+  "nextAction": "V33.49-EXECUTE-INDEPENDENT-EXTERNAL-COORDINATOR-DEPLOYMENT",
+  "risks": [
+    {
+      "id": "V25-R1",
+      "severity": "critical",
+      "status": "open",
+      "risk": "No live PostgreSQL primary/standby, pool-isolation, failover or PITR qualification.",
+      "control": "Static contracts and target runner; production blocked."
+    },
+    {
+      "id": "V25-R2",
+      "severity": "critical",
+      "status": "open",
+      "risk": "No independently qualified untrusted-code boundary.",
+      "control": "Untrusted host execution blocked."
+    },
+    {
+      "id": "V25-R3",
+      "severity": "high",
+      "status": "open",
+      "risk": "No authorized KMS/HSM or external monotonic witness.",
+      "control": "Attested protocol rehearsal only."
+    },
+    {
+      "id": "V25-R4",
+      "severity": "high",
+      "status": "open",
+      "risk": "No measured human product-value evidence.",
+      "control": "Five-task consented protocol; human-value claims prohibited."
+    },
+    {
+      "id": "V25-R5",
+      "severity": "high",
+      "status": "open",
+      "risk": "No external penetration or licensing review.",
+      "control": "Production promotion blocked."
+    },
+    {
+      "id": "V25-R6",
+      "severity": "medium",
+      "status": "mitigated-local",
+      "risk": "Registry mirror allowlisting does not establish mirror governance or provenance.",
+      "control": "Exact host allowlist, integrity and no install scripts; external mirror review remains required."
+    },
+    {
+      "id": "V25-R7",
+      "severity": "medium",
+      "status": "mitigated-local",
+      "risk": "Single-host file replay is not a multi-host consensus or durable-database guarantee.",
+      "control": "Authority limited to local package; multi-host promotion blocked."
+    },
+    {
+      "id": "V25-R8",
+      "severity": "medium",
+      "status": "mitigated-local",
+      "risk": "Operational telemetry or action evidence could grow or leak sensitive values.",
+      "control": "Bounded retention/cardinality, allowlists, hashing, redaction and digest verification."
+    },
+    {
+      "id": "V25-R9",
+      "severity": "medium",
+      "status": "mitigated-local",
+      "risk": "Archive portability can silently depend on filesystem modes or omitted inputs.",
+      "control": "Normalized archive policy, explicit interpreters, manifest and malicious archive self-tests."
+    },
+    {
+      "id": "V25-R10",
+      "severity": "medium",
+      "status": "open",
+      "risk": "Fifty non-critical tests are not individually mapped in the selected critical-invariant catalog.",
+      "control": "Full suite remains authoritative; expand mapping only where decision value justifies it."
+    },
+    {
+      "id": "V27-R9",
+      "severity": "high",
+      "status": "mitigated-local",
+      "risk": "Model or orchestrator dependency substitution could attempt authority escalation or malformed change admission.",
+      "control": "Assistant independently verifies receipt signature, identity, proposal-only ceiling and tool semantics; output remains review-only."
+    },
+    {
+      "id": "V27-R10",
+      "severity": "medium",
+      "status": "open-external",
+      "risk": "Fixture model tests do not establish production model quality, latency, privacy or provider resilience.",
+      "control": "No production model-value claim; external provider qualification and human pilot required."
+    },
+    {
+      "id": "V27-R11",
+      "severity": "medium",
+      "status": "mitigated-local",
+      "risk": "Registry advisory endpoint failure could hide vulnerability status.",
+      "control": "Three-state audit classification and explicit environment-blocked qualification."
+    },
+    {
+      "id": "V28-R1",
+      "severity": "high",
+      "status": "mitigated-local",
+      "risk": "Sensitive repository targets could bypass agent policy through lockfile-specific branch logic.",
+      "control": "Direct sensitive-target rejection plus adversarial tests and authentic mutation kill."
+    },
+    {
+      "id": "V28-R2",
+      "severity": "medium",
+      "status": "bounded",
+      "risk": "Coverage excludes some subprocess and environment-only paths from the in-process percentage.",
+      "control": "Correctness lanes still execute those paths; coverage scope and exclusions are explicitly reported."
+    },
+    {
+      "id": "V32.1-R1",
+      "severity": "high",
+      "status": "open",
+      "risk": "Original source archives and licenses are not present in the v32.1 workspace, so direct source-code adoption cannot be independently requalified.",
+      "control": "Use bounded behavioral reimplementation with explicit source lineage; do not claim direct code adoption."
+    },
+    {
+      "id": "V32.2-R1",
+      "severity": "critical",
+      "status": "open",
+      "risk": "External readiness remains below the production floor because PostgreSQL failover/PITR, HSM/KMS, multi-host propagation and independent review are absent.",
+      "control": "Production promotion blocked by the external-readiness scorecard axis."
+    },
+    {
+      "id": "V32.2-R2",
+      "severity": "high",
+      "status": "open",
+      "risk": "Human and commercial value are not yet measured.",
+      "control": "Value hypotheses and claim-forbidden policy require a consented comparative pilot."
+    },
+    {
+      "id": "V32.2-R3",
+      "severity": "medium",
+      "status": "controlled",
+      "risk": "Local performance may regress as test and proof depth grows.",
+      "control": "Normalized per-test performance budget and stability tracking."
+    },
+    {
+      "id": "V32.3-R1",
+      "severity": "critical",
+      "status": "controlled",
+      "risk": "Locally generated or simulated material could be mislabeled as external qualification evidence.",
+      "control": "Observed-only envelope, independent reviewer identity, verified signature and exact source/artifact digest binding."
+    },
+    {
+      "id": "V32.3-R2",
+      "severity": "high",
+      "status": "open",
+      "risk": "Human pilot evidence could expose personal data or be collected without valid consent.",
+      "control": "Use pseudonymous participant IDs, explicit consent, preregistration and minimum-data retention outside the release archive."
+    },
+    {
+      "id": "V32.3-R3",
+      "severity": "high",
+      "status": "open",
+      "risk": "A nominally independent reviewer may have organizational or financial conflicts.",
+      "control": "Distinct reviewer organization, conflict declaration, signed scope-specific verdict and procurement independence review."
+    },
+    {
+      "id": "V32.3-R4",
+      "severity": "medium",
+      "status": "controlled",
+      "risk": "Qualification thresholds could be selected after observing results.",
+      "control": "Thresholds are carried in preregistered evidence and evaluated deterministically."
+    },
+    {
+      "id": "V32.4-R1",
+      "severity": "high",
+      "status": "controlled",
+      "risk": "Optimization pressure could inflate scores by relabeling simulations or readiness as external truth.",
+      "control": "Score derivation preserves human, HSM, witness, PostgreSQL, independent review and multi-host blockers; project scores remain capped."
+    },
+    {
+      "id": "V32.5-R1",
+      "severity": "high",
+      "status": "controlled",
+      "risk": "Adding metrics could dilute promotion-critical core axes through averaging.",
+      "control": "The holistic score fixes core axes at 70 percent and external production blockers remain non-compensable."
+    },
+    {
+      "id": "V32.5-R2",
+      "severity": "medium",
+      "status": "controlled",
+      "risk": "Repository-local observability and capacity evidence could be misrepresented as production telemetry or cloud cost.",
+      "control": "Reports state local-only limits and external collector, provider billing and multi-host SLO remain unqualified."
+    },
+    {
+      "id": "V32.5-R3",
+      "severity": "high",
+      "status": "open",
+      "risk": "Accessibility confidence remains limited without consented observation by representative human participants.",
+      "control": "Static accessibility contracts are enforced while humanObserved remains false and the human-study limitation is explicit."
+    },
+    {
+      "id": "V32.5-R4",
+      "severity": "medium",
+      "status": "controlled",
+      "risk": "Dependency health could become stale between local validations.",
+      "control": "Exact pinning, integrity and replacement tests are local gates; continuous advisory monitoring remains an explicit external limitation."
+    },
+    {
+      "id": "V32.7-R1",
+      "severity": "high",
+      "status": "controlled",
+      "risk": "A large number of correlated tests could be mistaken for independent proof.",
+      "control": "Proof diversity requires distinct techniques, oracles, environments and defect classes."
+    },
+    {
+      "id": "V32.7-R2",
+      "severity": "high",
+      "status": "controlled",
+      "risk": "Happy-path integration tests could conceal timeout, replay, tamper, concurrency and rollback defects.",
+      "control": "Integration contracts and fault campaigns make negative-path obligations mandatory."
+    },
+    {
+      "id": "V32.7-R3",
+      "severity": "critical",
+      "status": "controlled",
+      "risk": "An automated local evaluator could be mistaken for production promotion authority.",
+      "control": "Governed release assurance hard-codes production promotion as blocked and reports external blockers separately."
+    },
+    {
+      "id": "V32.8-R1",
+      "severity": "critical",
+      "status": "controlled",
+      "risk": "A popular GitHub repository or mutable Action tag could be treated as trusted code without immutable provenance.",
+      "control": "Adapter-only intake, full-SHA workflow pins and no vendoring or runtime network authority."
+    },
+    {
+      "id": "V32.8-R2",
+      "severity": "critical",
+      "status": "controlled",
+      "risk": "Synthetic SARIF, attestation, policy, formal or fuzz metadata could be mistaken for executed assurance evidence.",
+      "control": "Evidence gates require observed state and exact digest binding; current external tools remain NOT_EXECUTED."
+    },
+    {
+      "id": "V32.8-R3",
+      "severity": "high",
+      "status": "controlled",
+      "risk": "Large quantities of correlated local proof could falsely close human, external or signed claims.",
+      "control": "Adversarial claim roast requires independent oracles, environments and external collection where applicable."
+    },
+    {
+      "id": "V32.8-R4",
+      "severity": "high",
+      "status": "controlled",
+      "risk": "CI workflow dependencies could be compromised or receive excessive credentials.",
+      "control": "Workflow security gate requires immutable SHAs, checkout credential isolation, read-only permissions and bounded artifacts."
+    },
+    {
+      "id": "V32.10-R1",
+      "severity": "high",
+      "status": "open",
+      "risk": "Local signatures and witness evidence are not externally transparent or independently governed.",
+      "control": "Classify as local-only, keep production blocked, and require external signer transparency and witness independence."
+    },
+    {
+      "id": "V32.11-R1",
+      "severity": "high",
+      "status": "controlled",
+      "risk": "Archived PASS reports may be mistaken for evidence from the current validation attempt when source and environment digests are unchanged.",
+      "control": "Require a fresh run directory, atomic execution ledger, ordered successful steps, artifact hashes, sizes, modification times and exact run identity before finalization."
+    },
+    {
+      "id": "V32.13-R1",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Cross-tenant or stale semantic cache reuse could disclose or substitute results.",
+      "control": "Exact tenant workload operation sensitivity source policy authority and freshness binding; restricted semantic reuse is denied and mutation-tested."
+    },
+    {
+      "id": "V32.13-R2",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Cost optimization could remove resilience reserve or provider independence.",
+      "control": "Exact optimizer fails closed unless compute database witness backup reserve provider and failure-domain floors all pass."
+    },
+    {
+      "id": "V32.13-R3",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Proposal-only capacity plans do not prove real host scaling, provider custody, failover or production SLOs.",
+      "control": "Keep production blocked and require authorized adapters plus independent multi-host qualification."
+    },
+    {
+      "id": "V32.14-R1",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Binary parser ambiguity or polyglot content could create false artifact identity or unsafe model context.",
+      "control": "Magic and structure cross-checks, strict policy, bounded context, domain-separated chunks, Merkle root, fuzzing, mutation and independent Python verification."
+    },
+    {
+      "id": "V32.14-R2",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Model-provider benchmark or marketing claims could be mistaken for platform proof.",
+      "control": "Comparative assurance separates official claims from observed current execution and blocks world-best status without all critical observed dimensions."
+    },
+    {
+      "id": "V32.14-R3",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local model orchestration and binary proof do not establish independent multi-host production superiority.",
+      "control": "Keep production and world-best claims blocked pending external comparative workload, independent host, human value and six qualification gates."
+    },
+    {
+      "id": "V32.15-R1",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Synthetic model outputs or self-declared keys could be presented as an external frontier benchmark.",
+      "control": "Out-of-band provider and judge trust, signed submissions, blind commitments, independent review, complete matrix and explicit dry-run verdict."
+    },
+    {
+      "id": "V32.15-R2",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "A WASM module could gain undeclared authority or be composed through ambiguous or cyclic interfaces.",
+      "control": "Exact WIT imports and exports, capability grants, bounded filesystem and network scope, independent review and composition graph validation."
+    },
+    {
+      "id": "V32.15-R3",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local process simulations do not establish independent multi-host production behavior or WASI runtime isolation.",
+      "control": "Production remains blocked pending externally pinned multi-host evidence and independent runtime qualification."
+    },
+    {
+      "id": "V32.16-R1",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Malformed or hidden-memory WebAssembly could evade stable runtime classification or memory accounting.",
+      "control": "Compile and inspect exports before worker launch, require one named memory export, enforce timeout and measured memory limits, and kill causal mutations."
+    },
+    {
+      "id": "V32.16-R2",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "A model provider could self-attest API transport or substitute a response after execution.",
+      "control": "Require independently authorized signed transport observations bound to request, response, provider and external response identifiers."
+    },
+    {
+      "id": "V32.16-R3",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Single-machine process failover does not establish independent-host, provider or failure-domain resilience.",
+      "control": "Keep production blocked and execute the same challenge across independently operated external hosts."
+    },
+    {
+      "id": "V32.17-R1",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "A compatible component could gain authority through untrusted identity, interface drift, broad transport or self-review.",
+      "control": "Exact admission policy binds SPIFFE trust domain, UDS, interfaces, digests, resource limits, egress and reviewer independence."
+    },
+    {
+      "id": "V32.17-R2",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "One implementation could become a hidden monopoly despite portable APIs.",
+      "control": "Topology requires full building-block coverage, organization diversity, concentration ceilings and measured substitution coverage."
+    },
+    {
+      "id": "V32.17-R3",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local envelope adapters do not prove actual Dapr, SPIRE, OPA, OpenTelemetry, Wasmtime or CloudNativePG behavior.",
+      "control": "Keep production blocked and execute pinned runtime profiles on independently operated hosts."
+    },
+    {
+      "id": "V32.18-R1",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Retries can amplify side effects or create unbounded latency and load.",
+      "control": "Compiler rejects retry without idempotency and enforces attempts resource and worst-case duration ceilings."
+    },
+    {
+      "id": "V32.18-R2",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Workflow replay can duplicate effects or accept mixed and tampered history.",
+      "control": "Sequence hash-chain identity transition and unique effect ownership checks fail closed."
+    },
+    {
+      "id": "V32.18-R3",
+      "severity": "high",
+      "status": "controlled-local",
+      "risk": "Telemetry savings can discard the exact traces required for security and reliability evidence.",
+      "control": "Mandatory error security and high-latency traces are retained and budget overrun is explicit."
+    },
+    {
+      "id": "V32.18-R4",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local identity and database observations do not prove SPIRE federation or CloudNativePG HA and PITR.",
+      "control": "Production remains blocked pending independently observed external daemon qualification."
+    },
+    {
+      "id": "V33.35-R1",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Distinct local processes and loopback HTTP do not prove independent external administration, public HTTPS durability or clock independence.",
+      "control": "Keep production blocked and execute V33.36 on separately administered externally retrievable hosts with pinned clock and certificate evidence."
+    },
+    {
+      "id": "V33.36-R1",
+      "status": "open-external",
+      "risk": "Local HTTPS execution could be misrepresented as independently administered external topology.",
+      "mitigation": "Require signed host evidence from two independent topology auditors."
+    },
+    {
+      "id": "V33.37-R1",
+      "severity": "critical",
+      "status": "open-external",
+      "risk": "The signed deployment kit has not yet run on independently administered external hosts.",
+      "control": "Keep externalTopologyObserved false, accept only LOCAL_REHEARSAL evidence locally, and block production promotion."
+    },
+    {
+      "id": "V33.38-R1",
+      "severity": "critical",
+      "status": "open-external",
+      "risk": "The custody ceremony has not yet been executed by independently administered external role owners or published outside platform control.",
+      "control": "Keep the verdict LOCAL_CUSTODY_IMPORT_REHEARSAL_ONLY, external role-owner count zero, G3 blocked and production promotion blocked."
+    },
+    {
+      "id": "V33.39-R1",
+      "severity": "critical",
+      "status": "open-external",
+      "risk": "The hardware custody, public checkpoint and recovery proof uses local simulated provider attestations and has not run across independently administered HSMs, monitors or recovery sites.",
+      "control": "Keep the verdict LOCAL_HSM_THRESHOLD_RECOVERY_REHEARSAL_ONLY, external topology and hardware false, G3 blocked and production promotion blocked."
+    },
+    {
+      "id": "V33.40-R1",
+      "severity": "critical",
+      "status": "open-external",
+      "risk": "The interoperability proof uses locally generated adapter modules attestations providers monitors and sites and has not run on independently administered external HSM infrastructure.",
+      "control": "Keep LOCAL_MULTI_PROVIDER_INTEROP_REHEARSAL_ONLY, external topology and hardware false, G3 blocked and production promotion blocked."
+    },
+    {
+      "id": "V33.41-R1",
+      "severity": "critical",
+      "status": "open-external",
+      "risk": "The onboarding proof uses local trust roots laboratories devices monitors and recovery sites and has not run against independently administered external HSM providers.",
+      "control": "Keep LOCAL_PROVIDER_ONBOARDING_CONFORMANCE_REHEARSAL_ONLY, external trust roots hardware sessions and public checkpoint false, G3 blocked and production promotion blocked."
+    },
+    {
+      "id": "V33.42-R1",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "The capsule tarballs were repacked from exact preinstalled packages rather than fetched with original registry signatures.",
+      "control": "Record REPACKED_FROM_PREINSTALLED_EXACT_VERSION provenance, bind all bytes locally, prohibit registry-origin claims and require second-host or vendor-origin verification."
+    },
+    {
+      "id": "V33.43-R1",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local reference provenance and vulnerability authorities may not represent independent real-world operators.",
+      "control": "Keep the result local-only, require independent source authorities and feed operators on a separate host before external qualification, and prohibit production promotion."
+    },
+    {
+      "id": "V33.44-R1",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local candidate descriptors and deterministic canary metrics may not predict compatibility or reliability of a real independently sourced package release.",
+      "control": "Keep the verdict local-only, require independently sourced candidate bytes and separately operated canary telemetry before external qualification, and prohibit production promotion."
+    },
+    {
+      "id": "V33.45-R1",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local target-version fixtures and deterministic canary metrics may not predict real coupled-package compatibility or production behavior.",
+      "control": "Keep the verdict local-only, require independently sourced bytes and separately operated staged telemetry before external qualification, and prohibit production promotion."
+    },
+    {
+      "id": "V33.46-R1",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local multi-process failover does not prove independent host, clock or durable-storage administration.",
+      "control": "Keep the verdict local-only and require external host, clock and journal qualification before production authority."
+    },
+    {
+      "id": "V33.47-R1",
+      "severity": "high",
+      "status": "open-external",
+      "risk": "Local processes and fixture host identities do not prove independent administration, external clock trust or append-only storage durability.",
+      "control": "Keep externalTopologyObserved false and require imported external host, clock and storage evidence before qualification."
+    },
+    {
+      "id": "V33.48-R1",
+      "status": "open-external",
+      "risk": "Local role identities and evidence files do not prove independent external administration.",
+      "mitigation": "Keep externalTopologyObserved false until two signed auditor attestations per infrastructure role and exact external evidence are imported."
+    },
+    {
+      "id": "V33.49-R1",
+      "status": "open-external",
+      "risk": "Local enrollment identities and evidence files could be mislabeled as independently administered external ceremony evidence.",
+      "mitigation": "Keep the external gate closed until twenty-two trusted provider-backed attestations and exact sealed transfer bytes are independently verified."
+    },
+    {
+      "id": "V33.50-R1",
+      "status": "open-external",
+      "risk": "Local mutual-authentication fixtures and builtin scans could be mislabeled as independently administered external intake.",
+      "mitigation": "Keep external readiness false until qualified scanner attestations, twenty-two infrastructure attestations and independent role ownership are verified."
+    },
+    {
+      "id": "V33.51-R1",
+      "status": "open-external",
+      "risk": "Queue state or reviewer collusion could be mistaken for independently verified external evidence.",
+      "mitigation": "Bind approvals to original v33.50 receipt signatures, require reviewer separation and keep external readiness false without twenty-two attestations."
+    },
+    {
+      "id": "V33.52-R1",
+      "status": "open-external",
+      "risk": "Stale workers, split journal replicas or overloaded queues could create duplicate or divergent operations.",
+      "mitigation": "Use lease fencing, witness-qualified takeover, exact-byte replica receipts, idempotency keys, pressure hysteresis and full audit replay."
+    },
+    {
+      "id": "V33.53-R1",
+      "status": "open-external",
+      "risk": "Collocated stores, clock skew, split view, premature failover or overload bypass could invalidate persistence qualification.",
+      "mitigation": "Require identity separation, exact-byte receipts, two-clock quorum, two partition observers, rejection thresholds, hysteresis and site-loss replay."
+    },
+    {
+      "id": "V33.54-R1",
+      "status": "open-external",
+      "risk": "Nonce replay, process reuse, auditor collusion, drill substitution or non-portable evidence could create a false readiness verdict.",
+      "mitigation": "Bind one-time challenges, unique process ids, two independent auditors, exact drill digests and relative file inventory."
+    },
+    {
+      "id": "V33.55-R1",
+      "status": "open-external",
+      "risk": "Share exposure, custody-ledger fork, controller collusion, infected media or revocation bypass could expose evidence.",
+      "mitigation": "Use 2-of-3 shares, monotonic ledger, dual control, quarantine scanning and irreversible quorum revocation."
+    },
+    {
+      "id": "V33.56-R1",
+      "status": "open-external",
+      "risk": "Ledger fork, stale authority resurrection, compromised shares or emergency-quorum abuse could expose evidence.",
+      "mitigation": "Use three replicas, fencing, independent witnesses, rotation, containment, one-time emergency quorum and terminal expiration."
+    }
+  ],
+  "updatedAt": "2026-07-24T07:30:00.000Z"
+}

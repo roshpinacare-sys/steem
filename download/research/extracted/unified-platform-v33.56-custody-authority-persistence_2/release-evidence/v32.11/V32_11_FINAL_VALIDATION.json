@@ -1,0 +1,57 @@
+{
+  "version": "32.11",
+  "runId": "v32.11-authoritative-local-r3",
+  "generatedAt": "2026-07-19T09:31:11.955Z",
+  "status": "passed",
+  "classification": "release-lineage-and-execution-freshness-assurance",
+  "compiledArtifactDigest": "f081dcd653d6fd66a7fadd7a705c0ffd809955663de4204cedc6080c2dbd96f2",
+  "environment": {
+    "ci": true,
+    "machine": "x86_64",
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "runnerArch": "",
+    "runnerOs": "",
+    "system": "Linux"
+  },
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "packageLockDigest": "af225b179455c27e134458f15726c13bd3230e534a0d4d4dd04f2b5c5174084d",
+  "sourceDigest": "0efb7118e728c0eec880575df81aa8a44c837e2ac5b38c326d6bea24a746b2be",
+  "testFilesDigest": "8bc184a86d9955952ac4dd5162aa76abda98dd7027662650382672fdf376f2c6",
+  "testManifestDigest": "79509e2cf2bdbc9939e551dc02578dc47f525574b9dd32ee118e5b89f44baf62",
+  "assertions": {
+    "ledgerFreshAndCoherent": true,
+    "exactGovernanceLineage": true,
+    "releaseMetadataCurrent": true,
+    "priorAssuranceStillPassed": true,
+    "fullRegressionExpanded": true,
+    "executionLedgerMutationsAuthentic": true,
+    "productionStillBlocked": true
+  },
+  "ledgerAssurance": {
+    "status": "PASS",
+    "failures": [],
+    "checkedSteps": 10,
+    "checkedArtifacts": 10,
+    "reportDigest": "24140d3f195386ed11621f77ca94ff8374c92d66923d38d920cd313e161a476d"
+  },
+  "governanceFindings": [],
+  "results": {
+    "tests": {
+      "total": 899,
+      "passed": 899,
+      "failed": 0
+    },
+    "executionLedgerMutations": 9,
+    "stepsBound": 10,
+    "artifactsBound": 10
+  },
+  "readiness": "Validated Integrated Pilot",
+  "productionPromotion": "blocked",
+  "externalQualification": "not executed",
+  "limitations": [
+    "The ledger is local trusted-runner evidence and does not create independent external truth.",
+    "Filesystem modification times complement artifact hashes and clean-run orchestration; they are not a remote transparency service.",
+    "External infrastructure, human and independent review gates remain blocked."
+  ]
+}

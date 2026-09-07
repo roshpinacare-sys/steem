@@ -1,0 +1,14 @@
+import { mkdirSync, readFileSync, writeFileSync, openSync, fsyncSync, closeSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { createHash } from 'node:crypto';
+const [sourceArg, destinationArg, replicaId] = process.argv.slice(2);
+if (!sourceArg || !destinationArg || !replicaId) throw new Error('usage: source destination replicaId');
+const source = resolve(sourceArg); const destination = resolve(destinationArg);
+const bytes = readFileSync(source); mkdirSync(dirname(destination), { recursive: true });
+writeFileSync(destination, bytes);
+const fd = openSync(destination, 'r'); fsyncSync(fd); closeSync(fd);
+const dirFd = openSync(dirname(destination), 'r'); fsyncSync(dirFd); closeSync(dirFd);
+const readBack = readFileSync(destination);
+if (!readBack.equals(bytes)) throw new Error('replica_readback_mismatch');
+const digest = createHash('sha256').update(bytes).digest('hex');
+process.stdout.write(`${JSON.stringify({ replicaId, pid: process.pid, destination, byteLength: bytes.length, sha256: digest, fileFsync: true, directoryFsync: true, readBackVerified: true })}\n`);

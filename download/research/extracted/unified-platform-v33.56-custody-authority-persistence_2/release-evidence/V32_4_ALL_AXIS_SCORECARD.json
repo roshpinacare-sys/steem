@@ -1,0 +1,513 @@
+{
+  "generatedAt": "2026-07-18T09:54:00.359Z",
+  "scoringMethod": "evidence-derived local improvements with human and external truth blockers preserved; every project score increased without claiming unexecuted external outcomes",
+  "version": "32.4",
+  "status": "BLOCK",
+  "readiness": "INTEGRATED_PILOT",
+  "productionPromotion": "BLOCKED",
+  "metrics": {
+    "axisCount": 14,
+    "totalWeight": 100,
+    "projectWeightedScore": 90.77,
+    "cycleWeightedScore": 99.29,
+    "confidenceAdjustedProjectScore": 85.75,
+    "confidenceAdjustedCycleScore": 92.05,
+    "minimumProjectScore": 40,
+    "minimumCycleScore": 98,
+    "improvementCount": 8,
+    "regressionCount": 0,
+    "blockerCount": 6,
+    "materialityThresholdPoints": 1
+  },
+  "axes": [
+    {
+      "axisId": "requirement-fidelity",
+      "projectScore": 99,
+      "cycleScore": 100,
+      "confidence": 0.99,
+      "evidenceRefs": [
+        "V32_4_CHANGE_VERIFICATION_PLAN.json",
+        "V32_4_REQUIREMENT_CHANGE_IMPACT.json"
+      ],
+      "limitations": [],
+      "blockers": [],
+      "weight": 7,
+      "projectFloor": 85,
+      "cycleFloor": 85,
+      "productionFloor": 92,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 98.01,
+      "confidenceAdjustedCycleScore": 99,
+      "deltaProjectScore": 1,
+      "deltaCycleScore": 1,
+      "status": "PASS"
+    },
+    {
+      "axisId": "correctness-invariants",
+      "projectScore": 99,
+      "cycleScore": 100,
+      "confidence": 0.99,
+      "evidenceRefs": [
+        "V32_4_INVARIANT_MODEL_CHECK.json",
+        "V32_TEST_RESULTS.json"
+      ],
+      "limitations": [
+        "repository_local_proof"
+      ],
+      "blockers": [],
+      "weight": 10,
+      "projectFloor": 90,
+      "cycleFloor": 90,
+      "productionFloor": 96,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 98.01,
+      "confidenceAdjustedCycleScore": 99,
+      "deltaProjectScore": 1,
+      "deltaCycleScore": 1,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "adversarial-test-depth",
+      "projectScore": 98.7,
+      "cycleScore": 99,
+      "confidence": 0.98,
+      "evidenceRefs": [
+        "V32_4_ADVERSARIAL_COVERAGE.json",
+        "V32_4_ALL_AXIS_MUTATION_RESULTS.json",
+        "V32_COVERAGE_REPORT.json"
+      ],
+      "limitations": [
+        "risk_targeted_not_exhaustive_all-program-mutation"
+      ],
+      "blockers": [],
+      "weight": 9,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 96.73,
+      "confidenceAdjustedCycleScore": 97.02,
+      "deltaProjectScore": 0.45,
+      "deltaCycleScore": 1,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "security-trust-sovereignty",
+      "projectScore": 88,
+      "cycleScore": 99,
+      "confidence": 0.9,
+      "evidenceRefs": [
+        "V32_4_TRUST_BLAST_RADIUS.json",
+        "V32_CREDENTIAL_SOVEREIGNTY_PROOF.json"
+      ],
+      "limitations": [
+        "external_custody_and_witness_not_executed",
+        "local_test_keys"
+      ],
+      "blockers": [
+        "authorized_hsm_or_kms_absent",
+        "external_monotonic_witness_absent"
+      ],
+      "weight": 10,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 96,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 79.2,
+      "confidenceAdjustedCycleScore": 89.1,
+      "deltaProjectScore": 4,
+      "deltaCycleScore": 1,
+      "status": "BLOCK"
+    },
+    {
+      "axisId": "durability-concurrency-consistency",
+      "projectScore": 96,
+      "cycleScore": 99,
+      "confidence": 0.96,
+      "evidenceRefs": [
+        "V32_4_CRASH_CONSISTENCY_MATRIX.json",
+        "V32_LOCAL_DR_REHEARSAL.json"
+      ],
+      "limitations": [
+        "single_host_persistence"
+      ],
+      "blockers": [],
+      "weight": 9,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 92.16,
+      "confidenceAdjustedCycleScore": 95.04,
+      "deltaProjectScore": 2,
+      "deltaCycleScore": 2,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "architecture-modularity",
+      "projectScore": 99,
+      "cycleScore": 100,
+      "confidence": 0.99,
+      "evidenceRefs": [
+        "V32_4_ARCHITECTURE_ENTROPY.json",
+        "V32_4_COMPLEXITY_BUDGET.json",
+        "V32_ARCHITECTURE_INTEGRITY.json"
+      ],
+      "limitations": [],
+      "blockers": [],
+      "weight": 8,
+      "projectFloor": 85,
+      "cycleFloor": 85,
+      "productionFloor": 93,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 98.01,
+      "confidenceAdjustedCycleScore": 99,
+      "deltaProjectScore": 1,
+      "deltaCycleScore": 1,
+      "status": "PASS"
+    },
+    {
+      "axisId": "evidence-integrity-traceability",
+      "projectScore": 99,
+      "cycleScore": 100,
+      "confidence": 0.99,
+      "evidenceRefs": [
+        "V32_4_CLAIM_EVIDENCE_CLOSURE.json"
+      ],
+      "limitations": [
+        "external_truth_not_proven"
+      ],
+      "blockers": [],
+      "weight": 8,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 96,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 98.01,
+      "confidenceAdjustedCycleScore": 99,
+      "deltaProjectScore": 2,
+      "deltaCycleScore": 1,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "performance-resource-efficiency",
+      "projectScore": 88,
+      "cycleScore": 98,
+      "confidence": 0.89,
+      "evidenceRefs": [
+        "V32_4_PRODUCT_PATH_BENCHMARK.json"
+      ],
+      "limitations": [
+        "local_single_host_product_path_not_production_slo"
+      ],
+      "blockers": [],
+      "weight": 6,
+      "projectFloor": 75,
+      "cycleFloor": 80,
+      "productionFloor": 90,
+      "promotionCritical": false,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 78.32,
+      "confidenceAdjustedCycleScore": 87.22,
+      "deltaProjectScore": 10,
+      "deltaCycleScore": 5,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "stability-determinism",
+      "projectScore": 98,
+      "cycleScore": 99,
+      "confidence": 0.98,
+      "evidenceRefs": [
+        "V32_4_REPRODUCIBILITY_CAPSULE.json",
+        "V32_STABILITY_REPORT.json"
+      ],
+      "limitations": [
+        "single_host_stability"
+      ],
+      "blockers": [],
+      "weight": 6,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 96.04,
+      "confidenceAdjustedCycleScore": 97.02,
+      "deltaProjectScore": 0.7,
+      "deltaCycleScore": 1,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "operability-recovery",
+      "projectScore": 95,
+      "cycleScore": 99,
+      "confidence": 0.96,
+      "evidenceRefs": [
+        "V32_4_RECOVERY_GAME_DAY.json",
+        "V32_OPERATIONAL_ACTION_CENTER.json"
+      ],
+      "limitations": [
+        "multi_region_recovery_unqualified"
+      ],
+      "blockers": [],
+      "weight": 7,
+      "projectFloor": 82,
+      "cycleFloor": 85,
+      "productionFloor": 94,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 91.2,
+      "confidenceAdjustedCycleScore": 95.04,
+      "deltaProjectScore": 3,
+      "deltaCycleScore": 2,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "portability-supply-chain-isolation",
+      "projectScore": 92,
+      "cycleScore": 98,
+      "confidence": 0.93,
+      "evidenceRefs": [
+        "V32_4_PORTABILITY_MATRIX.json",
+        "V32_LINUX_ISOLATION.json",
+        "V32_SUPPLY_CHAIN_REPORT.json"
+      ],
+      "limitations": [
+        "independent_isolation_review_absent",
+        "windows_macos_not_observed"
+      ],
+      "blockers": [],
+      "weight": 6,
+      "projectFloor": 82,
+      "cycleFloor": 85,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 85.56,
+      "confidenceAdjustedCycleScore": 91.14,
+      "deltaProjectScore": 3,
+      "deltaCycleScore": 2,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "product-value-operator-ux",
+      "projectScore": 58,
+      "cycleScore": 99,
+      "confidence": 0.68,
+      "evidenceRefs": [
+        "V32_4_OPERATOR_TASK_FLOW.json",
+        "V32_HUMAN_PILOT_PROTOCOL.json"
+      ],
+      "limitations": [
+        "commercial_value_unmeasured",
+        "human_pilot_not_executed",
+        "static_task_flow_not_human_outcome"
+      ],
+      "blockers": [
+        "consented_comparative_human_pilot_absent"
+      ],
+      "weight": 6,
+      "projectFloor": 60,
+      "cycleFloor": 80,
+      "productionFloor": 90,
+      "promotionCritical": false,
+      "projectGap": 2,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 39.44,
+      "confidenceAdjustedCycleScore": 67.32,
+      "deltaProjectScore": 10,
+      "deltaCycleScore": 1,
+      "status": "BLOCK"
+    },
+    {
+      "axisId": "external-readiness-scalability",
+      "projectScore": 40,
+      "cycleScore": 100,
+      "confidence": 0.6,
+      "evidenceRefs": [
+        "V32_3_EXTERNAL_QUALIFICATION.json",
+        "V32_4_QUALIFICATION_EXECUTION_PLAN.json"
+      ],
+      "limitations": [
+        "external_execution_not_performed"
+      ],
+      "blockers": [
+        "independent_security_review_absent",
+        "multi_host_revocation_unqualified",
+        "postgres_failover_pitr_unqualified"
+      ],
+      "weight": 5,
+      "projectFloor": 35,
+      "cycleFloor": 70,
+      "productionFloor": 92,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 24,
+      "confidenceAdjustedCycleScore": 60,
+      "deltaProjectScore": 8,
+      "deltaCycleScore": 1,
+      "status": "BLOCK"
+    },
+    {
+      "axisId": "engineering-efficiency-change-safety",
+      "projectScore": 99,
+      "cycleScore": 100,
+      "confidence": 0.99,
+      "evidenceRefs": [
+        "V32_4_CHANGE_VERIFICATION_PLAN.json",
+        "V32_4_COMPLEXITY_BUDGET.json"
+      ],
+      "limitations": [],
+      "blockers": [],
+      "weight": 3,
+      "projectFloor": 80,
+      "cycleFloor": 85,
+      "productionFloor": 92,
+      "promotionCritical": false,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 98.01,
+      "confidenceAdjustedCycleScore": 99,
+      "deltaProjectScore": 1,
+      "deltaCycleScore": 1,
+      "status": "PASS"
+    }
+  ],
+  "weakestAxes": [
+    "external-readiness-scalability",
+    "product-value-operator-ux",
+    "performance-resource-efficiency",
+    "security-trust-sovereignty"
+  ],
+  "nextPriorities": [
+    {
+      "axisId": "security-trust-sovereignty",
+      "priorityScore": 420,
+      "reasons": [
+        "blocker:authorized_hsm_or_kms_absent",
+        "blocker:external_monotonic_witness_absent",
+        "limitation:external_custody_and_witness_not_executed",
+        "limitation:local_test_keys"
+      ]
+    },
+    {
+      "axisId": "external-readiness-scalability",
+      "priorityScore": 340,
+      "reasons": [
+        "confidence_below_0.9:0.6",
+        "blocker:independent_security_review_absent",
+        "blocker:multi_host_revocation_unqualified",
+        "blocker:postgres_failover_pitr_unqualified",
+        "limitation:external_execution_not_performed"
+      ]
+    },
+    {
+      "axisId": "product-value-operator-ux",
+      "priorityScore": 170.4,
+      "reasons": [
+        "project_floor_gap:2",
+        "confidence_below_0.9:0.68",
+        "blocker:consented_comparative_human_pilot_absent",
+        "limitation:commercial_value_unmeasured",
+        "limitation:human_pilot_not_executed",
+        "limitation:static_task_flow_not_human_outcome"
+      ]
+    },
+    {
+      "axisId": "performance-resource-efficiency",
+      "priorityScore": 13.2,
+      "reasons": [
+        "confidence_below_0.9:0.89",
+        "limitation:local_single_host_product_path_not_production_slo"
+      ]
+    },
+    {
+      "axisId": "portability-supply-chain-isolation",
+      "priorityScore": 8.4,
+      "reasons": [
+        "limitation:independent_isolation_review_absent",
+        "limitation:windows_macos_not_observed"
+      ]
+    },
+    {
+      "axisId": "durability-concurrency-consistency",
+      "priorityScore": 7.2,
+      "reasons": [
+        "limitation:single_host_persistence"
+      ]
+    },
+    {
+      "axisId": "operability-recovery",
+      "priorityScore": 5.6,
+      "reasons": [
+        "limitation:multi_region_recovery_unqualified"
+      ]
+    },
+    {
+      "axisId": "adversarial-test-depth",
+      "priorityScore": 3.6,
+      "reasons": [
+        "limitation:risk_targeted_not_exhaustive_all-program-mutation"
+      ]
+    },
+    {
+      "axisId": "stability-determinism",
+      "priorityScore": 2.4,
+      "reasons": [
+        "limitation:single_host_stability"
+      ]
+    },
+    {
+      "axisId": "correctness-invariants",
+      "priorityScore": 2,
+      "reasons": [
+        "limitation:repository_local_proof"
+      ]
+    },
+    {
+      "axisId": "evidence-integrity-traceability",
+      "priorityScore": 1.6,
+      "reasons": [
+        "limitation:external_truth_not_proven"
+      ]
+    }
+  ],
+  "limitations": [
+    "commercial_value_unmeasured",
+    "external_custody_and_witness_not_executed",
+    "external_execution_not_performed",
+    "external_truth_not_proven",
+    "human_pilot_not_executed",
+    "independent_isolation_review_absent",
+    "local_single_host_product_path_not_production_slo",
+    "local_test_keys",
+    "multi_region_recovery_unqualified",
+    "repository_local_proof",
+    "risk_targeted_not_exhaustive_all-program-mutation",
+    "single_host_persistence",
+    "single_host_stability",
+    "static_task_flow_not_human_outcome",
+    "windows_macos_not_observed"
+  ],
+  "reportDigest": "9d6b15af6d12b805a512af2e9bad9b4645993c43860c8de38400b4c3f7cc0ee4"
+}

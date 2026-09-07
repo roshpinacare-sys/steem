@@ -1,0 +1,45 @@
+{
+  "version": "33.4",
+  "status": "reconciled-and-corrected",
+  "classification": "historical-evidence-generator-drift-correction",
+  "generatedAt": "2026-07-21T05:06:30.483784Z",
+  "finding": {
+    "priorEvidenceClaim": "99/99 capability paths closed",
+    "retainedGeneratorBeforeCorrection": "91 explicit capability paths",
+    "reproducibility": "prior 99-path artifact was not reproducible from the retained v33.3 source generator",
+    "productionImpact": "none; production promotion was and remains blocked"
+  },
+  "missingFromRetainedGenerator": [
+    "observed-wasm-runtime-qualification",
+    "independent-tournament-transport-observation",
+    "local-process-failover-execution",
+    "sovereign-component-admission-v32.17",
+    "portable-building-block-conformance-v32.17",
+    "cncf-sovereign-convergence-v32.17",
+    "sovereign-control-plane-v32.18",
+    "cncf-gold-mine-extraction-v32.18"
+  ],
+  "correction": {
+    "generatorPath": "scripts/architecture-validation-v32.mjs",
+    "explicitPathsAdded": 8,
+    "currentCapabilityPathCount": 99,
+    "currentClosedCapabilityPathCount": 99,
+    "currentFindings": [],
+    "regressionTests": "1230/1230",
+    "sourceCycles": 0,
+    "untestedSources": 0
+  },
+  "artifacts": {
+    "priorEvidencePath": "release-evidence/v33.3/V33_3_ARCHITECTURE_INTEGRITY.json",
+    "priorEvidenceSha256": "9a497d2cc55063a3c6b8b8ffc1106652951f59751fce820214cea0d7ab800171",
+    "correctedEvidencePath": "release-evidence/v33.4/V33_4_ARCHITECTURE_INTEGRITY.json",
+    "correctedEvidenceSha256": "8697dc04f7229fee0925aa3875c1f1d516f3a0e5b2a45ffc32afd9796866a689",
+    "correctedGeneratorSha256": "00b8051709bdfdbc5610cbc1921f0b715604b0a2f76df2716af71526ab1b98b2"
+  },
+  "policy": [
+    "Historical V33.3 evidence is preserved and not overwritten.",
+    "Future V33 validators must require exactly 99 closed paths until a governed capability-map change explicitly updates the expected set.",
+    "Architecture evidence must be regenerated from the packaged source during clean-package validation."
+  ],
+  "productionPromotion": "blocked"
+}

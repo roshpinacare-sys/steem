@@ -1,0 +1,286 @@
+// Steem AI Agent OS (SAOS) — simulation-first schema.
+// Every table models the equivalent Steem protocol entity so the same
+// kernel code can later be pointed at a live node (see docs/ARCHITECTURE.md).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── Global singleton state of the simulated chain ─────────────────────────
+model SimState {
+  id         Int      @id @default(1)
+  tick       Int      @default(0)
+  running    Boolean  @default(false)
+  speed      Int      @default(1)
+  feedPrice  Float    @default(0.32) // SBD per STEEM (witness price feed / market)
+  rewardPool Float    @default(50000)
+  spsPool    Float    @default(20000)
+  totalOps   Int      @default(0)
+  updatedAt  DateTime @updatedAt
+}
+
+// ── Accounts (agents, treasury, citizens) ──────────────────────────────────
+model Agent {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  role            String
+  appId           String? // owning app module id (null = system / citizen)
+  sp              Float    @default(1000) // STEEM Power (vesting)
+  rc              Float    @default(10000)
+  rcCap           Float    @default(10000)
+  balance         Float    @default(100) // liquid STEEM
+  sbd             Float    @default(50)
+  savings         Float    @default(0) // STEEM locked in savings
+  savingsSbd      Float    @default(0)
+  pendingSbd      Float    @default(0) // author rewards awaiting claim
+  pendingCuration Float    @default(0) // curation rewards awaiting claim
+  savingsReleaseTick Int? // pending savings withdrawal (72h compressed)
+  witness         Boolean  @default(false)
+  witnessVotes    Int      @default(0)
+  meta            String? // free json (delegations received, etc.)
+  createdAt       DateTime @default(now())
+
+  @@index([appId])
+}
+
+// ── Content: posts AND comments (comment op) ───────────────────────────────
+model SimPost {
+  id             String   @id @default(cuid())
+  appId          String?
+  author         String
+  permlink       String
+  title          String
+  body           String
+  tags           String?
+  parentAuthor   String? // null = root post
+  parentPermlink String?
+  beneficiaries  String? // json [{account,weight}]
+  payout         Float    @default(0) // settled author payout (claimed)
+  pending        Float    @default(0) // pending author payout
+  votes          String? // json [{voter,weight,value,tick}]
+  score          Float?
+  tick           Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([appId])
+  @@index([author])
+  @@index([createdAt])
+}
+
+// ── Native escrow (escrow_transfer / approve / dispute / release) ─────────
+model SimEscrow {
+  id        String   @id @default(cuid())
+  appId     String?
+  from      String
+  to        String
+  arbiter   String
+  amount    Float
+  asset     String   @default("STEEM")
+  memo      String?
+  status    String   @default("held") // held | approved | disputed | released | refunded
+  meta      String?
+  tick      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([appId])
+  @@index([status])
+}
+
+// ── Internal market limit orders ───────────────────────────────────────────
+model SimOrder {
+  id        String   @id @default(cuid())
+  appId     String?
+  owner     String
+  side      String // buy | sell
+  amount    Float // STEEM
+  price     Float // SBD per STEEM
+  status    String   @default("open") // open | filled | cancelled
+  tick      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([appId])
+  @@index([status])
+}
+
+// ── SPS / Steem.DAO proposals ──────────────────────────────────────────────
+model SimProposal {
+  id        String   @id @default(cuid())
+  appId     String?
+  creator   String
+  subject   String
+  body      String?
+  dailyPay  Float    @default(0)
+  votes     String? // json {agentName: sp}
+  status    String   @default("active") // active | expired
+  paid      Float    @default(0)
+  tick      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([appId])
+  @@index([status])
+}
+
+// ── custom_json layer: communities, L2 tokens, NFTs, KG facts, oracles ────
+model SimCustom {
+  id        String   @id @default(cuid())
+  appId     String?
+  agent     String
+  jsonId    String // namespaced id e.g. "ssc-aiq", "kg:fact", "community:op"
+  payload   String // json
+  tick      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([jsonId])
+  @@index([appId])
+}
+
+// ── Layer-2 token balances (Hive-Engine style, over custom_json) ──────────
+model TokenBalance {
+  id      String @id @default(cuid())
+  appId   String?
+  token   String
+  account String
+  amount  Float  @default(0)
+
+  @@unique([token, account])
+}
+
+// ── NFT items (layer-2 over custom_json + escrow sales) ───────────────────
+model NftItem {
+  id         String   @id @default(cuid())
+  appId      String?
+  collection String
+  tokenId    String
+  owner      String
+  title      String
+  meta       String? // json
+  price      Float?
+  forSale    Boolean  @default(false)
+  history    String? // json [{event,owner,tick}]
+  createdAt  DateTime @default(now())
+
+  @@index([appId])
+  @@index([collection])
+}
+
+// ── The immutable audit trail (every broadcast op lands here) ─────────────
+model OpLog {
+  id        String   @id @default(cuid())
+  seq       Int      @default(0) // assigned by kernel (monotonic)
+  tick      Int      @default(0)
+  appId     String?
+  agent     String
+  op        String
+  note      String?
+  rcCost    Float    @default(0)
+  payload   String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([appId])
+}
+
+// ── App module instances (one row per registered module) ──────────────────
+model AppInstance {
+  id         String    @id // module id
+  enabled    Boolean   @default(true)
+  interval   Int       @default(5) // ticks between runs
+  config     String? // json
+  state      String? // json (module persisted memory)
+  runs       Int       @default(0)
+  opsEmitted Int       @default(0)
+  lastNote   String?
+  lastTickAt DateTime?
+}
+
+// ── Cockpit: real Steem accounts managed by the platform (headcorner & co) ─
+// READ-ONLY by design: no private keys are ever stored here. Signing stays
+// client-side / SteemConnect in a later phase.
+model ManagedAccount {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  label     String   @default("")
+  role      String   @default("main") // main | bot-content | bot-capital | vault
+  createdAt DateTime @default(now())
+}
+
+// ── Console: operator runbook — real-world execution tasks ─────────────────
+// The management layer for progress tracking (docs/CONSOLE_PLAN.md §3).
+// Seeded from the wave-4 plan; statuses updated by the operator.
+model OpsTask {
+  id          String   @id @default(cuid())
+  order       Int      @default(0)
+  phase       String   @default("week1") // week1 | month1 | quarter
+  title       String
+  description String   @default("")
+  status      String   @default("todo") // todo | active | done | blocked
+  keyAuth     String   @default("posting") // posting | active | owner-offline | none
+  sourceDoc   String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([phase])
+  @@index([status])
+}
+
+// ── Console: capital ledger — real-world money movements (BOT-3 cycles etc)─
+// deposit = הפקדה · convert_result = תוצאת מחזור המרה · reward = פרס · expense
+model CapitalEvent {
+  id         String   @id @default(cuid())
+  kind       String   @default("deposit") // deposit | convert_result | reward | expense
+  amountUsd  Float    @default(0)
+  asset      String   @default("USD") // USD | STEEM | SBD | SP
+  note       String   @default("")
+  occurredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([kind])
+}
+
+// ── Console v2: window watcher — persistent samples of the BOT-3 window ────
+// One row per live sample (TTL-driven from /api/ops/watch + background sampler).
+// Read-only chain access; no keys involved (docs/CONSOLE_PLAN.md §7 v2).
+model WindowSample {
+  id          String   @id @default(cuid())
+  key         String   @default("BOT3_SBD_CONVERT")
+  edgePct     Float // top-of-book edge (steemPerSbd * bidTop - 1)
+  execEdgePct Float? // depth-aware edge at 100 SBD (VWAP over bids) — roast fix
+  vol24hSbd   Float? // 24h internal-market volume in SBD — roast fix
+  feed        Float // SBD per STEEM (operative current_median_history ratio)
+  ask         Float // SBD per STEEM (best bid at sample time; legacy name)
+  open        Boolean // edgePct >= threshold at sample time
+  createdAt   DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
+// ── Console v2: window watcher alerts — open↔closed transitions ────────────
+model WatchAlert {
+  id        String   @id @default(cuid())
+  key       String   @default("BOT3_SBD_CONVERT")
+  type      String // window_opened | window_closed
+  edgePct   Float
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
+// ── Console v4: Brain (autonomous production system) decision journal ──────
+// Every plan evaluation, autonomy change and heartbeat action is journaled
+// here — the operator's audit trail of what the brain inferred and decided.
+// NEVER contains secrets (no keys, no WIFs — only masked fingerprints).
+model BrainDecision {
+  id          String   @id @default(cuid())
+  kind        String // plan_eval | autonomy_change | key_vault | heartbeat | agent_exec
+  title       String // Hebrew one-liner
+  detail      String   @default("") // Hebrew elaboration / JSON snapshot
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}

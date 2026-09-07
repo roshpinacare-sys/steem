@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "release": "v15",
+  "nodes": [
+    {
+      "taskId": "SOV-001",
+      "title": "Inventory mandatory and optional sovereignty dependencies",
+      "status": "implemented",
+      "adrs": [
+        "ADR-0033",
+        "ADR-0037"
+      ],
+      "claims": [
+        {
+          "id": "CLM-085",
+          "statement": "v15 generates a machine-readable dependency ledger that separates mandatory local runtime dependencies from optional remote provider and registry adapters."
+        }
+      ],
+      "acceptance": [
+        "Mandatory external runtime dependencies are identified separately from optional remote adapters.",
+        "Unknown dependency evidence remains visible."
+      ],
+      "evidenceRequired": [
+        "docs/canonical/evidence/v15/sovereignty-dependency-ledger.json",
+        "src/lib/sovereignty/dependency-ledger.ts"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-002",
+      "title": "Prove a zero-key local sovereign workflow",
+      "status": "implemented",
+      "adrs": [
+        "ADR-0033"
+      ],
+      "claims": [
+        {
+          "id": "CLM-086",
+          "statement": "The zero-key local workflow selects a local model profile, filters governed memory, executes a local tool, creates an artifact, produces an independent attestation, encrypts a local backup, and restores it without a commercial key or network attempt."
+        }
+      ],
+      "acceptance": [
+        "No commercial key is used.",
+        "No network attempt is recorded.",
+        "Artifact, attestation, backup, and restore hashes match."
+      ],
+      "evidenceRequired": [
+        "tests/sovereign-zero-key-workflow.test.ts",
+        "docs/canonical/evidence/v15/sovereign-vertical-slices.json"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-003",
+      "title": "Implement portable governed memory and context-separated key hierarchy",
+      "status": "implemented",
+      "adrs": [
+        "ADR-0036"
+      ],
+      "claims": [
+        {
+          "id": "CLM-087",
+          "statement": "Portable memory bundles preserve scope, provenance, confidence, authority, correction, sensitivity, expiry, and integrity while rejecting cross-tenant import and conflicting records."
+        },
+        {
+          "id": "CLM-088",
+          "statement": "v15 derives context-separated installation, tenant, workspace, data, backup, and signing key material and uses separate Ed25519 identities for portable signatures."
+        }
+      ],
+      "acceptance": [
+        "Cross-tenant import fails closed.",
+        "Duplicate and conflict states are distinct.",
+        "Wrong context produces a different key."
+      ],
+      "evidenceRequired": [
+        "tests/sovereign-memory-portability.test.ts",
+        "tests/sovereign-key-hierarchy.test.ts"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-004",
+      "title": "Implement signed air-gap agent handoff and return bundles",
+      "status": "implemented",
+      "adrs": [
+        "ADR-0034"
+      ],
+      "claims": [
+        {
+          "id": "CLM-089",
+          "statement": "A signed air-gap task can be exported, verified on a disconnected node, executed within capability ceilings, returned with a separate signature, and imported only when task hash, tenant, workspace, receiver, and capabilities remain bound."
+        }
+      ],
+      "acceptance": [
+        "Tampering, expiry, cross-tenant scope, wrong receiver, and capability escalation fail closed.",
+        "Valid result preserves exact task binding."
+      ],
+      "evidenceRequired": [
+        "tests/sovereign-airgap-handoff.test.ts",
+        "docs/canonical/evidence/v15/sovereign-vertical-slices.json"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-005",
+      "title": "Implement signed offline updates with dry-run and rollback",
+      "status": "implemented",
+      "adrs": [
+        "ADR-0035"
+      ],
+      "claims": [
+        {
+          "id": "CLM-090",
+          "statement": "The signed offline update prototype verifies compatibility, hashes, paths, and version direction; applies changed files; validates the result; and restores the previous installation after explicit rollback or injected failure."
+        }
+      ],
+      "acceptance": [
+        "Dry-run identifies blockers.",
+        "Injected failure restores the previous version and content.",
+        "Downgrades and invalid signatures are rejected."
+      ],
+      "evidenceRequired": [
+        "tests/sovereign-offline-update.test.ts",
+        "docs/canonical/evidence/v15/sovereign-vertical-slices.json"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-006",
+      "title": "Implement sovereignty control plane and hardware-aware placement",
+      "status": "implemented",
+      "adrs": [
+        "ADR-0037"
+      ],
+      "claims": [
+        {
+          "id": "CLM-091",
+          "statement": "Hardware feasibility, tenant trust, data locality, node health, load, and energy are evaluated before utility scoring in sovereign work placement."
+        },
+        {
+          "id": "CLM-092",
+          "statement": "The sovereignty control plane displays separate sovereignty dimensions, fatal dependencies, network evidence, key separation, vertical-slice evidence, and blockers; unknown evidence remains blocking."
+        }
+      ],
+      "acceptance": [
+        "Infeasible models and unauthorized nodes cannot win.",
+        "Unknown evidence remains blocking.",
+        "The UI does not collapse fatal weaknesses into a decorative score."
+      ],
+      "evidenceRequired": [
+        "tests/sovereign-node-placement.test.ts",
+        "tests/sovereign-assessment.test.ts",
+        "src/components/sovereignty/sovereignty-control-plane.tsx"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-007",
+      "title": "Run a full process-level outbound network audit",
+      "status": "blocked",
+      "adrs": [
+        "ADR-0037"
+      ],
+      "claims": [
+        {
+          "id": "CLM-093",
+          "statement": "The v15 application-level network guard proves that declared sovereign adapters deny remote requests in air-gap mode, but a complete process-level outbound traffic audit and offline clean installation have not run."
+        }
+      ],
+      "acceptance": [
+        "Unexpected outbound attempts are zero.",
+        "All allowed local endpoints are declared and evidenced."
+      ],
+      "evidenceRequired": [
+        "Disposable environment packet or socket audit",
+        "docs/canonical/evidence/v15/sovereign-network-evidence.json"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-008",
+      "title": "Benchmark real local model artifacts on target hardware",
+      "status": "blocked",
+      "adrs": [
+        "ADR-0033",
+        "ADR-0037"
+      ],
+      "claims": [
+        {
+          "id": "CLM-094",
+          "statement": "Local model and energy profiles in v15 include feasibility and estimate contracts, but no real generative model artifact or target-hardware energy benchmark was executed."
+        }
+      ],
+      "acceptance": [
+        "A real local model meets declared quality and resource floors.",
+        "Artifact, license, source, and hardware evidence are complete."
+      ],
+      "evidenceRequired": [
+        "Isolated model benchmark evidence",
+        "Updated sovereign model registry"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-009",
+      "title": "Measure energy and thermal behavior on the target sovereign node",
+      "status": "blocked",
+      "adrs": [
+        "ADR-0037"
+      ],
+      "claims": [
+        {
+          "id": "CLM-094",
+          "statement": "Local model and energy profiles in v15 include feasibility and estimate contracts, but no real generative model artifact or target-hardware energy benchmark was executed."
+        }
+      ],
+      "acceptance": [
+        "Estimates are replaced or bounded by measured confidence intervals.",
+        "Energy decisions cannot trigger without sufficient confidence."
+      ],
+      "evidenceRequired": [
+        "Target mini-PC or GPU node measurement report"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-010",
+      "title": "Create an offline dependency and model installation bundle",
+      "status": "proposed",
+      "adrs": [
+        "ADR-0035"
+      ],
+      "claims": [
+        {
+          "id": "CLM-093",
+          "statement": "The v15 application-level network guard proves that declared sovereign adapters deny remote requests in air-gap mode, but a complete process-level outbound traffic audit and offline clean installation have not run."
+        }
+      ],
+      "acceptance": [
+        "Install succeeds with registry and model hub unavailable.",
+        "Every artifact has source, hash, license, and compatibility metadata."
+      ],
+      "evidenceRequired": [
+        "Offline installation proof",
+        "Dependency bundle manifest"
+      ],
+      "releaseGate": "sovereignty"
+    },
+    {
+      "taskId": "SOV-011",
+      "title": "Reject replayed or revoked air-gap bundles",
+      "status": "implemented",
+      "adrs": [
+        "ADR-0038"
+      ],
+      "claims": [
+        {
+          "id": "CLM-095",
+          "statement": "Air-gap task and result acceptance now requires a purpose-scoped, tenant-scoped, workspace-scoped, non-revoked local trust key and consumes a durable replay identifier that survives process restart."
+        }
+      ],
+      "acceptance": [
+        "A replayed task or result is rejected after constructing a new ledger instance.",
+        "A revoked or wrong-scope key is rejected before payload acceptance."
+      ],
+      "evidenceRequired": [
+        "Replay and trust-store tests",
+        "Signed handoff proof with durable replay rejection"
+      ],
+      "releaseGate": "sovereignty"
+    }
+  ]
+}

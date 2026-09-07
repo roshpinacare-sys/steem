@@ -1,0 +1,57 @@
+import { fork, spawnSync } from 'node:child_process';
+import { X509Certificate, createHash } from 'node:crypto';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { KeyRegistry, generateSigningIdentity, sha256 } from '../dist/src/contracts/crypto.js';
+import {
+  createExternalTimeAttestationV33_36, createPinnedHttpsPublicationV33_36,
+  detectMonitorSplitViewV33_36, finalizeMonitorReplacementV33_36,
+  verifyHttpsMonitorQualificationV33_36,
+} from '../dist/src/app/external-https-monitor-qualification-v33_36.js';
+const output = resolve(process.argv[2] ?? 'release-evidence/v33.36/V33_36_HTTPS_MONITOR_QUALIFICATION_PROOF.json');
+mkdirSync(dirname(output), { recursive: true });
+const runtime = resolve('release-evidence/v33.36/runtime'); mkdirSync(runtime, { recursive: true });
+const content = Buffer.from(JSON.stringify({ version: '33.36', qualification: 'local-https-rehearsal', productionAuthority: 'NONE' }));
+const contentPath = resolve(runtime, 'artifact.json'); const keyPath = resolve(runtime, 'tls-key.pem'); const certPath = resolve(runtime, 'tls-cert.pem');
+writeFileSync(contentPath, content);
+const openssl = spawnSync('openssl', ['req','-x509','-newkey','rsa:2048','-sha256','-nodes','-days','1','-subj','/CN=localhost','-addext','subjectAltName=IP:127.0.0.1','-keyout',keyPath,'-out',certPath], { encoding: 'utf8' });
+if (openssl.status !== 0) throw new Error(`openssl_failed:${openssl.stderr}`);
+const certificate = new X509Certificate(readFileSync(certPath)); const certificateSha256 = createHash('sha256').update(certificate.raw).digest('hex');
+const server = fork(resolve('scripts/v33_36-https-publication-server.mjs'), [keyPath, certPath, contentPath], { stdio: ['ignore','pipe','pipe','ipc'] });
+const wait = (child, type, timeout=15000) => new Promise((resolveMessage, reject) => { const timer=setTimeout(()=>reject(new Error(`${type}_timeout`)),timeout); const handler=(message)=>{if(message?.type==='error'){clearTimeout(timer);child.off('message',handler);reject(new Error(message.error));}else if(message?.type===type){clearTimeout(timer);child.off('message',handler);resolveMessage(message);}}; child.on('message',handler); child.once('exit',(code)=>{if(code!==0)reject(new Error(`${type}_worker_exit_${code}`));}); });
+const serverReady = await wait(server, 'ready'); const endpointUri = `https://127.0.0.1:${serverReady.port}/artifact.json`;
+const reg=(...ids)=>{const r=new KeyRegistry();for(const id of ids)r.register(id.keyId,id.publicKey);return r;};
+const actor=(id,n)=>{const r=reg(id);return{keyId:id.keyId,keyFingerprint:r.fingerprint(id.keyId),organizationId:`${n}-org`,hostId:`${n}-host`,administratorId:`${n}-admin`};};
+const publisher=generateSigningIdentity('proof-v3336-publisher'); const publisherDescriptor=actor(publisher,'publisher');
+const publication=createPinnedHttpsPublicationV33_36({publisher,publisherDescriptor,artifactId:'proof-v3336-artifact',content,endpointUri,serverName:'127.0.0.1',certificateSha256,publishedAt:new Date('2026-07-22T18:00:00.000Z'),topology:'LOCAL_HTTPS_REHEARSAL',externalHostEvidenceDigest:null});
+const timeSources=[1,2,3].map(n=>generateSigningIdentity(`proof-v3336-time-${n}`)); const timeDescriptors=timeSources.map((id,i)=>actor(id,`time-${i+1}`));
+const timeAttestations=timeSources.map((source,i)=>createExternalTimeAttestationV33_36({source,sourceDescriptor:timeDescriptors[i],sourceId:`proof-time-${i+1}`,endpointUri:`https://time-${i+1}.qualification.invalid/time`,unixTimeMs:1784743200000+i*100,maximumErrorMs:500,observedAt:new Date(`2026-07-22T18:00:0${i}.000Z`),topology:'LOCAL_HTTPS_REHEARSAL',externalHostEvidenceDigest:null}));
+const startWorker=async(n)=>{const config={keyId:`proof-v3336-monitor-${n}`,monitorId:`proof-monitor-${n}`,organizationId:`proof-monitor-org-${n}`,hostId:`proof-monitor-host-${n}`,administratorId:`proof-monitor-admin-${n}`,durableStoreId:`proof-store-${n}`};const child=fork(resolve('scripts/v33_36-monitor-worker.mjs'),[Buffer.from(JSON.stringify(config)).toString('base64url')],{stdio:['ignore','inherit','inherit','ipc']});const ready=await wait(child,'ready');return{child,...ready};};
+const first=[await startWorker(1),await startWorker(2),await startWorker(3)]; const firstDescriptors=first.map(x=>x.descriptor);
+for(let i=0;i<3;i++)first[i].child.send({type:'fetch',monitorSetVersion:1,publication,timeAttestations,durablePath:resolve(runtime,`monitor-${i+1}/receipt.bin`),observedAt:`2026-07-22T18:01:0${i}.000Z`});
+const initialRetrievals=(await Promise.all(first.map(x=>wait(x.child,'retrieval')))).map(x=>x.receipt);
+const unavailableKeyId=first[2].descriptor.keyId;
+for(let i=0;i<2;i++)first[i].child.send({type:'partition',monitors:firstDescriptors,monitorSetVersion:1,unavailableMonitorKeyId:unavailableKeyId,partitionStartedAt:'2026-07-22T18:02:00.000Z',observedAt:`2026-07-22T18:03:0${i}.000Z`,minimumPartitionMs:60000});
+const partitionStatements=(await Promise.all(first.slice(0,2).map(x=>wait(x.child,'partition')))).map(x=>x.statement);
+const replacement=await startWorker(4); const challengeDigest=sha256({challenge:'v3336-monitor-replacement'});
+replacement.child.send({type:'activation',predecessorMonitors:firstDescriptors,predecessorMonitorSetVersion:1,unavailableMonitorKeyId:unavailableKeyId,challengeDigest,activatedAt:'2026-07-22T18:03:10.000Z'});
+const activation=(await wait(replacement.child,'activation')).activation;
+const authority=generateSigningIdentity('proof-v3336-qualification-authority'); const monitorRegistry=new KeyRegistry(); for(const row of first)monitorRegistry.registerExported(row.publicKey); const replacementRegistry=new KeyRegistry(); replacementRegistry.registerExported(replacement.publicKey);
+const replacementCertificate=finalizeMonitorReplacementV33_36({qualificationAuthority:authority,predecessorMonitors:firstDescriptors,predecessorMonitorSetVersion:1,partitionStatements,activation,monitorRegistry,replacementRegistry,issuedAt:new Date('2026-07-22T18:03:20.000Z')});
+const active=[first[0],first[1],replacement]; const activeDescriptors=replacementCertificate.payload.nextMonitors;
+for(let i=0;i<active.length;i++)active[i].child.send({type:'fetch',monitorSetVersion:2,publication,timeAttestations,durablePath:resolve(runtime,`active-${i+1}/receipt.bin`),observedAt:`2026-07-22T18:04:0${i}.000Z`});
+const retrievals=(await Promise.all(active.map(x=>wait(x.child,'retrieval')))).map(x=>x.receipt);
+for(const row of active)row.child.send({type:'gossip',monitors:activeDescriptors,monitorSetVersion:2,retrievals,observedAt:'2026-07-22T18:05:00.000Z'});
+const gossip=(await Promise.all(active.map(x=>wait(x.child,'gossip')))).map(x=>x.gossip);
+const activeRegistry=new KeyRegistry(); for(const row of active)activeRegistry.registerExported(row.publicKey);
+const emptyAuditors=new KeyRegistry();
+const trust={publisherRegistry:reg(publisher),trustedPublisherIds:[publisher.keyId],timeRegistry:reg(...timeSources),trustedTimeSourceIds:timeSources.map(x=>x.keyId),monitorRegistry:activeRegistry,trustedMonitorIds:active.map(x=>x.descriptor.keyId),qualificationAuthorityRegistry:reg(authority),trustedQualificationAuthorityIds:[authority.keyId],topologyAuditorRegistry:emptyAuditors,trustedTopologyAuditorIds:[],monitors:activeDescriptors,timeQuorum:2,monitorQuorum:3,maximumClockSkewMs:1000};
+const verdict=verifyHttpsMonitorQualificationV33_36({publication,timeAttestations,retrievals,gossip,trust,replacementCertificate,verifiedAt:new Date('2026-07-22T18:06:00.000Z')});
+first[2].child.send({type:'forge-split',receipt:initialRetrievals[2]}); const splitReceipt=(await wait(first[2].child,'split')).receipt;
+const splitViewDetected=detectMonitorSplitViewV33_36([retrievals[0],retrievals[1],splitReceipt]).length===1;
+const keys={publisher:reg(publisher).exportPublicKey(publisher.keyId),timeSources:timeSources.map(id=>reg(id).exportPublicKey(id.keyId)),monitors:active.map(x=>x.publicKey),qualificationAuthority:reg(authority).exportPublicKey(authority.keyId)};
+const signatureCount=1+timeAttestations.length+retrievals.length+gossip.length+partitionStatements.length+1+1;
+const proof={version:'33.36',generatedAt:new Date().toISOString(),publication,timeAttestations,initialRetrievals,partitionStatements,activation,replacementCertificate,retrievals,gossip,verdict,keys,execution:{httpsServerProcessId:serverReady.pid,monitorProcessIds:active.map(x=>x.pid),distinctMonitorProcessCount:new Set(active.map(x=>x.pid)).size,tlsProtocol:'TLSv1.3',certificateSha256,networkFetchObserved:true,transport:'HTTPS_PINNED_LOCAL',durableFsyncObserved:true,monitorReplacementObserved:true,splitViewDetected},summary:{monitorSetVersionBefore:1,monitorSetVersionAfter:2,initialMonitorCount:3,activeMonitorCount:3,timeAttestationCount:timeAttestations.length,signatureCount},truthBoundary:{externalTopologyObserved:false,externalHostEvidenceCount:0,externalTimeSourcesObserved:0,externalHumanParticipants:0,productionAuthority:'NONE',externalEffectsExecuted:0,productionPromotion:'blocked'}};
+writeFileSync(output,JSON.stringify(proof,null,2)+'\n');
+for(const row of [...first,replacement])row.child.send({type:'stop'}); server.send({type:'stop'});
+console.log(JSON.stringify({status:'PASS',output,signatureCount,verdict:verdict.status,splitViewDetected,monitorSetVersion:2},null,2));

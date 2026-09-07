@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: persists and restores an activated shortcut with signed event chain
+ok 1 - persists and restores an activated shortcut with signed event chain
+  ---
+  duration_ms: 27.147916
+  type: 'test'
+  ...
+# Subtest: rejects a tampered snapshot without a valid store signature
+ok 2 - rejects a tampered snapshot without a valid store signature
+  ---
+  duration_ms: 3.373116
+  type: 'test'
+  ...
+# Subtest: requires a signed human approval before activation
+ok 3 - requires a signed human approval before activation
+  ---
+  duration_ms: 10.132477
+  type: 'test'
+  ...
+# Subtest: rejects approval scope expansion even when signed by an approver
+ok 4 - rejects approval scope expansion even when signed by an approver
+  ---
+  duration_ms: 9.460204
+  type: 'test'
+  ...
+# Subtest: selects the cheapest equivalent active shortcut under budget
+ok 5 - selects the cheapest equivalent active shortcut under budget
+  ---
+  duration_ms: 43.33927
+  type: 'test'
+  ...
+# Subtest: falls back when equivalent candidates exceed the budget
+ok 6 - falls back when equivalent candidates exceed the budget
+  ---
+  duration_ms: 15.371799
+  type: 'test'
+  ...
+# Subtest: falls back on conflicting projected result digests
+ok 7 - falls back on conflicting projected result digests
+  ---
+  duration_ms: 32.331947
+  type: 'test'
+  ...
+# Subtest: isolates workflow types and tenants
+ok 8 - isolates workflow types and tenants
+  ---
+  duration_ms: 13.713588
+  type: 'test'
+  ...
+# Subtest: drift sweep revokes an active shortcut and future routing falls back
+ok 9 - drift sweep revokes an active shortcut and future routing falls back
+  ---
+  duration_ms: 20.524404
+  type: 'test'
+  ...
+# Subtest: result mismatch creates an automatic revocation
+ok 10 - result mismatch creates an automatic revocation
+  ---
+  duration_ms: 23.426608
+  type: 'test'
+  ...
+# Subtest: records measured savings without claiming external effects
+ok 11 - records measured savings without claiming external effects
+  ---
+  duration_ms: 18.133156
+  type: 'test'
+  ...
+# Subtest: expires an activation and records fallback
+ok 12 - expires an activation and records fallback
+  ---
+  duration_ms: 15.176182
+  type: 'test'
+  ...
+# Subtest: manual revocation is terminal for routing
+ok 13 - manual revocation is terminal for routing
+  ---
+  duration_ms: 16.08992
+  type: 'test'
+  ...
+# Subtest: supports multiple distinct workflow classes in one persistent store
+ok 14 - supports multiple distinct workflow classes in one persistent store
+  ---
+  duration_ms: 47.20885
+  type: 'test'
+  ...
+# Subtest: rejects a store opened with an untrusted signer list
+ok 15 - rejects a store opened with an untrusted signer list
+  ---
+  duration_ms: 1.835772
+  type: 'test'
+  ...
+# Subtest: budget fuzz never selects a shortcut outside any declared limit
+ok 16 - budget fuzz never selects a shortcut outside any declared limit
+  ---
+  duration_ms: 752.612538
+  type: 'test'
+  ...
+# Subtest: tamper matrix rejects changed records audits events digests and signatures
+ok 17 - tamper matrix rejects changed records audits events digests and signatures
+  ---
+  duration_ms: 23.332705
+  type: 'test'
+  ...
+# Subtest: controller requires separate activation and revocation identities
+ok 18 - controller requires separate activation and revocation identities
+  ---
+  duration_ms: 1.622619
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1202.785485

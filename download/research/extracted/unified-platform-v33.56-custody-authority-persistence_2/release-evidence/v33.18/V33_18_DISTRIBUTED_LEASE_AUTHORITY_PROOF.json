@@ -1,0 +1,129 @@
+{
+  "version": "33.18",
+  "status": "DISTRIBUTED_LEASE_AUTHORITY_PROVEN_LOCALLY",
+  "evidenceClass": "LOCAL_TWO_CONTROLLER_PROCESS_SHARED_AUTHORITY_REFERENCE",
+  "controllerProcessCount": 2,
+  "authorityProcessModel": "LOOPBACK_HTTP_AUTHORITY_WITH_SEPARATE_CONTROLLER_PROCESSES",
+  "raceWinnerCount": 1,
+  "takeoverCount": 12,
+  "staleFenceRejectionCount": 12,
+  "partitionFailureObserved": true,
+  "authorityRestartCount": 2,
+  "rollbackRejectedByMonotonicWitness": true,
+  "finalFenceToken": 13,
+  "durableOutboxEventCount": 37,
+  "durableOutboxAcknowledgementCount": 37,
+  "newAcknowledgementCount": 37,
+  "backendProbes": [
+    {
+      "version": "33.18",
+      "backend": "POSTGRESQL",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T23:20:12.050Z",
+      "probeDigest": "9bd78f1fda0520c1071b5c2a609b0d60fb70ad06ef6229fe04a016202c4484ae"
+    },
+    {
+      "version": "33.18",
+      "backend": "ETCD",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T23:20:12.050Z",
+      "probeDigest": "0f66c628ecc04d82bc44084690acda750338ad4d8daf58b99ad9f6db786460a8"
+    },
+    {
+      "version": "33.18",
+      "backend": "CONSUL",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T23:20:12.050Z",
+      "probeDigest": "27762bca6f324d914337721d37886485b4d9eb7c0e603be4aee54fcbc198cac4"
+    }
+  ],
+  "authorityExpansionCount": 0,
+  "externalEffectsExecuted": 0,
+  "productionAuthority": "NONE",
+  "limitations": [
+    "LOCAL_SHARED_FILE_AUTHORITY_NOT_POSTGRES_ETCD_OR_CONSUL",
+    "AUTHORITY_SERVER_AND_TEST_HARNESS_SHARE_ONE_HOST",
+    "NETWORK_PARTITION_IS_LOOPBACK_SERVER_STOP_NOT_REAL_NETWORK_SPLIT",
+    "MONOTONIC_WITNESS_IS_SEPARATE_SIGNER_AND_FILE_NOT_EXTERNAL_HOST",
+    "NO_PRODUCTION_AUTHORITY_OR_EXTERNAL_EFFECTS"
+  ],
+  "productionPromotion": "blocked",
+  "proofDigest": "a536dcc8dc79e3c370d29006fd5db84f0f910f37fa7db9b900ee452e726efd59",
+  "proofEnvelope": {
+    "signedProof": {
+      "payload": {
+        "version": "33.18",
+        "status": "DISTRIBUTED_LEASE_AUTHORITY_PROVEN_LOCALLY",
+        "evidenceClass": "LOCAL_TWO_CONTROLLER_PROCESS_SHARED_AUTHORITY_REFERENCE",
+        "controllerProcessCount": 2,
+        "authorityProcessModel": "LOOPBACK_HTTP_AUTHORITY_WITH_SEPARATE_CONTROLLER_PROCESSES",
+        "raceWinnerCount": 1,
+        "takeoverCount": 12,
+        "staleFenceRejectionCount": 12,
+        "partitionFailureObserved": true,
+        "authorityRestartCount": 2,
+        "rollbackRejectedByMonotonicWitness": true,
+        "finalFenceToken": 13,
+        "durableOutboxEventCount": 37,
+        "durableOutboxAcknowledgementCount": 37,
+        "newAcknowledgementCount": 37,
+        "backendProbes": [
+          {
+            "version": "33.18",
+            "backend": "POSTGRESQL",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T23:20:12.050Z",
+            "probeDigest": "9bd78f1fda0520c1071b5c2a609b0d60fb70ad06ef6229fe04a016202c4484ae"
+          },
+          {
+            "version": "33.18",
+            "backend": "ETCD",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T23:20:12.050Z",
+            "probeDigest": "0f66c628ecc04d82bc44084690acda750338ad4d8daf58b99ad9f6db786460a8"
+          },
+          {
+            "version": "33.18",
+            "backend": "CONSUL",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T23:20:12.050Z",
+            "probeDigest": "27762bca6f324d914337721d37886485b4d9eb7c0e603be4aee54fcbc198cac4"
+          }
+        ],
+        "authorityExpansionCount": 0,
+        "externalEffectsExecuted": 0,
+        "productionAuthority": "NONE",
+        "limitations": [
+          "LOCAL_SHARED_FILE_AUTHORITY_NOT_POSTGRES_ETCD_OR_CONSUL",
+          "AUTHORITY_SERVER_AND_TEST_HARNESS_SHARE_ONE_HOST",
+          "NETWORK_PARTITION_IS_LOOPBACK_SERVER_STOP_NOT_REAL_NETWORK_SPLIT",
+          "MONOTONIC_WITNESS_IS_SEPARATE_SIGNER_AND_FILE_NOT_EXTERNAL_HOST",
+          "NO_PRODUCTION_AUTHORITY_OR_EXTERNAL_EFFECTS"
+        ],
+        "productionPromotion": "blocked",
+        "proofDigest": "a536dcc8dc79e3c370d29006fd5db84f0f910f37fa7db9b900ee452e726efd59"
+      },
+      "issuerKeyId": "v33.18-proof",
+      "algorithm": "Ed25519",
+      "signature": "Ite-8i3Q7JHHuUYi6e6rqnm3C7Ya6SIOuWj8muJ9GpFHnPyKeiHtjKHQOra-qvwjtrQoLwawUFxKx0vV-lkvCA"
+    },
+    "publicKey": {
+      "keyId": "v33.18-proof",
+      "spkiDerBase64": "MCowBQYDK2VwAyEADEzW3zvkCE9uozJxk95J+rp/z7T9uKde5fVDCKc9YmI=",
+      "fingerprint": "3107bf55d928aeb5edff064e842dcd3fa7c2c574235f4c726da75642f50deb68",
+      "revoked": false
+    }
+  }
+}
