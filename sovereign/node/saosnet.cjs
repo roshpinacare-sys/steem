@@ -535,8 +535,13 @@ function saveAll(st, chainState, kernelState) {
     floatAccounts: Object.entries(kernelState.accounts).filter(([n, a]) => n !== 'host' && (a.saos > 0 || a.steem > 0)).length,
   };
   // 94 — תמצית-נגזרות-עטופות (מוצרי-הדקס): supply/locked ביחידות-מלאות — WTRX = ערך-TRON על-הרשת-שלנו
+  // 117 — דיוק-פר-סמל: חלוקה-לפי-bookScale-של-הסמל (µ=1000 מורשת · ננו=1e9 למטבעות-רשת-אמת)
   st.wrappedSummary = Object.fromEntries(
-    Object.entries(kernelState.wrapped || {}).map(([sym, w]) => [sym, { supply: (w.supply || 0) / 1000, locked: (w.locked || 0) / 1000, holders: Object.values(kernelState.accounts).filter((a) => a.wrapped && a.wrapped[sym] > 0).length }])
+    Object.entries(kernelState.wrapped || {}).map(([sym, w]) => {
+      const m = (kernelState.assetMeta || {})[sym];
+      const scale = (m && Number.isInteger(m.bookScale) && m.bookScale >= 1) ? m.bookScale : 1000;
+      return [sym, { supply: (w.supply || 0) / scale, locked: (w.locked || 0) / scale, holders: Object.values(kernelState.accounts).filter((a) => a.wrapped && a.wrapped[sym] > 0).length }];
+    })
   );
   // 95 — תמצית-האצלות (חיבור-כולם לראש @headcorner בלי-לגעת-במפתחות-ראשיים)
   st.delegationsSummary = kernelState.delegations
