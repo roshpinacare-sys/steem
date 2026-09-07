@@ -1,0 +1,290 @@
+{
+ "ts": "2026-09-01T09:59:16.662106+00:00",
+ "bot3_convert": {
+  "edge_distribution_365d_constantK_INVALID": {
+   "edge_realized_mean_pct": 28.25,
+   "edge_realized_median_pct": 26.46,
+   "edge_positive_days_pct": 82.6,
+   "edge_min_pct": -14.2,
+   "edge_max_pct": 119.23
+  },
+  "current_regime_last60d": {
+   "window_days": 60,
+   "feed_assumed_constant": 0.1043,
+   "live_edge_now_pct": 4.13,
+   "hedged_cycle_edge": {
+    "mean_pct": -0.09,
+    "median_pct": -1.06,
+    "positive_pct": 36.7,
+    "min_pct": -6.9,
+    "max_pct": 10.85
+   },
+   "unhedged_cycle_edge": {
+    "mean_pct": -0.02,
+    "positive_pct": 31.6,
+    "min_pct": -8.7
+   },
+   "hedged_days_over_3pct_pct": 23.3,
+   "hedged_days_over_5pct_pct": 10.0,
+   "verdict": "edge oscillates around ZERO in the current regime (+/-7% band, positive only ~37% of days): convert-arb is EVENT-DRIVEN (fire only above +5%), not a steady APR machine",
+   "warning": "feed (K) is debt-managed and regime-dependent: historical K differed; 365d compounding with today's K is INVALID. Only last-60d regime stats are trustworthy."
+  },
+  "forward_montecarlo_hedged_90d": {
+   "paths": 5000,
+   "days": 90,
+   "capital_usd": 10000,
+   "trigger_pct": 3,
+   "cost_per_cycle_pct": 0.5,
+   "method": "bootstrap of measured 60d hedged cycle-edge distribution (i.i.d.); cycle=3.5d; fire only when draw >= trigger; profit = edge - cost",
+   "E_edge_given_triggered_pct": 6.19,
+   "trigger_rate_pct": 23.3,
+   "expected_events_90d": 21.0,
+   "final_p10": 18224.0,
+   "final_median": 22105.0,
+   "final_p90": 27239.0,
+   "median_90d_return_pct": 121.05,
+   "p10_90d_return_pct": 82.24,
+   "p90_90d_return_pct": 172.39,
+   "note": "hedged (short STEEM during 3.5d window); capital sits idle between events; hard capacity cap = liquid SBD float (~6.4M SBD supply)"
+  },
+  "steem_volatility_evidence": {
+   "max_3d_drops_pct": [
+    -31.5,
+    -31.0,
+    -30.4,
+    -29.5
+   ],
+   "count_3d_drops_over_15pct": 19
+  },
+  "simulations_constantK_reference_only": [
+   {
+    "trigger_pct": 0.0,
+    "cycles": 81,
+    "final_usd": 4279034203698.21,
+    "return_1y_pct": 427903420269.82,
+    "max_drawdown_pct": 0.0,
+    "days_in_market": 283.5,
+    "variant": "hedged_lock_at_entry"
+   },
+   {
+    "trigger_pct": 3.0,
+    "cycles": 77,
+    "final_usd": 4413155709749.21,
+    "return_1y_pct": 441315570874.92,
+    "max_drawdown_pct": 0.0,
+    "days_in_market": 269.5,
+    "variant": "hedged_lock_at_entry"
+   },
+   {
+    "trigger_pct": 5.0,
+    "cycles": 71,
+    "final_usd": 3504856979420.16,
+    "return_1y_pct": 350485697842.02,
+    "max_drawdown_pct": 0.0,
+    "days_in_market": 248.5,
+    "variant": "hedged_lock_at_entry"
+   },
+   {
+    "trigger_pct": 8.0,
+    "cycles": 68,
+    "final_usd": 2912173649086.84,
+    "return_1y_pct": 291217364808.68,
+    "max_drawdown_pct": 0.0,
+    "days_in_market": 238.0,
+    "variant": "hedged_lock_at_entry"
+   },
+   {
+    "trigger_pct": 0.0,
+    "cycles": 81,
+    "final_usd": 2025803614810.11,
+    "return_1y_pct": 202580361381.01,
+    "max_drawdown_pct": 5.03,
+    "days_in_market": 283.5,
+    "variant": "unhedged_full_exposure"
+   },
+   {
+    "trigger_pct": 3.0,
+    "cycles": 77,
+    "final_usd": 2364620776945.21,
+    "return_1y_pct": 236462077594.52,
+    "max_drawdown_pct": 2.07,
+    "days_in_market": 269.5,
+    "variant": "unhedged_full_exposure"
+   },
+   {
+    "trigger_pct": 5.0,
+    "cycles": 71,
+    "final_usd": 2035194746010.62,
+    "return_1y_pct": 203519474501.06,
+    "max_drawdown_pct": 2.07,
+    "days_in_market": 248.5,
+    "variant": "unhedged_full_exposure"
+   },
+   {
+    "trigger_pct": 8.0,
+    "cycles": 68,
+    "final_usd": 1983376436261.54,
+    "return_1y_pct": 198337643526.15,
+    "max_drawdown_pct": 0.0,
+    "days_in_market": 238.0,
+    "variant": "unhedged_full_exposure"
+   },
+   {
+    "trigger_pct": 0.0,
+    "cycles": 55,
+    "final_usd": 1690566627.31,
+    "return_1y_pct": 169056562.73,
+    "max_drawdown_pct": 11.13,
+    "days_in_market": 192.5,
+    "variant": "unhedged_momentum_filter"
+   },
+   {
+    "trigger_pct": 3.0,
+    "cycles": 51,
+    "final_usd": 2064201747.94,
+    "return_1y_pct": 206420074.79,
+    "max_drawdown_pct": 2.07,
+    "days_in_market": 178.5,
+    "variant": "unhedged_momentum_filter"
+   },
+   {
+    "trigger_pct": 5.0,
+    "cycles": 47,
+    "final_usd": 1814836496.99,
+    "return_1y_pct": 181483549.7,
+    "max_drawdown_pct": 2.07,
+    "days_in_market": 164.5,
+    "variant": "unhedged_momentum_filter"
+   },
+   {
+    "trigger_pct": 8.0,
+    "cycles": 45,
+    "final_usd": 1845414667.33,
+    "return_1y_pct": 184541366.73,
+    "max_drawdown_pct": 0.0,
+    "days_in_market": 157.5,
+    "variant": "unhedged_momentum_filter"
+   }
+  ],
+  "headline": "UNHEDGED compounding = ruin-risk (STEEM -30%/3d crashes measured in raw series); hedged (short STEEM during 3.5d window) = edge locked. Historical K unknown -> only current-regime (60d) numbers are decision-grade.",
+  "assumptions": {
+   "feed_active": 0.1043,
+   "steem_per_sbd_at_convert": 9.5877,
+   "mechanism": "convert locks STEEM amount at request-time feed; exits after 3.5d at market",
+   "momentum_filter": "skip entries when STEEM 14d momentum < -5%"
+  }
+ },
+ "bot2_curation": {
+  "calibration_points_live": [
+   {
+    "profile": "spread-whale (justyy)",
+    "votes_day": 70.7,
+    "weight_pct": 8.5,
+    "apr_measured": 3.31
+   },
+   {
+    "profile": "service-bot (upvu)",
+    "votes_day": 92.6,
+    "weight_pct": 10.4,
+    "apr_measured": 5.64
+   },
+   {
+    "profile": "community-curator (h4lab)",
+    "votes_day": 73.0,
+    "weight_pct": 12.2,
+    "apr_measured": 5.99
+   },
+   {
+    "profile": "focused-curator (steemcurator03)",
+    "votes_day": 28.5,
+    "weight_pct": 34.3,
+    "apr_measured": 7.24
+   },
+   {
+    "profile": "focused-curator (steemcurator04)",
+    "votes_day": 27.8,
+    "weight_pct": 35.3,
+    "apr_measured": 7.61
+   }
+  ],
+  "vote_power_budget_check_pct_of_20pct_daily": [
+   {
+    "profile": "spread-whale (justyy)",
+    "vp_spent_daily_pct": 12.0
+   },
+   {
+    "profile": "service-bot (upvu)",
+    "vp_spent_daily_pct": 19.3
+   },
+   {
+    "profile": "community-curator (h4lab)",
+    "vp_spent_daily_pct": 17.8
+   },
+   {
+    "profile": "focused-curator (steemcurator03)",
+    "vp_spent_daily_pct": 19.6
+   },
+   {
+    "profile": "focused-curator (steemcurator04)",
+    "vp_spent_daily_pct": 19.6
+   }
+  ],
+  "projections": [
+   {
+    "SP": 10000,
+    "APR_pct": 3.3,
+    "SP_per_day": 0.904,
+    "SP_90d": 81.4,
+    "note": "curation pays in SP (auto-restaked) - zero SBD price exposure"
+   },
+   {
+    "SP": 10000,
+    "APR_pct": 6.0,
+    "SP_per_day": 1.644,
+    "SP_90d": 147.9,
+    "note": "curation pays in SP (auto-restaked) - zero SBD price exposure"
+   },
+   {
+    "SP": 10000,
+    "APR_pct": 7.6,
+    "SP_per_day": 2.082,
+    "SP_90d": 187.4,
+    "note": "curation pays in SP (auto-restaked) - zero SBD price exposure"
+   },
+   {
+    "SP": 100000,
+    "APR_pct": 3.3,
+    "SP_per_day": 9.041,
+    "SP_90d": 813.7,
+    "note": "curation pays in SP (auto-restaked) - zero SBD price exposure"
+   },
+   {
+    "SP": 100000,
+    "APR_pct": 6.0,
+    "SP_per_day": 16.438,
+    "SP_90d": 1479.5,
+    "note": "curation pays in SP (auto-restaked) - zero SBD price exposure"
+   },
+   {
+    "SP": 100000,
+    "APR_pct": 7.6,
+    "SP_per_day": 20.822,
+    "SP_90d": 1874.0,
+    "note": "curation pays in SP (auto-restaked) - zero SBD price exposure"
+   }
+  ],
+  "finding": "vote-power budget (~20%/day) binds votes_day x weight ~ 18-28%; focused 25-30 votes at ~35% beat spread 70-90 votes at ~10%"
+ },
+ "bot4_snapshot": {
+  "internal_best_ask_usd": 0.03924,
+  "internal_best_bid_usd": 0.03731,
+  "internal_ask_sbd_per_steem": 0.09872,
+  "p_sbd_used": 0.39751085388134555,
+  "internal_mid_usd": 0.03828,
+  "internal_spread_pct": 4.92,
+  "ask_depth_within_1pct_sbd": 4005.0,
+  "external_steem_usd": 0.04329007,
+  "gap_internal_ask_vs_external_pct": -9.35,
+  "gap_internal_bid_vs_external_pct": -13.81
+ }
+}

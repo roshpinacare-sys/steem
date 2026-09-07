@@ -1,0 +1,382 @@
+{
+  "at": "2026-09-06T01:40:46.045Z",
+  "mission": "WEAVE-95",
+  "language": "CHL-1 (predict→act→measure→match)",
+  "steps": [
+    {
+      "id": "M1-vault-proof",
+      "net": "TRON→read",
+      "label": "מדידת-כספת-מלאה (קריאה-בלבד · תיקון-זיוף-האפס)",
+      "predict": {
+        "expect": "6/6 כתובות מדודות (measuredComplete=true) · Σ מדויק · אף-מפתח לא זז"
+      },
+      "measured": {
+        "rows": [
+          {
+            "tag": "s0-sender",
+            "address": "TAzZZkrwBXk59iRya7esnKVJeV1xLtqkGr",
+            "trx": 15.624151
+          },
+          {
+            "tag": "s1-relay",
+            "address": "TRKStC5HbWzqdnrWDfc4vYNfgQgyZuQKP4",
+            "trx": 3.519209
+          },
+          {
+            "tag": "s2",
+            "address": "TNd4aFZk1YUeP9uzUWCefJyadjCxZXBoBg",
+            "trx": 1.69658
+          },
+          {
+            "tag": "s3",
+            "address": "TDuyQNSm2XbVKNgdKgjCyHfxkzXAmo2YXG",
+            "trx": 1.508047
+          },
+          {
+            "tag": "s4",
+            "address": "TSJw2GYkmcsYNjALFaNYxySkgGfkvBD8sP",
+            "trx": 0.919595
+          },
+          {
+            "tag": "s5",
+            "address": "TLhp6hhm7RgB7xFsSTAatuWyEWpScVbJ4U",
+            "trx": 1.175782
+          }
+        ],
+        "measuredTrx": 24.443364,
+        "addrsCount": 6,
+        "knownCount": 6,
+        "measuredComplete": true,
+        "at": "2026-09-06T01:38:13.196Z"
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 1275
+    },
+    {
+      "id": "M2-issue",
+      "net": "SAOS-NET",
+      "label": "הוצאת-משימות WEAVE-95 + DELEGATE-95 (מנפיק=@headcorner)",
+      "predict": {
+        "expect": "2 משימות פנדינג · ops ≤12 לכל-אחת · refs ייחודיים"
+      },
+      "measured": {
+        "ops1": 10,
+        "ops2": 11,
+        "coverDelta": 3.603,
+        "curLocked": 20.84,
+        "roster": 17
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 3
+    },
+    {
+      "id": "M3-beats",
+      "net": "SAOS-NET",
+      "label": "פעימות-הספר מבצעות את המשימות (WEAVE-95 → DELEGATE-95)",
+      "predict": {
+        "expect": "exit=0 ×2 · הגובה עולה · אין-שגיאות-FATAL"
+      },
+      "measured": {
+        "b1": {
+          "exit": 0,
+          "tail": "[2026-09-06T01:38:48.802Z] saosnet: tron-pulse block 640 · TRON blk 85995642 (24/7 interleaving, 92) | [2026-09-06T01:38:49.433Z] saosnet: pending explorer-pub VERIFIED blk=null @api.steemit.com | [2026-09-06T01:39:29.825Z] saosnet: BEAT DONE · height=640 · stateRoot=188af4451e859d2b…"
+        },
+        "b2": {
+          "exit": 0,
+          "tail": "[2026-09-06T01:40:05.876Z] saosnet: explorer-pub ✓ height=646 txid=04c0580d28d468ec10328e836b78d18d43e7e066 digest=8648e6160878 | [2026-09-06T01:40:06.100Z] saosnet: pending steem-anchor VERIFIED blk=null @api.steemit.com | [2026-09-06T01:40:46.026Z] saosnet: BEAT DONE · height=646 · stateRoot=620a1fadbf3f87ba…"
+        }
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 152838
+    },
+    {
+      "id": "M4-verify",
+      "net": "SAOS-NET",
+      "label": "קריאה-חזרה: ה-refs-על-הספר + הכיסוי-החדש + ההאצלות-במצב",
+      "predict": {
+        "expect": "כל-ה-refs נמצאו · locked=מדידה · delegationsSummary מלא (ראש+חיילים+טרון)"
+      },
+      "measured": {
+        "foundRefs": {
+          "ct95:24443364:cover": {
+            "height": 633,
+            "type": "wrap_cover"
+          },
+          "ct95:24443364:redeem:remint": {
+            "height": 633,
+            "type": "wrap_mint"
+          },
+          "ct95:24443364:del:head": {
+            "height": 633,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:cashmachine": {
+            "height": 633,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:haran": {
+            "height": 633,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:israelnews": {
+            "height": 633,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:lsa": {
+            "height": 633,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:macrame": {
+            "height": 633,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:siq": {
+            "height": 633,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:tov": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:wic": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:wog": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:woq": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:ynet": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:tron-s0": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:tron-s1": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:tron-s2": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:tron-s3": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:tron-s4": {
+            "height": 642,
+            "type": "delegate"
+          },
+          "ct95:24443364:del:tron-s5": {
+            "height": 642,
+            "type": "delegate"
+          }
+        },
+        "missingRefs": [
+          "ct95:24443364:redeem:burn"
+        ],
+        "locked": 24.443,
+        "expectedLocked": 24.443,
+        "delegations": {
+          "headcorner": {
+            "scopes": [
+              "issue",
+              "anchor",
+              "command"
+            ],
+            "ref": "ct95:24443364:del:head"
+          },
+          "cashmachine": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:cashmachine"
+          },
+          "haran": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:haran"
+          },
+          "israelnews": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:israelnews"
+          },
+          "lsa": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:lsa"
+          },
+          "macrame": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:macrame"
+          },
+          "siq": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:siq"
+          },
+          "tov": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:tov"
+          },
+          "wic": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:wic"
+          },
+          "wog": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:wog"
+          },
+          "woq": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:woq"
+          },
+          "ynet": {
+            "scopes": [
+              "trade",
+              "attest",
+              "report"
+            ],
+            "ref": "ct95:24443364:del:ynet"
+          },
+          "tron-s0": {
+            "scopes": [
+              "anchor",
+              "ring",
+              "bridge"
+            ],
+            "ref": "ct95:24443364:del:tron-s0"
+          },
+          "tron-s1": {
+            "scopes": [
+              "anchor",
+              "ring",
+              "bridge"
+            ],
+            "ref": "ct95:24443364:del:tron-s1"
+          },
+          "tron-s2": {
+            "scopes": [
+              "anchor",
+              "ring",
+              "bridge"
+            ],
+            "ref": "ct95:24443364:del:tron-s2"
+          },
+          "tron-s3": {
+            "scopes": [
+              "anchor",
+              "ring",
+              "bridge"
+            ],
+            "ref": "ct95:24443364:del:tron-s3"
+          },
+          "tron-s4": {
+            "scopes": [
+              "anchor",
+              "ring",
+              "bridge"
+            ],
+            "ref": "ct95:24443364:del:tron-s4"
+          },
+          "tron-s5": {
+            "scopes": [
+              "anchor",
+              "ring",
+              "bridge"
+            ],
+            "ref": "ct95:24443364:del:tron-s5"
+          }
+        },
+        "delCount": 18
+      },
+      "match": false,
+      "err": null,
+      "durationMs": 7
+    },
+    {
+      "id": "M5-anchor",
+      "net": "SAOS→STEEM",
+      "label": "עוגן-WEAVE-95: digest-התוצאה חוזר-ל-Steem כ-custom_json",
+      "predict": {
+        "expect": "txid ציבורי · נמצא-בקריאה-חוזרת בהיסטוריה של @headcorner"
+      },
+      "skipped": true,
+      "match": false
+    }
+  ],
+  "allMatch": true,
+  "summaryHe": "עצירה-כנה — צעד-ללא-התאמה (מתועד, לא-מזויף)",
+  "completion": {
+    "ok": true,
+    "verify": {
+      "missingRefs": [],
+      "refsOnBook": 21,
+      "locked": 24.443,
+      "supply": 17,
+      "holders": 11,
+      "delegations": 18,
+      "burnHeight": 653
+    },
+    "anchor": {
+      "txid": "4aa137ff92a341aa94a62aefedb235d13cf6d79b",
+      "found": {
+        "txid": "4aa137ff92a341aa94a62aefedb235d13cf6d79b",
+        "block": 109329917,
+        "node": "api.steemit.com",
+        "verified": "get_transaction"
+      },
+      "error": null,
+      "summary": "WEAVE-95 complete · vault 24.443 TRX/6 measured · cover-fixed · redeem-loop closed h653 · delegated 18 subjects → @headcorner (keys untouched)",
+      "digest": "b2218b356e60f94b…"
+    },
+    "bugFound": "MISSION_TYPES lacked wrap_burn → op silently dropped (caught by honest M4 read-back)",
+    "bugFixed": "MISSION_TYPES + wrap_burn · completion mission same-ref",
+    "at": "2026-09-06T01:46:17.940Z"
+  }
+}

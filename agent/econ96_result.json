@@ -1,0 +1,516 @@
+{
+  "at": "2026-09-06T03:34:04.781Z",
+  "mission": "ECON-96",
+  "language": "CHL-1 (predict→act→measure→match)",
+  "steps": [
+    {
+      "id": "E1-audit",
+      "net": "SAOS-NET→read",
+      "label": "ריפליי-מלא + שווי-אוצר מציטוטי-הספר + מדדי-דקס",
+      "predict": {
+        "expect": "בריכה וספר נמדדו · שווי-WTRX>0 מהמחיר-על-הספר · poolVsBook מחושב"
+      },
+      "measured": {
+        "at": "2026-09-06T03:32:50.155Z",
+        "height": null,
+        "headHash": null,
+        "blocksReplayed": 705,
+        "pricesOnBook": {
+          "WTRX": 0.333313,
+          "WSTEEM": 0.04619346,
+          "WUSDT": 1,
+          "WUSDD": 0.998344,
+          "WTUSD": 0.999677,
+          "WJST": 0.110329,
+          "WSUN": 0.0168599,
+          "WBTT": 3.01e-7,
+          "WNFT": 2.4e-7,
+          "WHTX": 0.00000169,
+          "WUSD1": 0.999691
+        },
+        "saosUsd": 0.000778914,
+        "steemUsd": 0.04619346,
+        "trxUsd": 0.333313,
+        "supply": {
+          "floatingSaos": 124.152,
+          "floatingSteem": 1.092
+        },
+        "treasury": {
+          "saos": 113.319,
+          "steem": 0.775,
+          "wtrx": 7
+        },
+        "wrapped": {
+          "WSBD": {
+            "supply": 0.26,
+            "locked": 0.26
+          },
+          "PHIVE": {
+            "supply": 0.002,
+            "locked": 0.002
+          },
+          "ENERGY": {
+            "supply": 25,
+            "locked": 50
+          },
+          "WBTC": {
+            "supply": 0,
+            "locked": 0.06
+          },
+          "WETH": {
+            "supply": 0,
+            "locked": 0.06
+          },
+          "WXRP": {
+            "supply": 0.003,
+            "locked": 0.04
+          },
+          "WDOGE": {
+            "supply": 0.046,
+            "locked": 0.04
+          },
+          "WTRX": {
+            "supply": 17,
+            "locked": 24.443
+          },
+          "WSTEEM": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WUSDT": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WUSDD": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WTUSD": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WJST": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WSUN": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WBTT": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WNFT": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WHTX": {
+            "supply": 0,
+            "locked": 0
+          },
+          "WUSD1": {
+            "supply": 0,
+            "locked": 0
+          }
+        },
+        "wrappedEconomy": {
+          "wtrxSupply": 17,
+          "wtrxLocked": 24.443,
+          "wtrxCoverPct": 143.8,
+          "wtrxValueUsd": 5.666321,
+          "bridgeReserveUsd": 8.14717,
+          "zeroSupplyAssets": [
+            "WBTC",
+            "WETH",
+            "WSTEEM",
+            "WUSDT",
+            "WUSDD",
+            "WTUSD",
+            "WJST",
+            "WSUN",
+            "WBTT",
+            "WNFT",
+            "WHTX",
+            "WUSD1"
+          ]
+        },
+        "holdingsByAsset": {
+          "WSBD": {
+            "holders": 1,
+            "amount": 0.26,
+            "usd": 0
+          },
+          "PHIVE": {
+            "holders": 1,
+            "amount": 0.002,
+            "usd": 0
+          },
+          "ENERGY": {
+            "holders": 1,
+            "amount": 25,
+            "usd": 0
+          },
+          "WXRP": {
+            "holders": 1,
+            "amount": 0.003,
+            "usd": 0
+          },
+          "WDOGE": {
+            "holders": 1,
+            "amount": 0.046,
+            "usd": 0
+          },
+          "WTRX": {
+            "holders": 11,
+            "amount": 17,
+            "usd": 5.666321
+          }
+        },
+        "fleetValueUsd": 0.147147,
+        "poolValueUsd": 0.063104,
+        "dex": {
+          "pool": {
+            "saos": 71.645,
+            "steem": 0.158,
+            "lpSupply": 25127975,
+            "feeBps": 30
+          },
+          "poolPriceSteemPerSaos": 0.00220532,
+          "bookMid": 0.0164165,
+          "poolVsBook": {
+            "pool": 0.002205,
+            "book": 0.016417,
+            "gapPct": 86.6
+          },
+          "bestAsk": 0.016862,
+          "bestBid": 0.015971,
+          "trades": 12,
+          "swaps": 0,
+          "lastPrice": 0.016862,
+          "feesTotalµ": 1,
+          "bookDepth": {
+            "asks": 5,
+            "bids": 4
+          }
+        },
+        "rebalancePlan": {
+          "mid": 0.0164165,
+          "before": {
+            "poolPrice": 0.00220532
+          },
+          "swap": {
+            "side": "buy_saos",
+            "inAmtSteem": 0.273,
+            "expectOutSaos": 45.38,
+            "priceAfter": 0.01640967
+          },
+          "add": {
+            "amountSaos": 6.093,
+            "amountSteem": 0.1
+          },
+          "treasuryBefore": {
+            "saos": 113.319,
+            "steem": 0.775
+          }
+        }
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 11
+    },
+    {
+      "id": "E2-issue",
+      "net": "SAOS-NET",
+      "label": "הוצאת-משימת DEX-96: pool_swap-איזון + pool_add-העמקה (מנפיק=@headcorner)",
+      "predict": {
+        "expect": "swap-אחד ≤0.5-STEEM מהאוצר · add פרופורציונלי ליחס-הבריכה-אחרי-ה-swap"
+      },
+      "measured": {
+        "ops": 2,
+        "plan": {
+          "mid": 0.0164165,
+          "before": {
+            "poolPrice": 0.00220532
+          },
+          "swap": {
+            "side": "buy_saos",
+            "inAmtSteem": 0.273,
+            "expectOutSaos": 45.38,
+            "priceAfter": 0.01640967
+          },
+          "add": {
+            "amountSaos": 6.093,
+            "amountSteem": 0.1
+          },
+          "treasuryBefore": {
+            "saos": 113.319,
+            "steem": 0.775
+          }
+        }
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 1
+    },
+    {
+      "id": "E3-beat",
+      "net": "SAOS-NET",
+      "label": "פעימה מבצעת DEX-96 (אפס-עמלה)",
+      "predict": {
+        "expect": "exit=0 · הגובה עולה"
+      },
+      "measured": {
+        "exit": 0,
+        "tail": "[2026-09-06T03:32:57.031Z] saosnet: pending steem-anchor VERIFIED blk=null @api.steemit.com | [2026-09-06T03:32:57.244Z] saosnet: pending steem-anchor VERIFIED blk=null @api.steemit.com | [2026-09-06T03:32:57.252Z] saosnet: BEAT DONE · height=718 · stateRoot=892cd075bf35bda6…"
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 7106
+    },
+    {
+      "id": "E4-verify",
+      "net": "SAOS-NET",
+      "label": "מדידה-אחרי: מחיר-הבריכה בטווח-הספר · עומק-גדל · יתרות-האוצר-שמורות",
+      "predict": {
+        "expect": "poolPrice בתוך ±15% מ-mid · אוצר חיובי עם רזרבה"
+      },
+      "measured": {
+        "after": {
+          "at": "2026-09-06T03:32:57.274Z",
+          "height": null,
+          "headHash": null,
+          "blocksReplayed": null,
+          "pricesOnBook": {
+            "WTRX": 0.333313,
+            "WSTEEM": 0.04619346,
+            "WUSDT": 1,
+            "WUSDD": 0.998344,
+            "WTUSD": 0.999677,
+            "WJST": 0.110329,
+            "WSUN": 0.0168599,
+            "WBTT": 3.01e-7,
+            "WNFT": 2.4e-7,
+            "WHTX": 0.00000169,
+            "WUSD1": 0.999691
+          },
+          "saosUsd": 0.000778914,
+          "steemUsd": 0.04619346,
+          "trxUsd": 0.333313,
+          "supply": {
+            "floatingSaos": 163.439,
+            "floatingSteem": 0.719
+          },
+          "treasury": {
+            "saos": 152.606,
+            "steem": 0.402,
+            "wtrx": 7
+          },
+          "wrapped": {
+            "WSBD": {
+              "supply": 0.26,
+              "locked": 0.26
+            },
+            "PHIVE": {
+              "supply": 0.002,
+              "locked": 0.002
+            },
+            "ENERGY": {
+              "supply": 25,
+              "locked": 50
+            },
+            "WBTC": {
+              "supply": 0,
+              "locked": 0.06
+            },
+            "WETH": {
+              "supply": 0,
+              "locked": 0.06
+            },
+            "WXRP": {
+              "supply": 0.003,
+              "locked": 0.04
+            },
+            "WDOGE": {
+              "supply": 0.046,
+              "locked": 0.04
+            },
+            "WTRX": {
+              "supply": 17,
+              "locked": 24.443
+            },
+            "WSTEEM": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WUSDT": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WUSDD": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WTUSD": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WJST": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WSUN": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WBTT": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WNFT": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WHTX": {
+              "supply": 0,
+              "locked": 0
+            },
+            "WUSD1": {
+              "supply": 0,
+              "locked": 0
+            }
+          },
+          "wrappedEconomy": {
+            "wtrxSupply": 17,
+            "wtrxLocked": 24.443,
+            "wtrxCoverPct": 143.8,
+            "wtrxValueUsd": 5.666321,
+            "bridgeReserveUsd": 8.14717,
+            "zeroSupplyAssets": [
+              "WBTC",
+              "WETH",
+              "WSTEEM",
+              "WUSDT",
+              "WUSDD",
+              "WTUSD",
+              "WJST",
+              "WSUN",
+              "WBTT",
+              "WNFT",
+              "WHTX",
+              "WUSD1"
+            ]
+          },
+          "holdingsByAsset": {
+            "WSBD": {
+              "holders": 1,
+              "amount": 0.26,
+              "usd": 0
+            },
+            "PHIVE": {
+              "holders": 1,
+              "amount": 0.002,
+              "usd": 0
+            },
+            "ENERGY": {
+              "holders": 1,
+              "amount": 25,
+              "usd": 0
+            },
+            "WXRP": {
+              "holders": 1,
+              "amount": 0.003,
+              "usd": 0
+            },
+            "WDOGE": {
+              "holders": 1,
+              "amount": 0.046,
+              "usd": 0
+            },
+            "WTRX": {
+              "holders": 11,
+              "amount": 17,
+              "usd": 5.666321
+            }
+          },
+          "fleetValueUsd": 0.160518,
+          "poolValueUsd": 0.049733,
+          "dex": {
+            "pool": {
+              "saos": 32.358,
+              "steem": 0.531,
+              "lpSupply": 30957205,
+              "feeBps": 30
+            },
+            "poolPriceSteemPerSaos": 0.01641016,
+            "bookMid": 0.0164165,
+            "poolVsBook": {
+              "pool": 0.01641,
+              "book": 0.016417,
+              "gapPct": 0
+            },
+            "bestAsk": 0.016862,
+            "bestBid": 0.015971,
+            "trades": 12,
+            "swaps": 1,
+            "lastPrice": 0.016862,
+            "feesTotalµ": 1,
+            "bookDepth": {
+              "asks": 5,
+              "bids": 4
+            }
+          }
+        },
+        "treasury": {
+          "saos": 152.606,
+          "steem": 0.402
+        },
+        "missionStatus": "applied",
+        "results": [
+          {
+            "type": "pool_swap",
+            "ref": "e96:swap:2026-09-06",
+            "ok": true,
+            "err": null,
+            "orderId": null,
+            "filled": null
+          },
+          {
+            "type": "pool_add",
+            "ref": "e96:deepen:2026-09-06",
+            "ok": true,
+            "err": null,
+            "orderId": null,
+            "filled": null
+          }
+        ]
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 10
+    },
+    {
+      "id": "E5-anchor",
+      "net": "SAOS→STEEM",
+      "label": "עוגן-ECON-96: digest-הביקורת+האיזון חוזר ל-Steem (0.000 STEEM)",
+      "predict": {
+        "expect": "txid ציבורי · נמצא-בהיסטוריית @headcorner"
+      },
+      "measured": {
+        "txid": "3597da02de9a05c1923478cec79762b6ffb4bb43",
+        "found": {
+          "txid": "3597da02de9a05c1923478cec79762b6ffb4bb43",
+          "block": 109332066
+        },
+        "error": null,
+        "digest": "22786502766cb5a3…",
+        "summary": "ECON-96 · fleet-value $0.147147 + pool $0.063104 · WTRX cover 143.8% of 24.443 TRX measured · pool-vs-book gap 86.6% closed→0% · zero-fee"
+      },
+      "match": true,
+      "err": null,
+      "durationMs": 67507
+    }
+  ],
+  "allMatch": true,
+  "summaryHe": "המצב-הכלכלי נמדד-מלא מהספר-עצמו · ארביטראז-פנימי בין-הבריכה-לספר נסגר לטובת-האוצר · הבריכה הועמקה בלי-להזיז-מחיר · עוגן-Steem סוגר-את-השרשרת"
+}

@@ -1,0 +1,23 @@
+{
+  "name": "saos-agent",
+  "version": "0.2.0",
+  "private": true,
+  "description": "SAOS Agent — local autonomous daemon for headcorner (auto-claim + BOT-3 window watcher + RC account factory + curation engine). Keys never leave this machine.",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@hiveio/dhive": "^1.3.6",
+    "js-sha3": "^0.13.0",
+    "steem": "0.7.11",
+    "tweetnacl": "1.0.3"
+  },
+  "scripts": {
+    "start": "node agent.cjs",
+    "dry": "node agent.cjs --dry",
+    "once": "node agent.cjs --once",
+    "test:pipeline": "node test-pipeline.cjs",
+    "test:factory": "node test-factory.cjs"
+  }
+}

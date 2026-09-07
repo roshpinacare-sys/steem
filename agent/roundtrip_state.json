@@ -1,0 +1,98 @@
+{
+  "steps": {
+    "h1": {
+      "txid": "bb3156cdc725b15785d9b67b6c3f47fcc8d12040",
+      "memo": "saos:xlock:PHIVE:0.002:rt66",
+      "verified": true,
+      "node": "api.openhive.network",
+      "block": 109631572
+    },
+    "s1": {
+      "txid": "6f5f05e7e853a5a6659195859e7a575b0d51aadd",
+      "amount": 0.002,
+      "ref": "bb3156cdc725b15785d9b67b6c3f47fcc8d12040",
+      "verified": true,
+      "node": "api.steemit.com"
+    },
+    "s2": {
+      "txid": "aee5d329d589b0c3fef02a5e8d2bc90ec011a17d",
+      "amount": 0.002362,
+      "from": "haran",
+      "to": "headcorner",
+      "verified": true,
+      "node": "api.steemit.com"
+    },
+    "s3": {
+      "txid": "7ea3dc668aff0b9b37476d194c85a6094596b480",
+      "oid": "headcorner-p1-a1",
+      "amount": 0.001,
+      "taker": "haran",
+      "payRef": "aee5d329d589b0c3fef02a5e8d2bc90ec011a17d",
+      "verified": true,
+      "node": "api.steemit.com"
+    },
+    "s4": {
+      "txid": "7bdec0aa64c761672680c7dfa7ffcdebacddac7e",
+      "amount": 0.001,
+      "by": "haran",
+      "ref": "7ea3dc668aff0b9b37476d194c85a6094596b480",
+      "verified": true,
+      "node": "api.steemit.com"
+    },
+    "h2": {
+      "txid": "454d2d22e7301561680efb66d99e43b37bcde227",
+      "memo": "saos:xunlock:PHIVE:0.001:rt66:7bdec0aa64c761672680c7dfa7ffcdebacddac7e",
+      "ref": "7bdec0aa64c761672680c7dfa7ffcdebacddac7e",
+      "verified": true,
+      "node": "api.openhive.network",
+      "block": 109631853,
+      "memoOnChain": "saos:xunlock:PHIVE:0.001:rt66:7bdec0aa64c761672680c7dfa7ffcdebacddac7e"
+    },
+    "s5": {
+      "txid": "50fb9912bc25546fe11fe8cd7f89920892c16d48",
+      "amount": 0.001,
+      "ref": "454d2d22e7301561680efb66d99e43b37bcde227",
+      "verified": true,
+      "node": "api.steemit.com"
+    }
+  },
+  "at": "2026-09-04T22:39:22.281Z",
+  "ms": 20259,
+  "allVerified": true,
+  "conservation": {
+    "supply": 0.003,
+    "lockedHive": 0.003,
+    "ratioPct": 100,
+    "redeemed": 0.001,
+    "unlocked": 0.001,
+    "holders": [
+      "headcorner:0.003"
+    ],
+    "note": "replay-lag tolerated — המטריצה מאמתת את השימור בריצה עצמאית"
+  },
+  "summary": {
+    "locked": 0.002,
+    "minted": 0.002,
+    "traded": 0.001,
+    "burned": 0.001,
+    "unlocked": 0.001,
+    "steps": [
+      "H1-lock(hive)",
+      "S1-mint",
+      "S2-pay",
+      "S3-fill",
+      "S4-burn",
+      "H2-unlock(hive)",
+      "S5-unlock-ack"
+    ],
+    "txids": {
+      "h1": "bb3156cdc725b15785d9b67b6c3f47fcc8d12040",
+      "s1": "6f5f05e7e853a5a6659195859e7a575b0d51aadd",
+      "s2": "aee5d329d589b0c3fef02a5e8d2bc90ec011a17d",
+      "s3": "7ea3dc668aff0b9b37476d194c85a6094596b480",
+      "s4": "7bdec0aa64c761672680c7dfa7ffcdebacddac7e",
+      "h2": "454d2d22e7301561680efb66d99e43b37bcde227",
+      "s5": "50fb9912bc25546fe11fe8cd7f89920892c16d48"
+    }
+  }
+}

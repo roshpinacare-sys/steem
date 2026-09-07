@@ -1,0 +1,94 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+local-*
+.claude
+.z-ai-config
+*.log
+dev.log
+dev.out.log
+test
+prompt
+
+server.log
+# Skills directory
+/skills/
+# sandbox secrets & runtime
+upload/
+dev.log
+server.log
+db/*.db
+db/*.db-journal
+*.db-wal
+*.db-shm
+.agent*
+agent-ctx/
+tool-results/
+
+# runtime junk (never history)
+.zscripts/dev.pid
+
+# gitkeeper runtime state (console reads from disk, not from git)
+agent/gitkeeper_state.json
+agent/gitkeeper.lock
+
+# sovereign node runtime lock (transient — never history)
+sovereign/node/beat.lock
+
+# 82 — runtime locks/reports (console reads from disk; txids live on-chain)
+agent/.daemon.lock
+agent/.guardian.lock
+agent/guardian_result.json
+agent/selfhost_verdict.json
+agent/selfhost_drill.json
+agent/anchor_last.json
+agent/attest_last.json
+sovereign/node/RECOVERY_POINTER.json
+
+agent/*.lock
+agent/blurt_health.json
+# 98 — יומן-הרווח-החי (רוטציה-יומית · נפח) — לא-בגיט
+sovereign/node/grid-journal-*.jsonl
+sovereign/node/chain-archive.jsonl.bak
+.steem-engeiner-live
+# 113 — sovereign wallet keys (seed+registry private) — never in git
+agent/keys/
