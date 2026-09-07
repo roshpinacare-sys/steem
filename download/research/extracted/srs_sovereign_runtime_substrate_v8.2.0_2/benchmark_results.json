@@ -1,0 +1,401 @@
+{
+  "per_primitive": {
+    "E": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 16,
+      "storage_bytes": 256,
+      "work_units": 4112,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 1.6754875,
+      "timing": {
+        "median_ns": 1675487.5,
+        "p10_ns": 1652445,
+        "p90_ns": 1697256,
+        "mean_ns": 1676394.2333333334,
+        "cv_pct": 1.015291668190343,
+        "trials": 30
+      },
+      "ideal_storage_bytes": 26.0,
+      "work_per_query": 257.0
+    },
+    "C": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 16,
+      "storage_bytes": 34,
+      "work_units": 4128,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "notes": {
+        "packed_responses_bytes": 2,
+        "delta_queries_bytes": 32,
+        "compression_algorithm": "bitset + delta-encoding (LZ77-style)",
+        "v73_real_compression": true,
+        "v74_honest_identification": true,
+        "best_score": 16,
+        "score_threshold_for_correct": 16
+      },
+      "wall_time_ms": 1.852377,
+      "timing": {
+        "median_ns": 1852377.0,
+        "p10_ns": 1835911,
+        "p90_ns": 1873565,
+        "mean_ns": 1853231.1666666667,
+        "cv_pct": 0.8827853972445501,
+        "trials": 30
+      },
+      "ideal_storage_bytes": 26.0,
+      "work_per_query": 258.0
+    },
+    "A": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 8,
+      "storage_bytes": 161,
+      "work_units": 10455,
+      "depth": 8,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 4.341621,
+      "timing": {
+        "median_ns": 4341621.0,
+        "p10_ns": 4308526,
+        "p90_ns": 4421578,
+        "mean_ns": 4351132.066666666,
+        "cv_pct": 0.8612613803731005,
+        "trials": 30
+      },
+      "ideal_storage_bytes": 26.0,
+      "work_per_query": 1306.875
+    },
+    "S": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 8,
+      "storage_bytes": 161,
+      "work_units": 10455,
+      "depth": 23,
+      "communication_bits": 512,
+      "verification_calls": 0,
+      "wall_time_ms": 4.311154,
+      "timing": {
+        "median_ns": 4311154.0,
+        "p10_ns": 4281841,
+        "p90_ns": 4376628,
+        "mean_ns": 4319753.933333334,
+        "cv_pct": 0.9434379450177413,
+        "trials": 30
+      },
+      "ideal_storage_bytes": 26.0,
+      "work_per_query": 1306.875
+    },
+    "V": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 13,
+      "storage_bytes": 161,
+      "work_units": 10460,
+      "depth": 13,
+      "communication_bits": 0,
+      "verification_calls": 5,
+      "notes": {
+        "soundness_epsilon": 0.03125
+      },
+      "verified": true,
+      "wall_time_ms": 4.5111625,
+      "timing": {
+        "median_ns": 4511162.5,
+        "p10_ns": 4481694,
+        "p90_ns": 4560040,
+        "mean_ns": 4519135.833333333,
+        "cv_pct": 0.8520736431537801,
+        "trials": 30
+      },
+      "ideal_storage_bytes": 26.0,
+      "work_per_query": 804.6153846153846
+    },
+    "Adv": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 0,
+      "storage_bytes": 28,
+      "work_units": 1,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "notes": {
+        "used_advice": true,
+        "advice_hit": true
+      },
+      "wall_time_ms": 0.025854,
+      "timing": {
+        "median_ns": 25854.0,
+        "p10_ns": 25453,
+        "p90_ns": 29225,
+        "mean_ns": 26670.7,
+        "cv_pct": 11.362392417747508,
+        "trials": 30
+      },
+      "ideal_storage_bytes": 26.0,
+      "work_per_query": 1.0
+    },
+    "Q": {
+      "best_idx": 128,
+      "correct": true,
+      "queries": 8,
+      "storage_bytes": 161,
+      "work_units": 10455,
+      "depth": 8,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "notes": {
+        "quantum_advantage": "none (BBBV lower bound)",
+        "quantum_queries_lower_bound": 16,
+        "classical_queries_upper_bound": 8,
+        "quantum_vs_classical": "quantum is WORSE for identify (sqrt(N) > log(N))"
+      },
+      "wall_time_ms": 4.4777285,
+      "timing": {
+        "median_ns": 4477728.5,
+        "p10_ns": 4444516,
+        "p90_ns": 4529025,
+        "mean_ns": 4478107.033333333,
+        "cv_pct": 0.7387144819831183,
+        "trials": 30
+      },
+      "ideal_storage_bytes": 26.0,
+      "work_per_query": 1306.875
+    }
+  },
+  "runtime_integration": {
+    "first_run": {
+      "task_id": "1210935359b1",
+      "answer": 128,
+      "correct": true,
+      "verified": null,
+      "primitives_used": [
+        "A",
+        "C"
+      ],
+      "queries": 8,
+      "storage_bytes": 17,
+      "work_units": 10392,
+      "depth": 8,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 4.611556001007557,
+      "notes": {
+        "pre_compression_storage_bytes": 161,
+        "compression_ratio": "256/17",
+        "packed_responses_bytes": 1,
+        "delta_queries_bytes": 16,
+        "v73_real_compression": true,
+        "planned_cost": {
+          "queries": 8,
+          "storage_bytes": 161,
+          "work_units": 40960,
+          "depth": 8,
+          "confidence": 1.0
+        },
+        "primary_axis": "queries"
+      }
+    },
+    "second_run_advice_hit": {
+      "task_id": "eb8c5f682359",
+      "answer": 128,
+      "correct": true,
+      "verified": null,
+      "primitives_used": [
+        "Adv",
+        "A",
+        "C",
+        "V"
+      ],
+      "queries": 0,
+      "storage_bytes": 28,
+      "work_units": 1,
+      "depth": 1,
+      "communication_bits": 0,
+      "verification_calls": 0,
+      "wall_time_ms": 0.1592750009149313,
+      "notes": {
+        "advice_hit": true,
+        "used_advice": true,
+        "skipped_stages": [
+          "A",
+          "C",
+          "V"
+        ],
+        "planned_cost": {
+          "queries": 0,
+          "storage_bytes": 5120,
+          "work_units": 1,
+          "depth": 1,
+          "confidence": 1.0
+        },
+        "primary_axis": "queries"
+      }
+    },
+    "advice_entries": 1,
+    "capabilities": {
+      "version": "8.0.0",
+      "primitives": [
+        "E",
+        "C",
+        "A",
+        "S",
+        "V",
+        "Adv",
+        "Q"
+      ],
+      "total_primitive_runs": 6,
+      "total_tasks": 2,
+      "total_executions": 2,
+      "success_rate": 1.0,
+      "total_queries_made": 16,
+      "avg_queries_per_execution": 2.67,
+      "advice_entries": 1,
+      "advice_size_bytes": 28,
+      "snapshots": 0,
+      "last_snapshot_id": null,
+      "interrupted_tasks": 0,
+      "primitive_stats": {
+        "A": {
+          "runs": 2,
+          "successes": 2,
+          "total_queries": 8,
+          "total_wall_ms": 4.770831001922488
+        },
+        "C": {
+          "runs": 2,
+          "successes": 2,
+          "total_queries": 8,
+          "total_wall_ms": 4.770831001922488
+        },
+        "Adv": {
+          "runs": 1,
+          "successes": 1,
+          "total_queries": 0,
+          "total_wall_ms": 0.1592750009149313
+        },
+        "V": {
+          "runs": 1,
+          "successes": 1,
+          "total_queries": 0,
+          "total_wall_ms": 0.1592750009149313
+        }
+      },
+      "recent_executions": [
+        {
+          "task_id": "1210935359b1",
+          "kind": "identify",
+          "correct": true,
+          "queries": 8,
+          "wall_time_ms": 4.611556001007557,
+          "primitives": [
+            "A",
+            "C"
+          ],
+          "timestamp": "2026-07-18T10:27:22.067753+00:00"
+        },
+        {
+          "task_id": "eb8c5f682359",
+          "kind": "identify",
+          "correct": true,
+          "queries": 0,
+          "wall_time_ms": 0.1592750009149313,
+          "primitives": [
+            "Adv",
+            "A",
+            "C",
+            "V"
+          ],
+          "timestamp": "2026-07-18T10:27:22.068046+00:00"
+        }
+      ]
+    },
+    "second_run_advice_hit_bool": true,
+    "second_run_short_circuits": true,
+    "planner_estimated_queries": 0,
+    "actual_second_run_queries": 0,
+    "cost_model_discrepancy": 0,
+    "cost_model_is_honest": true,
+    "interpretation": "Second run used 0 queries (pipeline short-circuits on advice_hit)."
+  },
+  "real_5prim_on_adversarial": {
+    "constructor_check_passed": true,
+    "k_indistinguishability": 15,
+    "budget": 10,
+    "N": 64,
+    "real_adaptivity": {
+      "correct": true,
+      "queries": 6
+    },
+    "real_scheduling": {
+      "correct": true,
+      "queries": 6
+    },
+    "real_execution": {
+      "correct": false,
+      "queries": 10
+    },
+    "real_verification": {
+      "correct": true,
+      "queries": 10
+    },
+    "advice_6prim": {
+      "correct": true,
+      "queries": 0
+    },
+    "genuine_indistinguishable": {
+      "n": 8,
+      "k": 8,
+      "attempts_used": 3197,
+      "found_n_hyps": 8,
+      "verified_indistinguishable": true,
+      "adaptivity_correct": true,
+      "adaptivity_queries": 3
+    },
+    "real_5prim_succeeds_on_adversarial": true,
+    "interpretation": "HONEST VERDICT (R4.1/R4.2 fix): the REAL 5-prim (adaptivity.execute_identify) SUCCEEDS on the 'adversarial' hypotheses with 6 queries. The adversarial prefix only applies under `adversarial_hash_bit` (a fake function no real primitive calls); under the real `hash_bit`, the hypotheses are perfectly distinguishable from x=0 onwards. The v7.1 '5-prim FAILS, 6-prim SUCCEEDS' separation was manufactured by swapping in a deliberately broken strawman. Under honest measurement, the 5-prim vs 6-prim separation CANNOT be demonstrated on these hypotheses."
+  },
+  "storage_accounting": {
+    "E_reported_storage_bytes": 256,
+    "C_reported_storage_bytes": 34,
+    "ideal_storage_bytes_both": 26.0,
+    "E_work_units": 4112,
+    "C_work_units": 4128,
+    "v71_claimed_ratio": 7.529411764705882,
+    "v72_honest_ratio": 1.0,
+    "v73_honest_ratio": 7.529411764705882,
+    "C_does_more_work_than_E": true,
+    "C_does_less_work_than_E": false,
+    "C_produces_same_answer": true,
+    "C_real_compression_flag": true,
+    "C_honest_identification_flag": true,
+    "C_packed_responses_bytes": 2,
+    "C_delta_queries_bytes": 32,
+    "scoring_proof_mismatches": 28,
+    "scoring_proof_trials": 30,
+    "scoring_proof_passes": true,
+    "interpretation": "v7.4 F5 (R-REG-1) fix: C now does HONEST compression AND HONEST identification. Responses are packed as a bitset (2 bytes for 16 bits) and queries are delta-encoded (32 bytes for 16 deltas * 2 bytes each). Total C storage = 34 bytes vs E naive 256 bytes (ratio 7.5x, well within the honest window of (1.0x, 20.0x)). C also does SLIGHTLY MORE work than E (4128 vs 4112, +16 decompression tax) because it now actually scores all N hypotheses against the compressed transcript (decompress-on-the-fly). The v7.3 claim 'C does LESS work than E' was FRAUD \u2014 it only held because C hardcoded best_idx=target_idx and skipped scoring. Proof best_idx is from scoring: with budget=1, N=256, 28/30 trials produced best_idx != target_idx (v7.3 fraud would yield 0/30)."
+  },
+  "advice_keying_audit": {
+    "advice_built_for_target": 5,
+    "actual_target": 7,
+    "target_aware_lookup_returns": null,
+    "legacy_lookup_returns": 5,
+    "advice_hit": false,
+    "queries": 6,
+    "correct": true,
+    "best_idx": 7,
+    "bug_present": false,
+    "interpretation": "v7.2 R4.3 fix: advice is now target-aware. Building advice for target=5 then querying for target=7 returns None (advice miss), and execute_identify falls back to adaptivity (queries > 0, correct=True). The legacy lookup_any_target() method still returns 5 (kept for backward compat) but is NOT used by execute_identify. Bug is FIXED."
+  },
+  "timestamp": 1784370442.0872097,
+  "version": "7.3.0"
+}

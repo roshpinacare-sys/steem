@@ -1,0 +1,14 @@
+import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { sha256 } from '../contracts/crypto.js';
+import type { AgentPlan } from './types.js';
+export interface StoredAgentProposal{readonly version:1;readonly plan:AgentPlan;readonly digest:string;}
+export interface AgentProposalStore{put(plan:AgentPlan):StoredAgentProposal;get(planId:string):StoredAgentProposal;}
+export class InMemoryAgentProposalStore implements AgentProposalStore{readonly #rows=new Map<string,StoredAgentProposal>();put(plan:AgentPlan){const row=record(plan);const prior=this.#rows.get(plan.planId);if(prior&&prior.digest!==row.digest)throw new Error('agent_proposal_id_conflict');this.#rows.set(plan.planId,row);return structuredClone(row);}get(id:string){const row=this.#rows.get(id);if(!row)throw new Error('agent_proposal_not_found');verify(row);return structuredClone(row);}}
+export class FileAgentProposalStore implements AgentProposalStore{readonly #root:string;constructor(root:string){if(root.trim()==='')throw new Error('agent_proposal_store_root_required');this.#root=resolve(root);mkdirSync(this.#root,{recursive:true,mode:0o700});fsyncDirectory(this.#root);}put(plan:AgentPlan){const row=record(plan),path=this.#path(plan.planId);if(existsSync(path)){const prior=this.get(plan.planId);if(prior.digest!==row.digest)throw new Error('agent_proposal_id_conflict');return prior;}atomicReplace(path,`${JSON.stringify(row,null,2)}\n`);fsyncDirectory(this.#root);return structuredClone(row);}get(id:string){const path=this.#path(id);if(!existsSync(path))throw new Error('agent_proposal_not_found');const row=JSON.parse(readFileSync(path,'utf8')) as StoredAgentProposal;verify(row);if(row.plan.planId!==id)throw new Error('agent_proposal_store_key_mismatch');return structuredClone(row);}#path(id:string){if(id.trim()==='')throw new Error('agent_plan_id_required');return join(this.#root,`${sha256({planId:id})}.json`);}}
+function record(plan:AgentPlan):StoredAgentProposal{const material={version:1 as const,plan:structuredClone(plan)};return{...material,digest:sha256(material)};}
+function verify(row:StoredAgentProposal){const{digest,...material}=row;if(digest!==sha256(material)||row.version!==1||row.plan.proposalDigest!==proposalDigest(row.plan))throw new Error('agent_proposal_store_tampered');}
+export function proposalDigest(plan:AgentPlan):string{const{proposalDigest:_digest,...material}=plan;return sha256(material);}
+function atomicReplace(path:string,content:string){mkdirSync(dirname(path),{recursive:true});const tmp=`${path}.tmp-${process.pid}-${randomUUID()}`;const fd=openSync(tmp,'wx',0o600);try{writeFileSync(fd,content);fsyncSync(fd);}finally{closeSync(fd);}renameSync(tmp,path);}
+function fsyncDirectory(path:string){const fd=openSync(path,'r');try{fsyncSync(fd);}finally{closeSync(fd);}}

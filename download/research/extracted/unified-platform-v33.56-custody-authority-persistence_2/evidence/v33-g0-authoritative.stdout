@@ -1,0 +1,50 @@
+== repository-truth-map ==
+{
+  "step": "repository-truth-map",
+  "status": "failed",
+  "exitCode": 1,
+  "timedOut": false,
+  "artifacts": []
+}
+{
+  "status": "failed",
+  "inventory": {
+    "sourceModules": 185,
+    "testFiles": 185,
+    "scripts": 327,
+    "packageScripts": 297,
+    "governanceFiles": 14,
+    "externalQualificationKits": 6,
+    "frontierBenchmarkKits": 1,
+    "sovereignInfraFiles": 30,
+    "independentVerifierFiles": 5,
+    "sovereignServices": 12
+  },
+  "boundaries": {
+    "sourceIdentityIncludesInfra": true,
+    "sourceIdentityIncludesExternalQualification": true,
+    "sourceIdentityIncludesBenchmarkKits": true,
+    "sourceIdentityDiscoversVersionedHandoffs": true,
+    "externalNetworkBoundariesExplicit": [
+      "email",
+      "global-edge",
+      "payments",
+      "sms"
+    ],
+    "productionPromotion": "blocked"
+  },
+  "findings": [
+    {
+      "severity": "critical",
+      "code": "GOVERNANCE_VERSION_DRIFT",
+      "status": "open"
+    }
+  ]
+}
+
+{
+  "status": "failed",
+  "step": "repository-truth-map",
+  "reason": "step_failed:repository-truth-map",
+  "ledger": "evidence/runs/v33-g0-authoritative/V32_18_EXECUTION_LEDGER.json"
+}

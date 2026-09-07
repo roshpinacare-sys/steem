@@ -1,0 +1,45 @@
+{
+  "version": "33.31",
+  "generatedAt": "2026-07-22T12:10:00.000Z",
+  "status": "passed",
+  "candidateArchive": "unified-platform-v33.31-external-human-pilot-evidence-import-candidate.zip",
+  "candidateArchiveSha256": "3098cebf27a5acb74a0d223d86c021ee96268076326c6ec9e4fb0cad211df269",
+  "candidateArchiveBytes": 7805607,
+  "extractionRoot": "fresh temporary directory",
+  "dependencyMode": "compatible preinstalled TypeScript/@types toolchain linked after extraction; node_modules is not bundled",
+  "checks": [
+    {
+      "name": "archive extraction",
+      "status": "passed"
+    },
+    {
+      "name": "TypeScript build",
+      "status": "passed"
+    },
+    {
+      "name": "focused V33.30 plus V33.31 tests",
+      "status": "passed",
+      "tests": 74,
+      "failed": 0
+    },
+    {
+      "name": "independent public-key proof verifier",
+      "status": "passed",
+      "signaturesVerified": 7,
+      "artifactFilesVerified": 10
+    },
+    {
+      "name": "V33.31 validator",
+      "status": "passed",
+      "checksPassed": 35,
+      "checksFailed": 0
+    }
+  ],
+  "evidenceBoundary": {
+    "syntheticReferenceParticipants": 5,
+    "externalHumanParticipants": 0,
+    "humanPilotPassed": false,
+    "productionPromotion": "blocked"
+  },
+  "npmCi": "not claimed; the prior internal-registry E503 condition was not converted into a success claim"
+}

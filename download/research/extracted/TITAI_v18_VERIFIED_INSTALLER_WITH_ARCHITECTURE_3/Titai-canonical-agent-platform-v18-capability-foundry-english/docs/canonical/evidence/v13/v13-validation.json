@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-11T08:10:00.000Z",
+  "releaseClassification": "DEVELOPMENT ONLY",
+  "summary": {
+    "safeTestFiles": 44,
+    "safeTests": 147,
+    "baselineEvaluation": "8/8",
+    "durableSideEffects": 1,
+    "durableAttempts": 2,
+    "staticRoast": "43/44",
+    "dynamicRoast": "6/6",
+    "mutation": "12/12",
+    "failureMatrix": "10/25 passed, 15 blocked",
+    "productionBuild": "passed",
+    "nativeSuites": "blocked before collection",
+    "browserE2E": "blocked before launch",
+    "blockingPilotGates": 7
+  },
+  "commands": [
+    {
+      "name": "benchmark-v13",
+      "exitCode": 0,
+      "durationMs": 651,
+      "outputSha256": "a67e2508ef2cf058b97b476db99935097edb3331dbd882e0af7b99ef43d61211",
+      "command": "npm run benchmark:v13",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "canonical",
+      "exitCode": 0,
+      "durationMs": 393,
+      "outputSha256": "9c3d649d1f3ec33820d0807589551453b18f16ff7d2a010837d4e9cf84206668",
+      "command": "npm run canonical:validate",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "ci-pins",
+      "exitCode": 0,
+      "durationMs": 318,
+      "outputSha256": "fba5b9e7c80cf5776da317160bdb380f2a96ac090a8c1cf7e8da22e7c343f9cc",
+      "command": "npm run ci:pins",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "durable",
+      "exitCode": 0,
+      "durationMs": 728,
+      "outputSha256": "847285f6c40325c64c67ff90a5ad1c304838d1f0e381607ba84e6375cb5be3b2",
+      "command": "npm run durable:prove",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "eval",
+      "exitCode": 0,
+      "durationMs": 595,
+      "outputSha256": "4567a892144ddff67e1ca380b9f67cd15f7214b0c9015750f5d40b757bf46343",
+      "command": "npm run eval:baseline",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "language",
+      "exitCode": 0,
+      "durationMs": 334,
+      "outputSha256": "6794c64eea30b67a98fcf5efb3c0b440a1ac58ef88426e370be96ac9471cc831",
+      "command": "npm run language:validate",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "durationMs": 286,
+      "outputSha256": "111de444ecf35f829f2255132adad585213e97b63fcdfc02d0544622675b440e",
+      "command": "npm run lint",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "migrations",
+      "exitCode": 0,
+      "durationMs": 285,
+      "outputSha256": "821abfc2b9331ef4a577cacf0dbef668a0fcbe7d9ba22b62e16cabb597d68afb",
+      "command": "npm run db:migrations:validate",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "mutation-v13",
+      "exitCode": 0,
+      "durationMs": 669,
+      "outputSha256": "da1f699111be317f67cc1d7dc54fd0e9ab2ad223231db8675442679d3457eb47",
+      "command": "npm run mutation:v13",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "pilot-evidence",
+      "exitCode": 0,
+      "durationMs": 284,
+      "outputSha256": "eb0babd326a52146f50a61103c6a770d139a7ba90d6363bdc52f6e80b5df7677",
+      "command": "npm run pilot:evidence",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "pilot-prove",
+      "exitCode": 0,
+      "durationMs": 647,
+      "outputSha256": "ebbf10d6dc9f6cce02bb81769d16f6cd45a0896572a49662a204111afd82ebd9",
+      "command": "npm run pilot:prove",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "release-audit",
+      "exitCode": 0,
+      "durationMs": 670,
+      "outputSha256": "2c94a88405386189f7b2785e17cef4a64e88c2ef453843f23c373f274af58fa3",
+      "command": "npm run release:audit",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "roast-dynamic",
+      "exitCode": 0,
+      "durationMs": 11107,
+      "outputSha256": "51c7fcad19b2675b59aa8c4f59286a862d6058080078dc9ad4c5de90ae4a2eb8",
+      "command": "npm run roast:dynamic",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "roast-static",
+      "exitCode": 0,
+      "durationMs": 270,
+      "outputSha256": "b9fceefb8ddddbd89b79757eb6028ee4e76d41d3ecf75ac4db8ef0f7a1b65fb5",
+      "command": "npm run roast:static",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "roast-validate",
+      "exitCode": 0,
+      "durationMs": 274,
+      "outputSha256": "fdd90d28f9be6c91a98467095fa0d17b05e4da2cb5692aad8b0b54710c9ade23",
+      "command": "npm run roast:validate",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "durationMs": 2804,
+      "outputSha256": "d5d7a84e80966d6640185ba2d9cf1a0fea486f7de2a5276127c32589712b4fcf",
+      "command": "npm run typecheck",
+      "environment": "local-safe-no-lifecycle-scripts"
+    },
+    {
+      "exitCode": 0,
+      "outputSha256": "6e614768a90dcf63c2db544f9c17631e7192ed976773e0012e79cc53c2ac10de",
+      "command": "npm run test:safe",
+      "environment": "local-safe-no-lifecycle-scripts",
+      "name": "test-safe-final"
+    },
+    {
+      "exitCode": 0,
+      "durationMs": 47814,
+      "outputSha256": "25e6878f920df8d5956d5ec3dc254753779514609ed66e008390e35a5bf273c3",
+      "command": "npm run build",
+      "environment": "local-safe-no-native-binding",
+      "classification": "passed",
+      "name": "production-build-release"
+    },
+    {
+      "name": "native-suites",
+      "exitCode": 1,
+      "durationMs": 4047,
+      "outputSha256": "6bc53974a3eda8ae44798c559c16786cc2a4da6d2be186409ef50e4bf5ed4a39",
+      "command": "npx vitest run tests/approval-expiry.test.ts tests/audit.test.ts tests/runner.integration.test.ts --maxWorkers=1",
+      "environment": "local-isolated-scripts-disabled",
+      "classification": "failed_or_blocked"
+    },
+    {
+      "exitCode": 0,
+      "durationMs": 1733,
+      "outputSha256": "2cf69437fceabb633e00c4b3311837f39dccd1ce2221fe2526b0197cb21202f2",
+      "command": "npx playwright test --list",
+      "environment": "local-no-native-binding",
+      "name": "playwright-list"
+    },
+    {
+      "exitCode": 1,
+      "durationMs": 8185,
+      "outputSha256": "19b6f184e9760da3ee35fb2cb975937b465afcd1a6c7dd9519cbfbbe0ea334b2",
+      "command": "npx playwright test --project=chromium",
+      "environment": "local-no-native-binding",
+      "classification": "failed_or_blocked",
+      "name": "e2e-chromium"
+    }
+  ],
+  "pilotGates": {
+    "canonicalIntegrity": {
+      "state": "pass"
+    },
+    "languageAndSourceAudit": {
+      "state": "pass"
+    },
+    "sourceSafeTests": {
+      "state": "pass",
+      "evidence": "44 files / 147 tests"
+    },
+    "durablePortableProof": {
+      "state": "pass",
+      "evidence": "one side effect across two worker attempts"
+    },
+    "tenantAndApprovalSourceTests": {
+      "state": "pass"
+    },
+    "mutationThreshold": {
+      "state": "pass",
+      "evidence": {
+        "total": 12,
+        "killed": 12,
+        "survived": 0,
+        "score": 1
+      }
+    },
+    "portableFailureMatrix": {
+      "state": "partial",
+      "evidence": {
+        "total": 25,
+        "passed": 10,
+        "blocked": 15
+      }
+    },
+    "productionBuild": {
+      "state": "pass",
+      "evidence": {
+        "durationMs": 47814,
+        "outputSha256": "25e6878f920df8d5956d5ec3dc254753779514609ed66e008390e35a5bf273c3"
+      }
+    },
+    "nativePersistence": {
+      "state": "blocked_environment",
+      "evidence": {
+        "exitCode": 1,
+        "outputSha256": "6bc53974a3eda8ae44798c559c16786cc2a4da6d2be186409ef50e4bf5ed4a39"
+      }
+    },
+    "browserE2e": {
+      "state": "blocked_environment",
+      "evidence": {
+        "exitCode": 1,
+        "outputSha256": "19b6f184e9760da3ee35fb2cb975937b465afcd1a6c7dd9519cbfbbe0ea334b2"
+      }
+    },
+    "accessibilityAndVisualRegression": {
+      "state": "blocked_environment"
+    },
+    "multiProcessRaceAndRestart": {
+      "state": "blocked_environment"
+    },
+    "cleanNativeRestore": {
+      "state": "blocked_environment"
+    },
+    "independentFinalVerification": {
+      "state": "pending_final_zip"
+    }
+  }
+}

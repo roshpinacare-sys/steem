@@ -1,0 +1,69 @@
+
+> titai@1.3.0-canonical-v8-roast roast:safe
+> npm run canonical:validate && npm run language:validate && npm run lint && npm run release:audit && npm run roast:static && npm run roast:validate && npm run typecheck && npm run test:safe && npm run eval:baseline
+
+
+> titai@1.3.0-canonical-v8-roast canonical:validate
+> node scripts/validate-canonical.mjs
+
+Canonical validation passed: 52 tasks, 48 claims, 28 sources, 19 ADRs, 28 coverage domains, 15 experiments.
+
+> titai@1.3.0-canonical-v8-roast language:validate
+> node scripts/validate-english-only.mjs
+
+English-only validation passed: no non-Latin writing-system content found.
+
+> titai@1.3.0-canonical-v8-roast lint
+> node scripts/lint-source.mjs
+
+Repository source lint passed: syntax hygiene and client-boundary checks are clean.
+
+> titai@1.3.0-canonical-v8-roast release:audit
+> node scripts/audit-release.mjs
+
+Release audit passed: canonical integrity, language policy, exclusions, and credential checks are clean.
+
+> titai@1.3.0-canonical-v8-roast roast:static
+> node scripts/roast-project.mjs
+
+Roast static scan complete: 15/27 passed; 12 open.
+
+> titai@1.3.0-canonical-v8-roast roast:validate
+> node scripts/validate-roast.mjs
+
+Roast validation passed: 50 findings, 20 project killers.
+
+> titai@1.3.0-canonical-v8-roast typecheck
+> tsc --noEmit
+
+
+> titai@1.3.0-canonical-v8-roast test:safe
+> vitest run tests/calculator.test.ts tests/policy.test.ts tests/build-graph.test.ts tests/rate-limit.test.ts tests/crypto.test.ts tests/relative-time.test.ts tests/skills.test.ts tests/gateway.test.ts tests/lifecycle.test.ts tests/evidence-summary.test.ts tests/evaluation-baseline.test.ts tests/plan.test.ts tests/egress.test.ts --maxWorkers=2
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/mnt/data/titai_v8_roast_work/Titai-canonical-agent-platform-v7-english[39m
+
+ [32m✓[39m tests/relative-time.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m tests/skills.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m tests/rate-limit.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/evaluation-baseline.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m tests/lifecycle.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/build-graph.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/evidence-summary.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/calculator.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/egress.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/gateway.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/plan.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/crypto.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/policy.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+[2m      Tests [22m [1m[32m57 passed[39m[22m[90m (57)[39m
+[2m   Start at [22m 20:04:21
+[2m   Duration [22m 7.97s[2m (transform 844ms, setup 0ms, collect 1.84s, tests 277ms, environment 7ms, prepare 4.40s)[22m
+
+
+> titai@1.3.0-canonical-v8-roast eval:baseline
+> tsx --tsconfig tsconfig.scripts.json scripts/evaluate-baseline.ts
+
+Baseline evaluation: 8/8 passed.

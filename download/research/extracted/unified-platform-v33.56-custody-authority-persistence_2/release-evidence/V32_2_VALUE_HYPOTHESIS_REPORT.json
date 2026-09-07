@@ -1,0 +1,86 @@
+{
+  "version": "32.2",
+  "generatedAt": "2026-07-18T04:10:16.978Z",
+  "status": "READY_FOR_PILOT",
+  "metrics": {
+    "hypotheses": 5,
+    "protocolReady": 5,
+    "humanMeasured": 0,
+    "demonstrated": 0,
+    "regressed": 0
+  },
+  "results": [
+    {
+      "hypothesisId": "VH-ASSIST-01",
+      "capabilityId": "governed-engineering-assistant",
+      "status": "PROTOCOL_READY",
+      "claimAllowed": false,
+      "reasons": [
+        "human_measurement_not_completed",
+        "participant_minimum_not_met",
+        "run_minimum_not_met",
+        "observed_value_missing"
+      ]
+    },
+    {
+      "hypothesisId": "VH-CHANGE-01",
+      "capabilityId": "semantic-change-dag",
+      "status": "PROTOCOL_READY",
+      "claimAllowed": false,
+      "reasons": [
+        "human_measurement_not_completed",
+        "participant_minimum_not_met",
+        "run_minimum_not_met",
+        "observed_value_missing"
+      ]
+    },
+    {
+      "hypothesisId": "VH-AUDIT-01",
+      "capabilityId": "audit-completeness-probe",
+      "status": "PROTOCOL_READY",
+      "claimAllowed": false,
+      "reasons": [
+        "human_measurement_not_completed",
+        "participant_minimum_not_met",
+        "run_minimum_not_met",
+        "observed_value_missing"
+      ]
+    },
+    {
+      "hypothesisId": "VH-RECOVERY-01",
+      "capabilityId": "incident-to-recertification",
+      "status": "PROTOCOL_READY",
+      "claimAllowed": false,
+      "reasons": [
+        "human_measurement_not_completed",
+        "participant_minimum_not_met",
+        "run_minimum_not_met",
+        "observed_value_missing"
+      ]
+    },
+    {
+      "hypothesisId": "VH-AUTOMATION-01",
+      "capabilityId": "governed-automation-value-delivery",
+      "status": "PROTOCOL_READY",
+      "claimAllowed": false,
+      "reasons": [
+        "human_measurement_not_completed",
+        "participant_minimum_not_met",
+        "run_minimum_not_met",
+        "observed_value_missing"
+      ]
+    }
+  ],
+  "forbiddenClaims": [
+    "value_claim_forbidden:VH-ASSIST-01",
+    "value_claim_forbidden:VH-AUDIT-01",
+    "value_claim_forbidden:VH-AUTOMATION-01",
+    "value_claim_forbidden:VH-CHANGE-01",
+    "value_claim_forbidden:VH-RECOVERY-01"
+  ],
+  "reportDigest": "3d6aa865921f3783133c583c6a7fe9e3b4d265c328857f579dd13453afcf5419",
+  "claimPolicy": "No human or commercial value claim is permitted until MEASURED_HUMAN evidence meets the predefined sample and target.",
+  "limitations": [
+    "READY_FOR_PILOT is not evidence of human or commercial value."
+  ]
+}

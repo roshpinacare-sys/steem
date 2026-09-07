@@ -1,0 +1,138 @@
+{
+  "version": "33.20",
+  "evidenceClass": "LOCAL_SUPERVISORD_TWO_DAEMON_SQLITE_WAL_REFERENCE",
+  "observerPublicKey": {
+    "keyId": "v33.20-supervisor-observer",
+    "spkiDerBase64": "MCowBQYDK2VwAyEAYPmsPjfczbuw+X57NaH7lxt/yhmiA5nvZDYNQcL0JQ8=",
+    "fingerprint": "dd0f7d448294e58b0696e90152008522e6aecd6a869eda2c5e4fb7e14cb0f0e5",
+    "revoked": false
+  },
+  "events": [
+    {
+      "payload": {
+        "version": "33.20",
+        "event": "SERVICES_STARTED",
+        "details": {
+          "status": "authority_0                      RUNNING   pid 43830, uptime 0:00:02\nauthority_1                      STARTING  \n",
+          "endpoints": [
+            "https://127.0.0.1:44947",
+            "https://127.0.0.1:42873"
+          ]
+        },
+        "observedAt": "2026-07-21T18:47:14.167Z",
+        "serviceManager": "SUPERVISORD_LOCAL_REFERENCE",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "1079d74d956c5cac8f479a4c191e533209c72d9625aab313ede20004153baa72"
+      },
+      "issuerKeyId": "v33.20-supervisor-observer",
+      "algorithm": "Ed25519",
+      "signature": "wNh5BAWCvTZ3r3yyYhYt81mIwYQF24Q6Jo4YWK8--6xmHHoTlLUPTTiZ81f25j8pSUqo289i2e8bPxFMLlmwCA"
+    },
+    {
+      "payload": {
+        "version": "33.20",
+        "event": "MULTI_DAEMON_SINGLE_WINNER",
+        "details": {
+          "winner": "controller-a",
+          "loser": "controller-b",
+          "fenceToken": 1,
+          "decisionDigests": [
+            "1dc1f26a1f78c0a7bd245178e488ddf46f6b549848b382708af3d1d6800a33ea",
+            "e02454843f363f1743b06ba69ee0444d4affd11ffbf8070acd687c65afa051d1"
+          ]
+        },
+        "observedAt": "2026-07-21T18:47:14.230Z",
+        "serviceManager": "SUPERVISORD_LOCAL_REFERENCE",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "450c9cda2b4b287c14e41cea6022b3b6fd8cfb53dfd862fa62c173cfa3330217"
+      },
+      "issuerKeyId": "v33.20-supervisor-observer",
+      "algorithm": "Ed25519",
+      "signature": "g3PLmxha3qIVbOU7fNdW5BesEgOhdUyg_4HOhL6iFttN5FsHto7-YnVLV7yIeccBy8Jf_s08LNQskpZhgtpcDg"
+    },
+    {
+      "payload": {
+        "version": "33.20",
+        "event": "SUPERVISORD_RESTART",
+        "details": {
+          "program": "authority_0",
+          "status": "authority_0                      RUNNING   pid 43865, uptime 0:00:02\nauthority_1                      RUNNING   pid 43852, uptime 0:00:03\n"
+        },
+        "observedAt": "2026-07-21T18:47:16.052Z",
+        "serviceManager": "SUPERVISORD_LOCAL_REFERENCE",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "b3245fba8093406046277931d7bf7e0d03bb767fb4e1fec6862b7090f7958d89"
+      },
+      "issuerKeyId": "v33.20-supervisor-observer",
+      "algorithm": "Ed25519",
+      "signature": "qaGZE7AFn7MJT_YV5HJVYt9gL_gxxBA1KIfh-ZEYp24v6cUU8H4jOzrbr1Klos6ebZpSG6V5_PGaclFlF_H5DQ"
+    },
+    {
+      "payload": {
+        "version": "33.20",
+        "event": "DURABLE_TAKEOVER_AFTER_RESTART",
+        "details": {
+          "controllerId": "controller-b",
+          "fenceToken": 2,
+          "decisionDigest": "a7947f7ced3259e31db60aaf966685e7ec64f80258626b980dd00632bf447c30"
+        },
+        "observedAt": "2026-07-21T18:47:16.382Z",
+        "serviceManager": "SUPERVISORD_LOCAL_REFERENCE",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "11a31746820e31f3a21df20c01e8840f79bd28648ac6166095ff57a0439087b7"
+      },
+      "issuerKeyId": "v33.20-supervisor-observer",
+      "algorithm": "Ed25519",
+      "signature": "Tt2o1B4L7SencBfBKANyNJ0qeEOdsM_4-zo9NIbhgIic7DwFyRs9oPDH89XjLXbhghE0UV6YlnKvNfFTIt-7AQ"
+    },
+    {
+      "payload": {
+        "version": "33.20",
+        "event": "ENTERPRISE_IDENTITY_ROTATION",
+        "details": {
+          "oldIdentityId": "enterprise-identity-07e601e2-e1ee-4317-9403-6dcde054d21c",
+          "newIdentityId": "enterprise-identity-0d5d6e02-dc0a-4384-8cfa-ea2997973533",
+          "oldIdentityRejected": true
+        },
+        "observedAt": "2026-07-21T18:47:16.399Z",
+        "serviceManager": "SUPERVISORD_LOCAL_REFERENCE",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "420b119bb26723ac0fa84eac346d4da83d68f15a9a5a708a222f7a500632f78c"
+      },
+      "issuerKeyId": "v33.20-supervisor-observer",
+      "algorithm": "Ed25519",
+      "signature": "yPYnziJIob3nI-mQU5N5uMYCElSo34jq78D7C7qz-KHAGThH2e8aaS1q3jTqMABoVDUoeO6oocdiNWAkjFFCDA"
+    },
+    {
+      "payload": {
+        "version": "33.20",
+        "event": "SERVICES_STOPPED",
+        "details": {
+          "exitCode": 0
+        },
+        "observedAt": "2026-07-21T18:47:16.639Z",
+        "serviceManager": "SUPERVISORD_LOCAL_REFERENCE",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "09d3353e6b2300a2e5aa4a3b2b44debdb9f89f0fd45f525aeb51b40476ac5ce1"
+      },
+      "issuerKeyId": "v33.20-supervisor-observer",
+      "algorithm": "Ed25519",
+      "signature": "-SOg9yDUhWusOcDJEpU2ao8GtGrdxZIP-YQhZQ7FzhzNABju6KHLXq6qeGfCBiuaFA5B9tLghzDy7nFCj_rEAw"
+    }
+  ],
+  "supervisorStdoutDigest": "2527c08b85e0a8bca6328eab66ef18c9df99dc106f981f9042c59185f24b9198",
+  "supervisorStderrDigest": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+  "authoritySnapshotDigest": "ea58ee2801f3112d84fa8bf581187e281a333b67e55b4f614451d60d42c3d9a0",
+  "enterpriseIdentityDigests": [
+    "f526320a81343840be2a39ea109149394472d7f569cbe463f13b90ed1217319d",
+    "e8fcf9f2349ad32232a5258dbfab1e7d82d89d37d97a27522305834c87092817",
+    "030d0758bfcf1a1d85f262af2d8716a7159254ec843364c74582b8bff09884c2"
+  ],
+  "traceDigest": "d86454c23fded246e81257df107b73271b7f81824a2d532ce52682d671e1e2c7"
+}

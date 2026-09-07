@@ -1,0 +1,11 @@
+# v9 Evidence Index
+
+| Task | Requirement | Changed files | Test or gate | Raw evidence | Verification state |
+|---|---|---|---|---|---|
+| DUR-001 | Prove portable leases, checkpoints, idempotent side-effect recovery, encrypted backup, and independent verification | `src/lib/durable/`, `scripts/prove-durable-vertical-slice.ts`, ADR-0020 | `npm run test:durable`, `npm run durable:prove` | `docs/canonical/evidence/durable-vertical-slice.json`, `docs/canonical/evidence/durable-vertical-slice.md` | Portable core verified by deterministic proof; production runner migration pending |
+| LIF-001 | Reject illegal runtime state transitions | `src/lib/canonical/lifecycle.ts`, `src/lib/engine/runner.ts` | `tests/lifecycle.test.ts`, typecheck | Safe test output: 8 lifecycle tests passed | Implemented; independent verification pending |
+| EVAL-001 | Deterministic repository-owned baseline | `src/lib/evaluation/baseline.ts`, `scripts/evaluate-baseline.ts` | `tests/evaluation-baseline.test.ts`, `npm run eval:baseline` | `docs/canonical/evidence/baseline-evaluation.json` | Implemented; independent verification pending |
+| UX-002 | Surface structural evidence and gaps | `src/lib/engine/evidence-summary.ts`, `src/components/runs/evidence-ledger.tsx`, `src/components/runs/run-detail.tsx`, `src/app/globals.css` | `tests/evidence-summary.test.ts`, typecheck | `docs/canonical/21_VERTICAL_SLICE_REPORT.md` | Implemented; browser and independent accessibility verification pending |
+| THR-001 | Map assets, boundaries, attacks, and mitigations | `docs/canonical/security/THREAT_MODEL.md`, `docs/canonical/security/ABUSE_CASES.json` | canonical validation, JSON lint | Threat model and abuse-case registry | Implemented; red-team verification pending |
+| DAT-001 | Define data classes and lifecycle obligations | `docs/canonical/data/DATA_INVENTORY.json`, `docs/canonical/20_DATA_LIFECYCLE_CONTRACT.md` | canonical validation, JSON lint | Data inventory and open requirements | Implemented as contract; runtime lifecycle not complete |
+| Canonical release | Preserve English-only clean handoff | `AGENTS.md`, `HANDOFF_PROMPT.md`, CI and release scripts | language validation, release audit, source lint | Validation report and release hash | Implemented; archive revalidation required at release |

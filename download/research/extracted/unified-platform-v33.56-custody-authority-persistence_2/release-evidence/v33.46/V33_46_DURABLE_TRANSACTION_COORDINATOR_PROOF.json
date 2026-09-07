@@ -1,0 +1,813 @@
+{
+  "version": "33.46",
+  "generatedAt": "2026-07-23T01:38:53.431Z",
+  "base": {
+    "proofPath": "release-evidence/v33.45/V33_45_MULTI_PACKAGE_UPDATE_TRANSACTION_PROOF.json",
+    "proofSha256": "42abdec6d77aabc921e0aade234d029f462e6616817f7f8db026f54ad421338a",
+    "verdict": {
+      "version": "33.45",
+      "status": "LOCAL_MULTI_PACKAGE_UPDATE_TRANSACTION_PROVEN",
+      "basePlannerVerdictDigest": "46d25dd5178c1e67b0079da0d78ae418274422b884122673d89d9f64bd7d768b",
+      "policyDigest": "7ef5b21fa093f93ac5e6511b73d39bf3bcb9cd0b3a1016d63073de02d516aed2",
+      "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+      "resolutionDigest": "f9acf09b7e340f78d0a0efea7f229af94835c5d85ecee980bd3322a29d4a293f",
+      "rehearsalDigest": "4c400360a913d74176ea2c1e1c3720525997e73de8f0e61d26109ecc23b9b9e0",
+      "approvalCertificateDigest": "f1c59a32d06485750e615b5fda2f980f49f1c543c6dd38c65010c9372be23889",
+      "canaryPlanDigest": "d9eecbf9332aa6c23fcec6e0d937828de31e4466e734d861714549ef0d54b0e7",
+      "promotionDigest": "cf268146542bfb63197d68fd29069adc98a8677a876f9f4a08ab1d845af72fa3",
+      "partialRollbackDecisionDigest": "e66892cd0fd63ef98ecb99cc65926258dbaad0b1090a6d990165065dde55ced4",
+      "fullRollbackDecisionDigest": "7895a640117e6224983e97cbedb17be6233d79ab7582f9e5a6d8dea89aa1868d",
+      "interruptionRecoveryDigest": "7abb9b45884dc1eb0569b9832cd3226264094733b1cbf403ac9c0932db588146",
+      "retentionLedgerDigest": "206048272f9c1457108f20c84f43af4c817feeccebb952865952eaf411a4f6c2",
+      "packageCount": 3,
+      "approvalCount": 3,
+      "canaryStageCount": 3,
+      "canaryMonitorCount": 3,
+      "retainedGenerationCount": 4,
+      "atomicTransactionProven": true,
+      "conflictResolutionProven": true,
+      "stagedCanaryProven": true,
+      "promotionSuccessPathProven": true,
+      "rollbackClassificationProven": true,
+      "interruptionRecoveryProven": true,
+      "updatePromoted": false,
+      "externalPackageArtifactsObserved": false,
+      "externalCanaryTrafficObserved": false,
+      "externalHumanParticipants": 0,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "verifiedAt": "2026-07-23T20:00:14.000Z",
+      "verdictDigest": "54c07a28f89ec217d55b149303c5a3e06f2b12283f8b203da68d1b548e3d5bc0"
+    }
+  },
+  "publicKeys": [
+    {
+      "keyId": "v33.46-policy",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAk+Ypvhf5UoAOqGJmPJOqhvaZb8ozWR3dIZdYLZ+nnAw=",
+      "fingerprint": "47875898b7fe3a4f800966af0913921b1ed0cd24819bedf1c9de66f89b1b1732",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-lease",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAdXx+RHACA5lc79AWWisW9w+Hd/buEYLenNrSRJRa6MM=",
+      "fingerprint": "4aed553e7c5ce34e12dde3685fe1115922ad8f988a16828b4aa50b091ef43586",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-coordinator-a",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA1e2oadsyFVauz2TP/s3R052ij7SXUho9K9Pu5Q36DuE=",
+      "fingerprint": "84be1256f26b5e3539c4e4db7978ef165d617e892e1147e7376a960b4438044f",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-coordinator-b",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAMYw140iHZWmyi01HCZqqSPcHlWogAC03nz7IiyZ5fkc=",
+      "fingerprint": "3c46c07f7d9e587cb89e7de2f368605363e3aa532c74c06e27546c821fd90c32",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-coordinator-c",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAd/DL8UC0dMzLkw+SWGV+g3Lul//8B5m7mgDUVJ2VVAw=",
+      "fingerprint": "3190b704fee38c160af32cc8b4113c64bf711bd3a1f6e2dee99a684761f377e3",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-witness-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAkCEFbS5LGchjDOGFPHW0NsKPoDtfjnd9E/iTZxuOJa8=",
+      "fingerprint": "61b060bfab7edcb8c8f6b2706a23be5bbe372f969993963f853fca340d51b137",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-witness-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAXMyyF6Z9AE7fyb0km7MsNqVypNPtMLCzAzfakPA760g=",
+      "fingerprint": "2022611273d2754a296a4c702d190eb4ea499f02107a831d597f79e12ff1a98d",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-witness-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAy6xyXE30/dj76kwIGfkq6n0GTndvOmw3/vMJJXfwIYk=",
+      "fingerprint": "000a194e27299c777acb46c649a07c97be528a53596ea73eac92c3a45fe61d9a",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-takeover-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA4j/Zen0mU0hbGiJKFwo+hUqDuyLC5DeXA+6TwY3HPR0=",
+      "fingerprint": "43d8dcf39a2884b1532d8594eaf8b1a721fe2dd5344b93d0f8d47e930d15ad8a",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-storage",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAOfcEopBZPQcgkEfZpEaLgMR8B8kKw/HPWKNNQYnZzRo=",
+      "fingerprint": "dbd9cfdf7267522fe39533001a50b23b2da912052ad92255197d0814e1f9a39b",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-replay",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAockb7sLZXip5PdBK3vwBDp5cpwkQGIUJOVqkSyRrEjc=",
+      "fingerprint": "09e6ecaa7e5aef28ac446c32ffac7d4616f77d4a7417c352413b327d6c64be7f",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-compensation",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAiZCoLswooM77sf6OcQ29uveUXqTlHHo95fYPH68KLE4=",
+      "fingerprint": "73dfd7f9eb2e85f5374fafad335bdb8c894e39c207f8f9651004d8fb208a773a",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.46-recovery",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAqRNP/0eu9thfooJ0QWfq6b9GFug62nP6saJbepa4lDw=",
+      "fingerprint": "6ead979a56effc8610a27e75f0b647e11a5da5eefd8caead57f95cf2d16747c1",
+      "revoked": false
+    }
+  ],
+  "trustedIds": {
+    "policy": [
+      "v33.46-policy"
+    ],
+    "lease": [
+      "v33.46-lease"
+    ],
+    "coordinators": [
+      "v33.46-coordinator-a",
+      "v33.46-coordinator-b",
+      "v33.46-coordinator-c"
+    ],
+    "witnesses": [
+      "v33.46-witness-1",
+      "v33.46-witness-2",
+      "v33.46-witness-3"
+    ],
+    "takeover": [
+      "v33.46-takeover-authority"
+    ],
+    "storage": [
+      "v33.46-storage"
+    ],
+    "replay": [
+      "v33.46-replay"
+    ],
+    "compensation": [
+      "v33.46-compensation"
+    ],
+    "recovery": [
+      "v33.46-recovery"
+    ]
+  },
+  "policy": {
+    "payload": {
+      "version": "33.46",
+      "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+      "takeoverWitnessQuorum": 3,
+      "expirySafetyDelayMs": 1000,
+      "commandTimeoutMs": 5000,
+      "minimumDurableReplicas": 1,
+      "requireFileFsync": true,
+      "requireDirectoryFsync": true,
+      "generatedAt": "2026-07-24T00:00:00.000Z",
+      "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087"
+    },
+    "issuerKeyId": "v33.46-policy",
+    "algorithm": "Ed25519",
+    "signature": "vEH4ONfehIwOOWhJEleHH6_Cmu7peBdW8tMsq7ZmcI1fKD1U-AlOo_4KVfUETBzeKtadrDHAyOlm2UwhOGlXDg"
+  },
+  "initialLease": {
+    "payload": {
+      "version": "33.46",
+      "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+      "coordinator": {
+        "keyId": "v33.46-coordinator-a",
+        "organization": "Local Coordinator Org 1",
+        "host": "coord-1.local.fixture"
+      },
+      "term": 1,
+      "sequenceStart": 1,
+      "sequenceEnd": 20,
+      "issuedAt": "2026-07-24T00:00:01.000Z",
+      "expiresAt": "2026-07-24T00:00:10.000Z",
+      "leaseDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0"
+    },
+    "issuerKeyId": "v33.46-lease",
+    "algorithm": "Ed25519",
+    "signature": "AGfGNAuHBC4NJKkavJMH1ptxEM5zDGqTiG3ll2WI7-hcKuIwX-42iWoTpCCCFUhAbu4LQPv_BTwKPMqDXN6RDA"
+  },
+  "journalEntries": [
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 1,
+        "sequence": 1,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-a",
+          "organization": "Local Coordinator Org 1",
+          "host": "coord-1.local.fixture"
+        },
+        "authorityDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+        "stage": "PREPARED",
+        "commandId": "command-1",
+        "idempotencyKey": "idem-1",
+        "predecessorEntryDigest": null,
+        "eventTime": "2026-07-24T00:00:02.000Z",
+        "entryDigest": "fbb04f0990a1a6c4d5e39c43afb0c6cd302ea30c06c82c568cbcd213816ba50e"
+      },
+      "issuerKeyId": "v33.46-coordinator-a",
+      "algorithm": "Ed25519",
+      "signature": "xIZMOFy1V1hbawxqUuDUMO7Q94O4EQk74z-k0vhHwPMl2pH9QuVrvILZf2tK3NVeD_8EF_s8YZbXkhsONRQgDQ"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 1,
+        "sequence": 2,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-a",
+          "organization": "Local Coordinator Org 1",
+          "host": "coord-1.local.fixture"
+        },
+        "authorityDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+        "stage": "CANARY_STAGE_1_COMPLETED",
+        "commandId": "command-2",
+        "idempotencyKey": "idem-2",
+        "predecessorEntryDigest": "fbb04f0990a1a6c4d5e39c43afb0c6cd302ea30c06c82c568cbcd213816ba50e",
+        "eventTime": "2026-07-24T00:00:03.000Z",
+        "entryDigest": "e89550451d09ff529d226bb9ef239dddb2fa29b46f3abc0d9399eabc85dba9e8"
+      },
+      "issuerKeyId": "v33.46-coordinator-a",
+      "algorithm": "Ed25519",
+      "signature": "wvqGICYMceGqZxuF7buX9o6isf41swcC3XhKn_BRG3bzgq8TYMGJaq4vaE3AjSSOalstim6s8bkMA_ZVkBwUBw"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 1,
+        "sequence": 3,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-a",
+          "organization": "Local Coordinator Org 1",
+          "host": "coord-1.local.fixture"
+        },
+        "authorityDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+        "stage": "CANARY_STAGE_2_STARTED",
+        "commandId": "command-3",
+        "idempotencyKey": "idem-3",
+        "predecessorEntryDigest": "e89550451d09ff529d226bb9ef239dddb2fa29b46f3abc0d9399eabc85dba9e8",
+        "eventTime": "2026-07-24T00:00:04.000Z",
+        "entryDigest": "0baf91a2c85fd90aaeb183c4f192240ec5dda8efb3b181822747b45edffdd1eb"
+      },
+      "issuerKeyId": "v33.46-coordinator-a",
+      "algorithm": "Ed25519",
+      "signature": "pEIiiD-CQlwbhBuCvavSy4pCp83g0F4-QbLINYW6S_jnHBeI-GYr1DeKAOpnRNMj4fuA5RwYMlp4lkUNloAhBg"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 2,
+        "sequence": 4,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "authorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "stage": "CANARY_STAGE_2_RESUMED",
+        "commandId": "command-4",
+        "idempotencyKey": "idem-4",
+        "predecessorEntryDigest": "0baf91a2c85fd90aaeb183c4f192240ec5dda8efb3b181822747b45edffdd1eb",
+        "eventTime": "2026-07-24T00:00:05.000Z",
+        "entryDigest": "3d8b5d8e44c45e4074dd240265b99f156520aad0be2ac4015e76ecff16fc4b3e"
+      },
+      "issuerKeyId": "v33.46-coordinator-b",
+      "algorithm": "Ed25519",
+      "signature": "tAKSbwd2NhhI9hSwABNAFyHa04HWxwfJ8_5Bb6gyh53W9Q1oPqqRMCdrrXN-veUp-9dugQ2w4DlXc5roh_zcDw"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 2,
+        "sequence": 5,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "authorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "stage": "CANARY_STAGE_2_COMPLETED",
+        "commandId": "command-5",
+        "idempotencyKey": "idem-5",
+        "predecessorEntryDigest": "3d8b5d8e44c45e4074dd240265b99f156520aad0be2ac4015e76ecff16fc4b3e",
+        "eventTime": "2026-07-24T00:00:06.000Z",
+        "entryDigest": "dd7dcdc53a42af953a8513e8f953618910f2fb411f4c2431cc8cc53e14b86670"
+      },
+      "issuerKeyId": "v33.46-coordinator-b",
+      "algorithm": "Ed25519",
+      "signature": "YjohmElEL76RWL8UXa5CKjTA_Bqsg1jiCiTQHcnik4p0IdvZyFwoIFkKQxCaRS_lmjSMx50ukmJduU1xjtt8CQ"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 2,
+        "sequence": 6,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "authorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "stage": "CANARY_STAGE_3_COMPLETED",
+        "commandId": "command-6",
+        "idempotencyKey": "idem-6",
+        "predecessorEntryDigest": "dd7dcdc53a42af953a8513e8f953618910f2fb411f4c2431cc8cc53e14b86670",
+        "eventTime": "2026-07-24T00:00:07.000Z",
+        "entryDigest": "318ddfb58367f264560c726d76e770a3d03060590ded66242e4bd98571d59eeb"
+      },
+      "issuerKeyId": "v33.46-coordinator-b",
+      "algorithm": "Ed25519",
+      "signature": "k2DB1MXRgsDdK8Pzv0M0h-D5SL1OHXvH0sB1y-f3EYtjEmYmV2p9GdK-uZsj5Wnky9R8bBQBwm9JKjFgRLEVBQ"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 2,
+        "sequence": 7,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "authorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "stage": "PROMOTION_PREPARED",
+        "commandId": "command-7",
+        "idempotencyKey": "idem-7",
+        "predecessorEntryDigest": "318ddfb58367f264560c726d76e770a3d03060590ded66242e4bd98571d59eeb",
+        "eventTime": "2026-07-24T00:00:08.000Z",
+        "entryDigest": "c3c7be823eca8bc47f74525859ba7d46837f189df5c5ecceced838b31ac06f2f"
+      },
+      "issuerKeyId": "v33.46-coordinator-b",
+      "algorithm": "Ed25519",
+      "signature": "DPpPe4i3ahzI6ex0hg9kawm6KTR8cKNyzmtDeWZY7LT3xfYsNb7p2qJ3T_AKwpAVVkmPwJeB3S_DKR17lvYFCg"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 3,
+        "sequence": 8,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-c",
+          "organization": "Local Coordinator Org 3",
+          "host": "coord-3.local.fixture"
+        },
+        "authorityDigest": "1c09d8f771b798cd005bf99693ac67c1f18338363357f69cf03979b1768f7367",
+        "stage": "PROMOTION_RESUMED",
+        "commandId": "command-8",
+        "idempotencyKey": "idem-8",
+        "predecessorEntryDigest": "c3c7be823eca8bc47f74525859ba7d46837f189df5c5ecceced838b31ac06f2f",
+        "eventTime": "2026-07-24T00:00:09.000Z",
+        "entryDigest": "4a7a34dd119c8d5137c9e23f7bcb4e0fb0dea7524262a46db5335ebac04ce4e4"
+      },
+      "issuerKeyId": "v33.46-coordinator-c",
+      "algorithm": "Ed25519",
+      "signature": "TyVfNibPrEOgqxieFaDgo1FZJRXtA1amXMApu-fx86kEIzxGTRaDOTEUUHI4XhUlXTFC6P6HBa_S9xvrzj3aDg"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+        "term": 3,
+        "sequence": 9,
+        "coordinator": {
+          "keyId": "v33.46-coordinator-c",
+          "organization": "Local Coordinator Org 3",
+          "host": "coord-3.local.fixture"
+        },
+        "authorityDigest": "1c09d8f771b798cd005bf99693ac67c1f18338363357f69cf03979b1768f7367",
+        "stage": "PROMOTION_COMMITTED",
+        "commandId": "command-9",
+        "idempotencyKey": "idem-9",
+        "predecessorEntryDigest": "4a7a34dd119c8d5137c9e23f7bcb4e0fb0dea7524262a46db5335ebac04ce4e4",
+        "eventTime": "2026-07-24T00:00:10.000Z",
+        "entryDigest": "f1e96900bfa8065fe34177a58aba53d5c5e48c26aa1706f2881ef9232e88eb86"
+      },
+      "issuerKeyId": "v33.46-coordinator-c",
+      "algorithm": "Ed25519",
+      "signature": "h7C1LglffPsHTkiFovOd7pdt2G1YewDyrHa47r7rUK40_yTyQrfkO4ajZvl6t1cZQFt34p9_bXS3cmwMm0L4Cg"
+    }
+  ],
+  "takeoverVotes": [
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+        "predecessorTerm": 1,
+        "successorTerm": 2,
+        "successor": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "fenceSequence": 4,
+        "observedExpiredAt": "2026-07-24T00:00:11.000Z",
+        "witnessOrganization": "Witness Org 1",
+        "witnessHost": "witness-1.local.fixture",
+        "voteDigest": "c28d8c494b66b0e8d353e9c7c2f630992ee9d1fa332adcfaa18c29b8e459fa9f"
+      },
+      "issuerKeyId": "v33.46-witness-1",
+      "algorithm": "Ed25519",
+      "signature": "JJwpGI0tvq8zuAfzGY7ZAVTrmqNoE_lRv0A1vLaHfpm9rNpkQquuHZ2D1cjtw9_yUhkPGZWoPitobn60aZucBw"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+        "predecessorTerm": 1,
+        "successorTerm": 2,
+        "successor": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "fenceSequence": 4,
+        "observedExpiredAt": "2026-07-24T00:00:11.001Z",
+        "witnessOrganization": "Witness Org 2",
+        "witnessHost": "witness-2.local.fixture",
+        "voteDigest": "21732ffaf06cbd0a903e4f6089c111b21377ea7b198cdea0d6447f05cb2465e1"
+      },
+      "issuerKeyId": "v33.46-witness-2",
+      "algorithm": "Ed25519",
+      "signature": "o4FTk35TOEhnYeYLzyDXA7gDb8HRcSHIcfy6ZgbQjedCILRnoYM-ssfeYFC8LUDlDJseTw39isoZXz3LVl6gAQ"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+        "predecessorTerm": 1,
+        "successorTerm": 2,
+        "successor": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "fenceSequence": 4,
+        "observedExpiredAt": "2026-07-24T00:00:11.002Z",
+        "witnessOrganization": "Witness Org 3",
+        "witnessHost": "witness-3.local.fixture",
+        "voteDigest": "260138d608d1f8e63532229046143b59dad25e07500e5d7386470fc62d1c7e08"
+      },
+      "issuerKeyId": "v33.46-witness-3",
+      "algorithm": "Ed25519",
+      "signature": "I-YplhZWCDBnZhW-AwSl0-0mb83xke5jprHgiuwEnJ121GnOUaYhDApkKncfmkw_IObgL_iznCpCLWZYsbJXAw"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "predecessorTerm": 2,
+        "successorTerm": 3,
+        "successor": {
+          "keyId": "v33.46-coordinator-c",
+          "organization": "Local Coordinator Org 3",
+          "host": "coord-3.local.fixture"
+        },
+        "fenceSequence": 8,
+        "observedExpiredAt": "2026-07-24T00:00:13.000Z",
+        "witnessOrganization": "Witness Org 1",
+        "witnessHost": "witness-1.local.fixture",
+        "voteDigest": "a465f9000045a73285877f40b7b195fb9b9acdc3c7a3d1be9fd0903700d84c54"
+      },
+      "issuerKeyId": "v33.46-witness-1",
+      "algorithm": "Ed25519",
+      "signature": "NnlWFZ-sWklctAvbBLDHHOf890MW1oJZ1BEtDJg6twrVxFdqVPtr9L_ck_dZ36c5kZhyzjTAq4kkmrfRNJpcCw"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "predecessorTerm": 2,
+        "successorTerm": 3,
+        "successor": {
+          "keyId": "v33.46-coordinator-c",
+          "organization": "Local Coordinator Org 3",
+          "host": "coord-3.local.fixture"
+        },
+        "fenceSequence": 8,
+        "observedExpiredAt": "2026-07-24T00:00:13.001Z",
+        "witnessOrganization": "Witness Org 2",
+        "witnessHost": "witness-2.local.fixture",
+        "voteDigest": "ee9d0d35ffc3c324c304632739c25591e947c87bf58c00c507fe43b200fe6747"
+      },
+      "issuerKeyId": "v33.46-witness-2",
+      "algorithm": "Ed25519",
+      "signature": "7nd8UMmXtsU8Sen0VAUR-idPpI-vmleNBvonVQDqIQ8Z6nn8WWSS8So_b3miMYAJgt8EvkvfWlib8N0WE4znAw"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "predecessorTerm": 2,
+        "successorTerm": 3,
+        "successor": {
+          "keyId": "v33.46-coordinator-c",
+          "organization": "Local Coordinator Org 3",
+          "host": "coord-3.local.fixture"
+        },
+        "fenceSequence": 8,
+        "observedExpiredAt": "2026-07-24T00:00:13.002Z",
+        "witnessOrganization": "Witness Org 3",
+        "witnessHost": "witness-3.local.fixture",
+        "voteDigest": "5cdfb0a9f2f89a446c2b7d80e69924a59e699bcf0e702d14e2d604d71a653033"
+      },
+      "issuerKeyId": "v33.46-witness-3",
+      "algorithm": "Ed25519",
+      "signature": "EsKCcS1PG6SNfjiACUZYLvgBt984Z7rnUZTUJEZdk-vQlrQpheCZpzoygN4yC0snbUzZMdDEFkYI1NleDNYvAQ"
+    }
+  ],
+  "takeovers": [
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+        "predecessorTerm": 1,
+        "successorTerm": 2,
+        "successor": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "fenceSequence": 4,
+        "voteDigests": [
+          "21732ffaf06cbd0a903e4f6089c111b21377ea7b198cdea0d6447f05cb2465e1",
+          "260138d608d1f8e63532229046143b59dad25e07500e5d7386470fc62d1c7e08",
+          "c28d8c494b66b0e8d353e9c7c2f630992ee9d1fa332adcfaa18c29b8e459fa9f"
+        ],
+        "effectiveAt": "2026-07-24T00:00:12.000Z",
+        "takeoverDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99"
+      },
+      "issuerKeyId": "v33.46-takeover-authority",
+      "algorithm": "Ed25519",
+      "signature": "6IMTMS5iSEI2OM8QAvKu8caaHq4jLd_RsCaVJskMr6RlkG7Cg7nJmGVRgxq6P3saaLzrLecn7qJpYSqZZ5W2AA"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "predecessorAuthorityDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "predecessorTerm": 2,
+        "successorTerm": 3,
+        "successor": {
+          "keyId": "v33.46-coordinator-c",
+          "organization": "Local Coordinator Org 3",
+          "host": "coord-3.local.fixture"
+        },
+        "fenceSequence": 8,
+        "voteDigests": [
+          "5cdfb0a9f2f89a446c2b7d80e69924a59e699bcf0e702d14e2d604d71a653033",
+          "a465f9000045a73285877f40b7b195fb9b9acdc3c7a3d1be9fd0903700d84c54",
+          "ee9d0d35ffc3c324c304632739c25591e947c87bf58c00c507fe43b200fe6747"
+        ],
+        "effectiveAt": "2026-07-24T00:00:14.000Z",
+        "takeoverDigest": "1c09d8f771b798cd005bf99693ac67c1f18338363357f69cf03979b1768f7367"
+      },
+      "issuerKeyId": "v33.46-takeover-authority",
+      "algorithm": "Ed25519",
+      "signature": "ZYaqEkJbTEBUSml0md8bSWyoMivdQjYQjDLkG9hR6ErAZoHYWjIC33HHX19glmTQXC-7IPQZVhgauvVUPu-9CQ"
+    }
+  ],
+  "durabilityReceipt": {
+    "payload": {
+      "version": "33.46",
+      "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+      "entryDigests": [
+        "fbb04f0990a1a6c4d5e39c43afb0c6cd302ea30c06c82c568cbcd213816ba50e",
+        "e89550451d09ff529d226bb9ef239dddb2fa29b46f3abc0d9399eabc85dba9e8",
+        "0baf91a2c85fd90aaeb183c4f192240ec5dda8efb3b181822747b45edffdd1eb",
+        "3d8b5d8e44c45e4074dd240265b99f156520aad0be2ac4015e76ecff16fc4b3e",
+        "dd7dcdc53a42af953a8513e8f953618910f2fb411f4c2431cc8cc53e14b86670",
+        "318ddfb58367f264560c726d76e770a3d03060590ded66242e4bd98571d59eeb",
+        "c3c7be823eca8bc47f74525859ba7d46837f189df5c5ecceced838b31ac06f2f",
+        "4a7a34dd119c8d5137c9e23f7bcb4e0fb0dea7524262a46db5335ebac04ce4e4",
+        "f1e96900bfa8065fe34177a58aba53d5c5e48c26aa1706f2881ef9232e88eb86"
+      ],
+      "journalHeadDigest": "f1e96900bfa8065fe34177a58aba53d5c5e48c26aa1706f2881ef9232e88eb86",
+      "byteLength": 6344,
+      "fileFsync": true,
+      "directoryFsync": true,
+      "replicaCount": 1,
+      "storedAt": "2026-07-24T00:00:20.000Z",
+      "receiptDigest": "bc645ccf68cf8efe71846184d8cd9ac6ddbac2d248d48a0e932358c24cde1bf7"
+    },
+    "issuerKeyId": "v33.46-storage",
+    "algorithm": "Ed25519",
+    "signature": "R77tOc0xidhVNLK8U3S-wlVbOgpFuO_PI4JAXjimb3NDNYt9n8OmXVBxa33mUjrGt4LswIYBTz0yjJec-TcqDA"
+  },
+  "replayReceipts": [
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "idempotencyKey": "idem-4",
+        "originalEntryDigest": "3d8b5d8e44c45e4074dd240265b99f156520aad0be2ac4015e76ecff16fc4b3e",
+        "originalSequence": 4,
+        "duplicateCommandDigest": "d39d8908959117059216252ca9c69ca8d3e36c08f79627e44149939d93132f20",
+        "noNewJournalEntry": true,
+        "observedAt": "2026-07-24T00:00:21.000Z",
+        "receiptDigest": "4cd8d83e06e234f293c04747afa966965f0987571e4c33fc5db2d5e336d44ed3"
+      },
+      "issuerKeyId": "v33.46-replay",
+      "algorithm": "Ed25519",
+      "signature": "wbKb5K8ZKaFUvlWNCW6wiH4QkZ_vEEBmLWxNu22KHuYLaQXIRpEFfuuGYPnonpr8bWQSHgFBuuErcv3Jj1JjAQ"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "idempotencyKey": "idem-8",
+        "originalEntryDigest": "4a7a34dd119c8d5137c9e23f7bcb4e0fb0dea7524262a46db5335ebac04ce4e4",
+        "originalSequence": 8,
+        "duplicateCommandDigest": "2d3e7e459a3cc60fb657fd88a0ebc7bfe7d49f68bbff55cd36bd77af7e47bf7b",
+        "noNewJournalEntry": true,
+        "observedAt": "2026-07-24T00:00:21.001Z",
+        "receiptDigest": "ca7cd54e5ee42afa781ee6a6e8538359a4cd57e8107865ccb033df6f5e67f8ae"
+      },
+      "issuerKeyId": "v33.46-replay",
+      "algorithm": "Ed25519",
+      "signature": "vzP8kR-HuB1jci9d2qDW35hvwbnFHFUoU8iEYreKSxsg3bby_TEAZ7tVa-XCl-uNMzmWtvHefSeJNMhf1f3RAw"
+    }
+  ],
+  "timeoutCompensation": {
+    "payload": {
+      "version": "33.46",
+      "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+      "timedOutEntryDigest": "0baf91a2c85fd90aaeb183c4f192240ec5dda8efb3b181822747b45edffdd1eb",
+      "timeoutAt": "2026-07-24T00:00:15.000Z",
+      "decision": "FULL_ROLLBACK_TO_BASE",
+      "targetManifestDigest": "46d25dd5178c1e67b0079da0d78ae418274422b884122673d89d9f64bd7d768b",
+      "productionEffectsExecuted": 0,
+      "decidedAt": "2026-07-24T00:00:15.100Z",
+      "compensationDigest": "bb3794357bd365b30f850db5f9d2f4ab81f4df2c116e27ada32d41488a39d0aa"
+    },
+    "issuerKeyId": "v33.46-compensation",
+    "algorithm": "Ed25519",
+    "signature": "6UGjSflAUL-xfkd8X-ODJbpot8Munni1Kmh5wcKu-N4VcqpoWwoR5mMaFiOw6bX_lCnl_YPdDJahJGLKXBylCQ"
+  },
+  "recoveryReceipts": [
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "takeoverDigest": "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+        "predecessorJournalHeadDigest": "0baf91a2c85fd90aaeb183c4f192240ec5dda8efb3b181822747b45edffdd1eb",
+        "resumedSequence": 4,
+        "resumedStage": "CANARY_STAGE_2_RESUMED",
+        "recoveringCoordinator": {
+          "keyId": "v33.46-coordinator-b",
+          "organization": "Local Coordinator Org 2",
+          "host": "coord-2.local.fixture"
+        },
+        "noGap": true,
+        "noFork": true,
+        "recoveredAt": "2026-07-24T00:00:12.100Z",
+        "recoveryDigest": "6d0ceffe08059f35456333c02451be596e57f4acb1fd6b3c843c68f2014ccf31"
+      },
+      "issuerKeyId": "v33.46-recovery",
+      "algorithm": "Ed25519",
+      "signature": "4JFY74SEyDwBVSXN-Slh-OYuDW8R1asi8VUzJudWSzVFXvWFV8wTf0WvGPAFZjPMy0G9eralGzbmtBM0hdqxAQ"
+    },
+    {
+      "payload": {
+        "version": "33.46",
+        "transactionPlanDigest": "25ed4af7035d51b7f4dfbbe7bd9f8e9038f0a56f4e306aae858ef1932052d5fd",
+        "takeoverDigest": "1c09d8f771b798cd005bf99693ac67c1f18338363357f69cf03979b1768f7367",
+        "predecessorJournalHeadDigest": "c3c7be823eca8bc47f74525859ba7d46837f189df5c5ecceced838b31ac06f2f",
+        "resumedSequence": 8,
+        "resumedStage": "PROMOTION_RESUMED",
+        "recoveringCoordinator": {
+          "keyId": "v33.46-coordinator-c",
+          "organization": "Local Coordinator Org 3",
+          "host": "coord-3.local.fixture"
+        },
+        "noGap": true,
+        "noFork": true,
+        "recoveredAt": "2026-07-24T00:00:14.100Z",
+        "recoveryDigest": "4722b08269c82b22233bb3eb28e53f4193f58b26910f80d81739411a3d5658f3"
+      },
+      "issuerKeyId": "v33.46-recovery",
+      "algorithm": "Ed25519",
+      "signature": "kx5zGVxpELXWJ_d7jAIPSDa-OJhV_jIziyFf3jN6Cgh3Bn2v1aikN1UjTWe20VBR2G9ictB4rAxsIp6HJ1OoCw"
+    }
+  ],
+  "executionEvidence": {
+    "coordinatorProcesses": [
+      {
+        "term": 1,
+        "pid": 34676,
+        "sequenceStart": 1,
+        "sequenceEnd": 3
+      },
+      {
+        "term": 2,
+        "pid": 34687,
+        "sequenceStart": 4,
+        "sequenceEnd": 7
+      },
+      {
+        "term": 3,
+        "pid": 34698,
+        "sequenceStart": 8,
+        "sequenceEnd": 9
+      }
+    ],
+    "distinctProcessCount": 3,
+    "journal": {
+      "byteLength": 6344,
+      "sha256": "c9692a0dbe15a7ae9a0216750379fb66e1b5359056531f2c9dc8febfacfbd0a6",
+      "rereadSha256": "c9692a0dbe15a7ae9a0216750379fb66e1b5359056531f2c9dc8febfacfbd0a6",
+      "fileFsync": true,
+      "directoryFsync": true
+    }
+  },
+  "attacks": {
+    "oldCoordinatorResurrectionBlocked": true,
+    "journalGapBlocked": true,
+    "earlyTakeoverBlocked": true,
+    "replayMutationBlocked": true,
+    "storageTruncationBlocked": true,
+    "recoveryForkBlocked": true,
+    "productionAuthorityBlocked": true
+  },
+  "finalVerdict": {
+    "version": "33.46",
+    "status": "LOCAL_DURABLE_TRANSACTION_COORDINATOR_FAILOVER_PROVEN",
+    "baseTransactionVerdictDigest": "54c07a28f89ec217d55b149303c5a3e06f2b12283f8b203da68d1b548e3d5bc0",
+    "policyDigest": "1fcd80c1416268a9ad6467572e8af7cf766531c2004158221feddf5a201a4087",
+    "initialLeaseDigest": "bb908e7a7ce6f3e36fab444a9a2a02eed5bf023af56abf5288594a8a17bec4f0",
+    "takeoverDigests": [
+      "7c75db4c7ef3c66d5e99a1d7f3a31c603d378f7afe694a12a58a648a994d5e99",
+      "1c09d8f771b798cd005bf99693ac67c1f18338363357f69cf03979b1768f7367"
+    ],
+    "journalHeadDigest": "f1e96900bfa8065fe34177a58aba53d5c5e48c26aa1706f2881ef9232e88eb86",
+    "durabilityReceiptDigest": "bc645ccf68cf8efe71846184d8cd9ac6ddbac2d248d48a0e932358c24cde1bf7",
+    "replayReceiptDigests": [
+      "4cd8d83e06e234f293c04747afa966965f0987571e4c33fc5db2d5e336d44ed3",
+      "ca7cd54e5ee42afa781ee6a6e8538359a4cd57e8107865ccb033df6f5e67f8ae"
+    ],
+    "timeoutCompensationDigest": "bb3794357bd365b30f850db5f9d2f4ab81f4df2c116e27ada32d41488a39d0aa",
+    "recoveryDigests": [
+      "6d0ceffe08059f35456333c02451be596e57f4acb1fd6b3c843c68f2014ccf31",
+      "4722b08269c82b22233bb3eb28e53f4193f58b26910f80d81739411a3d5658f3"
+    ],
+    "journalEntryCount": 9,
+    "coordinatorTermCount": 3,
+    "takeoverCount": 2,
+    "replayReceiptCount": 2,
+    "crashRecoveryCount": 2,
+    "monotonicJournalProven": true,
+    "irreversibleFencingProven": true,
+    "idempotentReplayProven": true,
+    "timeoutCompensationProven": true,
+    "multiProcessFailoverProven": true,
+    "updatePromoted": false,
+    "externalCoordinatorHostsObserved": false,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "verifiedAt": "2026-07-24T00:00:30.000Z",
+    "verdictDigest": "5fac7909c9666972979955b4ffb99b8baf8184dc72abff15b35d1f367ef3065b"
+  },
+  "summary": {
+    "newSignatureCount": 25,
+    "totalChainSignatureCount": 83,
+    "journalEntryCount": 9,
+    "takeoverCount": 2,
+    "replayReceiptCount": 2,
+    "recoveryCount": 2,
+    "distinctCoordinatorProcessCount": 3
+  },
+  "truthBoundary": {
+    "externalCoordinatorHostsObserved": false,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0
+  }
+}

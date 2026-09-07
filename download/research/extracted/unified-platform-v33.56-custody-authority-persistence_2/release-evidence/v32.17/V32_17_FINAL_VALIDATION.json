@@ -1,0 +1,172 @@
+{
+  "version": "32.17",
+  "runId": "v32.17-authoritative-local-r2",
+  "generatedAt": "2026-07-20T23:38:26.208Z",
+  "status": "passed",
+  "classification": "cncf-sovereign-building-block-convergence-integrated-pilot",
+  "compiledArtifactDigest": "9cec2a36083db3af04bc36ebe3b308229e173b7e56533d10efe1effd07403148",
+  "environment": {
+    "ci": true,
+    "machine": "x86_64",
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "runnerArch": "",
+    "runnerOs": "",
+    "system": "Linux"
+  },
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "packageLockDigest": "d8ad748d299b1eefa17a11852a352d222426e7cb39ada487a3714f9cdc09d7be",
+  "sourceDigest": "a51414ffcda75a4688493b44aa05a8885f8735c5c3d32b89e3729c3c84ca3d5d",
+  "testFilesDigest": "b0892c2e89f54d8e8c5a5d4a074851d3fb821140152510d6938eba6ecfdf780b",
+  "testManifestDigest": "2ffcd6fd07f96559c118013ba0f5785b7d8664308c81a0fee010325735267a98",
+  "assertions": {
+    "ledgerFreshAndCoherent": true,
+    "exactGovernanceLineage": true,
+    "releaseMetadataCurrent": true,
+    "fullRegressionExpanded": true,
+    "mutationsAuthentic": true,
+    "coverageThresholdsPreserved": true,
+    "testQualityPassed": true,
+    "architecturePassed": true,
+    "truthMapPassed": true,
+    "wasmRuntimeObserved": true,
+    "transportTrustObserved": true,
+    "failoverObserved": true,
+    "independentVerifierPassed": true,
+    "cncfConvergencePassed": true,
+    "externalReadinessHonest": true
+  },
+  "ledgerAssurance": {
+    "status": "PASS",
+    "failures": [],
+    "checkedSteps": 21,
+    "checkedArtifacts": 25,
+    "reportDigest": "01d544ef7e64dc2017c1761b83f680bb2986fc4bef2a78e087f8ccc61e22a4c8"
+  },
+  "governanceFindings": [],
+  "results": {
+    "tests": {
+      "total": 1133,
+      "passed": 1133,
+      "failed": 0,
+      "skipped": 0,
+      "testFiles": 180
+    },
+    "mutations": {
+      "localAssurance": 12,
+      "executionLedger": 9,
+      "externalIntegrity": 24,
+      "sovereignEfficiency": 15,
+      "frontierBinary": 19,
+      "frontierTournamentWasm": 17,
+      "runtimeExternalFailover": 11,
+      "cncfSovereignConvergence": 25,
+      "total": 132
+    },
+    "coverage": {
+      "lines": 99.5,
+      "branches": 96.13,
+      "functions": 98.55
+    },
+    "architecture": {
+      "capabilityPaths": 97,
+      "closedPaths": 97,
+      "sourceCycles": 0,
+      "untestedSources": 0
+    },
+    "runtime": {
+      "wasm": {
+        "schemaVersion": "32.16",
+        "runtime": "node-webassembly-worker",
+        "state": "DRY_RUN_PASSED",
+        "productionQualified": false,
+        "moduleDigest": "5129cf62b9632f82d5af444b8b257a244cde303f5642d6245c3af3c9d7e24fd6",
+        "policyDigest": "3cb7c361b4c03a20a0e67e6ec02436dab22e260ab6782f3ab74c29c6fd9999cc",
+        "output": 15,
+        "memoryBytes": 131072,
+        "durationMs": 51,
+        "findings": [],
+        "limitations": [
+          "local-worker-runtime-only",
+          "not-wasi-component-runtime",
+          "no-fuel-or-epoch-interruption",
+          "not-os-sandboxed",
+          "not-independently-security-reviewed"
+        ],
+        "reportDigest": "e4fb1aaee34088a04f807c2b918755a303487eb8c82c074eb8053395e0b17713"
+      },
+      "transport": {
+        "schemaVersion": "32.16",
+        "mode": "LOCAL_DRY_RUN",
+        "state": "DRY_RUN_PASSED",
+        "externallyObserved": false,
+        "findings": [],
+        "invocationDigest": "f035046814d8d51f25274f62078bd793fa475b720d2e6547a09ba059c7e4c29c",
+        "reportDigest": "6c7c5c28bedfe677a2d3e64c643b6d9d2bd31b8b113810377b5eb9255c775ce4"
+      },
+      "failover": {
+        "schemaVersion": "32.16",
+        "state": "DRY_RUN_PASSED",
+        "productionQualified": false,
+        "requestsAttempted": 1000,
+        "requestsCompleted": 1000,
+        "primaryWrites": 500,
+        "secondaryWrites": 500,
+        "recoveredValue": 1000,
+        "rtoMs": 13,
+        "rpoWrites": 0,
+        "childProcessesCleaned": true,
+        "findings": [],
+        "limitations": [
+          "single-machine-process-failover-only",
+          "shared-kernel-and-network-stack",
+          "not-independent-host-evidence"
+        ],
+        "reportDigest": "19c602bd955e5ad8fe1790affe58e11554917d7de773a691eaf6307ab022df27"
+      }
+    }
+  },
+  "readiness": "CNCF Sovereign Building-Block Convergence Integrated Pilot — External Qualification Ready",
+  "productionPromotion": "blocked",
+  "externalQualification": "not_executed",
+  "proofClasses": {
+    "currentExecution": [
+      "clean build",
+      "full regression",
+      "eight mutation portfolios",
+      "coverage",
+      "test quality",
+      "architecture",
+      "repository truth map",
+      "bounded WASM worker execution",
+      "signed independent transport dry run",
+      "two-process HTTP failover",
+      "independent Python report verification",
+      "CNCF component admission",
+      "portable building-block trace equivalence",
+      "topology consolidation and substitution proof"
+    ],
+    "syntheticOnly": [
+      "provider transport fixture",
+      "local signing identities",
+      "Dapr-envelope compatibility adapter",
+      "normalized cost and operational baselines"
+    ],
+    "notExecuted": [
+      "hsm-kms-custody",
+      "external-monotonic-witness",
+      "postgres-ha-pitr",
+      "consented-comparative-human-pilot",
+      "independent-security-isolation-license-review",
+      "multi-host-slo-revocation-recovery"
+    ]
+  },
+  "limitations": [
+    "Actual Dapr SPIRE OPA OpenTelemetry Wasmtime and CloudNativePG runtimes were not executed in this offline environment.",
+    "Local portable adapters do not establish independent-organization runtime equivalence.",
+    "Node Worker WebAssembly execution is not a qualified WASI Component Model runtime.",
+    "Local observer fixtures do not establish provider API transport from an external organization.",
+    "Two processes on one machine do not establish independent-host or provider failover.",
+    "The six external qualification gates were not executed."
+  ]
+}

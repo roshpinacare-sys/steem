@@ -1,0 +1,88 @@
+# =============================================================================
+# Dependabot configuration for SRS — Sovereign Runtime Substrate (D19 fix)
+# =============================================================================
+#
+# Dependabot opens automated pull requests to bump dependencies when:
+#   - a new version is published on PyPI (pip ecosystem), OR
+#   - the base image is updated on Docker Hub (docker ecosystem), OR
+#   - a security advisory (CVE) is disclosed against any pinned package.
+#
+# Security-advisory-driven PRs are ALWAYS opened regardless of the
+# schedule below. The schedule only governs non-security version bumps.
+#
+# See https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# for the full schema.
+# =============================================================================
+
+version: 2
+
+updates:
+  # --- Python dependencies (runtime + dev) --------------------------------
+  # Scans requirements.txt, requirements-dev.txt, and requirements.lock
+  # every Monday at 09:00 UTC. Opens one PR per outdated package with
+  # a release-notes summary.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps(pip)"
+      include: "scope"
+    # Group minor/patch bumps into a single PR to reduce review load;
+    # major bumps still get individual PRs because they may require
+    # code changes.
+    groups:
+      python-minor:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # --- Docker base image --------------------------------------------------
+  # Scans Dockerfile for the python:3.12.4-slim base image and opens a
+  # PR when a new patch or minor version of python:3.12 is published.
+  # Major version bumps (e.g. python:3.13) are NOT auto-opened — they
+  # require manual review because they may break the runtime.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "deps(docker)"
+      include: "scope"
+    ignore:
+      # Ignore major-version bumps of the Python base image (3.12 -> 3.13).
+      # These require manual migration testing.
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major"]
+
+  # --- GitHub Actions (CI workflows) --------------------------------------
+  # Scans .github/workflows/ for outdated action versions (e.g.
+  # actions/checkout@v4). Bumps them weekly.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "deps(ci)"
+      include: "scope"

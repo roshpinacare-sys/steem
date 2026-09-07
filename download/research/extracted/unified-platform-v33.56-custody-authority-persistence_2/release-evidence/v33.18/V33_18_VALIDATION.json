@@ -1,0 +1,54 @@
+{
+  "version": "33.18",
+  "status": "passed",
+  "evidenceClass": "LOCAL_TWO_CONTROLLER_PROCESS_SHARED_AUTHORITY_REFERENCE",
+  "gates": {
+    "G0": "passed",
+    "G1": "passed",
+    "G2": "in-progress-not-passed",
+    "G3": "in-progress-not-passed",
+    "G4": "in-progress-not-passed",
+    "G5": "in-progress-not-passed",
+    "G6": "in-progress-not-passed"
+  },
+  "distributedLease": {
+    "controllerProcessCount": 2,
+    "raceWinnerCount": 1,
+    "takeoverCount": 12,
+    "staleFenceRejectionCount": 12,
+    "partitionFailureObserved": true,
+    "authorityRestartCount": 2,
+    "rollbackRejectedByMonotonicWitness": true,
+    "finalFenceToken": 13,
+    "externalEffectsExecuted": 0,
+    "productionAuthority": "NONE",
+    "productionPromotion": "blocked",
+    "durableOutboxEventCount": 37,
+    "durableOutboxAcknowledgementCount": 37
+  },
+  "regression": {
+    "testFiles": 203,
+    "tests": 1475,
+    "passed": 1475,
+    "failed": 0
+  },
+  "directV33": {
+    "testFiles": 18,
+    "tests": 308,
+    "passed": 308,
+    "failed": 0
+  },
+  "truthMap": {
+    "sourceModules": 205,
+    "testFiles": 203,
+    "findings": 0
+  },
+  "architecture": {
+    "sourceCycleCount": 0,
+    "untestedSourceCount": 0,
+    "capabilityPathCount": 131,
+    "closedCapabilityPathCount": 131
+  },
+  "errors": [],
+  "productionPromotion": "blocked"
+}

@@ -1,0 +1,85 @@
+{
+  "version": "32.0",
+  "status": "passed",
+  "declaredScope": "Node in-process coverage; subprocess, browser, Linux namespace, repository execution, WebAssembly worker and multi-process lanes are executed in correctness validation but excluded from this percentage.",
+  "baselineV31": {
+    "linePercent": 99.48,
+    "branchPercent": 96.25,
+    "functionPercent": 98.67
+  },
+  "requestBaselineV26": {
+    "linePercent": 96.6,
+    "branchPercent": 84.14,
+    "functionPercent": 97.58
+  },
+  "current": {
+    "file": "all files",
+    "linePercent": 99.44,
+    "branchPercent": 96.28,
+    "functionPercent": 98.73
+  },
+  "deltaVsV31": {
+    "linePercent": -0.04,
+    "branchPercent": 0.03,
+    "functionPercent": 0.06
+  },
+  "deltaVsV26RequestBaseline": {
+    "linePercent": 2.84,
+    "branchPercent": 12.14,
+    "functionPercent": 1.15
+  },
+  "sourceModulesMeasured": 108,
+  "lowCoverageSourceModules": [
+    {
+      "file": "trust-violation-worker.js",
+      "linePercent": 100,
+      "branchPercent": 50,
+      "functionPercent": 100
+    },
+    {
+      "file": "campaign-result-worker.js",
+      "linePercent": 100,
+      "branchPercent": 66.67,
+      "functionPercent": 100
+    },
+    {
+      "file": "external-evidence.js",
+      "linePercent": 100,
+      "branchPercent": 78.95,
+      "functionPercent": 100
+    },
+    {
+      "file": "sovereign-file-lease.js",
+      "linePercent": 90.81,
+      "branchPercent": 84.34,
+      "functionPercent": 100
+    },
+    {
+      "file": "capability-trust-policy.js",
+      "linePercent": 97.35,
+      "branchPercent": 90,
+      "functionPercent": 94.12
+    },
+    {
+      "file": "provider-trust.js",
+      "linePercent": 97.55,
+      "branchPercent": 92.44,
+      "functionPercent": 90.91
+    },
+    {
+      "file": "credential-trust-policy.js",
+      "linePercent": 100,
+      "branchPercent": 92.86,
+      "functionPercent": 92.86
+    }
+  ],
+  "thresholds": {
+    "linePercent": 99,
+    "branchPercent": 96,
+    "functionPercent": 98.5
+  },
+  "limitations": [
+    "Coverage is not proof of correctness; mutation, architecture, invariant and integration gates are required.",
+    "All-files percentages include test code because Node test coverage reports loaded JavaScript; source module rows are retained separately for review."
+  ]
+}

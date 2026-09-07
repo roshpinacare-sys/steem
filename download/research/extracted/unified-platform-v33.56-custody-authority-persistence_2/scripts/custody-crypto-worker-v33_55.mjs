@@ -1,0 +1,8 @@
+import { readFileSync, writeFileSync, mkdirSync, openSync, fsyncSync, closeSync, unlinkSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { sha256Bytes } from '../dist/src/contracts/crypto.js';
+import { decryptEvidenceBytesV33_55 } from '../dist/src/supply-chain/external-evidence-custody-transport-v33_55.js';
+const root=resolve('.'),inputPath=process.argv[2];if(!inputPath)throw new Error('input_path_required');const abs=join(root,inputPath);const input=JSON.parse(readFileSync(abs,'utf8'));
+const ciphertext=readFileSync(join(root,input.ciphertextPath));const aad=Buffer.from(input.aadBase64url,'base64url');const shares=input.shares.map(s=>({index:s.index,bytes:Buffer.from(s.bytesBase64url,'base64url'),commitment:s.commitment}));
+const plaintext=decryptEvidenceBytesV33_55({receipt:input.receipt,ciphertext,aad,shares});const out=join(root,input.outputPath);mkdirSync(dirname(out),{recursive:true});writeFileSync(out,plaintext);const fd=openSync(out,'r');fsyncSync(fd);closeSync(fd);const dfd=openSync(dirname(out),'r');fsyncSync(dfd);closeSync(dfd);const result={version:'33.55',mode:input.mode,processId:process.pid,inputPackageDigest:input.receipt.packageDigest,outputPath:input.outputPath,plaintextDigest:sha256Bytes(plaintext),byteLength:plaintext.length,usedShareIndices:shares.map(s=>s.index).sort((a,b)=>a-b),usedShareCommitments:shares.map(s=>s.commitment).sort(),fileFsync:true,directoryFsync:true,readBackVerified:sha256Bytes(readFileSync(out))===sha256Bytes(plaintext),productionAuthority:'NONE',externalEffectsExecuted:0};
+unlinkSync(abs);console.log(JSON.stringify(result));

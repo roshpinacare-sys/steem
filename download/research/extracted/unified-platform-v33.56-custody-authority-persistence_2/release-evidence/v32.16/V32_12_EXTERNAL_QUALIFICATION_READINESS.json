@@ -1,0 +1,74 @@
+{
+  "version": "32.12",
+  "generatedAt": "2026-07-20T22:14:38.711Z",
+  "status": "READY",
+  "externalQualification": "not_executed",
+  "productionPromotion": "blocked",
+  "gatesReady": 6,
+  "gatesTotal": 6,
+  "gates": [
+    {
+      "gateId": "hsm-kms-custody",
+      "readiness": "ready-for-authorized-external-execution",
+      "executionStatus": "not_executed",
+      "productionQualified": false,
+      "manifestPath": "external-qualification/v32.12/hsm-kms-custody/manifest.json",
+      "failures": []
+    },
+    {
+      "gateId": "external-monotonic-witness",
+      "readiness": "ready-for-authorized-external-execution",
+      "executionStatus": "not_executed",
+      "productionQualified": false,
+      "manifestPath": "external-qualification/v32.12/external-monotonic-witness/manifest.json",
+      "failures": []
+    },
+    {
+      "gateId": "postgres-ha-pitr",
+      "readiness": "ready-for-authorized-external-execution",
+      "executionStatus": "not_executed",
+      "productionQualified": false,
+      "manifestPath": "external-qualification/v32.12/postgres-ha-pitr/manifest.json",
+      "failures": []
+    },
+    {
+      "gateId": "consented-comparative-human-pilot",
+      "readiness": "ready-for-authorized-external-execution",
+      "executionStatus": "not_executed",
+      "productionQualified": false,
+      "manifestPath": "external-qualification/v32.12/consented-comparative-human-pilot/manifest.json",
+      "failures": []
+    },
+    {
+      "gateId": "independent-security-isolation-license-review",
+      "readiness": "ready-for-authorized-external-execution",
+      "executionStatus": "not_executed",
+      "productionQualified": false,
+      "manifestPath": "external-qualification/v32.12/independent-security-isolation-license-review/manifest.json",
+      "failures": []
+    },
+    {
+      "gateId": "multi-host-slo-revocation-recovery",
+      "readiness": "ready-for-authorized-external-execution",
+      "executionStatus": "not_executed",
+      "productionQualified": false,
+      "manifestPath": "external-qualification/v32.12/multi-host-slo-revocation-recovery/manifest.json",
+      "failures": []
+    }
+  ],
+  "verifier": "scripts/verify-external-qualification-v32_12.mjs",
+  "schemas": [
+    "schemas/external-qualification-verification-v32_12.schema.json",
+    "schemas/external-qualification-trust-anchor-v32_12.schema.json",
+    "schemas/external-qualification-trust-bundle-v32_12.schema.json",
+    "schemas/external-qualification-replay-state-v32_12.schema.json"
+  ],
+  "trustBoundary": {
+    "trustAnchor": "out-of-band-pinned",
+    "trustBundle": "root-signed",
+    "observations": "verifier-filesystem",
+    "clock": "verifier-system-clock",
+    "replayState": "local-integrity-with-external-rollback-blocker"
+  },
+  "reportDigest": "340cf03e2490619c474221ddb64b0c7b46c0270b61ec38b2ccbfba9b2187cd23"
+}

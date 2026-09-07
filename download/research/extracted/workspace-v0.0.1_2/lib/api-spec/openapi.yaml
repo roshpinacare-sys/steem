@@ -1,0 +1,2876 @@
+openapi: "3.1.0"
+info:
+  title: TFA API
+  version: "0.2.0"
+  description: >
+    TFA — enterprise SaaS backend (TypeScript, Node 24, Express 5, Drizzle+PostgreSQL).
+    ~143 endpoints across auth, workflows, agents, billing, analytics, search, knowledge-graph,
+    incidents, SLO, metering, DLQ.
+
+servers:
+  - url: /api
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      summary: Health check
+      responses:
+        "200":
+          description: Service is healthy
+
+  # ─── AUTH ────────────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      operationId: authRegister
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string, format: email }
+                password: { type: string, minLength: 8 }
+      responses:
+        "201":
+          description: User created
+        "400":
+          description: Validation error
+        "409":
+          description: Email already registered
+
+  /auth/login:
+    post:
+      operationId: authLogin
+      summary: Authenticate and receive tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string }
+                password: { type: string }
+      responses:
+        "200":
+          description: Tokens issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:  { type: string }
+                  refreshToken: { type: string }
+                  expiresIn:    { type: integer }
+        "401":
+          description: Invalid credentials
+        "403":
+          description: MFA required
+
+  /auth/logout:
+    post:
+      operationId: authLogout
+      summary: Revoke the current session
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Session revoked
+        "401":
+          description: Not authenticated
+
+  /auth/refresh:
+    post:
+      operationId: authRefresh
+      summary: Exchange refresh token for a new access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        "200":
+          description: New access token
+        "401":
+          description: Invalid or expired refresh token
+
+  /auth/me:
+    get:
+      operationId: authMe
+      summary: Get current authenticated user profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:       { type: string }
+                  email:    { type: string }
+                  tenantId: { type: string }
+                  roles:    { type: array, items: { type: string } }
+        "401":
+          description: Not authenticated
+
+  /auth/password/change:
+    post:
+      operationId: authPasswordChange
+      summary: Change password (authenticated)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [currentPassword, newPassword]
+              properties:
+                currentPassword: { type: string }
+                newPassword:     { type: string, minLength: 8 }
+      responses:
+        "204":
+          description: Password changed
+        "400":
+          description: Validation error
+        "401":
+          description: Wrong current password
+
+  /auth/password/reset/request:
+    post:
+      operationId: authPasswordResetRequest
+      summary: Request password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        "204":
+          description: Reset email sent (always 204, even if email not found)
+
+  /auth/password/reset/confirm:
+    post:
+      operationId: authPasswordResetConfirm
+      summary: Confirm password reset with token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token:       { type: string }
+                newPassword: { type: string, minLength: 8 }
+      responses:
+        "204":
+          description: Password reset successful
+        "400":
+          description: Invalid or expired token
+
+  # ─── MFA ─────────────────────────────────────────────────────────────────────
+  /auth/mfa/setup:
+    post:
+      operationId: authMfaSetup
+      summary: Initiate TOTP MFA setup — returns secret + QR URI
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: MFA setup initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  secret: { type: string }
+                  qrUri:  { type: string }
+        "401":
+          description: Not authenticated
+
+  /auth/mfa/verify:
+    post:
+      operationId: authMfaVerify
+      summary: Verify TOTP code to activate MFA
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string, minLength: 6, maxLength: 6 }
+      responses:
+        "204":
+          description: MFA activated
+        "400":
+          description: Invalid TOTP code
+        "401":
+          description: Not authenticated
+
+  /auth/mfa/disable:
+    post:
+      operationId: authMfaDisable
+      summary: Disable MFA for the current user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string }
+      responses:
+        "204":
+          description: MFA disabled
+        "401":
+          description: Wrong code or not authenticated
+
+  /auth/mfa/challenge:
+    post:
+      operationId: authMfaChallenge
+      summary: Submit TOTP code during login (step-up)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [challengeToken, code]
+              properties:
+                challengeToken: { type: string }
+                code:           { type: string }
+      responses:
+        "200":
+          description: Full tokens issued after MFA
+        "401":
+          description: Invalid code or expired challenge
+
+  # ─── API KEYS ─────────────────────────────────────────────────────────────────
+  /auth/api-keys:
+    get:
+      operationId: authApiKeysList
+      summary: List API keys for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: API key list
+    post:
+      operationId: authApiKeysCreate
+      summary: Create a new API key
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:      { type: string }
+                expiresAt: { type: string, format: date-time }
+                scopes:    { type: array, items: { type: string } }
+      responses:
+        "201":
+          description: API key created (secret shown once)
+
+  /auth/api-keys/{keyId}:
+    delete:
+      operationId: authApiKeysRevoke
+      summary: Revoke an API key
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: keyId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Key revoked
+        "404":
+          description: Key not found
+
+  # ─── SESSIONS ────────────────────────────────────────────────────────────────
+  /auth/sessions:
+    get:
+      operationId: authSessionsList
+      summary: List active sessions for the current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Session list
+
+  /auth/sessions/{sessionId}:
+    delete:
+      operationId: authSessionsRevoke
+      summary: Revoke a specific session
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Session revoked
+        "404":
+          description: Session not found
+
+  # ─── BILLING ─────────────────────────────────────────────────────────────────
+  /billing/plans:
+    get:
+      operationId: billingPlansList
+      summary: List available billing plans
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:          { type: string }
+                    name:        { type: string }
+                    priceMicro:  { type: string, description: "BigInt μ¢ as string" }
+                    interval:    { type: string, enum: [month, year] }
+
+  /billing/plans/{planId}:
+    get:
+      operationId: billingPlansGet
+      summary: Get a specific billing plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Plan details
+        "404":
+          description: Plan not found
+
+  /billing/subscriptions:
+    get:
+      operationId: billingSubscriptionsList
+      summary: List subscriptions for the current tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Subscription list
+    post:
+      operationId: billingSubscriptionsCreate
+      summary: Create a subscription
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [planId]
+              properties:
+                planId:          { type: string }
+                paymentMethodId: { type: string }
+      responses:
+        "201":
+          description: Subscription created
+        "400":
+          description: Validation error or insufficient funds
+        "409":
+          description: Active subscription already exists
+
+  /billing/subscriptions/{subId}:
+    get:
+      operationId: billingSubscriptionsGet
+      summary: Get a specific subscription
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: subId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Subscription details
+        "404":
+          description: Subscription not found
+    patch:
+      operationId: billingSubscriptionsUpdate
+      summary: Update (upgrade/downgrade) a subscription
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: subId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planId: { type: string }
+      responses:
+        "200":
+          description: Subscription updated
+        "404":
+          description: Subscription not found
+    delete:
+      operationId: billingSubscriptionsCancel
+      summary: Cancel a subscription
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: subId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Subscription cancelled
+        "404":
+          description: Subscription not found
+
+  /billing/invoices:
+    get:
+      operationId: billingInvoicesList
+      summary: List invoices for the current tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Invoice list
+
+  /billing/invoices/{invoiceId}:
+    get:
+      operationId: billingInvoicesGet
+      summary: Get a specific invoice
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Invoice details
+        "404":
+          description: Invoice not found
+
+  /billing/usage:
+    get:
+      operationId: billingUsageGet
+      summary: Get current billing period usage for the tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Usage summary
+
+  /billing/checkout:
+    post:
+      operationId: billingCheckout
+      summary: Initiate checkout session (in-house ledger or Stripe adapter)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [planId]
+              properties:
+                planId:      { type: string }
+                successUrl:  { type: string }
+                cancelUrl:   { type: string }
+      responses:
+        "200":
+          description: Checkout session or redirect URL
+        "400":
+          description: Validation error
+
+  /billing/payment-methods:
+    get:
+      operationId: billingPaymentMethodsList
+      summary: List payment methods for the current tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Payment method list
+    post:
+      operationId: billingPaymentMethodsCreate
+      summary: Add a payment method
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:   { type: string }
+                setDefault: { type: boolean }
+      responses:
+        "201":
+          description: Payment method added
+
+  /billing/payment-methods/{pmId}:
+    delete:
+      operationId: billingPaymentMethodsDelete
+      summary: Remove a payment method
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pmId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Payment method removed
+        "404":
+          description: Not found
+
+  # ─── AGENTS ──────────────────────────────────────────────────────────────────
+  /agents:
+    get:
+      operationId: agentsList
+      summary: List agents for the current tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Agent list
+    post:
+      operationId: agentsCreate
+      summary: Create a new agent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, type]
+              properties:
+                name:   { type: string }
+                type:   { type: string }
+                config: { type: object }
+      responses:
+        "201":
+          description: Agent created
+        "400":
+          description: Validation error
+
+  /agents/{agentId}:
+    get:
+      operationId: agentsGet
+      summary: Get agent details
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Agent details
+        "404":
+          description: Agent not found
+    patch:
+      operationId: agentsUpdate
+      summary: Update agent configuration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:   { type: string }
+                config: { type: object }
+      responses:
+        "200":
+          description: Agent updated
+        "404":
+          description: Agent not found
+    delete:
+      operationId: agentsDelete
+      summary: Delete an agent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Agent deleted
+        "404":
+          description: Agent not found
+
+  /agents/{agentId}/run:
+    post:
+      operationId: agentsRun
+      summary: Trigger an agent run (async, through guard → audit)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input: { type: object }
+      responses:
+        "202":
+          description: Run accepted
+        "402":
+          description: Insufficient funds (ledger guard)
+        "403":
+          description: Forbidden by guard policy
+        "404":
+          description: Agent not found
+
+  /agents/{agentId}/tasks:
+    get:
+      operationId: agentsTasksList
+      summary: List tasks for an agent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Task list
+
+  /agents/{agentId}/tasks/{taskId}:
+    get:
+      operationId: agentsTasksGet
+      summary: Get a specific agent task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Task details
+        "404":
+          description: Task not found
+
+  /agents/{agentId}/tasks/{taskId}/cancel:
+    post:
+      operationId: agentsTasksCancel
+      summary: Cancel a running task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Task cancelled
+        "404":
+          description: Task not found
+        "409":
+          description: Task not cancellable in current state
+
+  /agents/{agentId}/logs:
+    get:
+      operationId: agentsLogsList
+      summary: Get execution logs for an agent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Log entries
+
+  # ─── WORKFLOWS ───────────────────────────────────────────────────────────────
+  /workflows:
+    get:
+      operationId: workflowsList
+      summary: List workflows for the current tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Workflow list
+    post:
+      operationId: workflowsCreate
+      summary: Create a workflow definition
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, steps]
+              properties:
+                name:   { type: string }
+                steps:  { type: array, items: { type: object } }
+                config: { type: object }
+      responses:
+        "201":
+          description: Workflow created
+        "400":
+          description: Validation error
+
+  /workflows/{workflowId}:
+    get:
+      operationId: workflowsGet
+      summary: Get workflow definition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Workflow details
+        "404":
+          description: Workflow not found
+    patch:
+      operationId: workflowsUpdate
+      summary: Update workflow definition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:  { type: string }
+                steps: { type: array, items: { type: object } }
+      responses:
+        "200":
+          description: Workflow updated
+        "404":
+          description: Workflow not found
+    delete:
+      operationId: workflowsDelete
+      summary: Delete a workflow
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Workflow deleted
+        "404":
+          description: Workflow not found
+
+  /workflows/{workflowId}/run:
+    post:
+      operationId: workflowsRun
+      summary: Trigger a workflow run
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input: { type: object }
+      responses:
+        "202":
+          description: Run accepted
+        "402":
+          description: Insufficient funds (ledger guard)
+        "404":
+          description: Workflow not found
+
+  /workflows/{workflowId}/runs:
+    get:
+      operationId: workflowsRunsList
+      summary: List runs for a workflow
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Run list
+
+  /workflows/{workflowId}/runs/{runId}:
+    get:
+      operationId: workflowsRunsGet
+      summary: Get a specific workflow run
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: runId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Run details
+        "404":
+          description: Run not found
+
+  /workflows/{workflowId}/runs/{runId}/cancel:
+    post:
+      operationId: workflowsRunsCancel
+      summary: Cancel a running workflow run
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: runId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Run cancelled
+        "404":
+          description: Run not found
+        "409":
+          description: Run not cancellable
+
+  # ─── INCIDENTS ───────────────────────────────────────────────────────────────
+  /incidents:
+    get:
+      operationId: incidentsList
+      summary: List incidents for the current tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Incident list
+    post:
+      operationId: incidentsCreate
+      summary: Create an incident
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, severity]
+              properties:
+                title:       { type: string }
+                severity:    { type: string, enum: [critical, high, medium, low] }
+                description: { type: string }
+      responses:
+        "201":
+          description: Incident created
+        "400":
+          description: Validation error
+
+  /incidents/{incidentId}:
+    get:
+      operationId: incidentsGet
+      summary: Get incident details
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: incidentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Incident details
+        "404":
+          description: Incident not found
+    patch:
+      operationId: incidentsUpdate
+      summary: Update incident
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: incidentId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:       { type: string }
+                status:      { type: string, enum: [open, investigating, resolved] }
+                description: { type: string }
+      responses:
+        "200":
+          description: Incident updated
+        "404":
+          description: Incident not found
+
+  /incidents/{incidentId}/resolve:
+    post:
+      operationId: incidentsResolve
+      summary: Resolve an incident
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: incidentId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resolution: { type: string }
+      responses:
+        "204":
+          description: Incident resolved
+        "404":
+          description: Incident not found
+        "409":
+          description: Incident already resolved
+
+  /incidents/{incidentId}/escalate:
+    post:
+      operationId: incidentsEscalate
+      summary: Escalate an incident
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: incidentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Incident escalated
+        "404":
+          description: Incident not found
+
+  /incidents/{incidentId}/timeline:
+    get:
+      operationId: incidentsTimeline
+      summary: Get incident timeline events
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: incidentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Timeline events
+        "404":
+          description: Incident not found
+
+  # ─── DLQ ─────────────────────────────────────────────────────────────────────
+  /dlq/messages:
+    get:
+      operationId: dlqMessagesList
+      summary: List dead-letter queue messages
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: DLQ message list
+
+  /dlq/messages/{messageId}:
+    get:
+      operationId: dlqMessagesGet
+      summary: Get a DLQ message
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Message details
+        "404":
+          description: Message not found
+    delete:
+      operationId: dlqMessagesDelete
+      summary: Discard a DLQ message
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Message discarded
+        "404":
+          description: Message not found
+
+  /dlq/messages/{messageId}/retry:
+    post:
+      operationId: dlqMessagesRetry
+      summary: Retry a DLQ message
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "202":
+          description: Retry queued
+        "404":
+          description: Message not found
+
+  /dlq/messages/{messageId}/dead:
+    post:
+      operationId: dlqMessagesDead
+      summary: Mark a DLQ message as permanently dead
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Message permanently dead
+        "404":
+          description: Message not found
+
+  /dlq/stats:
+    get:
+      operationId: dlqStats
+      summary: Get DLQ statistics (pending, retrying, dead counts)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: DLQ statistics
+
+  # ─── ANALYTICS ───────────────────────────────────────────────────────────────
+  /analytics/events:
+    post:
+      operationId: analyticsEventsTrack
+      summary: Track an analytics event
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [event]
+              properties:
+                event:      { type: string }
+                properties: { type: object }
+                userId:     { type: string }
+      responses:
+        "204":
+          description: Event tracked
+        "400":
+          description: Validation error
+
+  /analytics/metrics:
+    get:
+      operationId: analyticsMetricsList
+      summary: List available metrics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Metrics list
+
+  /analytics/metrics/{metricId}:
+    get:
+      operationId: analyticsMetricsGet
+      summary: Get time-series data for a metric
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: metricId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Metric data
+        "404":
+          description: Metric not found
+
+  /analytics/reports:
+    get:
+      operationId: analyticsReportsList
+      summary: List analytics reports
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Report list
+    post:
+      operationId: analyticsReportsCreate
+      summary: Create an analytics report
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, query]
+              properties:
+                name:  { type: string }
+                query: { type: object }
+      responses:
+        "201":
+          description: Report created
+        "400":
+          description: Validation error
+
+  /analytics/reports/{reportId}:
+    get:
+      operationId: analyticsReportsGet
+      summary: Get a specific analytics report
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Report details
+        "404":
+          description: Report not found
+
+  # ─── SLO ─────────────────────────────────────────────────────────────────────
+  /slo:
+    get:
+      operationId: sloList
+      summary: List SLO definitions for the tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: SLO list
+    post:
+      operationId: sloCreate
+      summary: Create an SLO definition
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, target, metric]
+              properties:
+                name:   { type: string }
+                target: { type: number, minimum: 0, maximum: 1 }
+                metric: { type: string }
+                window: { type: string }
+      responses:
+        "201":
+          description: SLO created
+        "400":
+          description: Validation error
+
+  /slo/{sloId}:
+    get:
+      operationId: sloGet
+      summary: Get SLO definition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sloId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: SLO details
+        "404":
+          description: SLO not found
+    patch:
+      operationId: sloUpdate
+      summary: Update SLO definition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sloId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target: { type: number }
+                window: { type: string }
+      responses:
+        "200":
+          description: SLO updated
+        "404":
+          description: SLO not found
+    delete:
+      operationId: sloDelete
+      summary: Delete an SLO
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sloId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: SLO deleted
+        "404":
+          description: SLO not found
+
+  /slo/{sloId}/status:
+    get:
+      operationId: sloStatus
+      summary: Get current SLO status (burn rate, error budget remaining)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sloId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: SLO status
+        "404":
+          description: SLO not found
+
+  # ─── METERING ────────────────────────────────────────────────────────────────
+  /metering/usage:
+    get:
+      operationId: meteringUsageGet
+      summary: Get current metering usage for the tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Usage summary
+    post:
+      operationId: meteringUsageRecord
+      summary: Record a metering event (internal/worker use)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [metric, quantity]
+              properties:
+                metric:    { type: string }
+                quantity:  { type: integer }
+                metadata:  { type: object }
+      responses:
+        "201":
+          description: Usage recorded
+        "400":
+          description: Validation error
+
+  /metering/limits:
+    get:
+      operationId: meteringLimitsList
+      summary: List metering limits for the tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Limit list
+
+  /metering/limits/{limitId}:
+    patch:
+      operationId: meteringLimitsUpdate
+      summary: Update a metering limit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limitId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value: { type: integer }
+      responses:
+        "200":
+          description: Limit updated
+        "404":
+          description: Limit not found
+
+  /metering/quotas:
+    get:
+      operationId: meteringQuotasList
+      summary: List quotas for the tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Quota list
+
+  /metering/quotas/reset:
+    post:
+      operationId: meteringQuotasReset
+      summary: Reset quota counters (billing cycle rollover)
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Quotas reset
+        "403":
+          description: Only billing admins may reset quotas
+
+  # ─── KNOWLEDGE GRAPH ─────────────────────────────────────────────────────────
+  /knowledge-graph/nodes:
+    get:
+      operationId: kgNodesList
+      summary: List knowledge graph nodes for the tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Node list
+    post:
+      operationId: kgNodesCreate
+      summary: Create a knowledge graph node
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, label]
+              properties:
+                type:       { type: string }
+                label:      { type: string }
+                properties: { type: object }
+      responses:
+        "201":
+          description: Node created
+        "400":
+          description: Validation error
+
+  /knowledge-graph/nodes/{nodeId}:
+    get:
+      operationId: kgNodesGet
+      summary: Get a knowledge graph node
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Node details
+        "404":
+          description: Node not found
+    patch:
+      operationId: kgNodesUpdate
+      summary: Update a knowledge graph node
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:      { type: string }
+                properties: { type: object }
+      responses:
+        "200":
+          description: Node updated
+        "404":
+          description: Node not found
+    delete:
+      operationId: kgNodesDelete
+      summary: Delete a knowledge graph node
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Node deleted
+        "404":
+          description: Node not found
+
+  /knowledge-graph/edges:
+    get:
+      operationId: kgEdgesList
+      summary: List knowledge graph edges
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Edge list
+    post:
+      operationId: kgEdgesCreate
+      summary: Create an edge between two nodes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fromId, toId, relation]
+              properties:
+                fromId:   { type: string }
+                toId:     { type: string }
+                relation: { type: string }
+                weight:   { type: number }
+      responses:
+        "201":
+          description: Edge created
+        "400":
+          description: Validation error or cross-tenant violation
+        "404":
+          description: Source or target node not found
+
+  /knowledge-graph/query:
+    post:
+      operationId: kgQuery
+      summary: Execute a graph traversal query
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:  { type: string }
+                params: { type: object }
+                depth:  { type: integer, minimum: 1, maximum: 10 }
+      responses:
+        "200":
+          description: Query results
+        "400":
+          description: Invalid query
+
+  # ─── SEARCH ──────────────────────────────────────────────────────────────────
+  /search:
+    get:
+      operationId: searchQuery
+      summary: Full-text search across tenant resources
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+        - name: scope
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Search results
+        "400":
+          description: Missing query parameter
+
+  /search/index:
+    post:
+      operationId: searchIndexDocument
+      summary: Index a document for search
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, content]
+              properties:
+                id:      { type: string }
+                content: { type: string }
+                scope:   { type: string }
+                metadata: { type: object }
+      responses:
+        "201":
+          description: Document indexed
+        "400":
+          description: Validation error
+
+  /search/index/{docId}:
+    delete:
+      operationId: searchIndexDelete
+      summary: Remove a document from the search index
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: docId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Document removed
+        "404":
+          description: Document not found
+
+  /search/suggestions:
+    get:
+      operationId: searchSuggestions
+      summary: Get search autocomplete suggestions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Suggestion list
+
+  # ─── FEATURE FLAGS ────────────────────────────────────────────────────────────
+  /feature-flags:
+    get:
+      operationId: featureFlagsList
+      summary: List feature flags for the tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Feature flag list
+    post:
+      operationId: featureFlagsCreate
+      summary: Create a feature flag
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [key, enabled]
+              properties:
+                key:         { type: string }
+                enabled:     { type: boolean }
+                description: { type: string }
+                rollout:     { type: number, minimum: 0, maximum: 1 }
+      responses:
+        "201":
+          description: Feature flag created
+        "400":
+          description: Validation error
+        "409":
+          description: Flag key already exists
+
+  /feature-flags/{flagId}:
+    get:
+      operationId: featureFlagsGet
+      summary: Get a feature flag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: flagId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Feature flag details
+        "404":
+          description: Flag not found
+    patch:
+      operationId: featureFlagsUpdate
+      summary: Update a feature flag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: flagId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled: { type: boolean }
+                rollout: { type: number }
+      responses:
+        "200":
+          description: Flag updated
+        "404":
+          description: Flag not found
+
+  /feature-flags/{flagId}/evaluate:
+    post:
+      operationId: featureFlagsEvaluate
+      summary: Evaluate a feature flag for a given context
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: flagId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId: { type: string }
+                attrs:  { type: object }
+      responses:
+        "200":
+          description: Evaluation result
+        "404":
+          description: Flag not found
+
+  # ─── NOTIFICATIONS ────────────────────────────────────────────────────────────
+  /notifications:
+    get:
+      operationId: notificationsList
+      summary: List notifications for the current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Notification list
+    post:
+      operationId: notificationsCreate
+      summary: Send a notification (internal/system use)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, message]
+              properties:
+                userId:  { type: string }
+                message: { type: string }
+                channel: { type: string, enum: [in-app, email, sms] }
+      responses:
+        "201":
+          description: Notification created
+        "400":
+          description: Validation error
+
+  /notifications/{notificationId}/read:
+    patch:
+      operationId: notificationsMarkRead
+      summary: Mark a notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Marked as read
+        "404":
+          description: Notification not found
+
+  /notifications/{notificationId}:
+    delete:
+      operationId: notificationsDelete
+      summary: Delete a notification
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Notification deleted
+        "404":
+          description: Notification not found
+
+  /notifications/mark-all-read:
+    post:
+      operationId: notificationsMarkAllRead
+      summary: Mark all notifications as read for the current user
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: All notifications marked as read
+
+  # ─── OIDC ────────────────────────────────────────────────────────────────────
+  /auth/oidc/authorize:
+    get:
+      operationId: oidcAuthorize
+      summary: Start OIDC authorization flow
+      parameters:
+        - name: provider
+          in: query
+          required: true
+          schema: { type: string }
+        - name: redirect_uri
+          in: query
+          required: true
+          schema: { type: string, format: uri }
+      responses:
+        "302":
+          description: Redirect to OIDC provider
+
+  /auth/oidc/callback:
+    get:
+      operationId: oidcCallback
+      summary: OIDC callback — exchange code for session
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema: { type: string }
+        - name: state
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "302":
+          description: Redirect to app with session
+        "400":
+          description: Invalid state or code
+
+  /auth/oidc/providers:
+    get:
+      operationId: oidcProvidersList
+      summary: List configured OIDC providers for a tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of providers
+
+  /auth/oidc/providers/{providerId}:
+    get:
+      operationId: oidcProvidersGet
+      summary: Get OIDC provider configuration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Provider config
+        "404":
+          description: Provider not found
+    put:
+      operationId: oidcProvidersUpsert
+      summary: Create or update OIDC provider configuration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [clientId, clientSecret, discoveryUrl]
+              properties:
+                clientId:      { type: string }
+                clientSecret:  { type: string }
+                discoveryUrl:  { type: string, format: uri }
+                scopes:        { type: array, items: { type: string } }
+      responses:
+        "200":
+          description: Provider saved
+        "400":
+          description: Validation error
+    delete:
+      operationId: oidcProvidersDelete
+      summary: Delete OIDC provider configuration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Provider deleted
+        "404":
+          description: Provider not found
+
+  # ─── SAML ────────────────────────────────────────────────────────────────────
+  /auth/saml/metadata:
+    get:
+      operationId: samlMetadata
+      summary: Return SP SAML metadata XML
+      parameters:
+        - name: tenantId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: SAML metadata XML
+          content:
+            application/xml:
+              schema: { type: string }
+
+  /auth/saml/sso:
+    post:
+      operationId: samlSsoInitiate
+      summary: Initiate SAML SSO (IdP-initiated or SP-initiated)
+      parameters:
+        - name: tenantId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "302":
+          description: Redirect to IdP
+
+  /auth/saml/acs:
+    post:
+      operationId: samlAcs
+      summary: SAML Assertion Consumer Service
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [SAMLResponse]
+              properties:
+                SAMLResponse: { type: string }
+                RelayState:   { type: string }
+      responses:
+        "302":
+          description: Redirect to app with session
+        "400":
+          description: Invalid SAML assertion
+
+  /auth/saml/config:
+    get:
+      operationId: samlConfigGet
+      summary: Get SAML IdP configuration for a tenant
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: SAML config
+        "404":
+          description: No SAML config
+    put:
+      operationId: samlConfigUpsert
+      summary: Create or update SAML IdP configuration
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idpEntityId, idpSsoUrl, idpCertificate]
+              properties:
+                idpEntityId:   { type: string }
+                idpSsoUrl:     { type: string, format: uri }
+                idpCertificate:{ type: string }
+                attributeMap:  { type: object }
+      responses:
+        "200":
+          description: Config saved
+        "400":
+          description: Validation error
+
+  # ─── AUDIT EVENTS ─────────────────────────────────────────────────────────────
+  /audit-events:
+    get:
+      operationId: auditEventsList
+      summary: List audit events for the current tenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actorId
+          in: query
+          schema: { type: string }
+        - name: action
+          in: query
+          schema: { type: string }
+        - name: resourceType
+          in: query
+          schema: { type: string }
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 50, maximum: 500 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Audit event list
+
+  /audit-events/{eventId}:
+    get:
+      operationId: auditEventsGet
+      summary: Get a single audit event
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Audit event
+        "404":
+          description: Not found
+
+  /audit-events/export:
+    post:
+      operationId: auditEventsExport
+      summary: Export audit events to CSV / NDJSON (async, returns jobId)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:  { type: string, enum: [csv, ndjson], default: csv }
+                from:    { type: string, format: date-time }
+                to:      { type: string, format: date-time }
+      responses:
+        "202":
+          description: Export job accepted
+        "400":
+          description: Validation error
+
+  # ─── CHAOS ───────────────────────────────────────────────────────────────────
+  /chaos/experiments:
+    get:
+      operationId: chaosExperimentsList
+      summary: List chaos experiments
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Experiment list
+    post:
+      operationId: chaosExperimentsCreate
+      summary: Create a chaos experiment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, type, targetSelector]
+              properties:
+                name:           { type: string }
+                type:           { type: string, enum: [latency, error, kill, throttle, partition] }
+                targetSelector: { type: object }
+                durationSec:    { type: integer, minimum: 1, maximum: 3600 }
+                magnitude:      { type: number, minimum: 0, maximum: 1 }
+      responses:
+        "201":
+          description: Experiment created
+        "400":
+          description: Validation error
+
+  /chaos/experiments/{experimentId}:
+    get:
+      operationId: chaosExperimentsGet
+      summary: Get chaos experiment details
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experimentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Experiment
+        "404":
+          description: Not found
+    delete:
+      operationId: chaosExperimentsDelete
+      summary: Delete a chaos experiment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experimentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /chaos/experiments/{experimentId}/run:
+    post:
+      operationId: chaosExperimentsRun
+      summary: Activate a chaos experiment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experimentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "202":
+          description: Experiment started
+        "409":
+          description: Already running
+
+  /chaos/experiments/{experimentId}/stop:
+    post:
+      operationId: chaosExperimentsStop
+      summary: Stop a running chaos experiment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experimentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Experiment stopped
+        "404":
+          description: Not found
+
+  /chaos/status:
+    get:
+      operationId: chaosStatus
+      summary: Get current chaos system status (active experiments)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Chaos status
+
+  # ─── ANALYTICS FUNNELS ───────────────────────────────────────────────────────
+  /analytics/funnels:
+    get:
+      operationId: analyticsFunnelsList
+      summary: List defined funnels
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Funnel list
+    post:
+      operationId: analyticsFunnelsCreate
+      summary: Create a funnel definition
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, steps]
+              properties:
+                name:  { type: string }
+                steps:
+                  type: array
+                  items:
+                    type: object
+                    required: [event]
+                    properties:
+                      event:      { type: string }
+                      filters:    { type: object }
+                      maxSec:     { type: integer }
+      responses:
+        "201":
+          description: Funnel created
+        "400":
+          description: Validation error
+
+  /analytics/funnels/{funnelId}:
+    get:
+      operationId: analyticsFunnelsGet
+      summary: Get funnel definition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: funnelId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Funnel
+        "404":
+          description: Not found
+    delete:
+      operationId: analyticsFunnelsDelete
+      summary: Delete a funnel definition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: funnelId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+
+  /analytics/funnels/{funnelId}/compute:
+    post:
+      operationId: analyticsFunnelsCompute
+      summary: Compute funnel conversion rates
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: funnelId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:   { type: string, format: date-time }
+                to:     { type: string, format: date-time }
+                groupBy:{ type: string }
+      responses:
+        "200":
+          description: Funnel computation result
+        "404":
+          description: Funnel not found
+
+  # ─── FEATURE FLAG SEGMENTS ────────────────────────────────────────────────────
+  /feature-flags/{flagId}/segments:
+    get:
+      operationId: featureFlagsSegmentsList
+      summary: List targeting segments for a feature flag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: flagId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Segments list
+        "404":
+          description: Flag not found
+    post:
+      operationId: featureFlagsSegmentsCreate
+      summary: Add a targeting segment to a feature flag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: flagId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, rules]
+              properties:
+                name:       { type: string }
+                rollout:    { type: number, minimum: 0, maximum: 1, default: 1 }
+                rules:
+                  type: array
+                  items:
+                    type: object
+                    required: [attribute, operator, value]
+                    properties:
+                      attribute: { type: string }
+                      operator:  { type: string, enum: [eq, neq, in, nin, gt, lt, gte, lte, contains] }
+                      value:     {}
+      responses:
+        "201":
+          description: Segment created
+        "400":
+          description: Validation error
+        "404":
+          description: Flag not found
+
+  /feature-flags/{flagId}/segments/{segmentId}:
+    patch:
+      operationId: featureFlagsSegmentsUpdate
+      summary: Update a targeting segment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: flagId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: segmentId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:    { type: string }
+                rollout: { type: number, minimum: 0, maximum: 1 }
+                rules:   { type: array, items: { type: object } }
+      responses:
+        "200":
+          description: Segment updated
+        "404":
+          description: Not found
+    delete:
+      operationId: featureFlagsSegmentsDelete
+      summary: Delete a targeting segment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: flagId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: segmentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Segment deleted
+        "404":
+          description: Not found
+
+  # ─── ADVANCED NOTIFICATIONS ──────────────────────────────────────────────────
+  /notifications/preferences:
+    get:
+      operationId: notificationsPreferencesGet
+      summary: Get notification preferences for the current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Preferences
+    patch:
+      operationId: notificationsPreferencesUpdate
+      summary: Update notification preferences
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channels:
+                  type: object
+                  properties:
+                    inApp: { type: boolean }
+                    email: { type: boolean }
+                    sms:   { type: boolean }
+                digest:
+                  type: object
+                  properties:
+                    enabled:      { type: boolean }
+                    intervalMin:  { type: integer, minimum: 5 }
+      responses:
+        "200":
+          description: Preferences updated
+        "400":
+          description: Validation error
+
+  /notifications/digest:
+    post:
+      operationId: notificationsDigestTrigger
+      summary: Trigger digest delivery for a user (internal/system)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId: { type: string }
+      responses:
+        "202":
+          description: Digest queued
+        "400":
+          description: Validation error
+
+  /notifications/channels/test:
+    post:
+      operationId: notificationsChannelsTest
+      summary: Send a test notification on a channel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channel]
+              properties:
+                channel:  { type: string, enum: [in-app, email, sms] }
+                address:  { type: string }
+      responses:
+        "202":
+          description: Test notification sent
+        "400":
+          description: Validation error
+
+  # ── Sovereign API (integration layer — wired by composition root) ──
+  /ledger/accounts:
+    post:
+      operationId: createLedgerAccount
+      tags: [ledger]
+      summary: Create a sovereign ledger account (μ¢)
+      responses:
+        "201": { description: Account created }
+        "400": { description: Missing fields or tenant }
+  /ledger/accounts/{id}:
+    get:
+      operationId: getLedgerAccount
+      tags: [ledger]
+      summary: Get account (tenant-isolated)
+      responses:
+        "200": { description: Account }
+        "404": { description: Not found / cross-tenant }
+  /ledger/mint:
+    post:
+      operationId: ledgerMint
+      tags: [ledger]
+      summary: Mint μ¢ (guarded, fail-closed, audited)
+      responses:
+        "200": { description: Minted }
+        "403": { description: Guard denied }
+  /ledger/transfer:
+    post:
+      operationId: ledgerTransfer
+      tags: [ledger]
+      summary: Transfer μ¢ between accounts (guarded)
+      responses:
+        "200": { description: Transferred }
+        "403": { description: Guard denied }
+  /ledger/solvency:
+    get:
+      operationId: ledgerSolvency
+      tags: [ledger]
+      summary: Proof of solvency (integrity check)
+      responses:
+        "200": { description: Solvency proof }
+  /potential/profile:
+    post:
+      operationId: potentialProfile
+      tags: [potential]
+      summary: Build a personality/strength profile (Potential Engine)
+      responses:
+        "200": { description: Profile }
+        "400": { description: Invalid input }
+  /potential/personality:
+    post:
+      operationId: potentialPersonalityMap
+      tags: [potential]
+      summary: Map personality from signals (computes + persists PersonalityProfile)
+      responses:
+        "200": { description: PersonalityProfile }
+        "400": { description: Missing userId }
+  /potential/personality/{userId}:
+    get:
+      operationId: getPotentialPersonality
+      tags: [potential]
+      summary: Load a previously-saved PersonalityProfile (tenant-scoped)
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: PersonalityProfile }
+        "400": { description: Missing userId }
+        "404": { description: Not found }
+  /potential/success-path:
+    post:
+      operationId: computeSuccessPath
+      tags: [potential]
+      summary: Compute a learning path toward a target opportunity
+      responses:
+        "200": { description: SuccessPath }
+        "400": { description: Validation error }
+        "404": { description: Opportunity not found }
+  /potential/success-path/{userId}/{opportunityId}:
+    get:
+      operationId: getSuccessPath
+      tags: [potential]
+      summary: Load a previously-computed SuccessPath
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: opportunityId
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: SuccessPath }
+        "400": { description: Validation error }
+        "404": { description: Not found }
+  /potential/collaboration:
+    post:
+      operationId: findCollaborators
+      tags: [potential]
+      summary: Find best collaboration partners for a user (tenant-scoped)
+      responses:
+        "200": { description: CollaborationMatch array }
+        "400": { description: Validation error }
+  /potential/collaboration/{userId}:
+    get:
+      operationId: getCachedCollaborators
+      tags: [potential]
+      summary: Load cached collaboration matches for a user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: CollaborationMatch array }
+        "400": { description: Missing userId }
+        "404": { description: No cache found }
+  /escrow:
+    post:
+      operationId: createEscrow
+      tags: [escrow]
+      summary: Create an escrow agreement (no money moves yet)
+      responses:
+        "201": { description: EscrowAgreement created }
+        "400": { description: Validation error }
+  /escrow/{id}:
+    get:
+      operationId: getEscrow
+      tags: [escrow]
+      summary: Fetch an escrow agreement by id (tenant-scoped)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: EscrowAgreement }
+        "404": { description: Not found }
+  /escrow/{id}/fund:
+    post:
+      operationId: fundEscrow
+      tags: [escrow]
+      summary: Fund escrow — payer to escrow transfer (created→funded)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: EscrowAgreement funded }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/release:
+    post:
+      operationId: releaseEscrow
+      tags: [escrow]
+      summary: Release escrow to worker on completion (funded→released)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: EscrowAgreement released }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/refund:
+    post:
+      operationId: refundEscrow
+      tags: [escrow]
+      summary: Refund escrow to payer on cancellation (funded→refunded)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: EscrowAgreement refunded }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/dispute:
+    post:
+      operationId: disputeEscrow
+      tags: [escrow]
+      summary: Freeze a funded escrow (funded→disputed)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: EscrowAgreement disputed }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/undispute:
+    post:
+      operationId: undisputeEscrow
+      tags: [escrow]
+      summary: Unfreeze a disputed escrow (disputed→funded)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: EscrowAgreement undisputed }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+        "403": { description: Unauthorized }
+  /track-record/{identityId}:
+    get:
+      operationId: getTrackRecord
+      tags: [track-record]
+      summary: Verified Track Record — deterministic read-model over the signed audit chain
+      parameters:
+        - in: path
+          name: identityId
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: TrackRecord }
+        "400": { description: Validation error }
+  /tenants:
+    post:
+      operationId: createTenant
+      tags: [tenants]
+      summary: Tenant Onboarding — create tenant with root person, default policies, and first ledger account
+      responses:
+        "201": { description: Tenant created }
+        "200": { description: Tenant already exists (idempotent) }
+        "400": { description: Missing x-tenant-id or invalid input }
+
+  /sovereignty/export:
+    get:
+      operationId: exportTenantBundle
+      tags: [sovereignty]
+      summary: Export all tenant data as a signed bundle (data portability)
+      security:
+        - tenantHeader: []
+      responses:
+        "200": { description: ExportBundle JSON }
+        "400": { description: Missing x-tenant-id }
+
+  /sovereignty/import:
+    post:
+      operationId: importTenantBundle
+      tags: [sovereignty]
+      summary: Restore a signed bundle — verifies signature before any state change (fail-closed)
+      security:
+        - tenantHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: ExportBundle JSON (as returned by /sovereignty/export)
+      responses:
+        "200": { description: ImportResult }
+        "400": { description: Schema mismatch or invalid bundle }
+        "403": { description: Tenant mismatch }
+        "422": { description: Signature invalid }
+
+  /sovereignty/verify:
+    post:
+      operationId: verifyBundle
+      tags: [sovereignty]
+      summary: Verify a bundle signature without modifying state
+      security:
+        - tenantHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: ExportBundle JSON
+      responses:
+        "200": { description: "{ valid: boolean, reason?: string }" }
+        "400": { description: Invalid bundle }
+
+  /sovereignty/rotate-key:
+    post:
+      operationId: rotateKey
+      tags: [sovereignty]
+      summary: Live key rotation — atomically replace the stack MutableSigner delegate
+      description: |
+        Replaces the signing key used for all subsequent sign/verify operations.
+        Requires the `admin:key-rotation` scope. Fail-closed: 403 if scope missing.
+      security:
+        - apiKeyAuth: [admin:key-rotation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [signerKind, secret]
+                  properties:
+                    signerKind:
+                      type: string
+                      enum: [hmac]
+                    secret:
+                      type: string
+                      minLength: 16
+                      description: UTF-8 string, minimum 16 bytes
+                - type: object
+                  required: [signerKind, privateKey, publicKey]
+                  properties:
+                    signerKind:
+                      type: string
+                      enum: [ed25519]
+                    privateKey:
+                      type: string
+                      description: PKCS8 PEM private key
+                    publicKey:
+                      type: string
+                      description: SPKI PEM public key
+      responses:
+        "200":
+          description: Key rotated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, rotatedAt, rotationCount, newAlgorithm]
+                properties:
+                  ok: { type: boolean, example: true }
+                  rotatedAt: { type: string, format: date-time }
+                  rotationCount: { type: integer, minimum: 1 }
+                  newAlgorithm: { type: string, enum: [hmac-sha256, ed25519] }
+        "400": { description: Invalid signerKind or key material }
+        "403":
+          description: missing admin:key-rotation scope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string, example: "missing admin:key-rotation scope" }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: |
+        TFA API key. Pass the full secret value returned by POST /api-keys.
+        The resolved scopes determine which operations are permitted.
+    tenantHeader:
+      type: apiKey
+      in: header
+      name: x-tenant-id
+      description: |
+        Tenant ID header — for unauthenticated (no RBAC) tenant-scoped operations.
+        Operations that require specific scopes use `apiKeyAuth` instead.

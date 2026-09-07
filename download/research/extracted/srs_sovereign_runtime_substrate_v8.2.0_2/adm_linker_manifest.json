@@ -1,0 +1,198 @@
+{
+  "$schema": "https://srs.omnivisor.dev/schemas/adm_linker_manifest/v1.0.json",
+  "description": "Adm Linker Manifest — maps every file in the SRS repository to the Admissible Behavior Set (Adm) rules it implements, enforces, or tests. This manifest is the mathematical linkage required by the Final Constraint: every line of code and every configuration file must be linked to Adm.",
+  "adm_definition": {
+    "Adm_spatial": "∀ d, p . write_request(d, p) ⇒ admissible_write(d, p)  [Chapter 7.2]",
+    "Adm_temporal": "∀ d . □(consumed(d) ≤ budget(d))  [Chapter 7.3]",
+    "Adm_thermal": "∀ j . low(θ_j) ≤ F_j ≤ high(θ_j) ∧ θ_APU+θ_RPU ≤ 1.05 ∧ θ_FPGA+θ_NISQ ≤ 1.00 ∧ Σ F_j ≤ G ∧ Σ F_j·(1−θ_j) ≤ Q_BAR  [Chapter 7.4]",
+    "Adm_behavioural": "(i, c, a, r) ∈ Adm iff R1(op/tier well-typedness) ∧ R2(context compatibility) ∧ R3(proof coverage) ∧ R4(SEG certification)  [Chapter 7.6]"
+  },
+  "files": [
+    {
+      "path": "kernel/omnivisor.py",
+      "phase": 1,
+      "role": "implements",
+      "adm_rules": ["Adm_spatial", "Adm_temporal"],
+      "description": "Enforces spatio-temporal isolation via TI/SC page attributes and TIB token budgets. admissible_write() implements Adm_spatial; grant_hypercall() implements Adm_temporal.",
+      "self_test": "python3 kernel/omnivisor.py"
+    },
+    {
+      "path": "kernel/smpu_sppu.py",
+      "phase": 1,
+      "role": "enforces",
+      "adm_rules": ["Adm_spatial"],
+      "description": "SMPU/SPPU drivers enforce per-domain memory and peripheral access permissions derived from the Omnivisor's TI/SC attributes. NISQ_CAL_BUS and FPGA_JTAG require SEG certification.",
+      "self_test": "python3 kernel/smpu_sppu.py"
+    },
+    {
+      "path": "kernel/ebpf_telemetry.py",
+      "phase": 1,
+      "role": "implements",
+      "adm_rules": ["Adm_thermal"],
+      "description": "Unified Telemetry Bus feeds hardware-level invariants (power, ECR gate errors) into the agent decision loop, which is governed by Adm_thermal. Every eBPF program is an AdmissibleMutation requiring SQA quorum.",
+      "self_test": "python3 kernel/ebpf_telemetry.py"
+    },
+    {
+      "path": "cognition/agemem_controller.py",
+      "phase": 2,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "AgeMem controller with 6 ops (ADD, UPDATE, DELETE, RETRIEVE, FILTER, SUMMARY) and Step-wise GRPO. decide_adm() implements the Adm-gated re-sampling loop (Adm rule R1-R4).",
+      "self_test": "python3 cognition/agemem_controller.py"
+    },
+    {
+      "path": "cognition/agemem_adm_trainer.py",
+      "phase": 2,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "Adm-gated GRPO trainer (k=2) with SL bonus (+0.15) for DELETE tombstoning and Evidence Fabrication penalty (-1.0) for inadmissible chains. Operationalises Adm as a non-differentiable constraint.",
+      "self_test": "python3 cognition/agemem_adm_trainer.py"
+    },
+    {
+      "path": "cognition/adm_intent_mapper.py",
+      "phase": 2,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "Adm I×C×A×R relation evaluator. Implements rules R1 (op/tier well-typedness), R2 (context compatibility), R3 (proof coverage), R4 (SEG certification). 6 demonstration cases all pass.",
+      "self_test": "python3 cognition/adm_intent_mapper.py"
+    },
+    {
+      "path": "cognition/grpo_advantage_map.py",
+      "phase": 2,
+      "role": "tests",
+      "adm_rules": ["Adm_behavioural", "Adm_thermal"],
+      "description": "Generates the GRPO advantage map correlating DELETE/FILTER actions with thermal-safety envelope restoration. The contention-shaped reward (+0.25 FILTER red-herring, +0.15 DELETE tombstone) aligns the policy with Adm.",
+      "self_test": "python3 cognition/grpo_advantage_map.py"
+    },
+    {
+      "path": "cognition/esr_schema.json",
+      "phase": 2,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "ESR Persistence Schema v2.0. Defines evidence_chain (intent→context→action→reasoning) as a required field, plus bls_evidence_binding and seq for SEG verification.",
+      "self_test": "python3 -c \"import json; json.load(open('cognition/esr_schema.json'))\""
+    },
+    {
+      "path": "cognition/esr_sample_entry.json",
+      "phase": 2,
+      "role": "tests",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "Fully-populated v2.0 ESR entry demonstrating evidence_chain, BLS evidence binding, and seq epoch.",
+      "self_test": "python3 -c \"import json; json.load(open('cognition/esr_sample_entry.json'))\""
+    },
+    {
+      "path": "cognition/esr_contention_reconciliation.json",
+      "phase": 2,
+      "role": "tests",
+      "adm_rules": ["Adm_behavioural", "Adm_thermal"],
+      "description": "Quantum-Thermal Contention reconciliation log. Documents Verifiable Semantic Rollback (3 STM beliefs pruned), 3-of-4 SQA quorum, BLS evidence binding.",
+      "self_test": "python3 -c \"import json; json.load(open('cognition/esr_contention_reconciliation.json'))\""
+    },
+    {
+      "path": "verification/z3_power_proof.py",
+      "phase": 3,
+      "role": "implements",
+      "adm_rules": ["Adm_thermal"],
+      "description": "Z3 power-thermal proof in 4 modes: nominal, high-entropy, thermal-derating, contention-resolution. Certifies low(θ_j) ≤ F_j ≤ high(θ_j) with ε ≥ 0.05 margin. The contention-resolution mode binds RPU frequency to ESV and safety margin to QPU noise-floor.",
+      "self_test": "python3 verification/z3_power_proof.py --contention"
+    },
+    {
+      "path": "verification/TemporalBankerScheduler.tla",
+      "phase": 3,
+      "role": "implements",
+      "adm_rules": ["Adm_temporal"],
+      "description": "TLA+ specification proving deadlock-freedom across APU/RPU/FPGA boundaries. Theorems: BudgetInvariantTheorem (safety), NoDeadlockTheorem (liveness under AdmCostCheck), NoStarvationTheorem (fairness).",
+      "self_test": "tlc TemporalBankerScheduler.cfg (requires TLA+ tools)"
+    },
+    {
+      "path": "verification/saarthi_sva_generator.py",
+      "phase": 3,
+      "role": "implements",
+      "adm_rules": ["Adm_thermal", "Adm_spatial"],
+      "description": "Generates SystemVerilog Assertions from declarative safety invariants. Enforces Adm_thermal (power envelope, thermal coupling) and I2C protocol invariants at the RTL level. Used by the Saarthi formal validator.",
+      "self_test": "python3 verification/saarthi_sva_generator.py"
+    },
+    {
+      "path": "verification/srs_safety_assertions.sva",
+      "phase": 3,
+      "role": "enforces",
+      "adm_rules": ["Adm_thermal", "Adm_spatial"],
+      "description": "Generated SVA module (output of saarthi_sva_generator.py). Loaded into hardware model checkers to verify RTL against Adm invariants.",
+      "self_test": "loaded by JasperGold / VC Formal"
+    },
+    {
+      "path": "simulation/adaqc_compiler.py",
+      "phase": 4,
+      "role": "implements",
+      "adm_rules": ["Adm_thermal"],
+      "description": "AdaQC DP-based NISQ circuit compiler. Switches to depth-reduction mode when θ_FPGA > 0.85 × high(θ_FPGA), the Adm_thermal trigger threshold. Every compiled circuit is an AdmissibleMutation.",
+      "self_test": "python3 simulation/adaqc_compiler.py"
+    },
+    {
+      "path": "simulation/photonic_bus.py",
+      "phase": 4,
+      "role": "implements",
+      "adm_rules": ["Adm_thermal"],
+      "description": "Multidimensional photonic bus emulator (102 Tbps aggregate). Fed by VDD_OPT power rail whose thermal envelope is certified by the Z3 proof (Adm_thermal). ESR replication packets are AdmissibleMutations.",
+      "self_test": "python3 simulation/photonic_bus.py"
+    },
+    {
+      "path": "governance/sqa_aggregator.py",
+      "phase": 3,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "Semantic Quorum Assurance aggregator. Enforces risk-adaptive quorum threshold, heterogeneous-validator diversity, and c_sum ≥ c_min. Implements Adm rule R4 (SEG certification).",
+      "self_test": "python3 governance/sqa_aggregator.py"
+    },
+    {
+      "path": "governance/bls_signatures.py",
+      "phase": 3,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "BLS aggregate signature module. Cryptographically binds (validator_id, c_i) pairs to the Z3 witness hash, ensuring non-repudiation. Implements the evidence-binding primitive required by Adm rule R3.",
+      "self_test": "python3 governance/bls_signatures.py"
+    },
+    {
+      "path": "governance/seg_controller.py",
+      "phase": 3,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "Sovereign Execution Gate admission controller. Performs 5 checks: evidence_chain.admissible, seq epoch, SQA quorum, Z3 witness hash binding, sqa_certificate_ref resolution. The final authority on whether a mutation may take effect.",
+      "self_test": "python3 governance/seg_controller.py"
+    },
+    {
+      "path": "self_healing/digital_dna.py",
+      "phase": 5,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "Digital DNA encoder. Every artefact committed to the SRS carries a 256-bit DNA strand. The Antibody Repertoire scans DNA against known-defective patterns; matches trigger the CI/CD refactoring loop.",
+      "self_test": "python3 self_healing/digital_dna.py"
+    },
+    {
+      "path": "self_healing/antibody_maturation.py",
+      "phase": 5,
+      "role": "implements",
+      "adm_rules": ["Adm_behavioural"],
+      "description": "Antibody Repertoire with Affinity Maturation. Seeds known-defective patterns, records TP/FP outcomes, spawns mutated variants for finer-grained matching. Feeds the heuristic validator in the SQA quorum.",
+      "self_test": "python3 self_healing/antibody_maturation.py"
+    }
+  ],
+  "summary": {
+    "total_files": 21,
+    "by_phase": {
+      "phase_1_kernel": 3,
+      "phase_2_cognition": 8,
+      "phase_3_verification": 4,
+      "phase_3_governance": 3,
+      "phase_4_simulation": 2,
+      "phase_5_self_healing": 2
+    },
+    "by_adm_rule": {
+      "Adm_spatial": 4,
+      "Adm_temporal": 3,
+      "Adm_thermal": 7,
+      "Adm_behavioural": 13
+    },
+    "coverage": "Every file in the repository is linked to at least one Adm rule. The Adm_behavioural rule (I×C×A×R relation) is the most widely linked, reflecting its role as the cognitive-layer complement to the state-level Adm_spatial/temporal/thermal rules."
+  }
+}

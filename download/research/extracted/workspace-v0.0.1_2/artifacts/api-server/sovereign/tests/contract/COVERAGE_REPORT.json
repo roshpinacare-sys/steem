@@ -1,0 +1,1173 @@
+{
+  "generatedAt": "2026-06-22T11:12:33.502Z",
+  "summary": {
+    "total": 124,
+    "verified": 93,
+    "reachable-only": 31,
+    "shape-mismatch": 0,
+    "not-registered": 0,
+    "crash": 0
+  },
+  "entries": [
+    {
+      "opId": "acceptIntroduction",
+      "method": "post",
+      "path": "/introduction/{id}/accept",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "adapterRun",
+      "method": "post",
+      "path": "/adapter/run",
+      "expectStatus": 201,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "adapter-allowed"
+    },
+    {
+      "opId": "approveExecution",
+      "method": "post",
+      "path": "/execution/{id}/approve",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "adapter-approval"
+    },
+    {
+      "opId": "authApiKeysCreate",
+      "method": "post",
+      "path": "/auth/api-keys",
+      "expectStatus": 201,
+      "liveStatus": 201,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "authApiKeysList",
+      "method": "get",
+      "path": "/auth/api-keys",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "authApiKeysRevoke",
+      "method": "delete",
+      "path": "/auth/api-keys/{keyId}",
+      "expectStatus": 204,
+      "liveStatus": 404,
+      "hasResponseShape": false,
+      "classification": "verified",
+      "statefulFlow": "api-key-lifecycle"
+    },
+    {
+      "opId": "buildDisputeProof",
+      "method": "post",
+      "path": "/dispute/proof",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "buildRedactedProofBundle",
+      "method": "post",
+      "path": "/track-record/redacted-proof-bundle",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "claimMarketplaceOpportunity",
+      "method": "post",
+      "path": "/marketplace/opportunities/{id}/claim",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "completeCollaboration",
+      "method": "post",
+      "path": "/potential/collaboration/{escrowId}/complete",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "computeSuccessPath",
+      "method": "post",
+      "path": "/potential/success-path",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": false,
+      "classification": "verified",
+      "statefulFlow": "potential-success-path"
+    },
+    {
+      "opId": "createEscrow",
+      "method": "post",
+      "path": "/escrow",
+      "expectStatus": 201,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "createExecution",
+      "method": "post",
+      "path": "/execution",
+      "expectStatus": 201,
+      "liveStatus": 201,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "createLedgerAccount",
+      "method": "post",
+      "path": "/ledger/accounts",
+      "expectStatus": 201,
+      "liveStatus": 400,
+      "hasResponseShape": false,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "createMarketplaceOpportunity",
+      "method": "post",
+      "path": "/marketplace/opportunities",
+      "expectStatus": 201,
+      "liveStatus": 201,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "createSettlement",
+      "method": "post",
+      "path": "/settlement",
+      "expectStatus": 201,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-happy"
+    },
+    {
+      "opId": "createTenant",
+      "method": "post",
+      "path": "/tenants",
+      "expectStatus": 201,
+      "liveStatus": 201,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "deleteMarketplaceOpportunity",
+      "method": "delete",
+      "path": "/marketplace/opportunities/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "deleteWebhook",
+      "method": "delete",
+      "path": "/webhooks/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "webhook-happy"
+    },
+    {
+      "opId": "disengageKillSwitch",
+      "method": "post",
+      "path": "/admin/kill-switch/disengage",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "disputeEscrow",
+      "method": "post",
+      "path": "/escrow/{id}/dispute",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-dispute"
+    },
+    {
+      "opId": "disputeSettlement",
+      "method": "post",
+      "path": "/settlement/{id}/dispute",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-dispute-reverse"
+    },
+    {
+      "opId": "engageKillSwitch",
+      "method": "post",
+      "path": "/admin/kill-switch/engage",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "evaluateConfidence",
+      "method": "post",
+      "path": "/confidence/evaluate",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "explainDriftCompliance",
+      "method": "post",
+      "path": "/risk/drift-explain",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "exportTenantData",
+      "method": "get",
+      "path": "/sovereignty/export",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": false,
+      "classification": "verified"
+    },
+    {
+      "opId": "findCollaborators",
+      "method": "post",
+      "path": "/potential/collaboration",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": false,
+      "classification": "verified",
+      "statefulFlow": "potential-collaboration"
+    },
+    {
+      "opId": "fundEscrow",
+      "method": "post",
+      "path": "/escrow/{id}/fund",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "fundSettlement",
+      "method": "post",
+      "path": "/settlement/{id}/fund",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-happy"
+    },
+    {
+      "opId": "generateThresholdApproval",
+      "method": "post",
+      "path": "/settlement/{id}/threshold-approval",
+      "expectStatus": 201,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-threshold"
+    },
+    {
+      "opId": "getApiDocs",
+      "method": "get",
+      "path": "/docs",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": false,
+      "classification": "verified"
+    },
+    {
+      "opId": "getArbitrageQuotes",
+      "method": "post",
+      "path": "/arbitrage/quotes",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getArdCatalog",
+      "method": "get",
+      "path": "/.well-known/ai-catalog.json",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getAuditTrail",
+      "method": "get",
+      "path": "/audit-trail",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getCachedCollaborators",
+      "method": "get",
+      "path": "/potential/collaboration/{userId}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "potential-collaboration"
+    },
+    {
+      "opId": "getCurrentSigningKey",
+      "method": "get",
+      "path": "/keys/current",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getDashboard",
+      "method": "get",
+      "path": "/dashboard",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": false,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getEscrow",
+      "method": "get",
+      "path": "/escrow/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "getExecution",
+      "method": "get",
+      "path": "/execution/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "execution-core"
+    },
+    {
+      "opId": "getExecutionReceipt",
+      "method": "get",
+      "path": "/execution/{id}/receipt",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "adapter-allowed"
+    },
+    {
+      "opId": "getIntroduction",
+      "method": "get",
+      "path": "/introduction/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": false,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getKillSwitchStatus",
+      "method": "get",
+      "path": "/admin/kill-switch/status",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getLedgerAccount",
+      "method": "get",
+      "path": "/ledger/accounts/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "getMarketplaceOpportunity",
+      "method": "get",
+      "path": "/marketplace/opportunities/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getMonitorStatus",
+      "method": "get",
+      "path": "/monitor/status",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getOpenApiSpec",
+      "method": "get",
+      "path": "/openapi.yaml",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": false,
+      "classification": "verified"
+    },
+    {
+      "opId": "getPassportByAuditId",
+      "method": "get",
+      "path": "/passport/{auditId}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getPassportPublicKey",
+      "method": "get",
+      "path": "/passport/public-key",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getPassportRevocationStatus",
+      "method": "get",
+      "path": "/passports/{passportId}/revocation",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getPassportStatus",
+      "method": "get",
+      "path": "/passports/{id}/status",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getPotentialPersonality",
+      "method": "get",
+      "path": "/potential/personality/{userId}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": false,
+      "classification": "verified",
+      "statefulFlow": "potential-personality"
+    },
+    {
+      "opId": "getSettlement",
+      "method": "get",
+      "path": "/settlement/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-happy"
+    },
+    {
+      "opId": "getSigningKeyByKid",
+      "method": "get",
+      "path": "/keys/{kid}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getSuccessPath",
+      "method": "get",
+      "path": "/potential/success-path/{userId}/{opportunityId}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": false,
+      "classification": "verified",
+      "statefulFlow": "potential-success-path"
+    },
+    {
+      "opId": "getTenantInsights",
+      "method": "get",
+      "path": "/insights",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTenantPlan",
+      "method": "get",
+      "path": "/tenants",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTrackRecord",
+      "method": "get",
+      "path": "/track-record/{identityId}",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTrackRecordProof",
+      "method": "get",
+      "path": "/track-record/{identityId}/proof",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTrackRecordProofV2",
+      "method": "get",
+      "path": "/track-record/{identityId}/proof-v2",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTransparencyBalances",
+      "method": "get",
+      "path": "/transparency/balances",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTransparencyChain",
+      "method": "get",
+      "path": "/transparency/chain",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTransparencyLogConsistency",
+      "method": "get",
+      "path": "/transparency-log/consistency",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getTransparencyLogProof",
+      "method": "get",
+      "path": "/transparency/log/proof/{receiptId}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "getTransparencyLogRoot",
+      "method": "get",
+      "path": "/transparency/log/root",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getTransparencyPassports",
+      "method": "get",
+      "path": "/transparency/passports",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "getWitnessQuorum",
+      "method": "get",
+      "path": "/transparency-log/witness/quorum",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "healthCheck",
+      "method": "get",
+      "path": "/healthz",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": false,
+      "classification": "verified",
+      "statefulFlow": "health-check"
+    },
+    {
+      "opId": "importTenantData",
+      "method": "post",
+      "path": "/sovereignty/import",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "indexGetActorSummary",
+      "method": "get",
+      "path": "/index/actors/{actorId}/summary",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "adapter-allowed"
+    },
+    {
+      "opId": "indexGetApproval",
+      "method": "get",
+      "path": "/index/approvals/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "index-approval"
+    },
+    {
+      "opId": "indexGetDispute",
+      "method": "get",
+      "path": "/index/disputes/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-dispute"
+    },
+    {
+      "opId": "indexGetEscrow",
+      "method": "get",
+      "path": "/index/escrows/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "indexGetExecution",
+      "method": "get",
+      "path": "/index/executions/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "adapter-allowed"
+    },
+    {
+      "opId": "indexGetExecutionByAction",
+      "method": "get",
+      "path": "/index/executions/by-action/{actionId}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "adapter-allowed"
+    },
+    {
+      "opId": "indexGetPassport",
+      "method": "get",
+      "path": "/index/passports/{id}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "indexListActors",
+      "method": "get",
+      "path": "/index/actors",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "indexListApprovals",
+      "method": "get",
+      "path": "/index/approvals",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "indexListDisputes",
+      "method": "get",
+      "path": "/index/disputes",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "indexListEscrows",
+      "method": "get",
+      "path": "/index/escrows",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "indexListExecutions",
+      "method": "get",
+      "path": "/index/executions",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "indexListPassports",
+      "method": "get",
+      "path": "/index/passports",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "installPqcProvider",
+      "method": "post",
+      "path": "/admin/pqc/install",
+      "expectStatus": 200,
+      "liveStatus": 503,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "issueBreakGlassTicket",
+      "method": "post",
+      "path": "/sovereignty/break-glass",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "ledgerMint",
+      "method": "post",
+      "path": "/ledger/mint",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "ledgerSolvency",
+      "method": "get",
+      "path": "/ledger/solvency",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "ledgerTransfer",
+      "method": "post",
+      "path": "/ledger/transfer",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-transfer"
+    },
+    {
+      "opId": "ledgerWithdraw",
+      "method": "post",
+      "path": "/ledger/withdraw",
+      "expectStatus": 200,
+      "liveStatus": 403,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "linkMandates",
+      "method": "post",
+      "path": "/receipt/{workflowId}/link-mandates",
+      "expectStatus": 201,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ap2-mandate-linkage"
+    },
+    {
+      "opId": "listEscrow",
+      "method": "get",
+      "path": "/escrow",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "listExecution",
+      "method": "get",
+      "path": "/execution",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "listIntroductionInbox",
+      "method": "get",
+      "path": "/introduction/inbox",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": false,
+      "classification": "verified"
+    },
+    {
+      "opId": "listMarketplaceOpportunities",
+      "method": "get",
+      "path": "/marketplace/opportunities",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "listPassportRevocations",
+      "method": "get",
+      "path": "/passports/revocations",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "listSettlements",
+      "method": "get",
+      "path": "/settlement",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "listSigningKeys",
+      "method": "get",
+      "path": "/keys",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "listWebhooks",
+      "method": "get",
+      "path": "/webhooks",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "listWitnessStatements",
+      "method": "get",
+      "path": "/transparency-log/witness/statements",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "mcpJsonRpcBridge",
+      "method": "post",
+      "path": "/mcp",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "partialReleaseSettlement",
+      "method": "post",
+      "path": "/settlement/{id}/partial-release",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-partial-release"
+    },
+    {
+      "opId": "potentialPersonalityMap",
+      "method": "post",
+      "path": "/potential/personality",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "potential-personality"
+    },
+    {
+      "opId": "potentialProfile",
+      "method": "post",
+      "path": "/potential/profile",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "potential-personality"
+    },
+    {
+      "opId": "readinessCheck",
+      "method": "get",
+      "path": "/readyz",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "refundEscrow",
+      "method": "post",
+      "path": "/escrow/{id}/refund",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-dispute"
+    },
+    {
+      "opId": "registerWebhook",
+      "method": "post",
+      "path": "/webhooks",
+      "expectStatus": 201,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "webhook-happy"
+    },
+    {
+      "opId": "releaseEscrow",
+      "method": "post",
+      "path": "/escrow/{id}/release",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-happy"
+    },
+    {
+      "opId": "releaseSettlement",
+      "method": "post",
+      "path": "/settlement/{id}/release",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-happy"
+    },
+    {
+      "opId": "requestIntroduction",
+      "method": "post",
+      "path": "/introduction/request",
+      "expectStatus": 201,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "reverseSettlement",
+      "method": "post",
+      "path": "/settlement/{id}/reverse",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "settlement-dispute-reverse"
+    },
+    {
+      "opId": "revokePassport",
+      "method": "post",
+      "path": "/passports/revoke",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "rotateKernelKey",
+      "method": "post",
+      "path": "/sovereignty/rotate-key",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "routeMarketplace",
+      "method": "post",
+      "path": "/marketplace/route",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "runEval",
+      "method": "get",
+      "path": "/eval/run",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "runEvalTask",
+      "method": "get",
+      "path": "/eval/run/{taskId}",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "runMonitorNow",
+      "method": "post",
+      "path": "/monitor/run",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "runTransparencyLogConsistencyMonitor",
+      "method": "get",
+      "path": "/transparency-log/consistency/monitor",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "submitWitnessStatement",
+      "method": "post",
+      "path": "/transparency-log/witness",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    },
+    {
+      "opId": "superviseExecution",
+      "method": "post",
+      "path": "/execution/{id}/supervise",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "execution-supervise"
+    },
+    {
+      "opId": "transitionExecution",
+      "method": "post",
+      "path": "/execution/{id}/transition",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "execution-core"
+    },
+    {
+      "opId": "undisputeEscrow",
+      "method": "post",
+      "path": "/escrow/{id}/undispute",
+      "expectStatus": 200,
+      "liveStatus": 404,
+      "hasResponseShape": true,
+      "classification": "verified",
+      "statefulFlow": "ledger-escrow-dispute"
+    },
+    {
+      "opId": "verifyArdAgent",
+      "method": "post",
+      "path": "/ard/verify",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "verifyConfidenceTrace",
+      "method": "post",
+      "path": "/confidence/verify",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "verifyReceipt",
+      "method": "post",
+      "path": "/receipt/verify",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "verifyRedactedProofBundle",
+      "method": "post",
+      "path": "/track-record/redacted-proof-bundle/verify",
+      "expectStatus": 200,
+      "liveStatus": 200,
+      "hasResponseShape": true,
+      "classification": "verified"
+    },
+    {
+      "opId": "verifyTenantBundle",
+      "method": "post",
+      "path": "/sovereignty/verify",
+      "expectStatus": 200,
+      "liveStatus": 400,
+      "hasResponseShape": true,
+      "classification": "reachable-only"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.cache/
+
+# Build output
+dist/
+build/
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# Transformers / ONNX model cache
+node_modules/.cache/transformers/
+/tmp/qodo-fallback/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Wrangler local state
+.wrangler/
+
+# Runtime audit-log artifacts (hash-chained NDJSON written by the agent)
+.audit-log.ndjson
+
+# Test coverage output
+coverage/
+
+# Capacitor-generated Android project (CI regenerates it: android-apk job)
+apps/mission-control/android/
+
+# Verifiable Autonomy Receipts are per-run artifacts (uploaded from CI), never committed
+receipt.json
+
+# Playwright E2E outputs
+apps/mission-control/test-results/
+apps/mission-control/playwright-report/
+apps/mission-control/blob-report/
+apps/mission-control/.playwright/

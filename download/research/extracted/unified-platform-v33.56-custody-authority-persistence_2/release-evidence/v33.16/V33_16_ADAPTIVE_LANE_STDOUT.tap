@@ -1,0 +1,106 @@
+TAP version 13
+# Subtest: uniform training observations create a shadow-only candidate
+ok 1 - uniform training observations create a shadow-only candidate
+  ---
+  duration_ms: 4.61225
+  type: 'test'
+  ...
+# Subtest: candidate discovery rejects too little data, failure, high risk, non-reversible and nondeterminism
+ok 2 - candidate discovery rejects too little data, failure, high risk, non-reversible and nondeterminism
+  ---
+  duration_ms: 1.971837
+  type: 'test'
+  ...
+# Subtest: tampered observation and duplicate evidence are rejected
+ok 3 - tampered observation and duplicate evidence are rejected
+  ---
+  duration_ms: 1.869617
+  type: 'test'
+  ...
+# Subtest: holdout must be separate, sufficient, trusted and result-equivalent
+ok 4 - holdout must be separate, sufficient, trusted and result-equivalent
+  ---
+  duration_ms: 3.811149
+  type: 'test'
+  ...
+# Subtest: shadow mismatch prevents passport issuance and duplicate comparisons do not count twice
+ok 5 - shadow mismatch prevents passport issuance and duplicate comparisons do not count twice
+  ---
+  duration_ms: 3.990994
+  type: 'test'
+  ...
+# Subtest: passport issuer must be independent from qualifier
+ok 6 - passport issuer must be independent from qualifier
+  ---
+  duration_ms: 2.829447
+  type: 'test'
+  ...
+# Subtest: valid passport is signed, expiring, revocable and explicitly activated
+ok 7 - valid passport is signed, expiring, revocable and explicitly activated
+  ---
+  duration_ms: 4.018223
+  type: 'test'
+  ...
+# Subtest: untrusted passport signer and recomputed inner digest cannot verify
+ok 8 - untrusted passport signer and recomputed inner digest cannot verify
+  ---
+  duration_ms: 4.304434
+  type: 'test'
+  ...
+# Subtest: activation cannot widen scopes or outlive passport
+ok 9 - activation cannot widen scopes or outlive passport
+  ---
+  duration_ms: 4.014443
+  type: 'test'
+  ...
+# Subtest: qualified route is shadow-only and executes no external effect
+ok 10 - qualified route is shadow-only and executes no external effect
+  ---
+  duration_ms: 5.658554
+  type: 'test'
+  ...
+# Subtest: policy, authority, scope, schema, toolchain, model and result drift are detected
+ok 11 - policy, authority, scope, schema, toolchain, model and result drift are detected
+  ---
+  duration_ms: 3.070592
+  type: 'test'
+  ...
+# Subtest: any boundary drift, high risk or non-reversible work falls back to full workflow
+ok 12 - any boundary drift, high risk or non-reversible work falls back to full workflow
+  ---
+  duration_ms: 4.578371
+  type: 'test'
+  ...
+# Subtest: valid revocation forces fallback and untrusted revocation does not qualify as a valid signed revocation
+ok 13 - valid revocation forces fallback and untrusted revocation does not qualify as a valid signed revocation
+  ---
+  duration_ms: 4.282371
+  type: 'test'
+  ...
+# Subtest: missing revocation trust context fails closed when revocation evidence exists
+ok 14 - missing revocation trust context fails closed when revocation evidence exists
+  ---
+  duration_ms: 3.257816
+  type: 'test'
+  ...
+# Subtest: expired passport and expired activation fall back to full workflow
+ok 15 - expired passport and expired activation fall back to full workflow
+  ---
+  duration_ms: 3.294691
+  type: 'test'
+  ...
+# Subtest: forged activation signature cannot enable shortcut
+ok 16 - forged activation signature cannot enable shortcut
+  ---
+  duration_ms: 4.013527
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 175.75443

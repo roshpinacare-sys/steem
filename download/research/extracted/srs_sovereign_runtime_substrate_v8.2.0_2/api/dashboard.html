@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRS — Sovereign Runtime Substrate Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+               background: #0f172a; color: #e2e8f0; }
+        .header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155;
+                  display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 24px; color: #38bdf8; }
+        .header .version { font-size: 14px; color: #64748b; }
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+        .card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+        .card h2 { font-size: 18px; color: #94a3b8; margin-bottom: 15px; }
+        .stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; }
+        .stat:last-child { border-bottom: none; }
+        .stat .label { color: #64748b; }
+        .stat .value { color: #38bdf8; font-weight: bold; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-ok { background: #064e3b; color: #34d399; }
+        .badge-warn { background: #451a03; color: #fbbf24; }
+        .badge-err { background: #450a0a; color: #f87171; }
+        .footer { text-align: center; padding: 20px; color: #475569; font-size: 12px; }
+        .refresh { background: #0ea5e9; color: white; border: none; padding: 8px 16px;
+                   border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .refresh:hover { background: #0284c7; }
+        #audit-list { max-height: 300px; overflow-y: auto; }
+        .audit-entry { padding: 8px; border-bottom: 1px solid #334155; font-size: 13px; }
+        .audit-entry .ts { color: #64748b; font-size: 11px; }
+        .audit-entry .action { color: #38bdf8; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ SRS Dashboard</h1>
+        <div>
+            <span class="version" id="version">v5.4.0</span>
+            <button class="refresh" onclick="refresh()">↻ Refresh</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2>Health</h2>
+            <div id="health-stats"></div>
+        </div>
+        <div class="card">
+            <h2>Runtime Stats</h2>
+            <div id="runtime-stats"></div>
+        </div>
+        <div class="card">
+            <h2>Audit Trail (Last 10 Events)</h2>
+            <div id="audit-list"><p style="color:#64748b">Loading...</p></div>
+        </div>
+        <div class="card">
+            <h2>Policies</h2>
+            <div id="policy-list"><p style="color:#64748b">Loading...</p></div>
+        </div>
+    </div>
+    <div class="footer">
+        SRS — Sovereign Runtime Substrate | Formal Verification + Cryptographic Governance + Self-Healing
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let API_KEY = localStorage.getItem('srs_api_key') || '';
+
+        async function api(path) {
+            const headers = {};
+            if (API_KEY) headers['Authorization'] = 'Bearer ' + API_KEY;
+            const resp = await fetch(API_URL + path, { headers });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            return resp.json();
+        }
+
+        async function refresh() {
+            try {
+                // Health
+                const health = await api('/v1/health');
+                document.getElementById('health-stats').innerHTML = `
+                    <div class="stat"><span class="label">Status</span><span class="value"><span class="badge badge-ok">${health.status}</span></span></div>
+                    <div class="stat"><span class="label">Version</span><span class="value">${health.version}</span></div>
+                    <div class="stat"><span class="label">Tests Passing</span><span class="value">${health.tests_passing}</span></div>
+                    <div class="stat"><span class="label">Coverage</span><span class="value">${health.coverage}</span></div>
+                `;
+
+                // Stats
+                const stats = await api('/v1/stats');
+                const auditValid = stats.audit.chain_valid ? '<span class="badge badge-ok">VALID</span>' : '<span class="badge badge-err">TAMPERED</span>';
+                document.getElementById('runtime-stats').innerHTML = `
+                    <div class="stat"><span class="label">Audit Chain</span><span class="value">${auditValid}</span></div>
+                    <div class="stat"><span class="label">Audit Events</span><span class="value">${stats.audit.total_events || 0}</span></div>
+                    <div class="stat"><span class="label">SEG Certified</span><span class="value">${stats.seg.certified || 0}</span></div>
+                    <div class="stat"><span class="label">SEG Rejected</span><span class="value">${stats.seg.rejected || 0}</span></div>
+                    <div class="stat"><span class="label">Identities</span><span class="value">${stats.identities}</span></div>
+                    <div class="stat"><span class="label">Tenants</span><span class="value">${stats.tenants}</span></div>
+                    <div class="stat"><span class="label">API Keys</span><span class="value">${stats.api_keys}</span></div>
+                    <div class="stat"><span class="label">Policies</span><span class="value">${stats.policies}</span></div>
+                `;
+
+                // Audit trail
+                try {
+                    const audit = await api('/v1/audit');
+                    const events = (audit.events || []).slice(-10).reverse();
+                    document.getElementById('audit-list').innerHTML = events.map(e => `
+                        <div class="audit-entry">
+                            <span class="ts">${new Date(e.timestamp * 1000).toLocaleTimeString()}</span>
+                            <span class="action">${e.action}</span>
+                            → ${e.resource} (${e.outcome})
+                        </div>
+                    `).join('') || '<p style="color:#64748b">No events</p>';
+                } catch(e) {
+                    document.getElementById('audit-list').innerHTML = '<p style="color:#f87171">Requires auditor role</p>';
+                }
+
+                // Policies
+                try {
+                    const policies = await api('/v1/policies');
+                    document.getElementById('policy-list').innerHTML = (policies.policies || []).map(p => `
+                        <div class="stat"><span class="label">${p.name}</span><span class="value"><span class="badge ${p.effect === 'deny' ? 'badge-err' : p.effect === 'require_approval' ? 'badge-warn' : 'badge-ok'}">${p.effect}</span></span></div>
+                    `).join('') || '<p style="color:#64748b">No policies</p>';
+                } catch(e) {
+                    document.getElementById('policy-list').innerHTML = '<p style="color:#f87171">Auth required</p>';
+                }
+
+            } catch (e) {
+                document.getElementById('health-stats').innerHTML = '<p style="color:#f87171">Error: ' + e.message + '</p>';
+            }
+        }
+
+        refresh();
+        setInterval(refresh, 5000); // auto-refresh every 5s
+    </script>
+</body>
+</html>

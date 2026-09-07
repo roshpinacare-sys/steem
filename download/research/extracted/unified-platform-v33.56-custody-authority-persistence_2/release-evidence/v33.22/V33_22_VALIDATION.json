@@ -1,0 +1,65 @@
+{
+  "version": "33.22",
+  "status": "passed",
+  "evidenceClass": "LOCAL_SYNTHETIC_HA_PITR_IMPORT_GATE",
+  "gates": {
+    "G0": "passed",
+    "G1": "passed",
+    "G2": "in-progress-not-passed",
+    "G3": "in-progress-not-passed",
+    "G4": "in-progress-not-passed",
+    "G5": "in-progress-not-passed",
+    "G6": "in-progress-not-passed"
+  },
+  "postgresHaPitr": {
+    "status": "POSTGRES_HA_PITR_EVIDENCE_IMPORT_AND_GATE_PROVEN_LOCALLY",
+    "evidenceClass": "LOCAL_SYNTHETIC_HA_PITR_IMPORT_GATE",
+    "syntheticBundleCount": 2,
+    "syntheticBundleImportedCount": 2,
+    "syntheticBundleEligibleCount": 0,
+    "syntheticBundleAcceptedCount": 0,
+    "artifactCount": 13,
+    "artifactBytesVerified": true,
+    "replayIdempotent": true,
+    "tamperedArtifactRejected": true,
+    "ledgerEventCount": 2,
+    "requiredIndependentOperators": 2,
+    "requiredIndependentHosts": 2,
+    "qualificationVerdict": "EXTERNAL_HA_PITR_QUALIFICATION_REQUIRED",
+    "liveExternalEvidenceImported": 0,
+    "liveHaPitrQualified": false,
+    "failoverExecuted": false,
+    "backupExecuted": false,
+    "restoreExecuted": false,
+    "pitrExecuted": false,
+    "operatorKitFileCount": 10,
+    "externalEffectsExecuted": 0,
+    "productionAuthority": "NONE",
+    "productionPromotion": "blocked"
+  },
+  "regression": {
+    "testFiles": 207,
+    "tests": 1566,
+    "passed": 1566,
+    "failed": 0
+  },
+  "directV33": {
+    "testFiles": 22,
+    "tests": 399,
+    "passed": 399,
+    "failed": 0
+  },
+  "truthMap": {
+    "sourceModules": 211,
+    "testFiles": 207,
+    "findings": 0
+  },
+  "architecture": {
+    "sourceCycleCount": 0,
+    "untestedSourceCount": 0,
+    "capabilityPathCount": 139,
+    "closedCapabilityPathCount": 139
+  },
+  "errors": [],
+  "productionPromotion": "blocked"
+}

@@ -1,0 +1,27 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { KeyRegistry, generateSigningIdentity, sha256, sha256Bytes } from '../dist/src/contracts/crypto.js';
+import { qualifyExecutionBundleV33_54, verifyQualificationExecutionVerdictV33_54 } from '../dist/src/supply-chain/persistence-qualification-execution-bundle-v33_54.js';
+
+const root=resolve('.'),proofPath=join(root,'release-evidence/v33.54/V33_54_PERSISTENCE_QUALIFICATION_EXECUTION_BUNDLE_PROOF.json');
+const proof=JSON.parse(readFileSync(proofPath,'utf8'));
+const baseVerify=spawnSync(process.execPath,['scripts/verify-evidence-intake-operations-persistence-qualification-v33_53.mjs'],{cwd:root,encoding:'utf8'});if(baseVerify.status!==0)throw new Error(`v33_53_verifier_failed:${baseVerify.stderr||baseVerify.stdout}`);
+const baseProofPath=join(root,proof.base.proofPath);const base=JSON.parse(readFileSync(baseProofPath,'utf8'));if(sha256Bytes(readFileSync(baseProofPath))!==proof.base.proofSha256||base.verdict.payload.verdictDigest!==proof.base.verdictDigest)throw new Error('base_proof_binding');
+const all=new KeyRegistry();for(const k of proof.publicKeys)all.registerExported(k);
+const subset=(ids)=>{const r=new KeyRegistry();for(const id of ids){const k=proof.publicKeys.find(x=>x.keyId===id);if(!k)throw new Error(`missing_key:${id}`);r.registerExported(k);}return r;};
+const trust={policyRegistry:subset(proof.trustedIds.policy),trustedPolicySignerIds:proof.trustedIds.policy,enrollmentRegistry:subset(proof.trustedIds.enrollment),trustedEnrollmentSignerIds:proof.trustedIds.enrollment,responseRegistry:subset(proof.trustedIds.responses),trustedResponseSignerIds:proof.trustedIds.responses,auditorRegistry:subset(proof.trustedIds.auditors),trustedAuditorSignerIds:proof.trustedIds.auditors,drillRegistry:subset(proof.trustedIds.drills),trustedDrillSignerIds:proof.trustedIds.drills,bundleRegistry:subset(proof.trustedIds.bundle),trustedBundleSignerIds:proof.trustedIds.bundle,verdictRegistry:subset(proof.trustedIds.verdict),trustedVerdictSignerIds:proof.trustedIds.verdict,baseRegistry:subset(proof.trustedIds.base),trustedBaseSignerIds:proof.trustedIds.base,trustedExternalEvidenceDigests:proof.trustedIds.trustedExternalEvidenceDigests};
+const processRecords=[...proof.executionEvidence.processEvidence,...proof.executionEvidence.drillProcessEvidence];
+for(const rec of processRecords){if(rec.path.startsWith('/')||rec.path.includes('..')||rec.path.includes('\\'))throw new Error('non_portable_process_path');const bytes=readFileSync(join(root,rec.path));if(bytes.length!==rec.byteLength||sha256Bytes(bytes)!==rec.sha256||!rec.fileFsync||!rec.directoryFsync||!rec.readBackVerified)throw new Error('process_evidence_mismatch');}
+for(const f of proof.executionEvidence.files){const bytes=readFileSync(join(root,f.path));if(bytes.length!==f.byteLength||sha256Bytes(bytes)!==f.sha256)throw new Error('bundle_file_mismatch');}
+const recomputed=qualifyExecutionBundleV33_54({signer:generateSigningIdentity('v3354-recompute-verdict'),policy:proof.policy,baseVerdict:base.verdict,enrollments:proof.enrollments,responses:proof.responses,audits:proof.audits,drills:proof.drills,bundle:proof.bundle,trust,verifiedAt:new Date(proof.verdict.payload.verifiedAt)});
+// qualify signs at the end; replace the generated envelope with the stored signature after verifying payload equality.
+if(sha256(recomputed.payload)!==sha256(proof.verdict.payload))throw new Error('verdict_payload_recompute');
+verifyQualificationExecutionVerdictV33_54({verdict:proof.verdict,recomputed:proof.verdict,trust,verifiedAt:new Date(proof.verdict.payload.verifiedAt)});
+for(const att of proof.processAttestations){if(!all.verifyAt(att,new Date(proof.verdict.payload.verifiedAt)))throw new Error('process_attestation_signature');const p={...att.payload};delete p.attestationDigest;if(sha256(p)!==att.payload.attestationDigest||att.payload.productionAuthority!=='NONE'||att.payload.externalEffectsExecuted!==0)throw new Error('process_attestation_contract');}
+const signatureCount=1+proof.enrollments.length+proof.responses.length+proof.audits.length+proof.drills.length+1+1+proof.processAttestations.length;
+if(signatureCount!==48||proof.summary.newSignatureCount!==48||proof.summary.totalChainSignatureCount!==proof.base.baseTotalChainSignatureCount+48)throw new Error('signature_count');
+if(!Object.values(proof.attacks).every(Boolean))throw new Error('attack_not_blocked');
+if(proof.verdict.payload.status!=='LOCAL_QUALIFICATION_EXECUTION_REHEARSAL_ONLY'||proof.verdict.payload.externalTopologyObserved||proof.verdict.payload.productionAuthority!=='NONE'||proof.verdict.payload.externalEffectsExecuted!==0)throw new Error('truth_boundary');
+const result={version:'33.54',status:'PASS',verifiedAt:new Date().toISOString(),proofSha256:sha256Bytes(readFileSync(proofPath)),baseProofVerified:true,newSignatureCount:48,totalChainSignatureCount:proof.summary.totalChainSignatureCount,roleProcessCount:proof.summary.roleProcessCount,drillProcessCount:proof.summary.drillProcessCount,portableEvidencePathsVerified:true,processEvidenceFilesVerified:processRecords.length,verdictDigest:proof.verdict.payload.verdictDigest,truthBoundary:proof.truthBoundary};
+const out=join(root,'release-evidence/v33.54/V33_54_INDEPENDENT_VERIFICATION.json');writeFileSync(out,`${JSON.stringify(result,null,2)}\n`);console.log(JSON.stringify(result,null,2));

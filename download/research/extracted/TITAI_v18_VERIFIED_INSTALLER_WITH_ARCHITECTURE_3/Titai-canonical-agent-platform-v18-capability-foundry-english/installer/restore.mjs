@@ -1,0 +1,16 @@
+import { createInterface } from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
+import { resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { runNpm } from "./common.mjs";
+await import("./stop.mjs");
+const rl = createInterface({ input, output });
+const rawPath = await rl.question("Full backup file path: ");
+const passphrase = await rl.question("Backup passphrase: ");
+const confirm = await rl.question("Type RESTORE to replace the current database: ");
+rl.close();
+if (confirm !== "RESTORE") throw new Error("restore_cancelled");
+const path = resolve(rawPath.trim().replace(/^"|"$/g, ""));
+if (!existsSync(path)) throw new Error(`backup_not_found:${path}`);
+runNpm(["run", "backup:restore"], { env: { TITAI_BACKUP_PASSPHRASE: passphrase, TITAI_BACKUP_PATH: path, TITAI_RESTORE_OVERWRITE: "1" } });
+console.log("Restore complete. Run START.cmd.");

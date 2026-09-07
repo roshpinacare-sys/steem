@@ -1,0 +1,81 @@
+{
+  "version": "32.5",
+  "status": "passed-integrated-pilot",
+  "readiness": "Integrated Pilot",
+  "productionPromotion": "blocked",
+  "controls": [
+    {
+      "control": "Local correctness",
+      "passed": true,
+      "status": "implemented-and-exercised"
+    },
+    {
+      "control": "Coverage gate",
+      "passed": true,
+      "status": "implemented-and-exercised"
+    },
+    {
+      "control": "Architecture closure",
+      "passed": true,
+      "status": "implemented-and-exercised"
+    },
+    {
+      "control": "Credential sovereignty mutations",
+      "passed": true,
+      "status": "implemented-and-exercised"
+    },
+    {
+      "control": "Portable trust bundle and rollback proof",
+      "passed": true,
+      "status": "implemented-and-exercised-single-host"
+    },
+    {
+      "control": "Integration closure",
+      "passed": true,
+      "status": "integrated-and-exercised"
+    },
+    {
+      "control": "PostgreSQL primary/standby",
+      "passed": false,
+      "status": "environment-blocked"
+    },
+    {
+      "control": "KMS/HSM or external monotonic witness",
+      "passed": false,
+      "status": "environment-blocked"
+    },
+    {
+      "control": "Independent penetration and custody audit",
+      "passed": false,
+      "status": "operationally-unqualified"
+    },
+    {
+      "control": "Human comparative pilot",
+      "passed": false,
+      "status": "operationally-unqualified"
+    }
+  ],
+  "blockers": [
+    {
+      "control": "PostgreSQL primary/standby",
+      "status": "environment-blocked"
+    },
+    {
+      "control": "KMS/HSM or external monotonic witness",
+      "status": "environment-blocked"
+    },
+    {
+      "control": "Independent penetration and custody audit",
+      "status": "operationally-unqualified"
+    },
+    {
+      "control": "Human comparative pilot",
+      "status": "operationally-unqualified"
+    }
+  ],
+  "limitations": [
+    "Signatures prove authorization and material binding, not truth or legal independence.",
+    "The independent file anchor detects rollback of the bundle store alone; joint rollback of bundle and anchor remains unprotected without external monotonic storage, HSM or federation.",
+    "The proof is single-host and uses local test keys; PostgreSQL, KMS/HSM, live provider and human value are not qualified."
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "version": "33.20",
+  "status": "EXTERNAL_DURABLE_AUTHORITY_REFERENCE_PROVEN_LOCALLY",
+  "evidenceClass": "LOCAL_SUPERVISORD_TWO_DAEMON_SQLITE_WAL_REFERENCE",
+  "managedAuthorityDaemonCount": 2,
+  "serviceManager": "SUPERVISORD",
+  "serviceManagerRestartProven": true,
+  "sharedDurableBackend": "SQLITE_WAL",
+  "separateDurableWitness": "SEPARATE_SQLITE_WAL_REFERENCE",
+  "controllerRaceSingleWinner": true,
+  "fenceBeforeRestart": 1,
+  "fenceAfterRestart": 2,
+  "enterpriseIdentityProvider": "LOCAL_ENTERPRISE_PKI_REFERENCE",
+  "workloadUriSanRequired": true,
+  "enterpriseIdentityRotationCount": 1,
+  "oldIdentityRejectedAfterRotation": true,
+  "authorityIntegrityVerified": true,
+  "decisionCount": 3,
+  "outboxEventCount": 3,
+  "witnessReceiptCount": 1,
+  "infrastructureProbes": [
+    {
+      "version": "33.20",
+      "component": "SQLITE_WAL",
+      "status": "LOCAL_REFERENCE_QUALIFIED",
+      "executable": "/opt/nvm/versions/node/v22.16.0/bin/node",
+      "qualification": "LOCAL_REFERENCE_ONLY",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "48cc17f7319d15f3ba747e13520cf9485a44a4a5a4e50454d88d202b443353f2"
+    },
+    {
+      "version": "33.20",
+      "component": "POSTGRESQL",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "0110e98692d5252494359530ed36af6bceff6642f6d43b8240a7db8441717b6f"
+    },
+    {
+      "version": "33.20",
+      "component": "ETCD",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "98c8c0888e749f41e8e88d5cd4fdb3310b141960754595112fbbcd03144014cb"
+    },
+    {
+      "version": "33.20",
+      "component": "CONSUL",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "d04993a56f30d2cd0e0b6f97e550f1bbe64ac90e20926aa534642877d3be33ca"
+    },
+    {
+      "version": "33.20",
+      "component": "SUPERVISORD",
+      "status": "LOCAL_REFERENCE_QUALIFIED",
+      "executable": "/usr/bin/supervisord",
+      "qualification": "LOCAL_REFERENCE_ONLY",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "918ed63adc439be5cee00a1ceda523982eee7df3c5f62070877d52e6d98e22f5"
+    },
+    {
+      "version": "33.20",
+      "component": "SYSTEMD",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "executable": "/usr/bin/systemctl",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "e16ac0e69ebe250f8d43d372741f5275b71d798746461f43087e797e1390de88"
+    },
+    {
+      "version": "33.20",
+      "component": "SPIFFE_SPIRE",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "703d439fc555ed56e2a2fa2f2e20645451a2a67c9aaf82c98af3012e6f999de5"
+    },
+    {
+      "version": "33.20",
+      "component": "NETEM",
+      "status": "UNAVAILABLE_FAIL_CLOSED",
+      "executable": "/usr/sbin/tc",
+      "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+      "productionAuthority": "NONE",
+      "probedAt": "2026-07-21T18:47:17.082Z",
+      "probeDigest": "a75fbf7267a98f6d65a8b723114249c7c45ace4fd608c7053b8e6e72c91e4f9d"
+    }
+  ],
+  "externalQualificationChallengeDigest": "5743e676f793e7a714f3f3f94e48400e6b2f32c98774302405866dcf08ca4a7c",
+  "externalQualificationAccepted": false,
+  "externalEffectsExecuted": 0,
+  "productionAuthority": "NONE",
+  "limitations": [
+    "SINGLE_HOST_ONLY",
+    "SQLITE_WAL_NOT_POSTGRESQL_ETCD_OR_CONSUL",
+    "LOCAL_ENTERPRISE_PKI_NOT_SPIFFE_SPIRE",
+    "SUPERVISORD_LOCAL_REFERENCE_NOT_EXTERNAL_SERVICE_MANAGER_QUALIFICATION",
+    "NO_REAL_NETWORK_PARTITION_OR_NETEM",
+    "WITNESS_SEPARATE_DATABASE_BUT_SAME_HOST",
+    "NODE_SQLITE_EXPERIMENTAL_API",
+    "NO_KMS_HSM_OR_PRODUCTION_AUTHORITY"
+  ],
+  "productionPromotion": "blocked",
+  "proofDigest": "3f303f39521928b3275e8f71f09889ec0c44da7e62d2f2296bc481980cb36418",
+  "proofEnvelope": {
+    "signedProof": {
+      "payload": {
+        "version": "33.20",
+        "status": "EXTERNAL_DURABLE_AUTHORITY_REFERENCE_PROVEN_LOCALLY",
+        "evidenceClass": "LOCAL_SUPERVISORD_TWO_DAEMON_SQLITE_WAL_REFERENCE",
+        "managedAuthorityDaemonCount": 2,
+        "serviceManager": "SUPERVISORD",
+        "serviceManagerRestartProven": true,
+        "sharedDurableBackend": "SQLITE_WAL",
+        "separateDurableWitness": "SEPARATE_SQLITE_WAL_REFERENCE",
+        "controllerRaceSingleWinner": true,
+        "fenceBeforeRestart": 1,
+        "fenceAfterRestart": 2,
+        "enterpriseIdentityProvider": "LOCAL_ENTERPRISE_PKI_REFERENCE",
+        "workloadUriSanRequired": true,
+        "enterpriseIdentityRotationCount": 1,
+        "oldIdentityRejectedAfterRotation": true,
+        "authorityIntegrityVerified": true,
+        "decisionCount": 3,
+        "outboxEventCount": 3,
+        "witnessReceiptCount": 1,
+        "infrastructureProbes": [
+          {
+            "version": "33.20",
+            "component": "SQLITE_WAL",
+            "status": "LOCAL_REFERENCE_QUALIFIED",
+            "executable": "/opt/nvm/versions/node/v22.16.0/bin/node",
+            "qualification": "LOCAL_REFERENCE_ONLY",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "48cc17f7319d15f3ba747e13520cf9485a44a4a5a4e50454d88d202b443353f2"
+          },
+          {
+            "version": "33.20",
+            "component": "POSTGRESQL",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "0110e98692d5252494359530ed36af6bceff6642f6d43b8240a7db8441717b6f"
+          },
+          {
+            "version": "33.20",
+            "component": "ETCD",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "98c8c0888e749f41e8e88d5cd4fdb3310b141960754595112fbbcd03144014cb"
+          },
+          {
+            "version": "33.20",
+            "component": "CONSUL",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "d04993a56f30d2cd0e0b6f97e550f1bbe64ac90e20926aa534642877d3be33ca"
+          },
+          {
+            "version": "33.20",
+            "component": "SUPERVISORD",
+            "status": "LOCAL_REFERENCE_QUALIFIED",
+            "executable": "/usr/bin/supervisord",
+            "qualification": "LOCAL_REFERENCE_ONLY",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "918ed63adc439be5cee00a1ceda523982eee7df3c5f62070877d52e6d98e22f5"
+          },
+          {
+            "version": "33.20",
+            "component": "SYSTEMD",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "executable": "/usr/bin/systemctl",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "e16ac0e69ebe250f8d43d372741f5275b71d798746461f43087e797e1390de88"
+          },
+          {
+            "version": "33.20",
+            "component": "SPIFFE_SPIRE",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "703d439fc555ed56e2a2fa2f2e20645451a2a67c9aaf82c98af3012e6f999de5"
+          },
+          {
+            "version": "33.20",
+            "component": "NETEM",
+            "status": "UNAVAILABLE_FAIL_CLOSED",
+            "executable": "/usr/sbin/tc",
+            "qualification": "EXTERNAL_QUALIFICATION_REQUIRED",
+            "productionAuthority": "NONE",
+            "probedAt": "2026-07-21T18:47:17.082Z",
+            "probeDigest": "a75fbf7267a98f6d65a8b723114249c7c45ace4fd608c7053b8e6e72c91e4f9d"
+          }
+        ],
+        "externalQualificationChallengeDigest": "5743e676f793e7a714f3f3f94e48400e6b2f32c98774302405866dcf08ca4a7c",
+        "externalQualificationAccepted": false,
+        "externalEffectsExecuted": 0,
+        "productionAuthority": "NONE",
+        "limitations": [
+          "SINGLE_HOST_ONLY",
+          "SQLITE_WAL_NOT_POSTGRESQL_ETCD_OR_CONSUL",
+          "LOCAL_ENTERPRISE_PKI_NOT_SPIFFE_SPIRE",
+          "SUPERVISORD_LOCAL_REFERENCE_NOT_EXTERNAL_SERVICE_MANAGER_QUALIFICATION",
+          "NO_REAL_NETWORK_PARTITION_OR_NETEM",
+          "WITNESS_SEPARATE_DATABASE_BUT_SAME_HOST",
+          "NODE_SQLITE_EXPERIMENTAL_API",
+          "NO_KMS_HSM_OR_PRODUCTION_AUTHORITY"
+        ],
+        "productionPromotion": "blocked",
+        "proofDigest": "3f303f39521928b3275e8f71f09889ec0c44da7e62d2f2296bc481980cb36418"
+      },
+      "issuerKeyId": "v33.20-proof",
+      "algorithm": "Ed25519",
+      "signature": "iBZDSWOX4EBGa5Hsh4YYDiE3PWpZKtGd2CGPs12dgmFn5DCMWNhzw0qzbw6kluezq5DSseQx7_WjqqwYvr5QCw"
+    },
+    "publicKey": {
+      "keyId": "v33.20-proof",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA3LAAah/VybtOeU1tMHzekBu6W2TDhLgYzXRdlyjYxlU=",
+      "fingerprint": "36de1b7cf47d4efe70b7a6d85dc6b62ea25d26f2a782402b26456563b4d2c62c",
+      "revoked": false
+    }
+  }
+}

@@ -1,0 +1,334 @@
+# sdk/github-action/action.yml
+#
+# TFA Trust Gate — GitHub Composite Action
+#
+# Evaluates an ActionIntent through the TFA Trust Control Plane and blocks
+# the workflow step if the action is not allowed (exit 1 for approval_required,
+# exit 2 for denied). Optionally verifies the returned receipt signature
+# offline so that the trust decision is tamper-evident even if the TFA API
+# is later unreachable.
+#
+# Usage in a workflow:
+#
+#   - name: TFA trust gate
+#     uses: tfa/tfa-trust-gate@v1
+#     with:
+#       intent: './.tfa/action-intent.json'     # required
+#       base-url: 'https://tfa.example.com'     # optional; env TFA_BASE_URL
+#       tenant: 'acme'                           # optional; env TFA_TENANT_ID
+#       api-key: ${{ secrets.TFA_API_KEY }}      # optional; env TFA_API_KEY
+#       public-key: ${{ vars.TFA_PUBLIC_KEY }}   # optional; offline Ed25519 verify
+#       secret: ${{ secrets.TFA_HMAC_SECRET }}   # optional; offline HMAC-SHA256 verify
+#       allowed-outcomes: 'allowed'              # optional; comma-list of ok outcomes
+#       json-output: 'false'                     # optional; log raw JSON
+#
+# Outputs:
+#   decision       — "allowed" | "approval_required" | "denied"
+#   execution-id   — executionId from the TFA receipt (if available)
+#   approval-token — approvalToken if approval_required (for human-approval workflows)
+#
+# Exit behaviour (maps TFA CLI exit codes to step pass/fail):
+#   allowed            → step passes (exit 0)
+#   approval_required  → step fails  (exit 1) unless in allowed-outcomes
+#   denied             → step fails  (exit 2) unless in allowed-outcomes
+#   usage error        → step fails  (exit 3)
+#   network error      → step fails  (exit 4)
+#
+# Requirements: Node.js 22+ (standard on GitHub-hosted runners since 2024).
+
+name: 'TFA Trust Gate'
+description: >
+  Evaluate an ActionIntent through the TFA Trust Control Plane. Blocks the
+  workflow step if the action is not allowed, writes signed receipt outputs,
+  and optionally verifies the receipt signature offline.
+
+author: 'TFA'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  intent:
+    description: >
+      Path to the ActionIntent JSON file (relative to the workspace root),
+      or "-" to read from stdin. Required.
+    required: true
+
+  base-url:
+    description: >
+      TFA API base URL (e.g. https://tfa.example.com). Overrides the
+      TFA_BASE_URL environment variable. Defaults to http://localhost:3000
+      when neither is set.
+    required: false
+    default: ''
+
+  tenant:
+    description: >
+      Tenant id to send in x-tenant-id (or x-api-key header, depending on
+      auth mode). Overrides TFA_TENANT_ID env var. Can also be embedded in
+      the intent JSON.
+    required: false
+    default: ''
+
+  api-key:
+    description: >
+      API key for x-api-key authentication. Overrides TFA_API_KEY env var.
+      Store this as a GitHub secret: `api-key: ${{ secrets.TFA_API_KEY }}`.
+    required: false
+    default: ''
+
+  public-key:
+    description: >
+      Ed25519 SPKI PEM public key for offline receipt signature verification.
+      When set, the action verifies the TFA receipt locally after receiving it
+      — the decision cannot be forged even if the network is replayed.
+      Use `${{ vars.TFA_PUBLIC_KEY }}` (not a secret; public keys are safe to
+      store as plaintext repository variables).
+    required: false
+    default: ''
+
+  secret:
+    description: >
+      HMAC-SHA256 secret for offline receipt signature verification (HMAC
+      signer deployments). Mutually exclusive with public-key; if both are
+      set, public-key takes precedence.
+      Store as a GitHub secret: `secret: ${{ secrets.TFA_HMAC_SECRET }}`.
+    required: false
+    default: ''
+
+  allowed-outcomes:
+    description: >
+      Comma-separated list of decision outcomes that should NOT fail the step.
+      Defaults to "allowed". To let approval_required pass through (and handle
+      the token downstream), set allowed-outcomes: "allowed,approval_required".
+    required: false
+    default: 'allowed'
+
+  json-output:
+    description: >
+      If "true", print raw JSON receipt to the step log instead of the
+      human-readable summary. Useful for debugging or downstream jq parsing.
+    required: false
+    default: 'false'
+
+  post-comment:
+    description: >
+      If "true", post the TFA decision and receipt proof as a pull-request
+      comment using the gh CLI. Only has effect when the workflow runs on
+      pull_request. Requires pull-requests: write permission in the workflow.
+    required: false
+    default: 'false'
+
+  github-token:
+    description: >
+      GitHub token for posting PR comments when post-comment is true. Defaults
+      to the automatic GITHUB_TOKEN secret. Store as secret: github-token: ${{ secrets.GITHUB_TOKEN }}.
+    required: false
+    default: '${{ github.token }}'
+
+  node-path:
+    description: >
+      Explicit path to the Node.js binary (e.g. /usr/local/bin/node). Defaults
+      to "node" on PATH. Override when using a custom Node installation or a
+      self-hosted runner with a non-standard PATH.
+    required: false
+    default: 'node'
+
+outputs:
+  decision:
+    description: >
+      The TFA trust decision: "allowed", "approval_required", or "denied".
+    value: ${{ steps.tfa-gate.outputs.decision }}
+
+  execution-id:
+    description: >
+      The executionId from the TFA receipt. Present on allowed and
+      approval_required decisions. Use as a correlation id in downstream steps.
+    value: ${{ steps.tfa-gate.outputs.execution-id }}
+
+  approval-token:
+    description: >
+      The approvalToken returned when decision=approval_required. Pass this
+      to a human-approval step or POST it to /api/execution/{id}/approve.
+    value: ${{ steps.tfa-gate.outputs.approval-token }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Validate Node version'
+      shell: bash
+      run: |
+        NODE="${{ inputs.node-path }}"
+        NODE_VER=$("$NODE" --version 2>/dev/null || echo "missing")
+        echo "[TFA] Node version: $NODE_VER"
+        MAJOR=$(echo "$NODE_VER" | sed 's/v\([0-9]*\).*/\1/')
+        if [ -z "$MAJOR" ] || [ "$MAJOR" -lt 22 ]; then
+          echo "::error::TFA Trust Gate requires Node.js >= 22 (found: $NODE_VER). Add a setup-node step before this action."
+          exit 1
+        fi
+
+    - name: 'Run TFA trust gate'
+      id: tfa-gate
+      shell: bash
+      env:
+        TFA_BASE_URL: ${{ inputs.base-url }}
+        TFA_TENANT_ID: ${{ inputs.tenant }}
+        TFA_API_KEY: ${{ inputs.api-key }}
+      run: |
+        NODE="${{ inputs.node-path }}"
+        ACTION_DIR="${{ github.action_path }}"
+        CLI="$ACTION_DIR/bin/tfa.mjs"
+
+        # Build CLI args
+        ARGS=("check-action" "--intent" "${{ inputs.intent }}")
+
+        if [ -n "${{ inputs.base-url }}" ]; then
+          ARGS+=("--base-url" "${{ inputs.base-url }}")
+        fi
+        if [ -n "${{ inputs.tenant }}" ]; then
+          ARGS+=("--tenant" "${{ inputs.tenant }}")
+        fi
+        if [ -n "${{ inputs.api-key }}" ]; then
+          ARGS+=("--api-key" "${{ inputs.api-key }}")
+        fi
+        if [ "${{ inputs.json-output }}" = "true" ]; then
+          ARGS+=("--json")
+        fi
+
+        # Always request JSON to capture outputs even in human-readable mode
+        # We use a temp file to capture the JSON output separately.
+        # stderr is NOT merged so spinner/ANSI cannot break JSON parsing.
+        JSON_OUT=$(mktemp)
+        "$NODE" "$CLI" "${ARGS[@]}" --json > "$JSON_OUT"
+        TFA_EXIT=$?
+
+        cat "$JSON_OUT"
+
+        # Parse outputs from JSON response
+        DECISION=$(node -e "
+          try {
+            const d = JSON.parse(require('fs').readFileSync('$JSON_OUT', 'utf8'));
+            console.log(d.decision || '');
+          } catch { console.log(''); }
+        " 2>/dev/null || echo "")
+        EXEC_ID=$(node -e "
+          try {
+            const d = JSON.parse(require('fs').readFileSync('$JSON_OUT', 'utf8'));
+            console.log(d.executionId || d.receipt?.executionId || '');
+          } catch { console.log(''); }
+        " 2>/dev/null || echo "")
+        APPROVAL_TOKEN=$(node -e "
+          try {
+            const d = JSON.parse(require('fs').readFileSync('$JSON_OUT', 'utf8'));
+            console.log(d.approvalToken || d.receipt?.approvalToken || '');
+          } catch { console.log(''); }
+        " 2>/dev/null || echo "")
+
+        rm -f "$JSON_OUT"
+
+        echo "decision=$DECISION" >> "$GITHUB_OUTPUT"
+        echo "execution-id=$EXEC_ID" >> "$GITHUB_OUTPUT"
+        echo "approval-token=$APPROVAL_TOKEN" >> "$GITHUB_OUTPUT"
+
+        echo "[TFA] decision=$DECISION executionId=$EXEC_ID exit=$TFA_EXIT"
+
+        # Check allowed-outcomes
+        ALLOWED="${{ inputs.allowed-outcomes }}"
+        IFS=',' read -ra ALLOWED_LIST <<< "$ALLOWED"
+        for outcome in "${ALLOWED_LIST[@]}"; do
+          trimmed="${outcome// /}"
+          if [ "$DECISION" = "$trimmed" ]; then
+            echo "[TFA] Outcome '$DECISION' is in allowed-outcomes — step passes."
+            exit 0
+          fi
+        done
+
+        # Not in allowed list — propagate TFA exit code
+        case $TFA_EXIT in
+          0) echo "[TFA] allowed" ;;
+          1) echo "::error::TFA decision: approval_required — action requires human or policy approval before proceeding." ;;
+          2) echo "::error::TFA decision: denied — action was rejected by the Trust Control Plane." ;;
+          3) echo "::error::TFA usage error — check --intent path, JSON format, and --tenant/--base-url flags." ;;
+          4) echo "::error::TFA network/server error — could not reach the TFA API or received a 5xx response." ;;
+          *) echo "::error::TFA unexpected exit code: $TFA_EXIT" ;;
+        esac
+        exit $TFA_EXIT
+
+    - name: 'Verify receipt signature (offline)'
+      if: ${{ inputs.public-key != '' || inputs.secret != '' }}
+      shell: bash
+      run: |
+        NODE="${{ inputs.node-path }}"
+        DECISION="${{ steps.tfa-gate.outputs.decision }}"
+        EXEC_ID="${{ steps.tfa-gate.outputs.execution-id }}"
+
+        if [ -z "$EXEC_ID" ]; then
+          echo "[TFA] No executionId in outputs — skipping offline verification."
+          exit 0
+        fi
+
+        # Fetch receipt then verify offline
+        ACTION_DIR="${{ github.action_path }}"
+        CLI="$ACTION_DIR/bin/tfa.mjs"
+
+        ARGS=("receipt" "--workflow-id" "$EXEC_ID")
+        if [ -n "${{ inputs.tenant }}" ]; then ARGS+=("--tenant" "${{ inputs.tenant }}"); fi
+        if [ -n "${{ inputs.base-url }}" ]; then ARGS+=("--base-url" "${{ inputs.base-url }}"); fi
+        if [ -n "${{ inputs.api-key }}" ]; then ARGS+=("--api-key" "${{ inputs.api-key }}"); fi
+        if [ -n "${{ inputs.public-key }}" ]; then
+          ARGS+=("--public-key" "${{ inputs.public-key }}")
+        elif [ -n "${{ inputs.secret }}" ]; then
+          ARGS+=("--secret" "${{ inputs.secret }}")
+        fi
+
+        echo "[TFA] Verifying receipt signature for executionId=$EXEC_ID..."
+        "$NODE" "$CLI" "${ARGS[@]}"
+        VER_EXIT=$?
+        if [ $VER_EXIT -ne 0 ]; then
+          echo "::error::TFA receipt signature verification FAILED (exit $VER_EXIT). The receipt may have been tampered with."
+          exit $VER_EXIT
+        fi
+        echo "[TFA] Receipt signature verified ✓"
+
+    - name: 'Post TFA proof as PR comment'
+      if: ${{ inputs.post-comment == 'true' && github.event_name == 'pull_request' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        if ! command -v gh >/dev/null 2>&1; then
+          echo "[TFA] gh CLI not available — skipping PR comment."
+          exit 0
+        fi
+
+        PR_NUMBER="${{ github.event.pull_request.number }}"
+        DECISION="${{ steps.tfa-gate.outputs.decision }}"
+        EXEC_ID="${{ steps.tfa-gate.outputs.execution-id }}"
+        APPROVAL_TOKEN="${{ steps.tfa-gate.outputs.approval-token }}"
+
+        if [ -z "$PR_NUMBER" ]; then
+          echo "[TFA] No PR number available — skipping PR comment."
+          exit 0
+        fi
+
+        BODY="## 🔐 TFA Trust Gate Result
+
+        | Field | Value |
+        |---|---|
+        | Decision | **${DECISION}** |
+        | Execution ID | \`${EXEC_ID}\` |
+        | Approval Token | \`${APPROVAL_TOKEN:-N/A}\` |
+
+        *Verified by the TFA Trust Control Plane.*"
+
+        # Normalize indentation for markdown
+        BODY=$(echo "$BODY" | sed 's/^        //')
+
+        echo "$BODY" | gh pr comment "$PR_NUMBER" --body-file -
+        GH_EXIT=$?
+        if [ $GH_EXIT -ne 0 ]; then
+          echo "::warning::TFA PR comment failed (exit $GH_EXIT). Check pull-requests: write permission."
+          exit 0
+        fi
+        echo "[TFA] PR comment posted ✓"

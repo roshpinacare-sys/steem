@@ -1,0 +1,643 @@
+{
+  "workloads": {
+    "W1_seg_admission": {
+      "workload": "W1_seg_admission",
+      "dimensionality": 4,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 9,
+        "n_raw_laws": 5,
+        "n_compressed_laws": 5,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 53.529325012980806,
+        "compression_ratio": 0.08056966238276726,
+        "state_collapse_ratio": 0.09,
+        "law_collapse_ratio": 0.05
+      },
+      "calibration": {
+        "is_calibrated": true,
+        "metrics": {
+          "brier": 0.0,
+          "ece": 0.0,
+          "wrong_high_conf_rate": 0.0,
+          "n_records": 49
+        },
+        "calibrated_threshold": 0.5,
+        "reliability_curve": [
+          [
+            0.95,
+            1.0,
+            49
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 100.0,
+        "predictions": 49,
+        "predictions_total": 49,
+        "escalations": 0,
+        "rejections": 1,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 4556.0,
+        "savings_pct": 90.89,
+        "note": "accuracy_pct is among PREDICTIONS only (escalations excluded)"
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 100.0,
+        "escalations": 0,
+        "rejections": 0
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 100.0,
+        "ood_accuracy_pct": 100.0,
+        "false_accept_rate": 0.0,
+        "false_reject_rate": 0.05,
+        "threshold": 0.05
+      },
+      "audit": {
+        "total_states_added": 9,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 160,
+        "invariant": 0,
+        "law": 53,
+        "consensus": 75,
+        "escalated": 0,
+        "rejected_ood": 32,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 50,
+        "wrong": 0,
+        "prediction_rate_pct": 80.0,
+        "rejection_rate_pct": 20.0,
+        "accuracy_pct": 100.0
+      }
+    },
+    "W2_policy_gate": {
+      "workload": "W2_policy_gate",
+      "dimensionality": 3,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 7,
+        "n_raw_laws": 5,
+        "n_compressed_laws": 5,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 39.65148445440323,
+        "compression_ratio": 0.05968143096689712,
+        "state_collapse_ratio": 0.07,
+        "law_collapse_ratio": 0.05
+      },
+      "calibration": {
+        "is_calibrated": true,
+        "metrics": {
+          "brier": 2.6666671079486636e-22,
+          "ece": 4.0000225354219765e-12,
+          "wrong_high_conf_rate": 0.0,
+          "n_records": 50
+        },
+        "calibrated_threshold": 0.5,
+        "reliability_curve": [
+          [
+            0.95,
+            1.0,
+            50
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 100.0,
+        "predictions": 50,
+        "predictions_total": 50,
+        "escalations": 0,
+        "rejections": 0,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 5005.7,
+        "savings_pct": 89.99,
+        "note": "accuracy_pct is among PREDICTIONS only (escalations excluded)"
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 100.0,
+        "escalations": 0,
+        "rejections": 0
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 100.0,
+        "ood_accuracy_pct": 100.0,
+        "false_accept_rate": 0.0,
+        "false_reject_rate": 0.0,
+        "threshold": 0.05
+      },
+      "audit": {
+        "total_states_added": 7,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 160,
+        "invariant": 0,
+        "law": 0,
+        "consensus": 130,
+        "escalated": 0,
+        "rejected_ood": 30,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 50,
+        "wrong": 0,
+        "prediction_rate_pct": 81.25,
+        "rejection_rate_pct": 18.75,
+        "accuracy_pct": 100.0
+      }
+    },
+    "W3_sha_like": {
+      "workload": "W3_sha_like",
+      "dimensionality": 4,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 100,
+        "n_raw_laws": 0,
+        "n_compressed_laws": 0,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 664.3856189774724,
+        "compression_ratio": 1.0,
+        "state_collapse_ratio": 1.0,
+        "law_collapse_ratio": 0.0
+      },
+      "calibration": {
+        "is_calibrated": true,
+        "metrics": {
+          "brier": 0.008194957493563469,
+          "ece": 0.06401155166672445,
+          "wrong_high_conf_rate": 0.0,
+          "n_records": 2
+        },
+        "calibrated_threshold": 0.5,
+        "reliability_curve": [
+          [
+            0.8500000000000001,
+            1.0,
+            1
+          ],
+          [
+            0.95,
+            1.0,
+            1
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 43.75,
+        "predictions": 48,
+        "predictions_total": 48,
+        "escalations": 0,
+        "rejections": 2,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 8233.1,
+        "savings_pct": 83.53,
+        "note": "accuracy_pct is among PREDICTIONS only (escalations excluded)"
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 26.67,
+        "escalations": 0,
+        "rejections": 0
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 0.0,
+        "ood_accuracy_pct": 56.67,
+        "false_accept_rate": 1.0,
+        "false_reject_rate": 0.0,
+        "threshold": 0.3551546170107977
+      },
+      "audit": {
+        "total_states_added": 100,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 160,
+        "invariant": 0,
+        "law": 0,
+        "consensus": 110,
+        "escalated": 46,
+        "rejected_ood": 4,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 23,
+        "wrong": 27,
+        "prediction_rate_pct": 68.75,
+        "rejection_rate_pct": 2.5,
+        "accuracy_pct": 46.0
+      }
+    },
+    "W4_random_oracle": {
+      "workload": "W4_random_oracle",
+      "dimensionality": 3,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 100,
+        "n_raw_laws": 2,
+        "n_compressed_laws": 2,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 672.3856189774724,
+        "compression_ratio": 1.0120411998265593,
+        "state_collapse_ratio": 1.0,
+        "law_collapse_ratio": 0.02
+      },
+      "calibration": {
+        "is_calibrated": false,
+        "metrics": {
+          "brier": 0.6276373172885896,
+          "ece": 0.684496325901209,
+          "wrong_high_conf_rate": 0.5,
+          "n_records": 4
+        },
+        "calibrated_threshold": 1.0,
+        "reliability_curve": [
+          [
+            0.8500000000000001,
+            0.0,
+            2
+          ],
+          [
+            0.95,
+            0.5,
+            2
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 0.0,
+        "predictions": 1,
+        "predictions_total": 1,
+        "escalations": 48,
+        "rejections": 1,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 54567.9,
+        "savings_pct": -9.14,
+        "note": "accuracy_pct is among PREDICTIONS only (escalations excluded)"
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 100.0,
+        "escalations": 28,
+        "rejections": 1
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 16.67,
+        "ood_accuracy_pct": 100.0,
+        "false_accept_rate": 0.85,
+        "false_reject_rate": 0.05,
+        "threshold": 0.21874880425599894
+      },
+      "audit": {
+        "total_states_added": 100,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 160,
+        "invariant": 0,
+        "law": 0,
+        "consensus": 6,
+        "escalated": 144,
+        "rejected_ood": 10,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 49,
+        "wrong": 1,
+        "prediction_rate_pct": 3.75,
+        "rejection_rate_pct": 6.25,
+        "accuracy_pct": 98.0
+      }
+    },
+    "W5_noisy_and": {
+      "workload": "W5_noisy_and",
+      "dimensionality": 3,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 8,
+        "n_raw_laws": 6,
+        "n_compressed_laws": 6,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 48.0,
+        "compression_ratio": 0.0722471989593555,
+        "state_collapse_ratio": 0.08,
+        "law_collapse_ratio": 0.06
+      },
+      "calibration": {
+        "is_calibrated": true,
+        "metrics": {
+          "brier": 0.0,
+          "ece": 0.0,
+          "wrong_high_conf_rate": 0.0,
+          "n_records": 50
+        },
+        "calibrated_threshold": 0.5,
+        "reliability_curve": [
+          [
+            0.95,
+            1.0,
+            50
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 100.0,
+        "predictions": 50,
+        "predictions_total": 50,
+        "escalations": 0,
+        "rejections": 0,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 5247.4,
+        "savings_pct": 89.51,
+        "note": "accuracy_pct is among PREDICTIONS only (escalations excluded)"
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 100.0,
+        "escalations": 0,
+        "rejections": 0
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 100.0,
+        "ood_accuracy_pct": 100.0,
+        "false_accept_rate": 0.0,
+        "false_reject_rate": 0.0,
+        "threshold": 0.05
+      },
+      "audit": {
+        "total_states_added": 8,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 160,
+        "invariant": 0,
+        "law": 0,
+        "consensus": 130,
+        "escalated": 0,
+        "rejected_ood": 30,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 50,
+        "wrong": 0,
+        "prediction_rate_pct": 81.25,
+        "rejection_rate_pct": 18.75,
+        "accuracy_pct": 100.0
+      }
+    },
+    "W6_sparse": {
+      "workload": "W6_sparse",
+      "dimensionality": 8,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 9,
+        "n_raw_laws": 4,
+        "n_compressed_laws": 4,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 64.5293250129808,
+        "compression_ratio": 0.09712631214428624,
+        "state_collapse_ratio": 0.09,
+        "law_collapse_ratio": 0.04
+      },
+      "calibration": {
+        "is_calibrated": true,
+        "metrics": {
+          "brier": 1.5056946936078886e-20,
+          "ece": 5.1166626491294664e-11,
+          "wrong_high_conf_rate": 0.0,
+          "n_records": 50
+        },
+        "calibrated_threshold": 0.5,
+        "reliability_curve": [
+          [
+            0.95,
+            1.0,
+            50
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 100.0,
+        "predictions": 50,
+        "predictions_total": 50,
+        "escalations": 0,
+        "rejections": 0,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 6209.8,
+        "savings_pct": 87.58,
+        "note": "accuracy_pct is among PREDICTIONS only (escalations excluded)"
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 100.0,
+        "escalations": 0,
+        "rejections": 0
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 100.0,
+        "ood_accuracy_pct": 100.0,
+        "false_accept_rate": 0.0,
+        "false_reject_rate": 0.0,
+        "threshold": 0.05
+      },
+      "audit": {
+        "total_states_added": 9,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 160,
+        "invariant": 0,
+        "law": 47,
+        "consensus": 83,
+        "escalated": 0,
+        "rejected_ood": 30,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 50,
+        "wrong": 0,
+        "prediction_rate_pct": 81.25,
+        "rejection_rate_pct": 18.75,
+        "accuracy_pct": 100.0
+      }
+    },
+    "W7_long_tail": {
+      "workload": "W7_long_tail",
+      "dimensionality": 2,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 100,
+        "n_raw_laws": 1,
+        "n_compressed_laws": 1,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 667.3856189774724,
+        "compression_ratio": 1.0045154499349598,
+        "state_collapse_ratio": 1.0,
+        "law_collapse_ratio": 0.01
+      },
+      "calibration": {
+        "is_calibrated": true,
+        "metrics": {
+          "brier": 0.0008838355465602718,
+          "ece": 0.006556546753877307,
+          "wrong_high_conf_rate": 0.0,
+          "n_records": 41
+        },
+        "calibrated_threshold": 0.5,
+        "reliability_curve": [
+          [
+            0.8500000000000001,
+            1.0,
+            2
+          ],
+          [
+            0.95,
+            1.0,
+            39
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 100.0,
+        "predictions": 50,
+        "predictions_total": 50,
+        "escalations": 0,
+        "rejections": 0,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 5004.4,
+        "savings_pct": 89.99,
+        "note": "accuracy_pct is among PREDICTIONS only (escalations excluded)"
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 93.33,
+        "escalations": 0,
+        "rejections": 0
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 13.33,
+        "ood_accuracy_pct": 100.0,
+        "false_accept_rate": 0.85,
+        "false_reject_rate": 0.05,
+        "threshold": 0.08686691661621973
+      },
+      "audit": {
+        "total_states_added": 100,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 160,
+        "invariant": 0,
+        "law": 0,
+        "consensus": 147,
+        "escalated": 8,
+        "rejected_ood": 5,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 50,
+        "wrong": 0,
+        "prediction_rate_pct": 91.875,
+        "rejection_rate_pct": 3.125,
+        "accuracy_pct": 100.0
+      }
+    },
+    "W8_contradictory": {
+      "workload": "W8_contradictory",
+      "dimensionality": 2,
+      "train_size": 100,
+      "compression": {
+        "n_states": 100,
+        "n_canonical_states": 8,
+        "n_raw_laws": 0,
+        "n_compressed_laws": 0,
+        "mdl_raw_bits": 664.3856189774724,
+        "mdl_compressed_bits": 24.0,
+        "compression_ratio": 0.03612359947967775,
+        "state_collapse_ratio": 0.08,
+        "law_collapse_ratio": 0.0
+      },
+      "calibration": {
+        "is_calibrated": false,
+        "metrics": {
+          "brier": 0.1875,
+          "ece": 0.1875,
+          "wrong_high_conf_rate": 0.1875,
+          "n_records": 16
+        },
+        "calibrated_threshold": 1.0,
+        "reliability_curve": [
+          [
+            0.95,
+            0.8125,
+            16
+          ]
+        ]
+      },
+      "holdout": {
+        "size": 50,
+        "accuracy_pct": 87.5,
+        "predictions": 8,
+        "predictions_total": 8,
+        "escalations": 42,
+        "rejections": 0,
+        "direct_cost_us": 50000.0,
+        "substrate_cost_us": 46506.0,
+        "savings_pct": 6.99
+      },
+      "adversarial": {
+        "size": 30,
+        "accuracy_pct": 0.0,
+        "escalations": 0,
+        "rejections": 0
+      },
+      "ood": {
+        "size": 30,
+        "ood_reject_rate_pct": 0.0,
+        "ood_accuracy_pct": 100.0,
+        "false_accept_rate": 0.0,
+        "false_reject_rate": 0.0,
+        "threshold": 0.0
+      },
+      "audit": {
+        "total_states_added": 4,
+        "log_length": 100
+      },
+      "substrate_stats": {
+        "total": 130,
+        "invariant": 0,
+        "law": 0,
+        "consensus": 24,
+        "escalated": 106,
+        "rejected_ood": 0,
+        "rejected_low_conf": 0,
+        "rejected_recent_fail": 0,
+        "correct": 49,
+        "wrong": 1,
+        "prediction_rate_pct": 18.461538461538463,
+        "rejection_rate_pct": 0.0,
+        "accuracy_pct": 98.0
+      },
+      "note": "Contradictory workload \u2014 substrate MUST escalate (no law can fit 20% noise)"
+    }
+  }
+}

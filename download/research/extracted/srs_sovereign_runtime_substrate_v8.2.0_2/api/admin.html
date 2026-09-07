@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SRS — Identity & Policy Management</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:monospace; background:#0f172a; color:#e2e8f0; padding:20px; }
+        h1 { color:#38bdf8; margin-bottom:20px; }
+        h2 { color:#94a3b8; margin:20px 0 10px; }
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .card { background:#1e293b; border-radius:8px; padding:15px; border:1px solid #334155; }
+        table { width:100%; border-collapse:collapse; font-size:13px; }
+        th { text-align:left; color:#64748b; padding:8px; border-bottom:1px solid #334155; }
+        td { padding:8px; border-bottom:1px solid #334155; }
+        .badge { padding:2px 8px; border-radius:10px; font-size:11px; }
+        .b-ok { background:#064e3b; color:#34d399; }
+        .b-warn { background:#451a03; color:#fbbf24; }
+        .b-err { background:#450a0a; color:#f87171; }
+        .btn { background:#0ea5e9; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; }
+        .btn:hover { background:#0284c7; }
+        input,select { background:#0f172a; color:#e2e8f0; border:1px solid #334155; padding:6px; border-radius:4px; width:100%; }
+        #api-key { width:300px; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ SRS Identity & Policy Management</h1>
+    <div style="margin-bottom:20px">
+        <label>API Key: </label>
+        <input id="api-key" type="password" placeholder="Paste your SRS API key here">
+        <button class="btn" onclick="loadAll()">Load</button>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>Identities</h2>
+            <table id="identities-table">
+                <thead><tr><th>ID</th><th>Tenant</th><th>Role</th><th>Created</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h2>Policies</h2>
+            <table id="policies-table">
+                <thead><tr><th>Name</th><th>Effect</th><th>Priority</th><th>Enabled</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h2>Audit Trail (Last 10)</h2>
+            <table id="audit-table">
+                <thead><tr><th>Time</th><th>Action</th><th>Resource</th><th>Outcome</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h2>Cost Report</h2>
+            <div id="cost-report"><p style="color:#64748b">Click Load to view</p></div>
+        </div>
+    </div>
+
+    <script>
+        function api(path) {
+            const key = document.getElementById('api-key').value;
+            return fetch(path, { headers: { 'Authorization': 'Bearer ' + key } })
+                .then(r => r.ok ? r.json() : Promise.reject(r.statusText));
+        }
+
+        async function loadAll() {
+            try {
+                // Stats
+                const stats = await api('/v1/stats');
+                loadIdentities(stats);
+                // Policies
+                const policies = await api('/v1/policies');
+                loadPolicies(policies);
+                // Audit
+                try {
+                    const audit = await api('/v1/audit');
+                    loadAudit(audit);
+                } catch(e) { document.querySelector('#audit-table tbody').innerHTML = '<tr><td colspan=4 style="color:#f87171">Requires auditor role</td></tr>'; }
+                // Cost
+                try {
+                    const cost = await api('/v1/cost/report');
+                    loadCost(cost);
+                } catch(e) { document.getElementById('cost-report').innerHTML = '<p style="color:#f87171">Error loading</p>'; }
+            } catch(e) { alert('Error: ' + e); }
+        }
+
+        function loadIdentities(stats) {
+            const tbody = document.querySelector('#identities-table tbody');
+            tbody.innerHTML = `<tr><td>${stats.identities}</td><td>${stats.tenants} tenants</td><td>${stats.api_keys} API keys</td><td>—</td></tr>`;
+        }
+
+        function loadPolicies(data) {
+            const tbody = document.querySelector('#policies-table tbody');
+            tbody.innerHTML = data.policies.map(p => `<tr>
+                <td>${p.name}</td>
+                <td><span class="badge ${p.effect==='deny'?'b-err':p.effect==='require_approval'?'b-warn':'b-ok'}">${p.effect}</span></td>
+                <td>${p.priority}</td>
+                <td>${p.enabled?'✓':'✗'}</td>
+            </tr>`).join('');
+        }
+
+        function loadAudit(data) {
+            const tbody = document.querySelector('#audit-table tbody');
+            const events = (data.events||[]).slice(-10).reverse();
+            tbody.innerHTML = events.map(e => `<tr>
+                <td>${new Date(e.timestamp*1000).toLocaleTimeString()}</td>
+                <td>${e.action}</td>
+                <td>${e.resource}</td>
+                <td><span class="badge ${e.outcome==='success'?'b-ok':'b-err'}">${e.outcome}</span></td>
+            </tr>`).join('') || '<tr><td colspan=4>No events</td></tr>';
+        }
+
+        function loadCost(data) {
+            document.getElementById('cost-report').innerHTML = `
+                <p>Total events: ${data.total_events}</p>
+                <p>Total cost: $${data.total_cost_dollars.toFixed(6)}</p>
+                <p>By operation:</p>
+                <ul>${Object.entries(data.by_operation||{}).map(([k,v])=>`<li>${k}: ${(v/1e6).toFixed(6)} USD</li>`).join('')}</ul>
+            `;
+        }
+    </script>
+</body>
+</html>

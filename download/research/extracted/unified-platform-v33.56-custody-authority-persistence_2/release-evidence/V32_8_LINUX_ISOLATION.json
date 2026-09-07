@@ -1,0 +1,31 @@
+{
+  "status": "passed-single-host-research-proof",
+  "isolationClass": "linux-user-mount-network-pid-namespace-chroot-seccomp-default-deny-rlimit-v23",
+  "approvedOutput": "bounded:14:approved-input",
+  "rootManifestDigest": "5153f6cf9c0631b7b83e20b7a6da77adf6261baf3ad98b3c950ed42cb5268d5e",
+  "checks": [
+    "sanitized-environment",
+    "immutable-input-permissions",
+    "root-manifest",
+    "approved-input-output",
+    "network-syscall",
+    "process-creation",
+    "host-filesystem",
+    "address-space",
+    "file-size",
+    "ptrace",
+    "execve",
+    "kernel-metadata"
+  ],
+  "limitations": [
+    "kernel-4.4-no-landlock",
+    "cgroup-v1-environment-no-delegated-v2",
+    "no-container-image",
+    "no-independent-security-review",
+    "single-host-research-proof"
+  ],
+  "version": "27.0",
+  "ownerRole": "Capability Isolation Reviewer",
+  "productionQualified": false,
+  "nextAction": "Run independent security review and target-kernel/container qualification before any untrusted production execution."
+}

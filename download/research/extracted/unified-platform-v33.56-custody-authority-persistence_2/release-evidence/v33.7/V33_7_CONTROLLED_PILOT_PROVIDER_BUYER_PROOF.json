@@ -1,0 +1,61 @@
+{
+  "version": "33.7",
+  "status": "READY_FOR_CONTROLLED_EXECUTION",
+  "readiness": {
+    "version": "33.7",
+    "controlledHumanPilot": "not_executed",
+    "credentialledProviderQualification": "not_executed",
+    "buyerValidation": "not_executed",
+    "gates": {
+      "G2": "in-progress-not-passed",
+      "G3": "in-progress-not-passed"
+    },
+    "productionPromotion": "blocked",
+    "externalEffectsExecuted": 0,
+    "summaryDigest": "93446a0f45e2e2a7e7c91bf7a8d0e733b522d8d297319a8fef989fd60f39eaf6"
+  },
+  "implementedContracts": [
+    "immutable-signed-controlled-human-pilot-protocol",
+    "device-signed-pseudonymous-participant-consent",
+    "independent-observation-binding-to-protocol-consent-and-base-evidence",
+    "controlled-human-pilot-gate-with-fixed-thresholds",
+    "credentialled-provider-run-and-independent-witness-verification",
+    "buyer-interview-design-partner-and-paid-pilot-evidence-gate"
+  ],
+  "antiGamingControls": [
+    "one-device-cannot-create-multiple-participants",
+    "study-authority-cannot-be-independent-observer",
+    "same-organization-provider-witness-cannot-qualify",
+    "same-buyer-organization-counts-once-at-its-strongest-evidence-level",
+    "simulated-readiness-does-not-count-as-human-provider-or-buyer-proof"
+  ],
+  "officialProviderContractBasis": {
+    "APNS": [
+      "HTTP2",
+      "TLS1.2_OR_LATER",
+      "ES256_PROVIDER_JWT",
+      "SANDBOX_BEFORE_PRODUCTION"
+    ],
+    "FCM": [
+      "HTTP_V1_PROJECTS_MESSAGES_SEND",
+      "SHORT_LIVED_OAUTH2_OR_WORKLOAD_IDENTITY",
+      "ISOLATED_TEST_PROJECT"
+    ]
+  },
+  "observedExternalEvidence": {
+    "humanParticipants": 0,
+    "credentialledProviderRuns": 0,
+    "buyerInterviews": 0,
+    "designPartners": 0,
+    "paidPilots": 0
+  },
+  "gates": {
+    "G0": "passed",
+    "G1": "passed",
+    "G2": "in-progress-not-passed",
+    "G3": "in-progress-not-passed"
+  },
+  "productionPromotion": "blocked",
+  "externalEffectsExecuted": 0,
+  "proofDigest": "a29051e445519c3efc8d09b721badb4e2652d08a0683758cd8cba66622c37111"
+}

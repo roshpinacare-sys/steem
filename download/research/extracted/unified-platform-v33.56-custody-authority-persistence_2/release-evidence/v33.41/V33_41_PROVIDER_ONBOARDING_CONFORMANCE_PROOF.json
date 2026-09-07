@@ -1,0 +1,1214 @@
+{
+  "version": "33.41",
+  "generatedAt": "2026-07-22T22:02:47.787Z",
+  "priorV33_40ProofDigest": "00a239ea8f2dfd1d915734227c9bfb7900e41dcfc029dc14f03ee95d2b244ab1",
+  "priorV33_40Verdict": {
+    "version": "33.40",
+    "priorV33_39VerdictDigest": "2a0b95597b0e3aa92da798773aaa0ec16849e531e990730dbb4060beeae25142",
+    "adapterManifestCount": 3,
+    "providerCount": 3,
+    "remoteAttestationCount": 5,
+    "thresholdCertificateDigest": "f4db4a1673326dcad86858868147546f670712b33e30b1daa9b08c3f9d30843c",
+    "checkpointDigest": "f780a64db86f4397f0a64839803f576650e5d0e998c1c8334008b869a10557d0",
+    "monitorReceiptCount": 3,
+    "crossSiteRecoveryDigest": "21ff4c1e1145bc2e933263321dd2d9c9594fd21d2c29cbc462b23e2278554232",
+    "status": "LOCAL_MULTI_PROVIDER_INTEROP_REHEARSAL_ONLY",
+    "externalTopologyObserved": false,
+    "externalHardwareObserved": false,
+    "externalHumanParticipants": 0,
+    "verifiedAt": "2026-07-23T08:00:00.000Z",
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "verdictDigest": "d65a546444ebcf9efdbdec5431b6855d7395daa24ff4645ab34773c8e9444c51"
+  },
+  "manifests": [
+    {
+      "payload": {
+        "version": "33.40",
+        "adapterId": "3ce9a0ee-bcc1-44e7-aee7-e4110e7c0145",
+        "adapterClass": "PKCS11_GENERIC",
+        "providerId": "provider-pkcs11",
+        "moduleName": "module-0",
+        "moduleVersion": "1.0.0",
+        "moduleDigest": "47939d160555d7563d46263180be77ca2fdb5319ce2586072f1cfbf0d0de8e58",
+        "interfaceStandard": "PKCS11-3.1",
+        "abi": "linux-x64",
+        "mechanisms": [
+          "CKM_EDDSA"
+        ],
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "privateKeyMaterialEnteredProcess": false,
+        "failClosedOnProviderOutage": true,
+        "conformanceVectorDigest": "20eae3a9e00997823c2aa6fc2e49b67ae29eae8a49d1a287b56cacda3859302c",
+        "signerKeyId": "v33.40-adapter-0",
+        "issuedAt": "2026-07-23T08:00:00.000Z",
+        "expiresAt": "2026-08-23T08:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "manifestDigest": "56928759182a93a3f9eae53cc8deceffde69625d87fbaed1918c3c9fba68710d"
+      },
+      "issuerKeyId": "v33.40-adapter-0",
+      "algorithm": "Ed25519",
+      "signature": "Mpov-10jnFMRQMqVS5ELDJSZzZgvq-pMEJw42vm3l7QUE2rcdy_n7tsX1s9OXFWmxZDwdO3kjKXoHHtqKBTqCg"
+    },
+    {
+      "payload": {
+        "version": "33.40",
+        "adapterId": "481e93e9-95f1-49a3-a4e4-8435686d165e",
+        "adapterClass": "AWS_CLOUDHSM",
+        "providerId": "provider-aws",
+        "moduleName": "module-1",
+        "moduleVersion": "1.0.0",
+        "moduleDigest": "78f3393ca524d01262394d42d887e80573994fbc3e1b48cdc0a5219f0bcade40",
+        "interfaceStandard": "PROVIDER_NATIVE_SIGNING_API",
+        "abi": "linux-x64",
+        "mechanisms": [
+          "CKM_EDDSA"
+        ],
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "privateKeyMaterialEnteredProcess": false,
+        "failClosedOnProviderOutage": true,
+        "conformanceVectorDigest": "e677e445122e471b6a4fa5db29f061b7007dfde5854b0c0ca041377eb1b78c74",
+        "signerKeyId": "v33.40-adapter-1",
+        "issuedAt": "2026-07-23T08:00:00.000Z",
+        "expiresAt": "2026-08-23T08:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "manifestDigest": "e741fc1c35ef682a4e6b8e158deb8f28fab6cc6fc5432fc3fce4e7ce618331b5"
+      },
+      "issuerKeyId": "v33.40-adapter-1",
+      "algorithm": "Ed25519",
+      "signature": "cdZT1IsQmgCVE0d3xo36yhtwRBBzArcvKSmVcJ2nGcH88s-nJQRQjFgEfBvHVi2dtpgFNGtBCCorrpmi9bjrAg"
+    },
+    {
+      "payload": {
+        "version": "33.40",
+        "adapterId": "f0d3f6ba-df16-4714-b41b-61c2c458ef90",
+        "adapterClass": "AZURE_MANAGED_HSM",
+        "providerId": "provider-azure",
+        "moduleName": "module-2",
+        "moduleVersion": "1.0.0",
+        "moduleDigest": "6386d3360a3da9bcc3537a262ded07c49de6cd7f662eab52e666cb7031fb1cc9",
+        "interfaceStandard": "PROVIDER_NATIVE_SIGNING_API",
+        "abi": "linux-x64",
+        "mechanisms": [
+          "CKM_EDDSA"
+        ],
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "privateKeyMaterialEnteredProcess": false,
+        "failClosedOnProviderOutage": true,
+        "conformanceVectorDigest": "ac41086f7d177ff4584ede684acd8edf4c5f8879b64e9b3c8abc9a40134dfc69",
+        "signerKeyId": "v33.40-adapter-2",
+        "issuedAt": "2026-07-23T08:00:00.000Z",
+        "expiresAt": "2026-08-23T08:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "manifestDigest": "de7c54bbfdddeb100869cf0ba91a063426d2b484d96a4420c0ea53d1f7b97581"
+      },
+      "issuerKeyId": "v33.40-adapter-2",
+      "algorithm": "Ed25519",
+      "signature": "Bgq1WrqxWjHnYuJ7i7iByUyWto1lDruBa3vG4fzBleFnnyxYJKwJFyjLUpQczz_Zs-sFuNp7_QkBKvNUpJ-7Ag"
+    },
+    {
+      "payload": {
+        "version": "33.40",
+        "adapterId": "980d7fcd-ca00-4a61-8683-f7039021496e",
+        "adapterClass": "GCP_CLOUD_HSM",
+        "providerId": "provider-gcp",
+        "moduleName": "gcp-provider-adapter",
+        "moduleVersion": "1.0.0",
+        "moduleDigest": "e45cc675eb41739a98f0c12025d023a5d9a4ef255b3153793d956eefb6ea4898",
+        "interfaceStandard": "PROVIDER_NATIVE_SIGNING_API",
+        "abi": "linux-x64",
+        "mechanisms": [
+          "CKM_EDDSA"
+        ],
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "privateKeyMaterialEnteredProcess": false,
+        "failClosedOnProviderOutage": true,
+        "conformanceVectorDigest": "57129c869f519b32397c32b15143c8af94acdaeeae1cf0960ceb512eef451c3b",
+        "signerKeyId": "v33.41-adapter-provider-gcp",
+        "issuedAt": "2026-07-23T10:00:00.000Z",
+        "expiresAt": "2026-08-23T10:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "manifestDigest": "79593d74f19750e4db2e950671513ac27347050842deb32c76f1b7171e53c435"
+      },
+      "issuerKeyId": "v33.41-adapter-provider-gcp",
+      "algorithm": "Ed25519",
+      "signature": "BG2KISYQNk0VV1TOa0sGGBenBjUEeMpuYcO5lj2mTgG6MYRLOv_FoZVE5N8ZQMJQIfG2jg3cBBPAj1rer8bGAA"
+    }
+  ],
+  "moduleBytesBase64": [
+    "cGtjczExIGFkYXB0ZXIgbW9kdWxlIHYzMy40MA==",
+    "YXdzIGNsb3VkaHNtIGFkYXB0ZXIgdjMzLjQw",
+    "YXp1cmUgbWFuYWdlZCBoc20gYWRhcHRlciB2MzMuNDA=",
+    "Z2NwIHByb3ZpZGVyIGFkYXB0ZXIgbW9kdWxlIHYzMy40MQ=="
+  ],
+  "attestations": [
+    {
+      "payload": {
+        "version": "33.40",
+        "evidenceId": "644be4fc-67a1-49f3-8ec6-01d39fc0a90c",
+        "adapterManifestDigest": "56928759182a93a3f9eae53cc8deceffde69625d87fbaed1918c3c9fba68710d",
+        "roleKeyId": "v33.40-role-0",
+        "roleKeyFingerprint": "5253ed3bfcb4e53f1261c9f92c55fc59e1ecd10b8df070bb6070257a2545b727",
+        "providerId": "provider-pkcs11",
+        "deviceId": "device-0",
+        "firmwareDigest": "dccd5131b594fb60df7db26e2d12865781f066d1100b21b3d8202e0d83f27321",
+        "attestationDocumentDigest": "e5fe43662a75614a7caacf81aa675d02d0fc609513438dd517c9a95e5563be00",
+        "challengeDigest": "5a2fe1d98dbf4637b6d9203f56c236f55fcb590c6e6dbf374a220df32efb0194",
+        "nonceUnique": true,
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "verifiedBootObserved": true,
+        "requestDigestBound": true,
+        "attestationAuthorityKeyId": "v33.40-attest-authority-0",
+        "observedAt": "2026-07-23T08:00:00.000Z",
+        "expiresAt": "2026-08-23T08:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "evidenceDigest": "f8fb81537672fbb105fa4c234d23cd3946c8596f400dd5683eae01b21a991f8a"
+      },
+      "issuerKeyId": "v33.40-attest-authority-0",
+      "algorithm": "Ed25519",
+      "signature": "gHRuVa-JCnS8LuVcoGM17L6g6cVZo3NyCiAAxSs9r34B9UOnoKdo1HcsqnlFDrTWZzB57oLQ-xvSj0A7Mt5aBw"
+    },
+    {
+      "payload": {
+        "version": "33.40",
+        "evidenceId": "3ae5064f-6b54-47f1-a853-a8e0ffd227c0",
+        "adapterManifestDigest": "e741fc1c35ef682a4e6b8e158deb8f28fab6cc6fc5432fc3fce4e7ce618331b5",
+        "roleKeyId": "v33.40-role-1",
+        "roleKeyFingerprint": "20b6d336ea0e0e6acd66ce21fda607468d449e70efcc8f0eaca31b8545c7c544",
+        "providerId": "provider-aws",
+        "deviceId": "device-1",
+        "firmwareDigest": "33b58c84b93b120bd6d92ca0053b84f044a244d470bd31362e8913e25138eebd",
+        "attestationDocumentDigest": "bb67ded11c716aebe3e68b3bed784f68973e01f5add247a803f8a47d9ebb95fe",
+        "challengeDigest": "13c73ada7c489b94c48f4ceb98b5eb0b05830c3227f603e10d2fd72f19bf83da",
+        "nonceUnique": true,
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "verifiedBootObserved": true,
+        "requestDigestBound": true,
+        "attestationAuthorityKeyId": "v33.40-attest-authority-1",
+        "observedAt": "2026-07-23T08:00:00.000Z",
+        "expiresAt": "2026-08-23T08:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "evidenceDigest": "31afe8662f1336c524bcf8adacf9c4b770f22826ed55ba2a1cc24477e2c884a7"
+      },
+      "issuerKeyId": "v33.40-attest-authority-1",
+      "algorithm": "Ed25519",
+      "signature": "N0xMVuN1N0n_erGT1hIzSp6iUshpQwRXC0GlAHCr8rs27DWfPT_mkaQhk6QzPkr_n3tmJ0jg-RWGmt51gJroDg"
+    },
+    {
+      "payload": {
+        "version": "33.40",
+        "evidenceId": "1647c702-d2d9-473c-8867-33b9e0cb5bc9",
+        "adapterManifestDigest": "de7c54bbfdddeb100869cf0ba91a063426d2b484d96a4420c0ea53d1f7b97581",
+        "roleKeyId": "v33.40-role-2",
+        "roleKeyFingerprint": "505d386539692509afa566c7f61ad3a5ef8cf12c97ab3cb4007ee58119b05db9",
+        "providerId": "provider-azure",
+        "deviceId": "device-2",
+        "firmwareDigest": "4fcf61a8f0a2c05615a1bc28d3d31b256b45cf2bec0b97c7ec0e5c09ee50ae47",
+        "attestationDocumentDigest": "ea334c7a01c96ee4c84042f8c4914626d7fd575a7a952c4b9bda69827ae2152d",
+        "challengeDigest": "d8149d3cd009f4994e0a2cf18d876aa618c8caafd2a2db30f95551fe3462e963",
+        "nonceUnique": true,
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "verifiedBootObserved": true,
+        "requestDigestBound": true,
+        "attestationAuthorityKeyId": "v33.40-attest-authority-2",
+        "observedAt": "2026-07-23T08:00:00.000Z",
+        "expiresAt": "2026-08-23T08:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "evidenceDigest": "15385888d605fcf26cb9c37b5ba97c81b92db63bc5675f3263243762369d6d21"
+      },
+      "issuerKeyId": "v33.40-attest-authority-2",
+      "algorithm": "Ed25519",
+      "signature": "mgdDfaslCvPHz58YazqDpZWqIWQ2WBttx_XqXE-VxWtev3HSAizZMp39zUXdTA7JfGYYNOMOfUfGA50b7vZ6AA"
+    },
+    {
+      "payload": {
+        "version": "33.40",
+        "evidenceId": "05141ba9-9775-469a-a302-424727f2395b",
+        "adapterManifestDigest": "79593d74f19750e4db2e950671513ac27347050842deb32c76f1b7171e53c435",
+        "roleKeyId": "v33.41-role-provider-gcp",
+        "roleKeyFingerprint": "0ca7a65f1600f14d057e2f74157019c14ede3596e1af7f24a8e3baa7a8b655a3",
+        "providerId": "provider-gcp",
+        "deviceId": "device-provider-gcp",
+        "firmwareDigest": "f447b07fcb1cdd1e58d61cfedab00c1b6126ef9e57f3de8f0ad81558f75bc484",
+        "attestationDocumentDigest": "27648413ffa22ddfacb75ada26d5673db6f835d1990befcc88df401e86c2b4af",
+        "challengeDigest": "6bfd161548e554821796a6db6f0076d1f79d1100d171ff7124d18ebfe558fe99",
+        "nonceUnique": true,
+        "keyOrigin": "GENERATED_IN_HSM",
+        "extractable": false,
+        "verifiedBootObserved": true,
+        "requestDigestBound": true,
+        "attestationAuthorityKeyId": "v33.41-attestation-authority-provider-gcp",
+        "observedAt": "2026-07-23T10:00:00.000Z",
+        "expiresAt": "2026-08-23T10:00:00.000Z",
+        "executionClass": "LOCAL_INTEROP_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "evidenceDigest": "3897c770bf821bc25a109f93e89ebcd6afe6831b5066620d1433e2eae8d4a42b"
+      },
+      "issuerKeyId": "v33.41-attestation-authority-provider-gcp",
+      "algorithm": "Ed25519",
+      "signature": "mC--ld6oCJidQNyHOGHvZ4B6hC1M5hNH62vHtS7ML6vIZp35Bc0bRWa-SWGTosPmTx_C5447pDuPLhtTUjuEAA"
+    }
+  ],
+  "roots": [
+    {
+      "payload": {
+        "version": "33.41",
+        "rootId": "root-provider-pkcs11",
+        "providerId": "provider-pkcs11",
+        "rootClass": "PKCS11_VENDOR_ROOT",
+        "rootFingerprint": "7105b56d812b545c3677ff7b7aaf5352209ca2c4bd686ed2d5596b5d22a9408a",
+        "rootCertificateDigest": "7105b56d812b545c3677ff7b7aaf5352209ca2c4bd686ed2d5596b5d22a9408a",
+        "policyDigest": "08535948c63a15ced65b4c706443d2d70a21f03059d38e062ed78f53ffc94a93",
+        "publicDocumentationDigest": "c97a948f44c2cdd5160567a5797c15942fa559cfaca3991280772aecf0894a59",
+        "validFrom": "2026-07-22T10:00:00.000Z",
+        "validUntil": "2026-08-23T10:00:00.000Z",
+        "registrarKeyId": "v33.41-root-registrar-0",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "rootManifestDigest": "02226801b07201dbbe1b3d8cf622215c128821a4041cd7d19a6915d2100c6b37"
+      },
+      "issuerKeyId": "v33.41-root-registrar-0",
+      "algorithm": "Ed25519",
+      "signature": "sHSUNMFz7WJZykGDP8Jhwwtyn7TNn2BFGjWa1ASmpYvyIm2Wxk6nX_SEB1Bx_QqNuNq_C89dFnOU90v5HGzlDg"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "rootId": "root-provider-aws",
+        "providerId": "provider-aws",
+        "rootClass": "CLOUD_HSM_ATTESTATION_ROOT",
+        "rootFingerprint": "68e58594abb18b1575da13316765f4788bcf96bc6af1d0a32e658a66b462940f",
+        "rootCertificateDigest": "68e58594abb18b1575da13316765f4788bcf96bc6af1d0a32e658a66b462940f",
+        "policyDigest": "5fc3bf32b9abb67f53e533adc1af70908eecc7fa4ad191b127c5da930e789d3b",
+        "publicDocumentationDigest": "7543c0223254b58ee1b977e70e4c0dc8d75c22bbb8a121577f9003ece6703084",
+        "validFrom": "2026-07-22T10:00:00.000Z",
+        "validUntil": "2026-08-23T10:00:00.000Z",
+        "registrarKeyId": "v33.41-root-registrar-1",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "rootManifestDigest": "191166ac6b5ccc7356ec81b8149c3d59b631d90d4e57dd8d9976b91c138fbf67"
+      },
+      "issuerKeyId": "v33.41-root-registrar-1",
+      "algorithm": "Ed25519",
+      "signature": "fgN1dxiJ5qKJ4An8EKwnpvtz1hucHVvYzjS9e9xXkDmj1UO-CjhmbtcSthuIET_OxT88pklNttRPYvowyRhKCg"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "rootId": "root-provider-azure",
+        "providerId": "provider-azure",
+        "rootClass": "CLOUD_HSM_ATTESTATION_ROOT",
+        "rootFingerprint": "aa25a8c5b20fcc9a76da9843ff3e8ff6844ddfeb869a1c920779e5f5b6d080c7",
+        "rootCertificateDigest": "aa25a8c5b20fcc9a76da9843ff3e8ff6844ddfeb869a1c920779e5f5b6d080c7",
+        "policyDigest": "2c39ef1d25363d93cce493c498f63bf7d75b30180b4063bd713b093443c308c2",
+        "publicDocumentationDigest": "a1412fa2c16d46bcb3c21157b902528bb0d92dff8ce6c19c35feae3decbe374f",
+        "validFrom": "2026-07-22T10:00:00.000Z",
+        "validUntil": "2026-08-23T10:00:00.000Z",
+        "registrarKeyId": "v33.41-root-registrar-2",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "rootManifestDigest": "7e73b8be9b93a24ead57df76be9ca0f58ae3963b0a45a9f1914a4f511b260d68"
+      },
+      "issuerKeyId": "v33.41-root-registrar-2",
+      "algorithm": "Ed25519",
+      "signature": "cR7FdF2Q4N5Rw3ZgM__IBVUJRf2RqebQi_LENntWNfx-9ZQRXKhA47-FaRLKRzUTKC8HYAnGrunOa5Yv7SXtCA"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "rootId": "root-provider-gcp",
+        "providerId": "provider-gcp",
+        "rootClass": "CLOUD_HSM_ATTESTATION_ROOT",
+        "rootFingerprint": "c272ad938aea5e9c0ea0deeb276401ed9ae98f4e95ca3015207d2282ca9b3803",
+        "rootCertificateDigest": "c272ad938aea5e9c0ea0deeb276401ed9ae98f4e95ca3015207d2282ca9b3803",
+        "policyDigest": "f7b459a9fd87a8cfc8a7522389f06371dfa4c35125c461cef3a6973a60e91440",
+        "publicDocumentationDigest": "5ed5303ef853a11d4fa8d4a1bd0642fd324784a6ff7405cdeeab0b68df382a55",
+        "validFrom": "2026-07-22T10:00:00.000Z",
+        "validUntil": "2026-08-23T10:00:00.000Z",
+        "registrarKeyId": "v33.41-root-registrar-3",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "rootManifestDigest": "e289cc30a1b2f63950e586087ba12f16f8f36f55f65d101d7ab646a930058bf1"
+      },
+      "issuerKeyId": "v33.41-root-registrar-3",
+      "algorithm": "Ed25519",
+      "signature": "AaBoDZ1dZ-4F6CkZhgWLYiqgEg-jho_6QPlUvbIy6MGOdYyNc5OyULSilfGPpeNZtIOyM_I5OwnHs9hrtWidDg"
+    }
+  ],
+  "rootCertificateBytesBase64": [
+    "cHVibGljIHByb3ZpZGVyIHRydXN0IHJvb3QgcHJvdmlkZXItcGtjczExIHYzMy40MQ==",
+    "cHVibGljIHByb3ZpZGVyIHRydXN0IHJvb3QgcHJvdmlkZXItYXdzIHYzMy40MQ==",
+    "cHVibGljIHByb3ZpZGVyIHRydXN0IHJvb3QgcHJvdmlkZXItYXp1cmUgdjMzLjQx",
+    "cHVibGljIHByb3ZpZGVyIHRydXN0IHJvb3QgcHJvdmlkZXItZ2NwIHYzMy40MQ=="
+  ],
+  "conformance": [
+    {
+      "payload": {
+        "version": "33.41",
+        "receiptId": "conformance-provider-pkcs11-device-0",
+        "providerId": "provider-pkcs11",
+        "trustRootManifestDigest": "02226801b07201dbbe1b3d8cf622215c128821a4041cd7d19a6915d2100c6b37",
+        "adapterManifestDigest": "56928759182a93a3f9eae53cc8deceffde69625d87fbaed1918c3c9fba68710d",
+        "remoteAttestationDigest": "f8fb81537672fbb105fa4c234d23cd3946c8596f400dd5683eae01b21a991f8a",
+        "moduleDigest": "47939d160555d7563d46263180be77ca2fdb5319ce2586072f1cfbf0d0de8e58",
+        "interfaceStandard": "PKCS11-3.1",
+        "deviceId": "device-0",
+        "tokenSerialDigest": "b210303b4422ba2db239f263ee4f8cdf242b2231d13d4c7c5dce8ea133ef9b4a",
+        "sessionNonceDigest": "30b018de8e5dc75677d42c03ed115605f1c5450757a104f35c820fdcf2e97ae3",
+        "testVectorDigest": "4ef34a634e3e7164c584c347d1efc121306112c4160a6e03cb5c3c172a3939ec",
+        "generatedInDevice": true,
+        "extractable": false,
+        "sensitive": true,
+        "alwaysSensitive": true,
+        "neverExtractable": true,
+        "signVerifyObserved": true,
+        "privateKeyExportBlocked": true,
+        "sessionClosed": true,
+        "hardwareSessionObserved": false,
+        "laboratory": {
+          "keyId": "v33.41-conformance-lab-0",
+          "keyFingerprint": "86af77cc394e3558f5807d4f0bc5641a29c15d06401464ca8ec9259d3260edcf",
+          "organizationId": "org-lab-0",
+          "hostId": "host-lab-0",
+          "administratorId": "admin-lab-0"
+        },
+        "executedAt": "2026-07-23T10:00:00.000Z",
+        "expiresAt": "2026-08-23T10:00:00.000Z",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "7145026727afc53173923c950ecbf123533ea535066bb26b1446e0e7b585344f"
+      },
+      "issuerKeyId": "v33.41-conformance-lab-0",
+      "algorithm": "Ed25519",
+      "signature": "gUmi5G6r3YeQeJZqzHXToe1s3HOVMF6Ym0R2r078IPt-8B3Y4RD8BoNvVEWtczY2uJnxvqZo8MlqSCqp-rG5DA"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "receiptId": "conformance-provider-aws-device-1",
+        "providerId": "provider-aws",
+        "trustRootManifestDigest": "191166ac6b5ccc7356ec81b8149c3d59b631d90d4e57dd8d9976b91c138fbf67",
+        "adapterManifestDigest": "e741fc1c35ef682a4e6b8e158deb8f28fab6cc6fc5432fc3fce4e7ce618331b5",
+        "remoteAttestationDigest": "31afe8662f1336c524bcf8adacf9c4b770f22826ed55ba2a1cc24477e2c884a7",
+        "moduleDigest": "78f3393ca524d01262394d42d887e80573994fbc3e1b48cdc0a5219f0bcade40",
+        "interfaceStandard": "PROVIDER_NATIVE_SIGNING_API",
+        "deviceId": "device-1",
+        "tokenSerialDigest": "3070986fac504e3be308f21b69f5a026af4f532dcfb6d7befc29933c405a6431",
+        "sessionNonceDigest": "fada3095885fd643ac672bc4d838db6abbc4cba87ad6601974e207ed8b5419d9",
+        "testVectorDigest": "37ffa59f53578d8efb93f39f66fc3a1fe4be95a62e8d602840b9ecb718c3bc22",
+        "generatedInDevice": true,
+        "extractable": false,
+        "sensitive": true,
+        "alwaysSensitive": true,
+        "neverExtractable": true,
+        "signVerifyObserved": true,
+        "privateKeyExportBlocked": true,
+        "sessionClosed": true,
+        "hardwareSessionObserved": false,
+        "laboratory": {
+          "keyId": "v33.41-conformance-lab-1",
+          "keyFingerprint": "12f6ce800abc4b6835fb399a3ac29c20cd3a78043718aaadccc02dfab24d8904",
+          "organizationId": "org-lab-1",
+          "hostId": "host-lab-1",
+          "administratorId": "admin-lab-1"
+        },
+        "executedAt": "2026-07-23T10:00:00.000Z",
+        "expiresAt": "2026-08-23T10:00:00.000Z",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "25064aa79bcf9a4c2b8966ef3339058580520d8e42109cf03b938b9384c6564a"
+      },
+      "issuerKeyId": "v33.41-conformance-lab-1",
+      "algorithm": "Ed25519",
+      "signature": "QENbje8bJhyVEZKR438pbU_xqJZphtJZHc8mnFGO0yoIT0W3N7D-EzM1bQN9Eky83mW6GUh0VXFJ-MNCHaQaDw"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "receiptId": "conformance-provider-azure-device-2",
+        "providerId": "provider-azure",
+        "trustRootManifestDigest": "7e73b8be9b93a24ead57df76be9ca0f58ae3963b0a45a9f1914a4f511b260d68",
+        "adapterManifestDigest": "de7c54bbfdddeb100869cf0ba91a063426d2b484d96a4420c0ea53d1f7b97581",
+        "remoteAttestationDigest": "15385888d605fcf26cb9c37b5ba97c81b92db63bc5675f3263243762369d6d21",
+        "moduleDigest": "6386d3360a3da9bcc3537a262ded07c49de6cd7f662eab52e666cb7031fb1cc9",
+        "interfaceStandard": "PROVIDER_NATIVE_SIGNING_API",
+        "deviceId": "device-2",
+        "tokenSerialDigest": "8a34ec1c8b2a176c4e73089942a7007ac7cbfddb72d36b84698f2865059e1c98",
+        "sessionNonceDigest": "d60af549b0593979e1e967b87c1853db7a0595a8d31461276a154ad4051052bf",
+        "testVectorDigest": "91d0a0acd8019c1982c9ad27d1b4906736bf3878d08e533336bba6738eb8394c",
+        "generatedInDevice": true,
+        "extractable": false,
+        "sensitive": true,
+        "alwaysSensitive": true,
+        "neverExtractable": true,
+        "signVerifyObserved": true,
+        "privateKeyExportBlocked": true,
+        "sessionClosed": true,
+        "hardwareSessionObserved": false,
+        "laboratory": {
+          "keyId": "v33.41-conformance-lab-2",
+          "keyFingerprint": "27a297e4895a0fc5623256beb2e2f64ea3e566c5afef269b51e663feda3f0c0f",
+          "organizationId": "org-lab-2",
+          "hostId": "host-lab-2",
+          "administratorId": "admin-lab-2"
+        },
+        "executedAt": "2026-07-23T10:00:00.000Z",
+        "expiresAt": "2026-08-23T10:00:00.000Z",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "81152d1dbe8182282a30731484920098ed77ec2f83e0cc46ead08d9d2f93ffa2"
+      },
+      "issuerKeyId": "v33.41-conformance-lab-2",
+      "algorithm": "Ed25519",
+      "signature": "h8AGdCIgdbXJ6NfzQ9kbZEn-mJzXb_9MKX--yV7RciOsQUak-pj3Fp3Vfap07959RyT5G5fzWXvmfi_v7gehDQ"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "receiptId": "conformance-provider-gcp-device-provider-gcp",
+        "providerId": "provider-gcp",
+        "trustRootManifestDigest": "e289cc30a1b2f63950e586087ba12f16f8f36f55f65d101d7ab646a930058bf1",
+        "adapterManifestDigest": "79593d74f19750e4db2e950671513ac27347050842deb32c76f1b7171e53c435",
+        "remoteAttestationDigest": "3897c770bf821bc25a109f93e89ebcd6afe6831b5066620d1433e2eae8d4a42b",
+        "moduleDigest": "e45cc675eb41739a98f0c12025d023a5d9a4ef255b3153793d956eefb6ea4898",
+        "interfaceStandard": "PROVIDER_NATIVE_SIGNING_API",
+        "deviceId": "device-provider-gcp",
+        "tokenSerialDigest": "b9058686ee7bcc3aa827bcfa02c3dff0dceeeb54db49290a1f01f74a3d27839c",
+        "sessionNonceDigest": "539b8bbad9a4a5d3df476397021a3419cb4b8ace36a60bf8dadd673e27898074",
+        "testVectorDigest": "14515c3fbfeaf6b43c4e39e23a5f2b3cbed52dc37011b4eea25d3302105f85fa",
+        "generatedInDevice": true,
+        "extractable": false,
+        "sensitive": true,
+        "alwaysSensitive": true,
+        "neverExtractable": true,
+        "signVerifyObserved": true,
+        "privateKeyExportBlocked": true,
+        "sessionClosed": true,
+        "hardwareSessionObserved": false,
+        "laboratory": {
+          "keyId": "v33.41-conformance-lab-3",
+          "keyFingerprint": "e59a9f28d7d7937da85d12886f6698eae53ee6d58bab61b23e486d3f63ee9c67",
+          "organizationId": "org-lab-3",
+          "hostId": "host-lab-3",
+          "administratorId": "admin-lab-3"
+        },
+        "executedAt": "2026-07-23T10:00:00.000Z",
+        "expiresAt": "2026-08-23T10:00:00.000Z",
+        "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "0abc85b0e9ebe9c3acb02687d66e1b9aab3ddb8641f153b95f55ebc9b59c61f4"
+      },
+      "issuerKeyId": "v33.41-conformance-lab-3",
+      "algorithm": "Ed25519",
+      "signature": "3ki4391lBH4wO0mF9f9Cj8YiJ9tJNKavg9FNd9aFXP7AFY0qM9wSQ9Or6AfgyFkjVYJY2TczqsmRT5MuE9twAw"
+    }
+  ],
+  "sessionNoncesBase64": [
+    "cHJvdmlkZXItc2Vzc2lvbi1ub25jZS1wcm92aWRlci1wa2NzMTEtdjMzLjQxLTAxMjM0NTY3ODk=",
+    "cHJvdmlkZXItc2Vzc2lvbi1ub25jZS1wcm92aWRlci1hd3MtdjMzLjQxLTAxMjM0NTY3ODk=",
+    "cHJvdmlkZXItc2Vzc2lvbi1ub25jZS1wcm92aWRlci1henVyZS12MzMuNDEtMDEyMzQ1Njc4OQ==",
+    "cHJvdmlkZXItc2Vzc2lvbi1ub25jZS1wcm92aWRlci1nY3AtdjMzLjQxLTAxMjM0NTY3ODk="
+  ],
+  "revocation": {
+    "payload": {
+      "version": "33.41",
+      "snapshotId": "revocation-1",
+      "sequence": 1,
+      "previousSnapshotDigest": "ef77b61aa1c69f07be1360ea10a694d3ee7c359cfd6c1c478c0a8effb6208fb4",
+      "trustRootSetDigest": "3d092d76b5f3cb91d66997d708ea73c3e4a1a5f07892705a458bd0bc7cda243e",
+      "revokedAttestationDigests": [
+        "f8fb81537672fbb105fa4c234d23cd3946c8596f400dd5683eae01b21a991f8a"
+      ],
+      "revokedDeviceIds": [
+        "device-0"
+      ],
+      "effectiveAt": "2026-07-23T10:00:00.000Z",
+      "authorityKeyId": "v33.41-revocation-authority",
+      "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "snapshotDigest": "8be1ccb4168deec2c1a4928f830af15ad674d0eca3e447d55ed3b30f34c3f855"
+    },
+    "issuerKeyId": "v33.41-revocation-authority",
+    "algorithm": "Ed25519",
+    "signature": "mTJjeH9zGFYg0rBt2JxqH2yag3TqJH_hv6zgZjv2y7Vhu9oIHZhAIvUXQYgiWHWrRnP5h-iSpTiXApcQ37ifBA"
+  },
+  "replacementApprovals": [
+    {
+      "payload": {
+        "version": "33.41",
+        "approvalId": "replacement-approval-1",
+        "replacementPlanDigest": "179203474bd3dd92ddbe0d9f8e73513ca59164150afd4e0dfefca45e7b94b545",
+        "shareIndex": 1,
+        "custodian": {
+          "keyId": "v33.41-replacement-custodian-0",
+          "keyFingerprint": "32ffc7f1ec8d83011ef0a6e4632213906151cde93d7a97b8b92b680af4c81d27",
+          "organizationId": "org-custodian-0",
+          "hostId": "host-custodian-0",
+          "administratorId": "admin-custodian-0"
+        },
+        "approvedAt": "2026-07-23T10:00:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "approvalDigest": "f85a2b81f543e52d9140c5b329ba424150e21e5f45d469501d132d57d14d6541"
+      },
+      "issuerKeyId": "v33.41-replacement-custodian-0",
+      "algorithm": "Ed25519",
+      "signature": "BYwTCFYr-CxLcxgsoYVsz__cViSM15C--zVgz-KFC-JUqLewtxvukXrq7s0jV_dHxsgRUop-APx4xroXHgfFDg"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "approvalId": "replacement-approval-2",
+        "replacementPlanDigest": "179203474bd3dd92ddbe0d9f8e73513ca59164150afd4e0dfefca45e7b94b545",
+        "shareIndex": 2,
+        "custodian": {
+          "keyId": "v33.41-replacement-custodian-1",
+          "keyFingerprint": "ec4b70b47a6c0c0a0f3bdc2477382faf5ea599d35630f6a95a387e2a08164f9c",
+          "organizationId": "org-custodian-1",
+          "hostId": "host-custodian-1",
+          "administratorId": "admin-custodian-1"
+        },
+        "approvedAt": "2026-07-23T10:00:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "approvalDigest": "3c876948a8f08cb3fc51d6c571c0f774d3031d72e7a58ea1f2856fed72c449b3"
+      },
+      "issuerKeyId": "v33.41-replacement-custodian-1",
+      "algorithm": "Ed25519",
+      "signature": "2AG9lo_DRuwI6OOwTon7PfkwhdTwXV-r3gz32NqMQ5_SYb6tdFrSJPdS9OB8ZY7-Wb4BQmGJSa4y13B4ExtDDw"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "approvalId": "replacement-approval-3",
+        "replacementPlanDigest": "179203474bd3dd92ddbe0d9f8e73513ca59164150afd4e0dfefca45e7b94b545",
+        "shareIndex": 3,
+        "custodian": {
+          "keyId": "v33.41-replacement-custodian-2",
+          "keyFingerprint": "e16a6a1abc77e3a46a4653c5e3f8dca59bc424503361277300f7d602f85f4b11",
+          "organizationId": "org-custodian-2",
+          "hostId": "host-custodian-2",
+          "administratorId": "admin-custodian-2"
+        },
+        "approvedAt": "2026-07-23T10:00:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "approvalDigest": "c2814aa5425940aad1f0cd8042b21a3f77f496c0195ee2ed5ae1a77ad96d758d"
+      },
+      "issuerKeyId": "v33.41-replacement-custodian-2",
+      "algorithm": "Ed25519",
+      "signature": "_bjmL_YW_GNy2oEsGCyQ7g-uxReEK2RPALEiU8NYqmhGxKM4fMQd7HathmpwvA7S-rHVOmAmy4p-c41zfapkBw"
+    }
+  ],
+  "replacement": {
+    "payload": {
+      "version": "33.41",
+      "certificateId": "replacement-1",
+      "previousReplacementDigest": "e93178b60facc246c0c4dc461c6f60cb288f84148bee03d9cd4e39270aaf9140",
+      "replacementSequence": 1,
+      "oldProviderId": "provider-pkcs11",
+      "oldAttestationDigest": "f8fb81537672fbb105fa4c234d23cd3946c8596f400dd5683eae01b21a991f8a",
+      "oldDeviceId": "device-0",
+      "newProviderId": "provider-gcp",
+      "newTrustRootManifestDigest": "e289cc30a1b2f63950e586087ba12f16f8f36f55f65d101d7ab646a930058bf1",
+      "newConformanceReceiptDigest": "0abc85b0e9ebe9c3acb02687d66e1b9aab3ddb8641f153b95f55ebc9b59c61f4",
+      "revocationSnapshotDigest": "8be1ccb4168deec2c1a4928f830af15ad674d0eca3e447d55ed3b30f34c3f855",
+      "activeProviderIdsBefore": [
+        "provider-aws",
+        "provider-azure",
+        "provider-dedicated",
+        "provider-pkcs11",
+        "provider-spare"
+      ],
+      "activeProviderIdsAfter": [
+        "provider-aws",
+        "provider-azure",
+        "provider-dedicated",
+        "provider-gcp",
+        "provider-spare"
+      ],
+      "threshold": 3,
+      "configuredCustodianCount": 5,
+      "approvalDigests": [
+        "3c876948a8f08cb3fc51d6c571c0f774d3031d72e7a58ea1f2856fed72c449b3",
+        "c2814aa5425940aad1f0cd8042b21a3f77f496c0195ee2ed5ae1a77ad96d758d",
+        "f85a2b81f543e52d9140c5b329ba424150e21e5f45d469501d132d57d14d6541"
+      ],
+      "custodianKeyIds": [
+        "v33.41-replacement-custodian-0",
+        "v33.41-replacement-custodian-1",
+        "v33.41-replacement-custodian-2"
+      ],
+      "authorityKeyId": "v33.41-replacement-authority",
+      "issuedAt": "2026-07-23T10:00:00.000Z",
+      "oldProviderFenced": true,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "certificateDigest": "adfb7521e7d62c38757f1329d7f92bea39d88a53d8f457747d48fc6ca43b978b"
+    },
+    "issuerKeyId": "v33.41-replacement-authority",
+    "algorithm": "Ed25519",
+    "signature": "f2Mh-paOwPWcwYg2a_DE3JrY4Il5TaGPZ8V-ZBvbOOUaqtbgs0hdTtJmVFQAjyYpV8z8lIoJs7LNZacsHXcQDQ"
+  },
+  "checkpointAnchor": {
+    "payload": {
+      "version": "33.41",
+      "anchorId": "provider-anchor-3",
+      "previousAnchorDigest": "f780a64db86f4397f0a64839803f576650e5d0e998c1c8334008b869a10557d0",
+      "anchorSequence": 3,
+      "priorV33_40VerdictDigest": "d65a546444ebcf9efdbdec5431b6855d7395daa24ff4645ab34773c8e9444c51",
+      "trustRootSetDigest": "3d092d76b5f3cb91d66997d708ea73c3e4a1a5f07892705a458bd0bc7cda243e",
+      "conformanceSetDigest": "8d5411075b10711737134badab2443fb8cfff5dcd57475d69b501a607b32df4d",
+      "revocationSnapshotDigest": "8be1ccb4168deec2c1a4928f830af15ad674d0eca3e447d55ed3b30f34c3f855",
+      "replacementCertificateDigest": "adfb7521e7d62c38757f1329d7f92bea39d88a53d8f457747d48fc6ca43b978b",
+      "checkpointBytesDigest": "fadca6cb2a11d2950aec306725e7fc707eda6ff6a98933fbbf0bf3c4406d1e18",
+      "endpoint": "https://checkpoint.local/v33.41.json",
+      "publisher": {
+        "keyId": "v33.41-publisher",
+        "keyFingerprint": "3aa91d7e88778cf0a99f3e39045454a51246ecd03d5bacfb8d5f639a77190551",
+        "organizationId": "org-publisher",
+        "hostId": "host-publisher",
+        "administratorId": "admin-publisher"
+      },
+      "publicNetworkRetrievalObserved": false,
+      "publishedAt": "2026-07-23T10:00:00.000Z",
+      "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+      "publicationAuthorityKeyId": "v33.41-publication-authority",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "anchorDigest": "e06832e2378f70502f9008f64cc248b711c0c4742478b968655216d1bf1b72b2"
+    },
+    "issuerKeyId": "v33.41-publication-authority",
+    "algorithm": "Ed25519",
+    "signature": "IAFLhiKmcUXg_GBqICIEbTYe1wGqABWZN8iXADWr3-e-dPrReAtLr5B0Bk9Xjgs_FsHvzvcSctJiZXXZ_ULdAg"
+  },
+  "checkpointBytesBase64": "cHVibGljIHByb3ZpZGVyIG9uYm9hcmRpbmcgY2hlY2twb2ludCB2MzMuNDE=",
+  "monitorReceipts": [
+    {
+      "payload": {
+        "version": "33.41",
+        "receiptId": "provider-monitor-v33.41-monitor-0",
+        "anchorDigest": "e06832e2378f70502f9008f64cc248b711c0c4742478b968655216d1bf1b72b2",
+        "anchorSequence": 3,
+        "checkpointBytesDigest": "fadca6cb2a11d2950aec306725e7fc707eda6ff6a98933fbbf0bf3c4406d1e18",
+        "monitor": {
+          "keyId": "v33.41-monitor-0",
+          "keyFingerprint": "81b17ba74d6230d9c4b49f4ec54a539dcb97b7fa26b0c27ce35fbab147200dd6",
+          "organizationId": "org-monitor-0",
+          "hostId": "host-monitor-0",
+          "administratorId": "admin-monitor-0"
+        },
+        "providerId": "monitor-provider-a",
+        "retrievedAt": "2026-07-23T10:00:00.000Z",
+        "durableWriteObserved": true,
+        "fsyncObserved": true,
+        "networkClass": "LOCAL_LOOPBACK",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "4e3eec9fe3694d314f9336f73deb0c465d4de82c43a319a37e19ab3f4c1dcd12"
+      },
+      "issuerKeyId": "v33.41-monitor-0",
+      "algorithm": "Ed25519",
+      "signature": "FdsdHNyrbb7kjaDmdfAMU9aJ-2JMz6w1Nr48a3EYGOHp321KzqsshSK6RKcgYwdjsuNYXjEAa6DcmTkjHq7xDw"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "receiptId": "provider-monitor-v33.41-monitor-1",
+        "anchorDigest": "e06832e2378f70502f9008f64cc248b711c0c4742478b968655216d1bf1b72b2",
+        "anchorSequence": 3,
+        "checkpointBytesDigest": "fadca6cb2a11d2950aec306725e7fc707eda6ff6a98933fbbf0bf3c4406d1e18",
+        "monitor": {
+          "keyId": "v33.41-monitor-1",
+          "keyFingerprint": "a0f3fee8c674b817ca44adbf06c6835df843928b474d5b0d361bcdb2fd9dfa3a",
+          "organizationId": "org-monitor-1",
+          "hostId": "host-monitor-1",
+          "administratorId": "admin-monitor-1"
+        },
+        "providerId": "monitor-provider-b",
+        "retrievedAt": "2026-07-23T10:00:00.000Z",
+        "durableWriteObserved": true,
+        "fsyncObserved": true,
+        "networkClass": "LOCAL_LOOPBACK",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "384547d3fe1d266fa38b95e91b986d1016fe28544274071dc015f6721cda55c0"
+      },
+      "issuerKeyId": "v33.41-monitor-1",
+      "algorithm": "Ed25519",
+      "signature": "bQm6ELnZv419jAmqQSEFepiuVVWrKMfnfbqIu4bwO-FaKItyL28SgeFYKXv7LWQ1cETE8H_LL-z1v5pBvrl5Bw"
+    },
+    {
+      "payload": {
+        "version": "33.41",
+        "receiptId": "provider-monitor-v33.41-monitor-2",
+        "anchorDigest": "e06832e2378f70502f9008f64cc248b711c0c4742478b968655216d1bf1b72b2",
+        "anchorSequence": 3,
+        "checkpointBytesDigest": "fadca6cb2a11d2950aec306725e7fc707eda6ff6a98933fbbf0bf3c4406d1e18",
+        "monitor": {
+          "keyId": "v33.41-monitor-2",
+          "keyFingerprint": "ae724f0a105cb25a48405b04fa96738f16fecb131dc21cab57110c8ff9da7990",
+          "organizationId": "org-monitor-2",
+          "hostId": "host-monitor-2",
+          "administratorId": "admin-monitor-2"
+        },
+        "providerId": "monitor-provider-c",
+        "retrievedAt": "2026-07-23T10:00:00.000Z",
+        "durableWriteObserved": true,
+        "fsyncObserved": true,
+        "networkClass": "LOCAL_LOOPBACK",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "58c4265e8fac3271486eb6e07421ef07c947d6427ec735b19044a5c849d8fa22"
+      },
+      "issuerKeyId": "v33.41-monitor-2",
+      "algorithm": "Ed25519",
+      "signature": "oWWJEU8C96vQQr3FEoyRKdwzQah75Ytcpz-so_qanZNoAJFUzFJgA85bvLGqGGL850WuSu_SEejLAbK2xYfNDg"
+    }
+  ],
+  "siteRecovery": {
+    "payload": {
+      "version": "33.41",
+      "recoveryId": "provider-recovery-3",
+      "previousRecoveryDigest": "21ff4c1e1145bc2e933263321dd2d9c9594fd21d2c29cbc462b23e2278554232",
+      "recoverySequence": 3,
+      "sourceSiteId": "local-site-a",
+      "targetSiteId": "local-site-b",
+      "sourceProviderId": "provider-aws",
+      "targetProviderId": "provider-gcp",
+      "anchorDigest": "e06832e2378f70502f9008f64cc248b711c0c4742478b968655216d1bf1b72b2",
+      "replacementCertificateDigest": "adfb7521e7d62c38757f1329d7f92bea39d88a53d8f457747d48fc6ca43b978b",
+      "restoredBytesDigest": "fadca6cb2a11d2950aec306725e7fc707eda6ff6a98933fbbf0bf3c4406d1e18",
+      "sequenceReset": false,
+      "forkDetected": false,
+      "verifier": {
+        "keyId": "v33.41-recovery-verifier",
+        "keyFingerprint": "03183a1137da243bf1605091fe8111f8f0cb3dfa2a22ab12492d7cbec00a9159",
+        "organizationId": "org-recovery",
+        "hostId": "host-recovery",
+        "administratorId": "admin-recovery"
+      },
+      "recoveredAt": "2026-07-23T10:00:00.000Z",
+      "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "recoveryDigest": "f075bca94f0b520c080129abf054ff18a4675ab7bf2fafab6198d16222bd7cf5"
+    },
+    "issuerKeyId": "v33.41-recovery-verifier",
+    "algorithm": "Ed25519",
+    "signature": "ha3YrwSZjWHrZBcI4XE0NFFGJk8Md2BE2ToE2UxVPxFKxNH_Z3vllP4jawN7NJjLrCCil1gVltz_DV5YutlfAA"
+  },
+  "finalVerdict": {
+    "version": "33.41",
+    "priorV33_40VerdictDigest": "d65a546444ebcf9efdbdec5431b6855d7395daa24ff4645ab34773c8e9444c51",
+    "trustRootCount": 4,
+    "conformanceReceiptCount": 4,
+    "revocationSnapshotDigest": "8be1ccb4168deec2c1a4928f830af15ad674d0eca3e447d55ed3b30f34c3f855",
+    "replacementCertificateDigest": "adfb7521e7d62c38757f1329d7f92bea39d88a53d8f457747d48fc6ca43b978b",
+    "checkpointAnchorDigest": "e06832e2378f70502f9008f64cc248b711c0c4742478b968655216d1bf1b72b2",
+    "monitorReceiptCount": 3,
+    "siteRecoveryDigest": "f075bca94f0b520c080129abf054ff18a4675ab7bf2fafab6198d16222bd7cf5",
+    "status": "LOCAL_PROVIDER_ONBOARDING_CONFORMANCE_REHEARSAL_ONLY",
+    "externalTrustRootsObserved": false,
+    "externalHardwareSessionsObserved": false,
+    "publicCheckpointObserved": false,
+    "externalHumanParticipants": 0,
+    "verifiedAt": "2026-07-23T10:00:00.000Z",
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "verdictDigest": "bb0c488f0f16b4936ac619c6d8546ec9c7626ec43e73e03a2c94fe4880f1b356"
+  },
+  "publicKeys": [
+    {
+      "keyId": "v33.40-adapter-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAV18MT+Ka1HDKblymBXnX3WI9cZAYMElDrExFwmsBpqQ=",
+      "fingerprint": "a9c93fb94d39ecd5f3329bffac9da0be8dcd56f8f77966546326ff5cdec4d6a2",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-adapter-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAeOB3EBtiqrVRofykN21u2v4LIBKcwwjtuzFsfcTMln0=",
+      "fingerprint": "f8ab19064d8710e5c11586c18f15047d2af0add49bbbc60af526086af47d23a4",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-adapter-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAQ+KBIUrgDKKnO07bIdscQsP6WqLmMQXQ9FM+Byjudzw=",
+      "fingerprint": "0bdcfef40201b5b446f10c874e0c0a2caf3c22e703cbaa56d161accc3c73d940",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-attest-authority-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAbI4C5GFzhrnJBBlrk+Anxy5PqsjYDaXrqJwX1Nf2a6A=",
+      "fingerprint": "e0a91f7619f4f681120fe481dbc8981bdcbf7058c101df316a79111d48201332",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-attest-authority-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAHpcm5WVGmUS7TGxd2DrDr3mjquhPDDs5oKMEbFpJBeE=",
+      "fingerprint": "9bfca7778ad30e912f7d20016d2c205996297ae89d2d197732ecdefb18af000f",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-attest-authority-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAe11tITFkri1aHafoCbZE+KzSVUDMG1i7Sw2joQ2RbWA=",
+      "fingerprint": "5388a9407cae6a8a4b23b32d12881b7a1ae713dc45978eb87cedab9cd7e6d988",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-custodian-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAlQ/+1r/702HuMj78dOckjX5DCDItjo8YYH3xCvIsbxw=",
+      "fingerprint": "28fc0e57ff7fd0ad16f315719f6cc637e5703990f3320b0b193c2d0cdc2e494e",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-custodian-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAiqoce+qlNuVqDS7kRFQ+LuA9onjpWa1kwy6JPQ4PzkQ=",
+      "fingerprint": "0feb34b9f26a172d85ed8d3fb1121bc09f2db203ef007028675c73693665c748",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-custodian-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA5FEqTavTTykEzD0soE6kKjo2tEB+dmASikp1qM/ozjY=",
+      "fingerprint": "13d44380bcae2cce0dea616409c40a1b0daf1e476a8e5683309c85e8ae3045c5",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-custodian-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA7/SBSZDiLllOGrEjT06xtn8BWp8+ofxS3/arOqRK4lg=",
+      "fingerprint": "a966b7e4ecd924668e6828217b011586b0624a4f6d60ad38249f45587819b146",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-custodian-4",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAafImynxcp6cg/xuaQjFUilr3O/+AgVYdOHtiftPzYxI=",
+      "fingerprint": "8e10cfeaca3f845a1762e18264ec07c1fbcddd08e56cf65373f2b8df8f47b638",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-threshold-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEALzZLtaT5NJByThN8yVQO4ue685iXnky6oeAb/GWZdaQ=",
+      "fingerprint": "61b95b3bf2e6141e5e128387e3cc7bd979a23ae9e50b0d2f58704b7f55296725",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-publication-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAPeXrO/qxbGM/2Z0dw/pjvWv3h8y1NfkLdZufbhYwTBU=",
+      "fingerprint": "5b15586fdd6529d3471223167a675ff55931ef06fb025356d6ec11ef9a7f2324",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-monitor-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAThnuJ8aQTcCj9wqjTuinePpuKHH4qYHRID5hinyC5cM=",
+      "fingerprint": "4a1978b03674a4384d1f29fb11886e085b99bce529887f7d9c0a790ad144bd94",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-monitor-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAlFJeQaD7iaMXufQ+OdQO36kaK84rHGkaAj1E/UAeAuI=",
+      "fingerprint": "e60f06bfc84a6e45e7ffd917cbce58d55f1d854dfa4abeb8d09129cb8c50ab9c",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-monitor-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAwEM8CGTSdlWW93l9FnWPo9ynoOFpQGGsxE6iHP8f6MM=",
+      "fingerprint": "5e118015450a4d9a5c9c5a5e9ffce87eb0bdd67674ea4c281615c23054ff1ccc",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-recovery-verifier",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAE8H9m7c/ynaXHgqCx5Zqfyz2ExFvwb/dVDXjf/IXfwM=",
+      "fingerprint": "cbbdef075dbaf0ad8a71a6a030d294f22fb15d359cbb4f4d229bb4980ca9ecb0",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-role-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAJOfsWnkliTQV2pskV3Asz5omC6QUm2Q39pqBZ3ItB5I=",
+      "fingerprint": "5253ed3bfcb4e53f1261c9f92c55fc59e1ecd10b8df070bb6070257a2545b727",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-role-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAJ/64iGbHzjT8guMDnqFx65M1gMGLs69bbqeS8gQoHUw=",
+      "fingerprint": "20b6d336ea0e0e6acd66ce21fda607468d449e70efcc8f0eaca31b8545c7c544",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-role-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAvOsxDxGW/DQWOLWyPailI8e7uASEN1fXmjTos2GcJOI=",
+      "fingerprint": "505d386539692509afa566c7f61ad3a5ef8cf12c97ab3cb4007ee58119b05db9",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-role-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA0pVpyCc2Sx1hFwYbBcJmKFia8MIWkt7aJyDXRkAATpo=",
+      "fingerprint": "0ef230e55f63a3640e80cd5cd396a622431b3517aad5718c620c4c405b7fd7c1",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-role-4",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAIzWrS43gndcX0r4xUQlgpT9UXmH55r/wyG1V8LcpGXQ=",
+      "fingerprint": "17f113a26955c7651e7e3ab8437efce5bd301c14a2700c69cebbb137505f03b3",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.40-publisher",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAnz8OE4Xwrcpt23GP5M6VItxen0TEmNrxY5H2G46/J6Y=",
+      "fingerprint": "8a51e8fdfd4ea5d087357e153f90681cf1fa0360dffcad4504c52bd49b1718ab",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-adapter-provider-gcp",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAPbxn/KBvJmwmTRdEJ1VJz9VEdj9BjRLlho8Wf4v5PVY=",
+      "fingerprint": "38f430560b59d7218011b409554ffa1ae1cdef7bc71c371e6646a652177e61c4",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-attestation-authority-provider-gcp",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAubrLTUkH3xgqOw5U6gQNjvB7erwvMJjv/A7FmfiQMNk=",
+      "fingerprint": "b3077df25ae78c48ae4e678fe92f6bfe9e455d8de4b95812f4d9c3e6216cc663",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-role-provider-gcp",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAOICzWEOC79JkskkiJNOlSTcKnCX6Ox84xAznjXmpaS4=",
+      "fingerprint": "0ca7a65f1600f14d057e2f74157019c14ede3596e1af7f24a8e3baa7a8b655a3",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-root-registrar-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA8CDISsP0/2Xe4Ul7CoCVh5AO9RJPwcU3fMqz3rlvaO8=",
+      "fingerprint": "3e3ab487b7188b2ed27622009bbd6a5aff20e12b44152ca2f25847dc1626d9ed",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-root-registrar-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAuFeH+7dzatn+jx76DynHlIPCQH/8/VXD5w4fFpioppU=",
+      "fingerprint": "c5e7476902bb80acb816bc8e5ae2dd596f7b145e23b14585169a506561a0d8ac",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-root-registrar-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAI6Jea+XZ9nPzmAo6+Bi+S/u87jQJw0Xu6ZMrOKLzk68=",
+      "fingerprint": "d793f045620e5a8122be15478d976fd9d4f382627d5fa5514b1616f775bba188",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-root-registrar-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAUWdyBegdQo4MnJSotm1Gde2jBkHDdppGPTueRT2nTuE=",
+      "fingerprint": "95ed55f37a1e7d5f27192980988902c7091dff1a0e95acfa25438f498b54d14b",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-conformance-lab-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAvo3CmEZcsgYhRZ48yfceRq79prtXVBiRLFDj5tQFB5M=",
+      "fingerprint": "86af77cc394e3558f5807d4f0bc5641a29c15d06401464ca8ec9259d3260edcf",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-conformance-lab-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAwgnG7CSXKtDi+6b5IFx6m+BFOcXWs7PNssl+rTUdYIQ=",
+      "fingerprint": "12f6ce800abc4b6835fb399a3ac29c20cd3a78043718aaadccc02dfab24d8904",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-conformance-lab-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEArVvd/W7pcIUkzQ+JLewQs1A0Cn//+0al71yICytAPtk=",
+      "fingerprint": "27a297e4895a0fc5623256beb2e2f64ea3e566c5afef269b51e663feda3f0c0f",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-conformance-lab-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA7Y5XtaC/Rdiew/TZ9Y7FqlPlMuP4tzoXags2eF5PBGA=",
+      "fingerprint": "e59a9f28d7d7937da85d12886f6698eae53ee6d58bab61b23e486d3f63ee9c67",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-revocation-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAKSIjTCJYMiPDdgeyq8RUy8AFiWgu4ghjQ3V0qV6jqok=",
+      "fingerprint": "c8b065154ec2818cd8a6f4ebad3af910afeb02374183bfc593a43119be936536",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-replacement-custodian-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAGKChbPFilpqRWTqknO6YxjEmUideCsO3UZ7L5rint4A=",
+      "fingerprint": "32ffc7f1ec8d83011ef0a6e4632213906151cde93d7a97b8b92b680af4c81d27",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-replacement-custodian-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAxcbwrFDMV7e6TVcAlr2nPGYP10lfAdzl6MJ9P3n9ZYE=",
+      "fingerprint": "ec4b70b47a6c0c0a0f3bdc2477382faf5ea599d35630f6a95a387e2a08164f9c",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-replacement-custodian-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAUO9qKk3QZhldjra63lb5kS+S1eoCQIlWMY7z82BJuS4=",
+      "fingerprint": "e16a6a1abc77e3a46a4653c5e3f8dca59bc424503361277300f7d602f85f4b11",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-replacement-custodian-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAvjOmzGoTVcJ8DSg1eY1tlKT8MpvECek6yGTtYbXzIEE=",
+      "fingerprint": "cf31f04386785fa87269f3b4836100141eb4a732947de641ed44d41ccdf2e15b",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-replacement-custodian-4",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAZ9DqO1pLkluwOvF4WWeCPIYm81QHbTqZCljew/6XivY=",
+      "fingerprint": "28abcaf0122386b6bca8e6849f0f746c927478a712f0277369731dfa8871d90a",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-replacement-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAE4zQwSTk0ARFciz2KW+jy/3w8iDkkk+dHJ11ZIuQwEI=",
+      "fingerprint": "1f6b866d69fc804bc55b674a892e5524f17c46f62c5a24252fc9acef9731b560",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-publication-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEArco8UtHpTsMkQ3wbobwvbvwfSblRY8Oyqi3cxPxxAzc=",
+      "fingerprint": "c323dbf47e1233344d0b1340796e5621cb9346fb9265e72d3b6fdd0dea69761c",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-publisher",
+      "spkiDerBase64": "MCowBQYDK2VwAyEALfQmK85aw6z9KplvhTG53xskZMJV2hd1DIdUUdXTdUc=",
+      "fingerprint": "3aa91d7e88778cf0a99f3e39045454a51246ecd03d5bacfb8d5f639a77190551",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-monitor-0",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA0DQz8O/Bs3lJEqe3owRjnqnWQbCD0D57/Kahgwzwmyw=",
+      "fingerprint": "81b17ba74d6230d9c4b49f4ec54a539dcb97b7fa26b0c27ce35fbab147200dd6",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-monitor-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAPVukJjcj0WhI980/Q78CFsn6rpEJDcPV2VVaqhQjxj8=",
+      "fingerprint": "a0f3fee8c674b817ca44adbf06c6835df843928b474d5b0d361bcdb2fd9dfa3a",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-monitor-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA+EUZsCsMdiYovHRHBWJHuRzEtGze50xdjV6t+a5AMCE=",
+      "fingerprint": "ae724f0a105cb25a48405b04fa96738f16fecb131dc21cab57110c8ff9da7990",
+      "revoked": false
+    },
+    {
+      "keyId": "v33.41-recovery-verifier",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAnz7bVJmKlu8GX688K+qMENbH88gibt2l9BDmYat2DAY=",
+      "fingerprint": "03183a1137da243bf1605091fe8111f8f0cb3dfa2a22ab12492d7cbec00a9159",
+      "revoked": false
+    }
+  ],
+  "trustedIds": {
+    "adapterSigners": [
+      "v33.40-adapter-0",
+      "v33.40-adapter-1",
+      "v33.40-adapter-2",
+      "v33.41-adapter-provider-gcp"
+    ],
+    "attestationAuthorities": [
+      "v33.40-attest-authority-0",
+      "v33.40-attest-authority-1",
+      "v33.40-attest-authority-2",
+      "v33.41-attestation-authority-provider-gcp"
+    ],
+    "rootRegistrars": [
+      "v33.41-root-registrar-0",
+      "v33.41-root-registrar-1",
+      "v33.41-root-registrar-2",
+      "v33.41-root-registrar-3"
+    ],
+    "laboratories": [
+      "v33.41-conformance-lab-0",
+      "v33.41-conformance-lab-1",
+      "v33.41-conformance-lab-2",
+      "v33.41-conformance-lab-3"
+    ],
+    "revocationAuthorities": [
+      "v33.41-revocation-authority"
+    ],
+    "custodians": [
+      "v33.41-replacement-custodian-0",
+      "v33.41-replacement-custodian-1",
+      "v33.41-replacement-custodian-2",
+      "v33.41-replacement-custodian-3",
+      "v33.41-replacement-custodian-4"
+    ],
+    "replacementAuthorities": [
+      "v33.41-replacement-authority"
+    ],
+    "publicationAuthorities": [
+      "v33.41-publication-authority"
+    ],
+    "monitors": [
+      "v33.41-monitor-0",
+      "v33.41-monitor-1",
+      "v33.41-monitor-2"
+    ],
+    "recoveryVerifiers": [
+      "v33.41-recovery-verifier"
+    ]
+  },
+  "attacks": {
+    "rootSubstitutionBlocked": true,
+    "moduleSubstitutionBlocked": true,
+    "sessionNonceSubstitutionBlocked": true,
+    "replacementQuorumBlocked": true,
+    "priorRelabelBlocked": true,
+    "monitorQuorumBlocked": true
+  },
+  "summary": {
+    "providerCount": 4,
+    "trustRootCount": 4,
+    "conformanceReceiptCount": 4,
+    "verifiedSignatureCount": 26,
+    "newSignatureCount": 20,
+    "monitorReceiptCount": 3
+  },
+  "truthBoundary": {
+    "executionClass": "LOCAL_PROVIDER_CONFORMANCE_REHEARSAL",
+    "externalTrustRootsObserved": false,
+    "externalHardwareSessionsObserved": false,
+    "publicCheckpointObserved": false,
+    "externalRoleOwnersObserved": 0,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "g3": "blocked",
+    "productionPromotion": "blocked"
+  }
+}

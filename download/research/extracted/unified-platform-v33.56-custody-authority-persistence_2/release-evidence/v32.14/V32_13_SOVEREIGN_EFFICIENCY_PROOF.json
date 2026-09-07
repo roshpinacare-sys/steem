@@ -1,0 +1,209 @@
+{
+  "version": "32.13",
+  "generatedAt": "2026-07-20T16:03:34.659Z",
+  "status": "passed",
+  "classification": "repository-local-synthetic-workload-and-operator-supplied-cost-model",
+  "workload": {
+    "logicalOperations": 800,
+    "handlerInvocations": 301,
+    "handlerCounts": {
+      "rules": 100,
+      "localModel": 101,
+      "async": 0,
+      "burst": 0,
+      "external": 100
+    },
+    "routes": {
+      "CACHE_EXACT": 400,
+      "EXTERNAL_MODEL": 100,
+      "LOCAL_MODEL": 200,
+      "LOCAL_RULES": 100
+    },
+    "elapsedMs": 90.528,
+    "logicalOperationsPerSecond": 8837.01
+  },
+  "costEvidence": {
+    "operations": 800,
+    "cacheHits": 400,
+    "deduplicatedOperations": 99,
+    "externalOperations": 100,
+    "localOperations": 700,
+    "externalCostMicros": 100000,
+    "savedExternalCostMicros": 700000,
+    "savingsRate": 0.875,
+    "chainValid": true
+  },
+  "operationElimination": {
+    "avoidedHandlerInvocations": 499,
+    "eliminationRate": 0.62375
+  },
+  "consolidation": {
+    "status": "PASS",
+    "decisions": [
+      {
+        "serviceId": "identity",
+        "disposition": "NATIVE",
+        "implementation": "src/security/private-identity.ts",
+        "reason": "sovereign-primitive-satisfies-requirement",
+        "productionQualified": true
+      },
+      {
+        "serviceId": "relational-database",
+        "disposition": "SELF_HOSTED_STANDARD",
+        "implementation": "src/runtime/postgres-store.ts",
+        "reason": "local-implementation-ready-external-multi-host-qualification-pending",
+        "productionQualified": false
+      },
+      {
+        "serviceId": "cache",
+        "disposition": "NATIVE",
+        "implementation": "src/runtime/sovereign-efficiency-fabric.ts",
+        "reason": "sovereign-primitive-satisfies-requirement",
+        "productionQualified": true
+      },
+      {
+        "serviceId": "job-queue",
+        "disposition": "NATIVE",
+        "implementation": "src/runtime/postgres-store.ts",
+        "reason": "sovereign-primitive-satisfies-requirement",
+        "productionQualified": true
+      },
+      {
+        "serviceId": "object-storage",
+        "disposition": "NATIVE",
+        "implementation": "src/artifacts/content-addressed-store.ts",
+        "reason": "local-implementation-ready-external-multi-host-qualification-pending",
+        "productionQualified": false
+      },
+      {
+        "serviceId": "secrets",
+        "disposition": "NATIVE",
+        "implementation": "src/security/encrypted-keystore.ts",
+        "reason": "local-implementation-ready-external-multi-host-qualification-pending",
+        "productionQualified": false
+      },
+      {
+        "serviceId": "observability",
+        "disposition": "NATIVE",
+        "implementation": "src/operations/telemetry.ts",
+        "reason": "sovereign-primitive-satisfies-requirement",
+        "productionQualified": true
+      },
+      {
+        "serviceId": "ai-routing",
+        "disposition": "NATIVE",
+        "implementation": "src/runtime/sovereign-efficiency-fabric.ts",
+        "reason": "sovereign-primitive-satisfies-requirement",
+        "productionQualified": true
+      },
+      {
+        "serviceId": "email",
+        "disposition": "EXTERNAL_BOUNDARY",
+        "implementation": "external-adapter",
+        "reason": "regulated-or-global-delivery-boundary-cannot-be-honestly-eliminated",
+        "productionQualified": false
+      },
+      {
+        "serviceId": "payments",
+        "disposition": "EXTERNAL_BOUNDARY",
+        "implementation": "external-adapter",
+        "reason": "regulated-or-global-delivery-boundary-cannot-be-honestly-eliminated",
+        "productionQualified": false
+      }
+    ],
+    "nativeServices": 7,
+    "selfHostedStandards": 1,
+    "unavoidableExternalBoundaries": 2,
+    "blockedServices": 0,
+    "eliminatedPerUserLicenses": 8,
+    "externallyQualifiedServices": 5,
+    "reportDigest": "2944dcd5b33cde2419577fd9557473b9e976f6f5c2d8918c16b7089290d77056"
+  },
+  "topology": {
+    "status": "OPTIMAL",
+    "selectedOfferIds": [
+      "backup",
+      "data-a",
+      "data-b",
+      "witness"
+    ],
+    "monthlyCostMicros": 113000000,
+    "cpuCores": 25,
+    "memoryGiB": 102,
+    "usableNvmeGiB": 2000,
+    "providers": [
+      "independent",
+      "main"
+    ],
+    "failureDomains": [
+      "a",
+      "b",
+      "x",
+      "y"
+    ],
+    "computeNodes": 2,
+    "databaseNodes": 2,
+    "witnessNodes": 1,
+    "backupNodes": 1,
+    "evaluatedCombinations": 31,
+    "rejectedCombinations": 26,
+    "planDigest": "16346c45a8499730a013081420832835e9ee945a3dc1492c71f44183bd8efb57",
+    "threeLargeReferenceCostMicros": 163000000,
+    "optimizedCostReductionMicros": 50000000,
+    "optimizedCostReductionRate": 0.306748
+  },
+  "capacityControl": {
+    "burstPlan": {
+      "version": "32.13",
+      "tenantId": "tenant-a",
+      "sequence": 1,
+      "observedAt": "2026-07-20T16:03:34.659Z",
+      "proposalOnly": true,
+      "status": "PLANNED",
+      "targetLocalWorkers": 8,
+      "targetBurstNodes": 2,
+      "projectedBurstHourlyCostMicros": 600,
+      "actions": [
+        {
+          "kind": "REQUEST_BURST",
+          "units": 2,
+          "offerId": "qualified-burst",
+          "reason": "qualified-sovereign-overflow-capacity"
+        }
+      ],
+      "previousPlanDigest": null,
+      "planDigest": "32710104603e241fd14f2fafb6fa249c009e36f0a95250495efea543ed1f2ce6"
+    },
+    "scaleToZeroPlan": {
+      "version": "32.13",
+      "tenantId": "tenant-a",
+      "sequence": 1,
+      "observedAt": "2026-07-20T16:03:34.659Z",
+      "proposalOnly": true,
+      "status": "PLANNED",
+      "targetLocalWorkers": 0,
+      "targetBurstNodes": 0,
+      "projectedBurstHourlyCostMicros": 0,
+      "actions": [
+        {
+          "kind": "STOP_LOCAL_WORKERS",
+          "units": 4,
+          "reason": "idle-scale-to-zero-or-capacity-reduction"
+        },
+        {
+          "kind": "DRAIN_BURST",
+          "units": 1,
+          "reason": "queue-empty-release-paid-capacity"
+        }
+      ],
+      "previousPlanDigest": null,
+      "planDigest": "4569c282d095c482bc5dec666d3cfd6c6db52520ad43197f31912aeec07909e2"
+    }
+  },
+  "limitations": [
+    "synthetic workload does not prove production traffic distribution",
+    "cost inputs are normalized operator-supplied examples, not current provider quotes",
+    "multi-host PostgreSQL, storage, witness and failover remain externally unqualified"
+  ],
+  "reportDigest": "a8d8ed43db08548297b27be77cc98bd9e9e0f80d6c93a9a9361e41de5bf70677"
+}

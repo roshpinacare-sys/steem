@@ -1,0 +1,80 @@
+{
+  "version": "33.5",
+  "generatedAt": "2026-07-21T05:21:11.538Z",
+  "status": "passed",
+  "classification": "real-loopback-http-provider-and-webhook-local-qualification-shadow-only",
+  "assertions": {
+    "realLocalHttpRoundTrip": true,
+    "providerReceiptVerified": true,
+    "signedWebhookVerified": true,
+    "exactlyOnceAfterResponseLoss": true,
+    "redirectBlocked": true,
+    "ssrfPolicyEnforced": true,
+    "timeoutBounded": true,
+    "oversizedResponseBlocked": true,
+    "malformedResponseBlocked": true,
+    "mobileScopesPreserved": true,
+    "mobileFourActions": true,
+    "noExternalEffects": true,
+    "noG3SelfPromotion": true
+  },
+  "providerMetrics": {
+    "adapterId": "local-http-provider",
+    "requestCount": 3,
+    "uniqueAcceptances": 2,
+    "duplicateSuppressions": 1,
+    "webhookDeliveries": 3,
+    "responseDrops": 1,
+    "timeouts": 0,
+    "malformedResponses": 0,
+    "redirects": 0,
+    "httpFailures": 0
+  },
+  "qualificationEvidence": {
+    "version": "33.5",
+    "adapterId": "local-http-provider",
+    "realLocalHttpRoundTrip": true,
+    "providerReceiptVerified": true,
+    "signedWebhookVerified": true,
+    "exactlyOnceAfterResponseLoss": true,
+    "redirectBlocked": true,
+    "ssrfPolicyEnforced": true,
+    "timeoutBounded": true,
+    "oversizedResponseBlocked": true,
+    "malformedResponseBlocked": true,
+    "externalEffectsExecuted": 0,
+    "evidenceClass": "LOCAL_HTTP_QUALIFICATION",
+    "g3Eligible": false,
+    "evidenceDigest": "b2502cb7fa5d15c16311b3bc63f71a44e262ecb2d30b323ecf51e7d90f4c6c2d"
+  },
+  "mobilePresentation": {
+    "riskLabel": "MEDIUM · REVERSIBLE",
+    "rollbackLabel": "Rollback available",
+    "actions": [
+      "YES",
+      "NO",
+      "CHANGE_CONDITIONS",
+      "EXPLAIN"
+    ],
+    "scopeLabels": [
+      "repository.write"
+    ],
+    "evidenceClass": "SIMULATED_PRESENTATION"
+  },
+  "limitations": [
+    "No APNs, FCM or external provider credentials were used.",
+    "HTTP was restricted to 127.0.0.1 and did not qualify public-network DNS TLS or provider SLO behavior.",
+    "Keys were software-generated and not hardware-backed.",
+    "The mobile presentation was structurally simulated; no human comprehension or accessibility study was run.",
+    "Production effects and G3 promotion remain blocked."
+  ],
+  "gates": {
+    "G0": "passed",
+    "G1": "passed",
+    "G2": "not-started",
+    "G3": "in-progress-not-passed"
+  },
+  "productionPromotion": "blocked",
+  "externalQualification": "not_executed",
+  "reportDigest": "44a6b8b4da1b46dcc4cd90b17e5659b841d9833f92ec46a1fd0cf8d54d96f51f"
+}

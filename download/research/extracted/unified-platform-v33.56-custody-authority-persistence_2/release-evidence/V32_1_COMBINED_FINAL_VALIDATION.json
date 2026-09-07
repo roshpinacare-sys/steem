@@ -1,0 +1,187 @@
+{
+  "version": "32.1",
+  "status": "passed",
+  "classification": "source-remine-governance-closure-and-credential-sovereignty-integrated-pilot",
+  "sourceDigest": "0a0e17a0925bbfb899a754fd8670179ab8f11ae0d2324b868638f9d8b9f7764b",
+  "baseValidation": {
+    "stagesPassed": 19,
+    "stagesTotal": 19,
+    "results": {
+      "tests": {
+        "testFiles": 122,
+        "tests": 619,
+        "passed": 619,
+        "failed": 0,
+        "wallDurationMs": 18105.551
+      },
+      "coverage": {
+        "file": "all files",
+        "linePercent": 99.4,
+        "branchPercent": 96.21,
+        "functionPercent": 98.64
+      },
+      "testQuality": {
+        "files": 122,
+        "tests": 619,
+        "assertions": 2083,
+        "criticalOrHighIssues": 0,
+        "mediumIssues": 0
+      },
+      "architecture": {
+        "nodeCount": 221,
+        "sourceCount": 80,
+        "testCount": 126,
+        "entrypointCount": 15,
+        "importEdgeCount": 596,
+        "sourceCycleCount": 0,
+        "untestedSourceCount": 0,
+        "capabilityPathCount": 14,
+        "closedCapabilityPathCount": 14,
+        "layerCount": 20
+      },
+      "mutations": {
+        "mutantsSpecified": 16,
+        "mutantsKilledAuthentically": 16,
+        "survivors": 0,
+        "invalidKills": 0
+      },
+      "credentialSovereignty": {
+        "selfIssuanceRejected": true,
+        "sameCustodianThresholdRejected": true,
+        "thresholdCustodians": 2,
+        "oldProviderCredentialRevoked": true,
+        "newProviderCredentialActive": true,
+        "offlineImportDigestMatches": true,
+        "independentAnchorRollbackDetected": true,
+        "historicalSignatureValidBeforeEffectiveRevocation": true,
+        "signatureBlockedAfterEffectiveRevocation": true,
+        "externalMutationsExecuted": 0
+      },
+      "integration": {
+        "edges": 14,
+        "closed": 14,
+        "externalMutationsExecuted": 0,
+        "capabilityPaths": 14,
+        "closedCapabilityPaths": 14
+      },
+      "stability": {
+        "medianWallMs": 18900.396,
+        "meanWallMs": 18898.356,
+        "minWallMs": 18747.592,
+        "maxWallMs": 19047.079,
+        "coefficientOfVariation": 0.0065
+      },
+      "readiness": "Integrated Pilot",
+      "productionPromotion": "blocked"
+    }
+  },
+  "sourceRemining": {
+    "checks": {
+      "checks": 45,
+      "passed": 45,
+      "failed": 0,
+      "implementedCapabilities": 7,
+      "targetedTests": 35
+    },
+    "architectureBoundary": "single canonical authority; no new network/provider/repository mutation path",
+    "artifacts": [
+      {
+        "path": "src/repository/semantic-change-dag.ts",
+        "bytes": 7376,
+        "sha256": "42c8f4d326b61274985dfa9c6dbd1b4056b87dd7ad5f34a2271c8fb1edeece4c"
+      },
+      {
+        "path": "src/platform/audit-completeness.ts",
+        "bytes": 5839,
+        "sha256": "043dde3f3879664023b7370b4362745b32082b843a0571e69515f9c756e7a965"
+      },
+      {
+        "path": "src/ai/model-lifecycle-watchdog.ts",
+        "bytes": 4437,
+        "sha256": "e84f12e0951c59c8df81e8a9c68986ff4b5c8cd14cd5c54cbfdb99665d53cb6e"
+      },
+      {
+        "path": "src/governance/workspace-continuity.ts",
+        "bytes": 4303,
+        "sha256": "22afe49b69732f6e2b2dab925c5c03be7a565c6ff4ad51a2f1a50c87ee8baced"
+      },
+      {
+        "path": "src/platform/uncertainty-assurance.ts",
+        "bytes": 4395,
+        "sha256": "a3315fce9d0d976778bf22751560cd789fdb01e321e244d53f7f616291f661a7"
+      },
+      {
+        "path": "src/platform/payment-safety.ts",
+        "bytes": 6070,
+        "sha256": "5776f919877ead518835f97119f958c5a3a80dfa7a336f9744920642e298a6b4"
+      },
+      {
+        "path": "src/operations/governed-automation.ts",
+        "bytes": 19494,
+        "sha256": "bbe948c7ca455ace101d74be58848882e041439e83ed9c3a5349fa4b4f0737ef"
+      },
+      {
+        "path": "tests/semantic-change-dag-v32_1.test.ts",
+        "bytes": 3551,
+        "sha256": "5590ec6ba821d36b7f75c13eb7ea8038d3a769f147f60ac3279d384b83de1f90"
+      },
+      {
+        "path": "tests/audit-completeness-v32_1.test.ts",
+        "bytes": 2978,
+        "sha256": "130c918c11886db86f1e92459adad2508952f20caabd6fc8e39218175ea36bbd"
+      },
+      {
+        "path": "tests/model-lifecycle-watchdog-v32_1.test.ts",
+        "bytes": 2735,
+        "sha256": "c3d6d3774d61f12f72d5ddb6a1ccef914653ee727ade30066bc2810c9875a134"
+      },
+      {
+        "path": "tests/workspace-continuity-v32_1.test.ts",
+        "bytes": 1736,
+        "sha256": "77c21158703be81c0d091aa70ede62dcd185a7b14f169afd702f33b37de4d718"
+      },
+      {
+        "path": "tests/uncertainty-assurance-v32_1.test.ts",
+        "bytes": 1871,
+        "sha256": "7ae832fe1f9cb14e915aad50523c9d1fd8a1fe7d2fc07fae835ade445700d0a2"
+      },
+      {
+        "path": "tests/payment-safety-v32_1.test.ts",
+        "bytes": 2602,
+        "sha256": "794b63585a94176b935b272ffa879e55a3053a5784d1844835b4c069b7e7eb36"
+      },
+      {
+        "path": "tests/source-remine-branch-v32_1.test.ts",
+        "bytes": 18016,
+        "sha256": "5ff6cd1ae75bd5d6987fce14ce2f38421b479ca4f7a347463e1bc853b83fac74"
+      },
+      {
+        "path": "governance/v32_1/SOURCE_REMINING_REPORT_v32_1.md",
+        "bytes": 3244,
+        "sha256": "091e98ba0ff88c2190cf09f491e145ef03ef7fa3b528331a183ef7586e80c9d0"
+      },
+      {
+        "path": "governance/v32_1/SOURCE_REUSE_DECISION_MATRIX_v32_1.json",
+        "bytes": 4357,
+        "sha256": "6d37fcff9364b7178399fdd5716f790b3c7903cda85340c8320c544677136a3b"
+      },
+      {
+        "path": "governance/v32_1/SOURCE_TO_CANONICAL_TRACEABILITY_v32_1.json",
+        "bytes": 2439,
+        "sha256": "8ef01c4024998d5d3ecf1c098bda3cd0826543edbb6f0cfe73be25bce9d6fcb5"
+      }
+    ]
+  },
+  "postgresQualification": "environment-blocked",
+  "readiness": "Integrated Pilot",
+  "productionPromotion": "blocked",
+  "limitations": [
+    "Signatures prove authorization and material binding, not truth or legal independence.",
+    "The independent file anchor detects rollback of the bundle store alone; joint rollback of bundle and anchor remains unprotected without external monotonic storage, HSM or federation.",
+    "The proof is single-host and uses local test keys; PostgreSQL, KMS/HSM, live provider and human value are not qualified.",
+    "PostgreSQL, KMS/HSM, independent security, distributed custodians, live provider and human value remain externally unqualified.",
+    "Original source archives and independently verified licenses are not part of this workspace.",
+    "Behavioral reimplementation does not prove equivalence to source implementations.",
+    "External PostgreSQL, HSM/KMS, multi-host, provider and independent security gates remain outside this validation."
+  ]
+}

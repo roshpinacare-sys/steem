@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sovereign-foundry.example/schemas/engineering-commitment.v1.json",
+  "title": "Engineering Commitment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commitmentId", "tenantId", "subjectId", "builderId", "domainPackId", "goal", "authorityGrantDigest", "requirementIds", "promotionCeiling", "createdAt", "expiresAt"],
+  "properties": {
+    "commitmentId": { "type": "string", "minLength": 1 },
+    "tenantId": { "type": "string", "minLength": 1 },
+    "subjectId": { "type": "string", "minLength": 1 },
+    "builderId": { "type": "string", "minLength": 1 },
+    "domainPackId": { "type": "string", "minLength": 1 },
+    "goal": { "type": "string", "minLength": 1 },
+    "authorityGrantDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "requirementIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "promotionCeiling": { "enum": ["research", "shadow"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" }
+  }
+}

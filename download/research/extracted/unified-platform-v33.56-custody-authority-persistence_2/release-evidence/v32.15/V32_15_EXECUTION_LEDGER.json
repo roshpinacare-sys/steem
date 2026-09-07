@@ -1,0 +1,439 @@
+{
+  "version": "32.15",
+  "runId": "v32.15-authoritative-local-r1",
+  "status": "passed",
+  "startedAt": "2026-07-20T17:31:26.255860Z",
+  "updatedAt": "2026-07-20T17:37:09.471933Z",
+  "sourceDigest": "287223d3e47036d38200ea09539aa039bfd80af49299a5949304ca7aea257cac",
+  "steps": [
+    {
+      "id": "repository-truth-map",
+      "sequence": 1,
+      "command": [
+        "node",
+        "scripts/repository-truth-map-v32_15.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:31:26.333096Z",
+      "finishedAt": "2026-07-20T17:31:27.713840Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_15_REPOSITORY_TRUTH_MAP.json",
+          "sha256": "3193d288426f59804ecf709cd5989dea26bca1a1785578262b4b0defe0fec54b",
+          "bytes": 35411
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/01-repository-truth-map.log"
+    },
+    {
+      "id": "clean-build",
+      "sequence": 2,
+      "command": [
+        "npm",
+        "run",
+        "build:clean:v32"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:31:27.714477Z",
+      "finishedAt": "2026-07-20T17:31:34.228163Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_15_BUILD_IDENTITY.json",
+          "sha256": "6725e049e80cc0fe9b465682b5cc86d0f6ab5d95c772f55ca7fc247f0eda1601",
+          "bytes": 925
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/02-clean-build.log"
+    },
+    {
+      "id": "full-regression",
+      "sequence": 3,
+      "command": [
+        "python3",
+        "scripts/run-tests-v32_6.py",
+        "--mode",
+        "full",
+        "--no-build"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:33:45.867251Z",
+      "finishedAt": "2026-07-20T17:34:18.615990Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_6_FULL_TEST_RESULTS.json",
+          "sha256": "1c770bfc02c192d62148af0165b4ad086682c12f01c924495c588a3e266395c8",
+          "bytes": 22917
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/03-full-regression.log"
+    },
+    {
+      "id": "local-assurance-mutation-v32.10",
+      "sequence": 4,
+      "command": [
+        "python3",
+        "scripts/run-local-assurance-mutation-v32_10.py"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:34:27.921201Z",
+      "finishedAt": "2026-07-20T17:34:32.830283Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_10_LOCAL_ASSURANCE_MUTATION_RESULTS.json",
+          "sha256": "6c3e1266abcec4710e2d420e1ad5aff5870c128bb54581d12d0bac9b85ae032f",
+          "bytes": 18603
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/04-local-assurance-mutation-v32.10.log"
+    },
+    {
+      "id": "execution-ledger-mutation-v32.11",
+      "sequence": 5,
+      "command": [
+        "python3",
+        "scripts/run-execution-ledger-mutation-v32_11.py"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:34:43.585486Z",
+      "finishedAt": "2026-07-20T17:34:54.514745Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_11_EXECUTION_LEDGER_MUTATION_RESULTS.json",
+          "sha256": "9a8b9358e61e0be09ba3ac973cd11971b82bd66615664d06f2922668dfcc3e86",
+          "bytes": 16005
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/05-execution-ledger-mutation-v32.11.log"
+    },
+    {
+      "id": "external-integrity-mutation-v32.12",
+      "sequence": 6,
+      "command": [
+        "python3",
+        "scripts/run-external-integrity-mutation-v32_12.py"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:34:54.515583Z",
+      "finishedAt": "2026-07-20T17:35:10.614951Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_12_EXTERNAL_INTEGRITY_MUTATION_RESULTS.json",
+          "sha256": "0ec1fb6ca9642d0a6a9177374f1d8d5982023b7840dcc725877ddd00361d0272",
+          "bytes": 43551
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/06-external-integrity-mutation-v32.12.log"
+    },
+    {
+      "id": "sovereign-efficiency-proof-v32.13",
+      "sequence": 7,
+      "command": [
+        "node",
+        "scripts/sovereign-efficiency-proof-v32_13.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:35:22.516357Z",
+      "finishedAt": "2026-07-20T17:35:22.684473Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_13_SOVEREIGN_EFFICIENCY_PROOF.json",
+          "sha256": "c189654cb870148f2b11f9fc0b7f91de904b759575b34a0be50cea4c70ac4f9d",
+          "bytes": 6484
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/07-sovereign-efficiency-proof-v32.13.log"
+    },
+    {
+      "id": "sovereign-efficiency-mutation-v32.13",
+      "sequence": 8,
+      "command": [
+        "python3",
+        "scripts/run-sovereign-efficiency-mutation-v32_13.py"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:35:22.685061Z",
+      "finishedAt": "2026-07-20T17:35:28.430137Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_13_SOVEREIGN_EFFICIENCY_MUTATION_RESULTS.json",
+          "sha256": "ae783a4c9a10ef828a168ed807b88a2d0ceb34f8c06d56b2893ced76d501bd5f",
+          "bytes": 29680
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/08-sovereign-efficiency-mutation-v32.13.log"
+    },
+    {
+      "id": "frontier-binary-proof-v32.14",
+      "sequence": 9,
+      "command": [
+        "node",
+        "scripts/frontier-binary-proof-v32_14.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:35:28.430856Z",
+      "finishedAt": "2026-07-20T17:35:30.262118Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_14_FRONTIER_BINARY_PROOF.json",
+          "sha256": "8330894da514e0027e0d8cd041d7ed7de995524325c809fbf48128996bcdac3f",
+          "bytes": 3117
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/09-frontier-binary-proof-v32.14.log"
+    },
+    {
+      "id": "binary-fuzz-v32.14",
+      "sequence": 10,
+      "command": [
+        "node",
+        "scripts/run-binary-fuzz-v32_14.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:35:30.262838Z",
+      "finishedAt": "2026-07-20T17:35:31.586174Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_14_BINARY_FUZZ_REPORT.json",
+          "sha256": "620459929d51a9fd5ed147a60877513191061e51bf7893283d2e3243ded7a1c9",
+          "bytes": 298
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/10-binary-fuzz-v32.14.log"
+    },
+    {
+      "id": "frontier-binary-mutation-v32.14",
+      "sequence": 11,
+      "command": [
+        "python3",
+        "scripts/run-frontier-binary-mutation-v32_14.py"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:36:00.675861Z",
+      "finishedAt": "2026-07-20T17:36:13.365908Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_14_FRONTIER_BINARY_MUTATION_RESULTS.json",
+          "sha256": "61b13693fad205b27ec2a59ca026f17de55d9504e79e5f48280ef11936e60c81",
+          "bytes": 27660
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/11-frontier-binary-mutation-v32.14.log"
+    },
+    {
+      "id": "frontier-tournament-wasm-proof-v32.15",
+      "sequence": 12,
+      "command": [
+        "node",
+        "scripts/frontier-tournament-wasm-proof-v32_15.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:36:13.366868Z",
+      "finishedAt": "2026-07-20T17:36:14.514031Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_15_FRONTIER_TOURNAMENT_WASM_PROOF.json",
+          "sha256": "51ddb322d4263b8d4e520a03f509d22772fd019cfe9b7101284778348bea759a",
+          "bytes": 2658
+        },
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_15_FRONTIER_TOURNAMENT_WASM_BUNDLE.json",
+          "sha256": "e458431ef525629f432d891a7f931752622199b655c0786ac3d8cf4d321cf8c0",
+          "bytes": 2197
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/12-frontier-tournament-wasm-proof-v32.15.log"
+    },
+    {
+      "id": "frontier-tournament-wasm-mutation-v32.15",
+      "sequence": 13,
+      "command": [
+        "python3",
+        "scripts/run-frontier-tournament-wasm-mutation-v32_15.py"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:36:14.515050Z",
+      "finishedAt": "2026-07-20T17:36:18.276774Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_15_FRONTIER_TOURNAMENT_WASM_MUTATION_RESULTS.json",
+          "sha256": "7f159be39eba15629ce3b07e6258b8955398ea39032dac278c25d17e8b0434e6",
+          "bytes": 20719
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/13-frontier-tournament-wasm-mutation-v32.15.log"
+    },
+    {
+      "id": "coverage",
+      "sequence": 14,
+      "command": [
+        "node",
+        "scripts/run-coverage-v32.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:36:27.876540Z",
+      "finishedAt": "2026-07-20T17:36:52.664891Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_COVERAGE_REPORT.json",
+          "sha256": "de996a9acad354861bba55000f52c3859e9b981cd2748936f3b3e8bb87127cf5",
+          "bytes": 3876
+        },
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_COVERAGE_SCOPE.json",
+          "sha256": "d050e77baa79aa827dbe9865fb0ebfffa6e43fff4f2886be448dbc0a19be49d4",
+          "bytes": 7670
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/14-coverage.log"
+    },
+    {
+      "id": "test-quality",
+      "sequence": 15,
+      "command": [
+        "node",
+        "scripts/test-quality-audit-v32.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:36:52.666073Z",
+      "finishedAt": "2026-07-20T17:36:54.667092Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_TEST_QUALITY_AUDIT.json",
+          "sha256": "66554b8fd0c08792a4b9d492fd4b64a2000a14cb194fb2b7396f9e17b496c7fc",
+          "bytes": 30925
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/15-test-quality.log"
+    },
+    {
+      "id": "architecture",
+      "sequence": 16,
+      "command": [
+        "node",
+        "scripts/architecture-validation-v32.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:36:54.667909Z",
+      "finishedAt": "2026-07-20T17:36:57.326165Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_ARCHITECTURE_INTEGRITY.json",
+          "sha256": "d8d850e304cc1a2ace4dd5425a4ff15e0462765db762a248ce273ac8b4bf86dc",
+          "bytes": 21907
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/16-architecture.log"
+    },
+    {
+      "id": "external-readiness",
+      "sequence": 17,
+      "command": [
+        "node",
+        "scripts/external-qualification-readiness-cycle-v32_12.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:36:57.327075Z",
+      "finishedAt": "2026-07-20T17:36:57.393705Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_12_EXTERNAL_QUALIFICATION_READINESS.json",
+          "sha256": "dadf76537536f26e657b8fa9f5a155889bd27df47369f05a5b3473ab4e794723",
+          "bytes": 2842
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/17-external-readiness.log"
+    },
+    {
+      "id": "release-final",
+      "sequence": 18,
+      "command": [
+        "node",
+        "scripts/validate-v32_15.mjs"
+      ],
+      "workingDirectory": "/mnt/data/v32_15_work",
+      "startedAt": "2026-07-20T17:37:07.772007Z",
+      "finishedAt": "2026-07-20T17:37:09.470394Z",
+      "status": "passed",
+      "exitCode": 0,
+      "timedOut": false,
+      "signal": null,
+      "artifacts": [
+        {
+          "path": "evidence/runs/v32.15-authoritative-local-r1/V32_15_FINAL_VALIDATION.json",
+          "sha256": "4e134b1aa64410634298cc0ec07c620648259c541d52cb90ca6264622a06920b",
+          "bytes": 4540
+        }
+      ],
+      "logPath": "evidence/runs/v32.15-authoritative-local-r1/logs/18-release-final.log"
+    }
+  ],
+  "productionPromotion": "blocked"
+}

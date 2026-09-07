@@ -1,0 +1,59 @@
+{
+  "version": "33.19",
+  "status": "passed",
+  "evidenceClass": "LOCAL_SEPARATE_PROCESS_MTLS_AUTHORITY_REFERENCE",
+  "gates": {
+    "G0": "passed",
+    "G1": "passed",
+    "G2": "in-progress-not-passed",
+    "G3": "in-progress-not-passed",
+    "G4": "in-progress-not-passed",
+    "G5": "in-progress-not-passed",
+    "G6": "in-progress-not-passed"
+  },
+  "mtlsAuthority": {
+    "status": "SEPARATE_PROCESS_MTLS_AUTHORITY_PROVEN_LOCALLY",
+    "evidenceClass": "LOCAL_SEPARATE_PROCESS_MTLS_AUTHORITY_REFERENCE",
+    "authorityDaemonProcessCount": 1,
+    "transport": "MUTUAL_TLS_1_3",
+    "applicationCommandSignatureRequired": true,
+    "credentialRotationCount": 1,
+    "oldCredentialRejectedAfterRotation": true,
+    "liveRevocationCount": 1,
+    "revokedCredentialRejectedWithoutRestart": true,
+    "daemonCrashCount": 1,
+    "daemonRestartCount": 1,
+    "supervisorLifecycleReceiptCount": 4,
+    "supervisorReceiptChainValid": true,
+    "fenceBeforeRestart": 1,
+    "fenceAfterRestart": 2,
+    "externalEffectsExecuted": 0,
+    "productionAuthority": "NONE",
+    "productionPromotion": "blocked"
+  },
+  "regression": {
+    "testFiles": 204,
+    "tests": 1492,
+    "passed": 1492,
+    "failed": 0
+  },
+  "directV33": {
+    "testFiles": 19,
+    "tests": 325,
+    "passed": 325,
+    "failed": 0
+  },
+  "truthMap": {
+    "sourceModules": 207,
+    "testFiles": 204,
+    "findings": 0
+  },
+  "architecture": {
+    "sourceCycleCount": 0,
+    "untestedSourceCount": 0,
+    "capabilityPathCount": 133,
+    "closedCapabilityPathCount": 133
+  },
+  "errors": [],
+  "productionPromotion": "blocked"
+}

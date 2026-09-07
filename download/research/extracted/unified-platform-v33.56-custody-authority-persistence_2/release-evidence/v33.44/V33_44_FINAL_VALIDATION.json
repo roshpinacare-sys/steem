@@ -1,0 +1,175 @@
+{
+  "version": "33.44",
+  "status": "PASS",
+  "checkCount": 16,
+  "passed": 16,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "required-artifacts",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "proof-summary",
+      "ok": true,
+      "detail": {
+        "newSignatureCount": 17,
+        "totalChainSignatureCount": 34,
+        "candidateCount": 3,
+        "approvalCount": 3,
+        "canaryMonitorCount": 3,
+        "retainedGenerationCount": 3
+      }
+    },
+    {
+      "name": "proof-execution",
+      "ok": true,
+      "detail": {
+        "offlineInstall": {
+          "command": "npm ci --offline",
+          "cacheInitiallyEmpty": true,
+          "networkRequestsObserved": 0,
+          "exitCode": 0,
+          "logDigest": "9f0932d6cf8896161b5d67af1711148b4951a369c499ca72b126e1d0f27b9d4e"
+        },
+        "build": {
+          "command": "npm run build",
+          "exitCode": 0,
+          "logDigest": "22d5ffd2bb0dd82381f736a37577e4c6656b2c3fdc85024e7240f7e90ac42068"
+        },
+        "tests": {
+          "command": "node --test dist/tests/dependency-update-planner-v33_44.test.js",
+          "testCount": 33,
+          "passed": 33,
+          "failed": 0,
+          "exitCode": 0,
+          "logDigest": "b17ab5bf88f66b959f6c38d91cf864fb460f488833e3d88f3bf944255581ad5b"
+        },
+        "canaryMetricsClass": "LOCAL_DETERMINISTIC_FIXTURE_ONLY"
+      }
+    },
+    {
+      "name": "proof-attacks",
+      "ok": true,
+      "detail": {
+        "policyTamperBlocked": true,
+        "candidateRelabelBlocked": true,
+        "approvalQuorumBlocked": true,
+        "canaryAggregateTamperBlocked": true,
+        "rollbackTargetBlocked": true,
+        "retentionDropBlocked": true
+      }
+    },
+    {
+      "name": "truth-boundary",
+      "ok": true,
+      "detail": {
+        "candidateVersionsExternallyFetched": false,
+        "externalCanaryTrafficObserved": false,
+        "externalVulnerabilityIntelligenceObserved": false,
+        "externalHumanParticipants": 0,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0
+      }
+    },
+    {
+      "name": "independent-verification",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "repository-truth-map",
+      "ok": true,
+      "detail": "passed"
+    },
+    {
+      "name": "architecture-integrity",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "name": "focused-regression",
+      "ok": true,
+      "detail": {
+        "tests": 511,
+        "passed": 511,
+        "failed": 0
+      }
+    },
+    {
+      "name": "full-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 229,
+        "tests": 2336,
+        "passed": 2336,
+        "failed": 0
+      }
+    },
+    {
+      "name": "direct-v33-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 44,
+        "tests": 1169,
+        "passed": 1169,
+        "failed": 0
+      }
+    },
+    {
+      "name": "truth-inventory",
+      "ok": true,
+      "detail": {
+        "sourceModules": 233,
+        "testFiles": 229,
+        "scripts": 566,
+        "packageScripts": 537,
+        "governanceFiles": 11,
+        "externalQualificationKits": 6,
+        "frontierBenchmarkKits": 1,
+        "sovereignInfraFiles": 30,
+        "independentVerifierFiles": 5,
+        "sovereignServices": 12
+      }
+    },
+    {
+      "name": "architecture-metrics",
+      "ok": true,
+      "detail": {
+        "nodeCount": 467,
+        "sourceCount": 216,
+        "testCount": 234,
+        "entrypointCount": 17,
+        "importEdgeCount": 1121,
+        "sourceCycleCount": 0,
+        "untestedSourceCount": 0,
+        "capabilityPathCount": 169,
+        "closedCapabilityPathCount": 169,
+        "layerCount": 23
+      }
+    },
+    {
+      "name": "regression-input-binding",
+      "ok": true,
+      "detail": {
+        "receipts": 229,
+        "buildDigest": "4bea4247e1be186f3bd7f4fd12fb6ee5d8e42ec554672f6dc08900ea679dc2bf",
+        "runInputDigest": "9a61f32e9e503e694b7f3ef6c89938e02d9b3e1ef41a5978bcc47896b0e9cd7f"
+      }
+    },
+    {
+      "name": "canonical-metadata",
+      "ok": true,
+      "detail": {
+        "packageVersion": "0.34.0",
+        "lockVersion": "0.34.0"
+      }
+    },
+    {
+      "name": "offline-lockfile",
+      "ok": true,
+      "detail": null
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+function load(name,fallback={status:'missing'}){const p=`evidence/generated/${name}`;return existsSync(p)?JSON.parse(readFileSync(p,'utf8')):fallback;}
+const tests=load('V31_TEST_RESULTS.json'),coverage=load('V31_COVERAGE_REPORT.json'),quality=load('V31_TEST_QUALITY_AUDIT.json'),architecture=load('V31_ARCHITECTURE_INTEGRITY.json'),mutation=load('V31_SOVEREIGNTY_MUTATION_RESULTS.json'),claims=load('V31_CLAIM_FALSIFICATION.json'),value=load('V31_SOVEREIGNTY_VALUE_PROOF.json'),integration=load('V31_INTEGRATION_CLOSURE.json'),supply=load('V31_SUPPLY_CHAIN_REPORT.json'),incomplete=load('V31_INCOMPLETE_CODE_AUDIT.json'),dr=load('V31_LOCAL_DR_REHEARSAL.json'),browser=load('V31_BROWSER_E2E.json'),isolation=load('V31_LINUX_ISOLATION.json'),postgres=load('V31_POSTGRES_QUALIFICATION.json'),pilot=load('V31_HUMAN_PILOT_PROTOCOL.json'),stability=load('V31_STABILITY_REPORT.json'),operations=load('V31_OPERATIONAL_ACTION_CENTER.json');
+const local=[
+ {gate:'Full test suite',pass:tests.status==='passed'&&tests.totals.failed===0&&tests.totals.tests===tests.totals.passed&&tests.totals.tests>=547,evidence:'V31_TEST_RESULTS.json'},
+ {gate:'Coverage floor',pass:coverage.status==='passed'&&coverage.current.linePercent>=99&&coverage.current.branchPercent>=96&&coverage.current.functionPercent>=98.5,evidence:'V31_COVERAGE_REPORT.json'},
+ {gate:'Test quality',pass:quality.status==='passed'&&quality.criticalOrHighIssues===0&&quality.mediumIssues===0,evidence:'V31_TEST_QUALITY_AUDIT.json'},
+ {gate:'Architecture closure',pass:architecture.status==='PASS'&&architecture.metrics.sourceCycleCount===0&&architecture.metrics.untestedSourceCount===0&&architecture.metrics.closedCapabilityPathCount===architecture.metrics.capabilityPathCount,evidence:'V31_ARCHITECTURE_INTEGRITY.json'},
+ {gate:'Sovereignty mutation authenticity',pass:mutation.status==='passed'&&mutation.survivors===0&&mutation.invalidKills===0&&mutation.mutantsKilledAuthentically===mutation.mutantsSpecified,evidence:'V31_SOVEREIGNTY_MUTATION_RESULTS.json'},
+ {gate:'Claim falsification',pass:claims.status==='passed'&&claims.summary.passedClaims===claims.summary.claims&&claims.summary.rejectedOrDowngraded>=7,evidence:'V31_CLAIM_FALSIFICATION.json'},
+ {gate:'Sovereignty value proof',pass:value.status==='passed'&&value.results.externalInteractionsExecuted===5&&value.results.externalMutationsExecuted===0&&value.results.restartReplayProviderInteractions===0&&value.results.revokedCredentialReplayBlocked===true&&value.results.independentReviewerOrganizations>=2&&value.results.campaignState==='COMPLETED'&&value.valueEvidence.claimedStatus==='PROMISING_NOT_HUMAN_VALIDATED',evidence:'V31_SOVEREIGNTY_VALUE_PROOF.json'},
+ {gate:'Integration closure',pass:integration.status==='passed'&&integration.summary.closed===integration.summary.edges&&integration.summary.externalMutationsExecuted===0&&integration.summary.externalInteractionsExecuted===5,evidence:'V31_INTEGRATION_CLOSURE.json'},
+ {gate:'Supply chain',pass:['passed','passed-with-advisory-environment-blocked'].includes(supply.status),evidence:'V31_SUPPLY_CHAIN_REPORT.json'},
+ {gate:'Incomplete-code audit',pass:incomplete.status==='passed',evidence:'V31_INCOMPLETE_CODE_AUDIT.json'},
+ {gate:'Local DR',pass:dr.status==='passed-local-rehearsal',evidence:'V31_LOCAL_DR_REHEARSAL.json'},
+ {gate:'Browser workflow',pass:browser.status==='passed',evidence:'V31_BROWSER_E2E.json'},
+ {gate:'Single-host isolation proof',pass:isolation.status==='passed-single-host-research-proof',evidence:'V31_LINUX_ISOLATION.json'},
+ {gate:'Three-run stability',pass:stability.status==='passed'&&stability.flakeCount===0,evidence:'V31_STABILITY_REPORT.json'},
+ {gate:'Operational fail-closed state',pass:operations.status==='passed'&&operations.campaign.externalMutationsExecuted===0&&operations.campaign.externalInteractionsExecuted===5&&operations.campaign.revokedCredentialReplayBlocked===true,evidence:'V31_OPERATIONAL_ACTION_CENTER.json'}
+];
+const external=[
+ {gate:'PostgreSQL durable runtime',status:postgres.status??'missing',qualified:postgres.status==='implemented-and-exercised-single-database',evidence:'V31_POSTGRES_QUALIFICATION.json',blocker:postgres.blocker},
+ {gate:'Measured human pilot',status:pilot.status??'missing',qualified:false,evidence:'V31_HUMAN_PILOT_PROTOCOL.json'},
+ {gate:'Live external model-provider qualification',status:'not-qualified-local-attested-fixture-only',qualified:false,evidence:'V31_SOVEREIGNTY_VALUE_PROOF.json'},
+ {gate:'Distributed provider/reviewer trust and revocation',status:'not-qualified-single-process-registry',qualified:false,evidence:'V31_SOVEREIGNTY_VALUE_PROOF.json'},
+ {gate:'Real KMS/HSM',status:'environment-blocked',qualified:false,evidence:'none'},
+ {gate:'Independent isolation assessment',status:'not-qualified',qualified:false,evidence:'V31_LINUX_ISOLATION.json'},
+ {gate:'External penetration and licensing',status:'not-executed',qualified:false,evidence:'none'},
+ {gate:'Multi-host SLO and DR',status:'not-executed',qualified:false,evidence:'none'}
+];
+const localFailures=local.filter(x=>!x.pass);const report={version:'31.0',status:localFailures.length===0?'passed-integrated-pilot':'failed',readiness:localFailures.length===0?'Integrated Pilot':'Development',productionPromotion:'blocked',localGates:local,externalGates:external,counts:{localPassed:local.length-localFailures.length,localTotal:local.length,externalQualified:external.filter(x=>x.qualified).length,externalTotal:external.length},hardFailures:localFailures.map(x=>x.gate),limitations:['Local proof does not qualify production infrastructure, external model services or human value.','Provider and reviewer attestations prove identity and binding, not correctness or externally audited independence.','Modeled product value remains a hypothesis until the consented pilot is executed.']};mkdirSync('evidence/generated',{recursive:true});writeFileSync('evidence/generated/V31_QUALIFICATION_MATRIX.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({status:report.status,readiness:report.readiness,productionPromotion:report.productionPromotion,counts:report.counts,hardFailures:report.hardFailures},null,2));if(localFailures.length)process.exit(1);

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-11T18:02:28.510Z",
+  "workflow": "titai-v9-durable-proof",
+  "result": "verified",
+  "injectedCrashObserved": true,
+  "firstWorker": "durable-builder",
+  "recoveryWorker": "durable-recovery-worker",
+  "independentVerifier": "independent-verifier",
+  "sideEffectCount": 1,
+  "attemptCount": 2,
+  "completedSteps": [
+    "validate_objective",
+    "write_artifact",
+    "inspect_artifact"
+  ],
+  "receiptStatuses": [
+    {
+      "stepId": "write_artifact",
+      "status": "completed",
+      "key": "b0e929f21db740e94dfa5f52cfeb9e34867dc4afbe738aed116aed4a226996a3"
+    }
+  ],
+  "backup": {
+    "format": "titai-durable-backup",
+    "cipher": "aes-256-gcm",
+    "kdf": "scrypt",
+    "plaintextSha256": "f5c76b24b7871af5c983589f51ccd86796193aa7dab3a9b151145d6d2332508c",
+    "restoredJobStatus": "completed",
+    "restoredCheckpointRevision": 3
+  },
+  "verification": {
+    "status": "verified",
+    "verifierId": "independent-verifier",
+    "checkedAt": "2026-07-10T18:00:01.001Z",
+    "evidenceHash": "ce53954ab779c7f4476f3ce6313158759d4dc9d4ed8c809319cbe30eb09fa978",
+    "checks": [
+      {
+        "id": "independent_verifier",
+        "passed": true,
+        "detail": "Verifier identity must differ from builder identity."
+      },
+      {
+        "id": "job_completed",
+        "passed": true,
+        "detail": "Observed job status: completed."
+      },
+      {
+        "id": "all_steps_checkpointed",
+        "passed": true,
+        "detail": "Completed steps: validate_objective, write_artifact, inspect_artifact."
+      },
+      {
+        "id": "exactly_once_side_effect",
+        "passed": true,
+        "detail": "Observed side-effect count: 1."
+      },
+      {
+        "id": "completed_receipt_present",
+        "passed": true,
+        "detail": "At least one completed idempotency receipt must exist."
+      },
+      {
+        "id": "no_active_lease_after_completion",
+        "passed": true,
+        "detail": "No active lease remained."
+      }
+    ]
+  },
+  "limitations": [
+    "This proves the portable durable core with a JSON file adapter, not yet the production SQLite runner adapter.",
+    "A crash after receipt creation but before side-effect completion intentionally requires manual reconciliation.",
+    "The proof uses a local temporary directory and no network or commercial API."
+  ]
+}

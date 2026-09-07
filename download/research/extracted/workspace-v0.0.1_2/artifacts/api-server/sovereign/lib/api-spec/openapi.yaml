@@ -1,0 +1,4326 @@
+openapi: "3.1.0"
+info:
+  title: TFA API
+  version: "0.2.0"
+  description: >
+    TFA — enterprise SaaS backend (TypeScript, Node 24, Express 5, Drizzle+PostgreSQL).
+    ~41 endpoints across trust-plane core: ledger, escrow, execution, adapter,
+    incidents, SLO, metering, DLQ.
+
+servers:
+  - url: /api
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      summary: Health check
+      responses:
+        "200":
+          description: Service is healthy
+
+  /readyz:
+    get:
+      operationId: readinessCheck
+      summary: Readiness probe
+      description: >
+        Returns 200 when the server is ready to accept traffic
+        (DB reachable, solvency green, chain verified).
+        Returns 503 when draining or a dependency is unhealthy.
+      responses:
+        "200":
+          description: Ready
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, checks]
+                properties:
+                  status: { type: string, enum: [ok] }
+                  checks:
+                    type: object
+                    properties:
+                      draining: { type: string }
+                      db: { type: string }
+                      solvency: { type: string }
+                      chain: { type: string }
+                      pqc: { type: string, description: "Active signer algorithm; prefixed sim: when the zero-dep PQC simulation fallback is active. Omitted if no signer was supplied to readyz." }
+        "503":
+          description: Not ready (draining or dependency failure)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, checks]
+                properties:
+                  status: { type: string, enum: ["not ready"] }
+                  checks:
+                    type: object
+                    properties:
+                      draining: { type: string }
+                      db: { type: string }
+                      solvency: { type: string }
+                      chain: { type: string }
+                      pqc: { type: string, description: "Active signer algorithm; prefixed sim: when the zero-dep PQC simulation fallback is active. Omitted if no signer was supplied to readyz." }
+
+  # ─── AUTH ────────────────────────────────────────────────────────────────────
+  /auth/api-keys:
+    get:
+      operationId: authApiKeysList
+      summary: List API keys for the authenticated tenant
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      responses:
+        "200":
+          description: API key list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, keys]
+                properties:
+                  ok:   { type: boolean }
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        keyId:     { type: string }
+                        tenantId:  { type: string }
+                        name:      { type: string }
+                        scopes:    { type: array, items: { type: string } }
+                        createdAt: { type: string, format: date-time }
+                        expiresAt: { type: string, format: date-time }
+        "400": { description: Missing x-tenant-id or x-api-key }
+    post:
+      operationId: authApiKeysCreate
+      summary: Create a new API key for the current tenant (secret shown once)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:      { type: string }
+                expiresAt: { type: string, format: date-time }
+                scopes:    { type: array, items: { type: string } }
+      responses:
+        "201":
+          description: API key created (secret shown once)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, key, secret]
+                properties:
+                  ok:     { type: boolean }
+                  secret: { type: string, description: "Raw API key — shown exactly once. Prefix: tfa_" }
+                  key:
+                    type: object
+                    properties:
+                      keyId:     { type: string }
+                      tenantId:  { type: string }
+                      name:      { type: string }
+                      scopes:    { type: array, items: { type: string } }
+                      createdAt: { type: string, format: date-time }
+                      expiresAt: { type: string, format: date-time }
+        "400": { description: Missing name or invalid input }
+
+  /auth/api-keys/{keyId}:
+    delete:
+      operationId: authApiKeysRevoke
+      summary: Revoke an API key
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - name: keyId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Key revoked
+        "400": { description: Missing x-tenant-id or x-api-key }
+        "404":
+          description: Key not found (or belongs to another tenant)
+
+  # ─── INSIGHTS ────────────────────────────────────────────────────────────────
+  /insights:
+    get:
+      operationId: getTenantInsights
+      tags: [insights]
+      summary: Tenant headline analytics
+      description: >
+        Aggregated trust and economic metrics for the tenant over a sliding window.
+        Computed from the read-model (escrows + passports). TTL-cached for 30s on the default window.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: windowDays
+          required: false
+          schema: { type: integer, minimum: 1 }
+          description: Positive integer window in days (default 30).
+        - in: query
+          name: now
+          required: false
+          schema: { type: string, format: date-time }
+          description: Override "now" for deterministic tests.
+      responses:
+        "200":
+          description: Insights payload
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, cached, insights]
+                properties:
+                  ok: { type: boolean }
+                  cached: { type: boolean }
+                  insights:
+                    type: object
+                    required: [tenantId, windowDays, settledCount, volumeMicrounits, heldMicrounits, disputeCount, proofsIssued, trustTrendDelta, trustTrend]
+                    properties:
+                      tenantId:        { type: string }
+                      windowDays:      { type: integer }
+                      settledCount:    { type: integer }
+                      volumeMicrounits: { type: string, description: "BigInt μ¢ serialized as decimal string" }
+                      heldMicrounits:   { type: string, description: "BigInt μ¢ serialized as decimal string" }
+                      disputeCount:    { type: integer }
+                      proofsIssued:    { type: integer }
+                      trustTrendDelta: { type: number }
+                      trustTrend:      { type: string }
+        "400": { description: Invalid windowDays or missing x-tenant-id }
+        "404": { description: Not found / cross-tenant }
+
+  # ─── LEDGER ─────────────────────────────────────────────────────────────────
+  /ledger/accounts:
+    post:
+      operationId: createLedgerAccount
+      tags: [ledger]
+      summary: Create a sovereign ledger account (μ¢)
+      responses:
+        "201": { description: Account created }
+        "400": { description: Missing fields or tenant }
+  /ledger/accounts/{id}:
+    get:
+      operationId: getLedgerAccount
+      tags: [ledger]
+      summary: Get account (tenant-isolated)
+      responses:
+        "200":
+          description: Account
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [account]
+                properties:
+                  account: { type: object }
+        "404": { description: Not found / cross-tenant }
+  /ledger/mint:
+    post:
+      operationId: ledgerMint
+      tags: [ledger]
+      summary: Mint μ¢ (guarded, fail-closed, audited)
+      responses:
+        "200":
+          description: Minted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, auditId]
+                properties:
+                  ok:       { type: boolean }
+                  auditId:  { type: string }
+        "403": { description: Guard denied }
+  /ledger/transfer:
+    post:
+      operationId: ledgerTransfer
+      tags: [ledger]
+      summary: Transfer μ¢ between accounts (guarded)
+      responses:
+        "200":
+          description: Transferred
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, auditId]
+                properties:
+                  ok:      { type: boolean }
+                  auditId: { type: string }
+        "403": { description: Guard denied }
+  /ledger/solvency:
+    get:
+      operationId: ledgerSolvency
+      tags: [ledger]
+      summary: Proof of solvency (integrity check)
+      responses:
+        "200":
+          description: Solvency proof
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, auditId, data]
+                properties:
+                  ok:      { type: boolean }
+                  auditId: { type: string }
+                  data:    { type: object }
+  /ledger/withdraw:
+    post:
+      operationId: ledgerWithdraw
+      tags: [ledger]
+      summary: Withdraw micro-cents from an account (guarded, audited)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fromAccountId, amount]
+              properties:
+                fromAccountId: { type: string, description: Account to debit }
+                amount:        { type: string, description: Amount in micro-cents (BigInt string) }
+                memo:          { type: string }
+                initiatedBy:   { type: string }
+      responses:
+        "200":
+          description: Withdrawal result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, auditId]
+                properties:
+                  ok:      { type: boolean }
+                  auditId: { type: string }
+                  data:    { type: object }
+        "400": { description: Invalid input or insufficient funds }
+        "403": { description: Scope denied or break-glass ticket invalid }
+
+  /passport/public-key:
+    get:
+      operationId: getPassportPublicKey
+      tags: [passport]
+      summary: Return the kernel signer's public key for offline passport verification
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      responses:
+        "200":
+          description: Public key info
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [algorithm, publicKey]
+                properties:
+                  algorithm: { type: string, enum: [ed25519, hmac-sha256] }
+                  publicKey:
+                    type: string
+                    nullable: true
+                    description: SPKI PEM for ed25519; null for symmetric (hmac-sha256)
+
+  /passport/{auditId}:
+    get:
+      operationId: getPassportByAuditId
+      tags: [passport]
+      summary: Issue (or retrieve) a signed Action Passport for an audit record
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - name: auditId
+          in: path
+          required: true
+          schema: { type: string }
+          description: Audit record ID
+      responses:
+        "200":
+          description: Signed passport
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [passport]
+                properties:
+                  passport: { type: object }
+        "400": { description: Missing or malformed auditId }
+        "404": { description: Audit record not found or cross-tenant }
+
+  /passports/{id}/status:
+    get:
+      operationId: getPassportStatus
+      tags: [passport]
+      summary: Return a signed PassportClaim about the status of a passport
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+          description: Passport / audit ID
+      responses:
+        "200":
+          description: Signed PassportClaim
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [claim]
+                properties:
+                  claim: { type: object }
+        "400": { description: Missing id }
+        "404": { description: Passport not found or cross-tenant }
+
+  # ─── PASSPORT REVOCATION (per-passport denylist, v381 + OpenAPI backfill v392) ─
+  /passports/revoke:
+    post:
+      operationId: revokePassport
+      tags: [passport]
+      summary: Revoke a specific passport (denylist by passportId, independent of kid revocation)
+      description: >
+        Idempotent: revoking an already-revoked passport is a safe no-op — the
+        original entry (and its reason) is preserved and returned unchanged,
+        never overwritten by a second call.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [passportId]
+              properties:
+                passportId: { type: string, description: Passport ID to revoke }
+                reason: { type: string, description: "Optional human-readable reason (e.g. fraudulent_transfer, policy_violation)" }
+      responses:
+        "200":
+          description: Passport revoked (or was already revoked — same entry returned)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, entry]
+                properties:
+                  ok: { type: boolean }
+                  entry: { type: object, description: RevocationEntry { passportId, tenantId, revokedAt, reason } }
+        "400": { description: Missing/empty passportId, or missing x-tenant-id }
+
+  /passports/{passportId}/revocation:
+    get:
+      operationId: getPassportRevocationStatus
+      tags: [passport]
+      summary: Check whether a specific passport is revoked
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: passportId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Revocation status — revoked:false and entry:null when the passport was never revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, revoked, entry]
+                properties:
+                  ok: { type: boolean }
+                  revoked: { type: boolean }
+                  entry: { type: object, nullable: true, description: RevocationEntry, or null when not revoked }
+        "400": { description: Missing passportId param, or missing x-tenant-id }
+
+  /passports/revocations:
+    get:
+      operationId: listPassportRevocations
+      tags: [passport]
+      summary: List all revocation entries for the tenant, oldest-first
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Revocation list (empty array for a tenant with no revocations)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, revocations, total]
+                properties:
+                  ok: { type: boolean }
+                  revocations: { type: array, items: { type: object } }
+                  total: { type: integer }
+        "400": { description: Missing x-tenant-id }
+
+  /potential/profile:
+    post:
+      operationId: potentialProfile
+      tags: [potential]
+      summary: Build a personality/strength profile (Potential Engine)
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, auditId]
+                properties:
+                  ok:      { type: boolean }
+                  auditId: { type: string }
+        "400": { description: Invalid input }
+  /potential/personality:
+    post:
+      operationId: potentialPersonalityMap
+      tags: [potential]
+      summary: Map personality from signals (computes + persists PersonalityProfile)
+      responses:
+        "200":
+          description: PersonalityProfile
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, data]
+                properties:
+                  ok:   { type: boolean }
+                  data: { type: object }
+        "400": { description: Missing userId }
+  /potential/personality/{userId}:
+    get:
+      operationId: getPotentialPersonality
+      tags: [potential]
+      summary: Load a previously-saved PersonalityProfile (tenant-scoped)
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: PersonalityProfile }
+        "400": { description: Missing userId }
+        "404": { description: Not found }
+  /potential/success-path:
+    post:
+      operationId: computeSuccessPath
+      tags: [potential]
+      summary: Compute a learning path toward a target opportunity
+      responses:
+        "200": { description: SuccessPath }
+        "400": { description: Validation error }
+        "404": { description: Opportunity not found }
+  /potential/success-path/{userId}/{opportunityId}:
+    get:
+      operationId: getSuccessPath
+      tags: [potential]
+      summary: Load a previously-computed SuccessPath
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: opportunityId
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: SuccessPath }
+        "400": { description: Validation error }
+        "404": { description: Not found }
+  /potential/collaboration:
+    post:
+      operationId: findCollaborators
+      tags: [potential]
+      summary: Find best collaboration partners for a user (tenant-scoped)
+      responses:
+        "200": { description: CollaborationMatch array }
+        "400": { description: Validation error }
+  /potential/collaboration/{userId}:
+    get:
+      operationId: getCachedCollaborators
+      tags: [potential]
+      summary: Load cached collaboration matches for a user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: CollaborationMatch array
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [matches]
+                properties:
+                  matches: { type: array, items: { type: object } }
+        "400": { description: Missing userId }
+        "404": { description: No cache found }
+  /potential/collaboration/{escrowId}/complete:
+    post:
+      operationId: completeCollaboration
+      tags: [potential]
+      summary: Mark a collaboration as complete and release escrow
+      description: >
+        Funds the escrow (if not yet funded) then releases to the worker.
+        Both steps flow through the ledger orchestrator (guard→audit→passport).
+        Returns the final agreement and an ActionPassport when a signer is wired.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: escrowId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                initiatedBy: { type: string, description: "User or system initiating completion" }
+      responses:
+        "200":
+          description: Collaboration completed and escrow released
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+                  passport:
+                    type: object
+                    nullable: true
+        "400": { description: Invalid input or completion failed }
+        "403": { description: Denied by guard or tenant isolation violation }
+        "404": { description: Escrow not found }
+        "409": { description: Wrong state for completion }
+  /escrow:
+    get:
+      operationId: listEscrow
+      tags: [escrow]
+      summary: List tenant escrow agreements
+      description: Returns all escrow agreements for the authenticated tenant.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Escrow list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, data]
+                properties:
+                  ok:   { type: boolean }
+                  data:
+                    type: object
+                    required: [agreements]
+                    properties:
+                      agreements:
+                        type: array
+                        items: { type: object }
+        "400": { description: Missing x-tenant-id or x-api-key }
+    post:
+      operationId: createEscrow
+      tags: [escrow]
+      summary: Create an escrow agreement (no money moves yet)
+      responses:
+        "201":
+          description: EscrowAgreement created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "400": { description: Validation error }
+  /escrow/{id}:
+    get:
+      operationId: getEscrow
+      tags: [escrow]
+      summary: Fetch an escrow agreement by id (tenant-scoped)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: EscrowAgreement
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+  /escrow/{id}/fund:
+    post:
+      operationId: fundEscrow
+      tags: [escrow]
+      summary: Fund escrow — payer to escrow transfer (created→funded)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: EscrowAgreement funded
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/release:
+    post:
+      operationId: releaseEscrow
+      tags: [escrow]
+      summary: Release escrow to worker on completion (funded→released)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: EscrowAgreement released
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/refund:
+    post:
+      operationId: refundEscrow
+      tags: [escrow]
+      summary: Refund escrow to payer on cancellation (funded→refunded)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: EscrowAgreement refunded
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/dispute:
+    post:
+      operationId: disputeEscrow
+      tags: [escrow]
+      summary: Freeze a funded escrow (funded→disputed)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: EscrowAgreement disputed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+  /escrow/{id}/undispute:
+    post:
+      operationId: undisputeEscrow
+      tags: [escrow]
+      summary: Unfreeze a disputed escrow (disputed→funded)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: EscrowAgreement undisputed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "409": { description: Wrong state }
+        "403": { description: Unauthorized }
+
+  # ─── SETTLEMENT ──────────────────────────────────────────────────────────────
+  /settlement:
+    post:
+      operationId: createSettlement
+      tags: [settlement]
+      summary: Create a settlement agreement (no money moves yet)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [opportunityId, payerAccountId, workerAccountId, totalAmount, settledBy]
+              properties:
+                opportunityId:    { type: string }
+                payerAccountId:   { type: string }
+                workerAccountId:  { type: string }
+                totalAmount:      { type: string, description: "Total amount in μ¢ (BigInt-safe decimal string)" }
+                settledBy:        { type: string, description: "Identity authorized to settle/approve" }
+                thresholdAmount:  { type: string, description: "Optional threshold in μ¢ above which a threshold-approval token is required" }
+      responses:
+        "201":
+          description: Settlement agreement created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "400": { description: Validation error }
+    get:
+      operationId: listSettlements
+      tags: [settlement]
+      summary: List settlement agreements for the tenant
+      responses:
+        "200":
+          description: List of settlement agreements
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreements]
+                properties:
+                  ok:         { type: boolean }
+                  agreements: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id }
+  /settlement/{id}:
+    get:
+      operationId: getSettlement
+      tags: [settlement]
+      summary: Fetch a settlement agreement by id (tenant-scoped)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Settlement agreement
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "400": { description: Missing x-tenant-id or id }
+        "404": { description: Not found }
+  /settlement/{id}/fund:
+    post:
+      operationId: fundSettlement
+      tags: [settlement]
+      summary: Fund settlement — payer to escrow transfer (created→held)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [initiatedBy]
+              properties:
+                initiatedBy: { type: string }
+      responses:
+        "200":
+          description: Settlement funded
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "422": { description: Wrong state or insufficient funds }
+  /settlement/{id}/partial-release:
+    post:
+      operationId: partialReleaseSettlement
+      tags: [settlement]
+      summary: Partially release held funds to worker
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [initiatedBy, amount]
+              properties:
+                initiatedBy:            { type: string }
+                amount:                   { type: string, description: "Amount in μ¢ to release" }
+                thresholdApprovalToken:   { type: string, description: "Required when amount exceeds the agreement's thresholdAmount" }
+      responses:
+        "200":
+          description: Partial release executed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "422": { description: Wrong state, insufficient funds, or threshold approval required }
+  /settlement/{id}/release:
+    post:
+      operationId: releaseSettlement
+      tags: [settlement]
+      summary: Full release of remaining held funds to worker
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [initiatedBy]
+              properties:
+                initiatedBy:            { type: string }
+                thresholdApprovalToken:   { type: string, description: "Required when remaining amount exceeds the agreement's thresholdAmount" }
+      responses:
+        "200":
+          description: Full release executed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "422": { description: Wrong state or threshold approval required }
+  /settlement/{id}/dispute:
+    post:
+      operationId: disputeSettlement
+      tags: [settlement]
+      summary: Freeze a funded settlement (funded→disputed)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [initiatedBy]
+              properties:
+                initiatedBy: { type: string }
+                reason:      { type: string }
+      responses:
+        "200":
+          description: Settlement disputed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "422": { description: Wrong state }
+  /settlement/{id}/reverse:
+    post:
+      operationId: reverseSettlement
+      tags: [settlement]
+      summary: Reverse a disputed settlement back to payer (disputed→reversed)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [initiatedBy]
+              properties:
+                initiatedBy: { type: string }
+      responses:
+        "200":
+          description: Settlement reversed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, agreement]
+                properties:
+                  ok:        { type: boolean }
+                  agreement: { type: object }
+        "404": { description: Not found }
+        "422": { description: Wrong state }
+  /settlement/{id}/threshold-approval:
+    post:
+      operationId: generateThresholdApproval
+      tags: [settlement]
+      summary: Generate a single-use threshold approval token for high-value releases
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [approvedBy, maxAmount]
+              properties:
+                approvedBy: { type: string, description: "Must match the settlement's settledBy authority" }
+                maxAmount:  { type: string, description: "Maximum amount this token authorizes, in μ¢" }
+      responses:
+        "201":
+          description: Threshold approval token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, approval]
+                properties:
+                  ok:      { type: boolean }
+                  approval:
+                    type: object
+                    required: [id, agreementId, maxAmount, approvedBy, issuedAt, expiresAt, token]
+                    properties:
+                      id:          { type: string }
+                      agreementId: { type: string }
+                      maxAmount:   { type: string }
+                      approvedBy:  { type: string }
+                      issuedAt:    { type: string, format: date-time }
+                      expiresAt:   { type: string, format: date-time }
+                      token:       { type: string }
+        "400": { description: Validation error }
+        "403": { description: approvedBy does not match settlement authority }
+        "404": { description: Settlement not found }
+
+  # ─── WEBHOOKS ────────────────────────────────────────────────────────────────
+  /webhooks:
+    post:
+      operationId: registerWebhook
+      tags: [webhooks]
+      summary: Register a webhook endpoint for settlement events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, events]
+              properties:
+                url:    { type: string, format: uri }
+                events: { type: array, items: { type: string }, description: "Event types to subscribe to (e.g. settlement.created, settlement.funded)" }
+                secret: { type: string, description: "Optional HMAC secret for payload signature verification" }
+      responses:
+        "201":
+          description: Webhook registered
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, registration]
+                properties:
+                  ok:           { type: boolean }
+                  registration:
+                    type: object
+                    required: [id, tenantId, url, events, createdAt, active]
+                    properties:
+                      id:        { type: string }
+                      tenantId:  { type: string }
+                      url:       { type: string }
+                      events:    { type: array, items: { type: string } }
+                      createdAt: { type: string, format: date-time }
+                      active:    { type: boolean }
+        "400": { description: Validation error }
+    get:
+      operationId: listWebhooks
+      tags: [webhooks]
+      summary: List webhook registrations for the tenant
+      responses:
+        "200":
+          description: List of webhook registrations
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, registrations]
+                properties:
+                  ok:            { type: boolean }
+                  registrations: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id }
+  /webhooks/{id}:
+    delete:
+      operationId: deleteWebhook
+      tags: [webhooks]
+      summary: Delete a webhook registration
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Webhook deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, deleted]
+                properties:
+                  ok:      { type: boolean }
+                  deleted: { type: boolean }
+        "400": { description: Missing x-tenant-id or id }
+        "404": { description: Webhook registration not found }
+
+  /track-record/{identityId}:
+    get:
+      operationId: getTrackRecord
+      tags: [track-record]
+      summary: Verified Track Record — deterministic read-model over the signed audit chain
+      parameters:
+        - in: path
+          name: identityId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: TrackRecord
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, data]
+                properties:
+                  ok:   { type: boolean }
+                  data: { type: object }
+        "400": { description: Validation error }
+  /tenants:
+    get:
+      operationId: getTenantPlan
+      tags: [tenants]
+      summary: Get current tenant plan
+      description: Returns the authenticated tenant's registered plan badge.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Tenant plan
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, tenantId, plan]
+                properties:
+                  ok:      { type: boolean }
+                  tenantId:{ type: string }
+                  plan:
+                    type: string
+                    nullable: true
+                    enum: [free, pro]
+        "400": { description: Missing x-tenant-id or x-api-key }
+    post:
+      operationId: createTenant
+      tags: [tenants]
+      summary: >
+        Tenant Onboarding — create tenant with root person, default policies,
+        and first ledger account in one call. Idempotent: repeat call updates plan.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rootPersonName: { type: string, description: "Display name for the root identity (default: 'root')" }
+                accountName:    { type: string, description: "Display name for the first ledger account (default: 'default')" }
+                accountType:    { type: string, enum: [asset, liability, equity], default: asset }
+                plan:
+                  type: string
+                  enum: [free, pro]
+                  description: >
+                    Subscription plan. Default 'free' on first creation.
+                    On a repeat call, an explicit plan value re-assigns (upgrade/downgrade);
+                    omitting it leaves the existing plan unchanged.
+      responses:
+        "201":
+          description: Tenant created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, tenantId, plan, created]
+                properties:
+                  ok:        { type: boolean }
+                  tenantId:  { type: string }
+                  plan:      { type: string, enum: [free, pro] }
+                  created:   { type: boolean, description: "true if first creation, false if idempotent update" }
+                  rootPerson:
+                    type: object
+                    properties:
+                      id:   { type: string }
+                      name: { type: string }
+                  account:
+                    type: object
+                    properties:
+                      id:      { type: string }
+                      name:    { type: string }
+                      type:    { type: string }
+                      balance: { type: string, description: "Balance in μ¢ as decimal string (BigInt-safe)" }
+                  policies: { type: array, items: { type: string } }
+        "200":
+          description: Tenant already exists (idempotent update)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:       { type: boolean }
+                  tenantId: { type: string }
+                  plan:     { type: string, enum: [free, pro] }
+                  created:  { type: boolean }
+        "400": { description: Missing x-tenant-id, invalid plan, or invalid input }
+
+  # ─── INDEXER (Trust-Graph read-model) ─────────────────────────────────────
+  /index/executions:
+    get:
+      operationId: indexListExecutions
+      summary: List executions (optionally filter by status or date range)
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: status
+          required: false
+          schema: { type: string }
+        - in: query
+          name: from
+          required: false
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          required: false
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: List of executions for the tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [executions]
+                properties:
+                  executions: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id or invalid date range }
+
+  /index/executions/by-action/{actionId}:
+    get:
+      operationId: indexGetExecutionByAction
+      summary: Get execution by actionId (most recent)
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: actionId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Execution found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [execution]
+                properties:
+                  execution: { type: object }
+        "400": { description: Missing x-tenant-id or empty actionId }
+        "404": { description: Execution not found }
+
+  /index/executions/{id}:
+    get:
+      operationId: indexGetExecution
+      summary: Get execution by id
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Execution found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [execution]
+                properties:
+                  execution: { type: object }
+        "400": { description: Missing x-tenant-id }
+        "404": { description: Execution not found }
+
+  /index/actors:
+    get:
+      operationId: indexListActors
+      summary: List actors for the tenant
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of actors
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [actors]
+                properties:
+                  actors: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id }
+
+  /index/actors/{actorId}/summary:
+    get:
+      operationId: indexGetActorSummary
+      summary: Get actor summary (actor record + executionCount)
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: actorId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Actor summary
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [actor, executionCount]
+                properties:
+                  actor: { type: object }
+                  executionCount: { type: integer }
+        "400": { description: Missing x-tenant-id }
+        "404": { description: Actor not found }
+
+  /index/escrows:
+    get:
+      operationId: indexListEscrows
+      summary: List escrow projections for the tenant
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of escrows
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [escrows]
+                properties:
+                  escrows: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id }
+
+  /index/escrows/{id}:
+    get:
+      operationId: indexGetEscrow
+      summary: Get escrow projection by id
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Escrow found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [escrow]
+                properties:
+                  escrow: { type: object }
+        "400": { description: Missing x-tenant-id }
+        "404": { description: Escrow not found }
+
+  /index/passports:
+    get:
+      operationId: indexListPassports
+      summary: List passport projections for the tenant
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of passports
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [passports]
+                properties:
+                  passports: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id }
+
+  /index/passports/{id}:
+    get:
+      operationId: indexGetPassport
+      summary: Get passport projection by id
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Passport found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [passport]
+                properties:
+                  passport: { type: object }
+        "400": { description: Missing x-tenant-id }
+        "404": { description: Passport not found }
+
+  /index/approvals:
+    get:
+      operationId: indexListApprovals
+      summary: List approval projections for the tenant
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of approvals
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [approvals]
+                properties:
+                  approvals: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id }
+
+  /index/approvals/{id}:
+    get:
+      operationId: indexGetApproval
+      summary: Get approval projection by id
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Approval found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [approval]
+                properties:
+                  approval: { type: object }
+        "400": { description: Missing x-tenant-id }
+        "404": { description: Approval not found }
+
+  /index/disputes:
+    get:
+      operationId: indexListDisputes
+      summary: List dispute projections for the tenant
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of disputes
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [disputes]
+                properties:
+                  disputes: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id }
+
+  /adapter/run:
+    post:
+      operationId: adapterRun
+      summary: Submit an ActionIntent for TFA policy evaluation and execution
+      description: >
+        Accepts an ActionIntent, evaluates it through the TFA policy stack, and returns
+        a signed ExecutionReceipt. Depending on the decision:
+          - `allowed` → ExecutionWorkflow opened, receipt includes `executionId`, status `running`.
+          - `approval_required` → workflow opened in `planned` state, receipt includes `approvalToken`.
+          - `denied` → no workflow opened, receipt records denial.
+        The receipt is cryptographically signed and always re-verified before returning.
+      tags: [adapter]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+          description: Tenant identifier. May be omitted when using x-api-key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [actorId, toolId, resourceRef, riskClass]
+              properties:
+                actorId:
+                  type: string
+                  description: Agent or user identifier
+                toolId:
+                  type: string
+                  description: Tool or action type identifier
+                resourceRef:
+                  type: string
+                  description: Target resource reference
+                riskClass:
+                  type: string
+                  enum: [low, medium, high, critical]
+                  description: Risk classification of the action
+                valueMicrounits:
+                  type: string
+                  description: Value in micro-cents (BigInt as decimal string). Default 0.
+                privacyLevel:
+                  type: string
+                  enum: [public, internal, confidential, secret]
+                  default: internal
+                approvalPolicyRef:
+                  type: string
+                  default: default
+                nonce:
+                  type: string
+                  description: Idempotency nonce; same nonce+tenant returns cached result
+                expiry:
+                  type: number
+                  description: Unix ms timestamp after which intent is rejected
+                provenance:
+                  type: string
+                  default: api
+                evidencePolicy:
+                  type: string
+                  default: default
+      responses:
+        "201":
+          description: Intent evaluated; receipt returned
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, decision, receipt]
+                properties:
+                  ok: { type: boolean }
+                  decision:
+                    type: string
+                    enum: [allowed, approval_required, denied]
+                  approvalClass:
+                    type: string
+                    nullable: true
+                  riskClass:
+                    type: string
+                  receipt:
+                    type: object
+                    description: Signed ExecutionReceipt
+                    properties:
+                      intentId: { type: string }
+                      tenantId: { type: string }
+                      actorId: { type: string }
+                      toolId: { type: string }
+                      resourceRef: { type: string }
+                      decision: { type: string }
+                      executionId:
+                        type: string
+                        nullable: true
+                        description: Present when decision=allowed; ID of opened ExecutionWorkflow
+                      approvalToken:
+                        type: string
+                        nullable: true
+                        description: Present when decision=approval_required; use as :id in /approve
+                      issuedAt: { type: string, format: date-time }
+                      signature: { type: string }
+                  workflow:
+                    type: object
+                    nullable: true
+                    description: Serialized ExecutionWorkflow (present when a workflow was opened)
+        "400": { description: Invalid intent body or missing required fields }
+        "422": { description: Intent failed validation (e.g. expired, replay) }
+        "500": { description: Internal error (e.g. receipt signature verification failed) }
+
+  /execution:
+    post:
+      operationId: createExecution
+      summary: Create a new ExecutionWorkflow
+      description: >
+        Creates a durable execution workflow for the given actionId.
+        The workflow starts in `planned` status and transitions through
+        the state machine as evidence is collected and the orchestrator
+        advances it. Tenant-isolated; 400 on missing actionId.
+      tags: [execution]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [actionId]
+              properties:
+                actionId: { type: string, description: "Canonical action identifier" }
+                intentId: { type: string, description: "Optional linked ActionIntent id" }
+                executionRef: { type: string, description: "Optional caller reference" }
+                approvalId: { type: string, description: "Optional pre-approved approval id" }
+                evidenceRefs:
+                  type: array
+                  items: { type: string }
+                  description: "Optional list of evidence artifact ids"
+                retryOfWorkflowId: { type: string, description: "Optional id of workflow being retried" }
+      responses:
+        "201":
+          description: Workflow created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, workflow]
+                properties:
+                  ok: { type: boolean }
+                  workflow:
+                    type: object
+                    required: [id, tenantId, actionId, status, createdAt, updatedAt, runLogLength]
+                    properties:
+                      id: { type: string }
+                      tenantId: { type: string }
+                      actionId: { type: string }
+                      status: { type: string }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+                      runLogLength: { type: integer }
+        "400": { description: Missing actionId or invalid input }
+        "500": { description: Internal error }
+    get:
+      operationId: listExecution
+      summary: List workflows for the tenant
+      description: >
+        Returns all ExecutionWorkflows owned by the caller's tenant.
+        Tenant-isolated; empty array when none exist.
+      tags: [execution]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Workflow list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, workflows]
+                properties:
+                  ok: { type: boolean }
+                  workflows:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, tenantId, actionId, status, createdAt, updatedAt, runLogLength]
+                      properties:
+                        id: { type: string }
+                        tenantId: { type: string }
+                        actionId: { type: string }
+                        status: { type: string }
+                        createdAt: { type: string, format: date-time }
+                        updatedAt: { type: string, format: date-time }
+                        runLogLength: { type: integer }
+        "400": { description: Missing x-tenant-id }
+        "500": { description: Internal error }
+
+  /execution/{id}:
+    get:
+      operationId: getExecution
+      summary: Get a workflow by id
+      description: >
+        Returns a single ExecutionWorkflow. Tenant-isolated:
+        404 on cross-tenant or unknown id.
+      tags: [execution]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Workflow found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, workflow]
+                properties:
+                  ok: { type: boolean }
+                  workflow:
+                    type: object
+                    required: [id, tenantId, actionId, status, createdAt, updatedAt, runLogLength]
+                    properties:
+                      id: { type: string }
+                      tenantId: { type: string }
+                      actionId: { type: string }
+                      status: { type: string }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+                      runLogLength: { type: integer }
+        "400": { description: Missing x-tenant-id or id }
+        "404": { description: Workflow not found or cross-tenant access }
+        "500": { description: Internal error }
+
+  /execution/{id}/transition:
+    post:
+      operationId: transitionExecution
+      summary: Transition workflow status
+      description: >
+        Moves a workflow to a new status (e.g., planned → running →
+        evidence_collected → settled → proved). The actor and reason are
+        recorded in the run log. Tenant-isolated; 404 on cross-tenant;
+        422 on invalid transition.
+      tags: [execution]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [toStatus, actor]
+              properties:
+                toStatus:
+                  type: string
+                  enum: [planned, approved, running, evidence_collected, settled, proved, failed, rejected]
+                actor: { type: string, description: "Who is performing the transition" }
+                reason: { type: string, description: "Human-readable reason" }
+      responses:
+        "200":
+          description: Transition applied
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, workflow]
+                properties:
+                  ok: { type: boolean }
+                  workflow:
+                    type: object
+                    required: [id, tenantId, actionId, status, createdAt, updatedAt, runLogLength]
+                    properties:
+                      id: { type: string }
+                      tenantId: { type: string }
+                      actionId: { type: string }
+                      status: { type: string }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+                      runLogLength: { type: integer }
+        "400": { description: Missing toStatus or actor }
+        "404": { description: Workflow not found or cross-tenant access }
+        "409": { description: Lease conflict }
+        "422": { description: Invalid transition }
+        "500": { description: Internal error }
+
+  /execution/{id}/supervise:
+    post:
+      operationId: superviseExecution
+      summary: Supervise (retry) a failed workflow
+      description: >
+        Triggered by the supervisor when a workflow has failed and a retry
+        is attempted. Creates a retry workflow linked to the original.
+        Tenant-isolated; 404 on cross-tenant; 422 if workflow is not failed.
+      tags: [execution]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [workerId]
+              properties:
+                workerId: { type: string, description: "Worker attempting the retry" }
+                retryConfig:
+                  type: object
+                  description: "Optional retry policy overrides"
+      responses:
+        "200":
+          description: Supervision completed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, plan, original, retryWorkflow]
+                properties:
+                  ok: { type: boolean }
+                  plan: { type: string, description: "Supervisor plan summary" }
+                  original:
+                    type: object
+                    required: [id, tenantId, actionId, status, createdAt, updatedAt, runLogLength]
+                    properties:
+                      id: { type: string }
+                      tenantId: { type: string }
+                      actionId: { type: string }
+                      status: { type: string }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+                      runLogLength: { type: integer }
+                  retryWorkflow:
+                    type: object
+                    nullable: true
+                    properties:
+                      id: { type: string }
+                      tenantId: { type: string }
+                      actionId: { type: string }
+                      status: { type: string }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+                      runLogLength: { type: integer }
+        "400": { description: Missing workerId or invalid retryConfig }
+        "404": { description: Workflow not found or cross-tenant access }
+        "422": { description: Workflow is not in failed status }
+        "500": { description: Internal error }
+
+  /execution/{id}/approve:
+    post:
+      operationId: approveExecution
+      summary: Approve a pending (approval_required) workflow
+      description: >
+        Transitions a workflow from `planned` state (created by an `approval_required` decision)
+        to `approved` → `running`. The `approvalToken` from the ExecutionReceipt is the workflow id.
+        Only `planned` workflows may be approved; any other status returns 422.
+      tags: [adapter]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+          description: Workflow id (= approvalToken from POST /api/adapter/run receipt)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actor:
+                  type: string
+                  default: tfa-approval
+                  description: Who is approving (for audit log)
+                reason:
+                  type: string
+                  description: Human-readable reason for approval
+      responses:
+        "200":
+          description: Workflow approved and moved to running
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, workflow]
+                properties:
+                  ok: { type: boolean }
+                  workflow:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      tenantId: { type: string }
+                      actionId: { type: string }
+                      status:
+                        type: string
+                        enum: [running]
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+                      runLogLength: { type: integer }
+        "400": { description: Missing x-tenant-id or id }
+        "404": { description: Workflow not found or cross-tenant access }
+        "422": { description: Workflow not in planned state }
+        "500": { description: Internal error }
+
+  /execution/{id}/receipt:
+    get:
+      operationId: getExecutionReceipt
+      summary: Get a signed status receipt for a workflow
+      description: >
+        Returns a freshly-signed `ExecutionStatusReceipt` reflecting the workflow's
+        current status. Useful for polling after `POST /api/execution/{id}/approve`
+        to confirm the workflow is now `running`, or as a portable tamper-evident
+        proof of state for webhooks and audit evidence.
+
+        The receipt is self-verifying: any party with the signer's verify key can
+        confirm both the workflow id and status without re-querying TFA.
+
+        Tenant-isolated: 404 on cross-tenant or unknown workflow id.
+      tags: [adapter]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: false
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+          description: Workflow id (executionId or approvalToken from POST /api/adapter/run receipt)
+      responses:
+        "200":
+          description: Signed status receipt for the workflow
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, receipt, workflow]
+                properties:
+                  ok: { type: boolean }
+                  receipt:
+                    type: object
+                    required: [version, executionId, tenantId, status, actorId, runLogLength, issuedAt, signature]
+                    properties:
+                      version:
+                        type: string
+                        enum: [tfa-status-receipt-v1]
+                      executionId: { type: string }
+                      tenantId: { type: string }
+                      status:
+                        type: string
+                        enum: [planned, approved, running, evidence_collected, settled, proved, failed, rejected]
+                      actorId: { type: string, description: "Actor from the last run-log entry" }
+                      runLogLength: { type: integer, description: "Monotonically increasing — tamper-evident" }
+                      issuedAt: { type: string, format: date-time }
+                      signature: { type: string, description: "HMAC-SHA256 or Ed25519 over canonical payload" }
+                  workflow:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      tenantId: { type: string }
+                      actionId: { type: string }
+                      status: { type: string }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+                      runLogLength: { type: integer }
+        "400": { description: Missing x-tenant-id or id }
+        "404": { description: Workflow not found or cross-tenant access }
+        "500": { description: Internal error (receipt verification failed) }
+
+  /index/disputes/{id}:
+    get:
+      operationId: indexGetDispute
+      summary: Get dispute projection by id
+      tags: [indexer]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Dispute found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [dispute]
+                properties:
+                  dispute: { type: object }
+        "400": { description: Missing x-tenant-id }
+        "404": { description: Dispute not found }
+
+  /receipt/{workflowId}/link-mandates:
+    post:
+      operationId: linkMandates
+      summary: Bind a workflow receipt to an AP2 mandate chain and return a Verifiable Credential
+      description: >
+        Accepts an array of AP2 MandateRef objects, signs a MandateLinkage binding the
+        workflow's status receipt to the mandate chain, and returns a W3C Verifiable
+        Credential carrying the linkage as credentialSubject evidence.
+        Only workflows in approved/running/succeeded status may be linked.
+      tags: [adapter]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string }
+        - in: path
+          name: workflowId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mandates]
+              properties:
+                mandates:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [type, id]
+                    properties:
+                      type:
+                        type: string
+                        enum: [intent, cart, payment]
+                      id:
+                        type: string
+                      hash:
+                        type: string
+      responses:
+        "201":
+          description: Linkage produced and VC returned
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, workflowId, status, linkage, vc]
+                properties:
+                  ok: { type: boolean }
+                  workflowId: { type: string }
+                  status: { type: string }
+                  linkage: { type: object }
+                  vc: { type: object }
+        "400": { description: Invalid input (missing/malformed mandates or tenantId) }
+        "404": { description: Workflow not found or cross-tenant access }
+        "422": { description: Workflow status is not linkable (planned or failed) }
+        "500": { description: Internal error (signature verification failed) }
+
+  /receipt/verify:
+    post:
+      operationId: verifyReceipt
+      summary: Verify an ExecutionReceipt's cryptographic signature and decision integrity
+      description: >
+        Accepts a signed ExecutionReceipt and performs two independent checks:
+        1. Cryptographic signature validation (receipt + embedded decisionTrace).
+        2. Decision-integrity re-derivation — re-computes the server-side risk
+           classification, approval class, and expected decision from the toolId alone
+           and compares them against the receipt's claims.
+        Returns 200 with {ok, valid, signatureValid, decisionValid, reasons}.
+      tags: [adapter]
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [receipt]
+              properties:
+                receipt:
+                  type: object
+                  description: The ExecutionReceipt to verify
+      responses:
+        "200":
+          description: Verification completed (valid may be true or false)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, valid, signatureValid, decisionValid, reasons]
+                properties:
+                  ok: { type: boolean }
+                  valid: { type: boolean }
+                  signatureValid: { type: boolean }
+                  decisionValid: { type: boolean }
+                  reasons:
+                    type: array
+                    items: { type: string }
+        "400": { description: Missing or malformed receipt }
+
+  # ─── KILL SWITCH (admin) ────────────────────────────────────────────────────
+  /admin/kill-switch/engage:
+    post:
+      operationId: engageKillSwitch
+      tags: [admin]
+      summary: Engage the kill switch at a chosen scope
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scope, reason]
+              properties:
+                scope:
+                  type: string
+                  enum: [global, tenant, action_type]
+                tenantId:
+                  type: string
+                  description: Required when scope is "tenant"
+                actionType:
+                  type: string
+                  description: Required when scope is "action_type"
+                reason:
+                  type: string
+                  minLength: 1
+      responses:
+        "200":
+          description: Kill switch engaged
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, scope, reason]
+                properties:
+                  ok: { type: boolean }
+                  scope: { type: string }
+                  reason: { type: string }
+        "400": { description: Invalid scope, missing reason, or missing tenantId/actionType }
+        "403": { description: Missing admin:kill-switch scope }
+
+  /admin/kill-switch/disengage:
+    post:
+      operationId: disengageKillSwitch
+      tags: [admin]
+      summary: Disengage the kill switch at a chosen scope
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scope]
+              properties:
+                scope:
+                  type: string
+                  enum: [global, tenant, action_type]
+                tenantId:
+                  type: string
+                  description: Required when scope is "tenant"
+                actionType:
+                  type: string
+                  description: Required when scope is "action_type"
+      responses:
+        "200":
+          description: Kill switch disengaged
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, scope]
+                properties:
+                  ok: { type: boolean }
+                  scope: { type: string }
+        "400": { description: Invalid scope or missing tenantId/actionType }
+        "403": { description: Missing admin:kill-switch scope }
+
+  /admin/kill-switch/status:
+    get:
+      operationId: getKillSwitchStatus
+      tags: [admin]
+      summary: Read the current kill-switch armed state and snapshot
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Kill switch status
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, armed]
+                properties:
+                  ok: { type: boolean }
+                  armed: { type: boolean }
+                  snapshot: { type: object }
+        "403": { description: Missing admin:kill-switch scope }
+
+  # ─── EVAL ───────────────────────────────────────────────────────────────────
+  /eval/run:
+    get:
+      operationId: runEval
+      tags: [eval]
+      summary: Run all golden tasks and return aggregate results
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Evaluation report
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, overallMean, taskCount, tasks]
+                properties:
+                  ok: { type: boolean }
+                  overallMean: { type: number }
+                  scorecardMeans:
+                    type: object
+                    additionalProperties: { type: number }
+                  taskCount: { type: integer }
+                  tasks:
+                    type: array
+                    items: { type: object }
+        "500": { description: Eval harness failure }
+
+  /eval/run/{taskId}:
+    get:
+      operationId: runEvalTask
+      tags: [eval]
+      summary: Run a single golden task by ID
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: taskId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Single task result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, task]
+                properties:
+                  ok: { type: boolean }
+                  task: { type: object }
+        "404": { description: Task not found }
+        "500": { description: Eval task failure }
+
+  # ─── CONFIDENCE ───────────────────────────────────────────────────────────────
+  /confidence/evaluate:
+    post:
+      operationId: evaluateConfidence
+      tags: [confidence]
+      summary: Run an action through the ConfidenceGate and return a signed trace
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [confidenceScore, actionType]
+              properties:
+                confidenceScore: { type: number, minimum: 0, maximum: 1 }
+                actionType: { type: string }
+                autoThreshold: { type: number }
+                hitlThreshold: { type: number }
+      responses:
+        "200":
+          description: Confidence gate verdict
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, verdict, allow]
+                properties:
+                  ok: { type: boolean }
+                  verdict: { type: string, enum: [auto, human, deny] }
+                  allow: { type: boolean }
+                  trace: { type: object, nullable: true }
+        "400": { description: Invalid confidence gate configuration }
+        "500": { description: Evaluation failure }
+
+  /confidence/verify:
+    post:
+      operationId: verifyConfidenceTrace
+      tags: [confidence]
+      summary: Verify the signature on a ConfidenceGateTrace
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trace]
+              properties:
+                trace: { type: object }
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, valid]
+                properties:
+                  ok: { type: boolean }
+                  valid: { type: boolean }
+        "400": { description: Missing or malformed trace }
+
+  # ─── MONITOR ─────────────────────────────────────────────────────────────────
+  /monitor/status:
+    get:
+      operationId: getMonitorStatus
+      tags: [monitor]
+      summary: Cron audit status
+      description: Returns the scheduled auditor's current state without triggering a run.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Cron status snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [running, intervalMs, tenants, totalRuns]
+                properties:
+                  running: { type: boolean }
+                  intervalMs: { type: integer }
+                  lastRunAt: { type: string, nullable: true, format: date-time }
+                  nextRunAt: { type: string, nullable: true, format: date-time }
+                  tenants:
+                    type: array
+                    items: { type: string }
+                  totalRuns: { type: integer }
+                  results:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      required: [tenantId, timestamp, isSolvent, accountsChecked, anomalies, alertSent]
+                      properties:
+                        tenantId: { type: string }
+                        timestamp: { type: string, format: date-time }
+                        isSolvent: { type: boolean }
+                        accountsChecked: { type: integer }
+                        anomalies:
+                          type: array
+                          items: { type: string }
+                        alertSent: { type: boolean }
+        "400": { description: Missing x-tenant-id or x-api-key }
+
+  /monitor/run:
+    post:
+      operationId: runMonitorNow
+      tags: [monitor]
+      summary: Trigger an on-demand audit
+      description: Runs a single-tenant solvency audit immediately and registers the tenant for future periodic sweeps.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Audit result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tenantId, timestamp, isSolvent, accountsChecked, anomalies, alertSent]
+                properties:
+                  tenantId: { type: string }
+                  timestamp: { type: string, format: date-time }
+                  isSolvent: { type: boolean }
+                  accountsChecked: { type: integer }
+                  anomalies:
+                    type: array
+                    items: { type: string }
+                  alertSent: { type: boolean }
+        "400": { description: Missing x-tenant-id or x-api-key }
+        "500": { description: Monitor run failed }
+
+  # ─── TRANSPARENCY ────────────────────────────────────────────────────────────
+  /transparency/chain:
+    get:
+      operationId: getTransparencyChain
+      tags: [transparency]
+      summary: Tenant audit chain with integrity check
+      description: Returns the tenant's full audit chain ordered by insertion, plus a tamper-evident integrity flag.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Chain view
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tenantId, chainIntact, recordCount, records]
+                properties:
+                  tenantId: { type: string }
+                  chainIntact: { type: boolean }
+                  recordCount: { type: integer }
+                  records:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, actionType, source, outcome, occurredAt, prevHash, hash, signed]
+                      properties:
+                        id: { type: string }
+                        actionType: { type: string }
+                        source: { type: string }
+                        outcome:
+                          type: string
+                          enum: [allowed, denied, error]
+                        reason: { type: string }
+                        occurredAt: { type: string, format: date-time }
+                        prevHash: { type: string }
+                        hash: { type: string }
+                        signed: { type: boolean }
+        "400": { description: Missing x-tenant-id or x-api-key }
+
+  /transparency/balances:
+    get:
+      operationId: getTransparencyBalances
+      tags: [transparency]
+      summary: Tenant balances and solvency proof
+      description: Returns all accounts with μ¢ balances as decimal strings plus a live solvency snapshot.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Balances view
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tenantId, accounts, solvency]
+                properties:
+                  tenantId: { type: string }
+                  accounts:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, ownerId, type, name, balance]
+                      properties:
+                        id: { type: string }
+                        ownerId: { type: string }
+                        type: { type: string }
+                        name: { type: string }
+                        balance: { type: string }
+                  solvency:
+                    type: object
+                    required: [isSolvent, totalAssets, totalLiabilities, netEquity, accountCount, balanceHash, generatedAt]
+                    properties:
+                      isSolvent: { type: boolean }
+                      totalAssets: { type: string }
+                      totalLiabilities: { type: string }
+                      netEquity: { type: string }
+                      accountCount: { type: integer }
+                      balanceHash: { type: string }
+                      generatedAt: { type: string, format: date-time }
+        "400": { description: Missing x-tenant-id or x-api-key }
+        "500": { description: Failed to build balances view }
+
+  /transparency/passports:
+    get:
+      operationId: getTransparencyPassports
+      tags: [transparency]
+      summary: Lightweight passport summaries
+      description: Returns summaries of allowed audit records with links to full signed passports. Efficient regardless of chain length.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Passport list view
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tenantId, count, passports]
+                properties:
+                  tenantId: { type: string }
+                  count: { type: integer }
+                  passports:
+                    type: array
+                    items:
+                      type: object
+                      required: [auditId, actionType, outcome, occurredAt, passportHref]
+                      properties:
+                        auditId: { type: string }
+                        actionType: { type: string }
+                        outcome:
+                          type: string
+                          enum: [allowed, denied, error]
+                        occurredAt: { type: string, format: date-time }
+                        passportHref: { type: string }
+        "400": { description: Missing x-tenant-id or x-api-key }
+
+  # ─── TRANSPARENCY-LOG CORE ROUTES (v391) ────────────────────────────────────
+  /transparency/log/root:
+    get:
+      operationId: getTransparencyLogRoot
+      tags: [transparency-log]
+      summary: Get the latest Merkle root for the tenant's transparency log
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Current anchored root (or null if no leaves yet)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, root]
+                properties:
+                  ok: { type: boolean }
+                  root: { type: object, nullable: true, description: "AnchoredRoot or null" }
+        "400": { description: Missing x-tenant-id }
+
+  /transparency/log/proof/{receiptId}:
+    get:
+      operationId: getTransparencyLogProof
+      tags: [transparency-log]
+      summary: Get a Merkle inclusion proof for a receipt
+      description: >
+        Returns the Merkle proof, the anchored root, and the leaf index for a
+        given receiptId. The caller can independently verify the proof using
+        verifyMerkleProof(). Returns 404 if the receipt is not in the log for
+        this tenant (cross-tenant isolation enforced by the log store).
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: receiptId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Inclusion proof for the receipt
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, proof, root, leafIndex]
+                properties:
+                  ok: { type: boolean }
+                  proof: { type: object, description: "MerkleProof (siblings array + index)" }
+                  root: { type: object, description: "AnchoredRoot at proof time" }
+                  leafIndex: { type: integer }
+        "400": { description: Missing x-tenant-id or receiptId }
+        "404": { description: Receipt not found in transparency log for tenant }
+
+  /transparency-log/consistency:
+    get:
+      operationId: getTransparencyLogConsistency
+      tags: [transparency-log]
+      summary: Get a consistency proof between an older tree size and the current root
+      description: >
+        Returns a ConsistencyProof that the first `oldSize` leaves are a prefix
+        of the current tree, along with oldRoot and newRoot so the caller can
+        immediately run verifyConsistencyProof() locally without a second
+        round-trip. A monitor that holds an older AnchoredRoot uses this to
+        confirm the log only grew (no history was rewritten) since that root.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: oldSize
+          required: true
+          schema: { type: integer, minimum: 1 }
+          description: "The leaf count of the older tree snapshot to prove consistency from"
+      responses:
+        "200":
+          description: Consistency proof with both roots
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, proof, newRoot, newSize]
+                properties:
+                  ok: { type: boolean }
+                  proof: { type: object, description: "ConsistencyProof (hashes array)" }
+                  newRoot: { type: string }
+                  newSize: { type: integer }
+                  oldRoot: { type: string, nullable: true }
+                  oldRootEntry: { type: object, nullable: true }
+        "400": { description: Missing x-tenant-id or invalid oldSize (not a positive integer) }
+        "404": { description: No leaves in log for tenant, or oldSize out of range }
+
+  /transparency-log/consistency/monitor:
+    get:
+      operationId: runTransparencyLogConsistencyMonitor
+      tags: [transparency-log]
+      summary: Run the consistency monitor over all root transitions for the tenant
+      description: >
+        Iterates all recorded root transitions for the tenant and verifies that
+        each is a consistent extension of the previous. ok=false means at least
+        one transition failed — a tamper signal. This is a read-only audit
+        operation; no state is modified.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Monitor result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, checked, failures, rootCount]
+                properties:
+                  ok: { type: boolean, description: "false means at least one tamper signal detected" }
+                  checked: { type: integer }
+                  failures: { type: array, items: { type: object } }
+                  rootCount: { type: integer }
+        "400": { description: Missing x-tenant-id }
+
+  # ─── TRANSPARENCY-LOG WITNESS CO-SIGNING (v388) ───────────────────────────────
+  /transparency-log/witness:
+    post:
+      operationId: submitWitnessStatement
+      tags: [transparency-log]
+      summary: Submit a co-signed tree-head witness statement
+      description: >
+        A provisioned witness POSTs its co-signed (logId, treeSize, root) observation.
+        The server always re-verifies the signature against the witness's registered
+        key before storing — an unregistered witnessId or an invalid signature is
+        rejected and nothing is persisted (fail-closed).
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version, logId, root, treeSize, observedAt, witnessId, algorithm, signature]
+              properties:
+                version: { type: string }
+                logId: { type: string }
+                root: { type: string, pattern: "^[a-f0-9]{64}$", description: "sha256 hex" }
+                treeSize: { type: integer, minimum: 1 }
+                observedAt: { type: string, format: date-time }
+                witnessId: { type: string }
+                algorithm: { type: string }
+                signature: { type: string }
+      responses:
+        "200":
+          description: Statement accepted and stored
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, statement]
+                properties:
+                  ok: { type: boolean }
+                  statement: { type: object }
+        "400": { description: Missing x-tenant-id, or body is not a well-formed WitnessStatement }
+        "403": { description: "witnessId not registered for tenant, or signature does not verify — not stored" }
+  /transparency-log/witness/quorum:
+    get:
+      operationId: getWitnessQuorum
+      tags: [transparency-log]
+      summary: Check whether a quorum of distinct witnesses co-signed a root
+      description: >
+        Returns whether `threshold` distinct, verified witnesses signed exactly this
+        (logId, treeSize, root). If a verified witness signed a DIFFERENT root at the
+        same position, returns 409 SPLIT_VIEW — the caller must not trust the target root.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: logId
+          required: true
+          schema: { type: string }
+        - in: query
+          name: root
+          required: true
+          schema: { type: string, pattern: "^[a-f0-9]{64}$" }
+        - in: query
+          name: treeSize
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: threshold
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "200":
+          description: Quorum check result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, result]
+                properties:
+                  ok: { type: boolean }
+                  result: { type: object }
+        "400": { description: Missing x-tenant-id, or a required query param is missing/invalid }
+        "409":
+          description: Split view — a verified witness signed a different root at this position
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, code, roots]
+                properties:
+                  error: { type: string }
+                  code: { type: string, enum: [SPLIT_VIEW] }
+                  roots: { type: array, items: { type: string } }
+  /transparency-log/witness/statements:
+    get:
+      operationId: listWitnessStatements
+      tags: [transparency-log]
+      summary: List stored witness statements for the tenant (audit / debugging)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: logId
+          required: false
+          schema: { type: string }
+        - in: query
+          name: treeSize
+          required: false
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "200":
+          description: Stored statements, optionally filtered by logId and/or treeSize
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, statements, total]
+                properties:
+                  ok: { type: boolean }
+                  statements: { type: array, items: { type: object } }
+                  total: { type: integer }
+        "400": { description: Missing x-tenant-id }
+
+  # ─── MARKETPLACE ─────────────────────────────────────────────────────────────
+  /marketplace/opportunities:
+    get:
+      operationId: listMarketplaceOpportunities
+      tags: [marketplace]
+      summary: List tenant opportunities
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Opportunity list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, opportunities]
+                properties:
+                  ok: { type: boolean }
+                  opportunities: { type: array, items: { type: object } }
+        "400": { description: Missing x-tenant-id or x-api-key }
+    post:
+      operationId: createMarketplaceOpportunity
+      tags: [marketplace]
+      summary: Create an opportunity (optional listing fee via ledger)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                requiredStrengths: { type: array, items: { type: object } }
+                fromAccountId: { type: string, description: "Account to charge listing fee from" }
+                listingFee: { type: string, description: "Fee in micro-cents (BigInt string), default 5000" }
+                budget: { type: string, description: "Budget in micro-cents (BigInt string)" }
+                userId: { type: string }
+      responses:
+        "201":
+          description: Opportunity created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, opportunity]
+                properties:
+                  ok: { type: boolean }
+                  opportunity: { type: object }
+                  listingFee: { type: string }
+                  ledgerEffect: { type: object }
+                  auditId: { type: string }
+                  passport: { type: object }
+        "400": { description: Invalid input }
+        "403": { description: Guard denied or insufficient funds }
+
+  /marketplace/opportunities/{id}:
+    get:
+      operationId: getMarketplaceOpportunity
+      tags: [marketplace]
+      summary: Get an opportunity by id
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Opportunity
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, opportunity]
+                properties:
+                  ok: { type: boolean }
+                  opportunity: { type: object }
+        "400": { description: Missing x-tenant-id or x-api-key }
+        "404": { description: Not found or cross-tenant }
+    delete:
+      operationId: deleteMarketplaceOpportunity
+      tags: [marketplace]
+      summary: Delete an opportunity by id
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean }
+        "400": { description: Missing x-tenant-id or x-api-key }
+        "404": { description: Not found or cross-tenant }
+
+  /marketplace/route:
+    post:
+      operationId: routeMarketplace
+      tags: [marketplace]
+      summary: Route a user against the opportunity catalog
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId: { type: string }
+                knowledgeSignals: { type: array, items: { type: object } }
+                analyticsSignals: { type: array, items: { type: object } }
+      responses:
+        "200":
+          description: Routing decision
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, auditId, data]
+                properties:
+                  ok: { type: boolean }
+                  auditId: { type: string, nullable: true }
+                  data: { type: object }
+        "400": { description: Invalid input }
+
+  /marketplace/opportunities/{id}/claim:
+    post:
+      operationId: claimMarketplaceOpportunity
+      tags: [marketplace]
+      summary: Claim an opportunity (fee + optional escrow)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fromAccountId]
+              properties:
+                fromAccountId: { type: string }
+                claimFee: { type: string, description: "Fee in micro-cents (BigInt string), default 10000" }
+                workerAccountId: { type: string }
+                userId: { type: string }
+                initiatedBy: { type: string }
+      responses:
+        "200":
+          description: Claim result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, opportunityId, ledgerEffect, auditId]
+                properties:
+                  ok: { type: boolean }
+                  opportunityId: { type: string }
+                  ledgerEffect: { type: object }
+                  auditId: { type: string }
+                  passport: { type: object }
+                  escrow: { type: object }
+        "400": { description: Invalid input }
+        "403": { description: Guard denied or insufficient funds }
+        "404": { description: Opportunity not found }
+
+  # ─── SOVEREIGNTY ─────────────────────────────────────────────────────────────
+  /sovereignty/export:
+    get:
+      operationId: exportTenantData
+      tags: [sovereignty]
+      summary: Export all tenant data as a signed bundle
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Export bundle
+          content:
+            application/json:
+              schema:
+                type: object
+        "400": { description: Missing x-tenant-id or x-api-key }
+        "403": { description: Tenant mismatch }
+        "500": { description: Export failed }
+
+  /sovereignty/import:
+    post:
+      operationId: importTenantData
+      tags: [sovereignty]
+      summary: Restore a signed bundle (signature verified first)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Import result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean }
+        "400": { description: Invalid bundle or schema mismatch }
+        "403": { description: Tenant ID mismatch }
+        "422": { description: Signature invalid }
+        "500": { description: Import failed }
+
+  /sovereignty/verify:
+    post:
+      operationId: verifyTenantBundle
+      tags: [sovereignty]
+      summary: Verify a bundle signature without modifying state
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [valid]
+                properties:
+                  valid: { type: boolean }
+                  reason: { type: string }
+        "400": { description: Invalid bundle }
+        "500": { description: Verification failed }
+
+  /sovereignty/rotate-key:
+    post:
+      operationId: rotateKernelKey
+      tags: [sovereignty]
+      summary: Live key rotation (requires admin:key-rotation scope)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: x-break-glass-ticket
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [signerKind]
+              properties:
+                signerKind:
+                  type: string
+                  enum: [hmac, ed25519]
+                secret: { type: string, description: "Required for hmac (≥16 bytes)" }
+                privateKey: { type: string, description: "PKCS8 PEM for ed25519" }
+                publicKey: { type: string, description: "SPKI PEM for ed25519" }
+      responses:
+        "200":
+          description: Rotation result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, rotatedAt, rotationCount, newAlgorithm]
+                properties:
+                  ok: { type: boolean }
+                  rotatedAt: { type: string, format: date-time }
+                  rotationCount: { type: integer }
+                  newAlgorithm: { type: string }
+        "400": { description: Invalid key material or missing fields }
+        "403": { description: Scope denied }
+
+  /sovereignty/break-glass:
+    post:
+      operationId: issueBreakGlassTicket
+      tags: [sovereignty]
+      summary: Issue an emergency-access ticket (requires admin:break-glass scope)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason, grantScope]
+              properties:
+                reason: { type: string, minLength: 10 }
+                grantScope: { type: string }
+                ttlMs:
+                  type: integer
+                  minimum: 1000
+                  maximum: 3600000
+                operator: { type: string }
+      responses:
+        "200":
+          description: Ticket issued
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, ticketId, tenantId, grantScope, operator, issuedAt, expiresAt, encodedTicket]
+                properties:
+                  ok: { type: boolean }
+                  ticketId: { type: string }
+                  tenantId: { type: string }
+                  grantScope: { type: string }
+                  operator: { type: string }
+                  issuedAt: { type: string, format: date-time }
+                  expiresAt: { type: string, format: date-time }
+                  ticket: { type: object }
+                  encodedTicket: { type: string }
+        "400": { description: Invalid reason, grantScope, or ttlMs }
+        "403": { description: Scope denied }
+
+  # ─── INTRODUCTION ────────────────────────────────────────────────────────────
+  /introduction/request:
+    post:
+      operationId: requestIntroduction
+      tags: [introduction]
+      summary: Request a cross-tenant introduction (signed by kernel)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetTenantId, proofTarget]
+              properties:
+                targetTenantId: { type: string }
+                proofTarget:
+                  type: object
+                  required: [kind, identityId]
+                  properties:
+                    kind:
+                      type: string
+                      enum: [track-record, passport]
+                    identityId: { type: string }
+      responses:
+        "201":
+          description: Introduction request created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, sourceTenantId, targetTenantId, proofTarget, signature, createdAt]
+                properties:
+                  id: { type: string }
+                  sourceTenantId: { type: string }
+                  targetTenantId: { type: string }
+                  proofTarget: { type: object }
+                  signature: { type: string }
+                  createdAt: { type: string, format: date-time }
+        "400": { description: Invalid input or missing tenant }
+
+  /introduction/inbox:
+    get:
+      operationId: listIntroductionInbox
+      tags: [introduction]
+      summary: List introductions targeting this tenant
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Introduction list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: object }
+        "400": { description: Missing x-tenant-id or x-api-key }
+
+  /introduction/{id}:
+    get:
+      operationId: getIntroduction
+      tags: [introduction]
+      summary: Get a single introduction by id (tenant-scoped access)
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Introduction request
+          content:
+            application/json:
+              schema:
+                type: object
+        "400": { description: Missing id or tenant }
+        "404": { description: Not found or access denied }
+
+  /introduction/{id}/accept:
+    post:
+      operationId: acceptIntroduction
+      tags: [introduction]
+      summary: Accept an introduction and receive proof bundle
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Accepted with proof
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [accepted]
+                properties:
+                  accepted: { type: boolean }
+                  proofBundle: { type: object }
+                  passport: { type: object }
+        "400": { description: Could not build proof bundle }
+        "403": { description: Signature verification failed or not target tenant }
+        "404": { description: Introduction or passport not found }
+
+  # ─── TRACK-RECORD PROOF ──────────────────────────────────────────────────────
+  /track-record/{identityId}/proof:
+    get:
+      operationId: getTrackRecordProof
+      tags: [track-record]
+      summary: Public Trust API — portable proof bundle v1
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: identityId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Trust proof bundle
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, data]
+                properties:
+                  ok: { type: boolean }
+                  data: { type: object }
+        "400": { description: Validation error }
+
+  /track-record/{identityId}/proof-v2:
+    get:
+      operationId: getTrackRecordProofV2
+      tags: [track-record]
+      summary: Public Trust API — portable proof bundle v2
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: identityId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Trust proof bundle v2
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, data]
+                properties:
+                  ok: { type: boolean }
+                  data: { type: object }
+        "400": { description: Validation error }
+
+  # ─── META / DOCUMENTATION ROUTES ────────────────────────────────────────────
+
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [meta]
+      summary: Tenant dashboard (HTML)
+      description: >
+        Read-only HTML dashboard for a tenant. Pulls live data from existing
+        API endpoints (transparency/chain, balances, insights). Served directly
+        from the server — not an API operation.
+      responses:
+        "200":
+          description: Dashboard HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /docs:
+    get:
+      operationId: getApiDocs
+      tags: [meta]
+      summary: Swagger UI (HTML)
+      description: >
+        Interactive OpenAPI documentation (Swagger UI). Loads the spec from
+        /api/openapi.yaml and renders it in the browser.
+      responses:
+        "200":
+          description: Swagger UI HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /openapi.yaml:
+    get:
+      operationId: getOpenApiSpec
+      tags: [meta]
+      summary: OpenAPI specification (YAML)
+      description: >
+        Returns the current OpenAPI 3.1 specification for this API in YAML
+        format. Consumed by Swagger UI, SDK generators, and contract tests.
+      responses:
+        "200":
+          description: OpenAPI YAML document
+          content:
+            text/yaml:
+              schema:
+                type: string
+        "500":
+          description: Spec file not available
+
+  # ─── AUDIT TRAIL ─────────────────────────────────────────────────────────────
+
+  /audit-trail:
+    get:
+      operationId: getAuditTrail
+      tags: [audit]
+      summary: Cross-vendor agent audit trail
+      description: >
+        Returns execution records for the requesting tenant filtered by agent
+        provenance and/or vendor. Provides a neutral, cross-vendor audit trail
+        (xAI, OpenAI, Anthropic, Google, Cursor, etc.) without trusting any
+        single vendor's own trail. At least one of provenanceId or vendor is
+        required.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: provenanceId
+          required: false
+          schema: { type: string }
+          description: sha256 fingerprint of the agent identity
+        - in: query
+          name: vendor
+          required: false
+          schema: { type: string }
+          description: >
+            Normalised vendor tag (xai|openai|anthropic|google|cursor|custom|…)
+      responses:
+        "200":
+          description: Audit trail entries for the tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [executions]
+                properties:
+                  executions:
+                    type: array
+                    items:
+                      type: object
+        "400":
+          description: Missing filter params or missing x-tenant-id header
+
+  /mcp:
+    post:
+      operationId: mcpJsonRpcBridge
+      tags: [mcp]
+      summary: MCP JSON-RPC 2.0 HTTP bridge (thin transport over TfaMcpServer)
+      description: >
+        Accepts a JSON-RPC 2.0 request and dispatches it to the TFA MCP server's
+        tool registry. Authentication is optional: if x-api-key is present it
+        must carry the "mcp:execute" scope (or "superadmin"); if absent, the
+        request passes through with only x-tenant-id validation (anonymous
+        access allowed by caller policy). Notifications (no id field) return
+        204 No Content; otherwise the JSON-RPC response is returned as 200.
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+        - in: header
+          name: x-api-key
+          required: false
+          schema: { type: string }
+          description: Optional. When present, must carry the mcp:execute or superadmin scope.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jsonrpc, method]
+              properties:
+                jsonrpc: { type: string, description: "Must be the literal string \"2.0\"" }
+                id:
+                  description: Request id (string or number). Omit for a notification.
+                method: { type: string, description: MCP tool/method name to invoke }
+                params: { type: object, description: Method parameters; tenantId is injected from the header if absent }
+      responses:
+        "200":
+          description: JSON-RPC 2.0 response (result or error)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [jsonrpc]
+                properties:
+                  jsonrpc: { type: string }
+                  id: {}
+                  result: {}
+                  error: { type: object }
+        "204":
+          description: Notification accepted (request had no id) — no body returned
+        "400":
+          description: Missing x-tenant-id, body is not a JSON-RPC 2.0 object, or method is missing/empty
+        "403":
+          description: x-api-key present but missing the mcp:execute (or superadmin) scope
+
+  # ─── Redacted proof-bundle (§2.B-3 HTTP layer) ───────────────────────────────
+  /track-record/redacted-proof-bundle:
+    post:
+      operationId: buildRedactedProofBundle
+      summary: Build a privacy-preserving redacted proof bundle (version 2r)
+      description: >
+        Takes a full TrustProofBundleV2 (version "2") and returns a redacted
+        bundle (version "2r") that exposes only verdict-level fields (TrackRecord
+        counts/score, issuedAt, validUntil, tenantId, identityId) plus SHA-256
+        commitments to every sensitive array (passports, signerKeys,
+        evidenceManifest, approvalRefs, ledgerRefs, policyRefs). The
+        counterparty can verify the redactedBundleHash against the disclosed
+        fields without learning the underlying passport content or ledger amounts.
+        The full bundle's tenantId must match x-tenant-id (tenant-scope check).
+      tags: [track-record]
+      parameters:
+        - name: x-tenant-id
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bundle]
+              properties:
+                bundle:
+                  type: object
+                  description: A valid TrustProofBundleV2 (version "2")
+      responses:
+        "200":
+          description: Redacted bundle (version 2r) with hash commitments
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, redacted]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  redacted:
+                    type: object
+                    required: [version, tenantId, identityId, record, issuedAt, originalBundleHash, redacted, redactedBundleHash]
+                    properties:
+                      version: { type: string, enum: ["2r"] }
+                      tenantId: { type: string }
+                      identityId: { type: string }
+                      record: { type: object }
+                      issuedAt: { type: string }
+                      validUntil: { type: string, nullable: true }
+                      originalBundleHash: { type: string }
+                      redacted: { type: object }
+                      redactedBundleHash: { type: string }
+        "400":
+          description: Missing x-tenant-id, missing/invalid bundle, or wrong bundle version
+        "403":
+          description: bundle.tenantId does not match x-tenant-id
+
+  /track-record/redacted-proof-bundle/verify:
+    post:
+      operationId: verifyRedactedProofBundle
+      summary: Offline-verify a redacted proof bundle (version 2r)
+      description: >
+        Recomputes the redactedBundleHash from the disclosed fields and
+        returns { valid: true } iff the hash matches. Optionally enforces
+        freshness (validUntil) and passport-presence (requirePassports).
+        The bundle's tenantId must match x-tenant-id. Never throws — all
+        malformed inputs return { valid: false }.
+      tags: [track-record]
+      parameters:
+        - name: x-tenant-id
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bundle]
+              properties:
+                bundle:
+                  type: object
+                  description: A RedactedTrustProofBundle (version "2r")
+                options:
+                  type: object
+                  description: Optional RedactedBundleVerifyOptions (requirePassports, requireFreshness)
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, valid]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  valid: { type: boolean }
+        "400":
+          description: Missing x-tenant-id or missing bundle field
+        "403":
+          description: bundle.tenantId does not match x-tenant-id
+
+  # ─── Drift explainability (§2.C sub-step 9) ─────────────────────────────────
+  /risk/drift-explain:
+    post:
+      operationId: explainDriftCompliance
+      summary: Compliance explanation — why is this agent deteriorating?
+      description: >
+        Accepts an agentId and a window of trust-score records (DriftRecord[]),
+        runs scoreRiskDrift + assessRisk with the drift result wired in, and
+        returns a DriftComplianceReport: ranked factors (highest impact first),
+        a human-readable summary sentence, the effective approval class, an
+        actionable recommendation, and a machine-readable verdict.
+        This is §2.C sub-step 9 — Drift explainability.
+      tags: [risk]
+      parameters:
+        - name: x-tenant-id
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agentId, records]
+              properties:
+                agentId:
+                  type: string
+                  description: The agent or actor under review (non-empty)
+                records:
+                  type: array
+                  minItems: 2
+                  description: Historical trust-score window (at least 2 items)
+                  items:
+                    type: object
+                    required: [score, timestampMs]
+                    properties:
+                      score:       { type: number, minimum: 0, maximum: 100 }
+                      timestampMs: { type: number }
+                context:
+                  type: object
+                  description: Optional risk context overrides (reputationScore, baseApprovalClass, etc.)
+      responses:
+        "200":
+          description: DriftComplianceReport — ranked factors, summary, recommendation
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [agentId, riskScore, driftScore, direction, effectiveApprovalClass, factors, summary, recommendation, driftEscalated, windowSize, windowSpanMs]
+                properties:
+                  agentId:               { type: string }
+                  riskScore:             { type: number }
+                  driftScore:            { type: number }
+                  direction:             { type: string, enum: [improving, stable, deteriorating] }
+                  effectiveApprovalClass: { type: string }
+                  factors:               { type: array, items: { type: object } }
+                  summary:               { type: string }
+                  explanation:           { type: array, items: { type: string } }
+                  recommendation:        { type: string }
+                  driftEscalated:        { type: boolean }
+                  windowSize:            { type: integer }
+                  windowSpanMs:          { type: number }
+        "400":
+          description: Missing x-tenant-id, missing/invalid agentId, < 2 records, or invalid record fields
+
+  # ─── ARD (Agentic Resource Discovery) ───────────────────────────────────────
+
+  /.well-known/ai-catalog.json:
+    get:
+      operationId: getArdCatalog
+      tags: [adapter]
+      summary: ARD v0.9-draft catalog (well-known discovery document)
+      description: >
+        Returns a spec-conformant ARD (Agentic Resource Discovery) catalog for
+        the requesting tenant, with a TFA-backed trustManifest per agent
+        (identity + detached JWS produced by the kernel signer). Cached
+        per-tenant for 30s to avoid re-signing on every request. ARD is a
+        v0.9 draft; the adapter is labelled accordingly.
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: ARD catalog for the tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, publisher, agents]
+                properties:
+                  schemaVersion: { type: string }
+                  publisher:
+                    type: object
+                  agents:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, name, description]
+                      properties:
+                        id: { type: string }
+                        name: { type: string }
+                        description: { type: string }
+                        trustManifest:
+                          type: object
+                          description: identity + detached-JWS attestation, present once signed
+        "400":
+          description: Missing x-tenant-id header
+        "500":
+          description: Failed to build the ARD catalog
+
+  /ard/verify:
+    post:
+      operationId: verifyArdAgent
+      tags: [adapter]
+      summary: Verify an ARD agent's trustManifest
+      description: >
+        Checks URN well-formedness, that the URN publisher-FQDN matches the
+        trustManifest identity's domain, and (where resolvable) the detached
+        JWS / attestations. Returns a structured per-check verdict rather
+        than a single pass/fail so callers can see exactly which check
+        failed.
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [urn, trustManifest]
+              properties:
+                urn:
+                  type: string
+                  description: "urn:ai:<publisher-FQDN>:<namespace>:<agent-name>"
+                trustManifest:
+                  type: object
+                  description: ARD trustManifest containing at least `identity`
+      responses:
+        "200":
+          description: Verification verdict (valid may be false — this is not an error response)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [valid, checks, reasons]
+                properties:
+                  valid: { type: boolean }
+                  checks:
+                    type: object
+                    required: [urnWellFormed, domainAlignment, jwsValid, attestationsResolvable]
+                    properties:
+                      urnWellFormed: { type: boolean }
+                      domainAlignment: { type: boolean }
+                      jwsValid: { type: boolean, nullable: true }
+                      attestationsResolvable: { type: boolean, nullable: true }
+                  reasons:
+                    type: array
+                    items: { type: string }
+        "400":
+          description: Missing x-tenant-id, body not an object, or urn/trustManifest missing/malformed
+        "500":
+          description: ARD verification failed unexpectedly
+
+  # ─── PQC admin ───────────────────────────────────────────────────────────────
+
+  /admin/pqc/install:
+    post:
+      operationId: installPqcProvider
+      tags: [admin]
+      summary: Attempt to install a real post-quantum-crypto provider (requires admin:pqc-install scope)
+      description: >
+        Attempts an npm install of a real PQC provider package, replacing the
+        sim signer. A failed install is a normal, audited outcome (503), not
+        a server error — PQC remains sim-mode until install succeeds. Every
+        call (success or failure) is recorded as a signed, append-only audit
+        entry on the tenant chain.
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: PQC provider installed
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, package]
+                properties:
+                  ok: { type: boolean }
+                  package: { type: string }
+        "400": { description: Missing x-tenant-id header }
+        "403": { description: Missing admin:pqc-install scope }
+        "503":
+          description: Install attempt failed (network/registry/2FA-blocked) — PQC stays sim-mode
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, error]
+                properties:
+                  ok: { type: boolean }
+                  error: { type: string }
+
+  # ─── KEY RESOLVER (offline proof verification) ───────────────────────────────
+
+  /keys/current:
+    get:
+      operationId: getCurrentSigningKey
+      tags: [keys]
+      summary: Currently-active signing key
+      description: >
+        Returns the currently-active signing key (kid, algorithm, status,
+        createdAt, and publicKey for Ed25519). Lets a third-party verifier
+        resolve the key needed to check a TFA-signed passport or receipt. Public
+        and unauthenticated; HMAC secrets are never returned. Cacheable.
+      responses:
+        "200":
+          description: The active signing key (public material only)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [key]
+                properties:
+                  key:
+                    type: object
+                    required: [kid, algorithm, status]
+                    properties:
+                      kid: { type: string }
+                      algorithm: { type: string }
+                      status: { type: string }
+                      publicKey: { type: string }
+                      createdAt: { type: string }
+        "404":
+          description: No active signing key found
+
+  /keys:
+    get:
+      operationId: listSigningKeys
+      tags: [keys]
+      summary: List known signing keys
+      description: >
+        Returns the key history (active, retiring, revoked) as public material
+        only, so a verifier can resolve the key that was active at signing time —
+        not just the current one. Public and unauthenticated; secrets redacted.
+      responses:
+        "200":
+          description: Known signing keys (public material only)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [kids]
+                properties:
+                  kids:
+                    type: array
+                    items:
+                      type: object
+                      required: [kid, algorithm, status]
+                      properties:
+                        kid: { type: string }
+                        algorithm: { type: string }
+                        status: { type: string }
+                        publicKey: { type: string }
+                        createdAt: { type: string }
+
+  /keys/{kid}:
+    get:
+      operationId: getSigningKeyByKid
+      tags: [keys]
+      summary: Resolve a signing key by kid
+      description: >
+        Resolves the key entry for a given kid from the key history. Fail-closed:
+        an unknown kid returns 404 (no information leakage); a revoked kid returns
+        410 Gone, signalling that any proof signed with it must be rejected.
+      parameters:
+        - in: path
+          name: kid
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The resolved key (public material only)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [key]
+                properties:
+                  key:
+                    type: object
+                    required: [kid, algorithm, status]
+                    properties:
+                      kid: { type: string }
+                      algorithm: { type: string }
+                      status: { type: string }
+                      publicKey: { type: string }
+                      createdAt: { type: string }
+        "404":
+          description: Unknown kid (fail-closed, no information leakage)
+        "410":
+          description: Key revoked — proofs signed with it must be rejected
+
+  # ─── Cost arbitrage (v423) ───────────────────────────────────────────────────
+  /arbitrage/quotes:
+    post:
+      operationId: getArbitrageQuotes
+      tags: [arbitrage]
+      summary: Run cost arbitrage across vendor quotes
+      description: >
+        Given N vendor cost estimates for the same action (as decimal-string
+        micro-cents), returns the cheapest vendor (winner), the spread (revenue
+        headroom), a routing-fee suggestion, and all quotes sorted ascending.
+        feeFractionNumerator/Denominator default to 1/2 (50% of spread).
+        All monetary values are decimal strings (never Number).
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quotes]
+              properties:
+                quotes:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [vendorId, estimatedCostMc]
+                    properties:
+                      vendorId: { type: string }
+                      estimatedCostMc: { type: string, description: "Non-negative decimal integer string (μ¢)" }
+                feeFractionNumerator:   { type: string, default: "1", description: "Numerator of routing-fee fraction of spread" }
+                feeFractionDenominator: { type: string, default: "2", description: "Denominator; must be > 0 and ≥ numerator" }
+      responses:
+        "200":
+          description: Arbitrage result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, winner, runnerUp, spreadMc, suggestedRoutingFeeMc, sortedQuotes]
+                properties:
+                  ok: { type: boolean }
+                  winner:
+                    type: object
+                    required: [vendorId, estimatedCostMc]
+                    properties:
+                      vendorId: { type: string }
+                      estimatedCostMc: { type: string }
+                  runnerUp:
+                    nullable: true
+                    type: object
+                    properties:
+                      vendorId: { type: string }
+                      estimatedCostMc: { type: string }
+                  spreadMc: { type: string, description: "runnerUp.cost - winner.cost (μ¢ decimal string)" }
+                  suggestedRoutingFeeMc: { type: string }
+                  sortedQuotes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        vendorId: { type: string }
+                        estimatedCostMc: { type: string }
+        "400": { description: Missing x-tenant-id, empty quotes, invalid costs, or invalid fee fraction }
+
+  /dispute/proof:
+    post:
+      operationId: buildDisputeProof
+      tags: [dispute]
+      summary: Build and sign a portable billing-dispute proof
+      description: >
+        Given the amount TFA authorized for an intent, the amount the vendor
+        actually billed, and the TFA decision, builds and signs a portable
+        BillingDisputeProof a tenant can hand to a vendor or mediator. The
+        discrepancy type (OVERCHARGE / DENIED_BUT_BILLED / AMOUNT_MISMATCH) is
+        computed and signed by the issuer, not supplied by the caller.
+        All monetary values are decimal strings (never Number). This is a
+        pure read+sign operation — no store write.
+      security:
+        - bearerAuth: []
+        - apiKeyHeader: []
+      parameters:
+        - in: header
+          name: x-tenant-id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [intentId, authorizedMicrounits, billedMicrounits, decision]
+              properties:
+                intentId: { type: string, description: "The intent nonce from the original ExecutionReceipt" }
+                authorizedMicrounits: { type: string, description: "Non-negative decimal integer string (μ¢); \"0\" when the action was denied" }
+                billedMicrounits: { type: string, description: "Positive decimal integer string (μ¢) — what the vendor actually billed" }
+                decision: { type: string, description: "The TFA decision from the original receipt, e.g. \"allowed\" or \"denied\"" }
+      responses:
+        "200":
+          description: Signed billing-dispute proof
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, proof]
+                properties:
+                  ok: { type: boolean }
+                  proof:
+                    type: object
+                    required: [version, tenantId, intentId, authorizedMicrounits, billedMicrounits, decision, discrepancyType, issuedAt, signerId, algorithm, signature]
+                    properties:
+                      version: { type: string }
+                      tenantId: { type: string }
+                      intentId: { type: string }
+                      authorizedMicrounits: { type: string }
+                      billedMicrounits: { type: string }
+                      decision: { type: string }
+                      discrepancyType: { type: string, enum: [OVERCHARGE, DENIED_BUT_BILLED, AMOUNT_MISMATCH] }
+                      issuedAt: { type: string }
+                      signerId: { type: string }
+                      algorithm: { type: string }
+                      signature: { type: string }
+        "400": { description: Missing x-tenant-id, missing/invalid fields, or no discrepancy exists (billed equals authorized and decision is not "denied") }
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: >
+        Tenant API key issued by POST /auth/api-keys. Format: tfa_<random>.
+        The server resolves the tenantId from the key — no x-tenant-id header needed.
+        Takes precedence over x-tenant-id when both are present.

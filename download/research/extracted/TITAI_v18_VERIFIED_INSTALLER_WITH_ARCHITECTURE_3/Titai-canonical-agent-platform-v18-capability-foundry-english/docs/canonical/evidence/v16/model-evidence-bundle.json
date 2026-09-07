@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "release": "v16-operational-sovereignty",
+  "qualification": {
+    "format": "titai-v16-local-model-qualification",
+    "version": 1,
+    "generatedAt": "2026-07-11T13:18:14.282Z",
+    "candidate": {
+      "modelId": "qwen2.5-0.5b-instruct-q4_k_m",
+      "family": "Qwen2.5",
+      "format": "GGUF",
+      "quantization": "Q4_K_M",
+      "license": "Apache-2.0",
+      "runtimeContract": "OpenAI-compatible loopback or llama.cpp server",
+      "packagedWeights": false
+    },
+    "artifact": null,
+    "runtimeEndpoint": null,
+    "status": "blocked",
+    "blockers": [
+      "model_artifact_path_missing",
+      "local_runtime_endpoint_missing"
+    ],
+    "benchmark": null,
+    "honestConclusion": "A real local language model was not executed in this environment. Deterministic runtime evidence must not be treated as model-quality evidence."
+  },
+  "candidateOnly": true,
+  "weightsBundled": false,
+  "claims": [
+    "runtime lifecycle implemented",
+    "artifact hashes required",
+    "loopback-only endpoint enforced",
+    "real model quality not measured"
+  ]
+}

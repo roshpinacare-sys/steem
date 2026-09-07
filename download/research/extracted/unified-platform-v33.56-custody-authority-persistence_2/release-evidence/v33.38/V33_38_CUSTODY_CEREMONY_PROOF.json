@@ -1,0 +1,2074 @@
+{
+  "version": "33.38",
+  "generatedAt": "2026-07-22T20:02:14.719Z",
+  "manifest": {
+    "payload": {
+      "version": "33.37",
+      "deploymentId": "v3338-custody-deployment",
+      "campaignId": "v3338-local-custody-rehearsal",
+      "artifactId": "v3338-qualification-artifact",
+      "artifactDigest": "08bdb16808e853aae81708a9686ba098578bebed2a6d6f9ad3c7f5bc53d294f0",
+      "deploymentAuthorityKeyId": "proof-v3338-deployment-authority",
+      "deploymentAuthorityOrganizationId": "proof-v3338-deployment-authority-org",
+      "deploymentAuthorityHostId": "proof-v3338-deployment-authority-host",
+      "deploymentAuthorityAdministratorId": "proof-v3338-deployment-authority-admin",
+      "publisher": {
+        "keyId": "proof-v3338-publisher",
+        "keyFingerprint": "243b9e1848a7011e5126990c874cb2063a3ba9621049b4f5173e4aa926d3aec2",
+        "organizationId": "proof-v3338-publisher-org",
+        "hostId": "proof-v3338-publisher-host",
+        "administratorId": "proof-v3338-publisher-admin"
+      },
+      "monitors": [
+        {
+          "keyId": "proof-v3338-monitor-1",
+          "keyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+          "organizationId": "proof-v3338-monitor-1-org",
+          "hostId": "proof-v3338-monitor-1-host",
+          "administratorId": "proof-v3338-monitor-1-admin"
+        },
+        {
+          "keyId": "proof-v3338-monitor-2",
+          "keyFingerprint": "f4dd30d0cc8ca84ceece148e43b99dc38a90f8b7c91ee707ea4beff89a86d7a0",
+          "organizationId": "proof-v3338-monitor-2-org",
+          "hostId": "proof-v3338-monitor-2-host",
+          "administratorId": "proof-v3338-monitor-2-admin"
+        },
+        {
+          "keyId": "proof-v3338-monitor-3",
+          "keyFingerprint": "e47721320d6f14f29c5e894c78be1e0f8fa831bcecc5862eac48c6140a5eecd7",
+          "organizationId": "proof-v3338-monitor-3-org",
+          "hostId": "proof-v3338-monitor-3-host",
+          "administratorId": "proof-v3338-monitor-3-admin"
+        }
+      ],
+      "topologyAuditors": [
+        {
+          "keyId": "proof-v3338-auditor-1",
+          "keyFingerprint": "bf6b88387f18e7ef4fd0a488c33d6339902bb6d35dbbfb2df2e9f7b934bf996e",
+          "organizationId": "proof-v3338-auditor-1-org",
+          "hostId": "proof-v3338-auditor-1-host",
+          "administratorId": "proof-v3338-auditor-1-admin"
+        },
+        {
+          "keyId": "proof-v3338-auditor-2",
+          "keyFingerprint": "c511c72769571934d3609e745ef3fff75ae3c47ad26b92fccdac27f1cbea83dd",
+          "organizationId": "proof-v3338-auditor-2-org",
+          "hostId": "proof-v3338-auditor-2-host",
+          "administratorId": "proof-v3338-auditor-2-admin"
+        }
+      ],
+      "timeSources": [
+        {
+          "keyId": "proof-v3338-time-1",
+          "keyFingerprint": "e63fe6a174e3bb672ee4e5129c18105af59ad3bf52fa95696b376a72fbe9e4f9",
+          "organizationId": "proof-v3338-time-1-org",
+          "hostId": "proof-v3338-time-1-host",
+          "administratorId": "proof-v3338-time-1-admin"
+        },
+        {
+          "keyId": "proof-v3338-time-2",
+          "keyFingerprint": "bfa5fed42711a90b31ef663c9858fc49ef8acb9aa253e147507e9d39a67300f9",
+          "organizationId": "proof-v3338-time-2-org",
+          "hostId": "proof-v3338-time-2-host",
+          "administratorId": "proof-v3338-time-2-admin"
+        }
+      ],
+      "evidenceExporter": {
+        "keyId": "proof-v3338-exporter",
+        "keyFingerprint": "7a26175b6cdc93a5699d3a0d3a55b63a836bc048a4e843e152db51f0c08ac75e",
+        "organizationId": "proof-v3338-exporter-org",
+        "hostId": "proof-v3338-exporter-host",
+        "administratorId": "proof-v3338-exporter-admin"
+      },
+      "evidenceImporter": {
+        "keyId": "proof-v3338-importer",
+        "keyFingerprint": "3764926d3afad77e2b04e2128bf32073555fecbacd77a4b236f7b0b5194bf8d1",
+        "organizationId": "proof-v3338-importer-org",
+        "hostId": "proof-v3338-importer-host",
+        "administratorId": "proof-v3338-importer-admin"
+      },
+      "recoveryVerifier": {
+        "keyId": "proof-v3338-recovery",
+        "keyFingerprint": "944f79847b93f5f7ccef4a2c4eae393c114b0bc3fc13727746356ffe475bb720",
+        "organizationId": "proof-v3338-recovery-org",
+        "hostId": "proof-v3338-recovery-host",
+        "administratorId": "proof-v3338-recovery-admin"
+      },
+      "allowedDnsNames": [
+        "publisher.example.com"
+      ],
+      "requiredTlsProtocol": "TLSv1.3",
+      "monitorQuorum": 3,
+      "topologyAuditorQuorum": 2,
+      "timeSourceQuorum": 2,
+      "requiredEvidenceClass": "LIVE_EXTERNAL",
+      "providerEvidencePolicyDigest": "da947edcf9826c898a36f75b18eae3de4e5ae86f872cbaa3358b4a75e43f8e6d",
+      "issuedAt": "2026-07-22T18:00:00.000Z",
+      "expiresAt": "2026-08-22T18:00:00.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268"
+    },
+    "issuerKeyId": "proof-v3338-deployment-authority",
+    "algorithm": "Ed25519",
+    "signature": "bQzzxOloRmr56XSMzXv1gB3lhmkBn931HdxxWOWDymiHXz8vK1l0k4WSiPAvFuqCYs30twbRMlmVmqhnVsC-CA"
+  },
+  "acceptances": [
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "1208ef3f-77a2-4985-b3ae-536dbee74d43",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "PUBLISHER",
+        "actorKeyId": "proof-v3338-publisher",
+        "actorKeyFingerprint": "243b9e1848a7011e5126990c874cb2063a3ba9621049b4f5173e4aa926d3aec2",
+        "actorOrganizationId": "proof-v3338-publisher-org",
+        "actorHostId": "proof-v3338-publisher-host",
+        "actorAdministratorId": "proof-v3338-publisher-admin",
+        "acceptedAt": "2026-07-22T18:01:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "05f0ec32ae845fd27277fb372820107172a6ac71ea69d3ad6e8ebfee2cdb2abc"
+      },
+      "issuerKeyId": "proof-v3338-publisher",
+      "algorithm": "Ed25519",
+      "signature": "TDtzgpWZx4OqGyoJr5v9X_4CDtK31PysmJNcFzX0c44yqr6CJFuxJ2XIwjLdy56th8UtP1WipJZ43PsG_qQrDA"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "edf82671-4c08-48d0-a83e-75b4d134f591",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-1",
+        "actorKeyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+        "actorOrganizationId": "proof-v3338-monitor-1-org",
+        "actorHostId": "proof-v3338-monitor-1-host",
+        "actorAdministratorId": "proof-v3338-monitor-1-admin",
+        "acceptedAt": "2026-07-22T18:01:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "ab51c38d5e6b7cf22585291032a0fc42858c95bf3b209558df41d4257f438d08"
+      },
+      "issuerKeyId": "proof-v3338-monitor-1",
+      "algorithm": "Ed25519",
+      "signature": "uwDsFUvHJ0jqqdvrZuJ_hihOzkqPXZHpDM1TGla44Eg1K22Gferp6admuT8CTL9etGBeseV_5IilXnjDapufDQ"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "83574ec9-0a78-4648-ab7f-81edbfc739d3",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-2",
+        "actorKeyFingerprint": "f4dd30d0cc8ca84ceece148e43b99dc38a90f8b7c91ee707ea4beff89a86d7a0",
+        "actorOrganizationId": "proof-v3338-monitor-2-org",
+        "actorHostId": "proof-v3338-monitor-2-host",
+        "actorAdministratorId": "proof-v3338-monitor-2-admin",
+        "acceptedAt": "2026-07-22T18:01:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "fd64d0d59db9edd3de9ac8f0623da0f9d66eb61a5f09b9b9ebce51aca9d2fdb6"
+      },
+      "issuerKeyId": "proof-v3338-monitor-2",
+      "algorithm": "Ed25519",
+      "signature": "9kXPVfSLA4NXcIh6XnuHbEbQAJZslti1RCW6lH-lldu8HCf7HZCEOmygBf7UHcQbzCcfWdVejXD8QxTZyA5RAg"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "e4c16fe6-1b36-4f73-97b0-fb2f1c9684a6",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-3",
+        "actorKeyFingerprint": "e47721320d6f14f29c5e894c78be1e0f8fa831bcecc5862eac48c6140a5eecd7",
+        "actorOrganizationId": "proof-v3338-monitor-3-org",
+        "actorHostId": "proof-v3338-monitor-3-host",
+        "actorAdministratorId": "proof-v3338-monitor-3-admin",
+        "acceptedAt": "2026-07-22T18:02:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "f499996cfcf9e4058b6acfc7d1b9535865e4338161f7c105dab5d53ce9944962"
+      },
+      "issuerKeyId": "proof-v3338-monitor-3",
+      "algorithm": "Ed25519",
+      "signature": "OGziVpkMw7QHnUytYjLwhQb_--BTUW_yPVVLAnaka4WSA1o3NX9jjjngymBmHlkFhHxGvOYW179X77synUv5Aw"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "0735773c-812a-4851-b353-be525e526f26",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-1",
+        "actorKeyFingerprint": "bf6b88387f18e7ef4fd0a488c33d6339902bb6d35dbbfb2df2e9f7b934bf996e",
+        "actorOrganizationId": "proof-v3338-auditor-1-org",
+        "actorHostId": "proof-v3338-auditor-1-host",
+        "actorAdministratorId": "proof-v3338-auditor-1-admin",
+        "acceptedAt": "2026-07-22T18:02:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "5aca5069452746773d59eac82b8f87993013a4c546b2c26a3240b8bdda4ca9c4"
+      },
+      "issuerKeyId": "proof-v3338-auditor-1",
+      "algorithm": "Ed25519",
+      "signature": "-aHNrVzfkuqKXi6NpSQ_K4xbw8dRXu6ptgMTIOBIUBZ_AUZmZMIr6EpNyYBRdXtYme2MiFqsFtkxBKmAj8GxDQ"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "500907b8-b6b9-480e-8c86-2e41c722dbc0",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-2",
+        "actorKeyFingerprint": "c511c72769571934d3609e745ef3fff75ae3c47ad26b92fccdac27f1cbea83dd",
+        "actorOrganizationId": "proof-v3338-auditor-2-org",
+        "actorHostId": "proof-v3338-auditor-2-host",
+        "actorAdministratorId": "proof-v3338-auditor-2-admin",
+        "acceptedAt": "2026-07-22T18:02:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "e02bd9633f9c9a04a12b49ffe15e287072db067240a4faa9a78bdcbc6867b637"
+      },
+      "issuerKeyId": "proof-v3338-auditor-2",
+      "algorithm": "Ed25519",
+      "signature": "wcfDxXWb05fgjtGI31GxuF1nwDj_VYkHosXRKBdyoDOIPgxLcFkKXSyagsVRlQiNo9YEC7udkSv3W_yhm-3sDA"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "4e2b020f-5cf0-4998-a559-ecae9a2caf19",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-1",
+        "actorKeyFingerprint": "e63fe6a174e3bb672ee4e5129c18105af59ad3bf52fa95696b376a72fbe9e4f9",
+        "actorOrganizationId": "proof-v3338-time-1-org",
+        "actorHostId": "proof-v3338-time-1-host",
+        "actorAdministratorId": "proof-v3338-time-1-admin",
+        "acceptedAt": "2026-07-22T18:03:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "2dc7574303e0ac6f19fc15ceeb75f2cd75933c0f5e78f67165790ea22c472ef7"
+      },
+      "issuerKeyId": "proof-v3338-time-1",
+      "algorithm": "Ed25519",
+      "signature": "SwvM1t0Pe3axEi9LGzPCEIxH6O36FYz79425qhv0TFle4MqSdUBr_Tcmz-t6fmOZVdvqtc1fMBVEd2joZvnoCw"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "f3419214-a1cd-425b-8e94-9b38431e3f26",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-2",
+        "actorKeyFingerprint": "bfa5fed42711a90b31ef663c9858fc49ef8acb9aa253e147507e9d39a67300f9",
+        "actorOrganizationId": "proof-v3338-time-2-org",
+        "actorHostId": "proof-v3338-time-2-host",
+        "actorAdministratorId": "proof-v3338-time-2-admin",
+        "acceptedAt": "2026-07-22T18:03:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "4075f3849a3d096fe12411cb697a7e8ede686da8c4a045dac4ac1394101da61b"
+      },
+      "issuerKeyId": "proof-v3338-time-2",
+      "algorithm": "Ed25519",
+      "signature": "Yx171WnA6LigRwJ1v8jKjFcPWxcnS47UTmM4qXOOAtd_PLsuJ-a-vABobP6bG7UnTVOEwZLz_k3vleTuab3FCA"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "09351a98-f93d-4d68-956f-741fc9ea7f68",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "EVIDENCE_EXPORTER",
+        "actorKeyId": "proof-v3338-exporter",
+        "actorKeyFingerprint": "7a26175b6cdc93a5699d3a0d3a55b63a836bc048a4e843e152db51f0c08ac75e",
+        "actorOrganizationId": "proof-v3338-exporter-org",
+        "actorHostId": "proof-v3338-exporter-host",
+        "actorAdministratorId": "proof-v3338-exporter-admin",
+        "acceptedAt": "2026-07-22T18:03:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "e55228eb3ef09fb04a8a7bed4c5c7afc1242fd1a898a5e60dccf3bb6bb1ff78d"
+      },
+      "issuerKeyId": "proof-v3338-exporter",
+      "algorithm": "Ed25519",
+      "signature": "08R2nRj3o2mOWexAZoCbGLGsxIB3hDpcjCwCDrN75RJ1oSN_h-sbGcdjoK-8YxhILWlVLaaA8VqxYyU5oGlLBw"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "b21e7026-6f09-4d52-b643-d5b091ab9b39",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "EVIDENCE_IMPORTER",
+        "actorKeyId": "proof-v3338-importer",
+        "actorKeyFingerprint": "3764926d3afad77e2b04e2128bf32073555fecbacd77a4b236f7b0b5194bf8d1",
+        "actorOrganizationId": "proof-v3338-importer-org",
+        "actorHostId": "proof-v3338-importer-host",
+        "actorAdministratorId": "proof-v3338-importer-admin",
+        "acceptedAt": "2026-07-22T18:04:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "afda1112d79ca7d402fd299185b50208808738f1403369179986e7cc56a190b6"
+      },
+      "issuerKeyId": "proof-v3338-importer",
+      "algorithm": "Ed25519",
+      "signature": "spKzlzSkJQou9Yk-ml-GdhKaXmWJIim7Mjm0UhzPnNlodEBZOcb35WnlPf7Nbf8hdmpew_xk5KVKk2Op7xA6Aw"
+    },
+    {
+      "payload": {
+        "version": "33.37",
+        "acceptanceId": "d52034a5-75d9-472f-918d-df88c7f887f6",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "role": "RECOVERY_VERIFIER",
+        "actorKeyId": "proof-v3338-recovery",
+        "actorKeyFingerprint": "944f79847b93f5f7ccef4a2c4eae393c114b0bc3fc13727746356ffe475bb720",
+        "actorOrganizationId": "proof-v3338-recovery-org",
+        "actorHostId": "proof-v3338-recovery-host",
+        "actorAdministratorId": "proof-v3338-recovery-admin",
+        "acceptedAt": "2026-07-22T18:04:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "c2d091b1a2efb775df98caaa2a7ff20d57896016c5342cf30dc3ca8e5bab2323"
+      },
+      "issuerKeyId": "proof-v3338-recovery",
+      "algorithm": "Ed25519",
+      "signature": "lr9P-JNgs1dYP8o1t7esbzvun_fuRUQiuncGO90MnclE86YjEntQac4T3AbkksnILkgMWHj_2aK3R3ZRRR-vCw"
+    }
+  ],
+  "readiness": {
+    "version": "33.37",
+    "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+    "requiredRoleCount": 11,
+    "acceptedRoleCount": 11,
+    "keyPossessionVerified": true,
+    "roleSeparationVerified": true,
+    "dnsPolicyVerified": true,
+    "status": "READY_FOR_EXTERNAL_EXECUTION",
+    "verifiedAt": "2026-07-22T19:00:00.000Z",
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "verdictDigest": "caa9ff73ec37b40d92683b37af0fba6034a3bedb66f02568572cf6ff81ad2688"
+  },
+  "importChallenge": {
+    "payload": {
+      "version": "33.37",
+      "challengeId": "840c9720-46ba-4f13-a7a9-4bd528c2792d",
+      "nonceDigest": "42b4419a0e77715f157a78994c7f3be82e88bbec33bafdc67ea2079793e84fef",
+      "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+      "importerKeyId": "proof-v3338-importer",
+      "issuedAt": "2026-07-22T19:01:00.000Z",
+      "expiresAt": "2026-07-22T20:01:00.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "challengeDigest": "ad1978ac49d088d74a383b908334eda7d9e711051c20a14fb4898093255e884b"
+    },
+    "issuerKeyId": "proof-v3338-importer",
+    "algorithm": "Ed25519",
+    "signature": "srektL87ewK1c692kNXrTXCUNpW5GSIe0CLEq5n77jfVZ9FZIIv85FYpKC62btMcwGnpJodzsu9UMJm0zDEvAg"
+  },
+  "importBundle": {
+    "payload": {
+      "version": "33.37",
+      "bundleId": "3d51bd7b-6b46-4807-9d54-df292cb0e9b7",
+      "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+      "challengeDigest": "ad1978ac49d088d74a383b908334eda7d9e711051c20a14fb4898093255e884b",
+      "executionClass": "LOCAL_REHEARSAL",
+      "qualificationStatus": "LOCAL_HTTPS_MONITOR_REHEARSAL_ONLY",
+      "externalTopologyObserved": false,
+      "qualificationVerdictDigest": "dae2342e333074d9688d8fd8ff02500f7082a3672227c7e060a5b42a1bb7fe76",
+      "exporterKeyId": "proof-v3338-exporter",
+      "exporterOrganizationId": "proof-v3338-exporter-org",
+      "exporterHostId": "proof-v3338-exporter-host",
+      "exporterAdministratorId": "proof-v3338-exporter-admin",
+      "files": [
+        {
+          "path": "ceremony/chain-of-custody.json",
+          "mediaType": "application/json",
+          "byteLength": 70,
+          "sha256": "db8bf63aea14933b007ccbaee73cf7dbc0f9ad03febea3f4eb50468da0f97748"
+        },
+        {
+          "path": "qualification/verdict.json",
+          "mediaType": "application/json",
+          "byteLength": 76,
+          "sha256": "ee6c7bcb744d0cd6553c40c45c6fff4afb01acb98e95fd6293120e4a7faff60d"
+        },
+        {
+          "path": "receipts/monitor-1.bin",
+          "mediaType": "application/octet-stream",
+          "byteLength": 31,
+          "sha256": "d31158506b944eadcef43c30e2c2b55a37772f9265d13781764b35d651e15b5b"
+        }
+      ],
+      "exportedAt": "2026-07-22T19:02:00.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "bundleDigest": "6ecddb226e92fd4f2bde82ac6bce75872dd15a6d7d06497ded5a82586b847530"
+    },
+    "issuerKeyId": "proof-v3338-exporter",
+    "algorithm": "Ed25519",
+    "signature": "kNjC8hBGSBln1RurbBNDZfzqhnvXgqkqiSu-JZjwBIWij8pKwZZfmbad5eOhYOwDVFREyEkcvMQOjTKnsP-DCA"
+  },
+  "importRecovery": {
+    "payload": {
+      "version": "33.37",
+      "recoveryId": "c68d9281-cdf1-4e0e-9636-74d1ef289efc",
+      "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+      "bundleDigest": "6ecddb226e92fd4f2bde82ac6bce75872dd15a6d7d06497ded5a82586b847530",
+      "recoveryVerifierKeyId": "proof-v3338-recovery",
+      "durableReceiptPath": "receipts/monitor-1.bin",
+      "inventoryFileDigest": "d31158506b944eadcef43c30e2c2b55a37772f9265d13781764b35d651e15b5b",
+      "restoredFileDigest": "d31158506b944eadcef43c30e2c2b55a37772f9265d13781764b35d651e15b5b",
+      "fsyncObserved": true,
+      "restoredAt": "2026-07-22T19:03:00.000Z",
+      "decision": "RESTORE_VERIFIED",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "recoveryDigest": "b79ff56be0671e270d3dcbcc5b9b5333903d209f2b73057f57c3814d22ebf2f5"
+    },
+    "issuerKeyId": "proof-v3338-recovery",
+    "algorithm": "Ed25519",
+    "signature": "45TCQrFI-VGJ1Y8d3ncjU2lOUyHsrv4k3WfETLIdTTPmUVJg5o3EU4SpuLM4e83gxUeqNckDAUrtPe7s6LJmBw"
+  },
+  "importReceipt": {
+    "version": "33.37",
+    "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+    "challengeDigest": "ad1978ac49d088d74a383b908334eda7d9e711051c20a14fb4898093255e884b",
+    "bundleDigest": "6ecddb226e92fd4f2bde82ac6bce75872dd15a6d7d06497ded5a82586b847530",
+    "verifiedFileCount": 3,
+    "exactInventoryVerified": true,
+    "byteIntegrityVerified": true,
+    "recoveryVerified": true,
+    "externalTopologyObserved": false,
+    "externalHumanParticipants": 0,
+    "status": "LOCAL_IMPORT_REHEARSAL_ONLY",
+    "importedAt": "2026-07-22T19:04:00.000Z",
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "importDigest": "e36fbecfface765173fc1ed2e2f1d9ec7dff1c8566f19f594479a6228507684d"
+  },
+  "importFileBytesBase64": {
+    "receipts/monitor-1.bin": "djMzLjM4IGR1cmFibGUgbW9uaXRvciByZWNlaXB0Cg==",
+    "qualification/verdict.json": "ewogICJ2ZXJzaW9uIjogIjMzLjM4IiwKICAic3RhdHVzIjogIkxPQ0FMX0NVU1RPRFlfSU1QT1JUX1JFSEVBUlNBTF9PTkxZIgp9Cg==",
+    "ceremony/chain-of-custody.json": "ewogICJjZXJlbW9ueSI6ICJsb2NhbC1yZWhlYXJzYWwiLAogICJleHRlcm5hbE9wZXJhdG9yc09ic2VydmVkIjogMAp9Cg=="
+  },
+  "provisioningChallenges": [
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "a392a24e-d13b-457d-806d-ec08b8c9e3b1",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "PUBLISHER",
+        "role": "PUBLISHER",
+        "actorKeyId": "proof-v3338-publisher",
+        "actorKeyFingerprint": "243b9e1848a7011e5126990c874cb2063a3ba9621049b4f5173e4aa926d3aec2",
+        "actorOrganizationId": "proof-v3338-publisher-org",
+        "actorHostId": "proof-v3338-publisher-host",
+        "actorAdministratorId": "proof-v3338-publisher-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "72cd6e8422c407fb6d098690f1130b7ded7ec2f7f5e1d30bd9d521f015363793",
+        "issuedAt": "2026-07-22T18:10:00.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "e9ebb4c43c3b3aa57f198dd9b0f14c217621a6805970f441e5f26e1494a08665"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "yByJMaiuG-l1J-eTS5IYdidMPaoG4EzyvnV5vIdh5oSl7_FvG9hPJUVP0_A53ZlMX8Y2f8T1qkSaMgpMlDafAQ"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "d2e6d325-1efe-4024-9352-829df6befc67",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "MONITOR_1",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-1",
+        "actorKeyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+        "actorOrganizationId": "proof-v3338-monitor-1-org",
+        "actorHostId": "proof-v3338-monitor-1-host",
+        "actorAdministratorId": "proof-v3338-monitor-1-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "75877bb41d393b5fb8455ce60ecd8dda001d06316496b14dfa7f895656eeca4a",
+        "issuedAt": "2026-07-22T18:10:20.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "50a45e5d92b9dbbcafc6ff16dc5d04d6f83634122599b46547b89c87a7942ceb"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "8LRrTqRAerVZgQhLKFpoYQM7NFXDeXQqS2RcxsFaLplCWbiNA0kH-ToFqUD9FU5cW0mR0WlYANzzQMHgjNLjAA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "65f2eed0-76d1-4230-82f3-e5cace51448e",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "MONITOR_2",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-2",
+        "actorKeyFingerprint": "f4dd30d0cc8ca84ceece148e43b99dc38a90f8b7c91ee707ea4beff89a86d7a0",
+        "actorOrganizationId": "proof-v3338-monitor-2-org",
+        "actorHostId": "proof-v3338-monitor-2-host",
+        "actorAdministratorId": "proof-v3338-monitor-2-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "648aa5c579fb30f38af744d97d6ec840c7a91277a499a0d780f3e7314eca090b",
+        "issuedAt": "2026-07-22T18:10:40.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "896140cb448b388577af058cbe593518775d047838a0b06fd85b2d2bfc603d38"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "SGb-OIDHA_-SOftEwWsKgMOw9yBdojMHDrr2O1P4xGzFiO4q2-ykh71x3X4LBuGpjM2GVVF65qhRtUj0FT-cCA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "f06d20cd-2515-4b3c-9ef5-d0cba92fc944",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "MONITOR_3",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-3",
+        "actorKeyFingerprint": "e47721320d6f14f29c5e894c78be1e0f8fa831bcecc5862eac48c6140a5eecd7",
+        "actorOrganizationId": "proof-v3338-monitor-3-org",
+        "actorHostId": "proof-v3338-monitor-3-host",
+        "actorAdministratorId": "proof-v3338-monitor-3-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "9f4fb68f3e1dac82202f9aa581ce0bbf1f765df0e9ac3c8c57e20f685abab8ed",
+        "issuedAt": "2026-07-22T18:11:00.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "2e7920aafe79d1dbcbe00635ab01c1fcf44cdd8dbdba9c46691cbeadabf13179"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "SUcxrxCec68b4y7EB6drsz6lh7rpi6DkoRxwIHCeFw6svOzIjlflLcA-WeN0uZmJqEgo2K_GRgocvDrkv4j7AQ"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "34376f23-f439-47cf-a812-eca0326f68da",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TOPOLOGY_AUDITOR_1",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-1",
+        "actorKeyFingerprint": "bf6b88387f18e7ef4fd0a488c33d6339902bb6d35dbbfb2df2e9f7b934bf996e",
+        "actorOrganizationId": "proof-v3338-auditor-1-org",
+        "actorHostId": "proof-v3338-auditor-1-host",
+        "actorAdministratorId": "proof-v3338-auditor-1-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "f849d67325facf04177bc663b2dc544051831c589ef581d412f2eba44834e77c",
+        "issuedAt": "2026-07-22T18:11:20.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "52dcdca723fd878565873c11591354cd3cf09bd68696c8ac7ea17be6fa6776fe"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "L-W6reLQAEhy9JN2OMkpuYvGG9UAj41uHSz0db2HTjP3aPi9Na-46jnXhCbQdw2N6iq3tRU7B-bF3dkjHLRCAw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "c94f5e42-8057-4d9f-92c3-55153a2bd9e6",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TOPOLOGY_AUDITOR_2",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-2",
+        "actorKeyFingerprint": "c511c72769571934d3609e745ef3fff75ae3c47ad26b92fccdac27f1cbea83dd",
+        "actorOrganizationId": "proof-v3338-auditor-2-org",
+        "actorHostId": "proof-v3338-auditor-2-host",
+        "actorAdministratorId": "proof-v3338-auditor-2-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "e802086ad6a1e16b78352ad7296d2aabd835b1b16dbe951e1135b97c68e29d81",
+        "issuedAt": "2026-07-22T18:11:40.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "bc292e92d572d7d7d9038702b4e8a49ce3601df43a6d014af6b0cf1aaa415397"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "d5jN4blAauu2AkaoLZa9uHiFSyWKkx1f_-4pAJEp76MRpiMOKBfzWzTd1PAkRzX-xp60lB-9ZUfZpnoQY3LHDg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "36eead94-54e2-4da3-8e58-952222d7ebba",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TIME_SOURCE_1",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-1",
+        "actorKeyFingerprint": "e63fe6a174e3bb672ee4e5129c18105af59ad3bf52fa95696b376a72fbe9e4f9",
+        "actorOrganizationId": "proof-v3338-time-1-org",
+        "actorHostId": "proof-v3338-time-1-host",
+        "actorAdministratorId": "proof-v3338-time-1-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "4bb06f8e4e3a7715d201d573d0aa423762e55dabd61a2c02278fa56cc6d294e0",
+        "issuedAt": "2026-07-22T18:12:00.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "76f64bf0a1300223eb4df86b8c27fa656869c1dc15631bfb563fa5bea5285d75"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "4eSZFu7WDRuvcj6DHNylHx8yryPOkqR9UFrQPwk7G4PF77t-_QrmAnQ3LH4yILGXFoaf--MW9XX-2-nH7LTpDA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "a74b866e-27f1-4fac-92e5-5b9faeb8ea75",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TIME_SOURCE_2",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-2",
+        "actorKeyFingerprint": "bfa5fed42711a90b31ef663c9858fc49ef8acb9aa253e147507e9d39a67300f9",
+        "actorOrganizationId": "proof-v3338-time-2-org",
+        "actorHostId": "proof-v3338-time-2-host",
+        "actorAdministratorId": "proof-v3338-time-2-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "2578ccf8645b2d1dc10c465eff843585970f3a7e22296a92cad55d489a272072",
+        "issuedAt": "2026-07-22T18:12:20.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "2add73320c0bb2840d74361136ebe5fa1ed509cd02a57220fc45b1edac2e3dd5"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "YHLbBYtb-lEDVSlQ3fOTNootgIkMDZJl9SjlrKMai7Qmn_MNvleTPGChQlo9qJkYXEfKo_iRv27DdnuppcCjBg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "b01301e8-32ad-4ade-a27c-365fc0292a37",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "EVIDENCE_EXPORTER",
+        "role": "EVIDENCE_EXPORTER",
+        "actorKeyId": "proof-v3338-exporter",
+        "actorKeyFingerprint": "7a26175b6cdc93a5699d3a0d3a55b63a836bc048a4e843e152db51f0c08ac75e",
+        "actorOrganizationId": "proof-v3338-exporter-org",
+        "actorHostId": "proof-v3338-exporter-host",
+        "actorAdministratorId": "proof-v3338-exporter-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "8c0cc17a04942cc4f8e0fe0b302606d3108860c126428ba2ceeb5f9ed41c2b05",
+        "issuedAt": "2026-07-22T18:12:40.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "e4d01d86536f75585d38bd0c9569127fa0141fd4e3a7dfd81e70dd6516549307"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "Zdl53NNaiMTC9FAjCIA6Kbv1FEXKsC113VB4pxIWH_LsaLl9kxd-kziC7c2HsCEMBvWujEoQaQ61NfC_Kb-yAw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "6380613c-4449-4ce7-8f2a-4363c658bc62",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "EVIDENCE_IMPORTER",
+        "role": "EVIDENCE_IMPORTER",
+        "actorKeyId": "proof-v3338-importer",
+        "actorKeyFingerprint": "3764926d3afad77e2b04e2128bf32073555fecbacd77a4b236f7b0b5194bf8d1",
+        "actorOrganizationId": "proof-v3338-importer-org",
+        "actorHostId": "proof-v3338-importer-host",
+        "actorAdministratorId": "proof-v3338-importer-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "b9b07dd4e7718454476f04edeb935022ae4f4d90934ab7ce913ff20c8baeb399",
+        "issuedAt": "2026-07-22T18:13:00.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "c445251d6289733e48afcdb7908cc441053b3ef844fdb38fb2666c71b3323ec0"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "d8AkB5RCtFpG6Z6Na1mA9I2s_V8PZDqRvg2wp4mG--MlvhuNKuujNUqzqOVW7DGSO2cIRgyCWLz2FQUMs6GOAA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "challengeId": "8e0cda4a-a1a6-4f19-a9be-a2e82c40fa5f",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "RECOVERY_VERIFIER",
+        "role": "RECOVERY_VERIFIER",
+        "actorKeyId": "proof-v3338-recovery",
+        "actorKeyFingerprint": "944f79847b93f5f7ccef4a2c4eae393c114b0bc3fc13727746356ffe475bb720",
+        "actorOrganizationId": "proof-v3338-recovery-org",
+        "actorHostId": "proof-v3338-recovery-host",
+        "actorAdministratorId": "proof-v3338-recovery-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "nonceDigest": "f0e38b830ebd8a506615ecd154330ec07ff6bf5030447b44e297db1d4b7514ac",
+        "issuedAt": "2026-07-22T18:13:20.000Z",
+        "expiresAt": "2026-07-22T19:30:00.000Z",
+        "oneTime": true,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "challengeDigest": "8f75059cf2cb8ad5de4f09808276a2c88b2c583f624df62d34bac25acca5df65"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "YRgw97BXAFAZzOGWVmRZz64cM6-XLtjCVnstbW_rc_kLV0fW3dHWDeAI8rdoC2QRIgpW3rNOeDs6fWRQRE9JCw"
+    }
+  ],
+  "provisioningResponses": [
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "9322e9c7-d3ae-45d6-8585-15ac88782a91",
+        "challengeDigest": "e9ebb4c43c3b3aa57f198dd9b0f14c217621a6805970f441e5f26e1494a08665",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "PUBLISHER",
+        "role": "PUBLISHER",
+        "actorKeyId": "proof-v3338-publisher",
+        "actorKeyFingerprint": "243b9e1848a7011e5126990c874cb2063a3ba9621049b4f5173e4aa926d3aec2",
+        "actorOrganizationId": "proof-v3338-publisher-org",
+        "actorHostId": "proof-v3338-publisher-host",
+        "actorAdministratorId": "proof-v3338-publisher-admin",
+        "possessionProofDigest": "7f623f9df1270a0846b6d15a1cb992450d3f542c16d1e5bb47d40d5913d762db",
+        "respondedAt": "2026-07-22T18:20:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "163ca70105ffe490a063db1b83e2163acc36f15b853574611927e86408f37a24"
+      },
+      "issuerKeyId": "proof-v3338-publisher",
+      "algorithm": "Ed25519",
+      "signature": "IQLXom4hhSdtcF94UbENDOyNb9t2RuA2lQtyhiNobWyU1gbMJ8v5ASD5eRZevvClOM98RHuVDf454gURXrdeAg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "3d8213d2-c9b2-41a3-abb6-f87b1545107f",
+        "challengeDigest": "50a45e5d92b9dbbcafc6ff16dc5d04d6f83634122599b46547b89c87a7942ceb",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "MONITOR_1",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-1",
+        "actorKeyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+        "actorOrganizationId": "proof-v3338-monitor-1-org",
+        "actorHostId": "proof-v3338-monitor-1-host",
+        "actorAdministratorId": "proof-v3338-monitor-1-admin",
+        "possessionProofDigest": "733b536a3a1d9543922be79ac7238b571be73679284c7e3a5092d03b536d2f44",
+        "respondedAt": "2026-07-22T18:20:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "d13cc71967469202bd8703a1756323e1e8e4eea5b83b282b5899e69bd473bf7b"
+      },
+      "issuerKeyId": "proof-v3338-monitor-1",
+      "algorithm": "Ed25519",
+      "signature": "JFiI-PzwzCd44Kgo1HPjri82g1sNx6jN-1tGiEBDBJgo1gdaCx7W9xwsDNe3Nt7QRNYagULUrqG1B-hNhmUAAA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "8feea89c-ed01-4615-b06b-9cba2bd4b74a",
+        "challengeDigest": "896140cb448b388577af058cbe593518775d047838a0b06fd85b2d2bfc603d38",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "MONITOR_2",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-2",
+        "actorKeyFingerprint": "f4dd30d0cc8ca84ceece148e43b99dc38a90f8b7c91ee707ea4beff89a86d7a0",
+        "actorOrganizationId": "proof-v3338-monitor-2-org",
+        "actorHostId": "proof-v3338-monitor-2-host",
+        "actorAdministratorId": "proof-v3338-monitor-2-admin",
+        "possessionProofDigest": "fe5a7249e60ca3cd8966184626e7a38adcf702d2852bde7716f2af688fdf528f",
+        "respondedAt": "2026-07-22T18:20:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "39156d14807b9d6dda21ce4281adbec62984a91383689e2e5965b57e41b63613"
+      },
+      "issuerKeyId": "proof-v3338-monitor-2",
+      "algorithm": "Ed25519",
+      "signature": "hLg1doT-rIZsY3l95l8hTtZRQ98OM0bsFGBV_BprMsl-wlXiMCuWMzD5FQUHaEYqmhXkvEvJ6lAZceITkbAOAw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "11d74172-342e-4de5-8027-04d93a0b41ce",
+        "challengeDigest": "2e7920aafe79d1dbcbe00635ab01c1fcf44cdd8dbdba9c46691cbeadabf13179",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "MONITOR_3",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-3",
+        "actorKeyFingerprint": "e47721320d6f14f29c5e894c78be1e0f8fa831bcecc5862eac48c6140a5eecd7",
+        "actorOrganizationId": "proof-v3338-monitor-3-org",
+        "actorHostId": "proof-v3338-monitor-3-host",
+        "actorAdministratorId": "proof-v3338-monitor-3-admin",
+        "possessionProofDigest": "3685453d4fe5ff6dd6ad609481c897fc7749ea8d0acbaf2f84ad9eab711d623f",
+        "respondedAt": "2026-07-22T18:21:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "c1b55918bb316756a1027142032b8b7befee7abfed37aa24229ea1dd7672642a"
+      },
+      "issuerKeyId": "proof-v3338-monitor-3",
+      "algorithm": "Ed25519",
+      "signature": "_nGTqeSRvEUAw0wcycdI1JVs0gAuQTLY-xxZjFJa_Hvb-x9rZX6oTVpte6aG_n8yBKhYuhW5lwuHQS55SwF6AQ"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "afb9595b-1103-4e78-83cb-dbeb0ef4fc19",
+        "challengeDigest": "52dcdca723fd878565873c11591354cd3cf09bd68696c8ac7ea17be6fa6776fe",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TOPOLOGY_AUDITOR_1",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-1",
+        "actorKeyFingerprint": "bf6b88387f18e7ef4fd0a488c33d6339902bb6d35dbbfb2df2e9f7b934bf996e",
+        "actorOrganizationId": "proof-v3338-auditor-1-org",
+        "actorHostId": "proof-v3338-auditor-1-host",
+        "actorAdministratorId": "proof-v3338-auditor-1-admin",
+        "possessionProofDigest": "6bc62b6d5bdef4ebc040a496b426cf3be71a8ca726833a6493e064931efd7765",
+        "respondedAt": "2026-07-22T18:21:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "00502fdbc8cfb5c00262fb3d090f63dde10c95465c9c9a45c87657894d2b68e8"
+      },
+      "issuerKeyId": "proof-v3338-auditor-1",
+      "algorithm": "Ed25519",
+      "signature": "d0r-QjhzDBn3FkCci4Gf_F-gKlcg6J5llU24hvAod8_DRRYCv-Xr305nctwXy7zMZD9lbNfB_-uLL3GnwrtYCQ"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "27955a3b-655d-4d34-9647-39cf6af2d389",
+        "challengeDigest": "bc292e92d572d7d7d9038702b4e8a49ce3601df43a6d014af6b0cf1aaa415397",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TOPOLOGY_AUDITOR_2",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-2",
+        "actorKeyFingerprint": "c511c72769571934d3609e745ef3fff75ae3c47ad26b92fccdac27f1cbea83dd",
+        "actorOrganizationId": "proof-v3338-auditor-2-org",
+        "actorHostId": "proof-v3338-auditor-2-host",
+        "actorAdministratorId": "proof-v3338-auditor-2-admin",
+        "possessionProofDigest": "179d81867642f724dba6bd146951fec7cd0ab86181bc04b4b32d0ca6b693f1a7",
+        "respondedAt": "2026-07-22T18:21:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "76c3aad7d814beb82645fe85dd387ee111cdce86805b3f0dc55f8337681ca5b1"
+      },
+      "issuerKeyId": "proof-v3338-auditor-2",
+      "algorithm": "Ed25519",
+      "signature": "6lYeNlsh6jcR9-XsUPpxRdFP2TDwX5k6NzD3k2bIe4mW7gbOzHZrkg3QW5y7nDBuZRQ51E3kc1UAKHPZJz2DCQ"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "da7e7510-6cc8-4928-ba4e-fcd57ba45984",
+        "challengeDigest": "76f64bf0a1300223eb4df86b8c27fa656869c1dc15631bfb563fa5bea5285d75",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TIME_SOURCE_1",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-1",
+        "actorKeyFingerprint": "e63fe6a174e3bb672ee4e5129c18105af59ad3bf52fa95696b376a72fbe9e4f9",
+        "actorOrganizationId": "proof-v3338-time-1-org",
+        "actorHostId": "proof-v3338-time-1-host",
+        "actorAdministratorId": "proof-v3338-time-1-admin",
+        "possessionProofDigest": "85d4fc721f9c77f1f29c5fb618ecd30db9c2ca1e4628df5b889f5a71e33ad919",
+        "respondedAt": "2026-07-22T18:22:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "9193e6c4987d1af35f647c6773d9976f9a2616446cb5edbe6d74256785509ac9"
+      },
+      "issuerKeyId": "proof-v3338-time-1",
+      "algorithm": "Ed25519",
+      "signature": "B89LcfJl1uUcOdZoamzCshHSggHlF-ZctWoG9PgwuTePZgWMSyeB4uJhcgojGoSpPoftmHL2Mt7yYZ0sTcfiAg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "8025ce7d-0d12-40b9-9fd5-e59fd6e12a08",
+        "challengeDigest": "2add73320c0bb2840d74361136ebe5fa1ed509cd02a57220fc45b1edac2e3dd5",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "TIME_SOURCE_2",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-2",
+        "actorKeyFingerprint": "bfa5fed42711a90b31ef663c9858fc49ef8acb9aa253e147507e9d39a67300f9",
+        "actorOrganizationId": "proof-v3338-time-2-org",
+        "actorHostId": "proof-v3338-time-2-host",
+        "actorAdministratorId": "proof-v3338-time-2-admin",
+        "possessionProofDigest": "71822a61715c4ad2b19ab8354fe4795707945f701e43281447fe5f788fd6c45b",
+        "respondedAt": "2026-07-22T18:22:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "a3b468b65508a1ba52ce1357f9c31f063368e473d687010f0ff3c55f602c2391"
+      },
+      "issuerKeyId": "proof-v3338-time-2",
+      "algorithm": "Ed25519",
+      "signature": "wAmcyoudOKb8gYUQb1vYc613BbQtQYnnc3Fjn4JCC1DnnidlMZSmQF-iCLcY0p9-X390ReasqicxEEU0RdcsCg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "be19da83-a024-4788-b1d3-280c511e1aa3",
+        "challengeDigest": "e4d01d86536f75585d38bd0c9569127fa0141fd4e3a7dfd81e70dd6516549307",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "EVIDENCE_EXPORTER",
+        "role": "EVIDENCE_EXPORTER",
+        "actorKeyId": "proof-v3338-exporter",
+        "actorKeyFingerprint": "7a26175b6cdc93a5699d3a0d3a55b63a836bc048a4e843e152db51f0c08ac75e",
+        "actorOrganizationId": "proof-v3338-exporter-org",
+        "actorHostId": "proof-v3338-exporter-host",
+        "actorAdministratorId": "proof-v3338-exporter-admin",
+        "possessionProofDigest": "208ca6668adf3560b41ef24f0357f235b3c206903e8d8506dad86be65859e638",
+        "respondedAt": "2026-07-22T18:22:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "6de8f4eee59bc8aac7d784ef2c2c7f67ac853ad3b9d3438acff660dbd60ef1ca"
+      },
+      "issuerKeyId": "proof-v3338-exporter",
+      "algorithm": "Ed25519",
+      "signature": "5exik67gnXXR5opQVUV6VX61MOQXd2AiOjgxCIwxHF1UjJB6FL9a3wSsc2neEnBrjauv0jJ5wX4UInFeHY8EAA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "ed9c6544-9dac-410d-a394-b31ace08e92f",
+        "challengeDigest": "c445251d6289733e48afcdb7908cc441053b3ef844fdb38fb2666c71b3323ec0",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "EVIDENCE_IMPORTER",
+        "role": "EVIDENCE_IMPORTER",
+        "actorKeyId": "proof-v3338-importer",
+        "actorKeyFingerprint": "3764926d3afad77e2b04e2128bf32073555fecbacd77a4b236f7b0b5194bf8d1",
+        "actorOrganizationId": "proof-v3338-importer-org",
+        "actorHostId": "proof-v3338-importer-host",
+        "actorAdministratorId": "proof-v3338-importer-admin",
+        "possessionProofDigest": "a886f1e95facc704c148af744cc6ef49a96e66faecc452cd5bad6580526d0d47",
+        "respondedAt": "2026-07-22T18:23:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "e97f3e2b71868b045b993935bbe265287e05ea11c54c5bc439b5165247c31772"
+      },
+      "issuerKeyId": "proof-v3338-importer",
+      "algorithm": "Ed25519",
+      "signature": "ZnoMVxQxL7bC-p8l-vjYCy1pwUlbhvItFWdQgl4bovtvNYPYKmZGhnuN0V_DPfuuTlLB7nlnLLqHz551YeD3Cw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "responseId": "fb7835a6-244f-4cd0-9fdf-acd8f4c0ae3c",
+        "challengeDigest": "8f75059cf2cb8ad5de4f09808276a2c88b2c583f624df62d34bac25acca5df65",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "roleSlot": "RECOVERY_VERIFIER",
+        "role": "RECOVERY_VERIFIER",
+        "actorKeyId": "proof-v3338-recovery",
+        "actorKeyFingerprint": "944f79847b93f5f7ccef4a2c4eae393c114b0bc3fc13727746356ffe475bb720",
+        "actorOrganizationId": "proof-v3338-recovery-org",
+        "actorHostId": "proof-v3338-recovery-host",
+        "actorAdministratorId": "proof-v3338-recovery-admin",
+        "possessionProofDigest": "3ad53a3fda15078a38634851109e8f37f8ca5f6b389e5675adf2c7b1b2e328e9",
+        "respondedAt": "2026-07-22T18:23:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "responseDigest": "1fcab1f8fab0ad8516e5429ac5070f91b7f0018bb7a9bed62fa5d3a461abe787"
+      },
+      "issuerKeyId": "proof-v3338-recovery",
+      "algorithm": "Ed25519",
+      "signature": "64Jz5DzQQlXFSmz-nq5uxchcJwUMJV7nIP6P54p5BCXwQff_vd0_XjK-60KNonjAYbxSxPYRC168nn1W9-EmCA"
+    }
+  ],
+  "provisioningReceipts": [
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "c663a347-415c-4a66-ae16-a3c287d3d571",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "e9ebb4c43c3b3aa57f198dd9b0f14c217621a6805970f441e5f26e1494a08665",
+        "responseDigest": "163ca70105ffe490a063db1b83e2163acc36f15b853574611927e86408f37a24",
+        "roleSlot": "PUBLISHER",
+        "role": "PUBLISHER",
+        "actorKeyId": "proof-v3338-publisher",
+        "actorKeyFingerprint": "243b9e1848a7011e5126990c874cb2063a3ba9621049b4f5173e4aa926d3aec2",
+        "actorOrganizationId": "proof-v3338-publisher-org",
+        "actorHostId": "proof-v3338-publisher-host",
+        "actorAdministratorId": "proof-v3338-publisher-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:30:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "41a6eb6085950c9f87865c54491be6ea2290d16ce38b3d1710b13247e2f836be"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "1X6KZkge0a9jSzFIct1thi4RVxCImW7Witc8txS5VtgyFadu_SbMkRYAx0gGbqbkViSvmFQIEk7WVTabs50sAg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "9c7c8c59-ac93-444e-92db-1a8d89798c05",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "50a45e5d92b9dbbcafc6ff16dc5d04d6f83634122599b46547b89c87a7942ceb",
+        "responseDigest": "d13cc71967469202bd8703a1756323e1e8e4eea5b83b282b5899e69bd473bf7b",
+        "roleSlot": "MONITOR_1",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-1",
+        "actorKeyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+        "actorOrganizationId": "proof-v3338-monitor-1-org",
+        "actorHostId": "proof-v3338-monitor-1-host",
+        "actorAdministratorId": "proof-v3338-monitor-1-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:30:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "2262f3c54029f1e9469ef19e7e7dcc7615d52ba1c206cfe7ecd167b4982287c8"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "J8f1HTvkEdFZsHoo3g080kVAJ07Knx8GFjXNsgX-QmP5O1tdVxA4qmTxsFVLQIX2-13gCLHT8gEBehhYq6eBBw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "b2396313-c1ae-4c37-ae5b-4d9f6af9e84d",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "896140cb448b388577af058cbe593518775d047838a0b06fd85b2d2bfc603d38",
+        "responseDigest": "39156d14807b9d6dda21ce4281adbec62984a91383689e2e5965b57e41b63613",
+        "roleSlot": "MONITOR_2",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-2",
+        "actorKeyFingerprint": "f4dd30d0cc8ca84ceece148e43b99dc38a90f8b7c91ee707ea4beff89a86d7a0",
+        "actorOrganizationId": "proof-v3338-monitor-2-org",
+        "actorHostId": "proof-v3338-monitor-2-host",
+        "actorAdministratorId": "proof-v3338-monitor-2-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:30:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "8f26ac531deaf510bc25c5f00c4dd90813370062e8b72b809773c92ffbba4dda"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "-s4lpi-KoKOu9QufP1cXQYlh2MrlcFaZkV_Ch1GWOkQlAXi987MsXDn2WDfn8euF4nKfhsqR-rqihqaQ9zP_Cg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "c6ea21f6-9632-418c-82fc-1ea4b5b1e5e2",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "2e7920aafe79d1dbcbe00635ab01c1fcf44cdd8dbdba9c46691cbeadabf13179",
+        "responseDigest": "c1b55918bb316756a1027142032b8b7befee7abfed37aa24229ea1dd7672642a",
+        "roleSlot": "MONITOR_3",
+        "role": "MONITOR",
+        "actorKeyId": "proof-v3338-monitor-3",
+        "actorKeyFingerprint": "e47721320d6f14f29c5e894c78be1e0f8fa831bcecc5862eac48c6140a5eecd7",
+        "actorOrganizationId": "proof-v3338-monitor-3-org",
+        "actorHostId": "proof-v3338-monitor-3-host",
+        "actorAdministratorId": "proof-v3338-monitor-3-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:31:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "762cf24dfaabaf8798a6f147fb17ee2223703273ff474587a4c0a3b75bea402b"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "3zP_FrqOn0UbGvh4lc3eKVH-xJ9P9vN3xQMIR1AxSYBtGk3W5EKOke6pqMLrGyJrlVB9FYUG5s2NyuQpI64oDw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "9714b0cf-a697-45f1-bf7b-092200862e55",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "52dcdca723fd878565873c11591354cd3cf09bd68696c8ac7ea17be6fa6776fe",
+        "responseDigest": "00502fdbc8cfb5c00262fb3d090f63dde10c95465c9c9a45c87657894d2b68e8",
+        "roleSlot": "TOPOLOGY_AUDITOR_1",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-1",
+        "actorKeyFingerprint": "bf6b88387f18e7ef4fd0a488c33d6339902bb6d35dbbfb2df2e9f7b934bf996e",
+        "actorOrganizationId": "proof-v3338-auditor-1-org",
+        "actorHostId": "proof-v3338-auditor-1-host",
+        "actorAdministratorId": "proof-v3338-auditor-1-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:31:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "31dd093fc03598a6800d4daaec7aed1248a072f4e1c49fb2924584a7798ffa45"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "IskblxJxw8ljyZxL76KELhFysn1X6ftjKrXLkZyeTYQSUq3kYQXhDaCZEY1NcrXZ-LzAYDACnmjjTVxOm9HHDg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "5faaef23-d477-48b4-8c85-f5cdeea65bc2",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "bc292e92d572d7d7d9038702b4e8a49ce3601df43a6d014af6b0cf1aaa415397",
+        "responseDigest": "76c3aad7d814beb82645fe85dd387ee111cdce86805b3f0dc55f8337681ca5b1",
+        "roleSlot": "TOPOLOGY_AUDITOR_2",
+        "role": "TOPOLOGY_AUDITOR",
+        "actorKeyId": "proof-v3338-auditor-2",
+        "actorKeyFingerprint": "c511c72769571934d3609e745ef3fff75ae3c47ad26b92fccdac27f1cbea83dd",
+        "actorOrganizationId": "proof-v3338-auditor-2-org",
+        "actorHostId": "proof-v3338-auditor-2-host",
+        "actorAdministratorId": "proof-v3338-auditor-2-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:31:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "09490137cbdcb62d5ce8995f3521bd92b6169088c5c2f8fd90c24ef1ce8fb4ec"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "m3YAo5d6nfdhJ-dZEuRgvG10CQmG5zA-XuJKDuqnnb9VEc_OJkN18_3gD3R4dcDLN8b-LihUohL9zs0fl6bdCw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "df7a3cf6-b090-4a41-824c-a703f958ef00",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "76f64bf0a1300223eb4df86b8c27fa656869c1dc15631bfb563fa5bea5285d75",
+        "responseDigest": "9193e6c4987d1af35f647c6773d9976f9a2616446cb5edbe6d74256785509ac9",
+        "roleSlot": "TIME_SOURCE_1",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-1",
+        "actorKeyFingerprint": "e63fe6a174e3bb672ee4e5129c18105af59ad3bf52fa95696b376a72fbe9e4f9",
+        "actorOrganizationId": "proof-v3338-time-1-org",
+        "actorHostId": "proof-v3338-time-1-host",
+        "actorAdministratorId": "proof-v3338-time-1-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:32:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "418e123282bfc78d4df33aa622a6a78c391ad50f580b7776dc19a46d6e8cb937"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "68cjmwzmryvwXrYHVa7N30Kv1mdKbRdT8786UcE4OdYsO6lDtyVTqRUXo_K9xUK5rVEYuHy6Tpo074IKt21sBQ"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "55dbff87-28cf-4141-82f6-bbad4f723d80",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "2add73320c0bb2840d74361136ebe5fa1ed509cd02a57220fc45b1edac2e3dd5",
+        "responseDigest": "a3b468b65508a1ba52ce1357f9c31f063368e473d687010f0ff3c55f602c2391",
+        "roleSlot": "TIME_SOURCE_2",
+        "role": "TIME_SOURCE",
+        "actorKeyId": "proof-v3338-time-2",
+        "actorKeyFingerprint": "bfa5fed42711a90b31ef663c9858fc49ef8acb9aa253e147507e9d39a67300f9",
+        "actorOrganizationId": "proof-v3338-time-2-org",
+        "actorHostId": "proof-v3338-time-2-host",
+        "actorAdministratorId": "proof-v3338-time-2-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:32:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "f6c9b830ff47858c157e9911e2c5b9d1b56305e7f112ab05bb23e795cc0f48bb"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "KGsteQSbZwdNADmI0xdBYx4W1MzA7eMm8zF9cdYC6UcnJrAvvnAjzVVaQ4i6bkNqWE0fviq9Y-Qw1tnkGiKjCA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "02108884-0d9e-409b-9be3-dfe360e54562",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "e4d01d86536f75585d38bd0c9569127fa0141fd4e3a7dfd81e70dd6516549307",
+        "responseDigest": "6de8f4eee59bc8aac7d784ef2c2c7f67ac853ad3b9d3438acff660dbd60ef1ca",
+        "roleSlot": "EVIDENCE_EXPORTER",
+        "role": "EVIDENCE_EXPORTER",
+        "actorKeyId": "proof-v3338-exporter",
+        "actorKeyFingerprint": "7a26175b6cdc93a5699d3a0d3a55b63a836bc048a4e843e152db51f0c08ac75e",
+        "actorOrganizationId": "proof-v3338-exporter-org",
+        "actorHostId": "proof-v3338-exporter-host",
+        "actorAdministratorId": "proof-v3338-exporter-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:32:40.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "6afe146ffb8eeb2676006fbab985af26799753d5c944a3f173c085e663eee392"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "Gm_9ggtg15NpzNeGI3J7mYRkSkQgXlVc5s9C8gBRqz5EXUyoTVlcmyjtUHDzla8c830f9OcjhzyV-9lwQKtBDg"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "47f32f7f-7ae2-41a6-b178-5f2b2098b92b",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "c445251d6289733e48afcdb7908cc441053b3ef844fdb38fb2666c71b3323ec0",
+        "responseDigest": "e97f3e2b71868b045b993935bbe265287e05ea11c54c5bc439b5165247c31772",
+        "roleSlot": "EVIDENCE_IMPORTER",
+        "role": "EVIDENCE_IMPORTER",
+        "actorKeyId": "proof-v3338-importer",
+        "actorKeyFingerprint": "3764926d3afad77e2b04e2128bf32073555fecbacd77a4b236f7b0b5194bf8d1",
+        "actorOrganizationId": "proof-v3338-importer-org",
+        "actorHostId": "proof-v3338-importer-host",
+        "actorAdministratorId": "proof-v3338-importer-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:33:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "4b9b83020b1db3dd7c3d695ee302ed967b11aa9e8bee6ae47e6ac2b93d2fa06c"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "uSueAdS7A8Q6AeZafhn9_1o3-4uCWpnT0OLqqN4t8QDNpTRVIp0thEWrMOwfJ7jGD_Wm4WRqXdQtKmPr92XGAw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "receiptId": "fb913537-c702-45f9-a29b-d17c54efc5e5",
+        "ceremonyId": "v3338-local-custody-ceremony",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "challengeDigest": "8f75059cf2cb8ad5de4f09808276a2c88b2c583f624df62d34bac25acca5df65",
+        "responseDigest": "1fcab1f8fab0ad8516e5429ac5070f91b7f0018bb7a9bed62fa5d3a461abe787",
+        "roleSlot": "RECOVERY_VERIFIER",
+        "role": "RECOVERY_VERIFIER",
+        "actorKeyId": "proof-v3338-recovery",
+        "actorKeyFingerprint": "944f79847b93f5f7ccef4a2c4eae393c114b0bc3fc13727746356ffe475bb720",
+        "actorOrganizationId": "proof-v3338-recovery-org",
+        "actorHostId": "proof-v3338-recovery-host",
+        "actorAdministratorId": "proof-v3338-recovery-admin",
+        "provisioningAuthorityKeyId": "proof-v3338-provisioning-authority",
+        "keyPossessionVerified": true,
+        "oneTimeChallengeConsumed": true,
+        "provisionedAt": "2026-07-22T18:33:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "297442705163e93e699a83f5554e5b75525d28538548b39ba56c7e9de8ea2d3e"
+      },
+      "issuerKeyId": "proof-v3338-provisioning-authority",
+      "algorithm": "Ed25519",
+      "signature": "Eauv8rdbtBikhwGaH87dyA8OhtGR7jVBsnF0piW5MPFQqYP7jgHCIB96puCNbnZBD2NaWEYBsGJdJKDAwwL6Dg"
+    }
+  ],
+  "transcript": {
+    "payload": {
+      "version": "33.38",
+      "transcriptId": "a67b653f-09ba-4974-9a35-92dddd4e827d",
+      "ceremonyId": "v3338-local-custody-ceremony",
+      "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+      "executionClass": "LOCAL_REHEARSAL",
+      "recorderKeyId": "proof-v3338-recorder",
+      "recorderOrganizationId": "proof-v3338-recorder-org",
+      "recorderHostId": "proof-v3338-recorder-host",
+      "recorderAdministratorId": "proof-v3338-recorder-admin",
+      "roleSlots": [
+        "PUBLISHER",
+        "MONITOR_1",
+        "MONITOR_2",
+        "MONITOR_3",
+        "TOPOLOGY_AUDITOR_1",
+        "TOPOLOGY_AUDITOR_2",
+        "TIME_SOURCE_1",
+        "TIME_SOURCE_2",
+        "EVIDENCE_EXPORTER",
+        "EVIDENCE_IMPORTER",
+        "RECOVERY_VERIFIER"
+      ],
+      "provisioningReceiptDigests": [
+        "41a6eb6085950c9f87865c54491be6ea2290d16ce38b3d1710b13247e2f836be",
+        "2262f3c54029f1e9469ef19e7e7dcc7615d52ba1c206cfe7ecd167b4982287c8",
+        "8f26ac531deaf510bc25c5f00c4dd90813370062e8b72b809773c92ffbba4dda",
+        "762cf24dfaabaf8798a6f147fb17ee2223703273ff474587a4c0a3b75bea402b",
+        "31dd093fc03598a6800d4daaec7aed1248a072f4e1c49fb2924584a7798ffa45",
+        "09490137cbdcb62d5ce8995f3521bd92b6169088c5c2f8fd90c24ef1ce8fb4ec",
+        "418e123282bfc78d4df33aa622a6a78c391ad50f580b7776dc19a46d6e8cb937",
+        "f6c9b830ff47858c157e9911e2c5b9d1b56305e7f112ab05bb23e795cc0f48bb",
+        "6afe146ffb8eeb2676006fbab985af26799753d5c944a3f173c085e663eee392",
+        "4b9b83020b1db3dd7c3d695ee302ed967b11aa9e8bee6ae47e6ac2b93d2fa06c",
+        "297442705163e93e699a83f5554e5b75525d28538548b39ba56c7e9de8ea2d3e"
+      ],
+      "receiptCount": 11,
+      "openedAt": "2026-07-22T18:00:00.000Z",
+      "closedAt": "2026-07-22T18:50:00.000Z",
+      "immutableTranscript": true,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "transcriptDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a"
+    },
+    "issuerKeyId": "proof-v3338-recorder",
+    "algorithm": "Ed25519",
+    "signature": "48IvdN9Cb8GvGAUWVW-RLHvuL1B11X-yrJX90FHqLR4gqrkGhFyPMPxLfi5ADG01cxWgOzM14i5pmArSljExCw"
+  },
+  "ceremonyWitnesses": [
+    {
+      "payload": {
+        "version": "33.38",
+        "witnessId": "d2138aac-eda3-4692-b7f4-99d0c3cca9ea",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "transcriptDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a",
+        "witnessKeyId": "proof-v3338-ceremony-witness-1",
+        "witnessOrganizationId": "proof-v3338-ceremony-witness-1-org",
+        "witnessHostId": "proof-v3338-ceremony-witness-1-host",
+        "witnessAdministratorId": "proof-v3338-ceremony-witness-1-admin",
+        "observedReceiptCount": 11,
+        "decision": "CEREMONY_OBSERVED_COMPLETE",
+        "observedAt": "2026-07-22T18:51:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "witnessDigest": "5aad480558617f07b8262b7151612f5bdd0abe018180badab4a76fcd2684dbc3"
+      },
+      "issuerKeyId": "proof-v3338-ceremony-witness-1",
+      "algorithm": "Ed25519",
+      "signature": "UHbSZKD7Cd7aCL6CGeTvKFjgbf2XfQEQ_KHOd2SJw0bi-62sR0gIQGEYfK7pXzawnKUiV3OARfNMgu1_yxXGDA"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "witnessId": "4fa50fef-aa92-4091-8121-c5fedeb8bde9",
+        "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+        "transcriptDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a",
+        "witnessKeyId": "proof-v3338-ceremony-witness-2",
+        "witnessOrganizationId": "proof-v3338-ceremony-witness-2-org",
+        "witnessHostId": "proof-v3338-ceremony-witness-2-host",
+        "witnessAdministratorId": "proof-v3338-ceremony-witness-2-admin",
+        "observedReceiptCount": 11,
+        "decision": "CEREMONY_OBSERVED_COMPLETE",
+        "observedAt": "2026-07-22T18:51:30.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "witnessDigest": "63b8bbf2624eba8c5fb87f3d3d9ecbf4477c256b90a190ab41b598de184899ec"
+      },
+      "issuerKeyId": "proof-v3338-ceremony-witness-2",
+      "algorithm": "Ed25519",
+      "signature": "YXuOU9GLNGA_82oAy7BJT1dlqbAicLu26zRaae7ItkQ-iMYEMNKNeIfRlGrPq-v9Mp9YxfgzAvQGHJUbXGV3AA"
+    }
+  ],
+  "ceremonyVerdict": {
+    "version": "33.38",
+    "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+    "transcriptDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a",
+    "verifiedRoleCount": 11,
+    "witnessCount": 2,
+    "exactProvisioningSetVerified": true,
+    "oneTimeProvisioningVerified": true,
+    "executionClass": "LOCAL_REHEARSAL",
+    "status": "LOCAL_CUSTODY_CEREMONY_REHEARSAL_ONLY",
+    "verifiedAt": "2026-07-22T19:00:00.000Z",
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "verdictDigest": "ceb411a08fe0d14e81b91deb6aa34a538850ee0ac874048bdde85e9fb4bdd77d"
+  },
+  "lifecycleProposal": {
+    "payload": {
+      "version": "33.38",
+      "proposalId": "33c7fc24-683f-4082-bcb9-eb5d20a9c5c1",
+      "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+      "transcriptDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a",
+      "lifecycleSequence": 1,
+      "previousLifecycleDigest": null,
+      "roleSlot": "MONITOR_1",
+      "action": "SCHEDULED_ROTATION",
+      "currentActor": {
+        "keyId": "proof-v3338-monitor-1",
+        "keyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+        "organizationId": "proof-v3338-monitor-1-org",
+        "hostId": "proof-v3338-monitor-1-host",
+        "administratorId": "proof-v3338-monitor-1-admin"
+      },
+      "replacementActor": {
+        "keyId": "proof-v3338-monitor-1-replacement",
+        "keyFingerprint": "6361232bb0b9f7e8748d17c16c961492fdcd33021b002be677d0ce6a27441d36",
+        "organizationId": "proof-v3338-monitor-1-replacement-org",
+        "hostId": "proof-v3338-monitor-1-replacement-host",
+        "administratorId": "proof-v3338-monitor-1-replacement-admin"
+      },
+      "reasonDigest": "d467a4422b1e91a851f6b2e0820078709928a851ba064cd84e28bad201071daf",
+      "effectiveAt": "2026-07-22T19:10:00.000Z",
+      "lifecycleAuthorityKeyId": "proof-v3338-lifecycle-authority",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "proposalDigest": "23d5ebc3b89eee61e37ae11979e26562f15c746016bbc2dffd1548862c02dca8"
+    },
+    "issuerKeyId": "proof-v3338-lifecycle-authority",
+    "algorithm": "Ed25519",
+    "signature": "S0eBPiBC5CTijQ50G-ofL20-4V2GefVlcdqWAwL_R6DhB7n5jkILkUa2OfQ8pRvfcBCEYcUevZmHpRYumID0AQ"
+  },
+  "currentConsent": {
+    "payload": {
+      "version": "33.38",
+      "statementId": "ea79d873-0627-41c0-9b90-5c7355e6d694",
+      "proposalDigest": "23d5ebc3b89eee61e37ae11979e26562f15c746016bbc2dffd1548862c02dca8",
+      "purpose": "CURRENT_KEY_CONSENT",
+      "actorKeyId": "proof-v3338-monitor-1",
+      "actorKeyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+      "signedAt": "2026-07-22T19:05:00.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "statementDigest": "e47a01b109f671009a74f0987473ac03e7b3beebec9802f1d0b5904c198c4970"
+    },
+    "issuerKeyId": "proof-v3338-monitor-1",
+    "algorithm": "Ed25519",
+    "signature": "2hW9LPlMw_PZw79TbW53g1UtydmLqYvvVZTp5iioQ-TDTAAawhcunm7pMktFzUgm7Q7gqtB6BdO2Tk_3f3BeDw"
+  },
+  "replacementAcceptance": {
+    "payload": {
+      "version": "33.38",
+      "statementId": "0b8b49bc-a3a4-4b2b-97ef-dd1ad72bfed3",
+      "proposalDigest": "23d5ebc3b89eee61e37ae11979e26562f15c746016bbc2dffd1548862c02dca8",
+      "purpose": "REPLACEMENT_KEY_ACCEPTANCE",
+      "actorKeyId": "proof-v3338-monitor-1-replacement",
+      "actorKeyFingerprint": "6361232bb0b9f7e8748d17c16c961492fdcd33021b002be677d0ce6a27441d36",
+      "signedAt": "2026-07-22T19:05:30.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "statementDigest": "7bac3a40cc24091e328a80f991f06a2cb513ec98a3834a0ecc0c2e67939111e3"
+    },
+    "issuerKeyId": "proof-v3338-monitor-1-replacement",
+    "algorithm": "Ed25519",
+    "signature": "yY_MLbZho42DCFw548jXFIbw9uwNjDArom4icc09OFZxeicwAarBZeToiLgDw6_YbLflacgEp4zci0WDW5kWBA"
+  },
+  "securityApprovals": [
+    {
+      "payload": {
+        "version": "33.38",
+        "approvalId": "6ff8d143-b641-49d3-aff9-49a2afed9f53",
+        "proposalDigest": "23d5ebc3b89eee61e37ae11979e26562f15c746016bbc2dffd1548862c02dca8",
+        "custodianKeyId": "proof-v3338-security-1",
+        "custodianOrganizationId": "proof-v3338-security-1-org",
+        "custodianHostId": "proof-v3338-security-1-host",
+        "custodianAdministratorId": "proof-v3338-security-1-admin",
+        "decision": "APPROVE_KEY_LIFECYCLE_CHANGE",
+        "approvedAt": "2026-07-22T19:06:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "approvalDigest": "668b5aa01b977be0c8e940b87f84a453f3c26e3a012d247f6a8e07ed0162c017"
+      },
+      "issuerKeyId": "proof-v3338-security-1",
+      "algorithm": "Ed25519",
+      "signature": "sz2Xxi5HjUp_aAP8hvJz0qbEKzXNVxACMhTFNhnJQ-gom6dPmbIo64Y-4Rn89yZtrWdkf-80qHYGs74LhK-MCw"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "approvalId": "5eadca5b-4a57-4d87-84b8-0ad891453dc7",
+        "proposalDigest": "23d5ebc3b89eee61e37ae11979e26562f15c746016bbc2dffd1548862c02dca8",
+        "custodianKeyId": "proof-v3338-security-2",
+        "custodianOrganizationId": "proof-v3338-security-2-org",
+        "custodianHostId": "proof-v3338-security-2-host",
+        "custodianAdministratorId": "proof-v3338-security-2-admin",
+        "decision": "APPROVE_KEY_LIFECYCLE_CHANGE",
+        "approvedAt": "2026-07-22T19:06:30.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "approvalDigest": "0d93711df68ad45211c57a0332dabe3f705647fd09c5c13ad6cd3e35acb85e4d"
+      },
+      "issuerKeyId": "proof-v3338-security-2",
+      "algorithm": "Ed25519",
+      "signature": "Tbdjoqxqwsva52ZnPS_XEvL-q-nSIRzT86pwrI4rtTBQgy_yLbgjJnCsJDx8aPFRJ0o-2tGtdnraH2ibM9XLDg"
+    }
+  ],
+  "lifecycleCertificate": {
+    "payload": {
+      "version": "33.38",
+      "certificateId": "e3886746-4578-4c3f-acab-a12152704df8",
+      "proposalDigest": "23d5ebc3b89eee61e37ae11979e26562f15c746016bbc2dffd1548862c02dca8",
+      "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+      "transcriptDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a",
+      "lifecycleSequence": 1,
+      "previousLifecycleDigest": null,
+      "roleSlot": "MONITOR_1",
+      "action": "SCHEDULED_ROTATION",
+      "currentActor": {
+        "keyId": "proof-v3338-monitor-1",
+        "keyFingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+        "organizationId": "proof-v3338-monitor-1-org",
+        "hostId": "proof-v3338-monitor-1-host",
+        "administratorId": "proof-v3338-monitor-1-admin"
+      },
+      "replacementActor": {
+        "keyId": "proof-v3338-monitor-1-replacement",
+        "keyFingerprint": "6361232bb0b9f7e8748d17c16c961492fdcd33021b002be677d0ce6a27441d36",
+        "organizationId": "proof-v3338-monitor-1-replacement-org",
+        "hostId": "proof-v3338-monitor-1-replacement-host",
+        "administratorId": "proof-v3338-monitor-1-replacement-admin"
+      },
+      "currentKeyConsentDigest": "e47a01b109f671009a74f0987473ac03e7b3beebec9802f1d0b5904c198c4970",
+      "replacementKeyAcceptanceDigest": "7bac3a40cc24091e328a80f991f06a2cb513ec98a3834a0ecc0c2e67939111e3",
+      "securityApprovalDigests": [
+        "0d93711df68ad45211c57a0332dabe3f705647fd09c5c13ad6cd3e35acb85e4d",
+        "668b5aa01b977be0c8e940b87f84a453f3c26e3a012d247f6a8e07ed0162c017"
+      ],
+      "securityCustodianKeyIds": [
+        "proof-v3338-security-1",
+        "proof-v3338-security-2"
+      ],
+      "effectiveAt": "2026-07-22T19:10:00.000Z",
+      "lifecycleAuthorityKeyId": "proof-v3338-lifecycle-authority",
+      "oldKeyRevoked": true,
+      "decision": "KEY_LIFECYCLE_CHANGE_AUTHORIZED",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "lifecycleDigest": "d1ef99f9c50538ca3ce85768381dbe7110624d7d1bc34b2733b7a3bfe94da2a5"
+    },
+    "issuerKeyId": "proof-v3338-lifecycle-authority",
+    "algorithm": "Ed25519",
+    "signature": "2ffZQCTV5F9f37HmXbbUwkHVjgIIuYh3fcq2yoKuY4-N0bP77v9t_3vUHBB0ByqSkQh8IeUE877CP21VPMgACw"
+  },
+  "transparencySnapshot": {
+    "payload": {
+      "version": "33.38",
+      "logId": "v3338-custody-log",
+      "eventCount": 14,
+      "headEventDigest": "6397890aabc33291f0050727bc6335aafc3df0e10462ef6225a4a7708f0e20ae",
+      "events": [
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 1,
+          "eventId": "9e3ccb36-a942-4ac8-aa1c-b9800593102d",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "41a6eb6085950c9f87865c54491be6ea2290d16ce38b3d1710b13247e2f836be",
+          "roleSlot": "PUBLISHER",
+          "previousEventDigest": null,
+          "recordedAt": "2026-07-22T19:20:00.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "a9ce9824cc19d610a8c61ac51ce8ad77d11753db7c65232c368b0323124fcabc"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 2,
+          "eventId": "064d06f2-082c-409e-bd21-19a7fbc2ae6a",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "2262f3c54029f1e9469ef19e7e7dcc7615d52ba1c206cfe7ecd167b4982287c8",
+          "roleSlot": "MONITOR_1",
+          "previousEventDigest": "a9ce9824cc19d610a8c61ac51ce8ad77d11753db7c65232c368b0323124fcabc",
+          "recordedAt": "2026-07-22T19:20:10.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "cb1820451aaa97737a9d389a480c1fff96e7cefb15868a84ab0f12bfd3a9cb87"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 3,
+          "eventId": "c7e6da8e-e334-43cb-9921-74c06dc1688d",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "8f26ac531deaf510bc25c5f00c4dd90813370062e8b72b809773c92ffbba4dda",
+          "roleSlot": "MONITOR_2",
+          "previousEventDigest": "cb1820451aaa97737a9d389a480c1fff96e7cefb15868a84ab0f12bfd3a9cb87",
+          "recordedAt": "2026-07-22T19:20:20.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "6a116591aca5b65e971a9f8505f9fb7c2129e99f5280d7dbf8b76319f9076554"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 4,
+          "eventId": "cd8eea0a-4aa5-45a6-b72e-ac147e26a651",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "762cf24dfaabaf8798a6f147fb17ee2223703273ff474587a4c0a3b75bea402b",
+          "roleSlot": "MONITOR_3",
+          "previousEventDigest": "6a116591aca5b65e971a9f8505f9fb7c2129e99f5280d7dbf8b76319f9076554",
+          "recordedAt": "2026-07-22T19:20:30.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "308534f94efa47442d5c759d59d3716b034eca407d991de42b7a296b0ed9c9af"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 5,
+          "eventId": "f81addcc-2047-4f4a-b9e0-f2d7496c26aa",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "31dd093fc03598a6800d4daaec7aed1248a072f4e1c49fb2924584a7798ffa45",
+          "roleSlot": "TOPOLOGY_AUDITOR_1",
+          "previousEventDigest": "308534f94efa47442d5c759d59d3716b034eca407d991de42b7a296b0ed9c9af",
+          "recordedAt": "2026-07-22T19:20:40.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "f5ceaabb3789e0ba9067d53c697aad88f226351f2f08821fbd3e80d93151c4ef"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 6,
+          "eventId": "b8305740-1a20-4910-925e-7582d374011e",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "09490137cbdcb62d5ce8995f3521bd92b6169088c5c2f8fd90c24ef1ce8fb4ec",
+          "roleSlot": "TOPOLOGY_AUDITOR_2",
+          "previousEventDigest": "f5ceaabb3789e0ba9067d53c697aad88f226351f2f08821fbd3e80d93151c4ef",
+          "recordedAt": "2026-07-22T19:20:50.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "a840a1887f9f18b390f790175c92d5a13958ea8142362a5c0deafaf27f623c4e"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 7,
+          "eventId": "e8844b3d-e362-4355-97d9-6a3107ae6ca9",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "418e123282bfc78d4df33aa622a6a78c391ad50f580b7776dc19a46d6e8cb937",
+          "roleSlot": "TIME_SOURCE_1",
+          "previousEventDigest": "a840a1887f9f18b390f790175c92d5a13958ea8142362a5c0deafaf27f623c4e",
+          "recordedAt": "2026-07-22T19:21:00.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "ee3bc13c394c80a240ad92ef843f468f061894fb6093ae81a4548f367dedbd71"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 8,
+          "eventId": "50d7b220-cc21-4f45-b3a1-c5a282da5498",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "f6c9b830ff47858c157e9911e2c5b9d1b56305e7f112ab05bb23e795cc0f48bb",
+          "roleSlot": "TIME_SOURCE_2",
+          "previousEventDigest": "ee3bc13c394c80a240ad92ef843f468f061894fb6093ae81a4548f367dedbd71",
+          "recordedAt": "2026-07-22T19:21:10.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "245bd760e39f2b8621f49cc2f0b1e0278f7e297186d5cef0cea44cd704a08431"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 9,
+          "eventId": "d8432413-bcde-4f10-bfc5-b5f1431b4b9e",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "6afe146ffb8eeb2676006fbab985af26799753d5c944a3f173c085e663eee392",
+          "roleSlot": "EVIDENCE_EXPORTER",
+          "previousEventDigest": "245bd760e39f2b8621f49cc2f0b1e0278f7e297186d5cef0cea44cd704a08431",
+          "recordedAt": "2026-07-22T19:21:20.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "96e96102c009d3976a36100ec7b95b7f7430f5753914787db99fb86c6ef42f43"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 10,
+          "eventId": "fe114fc6-6bd7-4e4a-8f20-32721df19aea",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "4b9b83020b1db3dd7c3d695ee302ed967b11aa9e8bee6ae47e6ac2b93d2fa06c",
+          "roleSlot": "EVIDENCE_IMPORTER",
+          "previousEventDigest": "96e96102c009d3976a36100ec7b95b7f7430f5753914787db99fb86c6ef42f43",
+          "recordedAt": "2026-07-22T19:21:30.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "dcf213a950e62d49e33c98f682ac44a7c6b30bd34d6e5e021ce78c58ad69b097"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 11,
+          "eventId": "2951b6df-6e8e-4d3f-aa1b-e815dae320af",
+          "eventType": "ROLE_PROVISIONED",
+          "subjectDigest": "297442705163e93e699a83f5554e5b75525d28538548b39ba56c7e9de8ea2d3e",
+          "roleSlot": "RECOVERY_VERIFIER",
+          "previousEventDigest": "dcf213a950e62d49e33c98f682ac44a7c6b30bd34d6e5e021ce78c58ad69b097",
+          "recordedAt": "2026-07-22T19:21:40.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "aab9c51d3aefad5abdd6955bc81a480c0670a89982ce3f35d1eefdb0c448136e"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 12,
+          "eventId": "e651ae6b-4227-457c-8034-db3147804897",
+          "eventType": "CEREMONY_CLOSED",
+          "subjectDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a",
+          "roleSlot": null,
+          "previousEventDigest": "aab9c51d3aefad5abdd6955bc81a480c0670a89982ce3f35d1eefdb0c448136e",
+          "recordedAt": "2026-07-22T19:21:50.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "0b338dd89bd59f0f4cbf6a82b1305a2fca3209cf389139c62ba52db65fe18a39"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 13,
+          "eventId": "22f3103f-8103-4ac3-a960-99eb8392d069",
+          "eventType": "KEY_LIFECYCLE_CHANGED",
+          "subjectDigest": "d1ef99f9c50538ca3ce85768381dbe7110624d7d1bc34b2733b7a3bfe94da2a5",
+          "roleSlot": "MONITOR_1",
+          "previousEventDigest": "0b338dd89bd59f0f4cbf6a82b1305a2fca3209cf389139c62ba52db65fe18a39",
+          "recordedAt": "2026-07-22T19:22:00.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "628175e566de87ee587233d5137b2c0492d92b919bffd90b456bd04fada2e6d9"
+        },
+        {
+          "version": "33.38",
+          "logId": "v3338-custody-log",
+          "sequence": 14,
+          "eventId": "fa27251d-1280-4337-9cbd-2c18a8445d5f",
+          "eventType": "EVIDENCE_IMPORTED",
+          "subjectDigest": "e36fbecfface765173fc1ed2e2f1d9ec7dff1c8566f19f594479a6228507684d",
+          "roleSlot": null,
+          "previousEventDigest": "628175e566de87ee587233d5137b2c0492d92b919bffd90b456bd04fada2e6d9",
+          "recordedAt": "2026-07-22T19:22:10.000Z",
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "eventDigest": "6397890aabc33291f0050727bc6335aafc3df0e10462ef6225a4a7708f0e20ae"
+        }
+      ],
+      "generatedAt": "2026-07-22T19:22:20.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "snapshotDigest": "c8914f3edc969abfe9fdd2a37bc316ac9bc89f16cde2b435c4be6b27fdfab667"
+    },
+    "issuerKeyId": "proof-v3338-log-authority",
+    "algorithm": "Ed25519",
+    "signature": "5gB8JkIYB_2x2Ao1tAjKpjKb7w1BcKApuHe5GLVCwtExDMxkMGI-bj2YQIVi-VZHZQWLLIOnTf6Ns_fhJ3SCDA"
+  },
+  "transparencyWitnesses": [
+    {
+      "payload": {
+        "version": "33.38",
+        "checkpointId": "469e5fb3-4061-42c2-ad15-58109c677bbe",
+        "snapshotDigest": "c8914f3edc969abfe9fdd2a37bc316ac9bc89f16cde2b435c4be6b27fdfab667",
+        "logId": "v3338-custody-log",
+        "eventCount": 14,
+        "headEventDigest": "6397890aabc33291f0050727bc6335aafc3df0e10462ef6225a4a7708f0e20ae",
+        "witnessKeyId": "proof-v3338-log-witness-1",
+        "witnessOrganizationId": "proof-v3338-log-witness-1-org",
+        "witnessHostId": "proof-v3338-log-witness-1-host",
+        "witnessAdministratorId": "proof-v3338-log-witness-1-admin",
+        "observedAt": "2026-07-22T19:22:50.000Z",
+        "decision": "TRANSPARENCY_CHECKPOINT_OBSERVED",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "checkpointDigest": "4a7e751aec38f413b7b736f1428800f7a56dc954fdc833e784be9f6da458b51d"
+      },
+      "issuerKeyId": "proof-v3338-log-witness-1",
+      "algorithm": "Ed25519",
+      "signature": "l_lXM0MMXx2O1C-00YS-IZK3jBP7BA7kOCkasCdjWeU-E2PV5CWW6ePHykh8Gh8S3g1OX3YZMdyxVxAXyjbQBQ"
+    },
+    {
+      "payload": {
+        "version": "33.38",
+        "checkpointId": "fbab3263-cae3-44fa-85bf-88784dc1a379",
+        "snapshotDigest": "c8914f3edc969abfe9fdd2a37bc316ac9bc89f16cde2b435c4be6b27fdfab667",
+        "logId": "v3338-custody-log",
+        "eventCount": 14,
+        "headEventDigest": "6397890aabc33291f0050727bc6335aafc3df0e10462ef6225a4a7708f0e20ae",
+        "witnessKeyId": "proof-v3338-log-witness-2",
+        "witnessOrganizationId": "proof-v3338-log-witness-2-org",
+        "witnessHostId": "proof-v3338-log-witness-2-host",
+        "witnessAdministratorId": "proof-v3338-log-witness-2-admin",
+        "observedAt": "2026-07-22T19:23:20.000Z",
+        "decision": "TRANSPARENCY_CHECKPOINT_OBSERVED",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "checkpointDigest": "01538fd72979d72c10bb149c7d27703a8b210a6623cfab394d8c5dc7b54b16a0"
+      },
+      "issuerKeyId": "proof-v3338-log-witness-2",
+      "algorithm": "Ed25519",
+      "signature": "VBK6yt8xFT_PyMF930D3RMCVMCJ03aGBSzDHB_GoAv6r5A4hOArWagIlw_OOnNB2BELK7UqzX-WLzRlsstzHCQ"
+    }
+  ],
+  "finalVerdict": {
+    "version": "33.38",
+    "manifestDigest": "0c8634e3d7ac49ef7a130ab0166bcbed8376b155745025c6027a5180a8c44268",
+    "transcriptDigest": "c13e08770898e1a2c81bd301fbcbd99328b0e64250f214fe70a7e364edd5409a",
+    "importDigest": "e36fbecfface765173fc1ed2e2f1d9ec7dff1c8566f19f594479a6228507684d",
+    "transparencySnapshotDigest": "c8914f3edc969abfe9fdd2a37bc316ac9bc89f16cde2b435c4be6b27fdfab667",
+    "transparencyHeadEventDigest": "6397890aabc33291f0050727bc6335aafc3df0e10462ef6225a4a7708f0e20ae",
+    "lifecycleHeadDigest": "d1ef99f9c50538ca3ce85768381dbe7110624d7d1bc34b2733b7a3bfe94da2a5",
+    "provisionedRoleCount": 11,
+    "transparencyWitnessCount": 2,
+    "custodyChainVerified": true,
+    "lifecycleChainVerified": true,
+    "importReceiptLogged": true,
+    "status": "LOCAL_CUSTODY_IMPORT_REHEARSAL_ONLY",
+    "externalTopologyObserved": false,
+    "externalHumanParticipants": 0,
+    "verifiedAt": "2026-07-22T20:00:00.000Z",
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "verdictDigest": "a3195c5c694e967ef9dc632762c4764f9c3cdfd5554d05c5d09ba258717362ca"
+  },
+  "publicKeys": [
+    {
+      "keyId": "proof-v3338-deployment-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAIyStulTJwnxM/YNsDS3wG+h231zxRdx+rG8YrRZKR5k=",
+      "fingerprint": "3a73c1ae01b8a646477eb1d56b6a151b2defccc7d4ef2d14934d9f2665c0a7b3",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-provisioning-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAQRW1eEDslSA9kmNABkOYOOP7PXtyfJnEYfY/3b23Pm4=",
+      "fingerprint": "b8a468a14b39a6ce8a95d9b2df64da7992ed276a17b68348603112ca71bc8af3",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-recorder",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAzebZ4puYTT5CqOk5F8YtDMSKWaOnbWpWLVpi1U/VjhU=",
+      "fingerprint": "e04daa1c061eb14afb71702fc76658725109c71fbe7ded6153eb0a111db82ebb",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-ceremony-witness-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAvuD+75QFlpQ7iaNSx2FSFwwCqC9v3vIZ5Ll/Cay/y1M=",
+      "fingerprint": "417e5ec4d5776ea822fb57e3e7b03d2c24608f5ee182e042a0fcdf6455884415",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-ceremony-witness-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAePLzXoWOietF8wQWeTCJTNtY+OYpOfVRLC3CzetrZtE=",
+      "fingerprint": "f9ea1a2735e22f8a7a8a9c1c15cd12879ba484b58d5d0d4ca4e5781f38fc5e5e",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-lifecycle-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA+9F8DFvuwTwC1G6xbGj3kFO2v8jjjHA9RJjVeoFxlas=",
+      "fingerprint": "6b6ea55b7487191c823fe49e5a26de142884600a48394124b7f95a40c301f7a3",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-security-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAvHIA2z6APr1wxW8rFaE6C8qE9YinVJOzaHMDGYeoNTU=",
+      "fingerprint": "677ceeaf2eb85095a13986c486934f292643e9704a5faf87b97e67fc34cb79fc",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-security-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAzqMwsfhh78dlNiafP6uINhjmrtK5S14PQTWLR5gkM0c=",
+      "fingerprint": "1cceef2b23caf6a15d1529163e2432756a5e16f1fc1ca4ff674a3aa149eaa9bc",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-security-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAz51bJkNpZkKvj9nSkqd6RBPaLunTWJBTGBoPHa7p/8Y=",
+      "fingerprint": "8003816318a55f1fdfac146fac95805b12aec00596eecdead951982cee9b00d6",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-log-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAlext6Zx1lSPuw4UWBS2LUq2EpYE+/BN68Knc+ZYGfNU=",
+      "fingerprint": "8f662e2581ce8da6491c5544235af7b843a72552f42d45b6035a22bf59d4b2ed",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-log-witness-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAADkGp4I2IgAImjxBixbUMEmPdlmmGt3miWg6wI2wxjY=",
+      "fingerprint": "e163b48ce69cde8e332ada8ea242a7ae1f60948438bdf8a43ea4f09719fdc012",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-log-witness-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAxNkB6GW8azJWOOMkctsQVMmdew8fDCYjL33cmdZ9+uI=",
+      "fingerprint": "7e6e105ee0cd272f82f0ee099bf06f0e783f3959f186c49f10af5584c2a8829b",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-publisher",
+      "spkiDerBase64": "MCowBQYDK2VwAyEABIiF8TVo0WXqKCO9KEZ3ldFULcOPQZpAdE11sc5sihs=",
+      "fingerprint": "243b9e1848a7011e5126990c874cb2063a3ba9621049b4f5173e4aa926d3aec2",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-monitor-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAL5PyljflIsMcqaUDSkEYJ/uok7CViKbfW7BpjsJQ9yA=",
+      "fingerprint": "b055f5862a84d167b16e0f80d9fbde900da4e195dbf857a2c810be11ca4ffb98",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-monitor-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAO/wNXUGYA/lf6PQjds496tNNGOw4JJI2lWalUZoUPM0=",
+      "fingerprint": "f4dd30d0cc8ca84ceece148e43b99dc38a90f8b7c91ee707ea4beff89a86d7a0",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-monitor-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAM4DOBPWUUYHKvatVzq8IfNhG840DbaZIGmNxRZ4mdRw=",
+      "fingerprint": "e47721320d6f14f29c5e894c78be1e0f8fa831bcecc5862eac48c6140a5eecd7",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-auditor-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAR8Ja3RODbMjHRoM6oz0FhEd6sVZ+u579SSY+4qu/qzc=",
+      "fingerprint": "bf6b88387f18e7ef4fd0a488c33d6339902bb6d35dbbfb2df2e9f7b934bf996e",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-auditor-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEARdrF8roALLOrYQwAJZabpf12+bzX+2y0TtdD30+ZPZs=",
+      "fingerprint": "c511c72769571934d3609e745ef3fff75ae3c47ad26b92fccdac27f1cbea83dd",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-time-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAQSR0I8E0RQ7Sm0RkfAOozepyw58xlT3qEwTPyaPGaSI=",
+      "fingerprint": "e63fe6a174e3bb672ee4e5129c18105af59ad3bf52fa95696b376a72fbe9e4f9",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-time-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA7eK9prZjtfeiFTfIqw1PA6fYB+p9C29Gw7J2IbLAQxs=",
+      "fingerprint": "bfa5fed42711a90b31ef663c9858fc49ef8acb9aa253e147507e9d39a67300f9",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-exporter",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAdtyXjfk5nS9BUOQp+oukeWbXGCD/yUg5iQ0XRjeDrnA=",
+      "fingerprint": "7a26175b6cdc93a5699d3a0d3a55b63a836bc048a4e843e152db51f0c08ac75e",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-importer",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA1mtnAVaEHoHcue3lCz3/Heqqcf7L9rDpm9/I/7y74LM=",
+      "fingerprint": "3764926d3afad77e2b04e2128bf32073555fecbacd77a4b236f7b0b5194bf8d1",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-recovery",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAQHW7USLeRFYHPNdJOrqstHpS83Iouvcg8zw+IAaMEVw=",
+      "fingerprint": "944f79847b93f5f7ccef4a2c4eae393c114b0bc3fc13727746356ffe475bb720",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3338-monitor-1-replacement",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAX9Vfy1H0oF1KNCY9hbtLjsFeTwBWXdPhAfx4n7Pg2YA=",
+      "fingerprint": "6361232bb0b9f7e8748d17c16c961492fdcd33021b002be677d0ce6a27441d36",
+      "revoked": false
+    }
+  ],
+  "trustedIds": {
+    "deploymentAuthority": [
+      "proof-v3338-deployment-authority"
+    ],
+    "provisioningAuthority": [
+      "proof-v3338-provisioning-authority"
+    ],
+    "roles": [
+      "proof-v3338-publisher",
+      "proof-v3338-monitor-1",
+      "proof-v3338-monitor-2",
+      "proof-v3338-monitor-3",
+      "proof-v3338-auditor-1",
+      "proof-v3338-auditor-2",
+      "proof-v3338-time-1",
+      "proof-v3338-time-2",
+      "proof-v3338-exporter",
+      "proof-v3338-importer",
+      "proof-v3338-recovery",
+      "proof-v3338-monitor-1-replacement"
+    ],
+    "ceremonyRecorder": [
+      "proof-v3338-recorder"
+    ],
+    "ceremonyWitnesses": [
+      "proof-v3338-ceremony-witness-1",
+      "proof-v3338-ceremony-witness-2"
+    ],
+    "lifecycleAuthority": [
+      "proof-v3338-lifecycle-authority"
+    ],
+    "securityCustodians": [
+      "proof-v3338-security-1",
+      "proof-v3338-security-2",
+      "proof-v3338-security-3"
+    ],
+    "transparencyLog": [
+      "proof-v3338-log-authority"
+    ],
+    "transparencyWitnesses": [
+      "proof-v3338-log-witness-1",
+      "proof-v3338-log-witness-2"
+    ],
+    "exporter": [
+      "proof-v3338-exporter"
+    ],
+    "importer": [
+      "proof-v3338-importer"
+    ],
+    "recoveryVerifier": [
+      "proof-v3338-recovery"
+    ]
+  },
+  "attacks": {
+    "provisioningReplayBlocked": true,
+    "oldKeyResurrectionBlocked": true,
+    "splitViewDetected": true,
+    "importReceiptRecomputationBlocked": true
+  },
+  "summary": {
+    "roleCount": 11,
+    "provisioningReceiptCount": 11,
+    "transparencyEventCount": 14,
+    "signatureCount": 60
+  },
+  "truthBoundary": {
+    "executionClass": "LOCAL_REHEARSAL",
+    "externalTopologyObserved": false,
+    "externalRoleOwnersObserved": 0,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "g3": "blocked",
+    "productionPromotion": "blocked"
+  }
+}

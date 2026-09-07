@@ -1,0 +1,50 @@
+# fly.toml — ECOS V145
+# ─────────────────────────────────────────────────────────────
+# Deployment configuration for Fly.io
+# Docs: https://fly.io/docs/reference/configuration/
+#
+# To deploy:
+#   1. Install flyctl: https://fly.io/docs/hands-on/install-flyctl/
+#   2. fly auth login
+#   3. fly launch --copy-config   (first time — creates app + postgres)
+#   4. fly secrets set JWT_SECRET=$(openssl rand -base64 48)
+#   5. fly secrets set RESEND_API_KEY=re_xxxx  (or SMTP_DSN=smtps://...)
+#   6. fly secrets set EMAIL_FROM="ECOS <noreply@yourdomain.com>"
+#   7. fly deploy
+
+app = "ecos-api"           # change to your chosen app name
+primary_region = "iad"     # US East (change to: lhr=London, fra=Frankfurt, sin=Singapore)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 3000
+  force_https   = true
+  auto_stop_machines  = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period  = "10s"
+    interval      = "30s"
+    method        = "GET"
+    path          = "/api/v1/health"
+    timeout       = "5s"
+    tls_skip_verify = false
+
+[[vm]]
+  size   = "shared-cpu-1x"   # 256MB — upgrade to performance-1x for production
+  memory = "256mb"
+
+[env]
+  NODE_ENV = "production"
+  PORT     = "3000"
+  LOG_LEVEL = "info"
+  # All secrets (JWT_SECRET, DATABASE_URL, RESEND_API_KEY, etc.)
+  # are set via: fly secrets set KEY=value
+  # Never put secrets in this file.
+
+# Postgres — provisioned separately via: fly postgres create
+# Then: fly postgres attach --app ecos-api <postgres-app-name>
+# This automatically sets DATABASE_URL as a secret.

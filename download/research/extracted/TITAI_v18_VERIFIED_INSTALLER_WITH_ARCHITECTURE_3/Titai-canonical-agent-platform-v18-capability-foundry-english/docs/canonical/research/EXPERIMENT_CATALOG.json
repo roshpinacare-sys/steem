@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "experiments": [
+    {
+      "id": "EXP-001",
+      "title": "Task-specific context pack",
+      "hypothesis": "Compare full-corpus prompting with generated task context under equal model and budget.",
+      "metrics": "Task success, missed criteria, tokens, latency",
+      "decisionRule": "Adopt if success is non-inferior and median prompt tokens fall materially without new omission class.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-002",
+      "title": "Memory value and harm",
+      "hypothesis": "Compare no memory, SQL memory, and optional retrieval adapter.",
+      "metrics": "Consistency, false memory, privacy failures, retrieval precision, tokens",
+      "decisionRule": "Reject any design that cannot reliably correct, forget, and explain retrieval.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-003",
+      "title": "Adaptive reasoning depth",
+      "hypothesis": "Compare direct answer, fixed iteration, and adaptive controller.",
+      "metrics": "Quality, latency, model calls, tool calls, loop failures",
+      "decisionRule": "Adopt only if quality gain exceeds predefined cost and latency ceiling.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-004",
+      "title": "Role-separated agents",
+      "hypothesis": "Compare single agent with planner-builder-verifier under fixed budget.",
+      "metrics": "Task completion, regression rate, human corrections, cost",
+      "decisionRule": "Reject if gains disappear under equal budget or roles self-confirm correlated errors.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-005",
+      "title": "Durable executor backend",
+      "hypothesis": "Compare internal executor with optional workflow engine adapter.",
+      "metrics": "Crash recovery, complexity, latency, operations, portability",
+      "decisionRule": "Select simplest option satisfying recovery and scale profile.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-006",
+      "title": "Tool isolation tiers",
+      "hypothesis": "Compare process, WASI, container sandbox, and microVM for representative tools.",
+      "metrics": "Escape tests, compatibility, cold start, memory, throughput",
+      "decisionRule": "Map risk tiers rather than choosing one universal boundary.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-007",
+      "title": "Local model qualification",
+      "hypothesis": "Benchmark pinned local models and quantizations on Titai workloads.",
+      "metrics": "Quality, structured output, tool use, latency, RAM/VRAM, energy",
+      "decisionRule": "Promote only pinned artifacts meeting workflow-specific thresholds.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-008",
+      "title": "Context compression",
+      "hypothesis": "Compare source selection, extractive compression, summaries, and larger context.",
+      "metrics": "Omission errors, instruction conflicts, quality, tokens",
+      "decisionRule": "Prefer the lowest-token method that meets quality and safety thresholds.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-009",
+      "title": "Retrieval strategy",
+      "hypothesis": "Compare FTS, vector, hybrid, reranking, and temporal filters.",
+      "metrics": "Recall, precision, citation correctness, deletion, latency",
+      "decisionRule": "Optional adapter must beat simple baseline and preserve portability.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-010",
+      "title": "Energy-aware scheduling",
+      "hypothesis": "Compare model, quantization, batch, and concurrency policies.",
+      "metrics": "Quality, latency, throughput, wall energy or labeled proxy",
+      "decisionRule": "No optimization may trade below minimum quality or thermal safety.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-011",
+      "title": "Approval decision quality",
+      "hypothesis": "Compare generic approval with scoped, explainable, editable approval.",
+      "metrics": "Correct approvals, denials, time, fatigue, comprehension",
+      "decisionRule": "Adopt only if users better identify risk without unacceptable friction.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-012",
+      "title": "Policy engine comparison",
+      "hypothesis": "Run identical capability policies on current engine and external adapter.",
+      "metrics": "Correctness, explanation, latency, testability, operations",
+      "decisionRule": "Migrate only on clear net benefit and reversible path.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-013",
+      "title": "MCP security prototype",
+      "hypothesis": "Expose one low-risk server through the broker and adversarial suite.",
+      "metrics": "Permission violations, injection success, error recovery, latency",
+      "decisionRule": "No broad MCP adoption until zero critical permission bypasses.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-014",
+      "title": "Offline recovery",
+      "hypothesis": "Disconnect network, restart components, restore backup, and resume local work.",
+      "metrics": "Data loss, recovery time, feature degradation, audit integrity",
+      "decisionRule": "Core workflows must remain usable without remote dependencies.",
+      "status": "proposed"
+    },
+    {
+      "id": "EXP-015",
+      "title": "Competitor workflow benchmark",
+      "hypothesis": "Run identical user workflows across selected alternatives and Titai.",
+      "metrics": "Completion, control, privacy, recovery, setup, cost",
+      "decisionRule": "Prioritize differentiated outcomes rather than feature count.",
+      "status": "proposed"
+    }
+  ]
+}

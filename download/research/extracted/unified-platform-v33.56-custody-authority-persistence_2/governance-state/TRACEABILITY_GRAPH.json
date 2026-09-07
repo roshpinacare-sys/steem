@@ -1,0 +1,1273 @@
+{
+  "version": "33.56",
+  "status": "updated",
+  "generatedAt": "2026-07-24T07:30:00.000Z",
+  "provenance": [
+    "canonical/proof-v32",
+    "v32.1-source-remine",
+    "v32.2-fourteen-axis-excellence-cycle",
+    "v32.3-external-qualification-readiness-and-internal-debt-closure",
+    "v32.4-fourteen-axis-system-optimization",
+    "v32.5-twenty-two-lens-holistic-assurance",
+    "v32.12-external-qualification-execution-readiness"
+  ],
+  "assumptions": [
+    "Local execution environment and recorded versions are accurate."
+  ],
+  "limitations": [
+    "External runtime, security, legal and human qualification remain outside this package."
+  ],
+  "confidence": "high for repository-local exercised evidence; low for external production qualification",
+  "independentVerificationStatus": "internal role-separated adversarial validation; external certification pending",
+  "ownerRole": "Traceability Auditor",
+  "evidence": [
+    "REQUIREMENT_REGISTRY.json",
+    "CAPABILITY_REGISTRY.json",
+    "EVIDENCE_REGISTRY.json",
+    "V32_2_14_AXIS_SCORECARD.json",
+    "V32_ARCHITECTURE_INTEGRITY.json",
+    "V32_4_ALL_AXIS_SCORECARD.json",
+    "V32_5_22_LENS_HOLISTIC_SCORECARD.json",
+    "V32_5_FINAL_VALIDATION.json",
+    "release-evidence/v33.45/V33_45_MULTI_PACKAGE_UPDATE_TRANSACTION_PROOF.json",
+    "release-evidence/v33.45/V33_45_INDEPENDENT_VERIFICATION.json",
+    "release-evidence/v33.46/V33_46_INDEPENDENT_VERIFICATION.json",
+    "release-evidence/v33.47/V33_47_EXTERNAL_COORDINATOR_JOURNAL_QUALIFICATION_PROOF.json",
+    "release-evidence/v33.47/V33_47_INDEPENDENT_VERIFICATION.json",
+    "release-evidence/v33.48/V33_48_EXTERNAL_COORDINATOR_DEPLOYMENT_EVIDENCE_IMPORT_PROOF.json",
+    "release-evidence/v33.48/V33_48_INDEPENDENT_VERIFICATION.json",
+    "release-evidence/v33.49/V33_49_EXTERNAL_CEREMONY_EXECUTOR_PROOF.json",
+    "release-evidence/v33.49/V33_49_INDEPENDENT_VERIFICATION.json"
+  ],
+  "nextAction": "V33.49-EXECUTE-INDEPENDENT-EXTERNAL-COORDINATOR-DEPLOYMENT",
+  "links": [
+    {
+      "requirement": "V25-REQ-01",
+      "implementation": "strict-canonical-signed-material",
+      "tests": [
+        "canonical-json-hardening-v25"
+      ],
+      "evidence": "EV25-TESTS"
+    },
+    {
+      "requirement": "V25-REQ-02",
+      "implementation": "explicit-byte-domain-hashing",
+      "tests": [
+        "canonical-json-hardening-v25",
+        "wasm-capability-runner"
+      ],
+      "evidence": "EV25-MUTATION"
+    },
+    {
+      "requirement": "V25-REQ-03",
+      "implementation": "persistent-concurrent-replay-ledger",
+      "tests": [
+        "replay-ledger-v25",
+        "evidence-completeness"
+      ],
+      "evidence": "EV25-TESTS"
+    },
+    {
+      "requirement": "V25-REQ-04",
+      "implementation": "bounded-privacy-aware-telemetry",
+      "tests": [
+        "telemetry-hardening-v25"
+      ],
+      "evidence": "EV25-TESTS"
+    },
+    {
+      "requirement": "V25-REQ-05",
+      "implementation": "evidence-bound-action-lifecycle",
+      "tests": [
+        "operational-action-ledger-v25",
+        "browser-e2e"
+      ],
+      "evidence": "EV25-E2E"
+    },
+    {
+      "requirement": "V25-REQ-06",
+      "implementation": "critical-invariant-coverage-map",
+      "tests": [
+        "invariant-coverage-v25"
+      ],
+      "evidence": "EV25-INVARIANTS"
+    },
+    {
+      "requirement": "V25-REQ-07",
+      "implementation": "deterministic-portable-archive",
+      "tests": [
+        "supply-chain-portability-v25",
+        "archive-selftest-v25.py"
+      ],
+      "evidence": "EV25-SUPPLY"
+    },
+    {
+      "requirement": "V25-REQ-08",
+      "implementation": "dependency-origin-and-integrity-policy",
+      "tests": [
+        "supply-chain-portability-v25",
+        "supply-chain-report-v25.mjs"
+      ],
+      "evidence": "EV25-SUPPLY"
+    },
+    {
+      "requirement": "V25-REQ-09",
+      "implementation": "complete-resource-aware-test-scheduler",
+      "tests": [
+        "run-tests-v25-parallel.py",
+        "test-quality-audit-v25.mjs"
+      ],
+      "evidence": "EV25-STABILITY"
+    },
+    {
+      "requirement": "V25-REQ-10",
+      "implementation": "qualification-matrix-v25",
+      "tests": [
+        "governance-consistency"
+      ],
+      "evidence": "EV25-QUAL"
+    },
+    {
+      "requirement": "V27-REQ-01",
+      "implementation": "governed-model-orchestration",
+      "tests": [
+        "governed-model-orchestrator-v27"
+      ],
+      "evidence": "EV27-MUTATION"
+    },
+    {
+      "requirement": "V27-REQ-02",
+      "implementation": "proposal-only-engineering-assistant",
+      "tests": [
+        "governed-engineering-assistant-v27"
+      ],
+      "evidence": "EV27-DESIGN"
+    },
+    {
+      "requirement": "V27-REQ-03",
+      "implementation": "architecture-integrity-and-capability-closure",
+      "tests": [
+        "architecture-integrity-v27"
+      ],
+      "evidence": "EV27-ARCH"
+    },
+    {
+      "requirement": "V27-REQ-04",
+      "implementation": "design-to-evidence-closure",
+      "tests": [
+        "design-closure-v26"
+      ],
+      "evidence": "EV27-DESIGN"
+    },
+    {
+      "requirement": "V27-REQ-05",
+      "implementation": "honest-registry-advisory-classification",
+      "tests": [
+        "supply-chain-advisory-v27"
+      ],
+      "evidence": "EV27-SUPPLY"
+    },
+    {
+      "id": "V28-T1",
+      "requirement": "V28-REQ-02",
+      "implementation": "src/agents/governed-agent.ts",
+      "tests": "tests/governed-agent-branch-v28.test.ts",
+      "mutation": "sensitive-lockfile-policy-bypass",
+      "evidence": "V28_BRANCH_MUTATION_RESULTS.json"
+    },
+    {
+      "requirement": "V32.1-REQ-01",
+      "implementation": "semantic-change-dag",
+      "tests": [
+        "semantic-change-dag-v32_1"
+      ],
+      "evidence": "EV32.1-SOURCE-REMINE-TESTS"
+    },
+    {
+      "requirement": "V32.1-REQ-02",
+      "implementation": "audit-completeness-probe",
+      "tests": [
+        "audit-completeness-v32_1"
+      ],
+      "evidence": "EV32.1-SOURCE-REMINE-TESTS"
+    },
+    {
+      "requirement": "V32.1-REQ-03",
+      "implementation": "model-lifecycle-watchdog",
+      "tests": [
+        "model-lifecycle-watchdog-v32_1"
+      ],
+      "evidence": "EV32.1-SOURCE-REMINE-TESTS"
+    },
+    {
+      "requirement": "V32.1-REQ-04",
+      "implementation": "workspace-continuity-validator",
+      "tests": [
+        "workspace-continuity-v32_1"
+      ],
+      "evidence": "EV32.1-SOURCE-REMINE-TESTS"
+    },
+    {
+      "requirement": "V32.1-REQ-05",
+      "implementation": "uncertainty-assurance-gate",
+      "tests": [
+        "uncertainty-assurance-v32_1"
+      ],
+      "evidence": "EV32.1-SOURCE-REMINE-TESTS"
+    },
+    {
+      "requirement": "V32.1-REQ-06",
+      "implementation": "payment-safety-ledger",
+      "tests": [
+        "payment-safety-v32_1"
+      ],
+      "evidence": "EV32.1-SOURCE-REMINE-TESTS"
+    },
+    {
+      "requirement": "V32.1-REQ-07",
+      "implementation": "atomic-file-store-publication",
+      "tests": [
+        "automation-concurrency-v29"
+      ],
+      "evidence": "EV32.1-SOURCE-REMINE-TESTS"
+    },
+    {
+      "requirement": "V32.2-REQ-01",
+      "implementation": "fourteen-axis-excellence-scorecard",
+      "tests": [
+        "excellence-scorecard-v32_2",
+        "excellence-branch-matrix-v32_2"
+      ],
+      "evidence": "EV32.2-SCORECARD"
+    },
+    {
+      "requirement": "V32.2-REQ-02",
+      "implementation": "source-bound-evidence-freshness",
+      "tests": [
+        "evidence-freshness-v32_2",
+        "excellence-branch-matrix-v32_2"
+      ],
+      "evidence": "EV32.2-FRESHNESS"
+    },
+    {
+      "requirement": "V32.2-REQ-03",
+      "implementation": "module-complexity-budget",
+      "tests": [
+        "complexity-budget-v32_2",
+        "excellence-branch-matrix-v32_2"
+      ],
+      "evidence": "EV32.2-COMPLEXITY"
+    },
+    {
+      "requirement": "V32.2-REQ-04",
+      "implementation": "resilience-scenario-coverage",
+      "tests": [
+        "resilience-coverage-v32_2",
+        "excellence-branch-matrix-v32_2"
+      ],
+      "evidence": "EV32.2-RESILIENCE"
+    },
+    {
+      "requirement": "V32.2-REQ-05",
+      "implementation": "value-hypothesis-claim-governance",
+      "tests": [
+        "value-hypothesis-v32_2",
+        "excellence-branch-matrix-v32_2"
+      ],
+      "evidence": "EV32.2-VALUE"
+    },
+    {
+      "requirement": "V32.2-REQ-06",
+      "implementation": "performance-regression-budget",
+      "tests": [
+        "performance-budget-v32_2",
+        "excellence-branch-matrix-v32_2"
+      ],
+      "evidence": "EV32.2-PERF"
+    },
+    {
+      "requirement": "V32.3-REQ-01",
+      "implementation": "module-complexity-budget",
+      "tests": [
+        "complexity-budget-v32_2",
+        "architecture-v32"
+      ],
+      "evidence": "EV32.3-COMPLEXITY"
+    },
+    {
+      "requirement": "V32.3-REQ-02",
+      "implementation": "external-qualification-aggregate-gate",
+      "tests": [
+        "external-qualification-v32_3",
+        "external-qualification-branch-v32_3"
+      ],
+      "evidence": "EV32.3-EXT-MUTATION"
+    },
+    {
+      "requirement": "V32.3-REQ-03",
+      "implementation": "external-qualification-aggregate-gate",
+      "tests": [
+        "external-qualification-v32_3",
+        "external-qualification-branch-v32_3"
+      ],
+      "evidence": "EV32.3-EXT-READINESS"
+    },
+    {
+      "requirement": "V32.3-REQ-04",
+      "implementation": "external-qualification-aggregate-gate",
+      "tests": [
+        "external-qualification-v32_3"
+      ],
+      "evidence": "EV32.3-EXT-MUTATION"
+    },
+    {
+      "requirement": "V32.3-REQ-05",
+      "implementation": "external-qualification-aggregate-gate",
+      "tests": [
+        "external-qualification-v32_3"
+      ],
+      "evidence": "EV32.3-EXT-STATUS"
+    },
+    {
+      "requirement": "V32.3-REQ-06",
+      "implementation": "external-qualification-aggregate-gate",
+      "tests": [
+        "external-qualification-branch-v32_3"
+      ],
+      "evidence": "EV32.3-EXT-MUTATION"
+    },
+    {
+      "requirement": "V32.3-REQ-07",
+      "implementation": "external-qualification-aggregate-gate",
+      "tests": [
+        "architecture-v32"
+      ],
+      "evidence": "EV32.3-EXT-READINESS"
+    },
+    {
+      "requirement": "V32.3-REQ-08",
+      "implementation": "fourteen-axis-excellence-scorecard",
+      "tests": [
+        "excellence-scorecard-v32_2"
+      ],
+      "evidence": "EV32.3-SCORECARD"
+    },
+    {
+      "requirement": "V32.4-REQ-01",
+      "implementation": "v32.4-change-impact-gate",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-02",
+      "implementation": "v32.4-invariant-model-checker",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-03",
+      "implementation": "v32.4-adversarial-test-planner",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-04",
+      "implementation": "v32.4-trust-blast-radius",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-05",
+      "implementation": "v32.4-crash-consistency-matrix",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-06",
+      "implementation": "v32.4-architecture-entropy",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-07",
+      "implementation": "v32.4-claim-evidence-closure",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-08",
+      "implementation": "v32.4-product-path-benchmark",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-09",
+      "implementation": "v32.4-reproducibility-capsule",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-10",
+      "implementation": "v32.4-recovery-game-day",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-11",
+      "implementation": "v32.4-portability-matrix",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-12",
+      "implementation": "v32.4-operator-task-flow",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-13",
+      "implementation": "v32.4-qualification-execution-plan",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.4-REQ-14",
+      "implementation": "v32.4-change-verification-plan",
+      "tests": [
+        "fourteen-axis-optimization-v32_4"
+      ],
+      "evidence": "EV32.4-ALL-AXIS"
+    },
+    {
+      "requirement": "V32.5-REQ-01",
+      "implementation": "v32.5-maintainability-assurance",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-MAINT"
+    },
+    {
+      "requirement": "V32.5-REQ-02",
+      "implementation": "v32.5-observability-assurance",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-OBS"
+    },
+    {
+      "requirement": "V32.5-REQ-03",
+      "implementation": "v32.5-data-lifecycle-assurance",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-DATA"
+    },
+    {
+      "requirement": "V32.5-REQ-04",
+      "implementation": "v32.5-dependency-resilience",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-DEPS"
+    },
+    {
+      "requirement": "V32.5-REQ-05",
+      "implementation": "v32.5-migration-compatibility",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-MIGRATION"
+    },
+    {
+      "requirement": "V32.5-REQ-06",
+      "implementation": "v32.5-privacy-minimization",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-PRIVACY"
+    },
+    {
+      "requirement": "V32.5-REQ-07",
+      "implementation": "v32.5-accessibility-human-factors",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-ACCESS"
+    },
+    {
+      "requirement": "V32.5-REQ-08",
+      "implementation": "v32.5-cost-capacity-assurance",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-CAPACITY"
+    },
+    {
+      "requirement": "V32.5-REQ-09",
+      "implementation": "v32.5-holistic-scorecard",
+      "tests": [
+        "complementary-metrics-v32_5"
+      ],
+      "evidence": "EV32.5-HOLISTIC"
+    },
+    {
+      "requirement": "V32.7-REQ-01",
+      "implementation": "v32.7-proof-diversity",
+      "tests": [
+        "proof-integration-v32_7"
+      ],
+      "evidence": "EV32.7-PROOF"
+    },
+    {
+      "requirement": "V32.7-REQ-02",
+      "implementation": "v32.7-integration-contract-assurance",
+      "tests": [
+        "proof-integration-v32_7"
+      ],
+      "evidence": "EV32.7-INTEGRATIONS"
+    },
+    {
+      "requirement": "V32.7-REQ-03",
+      "implementation": "v32.7-integration-fault-campaign",
+      "tests": [
+        "proof-integration-v32_7"
+      ],
+      "evidence": "EV32.7-FAULTS"
+    },
+    {
+      "requirement": "V32.7-REQ-04",
+      "implementation": "v32.7-governed-release-assurance",
+      "tests": [
+        "proof-integration-v32_7"
+      ],
+      "evidence": "EV32.7-FINAL"
+    },
+    {
+      "requirement": "V32.8-REQ-01",
+      "implementation": "v32.8-vetted-tool-intake",
+      "tests": [
+        "strategic-adversarial-v32_8",
+        "workflow-security-v32_8"
+      ],
+      "evidence": "EV32.8-WORKFLOW"
+    },
+    {
+      "requirement": "V32.8-REQ-02",
+      "implementation": "v32.8-sarif-security-evidence",
+      "tests": [
+        "strategic-adversarial-v32_8"
+      ],
+      "evidence": "EV32.8-ROAST"
+    },
+    {
+      "requirement": "V32.8-REQ-03",
+      "implementation": "v32.8-attestation-evidence",
+      "tests": [
+        "strategic-adversarial-v32_8"
+      ],
+      "evidence": "EV32.8-TOOLS"
+    },
+    {
+      "requirement": "V32.8-REQ-04",
+      "implementation": "v32.8-policy-evidence",
+      "tests": [
+        "strategic-adversarial-v32_8"
+      ],
+      "evidence": "EV32.8-MUTATION"
+    },
+    {
+      "requirement": "V32.8-REQ-05",
+      "implementation": "v32.8-formal-model-evidence",
+      "tests": [
+        "strategic-adversarial-v32_8"
+      ],
+      "evidence": "EV32.8-STRATEGIC"
+    },
+    {
+      "requirement": "V32.8-REQ-06",
+      "implementation": "v32.8-fuzz-evidence",
+      "tests": [
+        "strategic-adversarial-v32_8"
+      ],
+      "evidence": "EV32.8-FINAL"
+    },
+    {
+      "requirement": "V32.10-REQ-01",
+      "implementation": "native-static-security-sarif",
+      "tests": [
+        "local-execution-assurance-v32_10"
+      ],
+      "evidence": "V32.10-E1"
+    },
+    {
+      "requirement": "V32.10-REQ-02",
+      "implementation": "local-signed-provenance",
+      "tests": [
+        "local-execution-assurance-v32_10"
+      ],
+      "evidence": "V32.10-E1"
+    },
+    {
+      "requirement": "V32.10-REQ-03",
+      "implementation": "native-deterministic-policy",
+      "tests": [
+        "local-execution-assurance-v32_10"
+      ],
+      "evidence": "V32.10-E1"
+    },
+    {
+      "requirement": "V32.10-REQ-04",
+      "implementation": "bounded-release-model-exploration",
+      "tests": [
+        "local-execution-assurance-v32_10"
+      ],
+      "evidence": "V32.10-E1"
+    },
+    {
+      "requirement": "V32.10-REQ-05",
+      "implementation": "seeded-local-fuzz-campaign",
+      "tests": [
+        "local-execution-assurance-v32_10"
+      ],
+      "evidence": "V32.10-E1"
+    },
+    {
+      "requirement": "V32.10-REQ-06",
+      "implementation": "local-monotonic-witness",
+      "tests": [
+        "local-execution-assurance-v32_10"
+      ],
+      "evidence": "V32.10-E1"
+    },
+    {
+      "requirement": "V32.11-REQ-01",
+      "implementation": "run-scoped-execution-ledger",
+      "tests": [
+        "execution-ledger-assurance-v32_11"
+      ],
+      "evidence": "V32.11-E1"
+    },
+    {
+      "requirement": "V32.11-REQ-02",
+      "implementation": "execution-evidence-freshness-gate",
+      "tests": [
+        "execution-ledger-assurance-v32_11"
+      ],
+      "evidence": "V32.11-E1"
+    },
+    {
+      "requirement": "V32.11-REQ-03",
+      "implementation": "exact-version-qualification-binding",
+      "tests": [
+        "governance-consistency",
+        "workspace-continuity-v32_1"
+      ],
+      "evidence": "V32.11-E1"
+    },
+    {
+      "requirement": "V32.13-REQ-01",
+      "implementation": "sovereign-efficiency-fabric",
+      "tests": [
+        "sovereign-efficiency-fabric-v32_13",
+        "sovereign-efficiency-branch-matrix-v32_13"
+      ],
+      "evidence": "EV32.13-EFFICIENCY"
+    },
+    {
+      "requirement": "V32.13-REQ-02",
+      "implementation": "sovereign-topology-optimizer",
+      "tests": [
+        "sovereign-topology-optimizer-v32_13"
+      ],
+      "evidence": "EV32.13-EFFICIENCY"
+    },
+    {
+      "requirement": "V32.13-REQ-03",
+      "implementation": "sovereign-capacity-control",
+      "tests": [
+        "sovereign-capacity-controller-v32_13",
+        "sovereign-capacity-cli-v32_13"
+      ],
+      "evidence": "EV32.13-MUTATION"
+    },
+    {
+      "requirement": "V32.14-REQ-01",
+      "implementation": "frontier-sol-execution-kernel",
+      "tests": [
+        "frontier-execution-kernel-v32_14"
+      ],
+      "evidence": "EV32.14-FRONTIER-BINARY"
+    },
+    {
+      "requirement": "V32.14-REQ-02",
+      "implementation": "proof-carrying-binary-intelligence",
+      "tests": [
+        "proof-carrying-binary-v32_14",
+        "independent-binary-verifier-v32_14",
+        "binary-inspection-cli-v32_14"
+      ],
+      "evidence": "EV32.14-MUTATION"
+    },
+    {
+      "requirement": "V32.14-REQ-03",
+      "implementation": "frontier-comparative-assurance",
+      "tests": [
+        "frontier-comparative-assurance-v32_14"
+      ],
+      "evidence": "EV32.14-FRONTIER-BINARY"
+    },
+    {
+      "requirement": "V32.15-REQ-01",
+      "implementation": "blinded-frontier-tournament",
+      "tests": [
+        "blinded-frontier-tournament-v32_15",
+        "v32_15-causal-controls"
+      ],
+      "evidence": "EV32.15-PROOF"
+    },
+    {
+      "requirement": "V32.15-REQ-02",
+      "implementation": "proof-carrying-wasm-components",
+      "tests": [
+        "proof-carrying-wasm-component-v32_15",
+        "independent-assurance-verifier-v32_15",
+        "v32_15-causal-controls"
+      ],
+      "evidence": "EV32.15-MUTATION"
+    },
+    {
+      "requirement": "V32.15-REQ-03",
+      "implementation": "multi-host-challenge-qualification",
+      "tests": [
+        "multi-host-challenge-v32_15",
+        "independent-assurance-verifier-v32_15",
+        "v32_15-causal-controls"
+      ],
+      "evidence": "EV32.15-FINAL"
+    },
+    {
+      "requirement": "V32.16-REQ-01",
+      "implementation": "observed-wasm-runtime-qualification",
+      "tests": [
+        "wasm-runtime-qualification-v32_16",
+        "v32_16-causal-controls"
+      ],
+      "evidence": "EV32.16-RUNTIME-PROOF"
+    },
+    {
+      "requirement": "V32.16-REQ-02",
+      "implementation": "independent-tournament-transport-observation",
+      "tests": [
+        "external-tournament-transport-v32_16",
+        "v32_16-causal-controls"
+      ],
+      "evidence": "EV32.16-RUNTIME-PROOF"
+    },
+    {
+      "requirement": "V32.16-REQ-03",
+      "implementation": "local-process-failover-execution",
+      "tests": [
+        "local-process-failover-lab-v32_16",
+        "v32_16-causal-controls"
+      ],
+      "evidence": "EV32.16-MUTATION"
+    },
+    {
+      "requirement": "V32.17-REQ-01",
+      "implementation": "src/platform/sovereign-building-blocks-v32_17.ts",
+      "tests": [
+        "sovereign-building-blocks-v32_17",
+        "v32_17-causal-controls"
+      ],
+      "evidence": "EV32.17-MUTATION"
+    },
+    {
+      "requirement": "V32.17-REQ-02",
+      "implementation": "src/runtime/portable-building-block-harness-v32_17.ts",
+      "tests": [
+        "portable-building-block-harness-v32_17",
+        "cncf-sovereign-convergence-v32_17"
+      ],
+      "evidence": "EV32.17-PROOF"
+    },
+    {
+      "requirement": "V32.17-REQ-03",
+      "implementation": "src/app/cncf-sovereign-convergence-v32_17.ts",
+      "tests": [
+        "independent-cncf-verifier-v32_17"
+      ],
+      "evidence": "EV32.17-FINAL"
+    },
+    {
+      "requirement": "V32.18-REQ-01",
+      "implementation": "src/platform/sovereign-control-plane-v32_18.ts",
+      "tests": [
+        "sovereign-control-plane-v32_18",
+        "v32_18-causal-controls"
+      ],
+      "evidence": "EV32.18-MUTATION"
+    },
+    {
+      "requirement": "V32.18-REQ-02",
+      "implementation": "src/platform/sovereign-control-plane-v32_18.ts",
+      "tests": [
+        "sovereign-control-plane-v32_18",
+        "v32_18-causal-controls"
+      ],
+      "evidence": "EV32.18-PROOF"
+    },
+    {
+      "requirement": "V32.18-REQ-03",
+      "implementation": "src/platform/sovereign-control-plane-v32_18.ts",
+      "tests": [
+        "sovereign-control-plane-v32_18",
+        "v32_18-causal-controls"
+      ],
+      "evidence": "EV32.18-MUTATION"
+    },
+    {
+      "requirement": "V32.18-REQ-04",
+      "implementation": "src/platform/sovereign-control-plane-v32_18.ts",
+      "tests": [
+        "sovereign-control-plane-v32_18",
+        "cncf-gold-mine-extraction-v32_18"
+      ],
+      "evidence": "EV32.18-PROOF"
+    },
+    {
+      "requirement": "V32.18-REQ-05",
+      "implementation": "src/app/cncf-gold-mine-extraction-v32_18.ts",
+      "tests": [
+        "sovereign-control-plane-v32_18",
+        "independent-gold-mine-verifier-v32_18"
+      ],
+      "evidence": "EV32.18-FINAL"
+    },
+    {
+      "requirement": "V33.35-REQ-01",
+      "implementation": "src/app/expired-coordinator-takeover-v33_35.ts",
+      "tests": [
+        "expired-coordinator-takeover-v33_35"
+      ],
+      "evidence": "EV33.35-TAKEOVER"
+    },
+    {
+      "requirement": "V33.37-REQ-01",
+      "implementation": "src/app/external-qualification-deployment-import-v33_37.ts",
+      "tests": [
+        "external-qualification-deployment-import-v33_37"
+      ],
+      "evidence": "EV33.37-DEPLOYMENT-IMPORT"
+    },
+    {
+      "requirement": "V33.38-REQ-01",
+      "implementation": "src/app/external-qualification-custody-ceremony-v33_38.ts",
+      "tests": [
+        "external-qualification-custody-ceremony-v33_38"
+      ],
+      "evidence": "EV33.38-CUSTODY-CEREMONY"
+    },
+    {
+      "requirement": "V33.38-REQ-02",
+      "implementation": "src/app/external-qualification-custody-ceremony-v33_38.ts",
+      "tests": [
+        "external-qualification-custody-ceremony-v33_38"
+      ],
+      "evidence": "EV33.38-CUSTODY-CEREMONY"
+    },
+    {
+      "requirement": "V33.38-REQ-03",
+      "implementation": "src/app/external-qualification-custody-ceremony-v33_38.ts",
+      "tests": [
+        "external-qualification-custody-ceremony-v33_38"
+      ],
+      "evidence": "EV33.38-CUSTODY-CEREMONY"
+    },
+    {
+      "requirement": "V33.38-REQ-04",
+      "implementation": "src/app/external-qualification-custody-ceremony-v33_38.ts",
+      "tests": [
+        "external-qualification-custody-ceremony-v33_38"
+      ],
+      "evidence": "EV33.38-CUSTODY-CEREMONY"
+    },
+    {
+      "id": "TRACE-V33.39-REQ-01",
+      "requirement": "V33.39-REQ-01",
+      "implementation": "src/app/external-custody-hsm-threshold-recovery-v33_39.ts",
+      "tests": [
+        "external-custody-hsm-threshold-recovery-v33_39"
+      ],
+      "evidence": "EV33.39-HSM-THRESHOLD-RECOVERY"
+    },
+    {
+      "id": "TRACE-V33.39-REQ-02",
+      "requirement": "V33.39-REQ-02",
+      "implementation": "src/app/external-custody-hsm-threshold-recovery-v33_39.ts",
+      "tests": [
+        "external-custody-hsm-threshold-recovery-v33_39"
+      ],
+      "evidence": "EV33.39-HSM-THRESHOLD-RECOVERY"
+    },
+    {
+      "id": "TRACE-V33.39-REQ-03",
+      "requirement": "V33.39-REQ-03",
+      "implementation": "src/app/external-custody-hsm-threshold-recovery-v33_39.ts",
+      "tests": [
+        "external-custody-hsm-threshold-recovery-v33_39"
+      ],
+      "evidence": "EV33.39-HSM-THRESHOLD-RECOVERY"
+    },
+    {
+      "id": "TRACE-V33.39-REQ-04",
+      "requirement": "V33.39-REQ-04",
+      "implementation": "src/app/external-custody-hsm-threshold-recovery-v33_39.ts",
+      "tests": [
+        "external-custody-hsm-threshold-recovery-v33_39"
+      ],
+      "evidence": "EV33.39-HSM-THRESHOLD-RECOVERY"
+    },
+    {
+      "id": "TRACE-V33.40-REQ-01",
+      "requirement": "V33.40-REQ-01",
+      "implementation": "src/app/hsm-interoperability-remote-attestation-v33_40.ts",
+      "tests": [
+        "hsm-interoperability-remote-attestation-v33_40"
+      ],
+      "evidence": "EV33.40-HSM-INTEROPERABILITY"
+    },
+    {
+      "id": "TRACE-V33.40-REQ-02",
+      "requirement": "V33.40-REQ-02",
+      "implementation": "src/app/hsm-interoperability-remote-attestation-v33_40.ts",
+      "tests": [
+        "hsm-interoperability-remote-attestation-v33_40"
+      ],
+      "evidence": "EV33.40-HSM-INTEROPERABILITY"
+    },
+    {
+      "id": "TRACE-V33.40-REQ-03",
+      "requirement": "V33.40-REQ-03",
+      "implementation": "src/app/hsm-interoperability-remote-attestation-v33_40.ts",
+      "tests": [
+        "hsm-interoperability-remote-attestation-v33_40"
+      ],
+      "evidence": "EV33.40-HSM-INTEROPERABILITY"
+    },
+    {
+      "id": "TRACE-V33.40-REQ-04",
+      "requirement": "V33.40-REQ-04",
+      "implementation": "src/app/hsm-interoperability-remote-attestation-v33_40.ts",
+      "tests": [
+        "hsm-interoperability-remote-attestation-v33_40"
+      ],
+      "evidence": "EV33.40-HSM-INTEROPERABILITY"
+    },
+    {
+      "id": "TRACE-V33.41-REQ-01",
+      "requirement": "V33.41-REQ-01",
+      "implementation": "src/app/external-provider-onboarding-conformance-v33_41.ts",
+      "tests": [
+        "external-provider-onboarding-conformance-v33_41"
+      ],
+      "evidence": "EV33.41-PROVIDER-ONBOARDING-CONFORMANCE"
+    },
+    {
+      "id": "TRACE-V33.41-REQ-02",
+      "requirement": "V33.41-REQ-02",
+      "implementation": "src/app/external-provider-onboarding-conformance-v33_41.ts",
+      "tests": [
+        "external-provider-onboarding-conformance-v33_41"
+      ],
+      "evidence": "EV33.41-PROVIDER-ONBOARDING-CONFORMANCE"
+    },
+    {
+      "id": "TRACE-V33.41-REQ-03",
+      "requirement": "V33.41-REQ-03",
+      "implementation": "src/app/external-provider-onboarding-conformance-v33_41.ts",
+      "tests": [
+        "external-provider-onboarding-conformance-v33_41"
+      ],
+      "evidence": "EV33.41-PROVIDER-ONBOARDING-CONFORMANCE"
+    },
+    {
+      "id": "TRACE-V33.41-REQ-04",
+      "requirement": "V33.41-REQ-04",
+      "implementation": "src/app/external-provider-onboarding-conformance-v33_41.ts",
+      "tests": [
+        "external-provider-onboarding-conformance-v33_41"
+      ],
+      "evidence": "EV33.41-PROVIDER-ONBOARDING-CONFORMANCE"
+    },
+    {
+      "id": "TRACE-V33.42-REQ-01",
+      "requirement": "V33.42-REQ-01",
+      "implementation": "src/supply-chain/hermetic-dependency-capsule-v33_42.ts",
+      "tests": [
+        "hermetic-dependency-capsule-v33_42"
+      ],
+      "evidence": "EV33.42-HERMETIC-DEPENDENCY-CAPSULE"
+    },
+    {
+      "id": "TRACE-V33.42-REQ-02",
+      "requirement": "V33.42-REQ-02",
+      "implementation": "scripts/hermetic-dependency-capsule-proof-v33_42.mjs",
+      "tests": [
+        "hermetic-dependency-capsule-v33_42"
+      ],
+      "evidence": "EV33.42-HERMETIC-DEPENDENCY-CAPSULE"
+    },
+    {
+      "id": "TRACE-V33.42-REQ-03",
+      "requirement": "V33.42-REQ-03",
+      "implementation": "scripts/verify-hermetic-dependency-capsule-v33_42.mjs",
+      "tests": [
+        "hermetic-dependency-capsule-v33_42"
+      ],
+      "evidence": "EV33.42-HERMETIC-DEPENDENCY-CAPSULE"
+    },
+    {
+      "id": "TRACE-V33.43-REQ-01",
+      "requirement": "V33.43-REQ-01",
+      "implementation": "src/supply-chain/dependency-capsule-lifecycle-v33_43.ts",
+      "tests": [
+        "dependency-capsule-lifecycle-v33_43"
+      ],
+      "evidence": "EV33.43-DEPENDENCY-CAPSULE-LIFECYCLE"
+    },
+    {
+      "id": "TRACE-V33.43-REQ-02",
+      "requirement": "V33.43-REQ-02",
+      "implementation": "scripts/dependency-capsule-lifecycle-proof-v33_43.mjs",
+      "tests": [
+        "dependency-capsule-lifecycle-v33_43"
+      ],
+      "evidence": "EV33.43-DEPENDENCY-CAPSULE-LIFECYCLE"
+    },
+    {
+      "id": "TRACE-V33.43-REQ-03",
+      "requirement": "V33.43-REQ-03",
+      "implementation": "scripts/verify-dependency-capsule-lifecycle-v33_43.mjs",
+      "tests": [
+        "dependency-capsule-lifecycle-v33_43"
+      ],
+      "evidence": "EV33.43-DEPENDENCY-CAPSULE-LIFECYCLE"
+    },
+    {
+      "id": "TRACE-V33.44-REQ-01",
+      "requirement": "V33.44-REQ-01",
+      "implementation": "src/supply-chain/dependency-update-planner-v33_44.ts",
+      "tests": [
+        "dependency-update-planner-v33_44"
+      ],
+      "evidence": "EV33.44-DEPENDENCY-UPDATE-PLANNER"
+    },
+    {
+      "id": "TRACE-V33.45-REQ-01",
+      "requirement": "V33.45-REQ-01",
+      "implementation": "src/supply-chain/multi-package-update-transaction-v33_45.ts",
+      "tests": [
+        "multi-package-update-transaction-v33_45"
+      ],
+      "evidence": "EV33.45-MULTI-PACKAGE-UPDATE-TRANSACTION"
+    },
+    {
+      "id": "TRACE-V33.45-REQ-02",
+      "requirement": "V33.45-REQ-02",
+      "implementation": "scripts/verify-multi-package-update-transaction-v33_45.mjs",
+      "tests": [
+        "multi-package-update-transaction-v33_45"
+      ],
+      "evidence": "EV33.45-MULTI-PACKAGE-UPDATE-TRANSACTION"
+    },
+    {
+      "id": "TRACE-V33.46-REQ-01",
+      "requirement": "V33.46-REQ-01",
+      "implementation": "src/supply-chain/durable-transaction-coordinator-v33_46.ts",
+      "tests": [
+        "durable-transaction-coordinator-v33_46"
+      ],
+      "evidence": "V33.46-E1"
+    },
+    {
+      "id": "TRACE-V33.46-REQ-02",
+      "requirement": "V33.46-REQ-02",
+      "implementation": "scripts/verify-durable-transaction-coordinator-v33_46.mjs",
+      "tests": [
+        "durable-transaction-coordinator-v33_46"
+      ],
+      "evidence": "V33.46-E1"
+    },
+    {
+      "id": "TRACE-V33.47-REQ-01",
+      "requirement": "V33.47-REQ-01",
+      "implementation": "src/supply-chain/external-coordinator-journal-qualification-v33_47.ts",
+      "tests": [
+        "external-coordinator-journal-qualification-v33_47"
+      ],
+      "evidence": "V33.47-E1"
+    },
+    {
+      "id": "TRACE-V33.47-REQ-02",
+      "requirement": "V33.47-REQ-02",
+      "implementation": "scripts/verify-external-coordinator-journal-qualification-v33_47.mjs",
+      "tests": [
+        "external-coordinator-journal-qualification-v33_47"
+      ],
+      "evidence": "V33.47-E1"
+    },
+    {
+      "id": "TRACE-V33.48-REQ-01",
+      "requirement": "V33.48-REQ-01",
+      "capability": "external-coordinator-deployment-exact-evidence-import-and-durable-store-recovery-v33.48",
+      "test": "tests/external-coordinator-deployment-evidence-import-v33_48.test.ts",
+      "evidence": "V33.48-E1"
+    },
+    {
+      "id": "TRACE-V33.48-REQ-02",
+      "requirement": "V33.48-REQ-02",
+      "capability": "external-coordinator-deployment-exact-evidence-import-and-durable-store-recovery-v33.48",
+      "test": "tests/external-coordinator-deployment-evidence-import-v33_48.test.ts",
+      "evidence": "V33.48-E1"
+    },
+    {
+      "id": "TRACE-V33.49-REQ-01",
+      "requirement": "V33.49-REQ-01",
+      "capability": "external-ceremony-enrollment-revocation-sealed-transfer-and-import-gate-v33.49",
+      "test": "tests/external-ceremony-executor-v33_49.test.ts",
+      "evidence": "V33.49-E1"
+    },
+    {
+      "id": "TRACE-V33.49-REQ-02",
+      "requirement": "V33.49-REQ-02",
+      "capability": "external-ceremony-enrollment-revocation-sealed-transfer-and-import-gate-v33.49",
+      "test": "tests/external-ceremony-executor-v33_49.test.ts",
+      "evidence": "V33.49-E1"
+    },
+    {
+      "id": "TRACE-V33.50-REQ-01",
+      "requirement": "V33.50-REQ-01",
+      "capability": "ceremony-evidence-intake-mutual-auth-quarantine-replacement-and-readiness-v33.50",
+      "test": "tests/ceremony-evidence-intake-portal-v33_50.test.ts",
+      "evidence": "V33.50-E1"
+    },
+    {
+      "id": "TRACE-V33.50-REQ-02",
+      "requirement": "V33.50-REQ-02",
+      "capability": "ceremony-evidence-intake-mutual-auth-quarantine-replacement-and-readiness-v33.50",
+      "test": "tests/ceremony-evidence-intake-portal-v33_50.test.ts",
+      "evidence": "V33.50-E1"
+    },
+    {
+      "id": "TRACE-V33.51-REQ-01",
+      "requirement": "V33.51-REQ-01",
+      "capability": "evidence-intake-operations-sla-dual-control-dispute-resubmission-and-readiness-v33.51",
+      "test": "tests/evidence-intake-operations-plane-v33_51.test.ts",
+      "evidence": "V33.51-E1"
+    },
+    {
+      "id": "TRACE-V33.51-REQ-02",
+      "requirement": "V33.51-REQ-02",
+      "capability": "evidence-intake-operations-sla-dual-control-dispute-resubmission-and-readiness-v33.51",
+      "test": "tests/evidence-intake-operations-plane-v33_51.test.ts",
+      "evidence": "V33.51-E1"
+    },
+    {
+      "id": "TRACE-V33.52-REQ-01",
+      "requirement": "V33.52-REQ-01",
+      "capability": "evidence-intake-operations-persistence-durable-queues-worker-fencing-crash-recovery-backpressure-and-audit-replay-v33.52",
+      "test": "tests/evidence-intake-operations-persistence-v33_52.test.ts",
+      "evidence": "V33.52-E1"
+    },
+    {
+      "id": "TRACE-V33.52-REQ-02",
+      "requirement": "V33.52-REQ-02",
+      "capability": "evidence-intake-operations-persistence-durable-queues-worker-fencing-crash-recovery-backpressure-and-audit-replay-v33.52",
+      "test": "tests/evidence-intake-operations-persistence-v33_52.test.ts",
+      "evidence": "V33.52-E1"
+    },
+    {
+      "id": "TRACE-V33.53-REQ-01",
+      "requirement": "V33.53-REQ-01",
+      "capability": "evidence-intake-operations-persistence-infrastructure-qualification-v33.53",
+      "test": "tests/evidence-intake-operations-persistence-qualification-v33_53.test.ts",
+      "evidence": "V33.53-E1"
+    },
+    {
+      "id": "TRACE-V33.53-REQ-02",
+      "requirement": "V33.53-REQ-02",
+      "capability": "evidence-intake-operations-persistence-infrastructure-qualification-v33.53",
+      "test": "tests/evidence-intake-operations-persistence-qualification-v33_53.test.ts",
+      "evidence": "V33.53-E1"
+    },
+    {
+      "id": "TRACE-V33.54-REQ-01",
+      "requirement": "V33.54-REQ-01",
+      "capability": "persistence-qualification-execution-bundle-v33.54",
+      "test": "tests/persistence-qualification-execution-bundle-v33_54.test.ts",
+      "evidence": "V33.54-E1"
+    },
+    {
+      "id": "TRACE-V33.54-REQ-02",
+      "requirement": "V33.54-REQ-02",
+      "capability": "persistence-qualification-execution-bundle-v33.54",
+      "test": "tests/persistence-qualification-execution-bundle-v33_54.test.ts",
+      "evidence": "V33.54-E1"
+    },
+    {
+      "id": "TRACE-V33.55-REQ-01",
+      "requirement": "V33.55-REQ-01",
+      "capability": "external-evidence-custody-transport-v33.55",
+      "test": "tests/external-evidence-custody-transport-v33_55.test.ts",
+      "evidence": "V33.55-E1"
+    },
+    {
+      "id": "TRACE-V33.55-REQ-02",
+      "requirement": "V33.55-REQ-02",
+      "capability": "external-evidence-custody-transport-v33.55",
+      "test": "tests/external-evidence-custody-transport-v33_55.test.ts",
+      "evidence": "V33.55-E1"
+    },
+    {
+      "id": "TRACE-V33.56-REQ-01",
+      "requirement": "V33.56-REQ-01",
+      "capability": "custody-authority-persistence-v33.56",
+      "test": "tests/custody-authority-persistence-v33_56.test.ts",
+      "evidence": "V33.56-E1"
+    },
+    {
+      "id": "TRACE-V33.56-REQ-02",
+      "requirement": "V33.56-REQ-02",
+      "capability": "custody-authority-persistence-v33.56",
+      "test": "tests/custody-authority-persistence-v33_56.test.ts",
+      "evidence": "V33.56-E1"
+    }
+  ],
+  "updatedAt": "2026-07-24T07:30:00.000Z"
+}

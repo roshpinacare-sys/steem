@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0.0",
+  "version": "33.0",
+  "generatedAt": "2026-07-21T03:47:09.180832Z",
+  "gate": "G0",
+  "status": "passed",
+  "classification": "reproducible-local-truth-baseline-production-blocked",
+  "initialFinding": {
+    "status": "closed-after-reproduction-campaign",
+    "description": "An initial harness observation reported a completed TAP stream without clean control return. No runtime code change was claimed. Subsequent authoritative runs disproved a persistent open-handle defect.",
+    "blockerRecord": "docs/V33_0_TEST_RUNNER_LIVENESS_BLOCKER.md"
+  },
+  "namespaceCorrection": {
+    "status": "passed",
+    "finding": "V33 registries were incorrectly placed inside the v32.18 governance-state namespace, causing historical governance version drift.",
+    "correction": "Moved V33 overlay registries to v33/governance-state; the v32.18 truth-map implementation was not weakened.",
+    "truthMapStatus": "passed"
+  },
+  "consecutiveCanonicalReruns": [
+    {
+      "run": 1,
+      "path": "evidence/generated/v33-g0-reruns/run-1-results.json",
+      "sha256": "323c2a849e58a0b3a4fe67a7f2093f5a241e218ff81df08275ccfa42768034bf",
+      "status": "passed",
+      "tests": 1167,
+      "passed": 1167,
+      "failed": 0,
+      "wallDurationMs": 43049.706,
+      "runnerExitCode": 0,
+      "timedOut": false,
+      "forceExitDisabled": true
+    },
+    {
+      "run": 2,
+      "path": "evidence/generated/v33-g0-reruns/run-2-results.json",
+      "sha256": "42c21b6e88baa8bac086b45819d195cc454f4ae668de33d47f7550270a060e9c",
+      "status": "passed",
+      "tests": 1167,
+      "passed": 1167,
+      "failed": 0,
+      "wallDurationMs": 43024.347,
+      "runnerExitCode": 0,
+      "timedOut": false,
+      "forceExitDisabled": true
+    },
+    {
+      "run": 3,
+      "path": "evidence/generated/v33-g0-reruns/run-3-results.json",
+      "sha256": "7e5942c5c18fef252d110c378a2546a3a27d20bf7337a378d08d8fd9e1f299e6",
+      "status": "passed",
+      "tests": 1167,
+      "passed": 1167,
+      "failed": 0,
+      "wallDurationMs": 43347.754,
+      "runnerExitCode": 0,
+      "timedOut": false,
+      "forceExitDisabled": true
+    }
+  ],
+  "authoritativeValidation": {
+    "path": "evidence/runs/v33-g0-authoritative-2/V32_18_EXECUTION_COMPLETION.json",
+    "sha256": "386d3532d797168b0e7fbc9ea3241e934158d92539e31583e0941dcbc788197a",
+    "status": "passed",
+    "stepsPassed": 24,
+    "sourceDigest": "ea69181aa2e5e5098fad6fb836914b48021ed7f7ec7135775fe12cd7e0159753",
+    "productionPromotion": "blocked",
+    "externalQualification": "not_executed",
+    "finalValidationPath": "evidence/runs/v33-g0-authoritative-2/V32_18_FINAL_VALIDATION.json",
+    "finalValidationSha256": "eb4ed455c358476afed2f3033768f22c7f75cf936cb631aeb0109e6a37cf7251",
+    "tests": {
+      "total": 1167,
+      "passed": 1167,
+      "failed": 0,
+      "skipped": 0,
+      "testFiles": 185
+    },
+    "mutations": {
+      "localAssurance": 12,
+      "executionLedger": 9,
+      "externalIntegrity": 24,
+      "sovereignEfficiency": 15,
+      "frontierBinary": 19,
+      "frontierTournamentWasm": 17,
+      "runtimeExternalFailover": 11,
+      "cncfSovereignConvergence": 25,
+      "cncfGoldMine": 13,
+      "total": 145
+    },
+    "coverage": {
+      "lines": 99.51,
+      "branches": 96.18,
+      "functions": 98.58
+    },
+    "architecture": {
+      "capabilityPaths": 99,
+      "closedPaths": 99,
+      "sourceCycles": 0,
+      "untestedSources": 0
+    }
+  },
+  "residualLimitations": [
+    "External PostgreSQL, KMS/HSM, workload identity, multi-host, isolation and independent human qualification remain unexecuted.",
+    "Production promotion remains blocked.",
+    "The initial non-return observation was not reproduced; recurrence must reopen the liveness incident."
+  ],
+  "nextGate": "G1"
+}

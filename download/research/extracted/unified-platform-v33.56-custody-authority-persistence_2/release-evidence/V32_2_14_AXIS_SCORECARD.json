@@ -1,0 +1,530 @@
+{
+  "generatedAt": "2026-07-18T04:10:16.978Z",
+  "scoringMethod": "rule-derived, evidence-capped and blocker-preserving; project scores measure system proof, cycle scores measure this change cycle against its declared scope",
+  "scoringRules": {
+    "requirementFidelity": "96 only when all governance registries are v32.2 and every v32.2 requirement has capability and traceability closure.",
+    "correctness": "98 only with all tests passing and zero failed tests.",
+    "adversarial": "45% branch coverage, 35% authentic mutation kill rate, 20% test-quality gate.",
+    "security": "Local proof is capped at 84 until authorized HSM/KMS and external monotonic witness exist.",
+    "performance": "Local normalized suite performance is capped at 78 and is not a product SLO.",
+    "productValue": "Protocol readiness is capped below 50 until measured human evidence exists.",
+    "externalReadiness": "Environment-blocked PostgreSQL and absent independent qualification cap the project score at 25.",
+    "cycleExecution": "Scores whether the cycle implemented, tested and honestly bounded the declared improvement, including external blockers it could not execute."
+  },
+  "version": "32.2",
+  "status": "BLOCK",
+  "readiness": "INTEGRATED_PILOT",
+  "productionPromotion": "BLOCKED",
+  "metrics": {
+    "axisCount": 14,
+    "totalWeight": 100,
+    "projectWeightedScore": 86.62,
+    "cycleWeightedScore": 95.55,
+    "confidenceAdjustedProjectScore": 77.9,
+    "confidenceAdjustedCycleScore": 83.01,
+    "minimumProjectScore": 25,
+    "minimumCycleScore": 91,
+    "improvementCount": 13,
+    "regressionCount": 0,
+    "blockerCount": 6,
+    "materialityThresholdPoints": 1
+  },
+  "axes": [
+    {
+      "axisId": "requirement-fidelity",
+      "projectScore": 96,
+      "cycleScore": 97,
+      "confidence": 0.95,
+      "evidenceRefs": [
+        "V32_2_14_AXIS_SCORECARD.json",
+        "governance-state/TRACEABILITY_GRAPH.json"
+      ],
+      "limitations": [],
+      "blockers": [],
+      "weight": 7,
+      "projectFloor": 85,
+      "cycleFloor": 85,
+      "productionFloor": 92,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 91.2,
+      "confidenceAdjustedCycleScore": 92.15,
+      "deltaProjectScore": 12,
+      "deltaCycleScore": 15,
+      "status": "PASS"
+    },
+    {
+      "axisId": "correctness-invariants",
+      "projectScore": 98,
+      "cycleScore": 98,
+      "confidence": 0.97,
+      "evidenceRefs": [
+        "V32_INTEGRATION_CLOSURE.json",
+        "V32_TEST_RESULTS.json"
+      ],
+      "limitations": [
+        "repository_local_proof"
+      ],
+      "blockers": [],
+      "weight": 10,
+      "projectFloor": 90,
+      "cycleFloor": 90,
+      "productionFloor": 96,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 95.06,
+      "confidenceAdjustedCycleScore": 95.06,
+      "deltaProjectScore": 1,
+      "deltaCycleScore": 4,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "adversarial-test-depth",
+      "projectScore": 98.28,
+      "cycleScore": 97,
+      "confidence": 0.95,
+      "evidenceRefs": [
+        "V32_2_EXCELLENCE_MUTATION_RESULTS.json",
+        "V32_COVERAGE_REPORT.json",
+        "V32_CREDENTIAL_SOVEREIGNTY_MUTATION_RESULTS.json"
+      ],
+      "limitations": [
+        "targeted_mutation_not_full_mutation_of_every_module"
+      ],
+      "blockers": [],
+      "weight": 9,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 93.37,
+      "confidenceAdjustedCycleScore": 92.15,
+      "deltaProjectScore": 5.28,
+      "deltaCycleScore": 8,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "security-trust-sovereignty",
+      "projectScore": 84,
+      "cycleScore": 94,
+      "confidence": 0.84,
+      "evidenceRefs": [
+        "V32_CREDENTIAL_SOVEREIGNTY_PROOF.json"
+      ],
+      "limitations": [
+        "local_test_keys",
+        "single_host_trust_anchor"
+      ],
+      "blockers": [
+        "authorized_hsm_or_kms_absent",
+        "external_monotonic_witness_absent"
+      ],
+      "weight": 10,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 96,
+      "promotionCritical": true,
+      "projectGap": 4,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 70.56,
+      "confidenceAdjustedCycleScore": 78.96,
+      "deltaProjectScore": 0,
+      "deltaCycleScore": 3,
+      "status": "BLOCK"
+    },
+    {
+      "axisId": "durability-concurrency-consistency",
+      "projectScore": 94,
+      "cycleScore": 96,
+      "confidence": 0.92,
+      "evidenceRefs": [
+        "V32_2_RESILIENCE_COVERAGE.json",
+        "V32_LOCAL_DR_REHEARSAL.json"
+      ],
+      "limitations": [
+        "single_host_persistence"
+      ],
+      "blockers": [],
+      "weight": 9,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 86.48,
+      "confidenceAdjustedCycleScore": 88.32,
+      "deltaProjectScore": 2,
+      "deltaCycleScore": 2,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "architecture-modularity",
+      "projectScore": 95,
+      "cycleScore": 96,
+      "confidence": 0.95,
+      "evidenceRefs": [
+        "V32_2_COMPLEXITY_BUDGET.json",
+        "V32_ARCHITECTURE_INTEGRITY.json"
+      ],
+      "limitations": [
+        "bounded_complexity_warnings"
+      ],
+      "blockers": [],
+      "weight": 8,
+      "projectFloor": 85,
+      "cycleFloor": 85,
+      "productionFloor": 93,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 90.25,
+      "confidenceAdjustedCycleScore": 91.2,
+      "deltaProjectScore": 3,
+      "deltaCycleScore": 6,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "evidence-integrity-traceability",
+      "projectScore": 96,
+      "cycleScore": 98,
+      "confidence": 0.96,
+      "evidenceRefs": [
+        "V32_2_EVIDENCE_FRESHNESS.json",
+        "governance-state/EVIDENCE_REGISTRY.json"
+      ],
+      "limitations": [
+        "external_truth_not_proven"
+      ],
+      "blockers": [],
+      "weight": 8,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 96,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 92.16,
+      "confidenceAdjustedCycleScore": 94.08,
+      "deltaProjectScore": 14,
+      "deltaCycleScore": 14,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "performance-resource-efficiency",
+      "projectScore": 78,
+      "cycleScore": 92,
+      "confidence": 0.78,
+      "evidenceRefs": [
+        "V32_2_PERFORMANCE_BUDGET.json"
+      ],
+      "limitations": [
+        "local_test_metric_not_product_slo"
+      ],
+      "blockers": [],
+      "weight": 6,
+      "projectFloor": 75,
+      "cycleFloor": 80,
+      "productionFloor": 90,
+      "promotionCritical": false,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 60.84,
+      "confidenceAdjustedCycleScore": 71.76,
+      "deltaProjectScore": 10,
+      "deltaCycleScore": 16,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "stability-determinism",
+      "projectScore": 97.31,
+      "cycleScore": 97,
+      "confidence": 0.96,
+      "evidenceRefs": [
+        "V32_STABILITY_REPORT.json"
+      ],
+      "limitations": [
+        "single_host_stability"
+      ],
+      "blockers": [],
+      "weight": 6,
+      "projectFloor": 88,
+      "cycleFloor": 88,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 93.42,
+      "confidenceAdjustedCycleScore": 93.12,
+      "deltaProjectScore": 0.31,
+      "deltaCycleScore": 1,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "operability-recovery",
+      "projectScore": 91,
+      "cycleScore": 95,
+      "confidence": 0.9,
+      "evidenceRefs": [
+        "V32_2_RESILIENCE_COVERAGE.json",
+        "V32_LOCAL_DR_REHEARSAL.json",
+        "V32_OPERATIONAL_ACTION_CENTER.json"
+      ],
+      "limitations": [
+        "multi_region_recovery_unqualified"
+      ],
+      "blockers": [],
+      "weight": 7,
+      "projectFloor": 82,
+      "cycleFloor": 85,
+      "productionFloor": 94,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 81.9,
+      "confidenceAdjustedCycleScore": 85.5,
+      "deltaProjectScore": 7,
+      "deltaCycleScore": 8,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "portability-supply-chain-isolation",
+      "projectScore": 88,
+      "cycleScore": 93,
+      "confidence": 0.87,
+      "evidenceRefs": [
+        "V32_LINUX_ISOLATION.json",
+        "V32_SUPPLY_CHAIN_REPORT.json"
+      ],
+      "limitations": [
+        "independent_isolation_review_absent"
+      ],
+      "blockers": [],
+      "weight": 6,
+      "projectFloor": 82,
+      "cycleFloor": 85,
+      "productionFloor": 95,
+      "promotionCritical": true,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 76.56,
+      "confidenceAdjustedCycleScore": 80.91,
+      "deltaProjectScore": 2,
+      "deltaCycleScore": 4,
+      "status": "WATCH"
+    },
+    {
+      "axisId": "product-value-operator-ux",
+      "projectScore": 48,
+      "cycleScore": 91,
+      "confidence": 0.52,
+      "evidenceRefs": [
+        "V32_2_VALUE_HYPOTHESIS_REPORT.json",
+        "V32_HUMAN_PILOT_PROTOCOL.json"
+      ],
+      "limitations": [
+        "commercial_value_unmeasured",
+        "human_pilot_not_executed"
+      ],
+      "blockers": [
+        "consented_comparative_human_pilot_absent"
+      ],
+      "weight": 6,
+      "projectFloor": 60,
+      "cycleFloor": 80,
+      "productionFloor": 90,
+      "promotionCritical": false,
+      "projectGap": 12,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 24.96,
+      "confidenceAdjustedCycleScore": 47.32,
+      "deltaProjectScore": 8,
+      "deltaCycleScore": 21,
+      "status": "BLOCK"
+    },
+    {
+      "axisId": "external-readiness-scalability",
+      "projectScore": 25,
+      "cycleScore": 94,
+      "confidence": 0.38,
+      "evidenceRefs": [
+        "V32_POSTGRES_QUALIFICATION.json",
+        "V32_QUALIFICATION_MATRIX.json"
+      ],
+      "limitations": [
+        "external_infrastructure_outside_workspace"
+      ],
+      "blockers": [
+        "independent_security_review_absent",
+        "multi_host_revocation_unqualified",
+        "postgres_failover_pitr_unqualified"
+      ],
+      "weight": 5,
+      "projectFloor": 35,
+      "cycleFloor": 70,
+      "productionFloor": 92,
+      "promotionCritical": true,
+      "projectGap": 10,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 9.5,
+      "confidenceAdjustedCycleScore": 35.72,
+      "deltaProjectScore": 0,
+      "deltaCycleScore": 22,
+      "status": "BLOCK"
+    },
+    {
+      "axisId": "engineering-efficiency-change-safety",
+      "projectScore": 94,
+      "cycleScore": 98,
+      "confidence": 0.93,
+      "evidenceRefs": [
+        "V32_2_COMPLEXITY_BUDGET.json",
+        "V32_2_EXCELLENCE_MUTATION_RESULTS.json",
+        "V32_2_PERFORMANCE_BUDGET.json"
+      ],
+      "limitations": [],
+      "blockers": [],
+      "weight": 3,
+      "projectFloor": 80,
+      "cycleFloor": 85,
+      "productionFloor": 92,
+      "promotionCritical": false,
+      "projectGap": 0,
+      "cycleGap": 0,
+      "confidenceAdjustedProjectScore": 87.42,
+      "confidenceAdjustedCycleScore": 91.14,
+      "deltaProjectScore": 14,
+      "deltaCycleScore": 13,
+      "status": "PASS"
+    }
+  ],
+  "weakestAxes": [
+    "external-readiness-scalability",
+    "product-value-operator-ux",
+    "performance-resource-efficiency",
+    "security-trust-sovereignty"
+  ],
+  "nextPriorities": [
+    {
+      "axisId": "security-trust-sovereignty",
+      "priorityScore": 472,
+      "reasons": [
+        "project_floor_gap:4",
+        "confidence_below_0.9:0.84",
+        "blocker:authorized_hsm_or_kms_absent",
+        "blocker:external_monotonic_witness_absent",
+        "limitation:local_test_keys",
+        "limitation:single_host_trust_anchor"
+      ]
+    },
+    {
+      "axisId": "external-readiness-scalability",
+      "priorityScore": 412,
+      "reasons": [
+        "project_floor_gap:10",
+        "confidence_below_0.9:0.38",
+        "blocker:independent_security_review_absent",
+        "blocker:multi_host_revocation_unqualified",
+        "blocker:postgres_failover_pitr_unqualified",
+        "limitation:external_infrastructure_outside_workspace"
+      ]
+    },
+    {
+      "axisId": "product-value-operator-ux",
+      "priorityScore": 249.6,
+      "reasons": [
+        "project_floor_gap:12",
+        "confidence_below_0.9:0.52",
+        "blocker:consented_comparative_human_pilot_absent",
+        "limitation:commercial_value_unmeasured",
+        "limitation:human_pilot_not_executed"
+      ]
+    },
+    {
+      "axisId": "performance-resource-efficiency",
+      "priorityScore": 26.4,
+      "reasons": [
+        "confidence_below_0.9:0.78",
+        "limitation:local_test_metric_not_product_slo"
+      ]
+    },
+    {
+      "axisId": "portability-supply-chain-isolation",
+      "priorityScore": 15.6,
+      "reasons": [
+        "confidence_below_0.9:0.87",
+        "limitation:independent_isolation_review_absent"
+      ]
+    },
+    {
+      "axisId": "durability-concurrency-consistency",
+      "priorityScore": 14.4,
+      "reasons": [
+        "limitation:single_host_persistence"
+      ]
+    },
+    {
+      "axisId": "operability-recovery",
+      "priorityScore": 14,
+      "reasons": [
+        "limitation:multi_region_recovery_unqualified"
+      ]
+    },
+    {
+      "axisId": "adversarial-test-depth",
+      "priorityScore": 9,
+      "reasons": [
+        "limitation:targeted_mutation_not_full_mutation_of_every_module"
+      ]
+    },
+    {
+      "axisId": "architecture-modularity",
+      "priorityScore": 8,
+      "reasons": [
+        "limitation:bounded_complexity_warnings"
+      ]
+    },
+    {
+      "axisId": "evidence-integrity-traceability",
+      "priorityScore": 6.4,
+      "reasons": [
+        "limitation:external_truth_not_proven"
+      ]
+    },
+    {
+      "axisId": "correctness-invariants",
+      "priorityScore": 6,
+      "reasons": [
+        "limitation:repository_local_proof"
+      ]
+    },
+    {
+      "axisId": "stability-determinism",
+      "priorityScore": 4.8,
+      "reasons": [
+        "limitation:single_host_stability"
+      ]
+    }
+  ],
+  "limitations": [
+    "bounded_complexity_warnings",
+    "commercial_value_unmeasured",
+    "external_infrastructure_outside_workspace",
+    "external_truth_not_proven",
+    "human_pilot_not_executed",
+    "independent_isolation_review_absent",
+    "local_test_keys",
+    "local_test_metric_not_product_slo",
+    "multi_region_recovery_unqualified",
+    "repository_local_proof",
+    "single_host_persistence",
+    "single_host_stability",
+    "single_host_trust_anchor",
+    "targeted_mutation_not_full_mutation_of_every_module"
+  ],
+  "reportDigest": "743343dc0469caa3d425578ce78f81c41a3999a69f3d0ef235b5db969fb521a8"
+}

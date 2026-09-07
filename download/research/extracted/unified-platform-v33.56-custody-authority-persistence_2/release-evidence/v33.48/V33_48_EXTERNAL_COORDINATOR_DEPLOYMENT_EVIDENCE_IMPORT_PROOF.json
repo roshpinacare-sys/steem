@@ -1,0 +1,1115 @@
+{
+  "version": "33.48",
+  "generatedAt": "2026-07-23T02:49:31.702Z",
+  "base": {
+    "proofPath": "release-evidence/v33.47/V33_47_EXTERNAL_COORDINATOR_JOURNAL_QUALIFICATION_PROOF.json",
+    "proofSha256": "40a4d6fb4e575a7568a489f89bb3329564bf7a5e90a9438ba3cb7ef388dfbb07",
+    "verdict": {
+      "version": "33.47",
+      "status": "LOCAL_COORDINATOR_JOURNAL_QUALIFICATION_REHEARSAL_ONLY",
+      "baseCoordinatorVerdictDigest": "5fac7909c9666972979955b4ffb99b8baf8184dc72abff15b35d1f367ef3065b",
+      "hostAttestationDigests": [
+        "2885d9df9389e77084b73c346174776c75f8cf58783678b60f76ec9d647b0d49",
+        "8149c67d3b901efbfca72d8401254b4abf61628facf4470fc50cf795d229ec91",
+        "d74b95eefb335c4cea7166b338c6a405c83076fdd85a81f2e520183b29fca27c",
+        "f65ad349e155699050d6626f1469c059cbd9f9352705ee34169a96b541694f7c"
+      ],
+      "clockDigests": [
+        "5ac0887467df0be112fdc2ec71b4ac6571bb39fc5153dff26e1f68e353f3e90d",
+        "69dea0e8e02d8ca72df01b96a3d1569f359fd964103ceedf047cf4edd27dc859",
+        "e48c46dc8a3e6bd2b03bc44885100ac2fe47c6ffd0ac02ccc4742800b39f9069"
+      ],
+      "initialReplicaReceiptDigests": [
+        "1fed69772286efb4ae407313743b1fecd93d115234655c41ee2c95c9ae1a88ad",
+        "4444ab65a7015ce1cc6268390e648379aa3d5f65cbf39858c2fe6a6ad55f6967",
+        "890b786ba656a2ad99a58d6f35b117930d379a3a2f233995935fce3137bdce8b"
+      ],
+      "failoverDigest": "b18103cfae205be3b9c0b38eb7bc67b301bd7ca6eec52325c0a62858148c15d9",
+      "postFailoverReplicaReceiptDigests": [
+        "0314d276ce09d9c92c7446378b7dd395ef596ef4ad4306f0962c583348d8d1ce",
+        "93c55383a2861648d2a3b6d1dcd186f784f4417d5b12dfe05cb5a41e1df17603",
+        "ea23099c92d09cef269c17a1a5c5576a512babeb51f1f05c6921d347f3174afc"
+      ],
+      "checkpointDigest": "90700ec4a7a47f8c0c9d2104308130bc23a88ce2eedc0a33a7777349bffe2bcf",
+      "recoveryDigest": "0d2170efe997cdff61a9d9b7c02ff9532bf5ee30339935d4c96cd548d0d0e00a",
+      "journalHeadDigest": "f1e96900bfa8065fe34177a58aba53d5c5e48c26aa1706f2881ef9232e88eb86",
+      "journalBytesDigest": "c9692a0dbe15a7ae9a0216750379fb66e1b5359056531f2c9dc8febfacfbd0a6",
+      "initialReplicaCount": 3,
+      "postFailoverReplicaCount": 3,
+      "distinctReplicaProcessesObserved": true,
+      "independentClockQuorumVerified": true,
+      "partitionFailoverVerified": true,
+      "irreversibleFencingVerified": true,
+      "appendOnlyReplicationVerified": true,
+      "siteLossRecoveryVerified": true,
+      "externalTopologyObserved": false,
+      "externalHumanParticipants": 0,
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "verifiedAt": "2026-07-23T02:00:10.000Z",
+      "verdictDigest": "c95adba791fc5510415f58d88d34f331a622c04ba7fd2b1f76f280ce97168a28"
+    }
+  },
+  "publicKeys": [
+    {
+      "keyId": "proof-v3348-deployment-authority",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAelOX+LrEe7YClriqahyNXD23klj/mEEv2wYI70x1JrU=",
+      "fingerprint": "a118c5d252e01964bb24a815ae02cdf7f3bcf65611185d6c104d7a1e665dcab5",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-host-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEApqR3LS2S2+e0laPkiHgnVtFlW0lEbG/9/XkJvqN+zMo=",
+      "fingerprint": "b4ce53e83db2f032d2710d99694c395a148c266afff97872f287979a9219d2bb",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-host-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAh//AfnygLVbQKf88XVL6GV9E+n1+Omyw2QIsBr21T90=",
+      "fingerprint": "f7fb8fcd875fe1371ad35f578ac6fcfeec1050c870ad2666b0e1a5d321d47483",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-host-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAkiVYuggrdVotsm5Djg09cowZ5se8GPZeTov7A1+f7Os=",
+      "fingerprint": "4636ee5ad698f50b0bef660b703d62f2a354b674a221e93e79e6303ec5569837",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-host-4",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAF5wh7/I+7+uhBmmDieATQcekPy+vCQOP1PSxE3e8OMg=",
+      "fingerprint": "fe56e9190d806c275a3afac81e8e33999006787af6e734dbdb3f2930a9991a4d",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-clock-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAk3Cx8Ze4dqKpbL1cZwBFFv0gvo5XsNoT3bpwnXAUDXg=",
+      "fingerprint": "36e4c96124aa9ab8d7cd76ddf3505ea3a07b04d39115a0e54778d5ecfb8c49c1",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-clock-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAJb8jCG4whBURWpSU55zxSJUPbeNv9aPN5CHda2dI5No=",
+      "fingerprint": "fefe43ab63837ef415cf641a0fd809317bcd87d174c5b1462742d90da6b3b2d8",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-store-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA2BYG/Fo9siLW9MCQncYr4WFLVcOWxBVZNsqAbhj3i6c=",
+      "fingerprint": "9ac83c4a9327424123b001dc95032588d597cbb0fd72326aca70a9ce5116f11e",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-store-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAH014nn/6coAOKJX+yVyUXmHeGQOJ1bWBoiYbpxf5hFA=",
+      "fingerprint": "532bc46bd4713cd18d98daf52ea51ed812b4668db5e47a385b392eeff6b7fc23",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-store-3",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAUbL+rugQnoltRiI3ZGBwEckiBnGgFpcIA3ZzF92lOY4=",
+      "fingerprint": "72e63a9f2c35e0fb174890193d7ddb57568b8ead8125086488dfc6a2e79d0f95",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-observer-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA1cjSQFahSlpPwP3j5FM4NNE9cMgmzqJUjC2M+ZUDLkY=",
+      "fingerprint": "a18d1f7970eea6ba966d21b7ab218fb6bb6ab384c172d262be8c1ebc866f3e3b",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-observer-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAFbMScHkG+deHQbDc1vuPhu0bzHZS/5DwsoEaZ1ZGLD4=",
+      "fingerprint": "ebef9b3c3ae50fd1766afb54d8c394ab3960f01834e28f5922116a9e83fd5036",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-auditor-1",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA5M1WYgwuIsUJyHUO9oNWo/YZy9l6n+pCkPsMA1pyIIs=",
+      "fingerprint": "bb808f8e45701f4937c2592c4a7ee58538c58e425ee6098489d2a0a44c3cbedb",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-auditor-2",
+      "spkiDerBase64": "MCowBQYDK2VwAyEA4eR56gqv3RZwrucVuVaqrKTnYiUapAgIHl28Suo/M30=",
+      "fingerprint": "f76e3a70e323a5b1f1cd037efc3475350bf99b0ffca78e9721192d001482c84c",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-exporter",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAfiODxbzkzYX57ehr5Oq/ObAiook9EwfeBarP2zptf88=",
+      "fingerprint": "f4fa9f189fc7678e698963cd805049e0acd5635a94baf3f3c4bbfff448b29fdc",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-importer",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAdPkEjRGRctTmGwIqwwGBuzktSC1ID8V6ZMVzZoClJ9o=",
+      "fingerprint": "119e3a901f170bd2408b354552ca4673ae632d2a070db7aca46ec90d7b0036a5",
+      "revoked": false
+    },
+    {
+      "keyId": "proof-v3348-recovery-verifier",
+      "spkiDerBase64": "MCowBQYDK2VwAyEAmrv7IvGFLeYW+kW2grTFkImi7HGmKkBkjnWB+QsNGz0=",
+      "fingerprint": "1d8176737498ddc0f80675104a4291c5ae44028869b2d5db8547669a4a2dd16a",
+      "revoked": false
+    }
+  ],
+  "trustedIds": {
+    "deploymentAuthority": [
+      "proof-v3348-deployment-authority"
+    ],
+    "roles": [
+      "proof-v3348-host-1",
+      "proof-v3348-host-2",
+      "proof-v3348-host-3",
+      "proof-v3348-host-4",
+      "proof-v3348-clock-1",
+      "proof-v3348-clock-2",
+      "proof-v3348-store-1",
+      "proof-v3348-store-2",
+      "proof-v3348-store-3",
+      "proof-v3348-observer-1",
+      "proof-v3348-observer-2",
+      "proof-v3348-auditor-1",
+      "proof-v3348-auditor-2",
+      "proof-v3348-exporter",
+      "proof-v3348-importer",
+      "proof-v3348-recovery-verifier"
+    ],
+    "auditors": [
+      "proof-v3348-auditor-1",
+      "proof-v3348-auditor-2"
+    ],
+    "exporter": [
+      "proof-v3348-exporter"
+    ],
+    "importer": [
+      "proof-v3348-importer"
+    ],
+    "recovery": [
+      "proof-v3348-recovery-verifier"
+    ]
+  },
+  "manifest": {
+    "payload": {
+      "version": "33.48",
+      "deploymentId": "v3348-external-coordinator-deployment-kit",
+      "campaignId": "v3348-local-import-rehearsal",
+      "artifactId": "v3348-coordinator-journal-evidence",
+      "artifactDigest": "923f5fd6c27cde4baebc99a116199d88bbf4f9957fbea0e662b7efd0703c5f5f",
+      "baseQualificationVerdictDigest": "c95adba791fc5510415f58d88d34f331a622c04ba7fd2b1f76f280ce97168a28",
+      "deploymentAuthority": {
+        "keyId": "proof-v3348-deployment-authority",
+        "keyFingerprint": "a118c5d252e01964bb24a815ae02cdf7f3bcf65611185d6c104d7a1e665dcab5",
+        "organizationId": "proof-v3348-authority-org",
+        "hostId": "proof-v3348-authority.example.com",
+        "administratorId": "proof-v3348-authority-admin"
+      },
+      "coordinatorHosts": [
+        {
+          "keyId": "proof-v3348-host-1",
+          "keyFingerprint": "b4ce53e83db2f032d2710d99694c395a148c266afff97872f287979a9219d2bb",
+          "organizationId": "proof-v3348-host-1-org",
+          "hostId": "proof-v3348-host-1.example.com",
+          "administratorId": "proof-v3348-host-1-admin"
+        },
+        {
+          "keyId": "proof-v3348-host-2",
+          "keyFingerprint": "f7fb8fcd875fe1371ad35f578ac6fcfeec1050c870ad2666b0e1a5d321d47483",
+          "organizationId": "proof-v3348-host-2-org",
+          "hostId": "proof-v3348-host-2.example.com",
+          "administratorId": "proof-v3348-host-2-admin"
+        },
+        {
+          "keyId": "proof-v3348-host-3",
+          "keyFingerprint": "4636ee5ad698f50b0bef660b703d62f2a354b674a221e93e79e6303ec5569837",
+          "organizationId": "proof-v3348-host-3-org",
+          "hostId": "proof-v3348-host-3.example.com",
+          "administratorId": "proof-v3348-host-3-admin"
+        },
+        {
+          "keyId": "proof-v3348-host-4",
+          "keyFingerprint": "fe56e9190d806c275a3afac81e8e33999006787af6e734dbdb3f2930a9991a4d",
+          "organizationId": "proof-v3348-host-4-org",
+          "hostId": "proof-v3348-host-4.example.com",
+          "administratorId": "proof-v3348-host-4-admin"
+        }
+      ],
+      "clockRoots": [
+        {
+          "keyId": "proof-v3348-clock-1",
+          "keyFingerprint": "36e4c96124aa9ab8d7cd76ddf3505ea3a07b04d39115a0e54778d5ecfb8c49c1",
+          "organizationId": "proof-v3348-clock-1-org",
+          "hostId": "proof-v3348-clock-1.example.com",
+          "administratorId": "proof-v3348-clock-1-admin"
+        },
+        {
+          "keyId": "proof-v3348-clock-2",
+          "keyFingerprint": "fefe43ab63837ef415cf641a0fd809317bcd87d174c5b1462742d90da6b3b2d8",
+          "organizationId": "proof-v3348-clock-2-org",
+          "hostId": "proof-v3348-clock-2.example.com",
+          "administratorId": "proof-v3348-clock-2-admin"
+        }
+      ],
+      "appendOnlyStores": [
+        {
+          "keyId": "proof-v3348-store-1",
+          "keyFingerprint": "9ac83c4a9327424123b001dc95032588d597cbb0fd72326aca70a9ce5116f11e",
+          "organizationId": "proof-v3348-store-1-org",
+          "hostId": "proof-v3348-store-1.example.com",
+          "administratorId": "proof-v3348-store-1-admin"
+        },
+        {
+          "keyId": "proof-v3348-store-2",
+          "keyFingerprint": "532bc46bd4713cd18d98daf52ea51ed812b4668db5e47a385b392eeff6b7fc23",
+          "organizationId": "proof-v3348-store-2-org",
+          "hostId": "proof-v3348-store-2.example.com",
+          "administratorId": "proof-v3348-store-2-admin"
+        },
+        {
+          "keyId": "proof-v3348-store-3",
+          "keyFingerprint": "72e63a9f2c35e0fb174890193d7ddb57568b8ead8125086488dfc6a2e79d0f95",
+          "organizationId": "proof-v3348-store-3-org",
+          "hostId": "proof-v3348-store-3.example.com",
+          "administratorId": "proof-v3348-store-3-admin"
+        }
+      ],
+      "partitionObservers": [
+        {
+          "keyId": "proof-v3348-observer-1",
+          "keyFingerprint": "a18d1f7970eea6ba966d21b7ab218fb6bb6ab384c172d262be8c1ebc866f3e3b",
+          "organizationId": "proof-v3348-observer-1-org",
+          "hostId": "proof-v3348-observer-1.example.com",
+          "administratorId": "proof-v3348-observer-1-admin"
+        },
+        {
+          "keyId": "proof-v3348-observer-2",
+          "keyFingerprint": "ebef9b3c3ae50fd1766afb54d8c394ab3960f01834e28f5922116a9e83fd5036",
+          "organizationId": "proof-v3348-observer-2-org",
+          "hostId": "proof-v3348-observer-2.example.com",
+          "administratorId": "proof-v3348-observer-2-admin"
+        }
+      ],
+      "topologyAuditors": [
+        {
+          "keyId": "proof-v3348-auditor-1",
+          "keyFingerprint": "bb808f8e45701f4937c2592c4a7ee58538c58e425ee6098489d2a0a44c3cbedb",
+          "organizationId": "proof-v3348-auditor-1-org",
+          "hostId": "proof-v3348-auditor-1.example.com",
+          "administratorId": "proof-v3348-auditor-1-admin"
+        },
+        {
+          "keyId": "proof-v3348-auditor-2",
+          "keyFingerprint": "f76e3a70e323a5b1f1cd037efc3475350bf99b0ffca78e9721192d001482c84c",
+          "organizationId": "proof-v3348-auditor-2-org",
+          "hostId": "proof-v3348-auditor-2.example.com",
+          "administratorId": "proof-v3348-auditor-2-admin"
+        }
+      ],
+      "evidenceExporter": {
+        "keyId": "proof-v3348-exporter",
+        "keyFingerprint": "f4fa9f189fc7678e698963cd805049e0acd5635a94baf3f3c4bbfff448b29fdc",
+        "organizationId": "proof-v3348-exporter-org",
+        "hostId": "proof-v3348-exporter.example.com",
+        "administratorId": "proof-v3348-exporter-admin"
+      },
+      "evidenceImporter": {
+        "keyId": "proof-v3348-importer",
+        "keyFingerprint": "119e3a901f170bd2408b354552ca4673ae632d2a070db7aca46ec90d7b0036a5",
+        "organizationId": "proof-v3348-importer-org",
+        "hostId": "proof-v3348-importer.example.com",
+        "administratorId": "proof-v3348-importer-admin"
+      },
+      "recoveryVerifier": {
+        "keyId": "proof-v3348-recovery-verifier",
+        "keyFingerprint": "1d8176737498ddc0f80675104a4291c5ae44028869b2d5db8547669a4a2dd16a",
+        "organizationId": "proof-v3348-recovery-verifier-org",
+        "hostId": "proof-v3348-recovery-verifier.example.com",
+        "administratorId": "proof-v3348-recovery-verifier-admin"
+      },
+      "allowedDnsNames": [
+        "proof-v3348-clock-1.example.com",
+        "proof-v3348-clock-2.example.com",
+        "proof-v3348-host-1.example.com",
+        "proof-v3348-host-2.example.com",
+        "proof-v3348-host-3.example.com",
+        "proof-v3348-host-4.example.com",
+        "proof-v3348-observer-1.example.com",
+        "proof-v3348-observer-2.example.com",
+        "proof-v3348-store-1.example.com",
+        "proof-v3348-store-2.example.com",
+        "proof-v3348-store-3.example.com"
+      ],
+      "evidencePolicyDigest": "3f4a4ff6226ccd8df52a8162cbae48410a912c2a294fe2f76df6f0294eb06146",
+      "issuedAt": "2026-07-23T02:00:00.000Z",
+      "expiresAt": "2026-08-23T02:00:00.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841"
+    },
+    "issuerKeyId": "proof-v3348-deployment-authority",
+    "algorithm": "Ed25519",
+    "signature": "pcsTMJOwKFnc7u1NLBwxz-TWX5i-i3p1xqsfShCsrSyp3R42OxLMjjauuUyvC8WC37tTul7OCwQ7Wfm_FxlpDQ"
+  },
+  "acceptances": [
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "COORDINATOR_HOST",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-host-1",
+          "keyFingerprint": "b4ce53e83db2f032d2710d99694c395a148c266afff97872f287979a9219d2bb",
+          "organizationId": "proof-v3348-host-1-org",
+          "hostId": "proof-v3348-host-1.example.com",
+          "administratorId": "proof-v3348-host-1-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:10.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "1eb758c589964e68c7f824df15d4065d878e9120801e816ad4a51d45069be59c"
+      },
+      "issuerKeyId": "proof-v3348-host-1",
+      "algorithm": "Ed25519",
+      "signature": "ZDaRwupX2ON6J6YaKwaRwo_MYyZGFgUpjD5D1t-cTUu3LJ0rABdIDumHJfsgT4BbBz_tETBan1aqRPZcvKb2DA"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "COORDINATOR_HOST",
+        "ordinal": 2,
+        "actor": {
+          "keyId": "proof-v3348-host-2",
+          "keyFingerprint": "f7fb8fcd875fe1371ad35f578ac6fcfeec1050c870ad2666b0e1a5d321d47483",
+          "organizationId": "proof-v3348-host-2-org",
+          "hostId": "proof-v3348-host-2.example.com",
+          "administratorId": "proof-v3348-host-2-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:11.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "2d2b99f41c0f71d665f973791ccb11e546dce5841e881edafe5725cf0912f3a9"
+      },
+      "issuerKeyId": "proof-v3348-host-2",
+      "algorithm": "Ed25519",
+      "signature": "7RW9lEXhFMpfB2bjNxvhCODzbO4CuwyiWRbKPCAtXdKo3V4p3_wwwOehmjxhx5Sow1sghDnmScuzp6VY_afXCw"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "COORDINATOR_HOST",
+        "ordinal": 3,
+        "actor": {
+          "keyId": "proof-v3348-host-3",
+          "keyFingerprint": "4636ee5ad698f50b0bef660b703d62f2a354b674a221e93e79e6303ec5569837",
+          "organizationId": "proof-v3348-host-3-org",
+          "hostId": "proof-v3348-host-3.example.com",
+          "administratorId": "proof-v3348-host-3-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:12.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "97d798bbe76db383b21c56fef382dc8d30a695e18a058269bf29ad0fca94aa4a"
+      },
+      "issuerKeyId": "proof-v3348-host-3",
+      "algorithm": "Ed25519",
+      "signature": "7aO_ZS5Mwqy7XWFeDGKf4uJcAcFz18IaS49jm6CsbidifytZ-OOQHj2ZfKy3bmXxbIS3UT4OcbBh0z18TbsrAw"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "COORDINATOR_HOST",
+        "ordinal": 4,
+        "actor": {
+          "keyId": "proof-v3348-host-4",
+          "keyFingerprint": "fe56e9190d806c275a3afac81e8e33999006787af6e734dbdb3f2930a9991a4d",
+          "organizationId": "proof-v3348-host-4-org",
+          "hostId": "proof-v3348-host-4.example.com",
+          "administratorId": "proof-v3348-host-4-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:13.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "9a737927b4d7a8fea86cf402ee29b386eddba02143458ea011169326ed7946b0"
+      },
+      "issuerKeyId": "proof-v3348-host-4",
+      "algorithm": "Ed25519",
+      "signature": "0xs6KdM9bHDSTKWlpJivW2tK_9sHGNzRfk-1MewU31WfGwjRpKq--7o2b6IR-N8xkC4DQ-RZA10idUm56afJBw"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "CLOCK_ROOT",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-clock-1",
+          "keyFingerprint": "36e4c96124aa9ab8d7cd76ddf3505ea3a07b04d39115a0e54778d5ecfb8c49c1",
+          "organizationId": "proof-v3348-clock-1-org",
+          "hostId": "proof-v3348-clock-1.example.com",
+          "administratorId": "proof-v3348-clock-1-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:14.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "5733f9acb2ba65c4eb83350e7064d22d01a78addc9056cd31e3f4d0ae9f80c4e"
+      },
+      "issuerKeyId": "proof-v3348-clock-1",
+      "algorithm": "Ed25519",
+      "signature": "F9VouIWhmMtOw0MZ1ejKmYCkxe95G8I6a4IW2U0FmzUVuwmNDZM99WDZ788PypxK2GRc-6-L0XvSYmyVrnNMBw"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "CLOCK_ROOT",
+        "ordinal": 2,
+        "actor": {
+          "keyId": "proof-v3348-clock-2",
+          "keyFingerprint": "fefe43ab63837ef415cf641a0fd809317bcd87d174c5b1462742d90da6b3b2d8",
+          "organizationId": "proof-v3348-clock-2-org",
+          "hostId": "proof-v3348-clock-2.example.com",
+          "administratorId": "proof-v3348-clock-2-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:15.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "3ab7bc149f607a4b09d21c5865e8ae64e4b8240d7286d867b4d7422614302297"
+      },
+      "issuerKeyId": "proof-v3348-clock-2",
+      "algorithm": "Ed25519",
+      "signature": "AhVMKB9F0MW-cfhrAASaLlBzAu3SF-UTGMb84xVEGSQKD_8XjfvIl9lUTKzi-R3uyx45BeIa_PusLbvsKKuDAw"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "APPEND_ONLY_STORE",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-store-1",
+          "keyFingerprint": "9ac83c4a9327424123b001dc95032588d597cbb0fd72326aca70a9ce5116f11e",
+          "organizationId": "proof-v3348-store-1-org",
+          "hostId": "proof-v3348-store-1.example.com",
+          "administratorId": "proof-v3348-store-1-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:16.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "97d0b289a6b3910ece3cf79db4c446f852afde6f2dddea25594837b0f2e0f1da"
+      },
+      "issuerKeyId": "proof-v3348-store-1",
+      "algorithm": "Ed25519",
+      "signature": "CldiDMU4VXdM9hxpdv460Fi3Pyr69zX3_3aUTYvYnk8sV5PnwNNGIDCaSy04B5vvqhmbyEULkX-g1wO68ULvDw"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "APPEND_ONLY_STORE",
+        "ordinal": 2,
+        "actor": {
+          "keyId": "proof-v3348-store-2",
+          "keyFingerprint": "532bc46bd4713cd18d98daf52ea51ed812b4668db5e47a385b392eeff6b7fc23",
+          "organizationId": "proof-v3348-store-2-org",
+          "hostId": "proof-v3348-store-2.example.com",
+          "administratorId": "proof-v3348-store-2-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:17.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "074428485c0edb895fe17ed1f722002ae03a99f12b13df84f4aa1fda992ec7f7"
+      },
+      "issuerKeyId": "proof-v3348-store-2",
+      "algorithm": "Ed25519",
+      "signature": "wBot0O2X_wq4adVmaeGHPTH7Byje4WN4xrlyox_-YMAEhdnQ0pZa1tfjkJrOjoIWhvb6irNCszEJtttonem6BQ"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "APPEND_ONLY_STORE",
+        "ordinal": 3,
+        "actor": {
+          "keyId": "proof-v3348-store-3",
+          "keyFingerprint": "72e63a9f2c35e0fb174890193d7ddb57568b8ead8125086488dfc6a2e79d0f95",
+          "organizationId": "proof-v3348-store-3-org",
+          "hostId": "proof-v3348-store-3.example.com",
+          "administratorId": "proof-v3348-store-3-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:18.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "2638f147fea81180b07f2b8ee8cd3d2c276ee84e1f7da8965f6660cc515886e1"
+      },
+      "issuerKeyId": "proof-v3348-store-3",
+      "algorithm": "Ed25519",
+      "signature": "r3cjgOVcQmTdYpseEK48jh8bPtPP-yjQh9iNcpzShOxr5csX0Le5gP8n8omavhUgv8bBIYO2mQno9X83fsHoCA"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "PARTITION_OBSERVER",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-observer-1",
+          "keyFingerprint": "a18d1f7970eea6ba966d21b7ab218fb6bb6ab384c172d262be8c1ebc866f3e3b",
+          "organizationId": "proof-v3348-observer-1-org",
+          "hostId": "proof-v3348-observer-1.example.com",
+          "administratorId": "proof-v3348-observer-1-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:19.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "54a25281815ea8076359075a10af6d2919df8521597d71b1fdc1bef4014f86a4"
+      },
+      "issuerKeyId": "proof-v3348-observer-1",
+      "algorithm": "Ed25519",
+      "signature": "VWI8TOVi7RQQFVfaYE0_y2-R2xTuQFPDcBW4CuQxVDcXNVK2Hfm-CGoHbcJBWook8ffNLXwwyzk3cakxv1zVAQ"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "PARTITION_OBSERVER",
+        "ordinal": 2,
+        "actor": {
+          "keyId": "proof-v3348-observer-2",
+          "keyFingerprint": "ebef9b3c3ae50fd1766afb54d8c394ab3960f01834e28f5922116a9e83fd5036",
+          "organizationId": "proof-v3348-observer-2-org",
+          "hostId": "proof-v3348-observer-2.example.com",
+          "administratorId": "proof-v3348-observer-2-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:20.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "2bca0a6b9633af33e73d74b5b1b89310bda93d0e9d40591919d9f3a4c6d5e769"
+      },
+      "issuerKeyId": "proof-v3348-observer-2",
+      "algorithm": "Ed25519",
+      "signature": "4zr05IIThwauZE8SyZcqIcH1TXnc6CpebwMlqszD7ZqJ6ls5GQgHpxyP-W9RvvJaq94HUuzIxTvfvAnEyI-jBw"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "TOPOLOGY_AUDITOR",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-auditor-1",
+          "keyFingerprint": "bb808f8e45701f4937c2592c4a7ee58538c58e425ee6098489d2a0a44c3cbedb",
+          "organizationId": "proof-v3348-auditor-1-org",
+          "hostId": "proof-v3348-auditor-1.example.com",
+          "administratorId": "proof-v3348-auditor-1-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:21.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "4dad3ab3243577f449c0f5c3d9e010ff05ee3bbc341fda5b74033572282bf51e"
+      },
+      "issuerKeyId": "proof-v3348-auditor-1",
+      "algorithm": "Ed25519",
+      "signature": "oGrGR1PIJ_8aK2ttW-JdonRSR0RSKGGbbAWFJweLkzSx5uUkXCp7dkP62Wt5tWpgNauuiPpYh5FzB4YPIrVODA"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "TOPOLOGY_AUDITOR",
+        "ordinal": 2,
+        "actor": {
+          "keyId": "proof-v3348-auditor-2",
+          "keyFingerprint": "f76e3a70e323a5b1f1cd037efc3475350bf99b0ffca78e9721192d001482c84c",
+          "organizationId": "proof-v3348-auditor-2-org",
+          "hostId": "proof-v3348-auditor-2.example.com",
+          "administratorId": "proof-v3348-auditor-2-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:22.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "68e70a8737f4c4cb7c80007e60d8614e21fb650b24d42b672493bd4f7fb036a2"
+      },
+      "issuerKeyId": "proof-v3348-auditor-2",
+      "algorithm": "Ed25519",
+      "signature": "9r7vkK6eXU3pRM1TVAjNM0qOrjFKDEcyzSzz9Mr6LDR-PBvG_V4hUYhdBSEMcZFV-6AzqW0ebvrcIeKpH04BDA"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "EVIDENCE_EXPORTER",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-exporter",
+          "keyFingerprint": "f4fa9f189fc7678e698963cd805049e0acd5635a94baf3f3c4bbfff448b29fdc",
+          "organizationId": "proof-v3348-exporter-org",
+          "hostId": "proof-v3348-exporter.example.com",
+          "administratorId": "proof-v3348-exporter-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:23.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "9c3f32140c433300913a302f3d3fa29169bd8ac73003494518b67d1116d3c1b9"
+      },
+      "issuerKeyId": "proof-v3348-exporter",
+      "algorithm": "Ed25519",
+      "signature": "H5wNDsKnTabM-he2zSEl7Lqa2ycyVwt3fgQXyK20lhXAossi_WgAAbpBvXmSCSCkAfnPI0u-6EfQP1Gw8C-8BA"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "EVIDENCE_IMPORTER",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-importer",
+          "keyFingerprint": "119e3a901f170bd2408b354552ca4673ae632d2a070db7aca46ec90d7b0036a5",
+          "organizationId": "proof-v3348-importer-org",
+          "hostId": "proof-v3348-importer.example.com",
+          "administratorId": "proof-v3348-importer-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:24.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "72f94b32b9d2683f2c36cc920af6f0ff4888ed86582760ba77b382c81ac6eb0d"
+      },
+      "issuerKeyId": "proof-v3348-importer",
+      "algorithm": "Ed25519",
+      "signature": "fxeGHFePKckd4lEt4HucGHXTkSb2AsB29zTx07Ewh4qQWo9hAhAUUaPZisvnWJpN_Jz_gkBHy2sSMSIePGJfCA"
+    },
+    {
+      "payload": {
+        "version": "33.48",
+        "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+        "role": "RECOVERY_VERIFIER",
+        "ordinal": 1,
+        "actor": {
+          "keyId": "proof-v3348-recovery-verifier",
+          "keyFingerprint": "1d8176737498ddc0f80675104a4291c5ae44028869b2d5db8547669a4a2dd16a",
+          "organizationId": "proof-v3348-recovery-verifier-org",
+          "hostId": "proof-v3348-recovery-verifier.example.com",
+          "administratorId": "proof-v3348-recovery-verifier-admin"
+        },
+        "acceptedAt": "2026-07-23T02:00:25.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "acceptanceDigest": "21e102e54f4a48ff12c5c01e1bd0755e23c132a4bf58c37f33860c6c70cc0f28"
+      },
+      "issuerKeyId": "proof-v3348-recovery-verifier",
+      "algorithm": "Ed25519",
+      "signature": "vGNOTb-i_IBX_2SizKuqwLfpGBPSW2XXzCN2mRu3ZsmlQNUuIhRDix3AJ7WsPAgy9LFluhUZCrwupUGPDilrBQ"
+    }
+  ],
+  "readiness": {
+    "version": "33.48",
+    "status": "READY_FOR_EXTERNAL_EXECUTION",
+    "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+    "requiredRoleCount": 16,
+    "acceptedRoleCount": 16,
+    "coordinatorHostCount": 4,
+    "clockRootCount": 2,
+    "appendOnlyStoreCount": 3,
+    "partitionObserverCount": 2,
+    "topologyAuditorCount": 2,
+    "roleSeparationVerified": true,
+    "verifiedAt": "2026-07-23T02:01:00.000Z",
+    "readinessDigest": "d5fd6eb08593f08c3a24c9c96e3381e152e0fdd88ecfc7af606d004a5b44059d"
+  },
+  "challenge": {
+    "payload": {
+      "version": "33.48",
+      "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+      "nonceDigest": "84e0c0eafaa95a34c293f278ac52e45ce537bab5e752a00e6959a13ae103b65a",
+      "issuedAt": "2026-07-23T02:01:01.000Z",
+      "expiresAt": "2026-07-23T02:02:01.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "challengeDigest": "3951e04294b12fa447b87fb49686d8de7f258d3be0c53a345577034b3989dfa5"
+    },
+    "issuerKeyId": "proof-v3348-importer",
+    "algorithm": "Ed25519",
+    "signature": "e6GC9_k_HL_pOnqMLdq-G6ECPIksJpl0gtbWMktvL-4hiCl9D0OTXXVOzoGy01nVLdOIIf6neDGTHPmBog8OAQ"
+  },
+  "infrastructureEvidence": [],
+  "bundle": {
+    "payload": {
+      "version": "33.48",
+      "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+      "challengeDigest": "3951e04294b12fa447b87fb49686d8de7f258d3be0c53a345577034b3989dfa5",
+      "baseQualificationVerdictDigest": "c95adba791fc5510415f58d88d34f331a622c04ba7fd2b1f76f280ce97168a28",
+      "executionClass": "LOCAL_REHEARSAL",
+      "qualificationStatus": "LOCAL_COORDINATOR_JOURNAL_QUALIFICATION_REHEARSAL_ONLY",
+      "externalTopologyObserved": false,
+      "externalCoordinatorHostCount": 0,
+      "externalClockRootCount": 0,
+      "externalAppendOnlyStoreCount": 0,
+      "externalPartitionObserverCount": 0,
+      "infrastructureEvidenceDigests": [],
+      "files": [
+        {
+          "path": "clocks/root-1.json",
+          "mediaType": "application/json",
+          "byteLength": 41,
+          "sha256": "367a514d7b2e67775b3884ca5224c2941217385cc6da790d1ec73d66a680379f"
+        },
+        {
+          "path": "clocks/root-2.json",
+          "mediaType": "application/json",
+          "byteLength": 41,
+          "sha256": "4cb9d5209a594e30c4e6cce2601bd9151779b1f1969d47ca9a8e780fe59180aa"
+        },
+        {
+          "path": "hosts/host-1.json",
+          "mediaType": "application/json",
+          "byteLength": 36,
+          "sha256": "5d677f07d963c1682ac3f01e7933710de36c25eeac30e1d6df5e8e529cc90cc4"
+        },
+        {
+          "path": "hosts/host-2.json",
+          "mediaType": "application/json",
+          "byteLength": 36,
+          "sha256": "ea20ca13311668d292bb2cc5ffc3de6913484ce3acf2842ded9a35796e0e41d7"
+        },
+        {
+          "path": "hosts/host-3.json",
+          "mediaType": "application/json",
+          "byteLength": 36,
+          "sha256": "c75c9a9f7c8f04031c02dc7e632e85ee5d289475c5f2373d53c20f02bbd99b63"
+        },
+        {
+          "path": "hosts/host-4.json",
+          "mediaType": "application/json",
+          "byteLength": 36,
+          "sha256": "6c7674f1ab8cbb08d9a7b3536993a9286a97ab3afc120289d024cd4a25a1b280"
+        },
+        {
+          "path": "partition/failover.json",
+          "mediaType": "application/json",
+          "byteLength": 61,
+          "sha256": "3ef142f07897b31969ca81e315fbcbc7d7084f2219a2b6aad033cc856d99b5b6"
+        },
+        {
+          "path": "qualification/v33_47-verdict.json",
+          "mediaType": "application/json",
+          "byteLength": 2292,
+          "sha256": "175d41cbb3b3d1d1f3c5cb63961e2918ce0f7bdc6f1caa345fdd2f71f4ebecad"
+        },
+        {
+          "path": "recovery/site-loss.json",
+          "mediaType": "application/json",
+          "byteLength": 60,
+          "sha256": "b10a66f4263c89792fdff399eb1b09f284b87cf1dff7abb24d994229032d594f"
+        },
+        {
+          "path": "stores/store-1-receipt.bin",
+          "mediaType": "application/octet-stream",
+          "byteLength": 43,
+          "sha256": "93b4b459de1611c875cd6961488db93ea2fc5e2647de7614acc74de35340b4c3"
+        },
+        {
+          "path": "stores/store-2-receipt.bin",
+          "mediaType": "application/octet-stream",
+          "byteLength": 43,
+          "sha256": "e161448b5af2d05ebba2b6b1a7d5e248055c41fef271db48e1cf48e2c3f56f47"
+        },
+        {
+          "path": "stores/store-3-receipt.bin",
+          "mediaType": "application/octet-stream",
+          "byteLength": 43,
+          "sha256": "dfd4eb39c4a96e15d544fa19b0196275ba4beaabd1bb79a74569e8db4daee625"
+        }
+      ],
+      "exportedAt": "2026-07-23T02:01:02.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "bundleDigest": "7029dd4db367f0cbe3a59507825219683a0b84a1892e968ff2501ce69fcc8ca2"
+    },
+    "issuerKeyId": "proof-v3348-exporter",
+    "algorithm": "Ed25519",
+    "signature": "JU87j2VDG8NHSunrnX5WSDTW2lOpmxGk_gCEfXJcUAz717dghCwqo3ez74XlAiX_o4zqrMtiuvT_KwhM68wCDg"
+  },
+  "recovery": {
+    "payload": {
+      "version": "33.48",
+      "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+      "bundleDigest": "7029dd4db367f0cbe3a59507825219683a0b84a1892e968ff2501ce69fcc8ca2",
+      "durableStoreEvidencePath": "stores/store-1-receipt.bin",
+      "inventoryFileDigest": "93b4b459de1611c875cd6961488db93ea2fc5e2647de7614acc74de35340b4c3",
+      "restoredBytesDigest": "93b4b459de1611c875cd6961488db93ea2fc5e2647de7614acc74de35340b4c3",
+      "restoredByteLength": 43,
+      "fileFsync": true,
+      "directoryFsync": true,
+      "rereadVerified": true,
+      "restoredAt": "2026-07-23T02:01:03.000Z",
+      "productionAuthority": "NONE",
+      "externalEffectsExecuted": 0,
+      "recoveryDigest": "b3f832b08417a0af2e44163f14f476ee3b78c98a91271205b95e9b5ab3114d7d"
+    },
+    "issuerKeyId": "proof-v3348-recovery-verifier",
+    "algorithm": "Ed25519",
+    "signature": "Eds3FwgIITDbBaBykXwl1FfGICkM2eyaSe5A04EOkZUIVhXoPbWGX8fpiJrChbt_BnhdzZ009MIH8BceEsuJDw"
+  },
+  "importReceipt": {
+    "version": "33.48",
+    "status": "LOCAL_EXTERNAL_DEPLOYMENT_IMPORT_REHEARSAL_ONLY",
+    "manifestDigest": "0474e65472d417c756a853a166c7968d5160c2df950122fd82c2a427a5161841",
+    "readinessDigest": "d5fd6eb08593f08c3a24c9c96e3381e152e0fdd88ecfc7af606d004a5b44059d",
+    "challengeDigest": "3951e04294b12fa447b87fb49686d8de7f258d3be0c53a345577034b3989dfa5",
+    "bundleDigest": "7029dd4db367f0cbe3a59507825219683a0b84a1892e968ff2501ce69fcc8ca2",
+    "recoveryDigest": "b3f832b08417a0af2e44163f14f476ee3b78c98a91271205b95e9b5ab3114d7d",
+    "baseQualificationVerdictDigest": "c95adba791fc5510415f58d88d34f331a622c04ba7fd2b1f76f280ce97168a28",
+    "inventoryFileCount": 12,
+    "infrastructureEvidenceCount": 0,
+    "coordinatorHostCount": 0,
+    "clockRootCount": 0,
+    "appendOnlyStoreCount": 0,
+    "partitionObserverCount": 0,
+    "exactInventoryVerified": true,
+    "challengeReplayProtectionVerified": true,
+    "durableRecoveryVerified": true,
+    "independentEvidenceQuorumVerified": false,
+    "externalTopologyObserved": false,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "importedAt": "2026-07-23T02:01:04.000Z",
+    "receiptDigest": "e2e9ef8cc09a13298f45c8607f0c274dd9d0095b820caf4fd800da581720b206"
+  },
+  "executionEvidence": {
+    "bundleRoot": "deployment-evidence-bundle",
+    "importedRoot": "imported-evidence",
+    "bundleWrites": [
+      {
+        "path": "qualification/v33_47-verdict.json",
+        "byteLength": 2292,
+        "sha256": "175d41cbb3b3d1d1f3c5cb63961e2918ce0f7bdc6f1caa345fdd2f71f4ebecad",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-1.json",
+        "byteLength": 36,
+        "sha256": "5d677f07d963c1682ac3f01e7933710de36c25eeac30e1d6df5e8e529cc90cc4",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-2.json",
+        "byteLength": 36,
+        "sha256": "ea20ca13311668d292bb2cc5ffc3de6913484ce3acf2842ded9a35796e0e41d7",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-3.json",
+        "byteLength": 36,
+        "sha256": "c75c9a9f7c8f04031c02dc7e632e85ee5d289475c5f2373d53c20f02bbd99b63",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-4.json",
+        "byteLength": 36,
+        "sha256": "6c7674f1ab8cbb08d9a7b3536993a9286a97ab3afc120289d024cd4a25a1b280",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "clocks/root-1.json",
+        "byteLength": 41,
+        "sha256": "367a514d7b2e67775b3884ca5224c2941217385cc6da790d1ec73d66a680379f",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "clocks/root-2.json",
+        "byteLength": 41,
+        "sha256": "4cb9d5209a594e30c4e6cce2601bd9151779b1f1969d47ca9a8e780fe59180aa",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "stores/store-1-receipt.bin",
+        "byteLength": 43,
+        "sha256": "93b4b459de1611c875cd6961488db93ea2fc5e2647de7614acc74de35340b4c3",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "stores/store-2-receipt.bin",
+        "byteLength": 43,
+        "sha256": "e161448b5af2d05ebba2b6b1a7d5e248055c41fef271db48e1cf48e2c3f56f47",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "stores/store-3-receipt.bin",
+        "byteLength": 43,
+        "sha256": "dfd4eb39c4a96e15d544fa19b0196275ba4beaabd1bb79a74569e8db4daee625",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "partition/failover.json",
+        "byteLength": 61,
+        "sha256": "3ef142f07897b31969ca81e315fbcbc7d7084f2219a2b6aad033cc856d99b5b6",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "recovery/site-loss.json",
+        "byteLength": 60,
+        "sha256": "b10a66f4263c89792fdff399eb1b09f284b87cf1dff7abb24d994229032d594f",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      }
+    ],
+    "importedWrites": [
+      {
+        "path": "clocks/root-1.json",
+        "byteLength": 41,
+        "sha256": "367a514d7b2e67775b3884ca5224c2941217385cc6da790d1ec73d66a680379f",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "clocks/root-2.json",
+        "byteLength": 41,
+        "sha256": "4cb9d5209a594e30c4e6cce2601bd9151779b1f1969d47ca9a8e780fe59180aa",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-1.json",
+        "byteLength": 36,
+        "sha256": "5d677f07d963c1682ac3f01e7933710de36c25eeac30e1d6df5e8e529cc90cc4",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-2.json",
+        "byteLength": 36,
+        "sha256": "ea20ca13311668d292bb2cc5ffc3de6913484ce3acf2842ded9a35796e0e41d7",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-3.json",
+        "byteLength": 36,
+        "sha256": "c75c9a9f7c8f04031c02dc7e632e85ee5d289475c5f2373d53c20f02bbd99b63",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "hosts/host-4.json",
+        "byteLength": 36,
+        "sha256": "6c7674f1ab8cbb08d9a7b3536993a9286a97ab3afc120289d024cd4a25a1b280",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "partition/failover.json",
+        "byteLength": 61,
+        "sha256": "3ef142f07897b31969ca81e315fbcbc7d7084f2219a2b6aad033cc856d99b5b6",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "qualification/v33_47-verdict.json",
+        "byteLength": 2292,
+        "sha256": "175d41cbb3b3d1d1f3c5cb63961e2918ce0f7bdc6f1caa345fdd2f71f4ebecad",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "recovery/site-loss.json",
+        "byteLength": 60,
+        "sha256": "b10a66f4263c89792fdff399eb1b09f284b87cf1dff7abb24d994229032d594f",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "stores/store-1-receipt.bin",
+        "byteLength": 43,
+        "sha256": "93b4b459de1611c875cd6961488db93ea2fc5e2647de7614acc74de35340b4c3",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "stores/store-2-receipt.bin",
+        "byteLength": 43,
+        "sha256": "e161448b5af2d05ebba2b6b1a7d5e248055c41fef271db48e1cf48e2c3f56f47",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      },
+      {
+        "path": "stores/store-3-receipt.bin",
+        "byteLength": 43,
+        "sha256": "dfd4eb39c4a96e15d544fa19b0196275ba4beaabd1bb79a74569e8db4daee625",
+        "fileFsync": true,
+        "directoryFsync": true,
+        "rereadVerified": true
+      }
+    ],
+    "exactInventoryFileCount": 12
+  },
+  "attacks": {
+    "challengeReplayBlocked": true,
+    "extraFileBlocked": true,
+    "externalRelabelBlocked": true,
+    "missingAcceptanceBlocked": true,
+    "recoveryMismatchBlocked": true,
+    "productionAuthorityBlocked": true
+  },
+  "summary": {
+    "newSignatureCount": 20,
+    "totalChainSignatureCount": 121,
+    "requiredRoleCount": 16,
+    "acceptedRoleCount": 16,
+    "inventoryFileCount": 12,
+    "infrastructureEvidenceCount": 0,
+    "externalHostsObserved": 0,
+    "externalClockRootsObserved": 0,
+    "externalStoresObserved": 0
+  },
+  "truthBoundary": {
+    "status": "LOCAL_EXTERNAL_DEPLOYMENT_IMPORT_REHEARSAL_ONLY",
+    "externalTopologyObserved": false,
+    "externalHostsObserved": 0,
+    "externalClockRootsObserved": 0,
+    "externalStoresObserved": 0,
+    "externalHumanParticipants": 0,
+    "productionAuthority": "NONE",
+    "externalEffectsExecuted": 0,
+    "g3": "blocked",
+    "productionPromotion": "blocked"
+  }
+}

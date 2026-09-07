@@ -1,0 +1,501 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-11T18:02:43.239Z",
+  "projectVersion": "2.2.0-canonical-v18-capability-foundry",
+  "scope": "Repeatable static roast gates; a passing check proves only the narrow property described.",
+  "summary": {
+    "total": 44,
+    "pass": 44,
+    "fail": 0,
+    "bySeverity": {
+      "critical": {
+        "total": 13,
+        "fail": 0
+      },
+      "high": {
+        "total": 28,
+        "fail": 0
+      },
+      "medium": {
+        "total": 3,
+        "fail": 0
+      }
+    }
+  },
+  "checks": [
+    {
+      "id": "R-001",
+      "title": "Formal execution-plan validation",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/plan.ts",
+        "tests/plan.test.ts"
+      ],
+      "remediation": "Validate bounds, identifiers, dependency references, duplicates, and cycles before a run starts."
+    },
+    {
+      "id": "R-002",
+      "title": "Public-network egress guard",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/security/egress.ts",
+        "src/lib/engine/tools/httpFetch.ts",
+        "tests/egress.test.ts"
+      ],
+      "remediation": "Resolve and validate every destination and redirect; block private, loopback, link-local, and metadata networks."
+    },
+    {
+      "id": "R-003",
+      "title": "Least-privilege default tool set",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/tools/index.ts",
+        "src/app/api/agents/route.ts"
+      ],
+      "remediation": "New agents must receive an explicit minimal tool allowlist, never every registered tool."
+    },
+    {
+      "id": "R-004",
+      "title": "Plan deadlock cannot become success",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "tests/plan.test.ts"
+      ],
+      "remediation": "Fail or block the run when no step is ready while unfinished steps remain."
+    },
+    {
+      "id": "R-005",
+      "title": "Tool-loop exhaustion cannot become success",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/runner.ts"
+      ],
+      "remediation": "Mark the step failed when the model still requests tools after the iteration budget is exhausted."
+    },
+    {
+      "id": "R-006",
+      "title": "Run admission control",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/runner.ts"
+      ],
+      "remediation": "Bound global and per-user active runs and expose backpressure rather than allowing unbounded fan-out."
+    },
+    {
+      "id": "R-007",
+      "title": "Skill ownership enforcement",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/app/api/skills/[skillId]/route.ts",
+        "src/app/api/agents/[agentId]/route.ts"
+      ],
+      "remediation": "Only built-in or user-owned skills may be read or attached to an agent."
+    },
+    {
+      "id": "R-008",
+      "title": "Administrative policy mutation",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/app/api/policies/route.ts"
+      ],
+      "remediation": "Require an explicit administrative role for shared policy mutation."
+    },
+    {
+      "id": "R-009",
+      "title": "Audit log access restriction",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/app/api/audit/verify/route.ts"
+      ],
+      "remediation": "Restrict audit event access to authorized administrative or tenant-scoped principals."
+    },
+    {
+      "id": "R-010",
+      "title": "Database migration fail-closed",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/db/index.ts"
+      ],
+      "remediation": "Abort startup when required migrations fail."
+    },
+    {
+      "id": "R-011",
+      "title": "Provider enabled flag enforced",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/gateway.ts",
+        "src/lib/engine/runner.ts"
+      ],
+      "remediation": "A disabled provider must be ineligible for dispatch and test calls."
+    },
+    {
+      "id": "R-012",
+      "title": "Artifact size bound",
+      "severity": "medium",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/tools/writeArtifact.ts"
+      ],
+      "remediation": "Reject or stream artifacts above the documented limit."
+    },
+    {
+      "id": "R-013",
+      "title": "Baseline browser security headers",
+      "severity": "medium",
+      "status": "pass",
+      "evidence": [
+        "next.config.ts"
+      ],
+      "remediation": "Set baseline browser security headers on all application routes."
+    },
+    {
+      "id": "R-014",
+      "title": "Content Security Policy",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "next.config.ts"
+      ],
+      "remediation": "Add a tested CSP compatible with Next.js and the selected UI runtime."
+    },
+    {
+      "id": "R-015",
+      "title": "Durable workflow worker",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/lib/db/schema.ts"
+      ],
+      "remediation": "Persist run leases, checkpoints, retries, cancellation, and resume state outside process memory."
+    },
+    {
+      "id": "R-016",
+      "title": "Idempotency keys for side effects",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "src/lib/engine/runner.ts"
+      ],
+      "remediation": "Persist idempotency keys and atomically bind side effects to event/audit records."
+    },
+    {
+      "id": "R-017",
+      "title": "Tenant-scoped policies",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/db/schema.ts"
+      ],
+      "remediation": "Add tenant ownership or explicitly enforce a single-user deployment mode."
+    },
+    {
+      "id": "R-018",
+      "title": "Tenant-scoped templates",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/db/schema.ts"
+      ],
+      "remediation": "Scope custom templates to an owner or tenant and preserve built-in templates separately."
+    },
+    {
+      "id": "R-019",
+      "title": "Backup and restore implementation",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "docs/canonical/24_HONEST_LIMITATIONS.md"
+      ],
+      "remediation": "Implement, version, encrypt, restore, and test a clean-machine backup workflow."
+    },
+    {
+      "id": "R-020",
+      "title": "Governed memory subsystem",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "docs/canonical/06_DATA_MEMORY_KNOWLEDGE.md"
+      ],
+      "remediation": "Implement provenance, correction, contradiction, expiry, deletion, and tenant isolation for memory."
+    },
+    {
+      "id": "R-021",
+      "title": "OpenTelemetry or equivalent structured telemetry",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "package.json",
+        "docs/canonical/09_EVALUATION_OBSERVABILITY.md"
+      ],
+      "remediation": "Add traceable run, agent, model, tool, policy, cost, and verification events with privacy controls."
+    },
+    {
+      "id": "R-022",
+      "title": "SBOM and release provenance",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "package.json",
+        "docs/canonical/14_ACCEPTANCE_GATES.md"
+      ],
+      "remediation": "Generate and validate an SBOM, license report, model inventory, hashes, and build provenance."
+    },
+    {
+      "id": "R-023",
+      "title": "Drizzle ORM security baseline",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "package.json",
+        "docs/roast/evidence/npm-audit.json"
+      ],
+      "remediation": "Upgrade to a non-vulnerable supported Drizzle ORM release and rerun tests/migrations."
+    },
+    {
+      "id": "R-024",
+      "title": "Registration hardening",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/app/api/register/route.ts"
+      ],
+      "remediation": "Add closed/invite/first-user registration modes, stronger password policy, and non-enumerating errors."
+    },
+    {
+      "id": "R-025",
+      "title": "External content trust boundary",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/tools/httpFetch.ts"
+      ],
+      "remediation": "Label fetched data as untrusted and prevent it from granting authority or overriding policy."
+    },
+    {
+      "id": "R-026",
+      "title": "Explicit tool argument schemas",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/tools/index.ts"
+      ],
+      "remediation": "Validate every tool input against a versioned schema before execution."
+    },
+    {
+      "id": "R-027",
+      "title": "English-only canonical package",
+      "severity": "medium",
+      "status": "pass",
+      "evidence": [
+        "scripts/validate-english-only.mjs"
+      ],
+      "remediation": "Keep the language gate in the release pipeline and re-run it after ZIP extraction."
+    },
+    {
+      "id": "R-028",
+      "title": "Measured model capability routing",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/models/router.ts",
+        "tests/model-router.test.ts"
+      ],
+      "remediation": "Route through measured hard constraints, deterministic utility scoring, fail-closed eligibility, and explicit fallback."
+    },
+    {
+      "id": "R-029",
+      "title": "Governed memory prompt boundary",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/memory/prompt-context.ts",
+        "tests/memory-prompt-context.test.ts"
+      ],
+      "remediation": "Quarantine instruction-like or sensitive memory and label selected records as evidence rather than authority."
+    },
+    {
+      "id": "R-030",
+      "title": "Tool capability and runtime budgets",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/engine/tool-capability.ts",
+        "src/lib/engine/tool-runtime.ts",
+        "tests/tool-runtime.test.ts"
+      ],
+      "remediation": "Enforce allowlists, risk scopes, timeouts, output ceilings, and explicit network/filesystem capabilities."
+    },
+    {
+      "id": "R-031",
+      "title": "Artifact idempotency receipt",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "drizzle/0005_v11_tool_idempotency.sql"
+      ],
+      "remediation": "Bind artifact creation to a stable run/step/tool receipt and reuse the persisted result on duplicate delivery."
+    },
+    {
+      "id": "R-032",
+      "title": "Operator control dossier",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/components/runs/run-dossier.tsx",
+        "src/components/operations/control-room.tsx"
+      ],
+      "remediation": "Expose model choice, governed context, authority, tool effects, recovery evidence, pressure, and SLO violations without generic success decoration."
+    },
+    {
+      "id": "R-033",
+      "title": "Serializable approval continuation contract",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/durable/approval-continuation.ts",
+        "tests/approval-continuation.test.ts"
+      ],
+      "remediation": "Persist the contract behind approval waits and connect it to the active runner before claiming restart continuation."
+    },
+    {
+      "id": "R-034",
+      "title": "Adversarial generated state-space tests",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "tests/adversarial-state-space.test.ts"
+      ],
+      "remediation": "Keep generated cycle, routing permutation, and illegal lifecycle tests in the safe release suite."
+    },
+    {
+      "id": "R-035",
+      "title": "Lease fencing rejects stale workers",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/durable/types.ts",
+        "src/lib/durable/sqlite-store.ts",
+        "tests/durable-fencing.test.ts"
+      ],
+      "remediation": "Bind every durable mutation to a monotonically increasing fencing token and reject stale commits."
+    },
+    {
+      "id": "R-036",
+      "title": "Step-level durable workflow",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/durable/step-runner.ts",
+        "src/lib/engine/runner.ts",
+        "tests/durable-step-runner.test.ts"
+      ],
+      "remediation": "Persist and recover step progress rather than treating a whole agent run as one opaque durable action."
+    },
+    {
+      "id": "R-037",
+      "title": "Hash-bound independent verification",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/lib/verification/attestation.ts",
+        "src/app/api/runs/[runId]/verify/route.ts",
+        "src/components/runs/verification-panel.tsx"
+      ],
+      "remediation": "Bind verifier decisions to immutable source, test, artifact, and release hashes and expose missing verification honestly."
+    },
+    {
+      "id": "R-038",
+      "title": "Approval compare-and-set revision",
+      "severity": "critical",
+      "status": "pass",
+      "evidence": [
+        "src/app/api/approvals/[approvalId]/route.ts",
+        "src/lib/engine/runner.ts",
+        "drizzle/0006_v12_fencing_and_verification.sql"
+      ],
+      "remediation": "Reject stale or duplicate cross-process approval decisions with a database compare-and-set revision."
+    },
+    {
+      "id": "R-039",
+      "title": "Risk-adjusted autonomy boundary",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/intelligence/risk-adjusted-autonomy.ts",
+        "tests/risk-adjusted-autonomy.test.ts"
+      ],
+      "remediation": "Derive autonomy from risk, reversibility, idempotency, and evidence; never from prompt-granted authority."
+    },
+    {
+      "id": "R-040",
+      "title": "Pilot-readiness evidence gate",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/release/pilot-readiness.ts",
+        "src/components/operations/control-room.tsx",
+        "tests/pilot-readiness.test.ts"
+      ],
+      "remediation": "Keep runtime calm separate from release readiness and classify unknown evidence conservatively."
+    },
+    {
+      "id": "R-041",
+      "title": "Six-mode dynamic Roast",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "scripts/roast-dynamic.mjs"
+      ],
+      "remediation": "Run repeatable runtime, recovery, security, product, release, and performance audit modes."
+    },
+    {
+      "id": "R-042",
+      "title": "Targeted semantic mutation probes",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "scripts/mutation-v12.ts",
+        "docs/canonical/evidence/v12/targeted-mutation-probes.json"
+      ],
+      "remediation": "Prove the adversarial suite detects removal of selected critical guards and state the scope limit honestly."
+    },
+    {
+      "id": "R-043",
+      "title": "Verification-aware model routing",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/models/router.ts",
+        "tests/model-router.test.ts"
+      ],
+      "remediation": "Use measured verifier quality and model health as explicit routing signals and hard constraints."
+    },
+    {
+      "id": "R-044",
+      "title": "Governed-memory ablation evidence",
+      "severity": "high",
+      "status": "pass",
+      "evidence": [
+        "src/lib/evaluation/memory-ablation.ts",
+        "tests/memory-ablation.test.ts"
+      ],
+      "remediation": "Compare no-memory, raw retrieval, and governed retrieval under poisoning and token pressure before claiming benefit."
+    }
+  ]
+}

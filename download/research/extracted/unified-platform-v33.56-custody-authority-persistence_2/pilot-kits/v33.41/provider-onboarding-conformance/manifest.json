@@ -1,0 +1,34 @@
+{
+  "version": "33.41",
+  "kitId": "provider-onboarding-conformance-v33.41",
+  "status": "external-execution-ready-production-blocked",
+  "purpose": "Collect exact independently administered provider trust-root, conformance, revocation, replacement, checkpoint and recovery evidence.",
+  "requiredRoles": [
+    "root registrar",
+    "independent conformance laboratory",
+    "attestation revocation authority",
+    "five replacement custodians",
+    "replacement authority",
+    "checkpoint publisher",
+    "three independent monitors",
+    "recovery verifier"
+  ],
+  "requiredArtifacts": [
+    "signed trust-root manifests and exact root bytes",
+    "signed adapter manifests and exact module bytes",
+    "signed remote attestations",
+    "session nonce and conformance receipts",
+    "monotonic revocation snapshot",
+    "three-of-five provider replacement approvals and certificate",
+    "checkpoint bytes and three durable monitor receipts",
+    "cross-site recovery receipt"
+  ],
+  "forbidden": [
+    "private key export",
+    "self-attested external status",
+    "provider replacement without revocation",
+    "lowering the three-of-five quorum",
+    "production promotion",
+    "external mutation without authorization"
+  ]
+}

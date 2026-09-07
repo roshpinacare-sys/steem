@@ -1,0 +1,136 @@
+{
+  "intents": [
+    "diagnose",
+    "rebalance",
+    "promote",
+    "quorum_validate",
+    "refactor",
+    "retire"
+  ],
+  "ops": [
+    "ADD",
+    "UPDATE",
+    "DELETE",
+    "RETRIEVE",
+    "FILTER",
+    "SUMMARY",
+    "NOOP"
+  ],
+  "tiers": [
+    "STM",
+    "LTM"
+  ],
+  "proof_kinds": [
+    "z3_sat",
+    "z3_unsat",
+    "saarthi",
+    "sqa_quorum",
+    "empirical"
+  ],
+  "intent_required_ops": {
+    "diagnose": [
+      "FILTER",
+      "RETRIEVE",
+      "SUMMARY"
+    ],
+    "rebalance": [
+      "ADD",
+      "SUMMARY",
+      "UPDATE"
+    ],
+    "promote": [
+      "ADD",
+      "FILTER",
+      "SUMMARY"
+    ],
+    "quorum_validate": [
+      "DELETE",
+      "NOOP",
+      "RETRIEVE",
+      "UPDATE"
+    ],
+    "refactor": [
+      "DELETE",
+      "RETRIEVE",
+      "UPDATE"
+    ],
+    "retire": [
+      "DELETE"
+    ]
+  },
+  "intent_required_tier": {
+    "diagnose": "LTM",
+    "rebalance": "STM",
+    "promote": "LTM",
+    "quorum_validate": "STM",
+    "refactor": "STM",
+    "retire": "STM"
+  },
+  "intent_required_proofs": {
+    "diagnose": [
+      "empirical"
+    ],
+    "rebalance": [
+      "sqa_quorum",
+      "z3_sat"
+    ],
+    "promote": [
+      "sqa_quorum"
+    ],
+    "quorum_validate": [
+      "sqa_quorum",
+      "z3_unsat"
+    ],
+    "refactor": [
+      "saarthi",
+      "sqa_quorum"
+    ],
+    "retire": [
+      "sqa_quorum"
+    ]
+  },
+  "risk_threshold": {
+    "low": 2,
+    "medium": 3,
+    "high": 4,
+    "critical": 5
+  },
+  "demo_results": [
+    {
+      "label": "admissible diagnose (RETRIEVE on LTM)",
+      "intent": "diagnose",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "label": "inadmissible: DELETE without parent_rid",
+      "intent": "retire",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "label": "inadmissible: REBALANCE without Z3 sat witness",
+      "intent": "rebalance",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "label": "admissible: critical-risk DELETE with SQA quorum",
+      "intent": "retire",
+      "expected": true,
+      "actual": true
+    },
+    {
+      "label": "inadmissible: QUORUM_VALIDATE without SQA + Z3_UNSAT",
+      "intent": "quorum_validate",
+      "expected": false,
+      "actual": false
+    },
+    {
+      "label": "admissible: REFACTOR with Saarthi + SQA",
+      "intent": "refactor",
+      "expected": true,
+      "actual": true
+    }
+  ]
+}

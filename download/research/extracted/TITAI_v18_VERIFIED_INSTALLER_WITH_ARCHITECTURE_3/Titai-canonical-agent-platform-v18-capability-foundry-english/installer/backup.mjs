@@ -1,0 +1,12 @@
+import { createInterface } from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
+import { join } from "node:path";
+import { root, runNpm } from "./common.mjs";
+const rl = createInterface({ input, output });
+const passphrase = await rl.question("Backup passphrase (not stored): ");
+rl.close();
+if (passphrase.length < 12) throw new Error("backup_passphrase_must_be_at_least_12_characters");
+const stamp = new Date().toISOString().replaceAll(":", "-").replace(".", "-");
+const path = join(root, "backups", `titai-${stamp}.backup`);
+runNpm(["run", "backup:create"], { env: { TITAI_BACKUP_PASSPHRASE: passphrase, TITAI_BACKUP_PATH: path } });
+console.log(`Backup created: ${path}`);

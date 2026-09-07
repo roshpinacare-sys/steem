@@ -1,0 +1,54 @@
+{
+  "version": "32.2",
+  "generatedAt": "2026-07-18T04:10:16.978Z",
+  "budgetScope": "TypeScript production source modules",
+  "status": "WARN",
+  "totals": {
+    "modules": 102,
+    "warnings": 3,
+    "blocks": 0,
+    "warningRatePercent": 2.94
+  },
+  "findings": [
+    {
+      "path": "src/governance/consistency.ts",
+      "severity": "WARNING",
+      "metric": "exportedSymbolCount",
+      "observed": 52,
+      "maximum": 35
+    },
+    {
+      "path": "src/platform/capability-trust.ts",
+      "severity": "WARNING",
+      "metric": "decisionPointCount",
+      "observed": 153,
+      "maximum": 125
+    },
+    {
+      "path": "src/platform/credential-trust-bundle.ts",
+      "severity": "WARNING",
+      "metric": "decisionPointCount",
+      "observed": 130,
+      "maximum": 125
+    }
+  ],
+  "highestRiskModules": [
+    {
+      "path": "src/governance/consistency.ts",
+      "debtPoints": 49
+    },
+    {
+      "path": "src/platform/capability-trust.ts",
+      "debtPoints": 23
+    },
+    {
+      "path": "src/platform/credential-trust-bundle.ts",
+      "debtPoints": 5
+    }
+  ],
+  "reportDigest": "d78821d22ff9be71a5828723739c57ae9bce8f2ee7dffb227fe1745b7453184e",
+  "limitations": [
+    "Static complexity is a change-risk signal, not a correctness proof.",
+    "Generated JavaScript and external infrastructure are outside this budget."
+  ]
+}

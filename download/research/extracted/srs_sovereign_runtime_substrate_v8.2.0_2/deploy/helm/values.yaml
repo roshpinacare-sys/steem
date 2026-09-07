@@ -1,0 +1,44 @@
+replicaCount: 1
+
+image:
+  repository: srs-sovereign-runtime-substrate
+  tag: "5.3.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: ""
+
+monitoring:
+  enabled: true
+  prometheusPort: 9090
+
+env:
+  SRS_ENV: production
+
+livenessProbe:
+  httpGet:
+    path: /v1/health
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 30
+
+readinessProbe:
+  httpGet:
+    path: /v1/health
+    port: 8000
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 256Mi

@@ -1,0 +1,27 @@
+{
+  "version": "33.49",
+  "generatedAt": "2026-07-23T10:30:00.000Z",
+  "status": "passed",
+  "runner": "one-node-process-per-test-file-authoritative-staged-receipts",
+  "testTopologyReason": "Every test file runs in a separate Node process. Stateless files use eight workers. Sensitive files run sequentially inside disjoint shards. No retry or force-exit is used. Aggregate validates the exact compiled test digest and every receipt.",
+  "totals": {
+    "testFiles": 234,
+    "tests": 2512,
+    "passed": 2512,
+    "failed": 0
+  },
+  "runnerExitCode": 0,
+  "timedOut": false,
+  "forceExitDisabled": true,
+  "retry": false,
+  "stdoutEvidence": "release-evidence/v33.49/V33_49_FULL_TEST_STDOUT.tap",
+  "stderrEvidence": "release-evidence/v33.49/V33_49_FULL_TEST_STDERR.log",
+  "exitEvidence": "release-evidence/v33.49/V33_49_FULL_TEST_EXIT.txt",
+  "metaEvidence": "release-evidence/v33.49/V33_49_FULL_TEST_META.json",
+  "stdoutSha256": "70d0fbde98e20e21414fc2cfb68e0c036434399bc732da2de44546924e8825a1",
+  "stderrSha256": "35d0396ccb73d6fc00fb4bfe3f60b06419ee6e4b28413c21c59452627ddea7d0",
+  "topology": "one-node-process-per-test-file-staged-eight-parallel-workers-thirty-eight-sensitive-sharded-sequential",
+  "parallelWorkers": 8,
+  "sensitiveFileCount": 39,
+  "productionPromotion": "blocked"
+}

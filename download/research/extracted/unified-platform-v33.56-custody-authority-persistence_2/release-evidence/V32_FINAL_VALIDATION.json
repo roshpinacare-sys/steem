@@ -1,0 +1,391 @@
+{
+  "version": "32.5",
+  "status": "passed",
+  "classification": "twenty-two-lens-holistic-assurance-core-validation",
+  "startedAt": "2026-07-18T10:20:21.831271Z",
+  "finishedAt": "2026-07-18T10:29:31.504103Z",
+  "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b",
+  "checks": [
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build:clean:v32"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 5642.888,
+      "status": "passed",
+      "log": "evidence/generated/v32-build.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "prepare-isolation",
+      "command": [
+        "bash",
+        "scripts/prepare-linux-probes-v32.sh"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 3432.907,
+      "status": "passed",
+      "log": "evidence/generated/v32-prepare-isolation.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "tests",
+      "command": [
+        "python3",
+        "scripts/run-tests-v32-parallel.py"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 19846.301,
+      "status": "passed",
+      "log": "evidence/generated/v32-tests.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "coverage",
+      "command": [
+        "node",
+        "scripts/run-coverage-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 11213.487,
+      "status": "passed",
+      "log": "evidence/generated/v32-coverage.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "quality",
+      "command": [
+        "node",
+        "scripts/test-quality-audit-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 806.921,
+      "status": "passed",
+      "log": "evidence/generated/v32-quality.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "incomplete-audit",
+      "command": [
+        "node",
+        "scripts/incomplete-code-audit-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 912.933,
+      "status": "passed",
+      "log": "evidence/generated/v32-incomplete-audit.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "architecture",
+      "command": [
+        "node",
+        "scripts/architecture-validation-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 876.114,
+      "status": "passed",
+      "log": "evidence/generated/v32-architecture.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "credential-mutation",
+      "command": [
+        "python3",
+        "scripts/run-credential-sovereignty-mutation-v32.py"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 22399.75,
+      "status": "passed",
+      "log": "evidence/generated/v32-credential-mutation.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "credential-proof",
+      "command": [
+        "node",
+        "scripts/credential-sovereignty-proof-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 142.97,
+      "status": "passed",
+      "log": "evidence/generated/v32-credential-proof.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "integration",
+      "command": [
+        "node",
+        "scripts/integration-closure-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 70.368,
+      "status": "passed",
+      "log": "evidence/generated/v32-integration.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "supply-chain",
+      "command": [
+        "node",
+        "scripts/supply-chain-report-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 2030.356,
+      "status": "passed",
+      "log": "evidence/generated/v32-supply-chain.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "dr",
+      "command": [
+        "node",
+        "scripts/local-dr-rehearsal-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 92.4,
+      "status": "passed",
+      "log": "evidence/generated/v32-dr.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "pilot",
+      "command": [
+        "node",
+        "scripts/generate-human-pilot-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 69.353,
+      "status": "passed",
+      "log": "evidence/generated/v32-pilot.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "browser",
+      "command": [
+        "python3",
+        "e2e/test_breakthrough_pilot_v32.py"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 6229.584,
+      "status": "passed",
+      "log": "evidence/generated/v32-browser.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "isolation",
+      "command": [
+        "bash",
+        "scripts/run-linux-isolation-v32.sh"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 2956.319,
+      "status": "passed",
+      "log": "evidence/generated/v32-isolation.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "postgres",
+      "command": [
+        "node",
+        "scripts/qualify-postgres-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0,
+        2
+      ],
+      "exitCode": 2,
+      "durationMs": 95.188,
+      "status": "passed",
+      "log": "evidence/generated/v32-postgres.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "operations",
+      "command": [
+        "node",
+        "scripts/generate-operations-report-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 68.593,
+      "status": "passed",
+      "log": "evidence/generated/v32-operations.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "stability",
+      "command": [
+        "python3",
+        "scripts/stability-v32.py"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 79032.841,
+      "status": "passed",
+      "log": "evidence/generated/v32-stability.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    },
+    {
+      "name": "qualification",
+      "command": [
+        "node",
+        "scripts/qualification-matrix-v32.mjs"
+      ],
+      "acceptedExitCodes": [
+        0
+      ],
+      "exitCode": 0,
+      "durationMs": 75.721,
+      "status": "passed",
+      "log": "evidence/generated/v32-qualification.log",
+      "sourceDigest": "7c74ba0d01ca745df3913febb60de651cacbf3e0725cb8485d3deb58cb55034b"
+    }
+  ],
+  "assertions": {
+    "allStagesPassed": true,
+    "testsPassed": true,
+    "coverageFloor": true,
+    "qualityPassed": true,
+    "incompleteAuditPassed": true,
+    "architectureClosed": true,
+    "mutationsAuthentic": true,
+    "credentialProofPassed": true,
+    "integrationClosed": true,
+    "supplyChainPassed": true,
+    "drPassed": true,
+    "pilotNotFabricated": true,
+    "browserPassed": true,
+    "isolationResearchProof": true,
+    "postgresHonest": true,
+    "operationsFailClosed": true,
+    "stabilityPassed": true,
+    "qualificationIntegratedPilot": true
+  },
+  "results": {
+    "tests": {
+      "testFiles": 134,
+      "tests": 736,
+      "passed": 736,
+      "failed": 0,
+      "wallDurationMs": 18721.627
+    },
+    "coverage": {
+      "file": "all files",
+      "linePercent": 99.46,
+      "branchPercent": 96.14,
+      "functionPercent": 98.79
+    },
+    "testQuality": {
+      "files": 134,
+      "tests": 736,
+      "assertions": 2393,
+      "criticalOrHighIssues": 0,
+      "mediumIssues": 0
+    },
+    "architecture": {
+      "nodeCount": 279,
+      "sourceCount": 125,
+      "testCount": 139,
+      "entrypointCount": 15,
+      "importEdgeCount": 712,
+      "sourceCycleCount": 0,
+      "untestedSourceCount": 0,
+      "capabilityPathCount": 57,
+      "closedCapabilityPathCount": 57,
+      "layerCount": 21
+    },
+    "mutations": {
+      "mutantsSpecified": 16,
+      "mutantsKilledAuthentically": 16,
+      "survivors": 0,
+      "invalidKills": 0
+    },
+    "credentialSovereignty": {
+      "selfIssuanceRejected": true,
+      "sameCustodianThresholdRejected": true,
+      "thresholdCustodians": 2,
+      "oldProviderCredentialRevoked": true,
+      "newProviderCredentialActive": true,
+      "offlineImportDigestMatches": true,
+      "independentAnchorRollbackDetected": true,
+      "historicalSignatureValidBeforeEffectiveRevocation": true,
+      "signatureBlockedAfterEffectiveRevocation": true,
+      "externalMutationsExecuted": 0
+    },
+    "integration": {
+      "edges": 14,
+      "closed": 14,
+      "externalMutationsExecuted": 0,
+      "capabilityPaths": 57,
+      "closedCapabilityPaths": 57
+    },
+    "stability": {
+      "medianWallMs": 19395.522,
+      "meanWallMs": 19383.937,
+      "minWallMs": 18857.483,
+      "maxWallMs": 19898.805,
+      "coefficientOfVariation": 0.0219
+    },
+    "readiness": "Integrated Pilot",
+    "productionPromotion": "blocked"
+  },
+  "limitations": [
+    "Signatures prove authorization and material binding, not truth or legal independence.",
+    "The independent file anchor detects rollback of the bundle store alone; joint rollback of bundle and anchor remains unprotected without external monotonic storage, HSM or federation.",
+    "The proof is single-host and uses local test keys; PostgreSQL, KMS/HSM, live provider and human value are not qualified.",
+    "PostgreSQL, KMS/HSM, independent security, distributed custodians, live provider and human value remain externally unqualified."
+  ]
+}

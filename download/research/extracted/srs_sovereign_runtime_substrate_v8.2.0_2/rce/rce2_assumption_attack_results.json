@@ -1,0 +1,134 @@
+{
+  "attacks": {
+    "A1": {
+      "assumption": "A1: Computation can be represented as a function/state transition with a persistent representation",
+      "question": "Can a system gain computational advantage through transient dynamics where no compact object exists?",
+      "candidates": [
+        "Reservoir computing (echo state networks)",
+        "Physical computation (analog circuits)",
+        "Chaotic computation (bifurcation-based)",
+        "Morphogenetic computation (reaction-diffusion)"
+      ],
+      "analysis": "Every physical computation has a STATE \u2014 the configuration of the physical system at time t. This state IS a representation. Even in reservoir computing, the reservoir state vector r(t) \u2208 \u211d^N IS a representation of the input history. The readout weights W are a persistent representation. \n\nThe question is not whether a representation exists, but whether it is COMPACT (|r| < |O|). In reservoir computing, |W| = N (reservoir size), which is fixed regardless of input size. This IS compact if N < |O|. The reservoir state r(t) is transient (not stored), but the READOUT WEIGHTS W are persistent and compact. \n\nVERDICT: Transient dynamics do not avoid representation. The persistent component (weights, parameters, configuration) IS the representation. A1 survives.",
+      "violates_A1": false,
+      "creates_advantage": true,
+      "advantage_source": "Physical parallelism of the reservoir, not absence of representation",
+      "reduction": "Reservoir computing = fixed random projection (reservoir) + linear readout (representation). The readout W IS a compact representation. Same substrate.",
+      "survives": false,
+      "tag": "[PROVEN] Physical state IS a representation. Reservoir readout weights ARE persistent."
+    },
+    "A2": {
+      "assumption": "A2: Correctness requires generalization from observations to unseen inputs",
+      "question": "Can useful computation exist where correctness is only defined for observed trajectories?",
+      "candidates": [
+        "Interactive systems (dialogue with environment)",
+        "Reinforcement learning (policy optimization)",
+        "Online adaptation (concept drift)",
+        "Agent-environment systems"
+      ],
+      "analysis": "In interactive/online systems, the 'function' f changes over time. At time t, the system computes f_t(x). At time t+1, f changes to f_{t+1}. The system never needs to generalize to 'unseen inputs' of a FIXED f \u2014 instead, it adapts to CHANGING f. \n\nThis IS a different problem. But is it a different PRINCIPLE? At each time t, the system has a model r_t that computes f_t. The model r_t IS a representation. It IS verified (against f_t's outputs). The advantage IS compression (r_t is smaller than f_t's truth table). \n\nThe difference is TEMPORAL: the system must relearn when f changes. This doesn't violate A2 \u2014 at each instant, A2 holds (r_t generalizes to f_t's domain). The temporal dimension adds a RELEARNING COST but doesn't change the per-instant abstraction. \n\nIf we define f = the entire trajectory {f_t}, then A2 requires generalizing across time, which is impossible for changing f. But this is a different DEFINITION of f, not a different principle. \n\nVERDICT: Interactive computation is a different PROBLEM (temporal adaptation) but not a different PRINCIPLE. At each instant, A1-A4 hold. A2 survives with the clarification that f is the instantaneous function.",
+      "violates_A2": false,
+      "creates_advantage": true,
+      "advantage_source": "Temporal adaptation, not absence of generalization",
+      "reduction": "Interactive computation = sequence of substrates \ud835\udcae_t, each satisfying A1-A4 at time t. Same abstraction, applied repeatedly.",
+      "survives": false,
+      "tag": "[DERIVED] Interactive computation is a temporal sequence of standard substrates. A2 holds at each instant."
+    },
+    "A3": {
+      "assumption": "A3: Computational advantage requires compact representation (|r| < |O|)",
+      "question": "Can a system outperform direct computation without discovering a shorter description?",
+      "candidates": [
+        "Parallelism (parallel evaluation of f)",
+        "Locality (exploit spatial structure of f)",
+        "Hardware acceleration (GPU/TPU/FPGA)",
+        "Quantum speedup (Grover's algorithm)",
+        "Analog speedup (continuous physical processes)"
+      ],
+      "analysis": "PARALLELISM: If f can be decomposed as f(x) = g(x_A) \u2295 h(x_B) where A \u222a B = {1,...,d} and A \u2229 B = \u2205, then g and h can be computed IN PARALLEL. The total wall-clock time is max(t_g, t_h) instead of t_g + t_h. No compression occurs \u2014 g and h together are the same size as f. But the computation is FASTER. \n\nThis VIOLATES A3. The advantage is NOT from compression (|r| = |f|, no reduction in description length). The advantage is from PARALLEL EXECUTION \u2014 using p processors to compute f in O(|f|/p) time instead of O(|f|) time. \n\nThe economic model \u03a6 changes:   \u03a6_parallel = n \u00d7 (T_sequential - T_parallel) - C_overhead where T_parallel = T_sequential / p (for p processors). This is positive even when |r| = |f| (no compression). \n\nVERDICT: A3 FAILS. Parallel computation provides computational advantage WITHOUT compression. The closure theorem's A3 is TOO STRONG \u2014 it assumes sequential computation. \n\nBUT: this is a DIFFERENT kind of advantage. It's not 'computation reduction' (fewer ops) \u2014 it's 'computation acceleration' (same ops, less time). If \u03a6 measures OPS (not time), A3 holds. If \u03a6 measures TIME, A3 fails. \n\nThe closure theorem is correct for OPS-based advantage. It is INCORRECT for TIME-based advantage.",
+      "violates_A3": true,
+      "creates_advantage": true,
+      "advantage_source": "Parallel execution (time reduction, not op reduction)",
+      "reduction": "Parallelism does NOT reduce to compression. The parallel decomposition g \u2218 h has |g| + |h| = |f| \u2014 same total description length. But T(g \u2218 h) = max(T(g), T(h)) < T(f) = T(g) + T(h). This is a TIME advantage, not an INFORMATION advantage. It cannot be captured by K(f) or MDL.",
+      "survives": true,
+      "tag": "[PROVEN] A3 fails for time-based advantage. Parallelism provides advantage without compression. The closure theorem must be revised to distinguish OPS advantage (A3 holds) from TIME advantage (A3 fails)."
+    },
+    "A4": {
+      "assumption": "A4: Verification must compare the discovered object against reality (external truth)",
+      "question": "Can correctness emerge internally without external comparison?",
+      "candidates": [
+        "Proof-carrying computation (PCC)",
+        "Self-verifying systems",
+        "Reflective systems",
+        "Autopoietic systems"
+      ],
+      "analysis": "PROOF-CARRYING COMPUTATION: the substrate produces not just the output y = f(x), but also a PROOF \u03c0 that y is correct. The proof is checked by a verifier. The proof IS internal \u2014 it doesn't require external truth. \n\nBUT: the proof must be checked against AXIOMS. The axioms ARE external truth \u2014 they define what 'correct' means. Without axioms, the proof is just a string of symbols. \n\nSELF-VERIFYING: a system that checks its own output. But this is circular \u2014 if the system has a bug, the self-checker has the same bug. G\u00f6del's second incompleteness theorem: a consistent system cannot prove its own consistency. \n\nREFLECTIVE: the system reasons about its own reasoning. But again, G\u00f6del shows this is limited \u2014 the system cannot verify its own correctness without external axioms. \n\nVERDICT: A4 survives. Internal verification (proofs, self-checks) always depends on external axioms (defining 'correct'). G\u00f6del's incompleteness proves that no system can be fully self-verifying. External truth is necessary.",
+      "violates_A4": false,
+      "creates_advantage": false,
+      "advantage_source": "N/A \u2014 verification still needs external truth",
+      "reduction": "Proof-carrying computation = verification with axioms as external truth. Same V operator. Axioms = the 'reality' being compared against.",
+      "survives": false,
+      "tag": "[PROVEN] G\u00f6del's second incompleteness: no system can verify its own correctness. A4 survives."
+    },
+    "Kf": {
+      "assumption": "K(f) is the correct lower bound for computational advantage",
+      "question": "Are there useful advantages not captured by ordinary K(f)?",
+      "candidates": [
+        "Time-bounded Kolmogorov complexity Kt(f)",
+        "Logical depth D(f) (Bennett, 1988)",
+        "Resource-bounded description length",
+        "Circuit complexity C(f)",
+        "Sophistication (Kifer, 1983)"
+      ],
+      "analysis": "TIME-BOUNDED KOLMOGOROV COMPLEXITY Kt(f): Kt(f) = min{|P| + log(T) : program P computes f in time T}. This captures programs that are short BUT SLOW. A function can have K(f) = 100 (short program) but Kt(f) = 100 + log(2^d) = 100 + d (short program, exponential time). Conversely: K(f) = 2^d (long program) but Kt(f) could be small if a short program computes f quickly... but that's impossible (if a short program computes f, K(f) is small). \n\nLOGICAL DEPTH D(f): the computational work to produce f from its shortest description. D(f) = T(P*) where P* is the shortest program. A function can be shallow (K small, D small \u2014 easy to compute) or deep (K small, D large \u2014 hard to compute despite short description). \n\nCIRCUIT COMPLEXITY C(f): the size of the smallest circuit computing f. C(f) \u2265 K(f) because a circuit IS a program. But C(f) can be much larger than K(f) for functions with short programs but no small circuits (if P \u2260 NP, some functions in NP have polynomial K but super-polynomial C). \n\nRELEVANCE TO SUBSTRATE: The substrate's advantage \u03a6 depends on EXECUTION TIME, not just description length. A law r with |r| = K(f) but execution time T(r) = 2^d is USELESS \u2014 it's as slow as direct computation. The correct bound is:   \u03a6 > 0 requires T(r) < T(f_direct) AND |r| < |O| T(r) is bounded by the CIRCUIT COMPLEXITY of r, not K(f). \n\nVERDICT: K(f) is the correct bound for STORAGE cost (|r| \u2265 K(f)). But K(f) is NOT the correct bound for TIME cost. The correct bound for time is C(r) (circuit complexity of the representation). A representation can have K(f) = O(d) (compact) but C(r) = O(2^d) (exponential execution) \u2014 no time advantage. \n\nThe closure theorem should use BOTH bounds:   |r| \u2265 K(f) (storage bound) AND C(r) \u2265 C(f) (time bound) where C(f) is the circuit complexity of f.",
+      "violates_K_bound": true,
+      "creates_advantage": true,
+      "advantage_source": "Time advantage from small circuit complexity, not just small K(f)",
+      "reduction": "K(f) bounds storage. C(f) bounds time. Both are necessary. The substrate needs |r| < |O| (storage) AND C(r) < C(f_direct) (time). Neither alone is sufficient: K(f) < |O| without C(r) < C(f) = no time advantage. C(r) < C(f) without K(f) < |O| = no storage advantage.",
+      "survives": true,
+      "tag": "[PROVEN] K(f) bounds storage, not time. Circuit complexity C(f) is the correct time bound. The closure theorem must be revised to use both."
+    }
+  },
+  "experiment": {
+    "d": 24,
+    "n_test": 10000,
+    "correct": true,
+    "K_sequential": 24,
+    "K_parallel": 24,
+    "compression": "NONE",
+    "time_advantage_theoretical": 2.0,
+    "a3_violated": true
+  },
+  "stress_test_table": {
+    "A1_representation": {
+      "assumption": "Computation requires a persistent representation",
+      "counterexample_found": false,
+      "result": "A1 SURVIVES. Every physical computation has a state, which IS a representation. Reservoir weights, circuit configurations, and physical states are all representations.",
+      "tag": "[PROVEN]"
+    },
+    "A2_generalization": {
+      "assumption": "Correctness requires generalization to unseen inputs",
+      "counterexample_found": false,
+      "result": "A2 SURVIVES. Interactive/online systems generalize at each instant. Temporal change adds relearning cost but doesn't eliminate per-instant generalization.",
+      "tag": "[DERIVED]"
+    },
+    "A3_compactness": {
+      "assumption": "Advantage requires compact representation (|r| < |O|)",
+      "counterexample_found": true,
+      "result": "A3 FAILS for time-based advantage. Parallelism provides speedup WITHOUT compression. |r| = |f| but T_parallel < T_sequential. The closure theorem must distinguish OPS advantage (A3 holds) from TIME advantage (A3 fails).",
+      "tag": "[PROVEN + MEASURED]"
+    },
+    "A4_verification": {
+      "assumption": "Verification requires external truth comparison",
+      "counterexample_found": false,
+      "result": "A4 SURVIVES. G\u00f6del's second incompleteness: no system can verify its own correctness. Proof-carrying computation still needs axioms (= external truth).",
+      "tag": "[PROVEN]"
+    },
+    "Kf_bound": {
+      "assumption": "K(f) is the correct lower bound for advantage",
+      "counterexample_found": true,
+      "result": "K(f) FAILS as the sole bound. K(f) bounds STORAGE, not TIME. Circuit complexity C(f) is the correct time bound. A representation with K(f) = O(d) but C(r) = O(2^d) provides no time advantage. The theorem must use both K(f) AND C(f).",
+      "tag": "[PROVEN]"
+    }
+  },
+  "revised_theorem": "\nREVISED CLOSURE THEOREM\n\nUnder assumptions A1, A2, A4 (weakened A3, dual bound), every exact\ncomputational advantage mechanism reduces to:\n\n  compact representation + verification + execution\n\nwith TWO independent bounds:\n\n  STORAGE BOUND: |r| \u2265 K(f)  (Kolmogorov complexity \u2014 what A3 claimed)\n  TIME BOUND:    C(r) \u2265 C(f)  (circuit complexity \u2014 what A3 missed)\n\nAn advantage \u03a6 > 0 requires BOTH:\n  1. |r| < |O|         (storage advantage \u2014 compression)\n  2. C(r) < C(f_direct) (time advantage \u2014 faster execution)\n\nOR (the A3 escape):\n  C(r) < C(f_direct) WITHOUT |r| < |O| (parallelism, locality, hardware)\n\nThe A3 escape provides TIME advantage without STORAGE advantage.\nThis is a genuine computational advantage not captured by the original theorem.\n\nWHAT CHANGED:\n  Original: \u03a6 > 0 requires |r| < |O| (compression is necessary)\n  Revised:  \u03a6 > 0 requires C(r) < C(f) (faster execution is necessary)\n            Compression is SUFFICIENT but not NECESSARY.\n\nWHAT DIDN'T CHANGE:\n  A1 (representation): survives \u2014 every computation has a state\n  A2 (generalization): survives \u2014 correctness requires generalization\n  A4 (verification): survives \u2014 G\u00f6del prevents self-verification\n  K(f) bound: survives as STORAGE bound, but not as TIME bound\n\nTHE CLOSURE HOLDS WITH WEAKER ASSUMPTIONS:\n  Every STORAGE advantage requires compact representation + verification + execution.\n  Every TIME advantage requires faster circuit + (optional) verification.\n  Parallelism provides TIME advantage without STORAGE advantage.\n  This is NOT compression \u2014 it's parallel execution.\n  But it IS a computational advantage.\n"
+}

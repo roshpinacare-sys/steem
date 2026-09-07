@@ -1,0 +1,188 @@
+{
+  "version": "33.53",
+  "status": "PASS",
+  "checkCount": 16,
+  "passed": 16,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "required-artifacts",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "proof-summary",
+      "ok": true,
+      "detail": {
+        "newSignatureCount": 23,
+        "totalChainSignatureCount": 352,
+        "storeAttestationCount": 3,
+        "workerAttestationCount": 2,
+        "clockAttestationCount": 2,
+        "initialStoreReceiptCount": 3,
+        "partitionObservationCount": 2,
+        "postFailoverStoreReceiptCount": 3,
+        "overloadReceiptCount": 2,
+        "recoveryReceiptCount": 1,
+        "storeProcessCount": 3,
+        "overloadWorkerProcessCount": 2,
+        "recoveryProcessCount": 1,
+        "signedArtifactWriteCount": 23
+      }
+    },
+    {
+      "name": "proof-process-evidence",
+      "ok": true,
+      "detail": {
+        "stores": 3,
+        "workers": 2,
+        "writes": 23
+      }
+    },
+    {
+      "name": "proof-attacks",
+      "ok": true,
+      "detail": {
+        "splitViewBlocked": true,
+        "clockSkewBlocked": true,
+        "prematureFailoverBlocked": true,
+        "observerCollisionBlocked": true,
+        "overloadWithoutRejectionBlocked": true,
+        "hysteresisBypassBlocked": true,
+        "wrongRecoveryBytesBlocked": true,
+        "processReuseBlocked": true,
+        "externalRelabelBlocked": true,
+        "productionAuthorityMutationBlocked": true
+      }
+    },
+    {
+      "name": "truth-boundary",
+      "ok": true,
+      "detail": {
+        "status": "LOCAL_PERSISTENCE_INFRASTRUCTURE_QUALIFICATION_REHEARSAL_ONLY",
+        "externalTopologyObserved": false,
+        "externalInfrastructureAttestations": 0,
+        "externalHumanParticipants": 0,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "g3": "BLOCKED",
+        "productionPromotion": "BLOCKED"
+      }
+    },
+    {
+      "name": "independent-verification",
+      "ok": true,
+      "detail": {
+        "version": "33.53",
+        "verifiedAt": "2026-07-23T20:32:12.133Z",
+        "status": "PASS",
+        "verdictDigest": "7e511ccfc744564bacf3580841610451014d923fc1cd7c210d4f03d6bac64070",
+        "newSignatureCount": 23,
+        "totalChainSignatureCount": 352,
+        "storeProcessCount": 3,
+        "overloadWorkerProcessCount": 2,
+        "recoveryProcessCount": 1,
+        "portableEvidencePathsVerified": true,
+        "externalTopologyObserved": false,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0
+      }
+    },
+    {
+      "name": "focused-regression",
+      "ok": true,
+      "detail": {
+        "tests": 849,
+        "passed": 849,
+        "failed": 0
+      }
+    },
+    {
+      "name": "full-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 238,
+        "tests": 2674,
+        "passed": 2674,
+        "failed": 0
+      }
+    },
+    {
+      "name": "direct-v33-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 53,
+        "tests": 1507,
+        "passed": 1507,
+        "failed": 0
+      }
+    },
+    {
+      "name": "repository-truth-map",
+      "ok": true,
+      "detail": {
+        "sourceModules": 242,
+        "testFiles": 238,
+        "scripts": 648,
+        "packageScripts": 609,
+        "governanceFiles": 11,
+        "externalQualificationKits": 6,
+        "frontierBenchmarkKits": 1,
+        "sovereignInfraFiles": 30,
+        "independentVerifierFiles": 5,
+        "sovereignServices": 12
+      }
+    },
+    {
+      "name": "architecture-integrity",
+      "ok": true,
+      "detail": {
+        "nodeCount": 485,
+        "sourceCount": 225,
+        "testCount": 243,
+        "entrypointCount": 17,
+        "importEdgeCount": 1170,
+        "sourceCycleCount": 0,
+        "untestedSourceCount": 0,
+        "capabilityPathCount": 178,
+        "closedCapabilityPathCount": 178,
+        "layerCount": 23
+      }
+    },
+    {
+      "name": "regression-input-binding",
+      "ok": true,
+      "detail": {
+        "receipts": 238,
+        "buildDigest": "5bff5545edb60ddb0dcedb706aebbbb19c3bbcddd7393295769128eb02dc7d9d",
+        "runInputDigest": "0010d497827fddec659b35416072e92855f27049552e993e236f18fe496ef487"
+      }
+    },
+    {
+      "name": "canonical-metadata",
+      "ok": true,
+      "detail": {
+        "canonical": 11,
+        "mirror": 17
+      }
+    },
+    {
+      "name": "offline-lockfile",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "governance-boundary",
+      "ok": true,
+      "detail": {
+        "phase": "Evidence Intake Operations Persistence Infrastructure Qualification, Independent Stores, Worker Hosts, Lease Clocks, Partition Failover, Overload, and Site-Loss Audit Replay",
+        "status": "v33.53-persistence-infrastructure-qualification-local-rehearsal-production-blocked"
+      }
+    },
+    {
+      "name": "next-action-boundary",
+      "ok": true,
+      "detail": "NA33.53-EXECUTE-EXTERNAL-PERSISTENCE-QUALIFICATION"
+    }
+  ]
+}

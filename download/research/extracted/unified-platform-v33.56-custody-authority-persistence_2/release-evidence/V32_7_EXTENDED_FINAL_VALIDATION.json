@@ -1,0 +1,276 @@
+{
+  "version": "32.7",
+  "generatedAt": "2026-07-18T14:52:03.194745Z",
+  "runId": "v32.7-final2",
+  "status": "passed",
+  "classification": "proof-diversity-integration-stress-and-release-assurance-validated-integrated-pilot",
+  "sourceDigest": "0ca74ca9cbcd3bddd5a0a246c1fd8efb40ac9c5bea55847b4dfa5fa0c618d1db",
+  "compiledArtifactDigest": "94d102bb2bac1934302d9d2e1a5479615fcb9d2ac7e584ca6581c01420ac1e0b",
+  "testManifestDigest": "aa1e9aeaa2eb9540ea03f16aec2f2897fe2ec2bba93147c96de16eaec43aa3de",
+  "testFilesDigest": "ba4d437389dbc0e1ac178b5a1fb6a8955cbc862c1496ea8b2b6a59939ba8ef56",
+  "packageLockDigest": "84f49a028d0ad67f09a9b663a7bda556440ec00a00753836c91bd927d9a18701",
+  "environmentDigest": "b10bbc128c623ce9654a865fd7dcf88ccf2ac5e00fb0ca05869735b6906ac88b",
+  "environment": {
+    "nodeVersion": "v22.16.0",
+    "pythonVersion": "3.13.5",
+    "system": "Linux",
+    "machine": "x86_64",
+    "ci": true,
+    "runnerOs": "",
+    "runnerArch": ""
+  },
+  "assertions": {
+    "coreValidationPassed": true,
+    "allTestsPassed": true,
+    "coveragePassed": true,
+    "architectureClosed": true,
+    "proofClaimsClosed": true,
+    "integrationEdgesClosed": true,
+    "faultScenariosClosed": true,
+    "distributedInventoryExact": true,
+    "allTargetedMutationsKilled": true,
+    "credentialProofPassed": true,
+    "supplyChainPassed": true,
+    "localDrPassed": true,
+    "browserE2ePassed": true,
+    "linuxIsolationPassed": true,
+    "incompleteAuditPassed": true,
+    "postgresHonestBlock": true,
+    "productionStillBlocked": true
+  },
+  "results": {
+    "tests": {
+      "full": 788,
+      "core": 671,
+      "quick": 69,
+      "qualification": 36
+    },
+    "wallMs": {
+      "full": 22977.762,
+      "core": 8299.931,
+      "quick": 1680.254,
+      "qualification": 3824.134
+    },
+    "coverage": {
+      "file": "all files",
+      "linePercent": 99.48,
+      "branchPercent": 96.15,
+      "functionPercent": 98.81
+    },
+    "stability": {
+      "meanWallMs": 22291.658,
+      "coefficientOfVariation": 0.0218,
+      "minWallMs": 21898.601,
+      "maxWallMs": 22977.762
+    },
+    "architecture": {
+      "nodeCount": 287,
+      "sourceCount": 131,
+      "testCount": 141,
+      "entrypointCount": 15,
+      "importEdgeCount": 727,
+      "sourceCycleCount": 0,
+      "untestedSourceCount": 0,
+      "capabilityPathCount": 61,
+      "closedCapabilityPathCount": 61,
+      "layerCount": 21
+    },
+    "proofDiversity": {
+      "claims": 5,
+      "closedClaims": 5,
+      "proofs": 28,
+      "validProofs": 28,
+      "distinctTechniques": 9,
+      "independentOracles": 12,
+      "environments": 4,
+      "concentrationFindings": 0
+    },
+    "integrations": {
+      "edges": 5,
+      "closedEdges": 5,
+      "criticalEdges": 4,
+      "authorityEdges": 1,
+      "authorityCycles": 0,
+      "testReferences": 34
+    },
+    "faultCampaign": {
+      "edges": 5,
+      "scenarios": 32,
+      "requiredScenarios": 32,
+      "matchedScenarios": 32,
+      "missingScenarios": 0,
+      "unsafeSideEffects": 0,
+      "tenantLeaks": 0
+    },
+    "mutations": {
+      "testOperations": 13,
+      "proofIntegration": 12,
+      "credentialSovereignty": 16,
+      "totalAuthenticKills": 41,
+      "survivors": 0,
+      "invalidKills": 0
+    },
+    "distributedShards": {
+      "tests": 788,
+      "passed": 788,
+      "failed": 0,
+      "criticalPathWallMs": 6827.657
+    },
+    "deepGates": {
+      "credentialProof": "passed",
+      "supplyChain": "passed",
+      "npmVulnerabilities": 0,
+      "localDr": "passed-local-rehearsal",
+      "browserE2e": "passed",
+      "linuxIsolation": "passed-single-host-research-proof",
+      "postgres": "environment-blocked",
+      "incompleteAudit": "passed",
+      "unreferencedExportCandidates": 1
+    },
+    "strengthenedParameters": [
+      {
+        "parameter": "correctness-invariants",
+        "baseline": 99.2,
+        "current": 99.4,
+        "delta": 0.2,
+        "evidenceRefs": [
+          "V32_7_PROOF_DIVERSITY.json",
+          "V32_7_RELEASE_ASSURANCE.json"
+        ]
+      },
+      {
+        "parameter": "adversarial-test-depth",
+        "baseline": 99,
+        "current": 99.3,
+        "delta": 0.3,
+        "evidenceRefs": [
+          "V32_7_PROOF_INTEGRATION_MUTATION_RESULTS.json",
+          "V32_7_INTEGRATION_FAULT_CAMPAIGN.json"
+        ]
+      },
+      {
+        "parameter": "durability-concurrency-consistency",
+        "baseline": 96.5,
+        "current": 97,
+        "delta": 0.5,
+        "evidenceRefs": [
+          "V32_7_INTEGRATION_FAULT_CAMPAIGN.json"
+        ]
+      },
+      {
+        "parameter": "architecture-modularity",
+        "baseline": 99.2,
+        "current": 99.4,
+        "delta": 0.2,
+        "evidenceRefs": [
+          "V32_ARCHITECTURE_INTEGRITY.json",
+          "V32_7_INTEGRATION_CONTRACTS.json"
+        ]
+      },
+      {
+        "parameter": "evidence-integrity-traceability",
+        "baseline": 99.2,
+        "current": 99.5,
+        "delta": 0.3,
+        "evidenceRefs": [
+          "V32_7_PROOF_DIVERSITY.json",
+          "V32_7_RELEASE_ASSURANCE.json"
+        ]
+      },
+      {
+        "parameter": "operational-recovery",
+        "baseline": 96,
+        "current": 96.5,
+        "delta": 0.5,
+        "evidenceRefs": [
+          "V32_7_INTEGRATION_FAULT_CAMPAIGN.json"
+        ]
+      },
+      {
+        "parameter": "engineering-efficiency-change-safety",
+        "baseline": 99.2,
+        "current": 99.5,
+        "delta": 0.3,
+        "evidenceRefs": [
+          "V32_7_RELEASE_ASSURANCE.json"
+        ]
+      },
+      {
+        "parameter": "observability-diagnosability",
+        "baseline": 94,
+        "current": 95,
+        "delta": 1,
+        "evidenceRefs": [
+          "V32_7_INTEGRATION_CONTRACTS.json"
+        ]
+      },
+      {
+        "parameter": "maintainability-evolvability",
+        "baseline": 95,
+        "current": 96,
+        "delta": 1,
+        "evidenceRefs": [
+          "V32_7_INTEGRATION_CONTRACTS.json"
+        ]
+      }
+    ]
+  },
+  "deepEvidence": [
+    {
+      "name": "credentialMutation",
+      "path": "evidence/generated/V32_CREDENTIAL_SOVEREIGNTY_MUTATION_RESULTS.json",
+      "sha256": "61ce6d462bf20e7a1efc7157387e0e0e8f83fff17436fb96803b5ed1cc42c257",
+      "bytes": 53140
+    },
+    {
+      "name": "credentialProof",
+      "path": "evidence/generated/V32_CREDENTIAL_SOVEREIGNTY_PROOF.json",
+      "sha256": "50a9a0314de5aea78daad122b365c5f508a732768401793b25f341f3ce3475ed",
+      "bytes": 1971
+    },
+    {
+      "name": "supplyChain",
+      "path": "evidence/generated/V32_SUPPLY_CHAIN_REPORT.json",
+      "sha256": "0b02a280778b12d754872882ba30170b6f2780ee2afae7d097b6d856b4e9045b",
+      "bytes": 1911
+    },
+    {
+      "name": "localDr",
+      "path": "evidence/generated/V32_LOCAL_DR_REHEARSAL.json",
+      "sha256": "76847282236733cb07878ea5009fa59efae6d6f585621ca05595871c8b7ac8bd",
+      "bytes": 520
+    },
+    {
+      "name": "browserE2e",
+      "path": "evidence/generated/V32_BROWSER_E2E.json",
+      "sha256": "c5714b413e6099fd8def8a40e7bbd7a9d24eb52afa88f3ecf667a9276a782ddd",
+      "bytes": 1148
+    },
+    {
+      "name": "linuxIsolation",
+      "path": "evidence/generated/V32_LINUX_ISOLATION.json",
+      "sha256": "64699d1e5972fe2b15a04f760c5456032ae9b623248e7ef9bf44c85541c60712",
+      "bytes": 1018
+    },
+    {
+      "name": "postgres",
+      "path": "evidence/generated/V32_POSTGRES_QUALIFICATION.json",
+      "sha256": "bd10c93f83430c0d0385178ee1ad6caaba74e13dece6e6f86a1ee92e3c6f0148",
+      "bytes": 607
+    },
+    {
+      "name": "incompleteAudit",
+      "path": "evidence/generated/V32_INCOMPLETE_CODE_AUDIT.json",
+      "sha256": "b7e51d0b63db277e7d166a07f1e1d657979ed15ac1a97def39626802889b307a",
+      "bytes": 732
+    }
+  ],
+  "limitations": [
+    "PostgreSQL HA, failover, FORCE RLS and PITR were not executed because psql and a disposable PostgreSQL 16 environment were unavailable.",
+    "Credential, DR and Linux isolation evidence is local and single-host; it is not HSM/KMS, external witness, independent audit or multi-host qualification.",
+    "Human comparative pilot and external security/licensing review remain unexecuted."
+  ],
+  "readiness": "READY_FOR_EXTERNAL_QUALIFICATION",
+  "productionPromotion": "BLOCKED",
+  "externalQualification": "NOT_EXECUTED"
+}

@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-07-11T10:30:00.000Z",
+  "sourceTreeHash": "7c35bdf38a6583ecbb1986c694183063aa9863d601013f6ebd90fbdfab9555db",
+  "releaseCandidateHash": "c87495befcaca6ff959ec39bf1e45a2bed4d0e1af91d87d427ba0ede718fbaaa",
+  "zeroKey": {
+    "passed": true,
+    "durationMs": 6,
+    "selectedModelId": "deterministic-local-v1",
+    "artifactSha256": "c94002c08ec7b70669d5ecad75e2d949a7d00c4ecf143293b12080933dd62f21",
+    "verificationEvidenceHash": "74f37f6268cad41ff85712f201fa361285869a5b576f5db05e88688f4c63fedb",
+    "workflowEvidenceHash": "2a8d5a20e50f42bc3ddf5cd0fb67390a84aad0e4bb6a08c25e88c6eefc634fb7",
+    "selectedMemoryIds": [
+      "memory-local-rule"
+    ],
+    "rejectedMemoryIds": [
+      "memory-other-tenant",
+      "memory-poison"
+    ],
+    "backupPlaintextSha256": "85fb121a40af1c553f213d6c7f949ef9302f683c291182f191fd5788f93a5f7c",
+    "networkAttempts": []
+  },
+  "airGapHandoff": {
+    "passed": true,
+    "durationMs": 11,
+    "taskBundleId": "handoff-9aca8b40681a09a2b1f6",
+    "senderKeyId": "8ded4196192cc0ef7c65e3b9",
+    "executorKeyId": "5e91bca05b2bfae366f6369c",
+    "taskPayloadSha256": "2f27e5fb8b3ee3846c56ce0d16a0f92af476af775e802054f673cbba6249c4f7",
+    "resultPayloadSha256": "7ee0f1136fcbb0738bfd9a8d9650fd801fd810c59694f33f71e1e8f710b28215",
+    "resultStatus": "completed",
+    "durableReplayRejected": true,
+    "trustStoreEnforced": true
+  },
+  "sovereignUpdate": {
+    "passed": true,
+    "plan": {
+      "updateId": "update-e202aa0ea3102fac3000",
+      "fromVersion": "1.14.0",
+      "toVersion": "1.15.0",
+      "writes": [
+        {
+          "path": "docs/offline-update.txt",
+          "bytes": 22,
+          "sha256": "212c6656fee9ebf95eec8caf160ba72341a23d6d8741128924f5af4f58328a35"
+        },
+        {
+          "path": "runtime.txt",
+          "bytes": 13,
+          "sha256": "0d892e015b800605e602caa618411e957456034a54068bccc275c07d7abc7fbb"
+        }
+      ],
+      "deletes": [],
+      "migrations": [
+        "drizzle/0009_v15_sovereignty.sql"
+      ],
+      "compatible": true,
+      "blockers": []
+    },
+    "signatureKeyId": "31bbc2f72fe9e8f49f9830d6",
+    "updatePayloadSha256": "8159112a4d401196c1f572004525353b2b5293cbc5d06cf2ca491a18527d976a",
+    "updatedVersion": "1.15.0",
+    "rolledBackVersion": "1.14.0",
+    "durationMs": 7
+  },
+  "memoryPortability": {
+    "passed": true,
+    "exportedRecords": 2,
+    "importedRecords": 2,
+    "bundleSha256": "c71316e8baf40d5ab62f01b8b138a8c6e6728e984f6115d55e78f9b3ea819ce2"
+  },
+  "nodePlacement": {
+    "passed": true,
+    "selectedNodeId": "local-mini-pc",
+    "selectedModelId": "deterministic-local-v1",
+    "candidates": [
+      {
+        "node": {
+          "id": "local-mini-pc",
+          "displayName": "Local Mini-PC",
+          "trustLevel": "root",
+          "hardware": {
+            "id": "local-mini-pc",
+            "displayName": "Local Mini-PC reference node",
+            "cpuArchitecture": "x64",
+            "logicalCores": 8,
+            "ramBytes": 17179869184,
+            "diskFreeBytes": 107374182400,
+            "thermalState": "nominal",
+            "powerSource": "mains",
+            "maximumPowerWatts": 65,
+            "networkAvailable": false
+          },
+          "modelIds": [
+            "deterministic-local-v1"
+          ],
+          "toolIds": [
+            "local.hash",
+            "local.transform_json",
+            "local.inspect_file"
+          ],
+          "tenantIds": [
+            "tenant-local"
+          ],
+          "storageFreeBytes": 107374182400,
+          "currentLoad": 0.1,
+          "health": "healthy",
+          "lastSynchronizedAt": "2026-07-11T10:30:00.000Z",
+          "energyProfile": {
+            "idleWatts": 12,
+            "estimatedInferenceWatts": 45,
+            "confidence": "estimated"
+          }
+        },
+        "eligible": true,
+        "score": 0.703756,
+        "reasons": [],
+        "selectedModelId": "deterministic-local-v1",
+        "estimatedEnergyWh": 0.001018,
+        "contributions": {
+          "capabilityFit": 0.14,
+          "dataLocality": 0.15000000000000002,
+          "privacy": 0.16,
+          "availability": 0.14,
+          "energyEfficiency": 0.11975567999999999,
+          "loadPenalty": -0.006,
+          "transferPenalty": 0,
+          "trustPenalty": 0
+        }
+      }
+    ]
+  }
+}

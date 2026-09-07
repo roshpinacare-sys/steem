@@ -1,0 +1,49 @@
+{
+  "config": {
+    "group_size": 4,
+    "traj_len": 4,
+    "gamma": 0.99,
+    "lam": 0.95,
+    "clip_eps": 0.2,
+    "kl_coef": 0.05,
+    "lr": 0.003,
+    "update_epochs": 2,
+    "stm_reward_scale": 0.8,
+    "ltm_reward_scale": 1.2,
+    "entropy_coef": 0.01,
+    "target_kl": 0.03,
+    "max_resample": 2,
+    "sl_bonus": 0.15,
+    "evidence_fab_penalty": -1.0,
+    "admit_bonus": 0.1
+  },
+  "history": [
+    {
+      "loss": 1.2405064105987549,
+      "kl": 0.0004913057200610638,
+      "entropy": 1.942681074142456,
+      "clip_frac": 0.0,
+      "explained_var": 0.025824427604675293,
+      "n_samples": 80
+    },
+    {
+      "loss": 1.1323376893997192,
+      "kl": 0.0003641637449618429,
+      "entropy": 1.940439224243164,
+      "clip_frac": 0.0,
+      "explained_var": 0.010283827781677246,
+      "n_samples": 80
+    }
+  ],
+  "final_store": {
+    "stm": 1,
+    "ltm": 44
+  },
+  "esr_entries": 45,
+  "evidence_chain_entries": 4,
+  "reward_shaping": {
+    "sl_bonus": 0.15,
+    "evidence_fab_penalty": -1.0,
+    "admit_bonus": 0.1
+  }
+}

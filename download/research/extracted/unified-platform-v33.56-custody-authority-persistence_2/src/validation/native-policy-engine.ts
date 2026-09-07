@@ -1,0 +1,14 @@
+import { sha256 } from '../contracts/crypto.js';
+export type PolicyOperator='EQ'|'GTE'|'LTE'|'IN'|'PRESENT';
+export interface PolicyRule { readonly ruleId:string; readonly path:string; readonly operator:PolicyOperator; readonly expected?:unknown; readonly message:string; }
+export interface NativePolicyDocument { readonly policyId:string; readonly version:string; readonly rules:readonly PolicyRule[]; }
+export interface NativePolicyReport { readonly status:'PASS'|'BLOCK'; readonly deniedRules:readonly string[]; readonly undefinedRules:readonly string[]; readonly policyDigest:string; readonly inputDigest:string; readonly decisionDigest:string; readonly repeatedDecisionDigest:string; readonly deterministic:boolean; readonly observed:true; readonly reportDigest:string; }
+function getPath(input:unknown,path:string):{present:boolean;value:unknown}{let current:unknown=input;for(const part of path.split('.').filter(Boolean)){if(typeof current!=='object'||current===null||!Object.prototype.hasOwnProperty.call(current,part))return{present:false,value:undefined};current=(current as Record<string,unknown>)[part];}return{present:true,value:current};}
+function pass(op:PolicyOperator,value:unknown,expected:unknown):boolean{if(op==='PRESENT')return value!==undefined&&value!==null;if(op==='EQ')return JSON.stringify(value)===JSON.stringify(expected);if(op==='IN')return Array.isArray(expected)&&expected.some((x)=>JSON.stringify(x)===JSON.stringify(value));if(typeof value!=='number'||typeof expected!=='number')return false;return op==='GTE'?value>=expected:value<=expected;}
+export function evaluateNativePolicy(document:NativePolicyDocument,input:unknown):NativePolicyReport{
+ if(!document.policyId.trim()||!document.version.trim()||!document.rules.length)throw new Error('policy_document_invalid');
+ const ids=new Set<string>();for(const rule of document.rules){if(!rule.ruleId.trim()||ids.has(rule.ruleId)||!rule.path.trim())throw new Error('policy_rule_invalid');ids.add(rule.ruleId);}
+ const run=()=>{const denied:string[]=[];const undef:string[]=[];for(const rule of [...document.rules].sort((a,b)=>a.ruleId.localeCompare(b.ruleId))){const found=getPath(input,rule.path);if(!found.present){undef.push(rule.ruleId);continue;}if(!pass(rule.operator,found.value,rule.expected))denied.push(rule.ruleId);}return{deniedRules:denied,undefinedRules:undef};};
+ const first=run(),second=run();const policyDigest=sha256(document),inputDigest=sha256(input),decisionDigest=sha256(first),repeatedDecisionDigest=sha256(second),deterministic=decisionDigest===repeatedDecisionDigest;
+ const status=deterministic&&!first.deniedRules.length&&!first.undefinedRules.length?'PASS' as const:'BLOCK' as const;const material={status,...first,policyDigest,inputDigest,decisionDigest,repeatedDecisionDigest,deterministic,observed:true as const};return{...material,reportDigest:sha256(material)};
+}

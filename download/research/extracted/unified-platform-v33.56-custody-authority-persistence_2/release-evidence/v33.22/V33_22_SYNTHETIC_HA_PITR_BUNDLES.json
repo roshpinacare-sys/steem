@@ -1,0 +1,316 @@
+[
+  {
+    "envelope": {
+      "payload": {
+        "version": "33.22",
+        "bundleId": "postgres-ha-pitr-bundle-2855967e-69c7-47c7-b52d-4a43193aa937",
+        "challengeId": "postgres-ha-pitr-challenge-0f3f3ccb-c455-474a-9754-efee922d36d2",
+        "evidenceClass": "SYNTHETIC_CONTRACT_TEST",
+        "operatorRole": "HA_OPERATOR",
+        "operatorOrganizationId": "synthetic-ha-org",
+        "operatorSignerId": "v33.22-ha-operator",
+        "operatorHostId": "synthetic-ha-operator-host",
+        "sourceHostId": "synthetic-primary",
+        "targetHostId": "synthetic-standby",
+        "sourceClusterId": "synthetic-cluster",
+        "sourceDatabaseSystemIdentifier": "synthetic-system-id",
+        "serverVersionNum": 170000,
+        "migrationChainDigest": "535dbf9045ea14d51d645aef37d205d423f798906c5f7328f432d62b17a07b63",
+        "operationalReceipt": {
+          "version": "33.22",
+          "kind": "HA_FAILOVER",
+          "sourceTimelineId": 1,
+          "promotedTimelineId": 2,
+          "baselineFenceToken": 4,
+          "postFailoverFenceToken": 5,
+          "singleWriterCount": 1,
+          "oldPrimaryWriteRejected": true,
+          "outboxGapCount": 0,
+          "outboxDuplicateCount": 0,
+          "rtoMs": 20000,
+          "rpoMs": 1000,
+          "tlsVerifyFull": true,
+          "noEmbeddedSecrets": true,
+          "recordedAt": "2026-07-21T21:30:00.000Z",
+          "receiptDigest": "a9f67c54ba88b67667a1ac0fa1bc6702e507fd2f5ff4c96c4d0c1df1f4e198e0"
+        },
+        "artifactManifest": [
+          {
+            "path": "facts/server.json",
+            "kind": "SERVER_FACTS",
+            "mediaType": "application/json",
+            "sizeBytes": 82,
+            "sha256": "04291c3194afb5bbf06444538bd920864f8cb24bd795bef28958cbd5b628a784",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "ha/failover.json",
+            "kind": "FAILOVER_TRANSCRIPT",
+            "mediaType": "application/json",
+            "sizeBytes": 89,
+            "sha256": "f0eb1d409be76eba2e3296caba9c1390e442e4267f58814c3ea32e5bbc35cedf",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "ha/fence.json",
+            "kind": "FENCE_TRACE",
+            "mediaType": "application/json",
+            "sizeBytes": 81,
+            "sha256": "30bc2a8619b6d75faa4fb2a6bd9da1f2f5fbd05e424ab38374452b617cac2f16",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "ha/outbox.json",
+            "kind": "OUTBOX_TRACE",
+            "mediaType": "application/json",
+            "sizeBytes": 82,
+            "sha256": "16743345553f566a1ff9ed2c5c5e3d4cc262fa05ad1255af70c0683e9a1dcaeb",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "metrics/rpo-rto.json",
+            "kind": "RPO_RTO_MEASUREMENT",
+            "mediaType": "application/json",
+            "sizeBytes": 89,
+            "sha256": "11163a72e14ee9303924f38ecf8482c34ea3b29e2715d0cf83d95421ed301527",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "tls/session.json",
+            "kind": "TLS_SESSION",
+            "mediaType": "application/json",
+            "sizeBytes": 81,
+            "sha256": "0ed428921af6b80f8fa6f1393df39bcab9096a91b7ad2c066423e416654d6d8d",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          }
+        ],
+        "artifactManifestDigest": "0474740f991c3b338d169310062cf70afe02e5bcf3b03d81582fd85558606270",
+        "totalArtifactBytes": 504,
+        "collectedAt": "2026-07-21T21:30:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "bundleDigest": "892099d60ad95908db463eb2a52ec00a9bec91074af59670a6580b84ca1f0e60"
+      },
+      "issuerKeyId": "v33.22-ha-operator",
+      "algorithm": "Ed25519",
+      "signature": "8QpVcI5GWxnFa6dDv-RaqA2mBwlpPB3RAKSDJ2RMw77eMYqYHMhMNRk5-y29A-nuAAkkVpbuzQ3G5wVY7bo3BQ"
+    },
+    "artifactManifest": [
+      {
+        "path": "facts/server.json",
+        "kind": "SERVER_FACTS",
+        "mediaType": "application/json",
+        "sizeBytes": 82,
+        "sha256": "04291c3194afb5bbf06444538bd920864f8cb24bd795bef28958cbd5b628a784",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "ha/failover.json",
+        "kind": "FAILOVER_TRANSCRIPT",
+        "mediaType": "application/json",
+        "sizeBytes": 89,
+        "sha256": "f0eb1d409be76eba2e3296caba9c1390e442e4267f58814c3ea32e5bbc35cedf",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "ha/fence.json",
+        "kind": "FENCE_TRACE",
+        "mediaType": "application/json",
+        "sizeBytes": 81,
+        "sha256": "30bc2a8619b6d75faa4fb2a6bd9da1f2f5fbd05e424ab38374452b617cac2f16",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "ha/outbox.json",
+        "kind": "OUTBOX_TRACE",
+        "mediaType": "application/json",
+        "sizeBytes": 82,
+        "sha256": "16743345553f566a1ff9ed2c5c5e3d4cc262fa05ad1255af70c0683e9a1dcaeb",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "metrics/rpo-rto.json",
+        "kind": "RPO_RTO_MEASUREMENT",
+        "mediaType": "application/json",
+        "sizeBytes": 89,
+        "sha256": "11163a72e14ee9303924f38ecf8482c34ea3b29e2715d0cf83d95421ed301527",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "tls/session.json",
+        "kind": "TLS_SESSION",
+        "mediaType": "application/json",
+        "sizeBytes": 81,
+        "sha256": "0ed428921af6b80f8fa6f1393df39bcab9096a91b7ad2c066423e416654d6d8d",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      }
+    ]
+  },
+  {
+    "envelope": {
+      "payload": {
+        "version": "33.22",
+        "bundleId": "postgres-ha-pitr-bundle-882bc1ae-5138-476f-af8d-7fd5c2adef51",
+        "challengeId": "postgres-ha-pitr-challenge-0f3f3ccb-c455-474a-9754-efee922d36d2",
+        "evidenceClass": "SYNTHETIC_CONTRACT_TEST",
+        "operatorRole": "PITR_OPERATOR",
+        "operatorOrganizationId": "synthetic-pitr-org",
+        "operatorSignerId": "v33.22-pitr-operator",
+        "operatorHostId": "synthetic-pitr-operator-host",
+        "sourceHostId": "synthetic-primary",
+        "targetHostId": "synthetic-restore",
+        "sourceClusterId": "synthetic-cluster",
+        "sourceDatabaseSystemIdentifier": "synthetic-system-id",
+        "serverVersionNum": 170000,
+        "migrationChainDigest": "535dbf9045ea14d51d645aef37d205d423f798906c5f7328f432d62b17a07b63",
+        "operationalReceipt": {
+          "version": "33.22",
+          "kind": "PITR_RECOVERY",
+          "sourceTimelineId": 2,
+          "recoveryTimelineId": 3,
+          "sourceFenceToken": 5,
+          "restoredFenceToken": 5,
+          "backupManifestVerified": true,
+          "restoreIsolated": true,
+          "recoveryTargetAt": "2026-07-21T21:29:00.000Z",
+          "recoveryReachedAt": "2026-07-21T21:30:00.000Z",
+          "recoveryTargetReached": true,
+          "witnessRollbackRejected": true,
+          "outboxGapCount": 0,
+          "outboxDuplicateCount": 0,
+          "rtoMs": 40000,
+          "rpoMs": 5000,
+          "tlsVerifyFull": true,
+          "noEmbeddedSecrets": true,
+          "recordedAt": "2026-07-21T21:30:00.000Z",
+          "receiptDigest": "0d25190628c53e764e2cf6dfb75be0dcdfbe4cd7cb3471408f842a084d551e42"
+        },
+        "artifactManifest": [
+          {
+            "path": "backup/manifest.json",
+            "kind": "BACKUP_MANIFEST",
+            "mediaType": "application/json",
+            "sizeBytes": 85,
+            "sha256": "a86d08c984d23498d9060fc0bb07e1ddd2526909fb256366a4edde86560d0c3f",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "facts/server.json",
+            "kind": "SERVER_FACTS",
+            "mediaType": "application/json",
+            "sizeBytes": 82,
+            "sha256": "04291c3194afb5bbf06444538bd920864f8cb24bd795bef28958cbd5b628a784",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "metrics/rpo-rto.json",
+            "kind": "RPO_RTO_MEASUREMENT",
+            "mediaType": "application/json",
+            "sizeBytes": 89,
+            "sha256": "11163a72e14ee9303924f38ecf8482c34ea3b29e2715d0cf83d95421ed301527",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "pitr/recovery.json",
+            "kind": "PITR_RECOVERY_TRACE",
+            "mediaType": "application/json",
+            "sizeBytes": 89,
+            "sha256": "b08368854d8419857153c859b768cf23f2790ea8e7f2780705bf9b854bb6ec10",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "restore/transcript.json",
+            "kind": "RESTORE_TRANSCRIPT",
+            "mediaType": "application/json",
+            "sizeBytes": 88,
+            "sha256": "27d59c9105742df25bb35cbdec9c96e168050e30ea0d30c4af9fb541b5d89a0c",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "tls/session.json",
+            "kind": "TLS_SESSION",
+            "mediaType": "application/json",
+            "sizeBytes": 81,
+            "sha256": "0ed428921af6b80f8fa6f1393df39bcab9096a91b7ad2c066423e416654d6d8d",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          },
+          {
+            "path": "witness/trace.json",
+            "kind": "WITNESS_TRACE",
+            "mediaType": "application/json",
+            "sizeBytes": 83,
+            "sha256": "16405c2be86d3fd728bec98e3f7f18685b4603758c990b6bc3d031f886b7bac4",
+            "collectedAt": "2026-07-21T21:30:00.000Z"
+          }
+        ],
+        "artifactManifestDigest": "14bc433bbc22be88831c21a1c3493e4b8890fc824896d6413f242cf4a7f28e96",
+        "totalArtifactBytes": 597,
+        "collectedAt": "2026-07-21T21:30:00.000Z",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "bundleDigest": "7e625cc4405064fea582ce8fed834c4987896e2eb17a04abe5df6b6c1724a04a"
+      },
+      "issuerKeyId": "v33.22-pitr-operator",
+      "algorithm": "Ed25519",
+      "signature": "8iZnwHw2QXYEDz8jzjOcmvRgzyvFVNVoMsyh_n5Sv12fZtBz66tg8kiDJpQHnyU4wQKuN8g43bvMDmWkdlEaAw"
+    },
+    "artifactManifest": [
+      {
+        "path": "backup/manifest.json",
+        "kind": "BACKUP_MANIFEST",
+        "mediaType": "application/json",
+        "sizeBytes": 85,
+        "sha256": "a86d08c984d23498d9060fc0bb07e1ddd2526909fb256366a4edde86560d0c3f",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "facts/server.json",
+        "kind": "SERVER_FACTS",
+        "mediaType": "application/json",
+        "sizeBytes": 82,
+        "sha256": "04291c3194afb5bbf06444538bd920864f8cb24bd795bef28958cbd5b628a784",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "metrics/rpo-rto.json",
+        "kind": "RPO_RTO_MEASUREMENT",
+        "mediaType": "application/json",
+        "sizeBytes": 89,
+        "sha256": "11163a72e14ee9303924f38ecf8482c34ea3b29e2715d0cf83d95421ed301527",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "pitr/recovery.json",
+        "kind": "PITR_RECOVERY_TRACE",
+        "mediaType": "application/json",
+        "sizeBytes": 89,
+        "sha256": "b08368854d8419857153c859b768cf23f2790ea8e7f2780705bf9b854bb6ec10",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "restore/transcript.json",
+        "kind": "RESTORE_TRANSCRIPT",
+        "mediaType": "application/json",
+        "sizeBytes": 88,
+        "sha256": "27d59c9105742df25bb35cbdec9c96e168050e30ea0d30c4af9fb541b5d89a0c",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "tls/session.json",
+        "kind": "TLS_SESSION",
+        "mediaType": "application/json",
+        "sizeBytes": 81,
+        "sha256": "0ed428921af6b80f8fa6f1393df39bcab9096a91b7ad2c066423e416654d6d8d",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      },
+      {
+        "path": "witness/trace.json",
+        "kind": "WITNESS_TRACE",
+        "mediaType": "application/json",
+        "sizeBytes": 83,
+        "sha256": "16405c2be86d3fd728bec98e3f7f18685b4603758c990b6bc3d031f886b7bac4",
+        "collectedAt": "2026-07-21T21:30:00.000Z"
+      }
+    ]
+  }
+]

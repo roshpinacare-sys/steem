@@ -1,0 +1,217 @@
+{
+  "version": "33.49",
+  "status": "PASS",
+  "checkCount": 17,
+  "passed": 17,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "required-artifacts",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "proof-summary",
+      "ok": true,
+      "detail": {
+        "newSignatureCount": 41,
+        "totalChainSignatureCount": 162,
+        "requiredRoleCount": 16,
+        "enrollmentPackageCount": 16,
+        "enrollmentResponseCount": 16,
+        "externalAttestationCount": 0,
+        "transferFileCount": 5,
+        "revocationApprovalCount": 3
+      }
+    },
+    {
+      "name": "proof-durable-files",
+      "ok": true,
+      "detail": {
+        "enrollment": 32,
+        "transfer": 5,
+        "imported": 5
+      }
+    },
+    {
+      "name": "proof-attacks",
+      "ok": true,
+      "detail": {
+        "missingRoleBlocked": true,
+        "packageReplayBlocked": true,
+        "externalRelabelBlocked": true,
+        "extraFileBlocked": true,
+        "revokedResurrectionBlocked": true,
+        "challengeReplayBlocked": true
+      }
+    },
+    {
+      "name": "proof-receipt",
+      "ok": true,
+      "detail": {
+        "version": "33.49",
+        "status": "LOCAL_EXTERNAL_CEREMONY_EXECUTION_REHEARSAL_ONLY",
+        "ceremonyId": "v3349-local-ceremony",
+        "policyDigest": "89af3ad09d2fa537bf7e3e10d4ef5d08cbcb732444c876d548bb719b5df5eff4",
+        "transcriptDigest": "a26cbc43944dddaabb6aa364a9bdba1c12c68b7d27c97e37779e0bd634ca1876",
+        "transferDigest": "988ba8e49ab29294d4b4b0b14d0351299fb1717164022083029340156a1c5e72",
+        "baseImportReceiptDigest": "e2e9ef8cc09a13298f45c8607f0c274dd9d0095b820caf4fd800da581720b206",
+        "roleCount": 16,
+        "externalAttestationCount": 0,
+        "exactTransferInventoryVerified": true,
+        "replayProtectionVerified": true,
+        "externalCeremonyObserved": false,
+        "externalHumanParticipants": 0,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "importedAt": "2026-07-23T04:00:32.000Z",
+        "receiptDigest": "85b0d0d9a4d1e325576a8bcc87b78a71d0675e82cd1a5b4d472c0ecda1c61f93"
+      }
+    },
+    {
+      "name": "truth-boundary",
+      "ok": true,
+      "detail": {
+        "status": "LOCAL_EXTERNAL_CEREMONY_EXECUTION_REHEARSAL_ONLY",
+        "externalCeremonyObserved": false,
+        "externalHostsObserved": 0,
+        "externalClockRootsObserved": 0,
+        "externalStoresObserved": 0,
+        "externalHumanParticipants": 0,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "g3": "blocked",
+        "productionPromotion": "blocked"
+      }
+    },
+    {
+      "name": "independent-verification",
+      "ok": true,
+      "detail": {
+        "version": "33.49",
+        "generatedAt": "2026-07-23T03:27:11.827Z",
+        "status": "PASS",
+        "newSignatureCount": 41,
+        "totalChainSignatureCount": 162,
+        "enrollmentPackageCount": 16,
+        "enrollmentResponseCount": 16,
+        "revocationApprovalCount": 3,
+        "transferFileCount": 5,
+        "finalStatus": "LOCAL_EXTERNAL_CEREMONY_EXECUTION_REHEARSAL_ONLY",
+        "productionAuthority": "NONE",
+        "checks": {
+          "version": true,
+          "baseProofDigest": true,
+          "baseVerifierPassed": true,
+          "baseReceiptDigest": true,
+          "newSignaturesValid": true,
+          "newSignatureCount": true,
+          "totalChainSignatureCount": true,
+          "transcriptRecomputed": true,
+          "revocationRecomputed": true,
+          "importReceiptRecomputed": true,
+          "exactInventory": true,
+          "durableWrites": true,
+          "attacks": true,
+          "truthBoundary": true
+        }
+      }
+    },
+    {
+      "name": "focused-regression",
+      "ok": true,
+      "detail": {
+        "tests": 687,
+        "passed": 687,
+        "failed": 0
+      }
+    },
+    {
+      "name": "full-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 234,
+        "tests": 2512,
+        "passed": 2512,
+        "failed": 0
+      }
+    },
+    {
+      "name": "direct-v33-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 49,
+        "tests": 1345,
+        "passed": 1345,
+        "failed": 0
+      }
+    },
+    {
+      "name": "repository-truth-map",
+      "ok": true,
+      "detail": {
+        "sourceModules": 238,
+        "testFiles": 234,
+        "scripts": 608,
+        "packageScripts": 577,
+        "governanceFiles": 11,
+        "externalQualificationKits": 6,
+        "frontierBenchmarkKits": 1,
+        "sovereignInfraFiles": 30,
+        "independentVerifierFiles": 5,
+        "sovereignServices": 12
+      }
+    },
+    {
+      "name": "architecture-integrity",
+      "ok": true,
+      "detail": {
+        "nodeCount": 477,
+        "sourceCount": 221,
+        "testCount": 239,
+        "entrypointCount": 17,
+        "importEdgeCount": 1146,
+        "sourceCycleCount": 0,
+        "untestedSourceCount": 0,
+        "capabilityPathCount": 174,
+        "closedCapabilityPathCount": 174,
+        "layerCount": 23
+      }
+    },
+    {
+      "name": "regression-input-binding",
+      "ok": true,
+      "detail": {
+        "receipts": 234,
+        "buildDigest": "8f410bc14b181bb81585b53a052f2cffc5a94c80ab57d83cf95260b084c39d39",
+        "runInputDigest": "0d38d29fd4a595292825bcb7e168ef09770ffe1b64daab558a1ffd24ecd3b898"
+      }
+    },
+    {
+      "name": "canonical-metadata",
+      "ok": true,
+      "detail": {
+        "canonical": 11,
+        "mirror": 17
+      }
+    },
+    {
+      "name": "offline-lockfile",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "governance-boundary",
+      "ok": true,
+      "detail": {
+        "phase": "External Ceremony Executor, Role Enrollment, Revocation, Sealed Evidence Transfer, and Exact Import Gate",
+        "status": "v33.49-external-ceremony-executor-local-rehearsal-production-blocked"
+      }
+    },
+    {
+      "name": "next-action-boundary",
+      "ok": true,
+      "detail": "NA33.49-EXECUTE-INDEPENDENT-EXTERNAL-CEREMONY"
+    }
+  ]
+}

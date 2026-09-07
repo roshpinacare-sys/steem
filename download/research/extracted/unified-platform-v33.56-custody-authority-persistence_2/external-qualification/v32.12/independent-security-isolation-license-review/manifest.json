@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "32.12",
+  "gateId": "independent-security-isolation-license-review",
+  "title": "Independent Security, Isolation, Supply-Chain and License Review",
+  "objective": "Obtain independent scoped verdicts for penetration, isolation, supply chain and licensing.",
+  "status": "not_executed",
+  "productionSatisfyingMode": "independent-organization",
+  "threatModel": [
+    "reviewer conflict",
+    "unsigned report",
+    "scope omission",
+    "open critical findings",
+    "license blocker suppression",
+    "report substitution"
+  ],
+  "prerequisites": [
+    "Independent assessor organization",
+    "Approved scope and rules of engagement",
+    "Exact source and artifact digests",
+    "Signed report-delivery channel",
+    "Out-of-band pinned trust anchor controlled outside the verification document",
+    "Root-signed, time-bounded trust bundle authorizing collector, reviewer and witness keys",
+    "Protected replay/checkpoint state with exclusive writer locking",
+    "Immutable raw-evidence root readable by the verifier"
+  ],
+  "requiredExternalData": [
+    "penetration report",
+    "isolation report",
+    "supply-chain report",
+    "license report",
+    "finding closure evidence"
+  ],
+  "prepareCommand": "node scripts/prepare-external-qualification-v32_12.mjs external-qualification/v32.12/independent-security-isolation-license-review/manifest.json <run-directory>",
+  "verificationCommand": "node scripts/verify-external-qualification-v32_12.mjs <verification-document.json> <trust-anchor.json> <signed-trust-bundle.json> <evidence-root> <replay-state.json> <verdict.json>",
+  "requiredIdentities": [
+    "collector",
+    "independent-reviewer",
+    "independent-witness"
+  ],
+  "requiredEvidenceFields": [
+    "runId",
+    "qualificationId",
+    "gateId",
+    "sourceDigest",
+    "artifactDigest",
+    "toolchainDigest",
+    "environmentFingerprint",
+    "policyDigest",
+    "adapterVersion",
+    "challengeNonce",
+    "rawEvidence.sha256",
+    "collectorSignature",
+    "reviewerSignature",
+    "witnessSignature",
+    "trustBundleDigest",
+    "witnessCheckpointSequence",
+    "previousCheckpointDigest"
+  ],
+  "negativeControls": [
+    "Use a SIMULATED evidence class",
+    "Set synthetic=true",
+    "Reuse a challenge nonce",
+    "Use collector key as reviewer key",
+    "Change raw evidence after collection",
+    "Change source, artifact, toolchain or policy digest",
+    "Submit expired or revoked reviewer credential",
+    "Copy approval from another qualification",
+    "Embed attacker-controlled keys, policy, timestamps or observations in the verification document",
+    "Use a self-signed or tampered trust bundle",
+    "Rollback or alter replay/checkpoint state",
+    "Hold the replay-state lock from another verifier process"
+  ],
+  "acceptanceCriteria": [
+    "Evidence state is passed",
+    "Evidence class is OBSERVED",
+    "synthetic is false",
+    "Minimum execution mode is independent-organization",
+    "All signatures verify at action time",
+    "All identity tuple fields match policy",
+    "Raw evidence hash and size match observation",
+    "Nonce is unique",
+    "Collector, reviewer and witness are independent by key, process, host and organization",
+    "Trust anchor is supplied out-of-band and the trust bundle signature verifies against an allowed root key",
+    "Verifier uses its own system clock rather than a caller-selected evaluation time",
+    "Verifier reads and hashes the real raw-evidence files under the configured evidence root",
+    "Replay nonces and witness checkpoints advance in verifier-owned state under an exclusive lock",
+    "Production policy requires exactly all six gates, independent-organization mode and a witness"
+  ],
+  "failureConditions": [
+    "Any prerequisite unavailable",
+    "Any required external response absent",
+    "Any signature invalid, expired or revoked",
+    "Any identity, digest, time or raw artifact mismatch",
+    "Any replay or self-attestation detected"
+  ],
+  "rollbackAndCleanup": [
+    "Revoke temporary qualification credentials",
+    "Remove temporary test resources only after evidence hashes are recorded",
+    "Preserve failure logs as non-authoritative evidence",
+    "Do not alter production state from model output"
+  ],
+  "expiryPolicy": {
+    "maximumEvidenceAgeHours": 24,
+    "reexecuteOn": [
+      "source digest change",
+      "artifact digest change",
+      "toolchain digest change",
+      "policy digest change",
+      "adapter version change",
+      "credential revocation",
+      "external environment topology change"
+    ]
+  },
+  "fixtures": {
+    "unsigned": "synthetic-unsigned-example.json",
+    "signed": "synthetic-signed-example.json",
+    "classification": "synthetic-test-only-never-production-evidence"
+  },
+  "trustModel": {
+    "trustAnchor": "out-of-band-pinned",
+    "trustBundle": "root-signed-and-time-bounded",
+    "evaluationClock": "verifier-system-clock",
+    "rawEvidenceObservation": "verifier-filesystem",
+    "replayState": "exclusive-lock-atomic-hash-chain-local-integrity",
+    "rollbackLimitation": "requires external monotonic witness or protected monotonic storage for cross-host rollback resistance"
+  }
+}

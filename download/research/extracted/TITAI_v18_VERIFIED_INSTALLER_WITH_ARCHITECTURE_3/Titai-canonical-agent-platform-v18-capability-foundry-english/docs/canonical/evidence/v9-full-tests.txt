@@ -1,0 +1,124 @@
+
+> titai@1.4.0-canonical-v9-durable test
+> vitest run
+
+
+ RUN  v3.2.7 /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english
+
+ ✓ tests/lifecycle.test.ts (8 tests) 15ms
+ ✓ tests/build-graph.test.ts (4 tests) 12ms
+ ✓ tests/policy.test.ts (8 tests) 10ms
+ ✓ tests/calculator.test.ts (3 tests) 9ms
+ ✓ tests/evidence-summary.test.ts (4 tests) 12ms
+ ✓ tests/plan.test.ts (5 tests) 16ms
+ ✓ tests/relative-time.test.ts (3 tests) 93ms
+ ✓ tests/rate-limit.test.ts (3 tests) 14ms
+ ✓ tests/evaluation-baseline.test.ts (1 test) 154ms
+ ✓ tests/durable-file-store.test.ts (1 test) 103ms
+ ✓ tests/durable-verification.test.ts (2 tests) 157ms
+ ✓ tests/crypto.test.ts (3 tests) 13ms
+ ✓ tests/egress.test.ts (5 tests) 105ms
+ ✓ tests/skills.test.ts (5 tests) 197ms
+ ✓ tests/durable-backup.test.ts (3 tests) 2407ms
+   ✓ encrypted durable backup > round-trips a snapshot and restores it into a fresh store  895ms
+   ✓ encrypted durable backup > rejects an incorrect passphrase  801ms
+   ✓ encrypted durable backup > rejects ciphertext tampering  707ms
+ ✓ tests/durable-engine.test.ts (4 tests) 202ms
+ ✓ tests/durable-worker.test.ts (2 tests) 188ms
+ ✓ tests/gateway.test.ts (5 tests) 98ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/approval-expiry.test.ts [ tests/approval-expiry.test.ts ]
+Error: Could not locate the bindings file. Tried:
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/compiled/22.16.0/linux/x64/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/lib/binding/node-v127-linux-x64/better_sqlite3.node
+ ❯ bindings node_modules/bindings/bindings.js:126:9
+ ❯ new Database node_modules/better-sqlite3/lib/database.js:48:64
+ ❯ createDb src/lib/db/index.ts:36:18
+     34|     mkdirSync(dirname(dbPath), { recursive: true });
+     35|   }
+     36|   const sqlite = new Database(dbPath);
+       |                  ^
+     37|   sqlite.pragma("journal_mode = WAL");
+     38|   sqlite.pragma("busy_timeout = 5000");
+ ❯ src/lib/db/index.ts:56:54
+ ❯ tests/approval-expiry.test.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/audit.test.ts [ tests/audit.test.ts ]
+Error: Could not locate the bindings file. Tried:
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/compiled/22.16.0/linux/x64/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/lib/binding/node-v127-linux-x64/better_sqlite3.node
+ ❯ bindings node_modules/bindings/bindings.js:126:9
+ ❯ new Database node_modules/better-sqlite3/lib/database.js:48:64
+ ❯ createDb src/lib/db/index.ts:36:18
+     34|     mkdirSync(dirname(dbPath), { recursive: true });
+     35|   }
+     36|   const sqlite = new Database(dbPath);
+       |                  ^
+     37|   sqlite.pragma("journal_mode = WAL");
+     38|   sqlite.pragma("busy_timeout = 5000");
+ ❯ src/lib/db/index.ts:56:54
+ ❯ src/lib/engine/audit.ts:4:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/runner.integration.test.ts [ tests/runner.integration.test.ts ]
+Error: Could not locate the bindings file. Tried:
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/compiled/22.16.0/linux/x64/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /mnt/data/titai_v9_work/Titai-canonical-agent-platform-v8-roast-english/node_modules/better-sqlite3/lib/binding/node-v127-linux-x64/better_sqlite3.node
+ ❯ bindings node_modules/bindings/bindings.js:126:9
+ ❯ new Database node_modules/better-sqlite3/lib/database.js:48:64
+ ❯ createDb src/lib/db/index.ts:36:18
+     34|     mkdirSync(dirname(dbPath), { recursive: true });
+     35|   }
+     36|   const sqlite = new Database(dbPath);
+       |                  ^
+     37|   sqlite.pragma("journal_mode = WAL");
+     38|   sqlite.pragma("busy_timeout = 5000");
+ ❯ src/lib/db/index.ts:56:54
+ ❯ tests/runner.integration.test.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 18 passed (21)
+      Tests  69 passed (69)
+   Start at  20:26:52
+   Duration  30.10s (transform 17.13s, setup 0ms, collect 35.92s, tests 3.81s, environment 10ms, prepare 142.91s)
+

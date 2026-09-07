@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+for tool in clamscan freshclam yara yarac; do
+  if command -v "$tool" >/dev/null 2>&1; then printf '%s\tAVAILABLE\n' "$tool"; else printf '%s\tUNAVAILABLE_FAIL_CLOSED\n' "$tool"; fi
+done

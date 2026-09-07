@@ -1,0 +1,136 @@
+[
+  {
+    "rid": "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328",
+    "op": "ADD",
+    "tier": "LTM",
+    "content": "prior incident: APU thermal excursion 2026-06-30",
+    "ts": 1784153789.080279,
+    "parent_rid": null,
+    "salience": 0.6
+  },
+  {
+    "rid": "1532060f-ba70-4d76-9f4e-3c456dc30662",
+    "op": "ADD",
+    "tier": "STM",
+    "content": "step-0 on 'Diagnose APU thermal exc...'",
+    "ts": 1784153789.0807414,
+    "parent_rid": null,
+    "salience": 0.5
+  },
+  {
+    "rid": "2bc61395-6e5c-434c-855e-7c3248101a31",
+    "op": "ADD",
+    "tier": "STM",
+    "content": "step-1 on 'Diagnose APU thermal exc...'",
+    "ts": 1784153789.0811818,
+    "parent_rid": null,
+    "salience": 0.6
+  },
+  {
+    "rid": "d95cc22f-629d-44ea-af04-b56c77807fd6",
+    "op": "ADD",
+    "tier": "STM",
+    "content": "step-2 on 'Diagnose APU thermal exc...'",
+    "ts": 1784153789.081582,
+    "parent_rid": null,
+    "salience": 0.7
+  },
+  {
+    "rid": "36c3b73d-cbda-48a3-8835-1b608137e850",
+    "op": "RETRIEVE",
+    "tier": "LTM",
+    "content": "step-3 on 'Diagnose APU thermal exc...'",
+    "ts": 1784153789.082,
+    "parent_rid": "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328",
+    "salience": 0.8
+  },
+  {
+    "rid": "778bf37b-43a8-41fb-9b20-46d495385dd6",
+    "op": "ADD",
+    "tier": "STM",
+    "content": "qstep-0 on 'Quorum-validate an ECR g...'",
+    "ts": 1784153789.0824544,
+    "parent_rid": null,
+    "salience": 0.5
+  },
+  {
+    "rid": "80b2b5fa-33f1-4efb-9af3-f27b80e2bc82",
+    "op": "ADD",
+    "tier": "STM",
+    "content": "qstep-1 on 'Quorum-validate an ECR g...'",
+    "ts": 1784153789.0828378,
+    "parent_rid": null,
+    "salience": 0.6
+  },
+  {
+    "rid": "f4d07979-02c2-43fb-98ed-d05bf83b9f17",
+    "op": "RETRIEVE",
+    "tier": "LTM",
+    "content": "qstep-2 on 'Quorum-validate an ECR g...'",
+    "ts": 1784153789.083213,
+    "parent_rid": "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328",
+    "salience": 0.7
+  },
+  {
+    "rid": "648a2d71-9484-4d31-b560-04a891466c53",
+    "op": "RETRIEVE",
+    "tier": "LTM",
+    "content": "qstep-3 on 'Quorum-validate an ECR g...'",
+    "ts": 1784153789.083561,
+    "parent_rid": "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328",
+    "salience": 0.8
+  },
+  {
+    "rid": "fe78917d-3b0d-40a7-b69e-c96e056a8b6d",
+    "op": "DELETE",
+    "tier": "STM",
+    "content": "manual tombstone of seed record",
+    "ts": 1784153789.0836153,
+    "parent_rid": "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328",
+    "salience": 0.0
+  },
+  {
+    "rid": "2babfccc-a62c-4537-94e9-a780dec7a19c",
+    "op": "SUMMARY",
+    "tier": "LTM",
+    "content": "adm-gated diagnose step",
+    "ts": 1784153789.0856555,
+    "parent_rid": "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328",
+    "salience": 0.6,
+    "evidence_chain": {
+      "intent": "diagnose",
+      "context": {
+        "island": "APU",
+        "theta": 0.5,
+        "epistemic_ids": [
+          "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328"
+        ],
+        "tombstoned": [],
+        "risk_class": "low"
+      },
+      "action": {
+        "op": "SUMMARY",
+        "tier": "LTM",
+        "parent_rid": "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328"
+      },
+      "reasoning": {
+        "logprob": -1.8503057956695557,
+        "value": 0.0,
+        "advantage": null,
+        "proof_refs": [
+          "empirical"
+        ],
+        "esr_evidence": [
+          "d14a25f6-5afa-4e5c-bbb3-7e2f7fa18328"
+        ]
+      },
+      "admissible": true,
+      "attempts": [
+        "attempt 0: REJECTED op=ADD \u2014 R1_op_mismatch: intent=diagnose requires op \u2208 { SUMMARY, FILTER, RETRIEVE } but action.op=ADD; R1b_tier_mismatch: intent=diagnose requires tier=LTM but action.tier=STM",
+        "attempt 1: REJECTED op=DELETE \u2014 R1_op_mismatch: intent=diagnose requires op \u2208 { SUMMARY, FILTER, RETRIEVE } but action.op=DELETE; R1b_tier_mismatch: intent=diagnose requires tier=LTM but action.tier=STM",
+        "attempt 2: REJECTED op=DELETE \u2014 R1_op_mismatch: intent=diagnose requires op \u2208 { SUMMARY, FILTER, RETRIEVE } but action.op=DELETE; R1b_tier_mismatch: intent=diagnose requires tier=LTM but action.tier=STM",
+        "attempt 3: ADMITTED op=SUMMARY"
+      ]
+    }
+  }
+]

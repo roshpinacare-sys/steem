@@ -1,0 +1,224 @@
+{
+  "version": "33.20",
+  "authorityId": "authority-main",
+  "backend": "SQLITE_WAL",
+  "authorityEpoch": 1,
+  "fenceCounter": 2,
+  "activeLeases": [
+    {
+      "version": "33.18",
+      "leaseId": "durable-lease-eb2da36f-d0fd-4ee5-a287-75690e8ea62a",
+      "authorityId": "authority-main",
+      "tenantId": "tenant-a",
+      "serviceId": "adaptive-control",
+      "controllerId": "controller-b",
+      "fenceToken": 2,
+      "authorityEpoch": 1,
+      "acquiredAt": "2026-07-21T18:47:16.378Z",
+      "expiresAt": "2026-07-21T18:47:16.878Z",
+      "witnessReceiptDigest": "20603e399ccbf599a616dbea0fe6fef8da7a58eca8925ea89c15bf91f2effa80",
+      "authorityExpanded": false,
+      "externalEffectsExecuted": 0,
+      "leaseDigest": "5c8a056a14b764b0a4db4af32ee9309b23f0a3fc3d12b583e9eacf6a7a34a5f5"
+    }
+  ],
+  "decisions": [
+    {
+      "payload": {
+        "version": "33.18",
+        "decisionId": "durable-decision-4c66e34e-f882-4edd-b657-b495ac6d6439",
+        "commandId": "race-a",
+        "commandDigest": "c4c6bae9ddb122ada74ed52b300398c08799ee012ed15d1fc38c924d5c96da64",
+        "authorityId": "authority-main",
+        "tenantId": "tenant-a",
+        "serviceId": "adaptive-control",
+        "controllerId": "controller-a",
+        "operation": "ACQUIRE",
+        "accepted": true,
+        "reason": "LEASE_GRANTED",
+        "currentFenceToken": 1,
+        "grant": {
+          "version": "33.18",
+          "leaseId": "durable-lease-daad5d9d-841b-475a-bd28-87bfb5af1439",
+          "authorityId": "authority-main",
+          "tenantId": "tenant-a",
+          "serviceId": "adaptive-control",
+          "controllerId": "controller-a",
+          "fenceToken": 1,
+          "authorityEpoch": 1,
+          "acquiredAt": "2026-07-21T18:47:14.224Z",
+          "expiresAt": "2026-07-21T18:47:14.474Z",
+          "witnessReceiptDigest": "84d057cc2758c233d82f2321f2e3d7ecfde5ecc4d05bd32309d57bab28d74996",
+          "authorityExpanded": false,
+          "externalEffectsExecuted": 0,
+          "leaseDigest": "5c61126d308fc4577d6708667bdfb0c60c84e4bf7a2c6eadce3e49cd9975d89e"
+        },
+        "decidedAt": "2026-07-21T18:47:14.224Z",
+        "fallbackRoute": "FULL_GOVERNED_WORKFLOW",
+        "authorityExpanded": false,
+        "externalEffectsExecuted": 0,
+        "decisionDigest": "1dc1f26a1f78c0a7bd245178e488ddf46f6b549848b382708af3d1d6800a33ea"
+      },
+      "issuerKeyId": "v33.20-authority",
+      "algorithm": "Ed25519",
+      "signature": "ThETWOFc8RIYB6HFHagqluugxEFSGy85fcDLhUCWhpax_RlLytU2giP1Q2RNJ-ydHMwk3Oordrji68GmZAs3BQ"
+    },
+    {
+      "payload": {
+        "version": "33.18",
+        "decisionId": "durable-decision-9043ae35-7563-4db5-ba80-f9b5878da7d1",
+        "commandId": "race-b",
+        "commandDigest": "56d024c6f4095d639ec92fc72a3b55ef33af0f604cd933f608d6f9bfa0f69c08",
+        "authorityId": "authority-main",
+        "tenantId": "tenant-a",
+        "serviceId": "adaptive-control",
+        "controllerId": "controller-b",
+        "operation": "ACQUIRE",
+        "accepted": false,
+        "reason": "LEASE_BUSY",
+        "currentFenceToken": 1,
+        "decidedAt": "2026-07-21T18:47:14.226Z",
+        "fallbackRoute": "FULL_GOVERNED_WORKFLOW",
+        "authorityExpanded": false,
+        "externalEffectsExecuted": 0,
+        "decisionDigest": "e02454843f363f1743b06ba69ee0444d4affd11ffbf8070acd687c65afa051d1"
+      },
+      "issuerKeyId": "v33.20-authority",
+      "algorithm": "Ed25519",
+      "signature": "uGQUKE3lgzYXW_Exw0j-8PNnbzrh4Lk1Nd8CrG8t5WoCgn5USEtD7jaw8XfQ1sO7CHfdq_yWeqjoTiIZmzvIBA"
+    },
+    {
+      "payload": {
+        "version": "33.18",
+        "decisionId": "durable-decision-1dcb4225-4de9-4657-9df6-1709ed9c474d",
+        "commandId": "takeover",
+        "commandDigest": "a099e41ec9819bdbdc51cd5aa9c7c5e8df320e86a203d8be4bd97cdde19eb7e9",
+        "authorityId": "authority-main",
+        "tenantId": "tenant-a",
+        "serviceId": "adaptive-control",
+        "controllerId": "controller-b",
+        "operation": "ACQUIRE",
+        "accepted": true,
+        "reason": "LEASE_GRANTED",
+        "currentFenceToken": 2,
+        "grant": {
+          "version": "33.18",
+          "leaseId": "durable-lease-eb2da36f-d0fd-4ee5-a287-75690e8ea62a",
+          "authorityId": "authority-main",
+          "tenantId": "tenant-a",
+          "serviceId": "adaptive-control",
+          "controllerId": "controller-b",
+          "fenceToken": 2,
+          "authorityEpoch": 1,
+          "acquiredAt": "2026-07-21T18:47:16.378Z",
+          "expiresAt": "2026-07-21T18:47:16.878Z",
+          "witnessReceiptDigest": "20603e399ccbf599a616dbea0fe6fef8da7a58eca8925ea89c15bf91f2effa80",
+          "authorityExpanded": false,
+          "externalEffectsExecuted": 0,
+          "leaseDigest": "5c8a056a14b764b0a4db4af32ee9309b23f0a3fc3d12b583e9eacf6a7a34a5f5"
+        },
+        "decidedAt": "2026-07-21T18:47:16.378Z",
+        "fallbackRoute": "FULL_GOVERNED_WORKFLOW",
+        "authorityExpanded": false,
+        "externalEffectsExecuted": 0,
+        "decisionDigest": "a7947f7ced3259e31db60aaf966685e7ec64f80258626b980dd00632bf447c30"
+      },
+      "issuerKeyId": "v33.20-authority",
+      "algorithm": "Ed25519",
+      "signature": "20RT9YqvVDhNpB4JhGsyBmUi3IaXoAV-Q_rC3l1NAcvHUw4TpoGxz5Pn28fgUnF-yw9WPT_wZtvyjuLJKEv6Ag"
+    }
+  ],
+  "outbox": [
+    {
+      "payload": {
+        "version": "33.18",
+        "eventId": "durable-outbox-9ee22cc1-ad4d-4325-b6e3-b1796be126a9",
+        "sequence": 1,
+        "eventType": "LEASE_GRANTED",
+        "authorityId": "authority-main",
+        "tenantId": "tenant-a",
+        "serviceId": "adaptive-control",
+        "controllerId": "controller-a",
+        "fenceToken": 1,
+        "commandId": "race-a",
+        "decisionDigest": "1dc1f26a1f78c0a7bd245178e488ddf46f6b549848b382708af3d1d6800a33ea",
+        "createdAt": "2026-07-21T18:47:14.224Z",
+        "previousEventDigest": "9b7b357cfe7af7984d4a3191adfc4669041111408f81cd5001057b2a321d301f",
+        "externalEffectsExecuted": 0,
+        "eventDigest": "5e661e879a91f18b07b110273e37cb00be08c5c95999d3e913da90382f3c5bca"
+      },
+      "issuerKeyId": "v33.20-authority",
+      "algorithm": "Ed25519",
+      "signature": "FjVMaVFEHFJiONSGudIzYnDJmjCVT9wgCswQXR4MwRgl1xpkZ96LOmvu0eWqxW-8RKxa2Q0JbbM_lqf-zFLABg"
+    },
+    {
+      "payload": {
+        "version": "33.18",
+        "eventId": "durable-outbox-1fe1b59c-2944-4a5c-a79d-96e1866dc3f5",
+        "sequence": 2,
+        "eventType": "LEASE_TAKEOVER",
+        "authorityId": "authority-main",
+        "tenantId": "tenant-a",
+        "serviceId": "adaptive-control",
+        "controllerId": "controller-b",
+        "fenceToken": 2,
+        "commandId": "takeover",
+        "decisionDigest": "a7947f7ced3259e31db60aaf966685e7ec64f80258626b980dd00632bf447c30",
+        "createdAt": "2026-07-21T18:47:16.378Z",
+        "previousEventDigest": "5e661e879a91f18b07b110273e37cb00be08c5c95999d3e913da90382f3c5bca",
+        "externalEffectsExecuted": 0,
+        "eventDigest": "a3b9eb69a6d7546efbaad4609efb850847ce12e01f767c7e8ff23530c0790dee"
+      },
+      "issuerKeyId": "v33.20-authority",
+      "algorithm": "Ed25519",
+      "signature": "I27A12vonVNWg624Me988CcSkiFaQFp3ouCYB4iaF2NIifswCWgUAe0S6gT7j0mLbXjqeCzxyRgK7U0flv_CCw"
+    },
+    {
+      "payload": {
+        "version": "33.18",
+        "eventId": "durable-outbox-bbb7dbdc-573e-4f5e-a4f0-e6dcbc8328c6",
+        "sequence": 3,
+        "eventType": "FALLBACK_REQUIRED",
+        "authorityId": "authority-main",
+        "tenantId": "tenant-a",
+        "serviceId": "adaptive-control",
+        "controllerId": "controller-a",
+        "fenceToken": 2,
+        "commandId": "takeover",
+        "decisionDigest": "33ac564936c5147152f257e73e4c19a6f229dfe97003ea6a53db211502c82cbd",
+        "createdAt": "2026-07-21T18:47:16.378Z",
+        "previousEventDigest": "a3b9eb69a6d7546efbaad4609efb850847ce12e01f767c7e8ff23530c0790dee",
+        "externalEffectsExecuted": 0,
+        "eventDigest": "39164b791a5f827caa78cfb891becc39386292e41d06ee61fe4ef1a6d72b91bc"
+      },
+      "issuerKeyId": "v33.20-authority",
+      "algorithm": "Ed25519",
+      "signature": "sJYmvS4ONvNaufhcCg0Wmwsc5jogqrAIQ0dIvry-uxDYlQb1p-tl2JO4MQ0H-DDnC9_85-9leNH7JsdXcUlWAA"
+    }
+  ],
+  "witnessReceipts": [
+    {
+      "payload": {
+        "version": "33.20",
+        "witnessId": "authority-main-witness",
+        "authorityId": "authority-main",
+        "leaseKey": "tenant-a\u0000adaptive-control",
+        "fenceToken": 2,
+        "previousReceiptDigest": "84d057cc2758c233d82f2321f2e3d7ecfde5ecc4d05bd32309d57bab28d74996",
+        "observedAt": "2026-07-21T18:47:16.378Z",
+        "storage": "SEPARATE_SQLITE_WAL_REFERENCE",
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "receiptDigest": "20603e399ccbf599a616dbea0fe6fef8da7a58eca8925ea89c15bf91f2effa80"
+      },
+      "issuerKeyId": "v33.20-witness",
+      "algorithm": "Ed25519",
+      "signature": "i-PQO5TBXWWtbZZMrfIPcd8iKGx_ERop8Z-jsOJFHsyHGwaEp3lQkikw9SNpEcrJvj8WKOVz8rA1IDDQ11k9Cg"
+    }
+  ],
+  "lastObservedAt": "2026-07-21T18:47:16.378Z",
+  "generatedAt": "2026-07-21T18:47:16.644Z",
+  "productionAuthority": "NONE",
+  "externalEffectsExecuted": 0,
+  "snapshotDigest": "ea58ee2801f3112d84fa8bf581187e281a333b67e55b4f614451d60d42c3d9a0"
+}

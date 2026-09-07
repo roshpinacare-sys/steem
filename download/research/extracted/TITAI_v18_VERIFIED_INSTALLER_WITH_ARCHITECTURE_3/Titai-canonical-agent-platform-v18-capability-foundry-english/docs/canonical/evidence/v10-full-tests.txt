@@ -1,0 +1,38 @@
+
+> titai@1.5.0-canonical-v10-hardening test
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90m/mnt/data/titai_v10_work[39m
+
+(node:43181) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ [32m✓[39m tests/context-budget.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/safe-regex.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/calculator.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/metrics.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/evidence-summary.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/tool-arguments.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/lifecycle.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m tests/build-graph.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m tests/governed-memory.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m tests/policy.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m tests/evaluation-baseline.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m tests/relative-time.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 99[2mms[22m[39m
+ [32m✓[39m tests/plan.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+ [32m✓[39m tests/crypto.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 105[2mms[22m[39m
+ [32m✓[39m tests/durable-verification.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 209[2mms[22m[39m
+ [32m✓[39m tests/durable-file-store.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 288[2mms[22m[39m
+ [32m✓[39m tests/rate-limit.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 185[2mms[22m[39m
+ [32m✓[39m tests/application-backup.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 2897[2mms[22m[39m
+   [33m[2m✓[22m[39m application database backup[2m > [22mencrypts, restores, and verifies a clean database copy [33m 509[2mms[22m[39m
+   [33m[2m✓[22m[39m application database backup[2m > [22mrejects a wrong passphrase and a tampered envelope [33m 1385[2mms[22m[39m
+   [33m[2m✓[22m[39m application database backup[2m > [22mrefuses to overwrite a target unless explicitly authorized [33m 1000[2mms[22m[39m
+ [32m✓[39m tests/egress.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 202[2mms[22m[39m
+ [32m✓[39m tests/skills.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 206[2mms[22m[39m
+ [32m✓[39m tests/durable-engine.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 290[2mms[22m[39m
+ [32m✓[39m tests/durable-worker.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 200[2mms[22m[39m
+ [32m✓[39m tests/durable-backup.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 3003[2mms[22m[39m
+   [33m[2m✓[22m[39m encrypted durable backup[2m > [22mround-trips a snapshot and restores it into a fresh store [33m 1393[2mms[22m[39m
+   [33m[2m✓[22m[39m encrypted durable backup[2m > [22mrejects an incorrect passphrase [33m 713[2mms[22m[39m
+   [33m[2m✓[22m[39m encrypted durable backup[2m > [22mrejects ciphertext tampering [33m 891[2mms[22m[39m

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sovereign-foundry.local/schemas/authority-grant-v0.1.json",
+  "title": "AuthorityGrant v0.1",
+  "type": "object",
+  "required": ["grantId", "tenantId", "subjectId", "scopes", "issuedAt", "expiresAt", "issuer"],
+  "properties": {
+    "grantId": {"type": "string", "minLength": 1},
+    "tenantId": {"type": "string", "minLength": 1},
+    "subjectId": {"type": "string", "minLength": 1},
+    "workspaceId": {"type": "string", "minLength": 1},
+    "scopes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "issuedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "issuer": {"type": "string", "minLength": 1},
+    "evidenceRef": {"type": "string"},
+    "revokedAt": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": false
+}

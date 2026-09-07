@@ -1,0 +1,587 @@
+[
+  {
+    "file": "packages/agent/src/services/local/in-memory-adapters.ts",
+    "name": "LocalR2Storage",
+    "reason": "canonical sovereign in-memory adapter (trio with LocalRedisState/LocalGitHubClient); built by createLocalDeps in-file + used by tests"
+  },
+  {
+    "file": "packages/agent/src/services/policy.ts",
+    "name": "PolicySchema",
+    "reason": "public Zod schema for .qodo/policy.yml; consumed by tests + external tooling"
+  },
+  {
+    "file": "packages/agent/src/services/policy.ts",
+    "name": "DEFAULT_POLICY",
+    "reason": "public default-policy constant (fail-open contract); consumed by tests"
+  },
+  {
+    "file": "packages/agent/src/services/policy.ts",
+    "name": "parsePolicy",
+    "reason": "public parse entry point; used by loadPolicy internally + tests/tooling"
+  },
+  {
+    "file": "packages/agent/src/services/budget-governor.ts",
+    "name": "_resetBudget",
+    "reason": "test-only reset hook (module singleton), mirrors _resetDryRun"
+  },
+  {
+    "file": "packages/agent/src/services/trigger-queue.ts",
+    "name": "TRIGGER_QUEUE_KEY",
+    "reason": "canonical Redis key contract (ADR-003/005); used internally + documents the schema"
+  },
+  {
+    "file": "packages/agent/src/services/trigger-queue.ts",
+    "name": "TRIGGER_PROCESSING_KEY",
+    "reason": "canonical Redis key contract (ADR-005 reliability model)"
+  },
+  {
+    "file": "packages/agent/src/services/trigger-queue.ts",
+    "name": "TRIGGER_DEAD_KEY",
+    "reason": "canonical Redis dead-letter key contract (ADR-005)"
+  },
+  {
+    "file": "packages/agent/src/services/alerting-rules.ts",
+    "name": "evaluateAlerts",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/api-contract-guard.ts",
+    "name": "isSchemaFile",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/ast-doc.ts",
+    "name": "generateMermaidDiagram",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/ast-doc.ts",
+    "name": "generateMermaidGraph",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/audit-log.ts",
+    "name": "verifyAuditChain",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/axiom-shipper.ts",
+    "name": "flushAxiomShipper",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/axiom-shipper.ts",
+    "name": "_resetAxiomShipper",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/cartographer.ts",
+    "name": "isLargeFile",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/cartographer.ts",
+    "name": "summarizeFile",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/circuit-breaker.ts",
+    "name": "CircuitBreakerOpenError",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/confidence-scorer.ts",
+    "name": "computeConfidence",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/cost-ledger.ts",
+    "name": "loadLedger",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/cost-ledger.ts",
+    "name": "queryLedger",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/cve-scanner.ts",
+    "name": "loadCveShelf",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/cve-scanner.ts",
+    "name": "saveCveShelf",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/cve-scanner.ts",
+    "name": "scanCve",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/d1-history.ts",
+    "name": "computeLatencyPercentiles",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/dependency-graph.ts",
+    "name": "loadDependencyGraph",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/dependency-graph.ts",
+    "name": "getFanOut",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/dependency-graph.ts",
+    "name": "getHighFanOutPackages",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/dry-run.ts",
+    "name": "initDryRun",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/dry-run.ts",
+    "name": "isDryRun",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/dry-run.ts",
+    "name": "dryRunSkip",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/dry-run.ts",
+    "name": "getDryRunReport",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/edge-fragment.ts",
+    "name": "parseChunkInProcess",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/edge-prefetch-channel.ts",
+    "name": "EdgePrefetchClient",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/edge-prefetch-channel.ts",
+    "name": "EdgePrefetchServer",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/env-validator.ts",
+    "name": "_resetEnvCache",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/hot-reload-config.ts",
+    "name": "startHotReload",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/blame-sentry-bridge.ts",
+    "name": "runBlameSentryBridge",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/blame-sentry-bridge.ts",
+    "name": "formatBridgeContext",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/codecov-intelligence.ts",
+    "name": "CodecovConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/git-blame-risk.ts",
+    "name": "GitBlameRiskConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/github-issues.ts",
+    "name": "GitHubIssuesConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/qstash-async.ts",
+    "name": "QStashConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/sentry-gate.ts",
+    "name": "SentryGateConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/slack-webhook.ts",
+    "name": "SlackWebhookConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/ticket-enrichment.ts",
+    "name": "TicketEnrichmentConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/license-checker.ts",
+    "name": "DEFAULT_ALLOWED_LICENSES",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/license-checker.ts",
+    "name": "DEFAULT_DENIED_LICENSES",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/license-checker.ts",
+    "name": "checkLicenses",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/mission-priority.ts",
+    "name": "scoreMission",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/mission-priority.ts",
+    "name": "dequeueMission",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/mission-priority.ts",
+    "name": "removeMission",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/model-deprecation-watchdog.ts",
+    "name": "_resetWatchdogCache",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/obfuscator.ts",
+    "name": "obfuscateCode",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/otel-tracer.ts",
+    "name": "tracer",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/otel-tracer.ts",
+    "name": "createTracer",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/progress-bar.ts",
+    "name": "createProgressBar",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/prompt-registry.ts",
+    "name": "registerPrompt",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/prompt-registry.ts",
+    "name": "getActivePrompt",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/prompt-registry.ts",
+    "name": "rollbackPrompt",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/prompt-registry.ts",
+    "name": "recordPromptResult",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/quota-guardian.ts",
+    "name": "filterByHeadroom",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/quota-guardian.ts",
+    "name": "rankByHeadroom",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/quota-guardian.ts",
+    "name": "hasComfortableHeadroom",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/r2-storage.ts",
+    "name": "FALLBACK_DIR",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/rationale-bank.ts",
+    "name": "loadRunRationale",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/sbom-generator.ts",
+    "name": "generateSbom",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/sbom-generator.ts",
+    "name": "saveSbom",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/skill-exchange.ts",
+    "name": "SkillRecordSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/skill-exchange.ts",
+    "name": "maybeExtractSkill",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/skill-exchange.ts",
+    "name": "downloadGlobalSkills",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/slo-tracker.ts",
+    "name": "recordRunSample",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/slo-tracker.ts",
+    "name": "computeSloReport",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/support-ticket-bridge.ts",
+    "name": "ZendeskConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/support-ticket-bridge.ts",
+    "name": "IntercomConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/support-ticket-bridge.ts",
+    "name": "SupportTicketConfigSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/support-ticket-bridge.ts",
+    "name": "fetchSupportTickets",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/support-ticket-bridge.ts",
+    "name": "buildTicketObjectives",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/support-ticket-bridge.ts",
+    "name": "aggregateDuplicates",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/trust-ledger.ts",
+    "name": "getBond",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/trust-ledger.ts",
+    "name": "seedTrustFromProvenRepo",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/uncertainty-sampling.ts",
+    "name": "sampleUncertainty",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/vector-skill-exchange.ts",
+    "name": "VectorSkillRecordSchema",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/vitals-score.ts",
+    "name": "loadVitals",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/validators/path-guard-scoped.ts",
+    "name": "loadPathGuardConfig",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/validators/path-guard-scoped.ts",
+    "name": "isPathAllowed",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/validators/path-guard-scoped.ts",
+    "name": "assertPathsAllowed",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/agents/darwin-engine.ts",
+    "name": "recordMutationBaseline",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/agents/darwin-engine.ts",
+    "name": "evaluateMutationFitness",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/agents/meta-agent.ts",
+    "name": "promoteMutation",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/agents/supervisor.ts",
+    "name": "supervisorDecide",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/agents/warden.ts",
+    "name": "WardenRejectionError",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/agents/warden.ts",
+    "name": "inspectFile",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/sacred-file-integrity.ts",
+    "name": "SACRED_FILES",
+    "reason": "used-in-bin-script-and-tests"
+  },
+  {
+    "file": "packages/agent/src/services/sacred-file-integrity.ts",
+    "name": "generateSacredManifest",
+    "reason": "used-in-bin-script-and-tests"
+  },
+  {
+    "file": "packages/agent/src/services/sacred-file-integrity.ts",
+    "name": "verifySacredFiles",
+    "reason": "public-api-also-used-via-verifyAndAuditSacredFiles-wrapper-and-tests"
+  },
+  {
+    "file": "packages/agent/src/services/dry-run.ts",
+    "name": "setVirusTotalFindings",
+    "reason": "intentional-public-api \u2014 called by pipeline orchestrator to attach VT findings to dry-run report"
+  },
+  {
+    "file": "packages/agent/src/services/dry-run.ts",
+    "name": "_resetDryRun",
+    "reason": "test-helper \u2014 exported for test cleanup; mirrors _resetEnvCache / _resetAxiomShipper pattern"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/socket-risk.ts",
+    "name": "flaggedPackages",
+    "reason": "intentional-public-api \u2014 convenience filter used by sbom-generator callers and tests"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/virustotal.ts",
+    "name": "VT_MALICIOUS_THRESHOLD",
+    "reason": "intentional-public-api \u2014 exported constant for use by callers and tests"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/virustotal.ts",
+    "name": "flaggedFindings",
+    "reason": "intentional-public-api \u2014 convenience filter used by dry-run callers and tests"
+  },
+  {
+    "file": "packages/agent/src/services/license-checker.ts",
+    "name": "checkSocketSupplyChain",
+    "reason": "intentional-public-api \u2014 called by pipeline phase runner alongside checkLicenses"
+  },
+  {
+    "file": "packages/agent/src/services/sbom-generator.ts",
+    "name": "enrichSbomWithSocketRisk",
+    "reason": "intentional-public-api \u2014 called by pipeline phase runner after generateSbom()"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/launchdarkly.ts",
+    "name": "isCanaryEnabled",
+    "reason": "intentional-public-api \u2014 called by routeTrafficWithFeatureFlag in canary.ts"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/launchdarkly.ts",
+    "name": "FlagSource",
+    "reason": "intentional-public-api \u2014 type exported for consumers of FlagEvalResult"
+  },
+  {
+    "file": "packages/agent/src/services/canary.ts",
+    "name": "routeTrafficWithFeatureFlag",
+    "reason": "intentional-public-api \u2014 called by pipeline orchestrator (cli.ts) canary phase"
+  },
+  {
+    "file": "packages/agent/src/services/canary.ts",
+    "name": "CanaryRoutingOutcome",
+    "reason": "intentional-public-api \u2014 type exported for pipeline phase callers"
+  },
+  {
+    "file": "packages/agent/src/services/canary.ts",
+    "name": "CanaryRoutingResult",
+    "reason": "intentional-public-api \u2014 type exported for pipeline phase callers"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/launchdarkly.ts",
+    "name": "evaluateFlag",
+    "reason": "intentional-public-api \u2014 primary evaluation primitive; also consumed by isCanaryEnabled in the same file and directly by callers who need custom user-key evaluation"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/github-dependency-graph.ts",
+    "name": "fetchGitHubSbom",
+    "reason": "intentional-public-api \u2014 called by pipeline orchestrator and dependency-graph enrichment path after loadDependencyGraph()"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/github-dependency-graph.ts",
+    "name": "crossCheckDependencyGraph",
+    "reason": "intentional-public-api \u2014 called by blast-radius and confidence-scorer to surface dep graph discrepancies"
+  },
+  {
+    "file": "packages/agent/src/services/integrations/github-dependency-graph.ts",
+    "name": "annotateGraphWithGitHubSbom",
+    "reason": "intentional-public-api \u2014 called after loadDependencyGraph() to annotate DepNodes with githubReported flag"
+  },
+  {
+    "file": "packages/agent/src/services/cost-ledger.ts",
+    "name": "generateChargebackReport",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/trust-ledger.ts",
+    "name": "canAutoMerge",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/trust-ledger.ts",
+    "name": "isProbation",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/vitals-score.ts",
+    "name": "computeVitals",
+    "reason": "intentional-public-api"
+  },
+  {
+    "file": "packages/agent/src/services/license-checker.ts",
+    "name": "LICENSE_EXCEPTIONS",
+    "reason": "auditable policy data \u2014 exported so exceptions and their justifications are inspectable"
+  }
+]

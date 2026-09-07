@@ -1,0 +1,197 @@
+{
+  "version": "33.52",
+  "status": "PASS",
+  "checkCount": 16,
+  "passed": 16,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "required-artifacts",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "proof-summary",
+      "ok": true,
+      "detail": {
+        "newSignatureCount": 24,
+        "totalChainSignatureCount": 329,
+        "workerLeaseCount": 2,
+        "expiryWitnessCount": 3,
+        "journalEntryCount": 8,
+        "replayReceiptCount": 1,
+        "pressureSnapshotCount": 4,
+        "replicaReceiptCount": 3,
+        "recoveryReceiptCount": 1,
+        "replicaProcessCount": 3,
+        "signedArtifactWriteCount": 24
+      }
+    },
+    {
+      "name": "proof-durable-writes",
+      "ok": true,
+      "detail": {
+        "signedWrites": 24,
+        "durableFiles": 28,
+        "replicaProcesses": 3
+      }
+    },
+    {
+      "name": "proof-attacks",
+      "ok": true,
+      "detail": {
+        "staleWorkerBlocked": true,
+        "earlyTakeoverBlocked": true,
+        "witnessCollisionBlocked": true,
+        "journalForkBlocked": true,
+        "idempotencyConflictBlocked": true,
+        "backpressureBypassBlocked": true,
+        "replicaSplitViewBlocked": true,
+        "crashSequenceResetBlocked": true,
+        "productionAuthorityMutationBlocked": true
+      }
+    },
+    {
+      "name": "truth-boundary",
+      "ok": true,
+      "detail": {
+        "status": "LOCAL_OPERATIONS_PERSISTENCE_REHEARSAL_ONLY",
+        "externalTopologyObserved": false,
+        "externalInfrastructureAttestations": 0,
+        "externalHumanParticipants": 0,
+        "productionAuthority": "NONE",
+        "externalEffectsExecuted": 0,
+        "g3": "BLOCKED",
+        "productionPromotion": "BLOCKED"
+      }
+    },
+    {
+      "name": "independent-verification",
+      "ok": true,
+      "detail": {
+        "version": "33.52",
+        "verifiedAt": "2026-07-23T16:34:04.481Z",
+        "status": "PASS",
+        "baseVerifierPassed": true,
+        "baseProofDigestVerified": true,
+        "policyVerified": true,
+        "auditReplayRecomputed": true,
+        "journalChainVerified": true,
+        "workerFencingVerified": true,
+        "idempotencyVerified": true,
+        "backlogControlsVerified": true,
+        "replicaDurabilityVerified": true,
+        "crashRecoveryVerified": true,
+        "replicaProcessCount": 3,
+        "newSignatureCount": 24,
+        "totalChainSignatureCount": 329,
+        "truthBoundary": {
+          "status": "LOCAL_OPERATIONS_PERSISTENCE_REHEARSAL_ONLY",
+          "externalTopologyObserved": false,
+          "externalInfrastructureAttestations": 0,
+          "externalHumanParticipants": 0,
+          "productionAuthority": "NONE",
+          "externalEffectsExecuted": 0,
+          "g3": "BLOCKED",
+          "productionPromotion": "BLOCKED"
+        }
+      }
+    },
+    {
+      "name": "focused-regression",
+      "ok": true,
+      "detail": {
+        "tests": 802,
+        "passed": 802,
+        "failed": 0
+      }
+    },
+    {
+      "name": "full-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 237,
+        "tests": 2627,
+        "passed": 2627,
+        "failed": 0
+      }
+    },
+    {
+      "name": "direct-v33-regression",
+      "ok": true,
+      "detail": {
+        "testFiles": 52,
+        "tests": 1460,
+        "passed": 1460,
+        "failed": 0
+      }
+    },
+    {
+      "name": "repository-truth-map",
+      "ok": true,
+      "detail": {
+        "sourceModules": 241,
+        "testFiles": 237,
+        "scripts": 636,
+        "packageScripts": 601,
+        "governanceFiles": 11,
+        "externalQualificationKits": 6,
+        "frontierBenchmarkKits": 1,
+        "sovereignInfraFiles": 30,
+        "independentVerifierFiles": 5,
+        "sovereignServices": 12
+      }
+    },
+    {
+      "name": "architecture-integrity",
+      "ok": true,
+      "detail": {
+        "nodeCount": 483,
+        "sourceCount": 224,
+        "testCount": 242,
+        "entrypointCount": 17,
+        "importEdgeCount": 1165,
+        "sourceCycleCount": 0,
+        "untestedSourceCount": 0,
+        "capabilityPathCount": 177,
+        "closedCapabilityPathCount": 177,
+        "layerCount": 23
+      }
+    },
+    {
+      "name": "regression-input-binding",
+      "ok": true,
+      "detail": {
+        "receipts": 237,
+        "buildDigest": "c90405932486f202e224ad3a69cec6549c22828d312479f26c037e078cc017ea",
+        "runInputDigest": "4f268c60ebdc8d1b1996ba49278b017991a86af5265fcafdc3aeccf6c351c27d"
+      }
+    },
+    {
+      "name": "canonical-metadata",
+      "ok": true,
+      "detail": {
+        "canonical": 11,
+        "mirror": 17
+      }
+    },
+    {
+      "name": "offline-lockfile",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "governance-boundary",
+      "ok": true,
+      "detail": {
+        "phase": "Evidence Intake Operations Persistence, Durable Queues, Worker Fencing, Crash Recovery, Backpressure, and Audit Replay",
+        "status": "v33.52-evidence-intake-operations-persistence-local-rehearsal-production-blocked"
+      }
+    },
+    {
+      "name": "next-action-boundary",
+      "ok": true,
+      "detail": "NA33.52-EXECUTE-EXTERNAL-DURABLE-OPERATIONS"
+    }
+  ]
+}

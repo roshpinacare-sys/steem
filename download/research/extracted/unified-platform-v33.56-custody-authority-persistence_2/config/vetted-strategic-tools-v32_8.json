@@ -1,0 +1,20 @@
+{
+  "version": "32.8",
+  "policy": "Adapter-only intake. No repository is vendored, no binary is bundled, and no network access is granted to runtime code.",
+  "candidates": [
+    {"toolId":"codeql","repository":"https://github.com/github/codeql","officialOrganization":"github","license":"MIT","capability":"semantic security analysis and SARIF evidence","integrationMode":"SARIF_IMPORT","executionStatus":"NOT_EXECUTED","adoption":"ADAPTER_READY"},
+    {"toolId":"openssf-scorecard","repository":"https://github.com/ossf/scorecard","officialOrganization":"ossf","license":"Apache-2.0","capability":"repository supply-chain posture evidence","integrationMode":"METADATA_ONLY","executionStatus":"NOT_EXECUTED","adoption":"ADAPTER_READY"},
+    {"toolId":"cosign","repository":"https://github.com/sigstore/cosign","officialOrganization":"sigstore","license":"Apache-2.0","capability":"signature and transparency verification","integrationMode":"ATTESTATION_IMPORT","executionStatus":"NOT_EXECUTED","adoption":"ADAPTER_READY"},
+    {"toolId":"witness","repository":"https://github.com/in-toto/witness","officialOrganization":"in-toto","license":"Apache-2.0","capability":"provenance collection and policy verification","integrationMode":"ATTESTATION_IMPORT","executionStatus":"NOT_EXECUTED","adoption":"ADAPTER_READY"},
+    {"toolId":"opa","repository":"https://github.com/open-policy-agent/opa","officialOrganization":"open-policy-agent","license":"Apache-2.0","capability":"policy-as-code decisions","integrationMode":"POLICY_BUNDLE","executionStatus":"NOT_EXECUTED","adoption":"ADAPTER_READY"},
+    {"toolId":"tla-plus","repository":"https://github.com/tlaplus/tlaplus","officialOrganization":"tlaplus","license":"MIT","capability":"formal state model checking","integrationMode":"MODEL_EVIDENCE","executionStatus":"NOT_EXECUTED","adoption":"ADAPTER_READY"},
+    {"toolId":"oss-fuzz","repository":"https://github.com/google/oss-fuzz","officialOrganization":"google","license":"Apache-2.0","capability":"continuous fuzzing evidence","integrationMode":"FUZZ_EVIDENCE","executionStatus":"NOT_EXECUTED","adoption":"ADAPTER_READY"}
+  ],
+  "executionPreconditions": [
+    "pin the exact repository revision or release digest",
+    "verify license and security policy at execution time",
+    "import signed or digest-bound evidence only",
+    "run in an isolated CI job with least privilege",
+    "never grant runtime or production authority"
+  ]
+}

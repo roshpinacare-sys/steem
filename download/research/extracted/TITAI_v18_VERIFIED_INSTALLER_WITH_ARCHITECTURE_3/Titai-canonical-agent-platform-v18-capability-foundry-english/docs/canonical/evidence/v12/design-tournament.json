@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "method": "Nine structurally distinct directions scored independently against operator tasks and fatal-flaw gates. Scores are design-analysis estimates, not user-study measurements.",
+  "criteria": ["stateComprehension","nextSafeAction","evidenceDiscovery","recoveryClarity","verificationClarity","accessibility","mobileViability","novelty","informationScale","implementationRisk"],
+  "directions": [
+    {"id":"D1","name":"Evidence Control Plane","mentalModel":"A run is a chain of claims, authorities, and evidence.","scores":[9,9,10,8,10,8,7,9,9,7],"fatalFlaws":[],"result":"selected_core"},
+    {"id":"D2","name":"Operational Command Map","mentalModel":"A live map of jobs, workers, queues, and recovery debt.","scores":[9,9,7,9,7,7,6,8,9,6],"fatalFlaws":[],"result":"selected_operations_layer"},
+    {"id":"D3","name":"Temporal Execution Ledger","mentalModel":"A chronological, append-only operational record.","scores":[8,7,9,8,8,8,8,7,8,8],"fatalFlaws":[],"result":"retained_component"},
+    {"id":"D4","name":"Dependency Graph Workspace","mentalModel":"Tasks and agents are a navigable DAG.","scores":[7,7,6,6,6,5,3,8,7,5],"fatalFlaws":["mobile complexity","evidence details become secondary"],"result":"rejected_as_primary"},
+    {"id":"D5","name":"Verification Dossier","mentalModel":"Each run is an auditable case file.","scores":[8,8,10,7,10,9,8,8,8,8],"fatalFlaws":[],"result":"selected_verification_layer"},
+    {"id":"D6","name":"Multi-Pane Engineering Cockpit","mentalModel":"Persistent simultaneous views of state, evidence, and action.","scores":[8,9,8,8,8,6,3,7,9,5],"fatalFlaws":["poor narrow-screen behavior"],"result":"rejected_as_primary"},
+    {"id":"D7","name":"Canonical Document Workspace","mentalModel":"Decisions and tasks are executable documents.","scores":[7,6,9,6,8,9,9,6,7,9],"fatalFlaws":["live operational pressure is hidden"],"result":"retained_for_governance"},
+    {"id":"D8","name":"Recovery-First Operations Console","mentalModel":"Every state is organized around safe recovery actions.","scores":[9,10,8,10,8,8,7,9,8,7],"fatalFlaws":[],"result":"selected_recovery_layer"},
+    {"id":"D9","name":"Human-Authority Control Surface","mentalModel":"The primary object is the boundary between machine proposal and human authority.","scores":[8,9,8,8,9,9,9,9,7,8],"fatalFlaws":[],"result":"selected_approval_layer"}
+  ],
+  "selectedThesis": "Evidence Control Plane with Recovery-First Operations and a Human-Authority boundary. Completion, verification, release readiness, and runtime health remain visually and semantically separate.",
+  "implementedSurfaces": ["Run execution dossier","Evidence ledger","Immutable verification plane","Operations signal plane","Pilot evidence gate","Approval card"],
+  "limitations": ["Scores are not blind user-study data.","Browser visual regression and real keyboard/screen-reader testing remain blocked.","The legacy application shell is not fully replaced."]
+}

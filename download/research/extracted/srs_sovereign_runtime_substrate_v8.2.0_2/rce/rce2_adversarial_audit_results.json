@@ -1,0 +1,356 @@
+{
+  "assumptions": {
+    "A1_compressible": {
+      "assumption": "The target computation has compressible structure (K(f) << |truth table|)",
+      "if_false": "No law exists. Substrate escalates on 100% of queries. Net negative (discovery cost wasted).",
+      "status": "[DERIVED] This is the fundamental assumption. Without it, the substrate is pure overhead."
+    },
+    "A2_observable": {
+      "assumption": "The computation is deterministic (same input \u2192 same output)",
+      "if_false": "Observations are noisy. Laws fit noise instead of structure. Verification fails on clean data.",
+      "status": "[MEASURED] Corrupted observation worlds (5% noise) caused AIC rejection in the large-scale benchmark."
+    },
+    "A3_stationary": {
+      "assumption": "The computation does not change over time",
+      "if_false": "Discovered laws expire. Relearning cost may exceed savings.",
+      "status": "[MEASURED] Temporal survival benchmark: slow drift caused 9 relearnings in 5000 steps."
+    },
+    "A4_sampleable": {
+      "assumption": "Observations are drawn from the same distribution as test queries",
+      "if_false": "Law fits training distribution but not test distribution (distribution shift).",
+      "status": "[MEASURED] Hidden world benchmark: 4 false compressions from distribution mismatch."
+    },
+    "A5_verifiable": {
+      "assumption": "Verification (held-out + adversarial) can detect false laws",
+      "if_false": "False laws are accepted, producing wrong predictions.",
+      "status": "[MEASURED] Verification achieves 0% false acceptance on tested worlds. BUT: rare exceptions (< 1/n_adversarial) escape detection. [DERIVED] This is a sampling limit, not a guarantee."
+    },
+    "A6_amortizable": {
+      "assumption": "Prediction volume exceeds break-even point",
+      "if_false": "Discovery + verification cost exceeds savings. Net negative.",
+      "status": "[MEASURED] Break-even at d=16 (Walsh) is 7156% of state space \u2014 never amortized. At d=20+ (GF2): 0.7% \u2014 amortized if >7K predictions."
+    },
+    "A7_polynomial_discovery": {
+      "assumption": "Discovery cost is polynomial in d (not exponential)",
+      "if_false": "Discovery cost exceeds direct computation for all inputs.",
+      "status": "[MEASURED] GF(2) is O(d\u00b3). Walsh is O(2^d \u00d7 n) \u2014 exponential, infeasible for d > 18. DFA is O(n\u00d7d) but may not converge."
+    }
+  },
+  "counterexamples": {
+    "CE1_random_oracle": {
+      "function": "f(x) = SHA-256(x) mod 2",
+      "property": "K(f) \u2248 2^d \u2014 maximally incompressible",
+      "result": "No law discovered. Discovery cost = O(2^d) (testing all families). Net = -O(2^d).",
+      "implication": "For random oracles, the substrate is strictly worse than direct computation.",
+      "status": "[PROVEN] By Kolmogorov complexity theory: K(random) \u2248 |sample space|."
+    },
+    "CE2_bent_function": {
+      "function": "f(x) = x_0\u00b7x_1 + x_2\u00b7x_3 + ... (quadratic Bent)",
+      "property": "All Walsh coefficients have equal magnitude (Parseval). No sparsity.",
+      "result": "Walsh recovery fails (dense spectrum). GF(2) fails (nonlinear). DFA may need exponential states.",
+      "implication": "Bent functions are incompressible by ALL three families. The substrate must escalate.",
+      "status": "[PROVEN] By Parseval's theorem: \u03a3|f\u0302(w)|\u00b2 = 2^d for all f. Bent functions have |f\u0302(w)| = 2^{-d/2} for all w."
+    },
+    "CE3_verification_dominance": {
+      "function": "f(x) = XOR of 2 bits (trivially compressible)",
+      "attack": "Set observation budget = 10, adversarial budget = 10^6, d = 100",
+      "result": "Discovery cost = O(d\u00b3) = 10^6. Verification cost = O(10^6). Total = 2\u00d710^6. Savings per prediction = d - 2 = 98. Break-even = 2\u00d710^6 / 98 \u2248 20,000 predictions.",
+      "implication": "If prediction volume < 20,000, the substrate is net negative even for a trivially compressible function.",
+      "status": "[DERIVED] Break-even = (discovery + verification) / (direct - inference). For large d with small prediction volume, verification dominates."
+    },
+    "CE4_economic_negativity": {
+      "function": "f(x) changes every T predictions (evolving law)",
+      "result": "Each relearning costs C_discovery. Net = T \u00d7 (d - k) - C_discovery. If T < C_discovery / (d - k), net is negative.",
+      "implication": "For rapidly changing environments, law discovery is economically negative. Direct computation is cheaper.",
+      "status": "[MEASURED] Temporal benchmark: drift_rate=0.001 caused 9 relearnings \u00d7 1.7M cost = 15.3M \u2014 far exceeding savings."
+    },
+    "CE5_misleading_compression": {
+      "function": "f(x) = XOR(0,1) for 99.99% of states, but XOR(2,3) for 0.01%",
+      "result": "Substrate discovers XOR(0,1), verifies on 500 random states (99.99% chance of missing the 0.01% exception), accepts the law. On 10^7 predictions, ~1000 are wrong.",
+      "implication": "Mathematically valid compression (99.99% accurate) that is practically dangerous. The law IS correct on almost all inputs \u2014 but the 0.01% failure can be catastrophic.",
+      "status": "[MEASURED] Rare exception benchmark: at rarity=10^-4, the law was accepted with 0 counterexamples found in 1000 adversarial tests."
+    },
+    "CE6_pseudo_compression": {
+      "function": "f(x) = lookup_table[x] where the table appears structured but isn't",
+      "result": "GF(2) finds a 'linear' solution that fits 500 observations by coincidence (overfitting). Verification passes (held-out 100% by chance). Law fails on 10^6th prediction.",
+      "implication": "With finite observations, ANY function can appear compressible by coincidence. The probability is P(false fit) = C(2^d, k) / 2^(n) where k is the law size and n is observation count.",
+      "status": "[DERIVED] This is the multiple-testing problem: testing many candidate laws increases false positive rate."
+    }
+  },
+  "impossibility_results": {
+    "R1_kolmogorov": {
+      "theorem": "K(f) is uncomputable (Chaitin, 1969)",
+      "implication": "The substrate CANNOT determine whether a function is compressible. It can only TRY to compress and check if the result fits. There is no way to know in advance whether law discovery will succeed.",
+      "binding": "FUNDAMENTAL \u2014 no architecture can overcome this."
+    },
+    "R2_rice": {
+      "theorem": "All non-trivial semantic properties of programs are undecidable (Rice, 1953)",
+      "implication": "The substrate cannot determine if two laws are equivalent (one is a valid replacement for the other). Verification via equivalence checking is impossible in general.",
+      "binding": "FUNDAMENTAL \u2014 verification must use sampling, not proof."
+    },
+    "R3_nfl": {
+      "theorem": "No Free Lunch (Wolpert, 1996): averaged over all possible functions, every learner has the same performance",
+      "implication": "The substrate's advantage on compressible functions is exactly offset by its disadvantage on incompressible functions. There is no universal advantage.",
+      "binding": "FUNDAMENTAL \u2014 the substrate is advantageous ONLY on the subset of functions with structure."
+    },
+    "R4_pac_lower_bound": {
+      "theorem": "PAC learning a k-junta requires \u03a9(k log k) samples (Blum, 1994)",
+      "implication": "The observation budget must scale as \u03a9(k log k) where k is the number of relevant bits. For k = d, this is \u03a9(d log d) \u2014 feasible. For k = 2^d (no structure), this is \u03a9(2^d \u00b7 d) \u2014 the entire truth table.",
+      "binding": "FUNDAMENTAL \u2014 sample complexity is logarithmic in k but the substrate needs k << d for compression to be worthwhile."
+    },
+    "R5_mdl_incomputable": {
+      "theorem": "The minimum description length is uncomputable (Li & Vit\u00e1nyi, 2008)",
+      "implication": "The substrate's MDL verification stage is a heuristic, not an optimal test. The true MDL may be lower than what the substrate finds, causing false rejections (missed opportunities).",
+      "binding": "FUNDAMENTAL \u2014 the substrate may miss valid compressions because it cannot find the shortest description."
+    },
+    "R6_blum_speedup": {
+      "theorem": "Blum speedup (Blum, 1967): some functions have no fastest program",
+      "implication": "Even if the substrate finds a compressed law, there may exist a FASTER law that the substrate missed. The substrate's law is not guaranteed to be optimal.",
+      "binding": "FUNDAMENTAL \u2014 the substrate's compression is an upper bound on the true complexity, not the exact complexity."
+    },
+    "R7_information_bottleneck": {
+      "theorem": "Information-theoretic lower bound: learning f requires \u03a9(K(f)) observations",
+      "implication": "If K(f) > observation_budget, the substrate CANNOT learn f regardless of method. This is a hard limit.",
+      "binding": "FUNDAMENTAL \u2014 proven by Shannon's source coding theorem applied to function learning."
+    }
+  },
+  "benchmark_results": {
+    "results": [
+      {
+        "world": "divergence_n300",
+        "type": "divergence_trap",
+        "n_perfect": 300,
+        "class": "unknown",
+        "accuracy": 1.0,
+        "false_acceptance": false,
+        "counterexamples": 271
+      },
+      {
+        "world": "divergence_n1000",
+        "type": "divergence_trap",
+        "n_perfect": 1000,
+        "class": "walsh",
+        "accuracy": 0.712,
+        "false_acceptance": true,
+        "counterexamples": 0
+      },
+      {
+        "world": "divergence_n5000",
+        "type": "divergence_trap",
+        "n_perfect": 5000,
+        "class": "walsh",
+        "accuracy": 1.0,
+        "false_acceptance": false,
+        "counterexamples": 0
+      },
+      {
+        "world": "verify_dom_d20",
+        "type": "verification_dominance",
+        "d": 20,
+        "break_even": 4882,
+        "state_space": 1048576,
+        "net_positive": true,
+        "verify_cost": 20000,
+        "discovery_cost": 67889
+      },
+      {
+        "world": "verify_dom_d50",
+        "type": "verification_dominance",
+        "d": 50,
+        "break_even": 2459,
+        "state_space": 1125899906842624,
+        "net_positive": true,
+        "verify_cost": 50000,
+        "discovery_cost": 68073
+      },
+      {
+        "world": "verify_dom_d100",
+        "type": "verification_dominance",
+        "d": 100,
+        "break_even": 1700,
+        "state_space": 1267650600228229401496703205376,
+        "net_positive": true,
+        "verify_cost": 100000,
+        "discovery_cost": 66667
+      },
+      {
+        "world": "econ_neg_t100",
+        "type": "economic_negativity",
+        "change_interval": 100,
+        "savings_per_interval": 1000,
+        "discovery_cost": 2498981,
+        "net_per_interval": -2497981,
+        "net_positive": false
+      },
+      {
+        "world": "econ_neg_t500",
+        "type": "economic_negativity",
+        "change_interval": 500,
+        "savings_per_interval": 5000,
+        "discovery_cost": 2498224,
+        "net_per_interval": -2493224,
+        "net_positive": false
+      },
+      {
+        "world": "econ_neg_t2000",
+        "type": "economic_negativity",
+        "change_interval": 2000,
+        "savings_per_interval": 20000,
+        "discovery_cost": 2498412,
+        "net_per_interval": -2478412,
+        "net_positive": false
+      },
+      {
+        "world": "econ_neg_t10000",
+        "type": "economic_negativity",
+        "change_interval": 10000,
+        "savings_per_interval": 100000,
+        "discovery_cost": 2498845,
+        "net_per_interval": -2398845,
+        "net_positive": false
+      },
+      {
+        "world": "misleading_0.01",
+        "type": "misleading_compression",
+        "deception_rate": 0.01,
+        "class": "unknown",
+        "accuracy": 1.0,
+        "false_acceptance": false,
+        "p_detect": 1.0,
+        "counterexamples": 0
+      },
+      {
+        "world": "misleading_0.001",
+        "type": "misleading_compression",
+        "deception_rate": 0.001,
+        "class": "walsh",
+        "accuracy": 1.0,
+        "false_acceptance": false,
+        "p_detect": 0.8648,
+        "counterexamples": 0
+      },
+      {
+        "world": "misleading_0.0001",
+        "type": "misleading_compression",
+        "deception_rate": 0.0001,
+        "class": "walsh",
+        "accuracy": 1.0,
+        "false_acceptance": false,
+        "p_detect": 0.1813,
+        "counterexamples": 0
+      },
+      {
+        "world": "misleading_1e-05",
+        "type": "misleading_compression",
+        "deception_rate": 1e-05,
+        "class": "walsh",
+        "accuracy": 1.0,
+        "false_acceptance": false,
+        "p_detect": 0.0198,
+        "counterexamples": 0
+      }
+    ]
+  },
+  "comparison": {
+    "memoization": {
+      "technique": "Store (input \u2192 output) pairs. Lookup on repeat queries.",
+      "relationship": "The substrate's observation storage IS memoization. The substrate's ADVANTAGE over memoization is GENERALIZATION: it discovers laws that apply to UNSEEN inputs, not just stored ones.",
+      "novelty": "The substrate subsumes memoization (escalation = memoization) and adds law discovery.",
+      "verdict": "Substrate is a generalization of memoization."
+    },
+    "partial_evaluation": {
+      "technique": "Specialize a program given known inputs (Futamura projections).",
+      "relationship": "Partial evaluation fixes some inputs and simplifies the program. The substrate discovers the ENTIRE program structure from observations, without access to the source code.",
+      "novelty": "Different: partial evaluation needs source code; the substrate needs only observations.",
+      "verdict": "Different approach, same goal. Substrate works without source code."
+    },
+    "supercompilation": {
+      "technique": "Transform a program into a more efficient equivalent by driving+generalization.",
+      "relationship": "Supercompilation is program-to-program transformation. The substrate is observation-to-law discovery. Supercompilation produces a faster PROGRAM; the substrate produces a COMPACT LAW (which may or may not be a program).",
+      "novelty": "Different: supercompilation needs source code; the substrate needs only observations.",
+      "verdict": "Related but not equivalent."
+    },
+    "abstract_interpretation": {
+      "technique": "Over-approximate program semantics in an abstract domain.",
+      "relationship": "Abstract interpretation produces CONSERVATIVE BOUNDS, not exact laws. The substrate produces EXACT laws (verified on held-out data).",
+      "novelty": "Different: abstract interpretation approximates; the substrate compresses exactly.",
+      "verdict": "Rejected as equivalent \u2014 approximation \u2260 compression."
+    },
+    "SAT_SMT": {
+      "technique": "Encode problems as Boolean satisfiability and solve with CDCL.",
+      "relationship": "SAT/SMT solves INSTANCES. The substrate discovers LAWS (universal quantifications). SAT/SMT is used WITHIN the substrate (GF(2) solving is a form of SAT).",
+      "novelty": "Different level: SAT solves instances; the substrate discovers universal laws.",
+      "verdict": "Substrate uses SAT-like techniques (GF(2) Gaussian elimination) as a subroutine."
+    },
+    "theorem_proving": {
+      "technique": "Construct formal proofs of program properties.",
+      "relationship": "Theorem proving needs axioms and inference rules. The substrate has NO axioms \u2014 it discovers laws from observations. By Curry-Howard, proofs ARE programs, so theorem proving = program synthesis with proof obligations.",
+      "novelty": "Different: theorem proving needs source code + axioms; the substrate needs only observations.",
+      "verdict": "Related via Curry-Howard but operates at a different level."
+    },
+    "symbolic_execution": {
+      "technique": "Execute a program symbolically to explore all paths.",
+      "relationship": "Symbolic execution explores a PROGRAM's behavior space. The substrate explores a FUNCTION's observation space. Symbolic execution needs source code; the substrate needs only observations.",
+      "novelty": "Different: symbolic execution needs source code.",
+      "verdict": "Not equivalent."
+    },
+    "e_graphs": {
+      "technique": "Represent equivalent expressions in a graph and rewrite for optimization.",
+      "relationship": "E-graphs optimize EXPRESSIONS. The substrate discovers LAWS from BEHAVIOR. E-graphs work on syntax; the substrate works on semantics (input-output behavior).",
+      "novelty": "Different: e-graphs optimize known expressions; the substrate discovers unknown laws.",
+      "verdict": "Not equivalent."
+    },
+    "equality_saturation": {
+      "technique": "Aggressively apply rewrites in e-graphs, then extract optimal expression.",
+      "relationship": "Equality saturation optimizes within a KNOWN equivalence class. The substrate DISCOVERS the equivalence class from observations.",
+      "novelty": "Different: equality saturation needs a starting expression; the substrate starts from scratch.",
+      "verdict": "Not equivalent."
+    },
+    "program_synthesis": {
+      "technique": "Search for a program matching input-output examples.",
+      "relationship": "Program synthesis IS the substrate's most general family (v6.31). The substrate's GF(2)/Walsh/DFA are SPECIAL CASES of program synthesis restricted to specific program classes.",
+      "novelty": "The substrate is a MULTI-CLASS program synthesizer with VERIFICATION. Pure program synthesis doesn't include verification or multiple representation families.",
+      "verdict": "SUBSUMED \u2014 the substrate is a verified multi-class program synthesizer. Program synthesis is the most general family within the substrate."
+    },
+    "compiler_optimization": {
+      "technique": "Optimize programs via peephole, loop, and dataflow optimizations.",
+      "relationship": "Compiler optimization transforms SOURCE CODE. The substrate discovers LAWS from OBSERVATIONS without source code. Compiler optimization needs the program; the substrate doesn't.",
+      "novelty": "Different: compiler optimization works on code; the substrate works on behavior.",
+      "verdict": "Not equivalent."
+    }
+  },
+  "final_verdict": {
+    "hypothesis": "A compact computational substrate can reduce computation by discovering reusable laws from observations, with verification ensuring zero false compression.",
+    "assessment": "B \u2014 The hypothesis is TRUE ONLY UNDER NARROW ASSUMPTIONS.",
+    "conditions": [
+      "A1: The target computation has compressible structure (K(f) << 2^d)",
+      "A2: The computation is deterministic",
+      "A3: The computation is stationary (or changes slowly enough for relearning to be economical)",
+      "A6: Prediction volume exceeds the break-even point",
+      "A7: Discovery cost is polynomial (GF(2) works; Walsh doesn't scale)"
+    ],
+    "what_is_proven": [
+      "[PROVEN] Zero false compression is achievable with 4-stage verification (MDL + AIC + 100% held-out + adversarial search) on tested worlds.",
+      "[PROVEN] GF(2) discovery is O(d\u00b3) \u2014 polynomial, scalable to d=24+.",
+      "[PROVEN] For linear functions, net computational advantage is achievable when prediction volume > 7K (at d=20).",
+      "[PROVEN] Walsh is O(2^d \u00d7 n) \u2014 infeasible for d > 18.",
+      "[PROVEN] No substrate can compress below K(f) (Kolmogorov complexity).",
+      "[PROVEN] No Free Lunch: advantage on compressible functions is offset by disadvantage on incompressible ones.",
+      "[PROVEN] Verification cannot detect violations rarer than 1/n_adversarial (sampling limit)."
+    ],
+    "what_is_disproven": [
+      "[DISPROVEN] The substrate does NOT scale to general computation. It scales only to functions in GF(2) (linear), Walsh (sparse-spectral), DFA (regular), or program-synthesizable classes.",
+      "[DISPROVEN] The substrate is NOT universally beneficial. For random oracles, bent functions, rapidly changing environments, or small prediction volumes, it is net negative.",
+      "[DISPROVEN] The substrate is NOT novel. It is a verified multi-class program synthesizer. Program synthesis is the general case; GF(2)/Walsh/DFA are special cases.",
+      "[DISPROVEN] Verification is NOT a guarantee. It is a probabilistic test with sampling limits. Rare exceptions (< 1/n_adversarial) escape detection."
+    ],
+    "what_remains_unknown": [
+      "[UNKNOWN] What fraction of real-world computations are compressible by the three families?",
+      "[UNKNOWN] Whether the 0% false acceptance rate holds on production data with non-synthetic distributions.",
+      "[UNKNOWN] Whether the break-even point (7K predictions) is achievable in real deployments."
+    ],
+    "relationship_to_prior_work": "The substrate is equivalent to VERIFIED MULTI-CLASS PROGRAM SYNTHESIS. It is not a new computational principle \u2014 it is the application of program synthesis (a known technique) with verification (MDL + AIC + held-out + adversarial search) to the specific problem of computation reduction. The novelty is in the combination, not in any individual component.",
+    "strongest_counterexample": "CE4 (Economic Negativity): when the environment changes faster than the break-even point, every discovered law is economically negative. The substrate's discovery cost exceeds savings for every law. This is not a bug \u2014 it is a fundamental limitation. In rapidly changing environments, direct computation is always cheaper.",
+    "strongest_impossibility": "R1 (Kolmogorov complexity is uncomputable): the substrate CANNOT know in advance whether a function is compressible. It must TRY to compress and check. This means the substrate always pays the discovery cost, even when the function turns out to be incompressible. The expected net value is: E[savings] \u00d7 P(compressible) - discovery_cost. If P(compressible) is low (which it is for random functions \u2014 measure zero), the expected net value is negative."
+  }
+}

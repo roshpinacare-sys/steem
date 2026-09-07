@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "release": "Titai Canonical Agent Platform v10 Hardening English",
+  "generatedAt": "2026-07-10T21:42:39.246773Z",
+  "executionProfile": {
+    "securitySensitiveWorkstation": true,
+    "powershellUsed": false,
+    "endpointProtectionDisabled": false,
+    "opaqueExecutableDownloaded": false,
+    "npmPostInstallScriptsEnabled": false
+  },
+  "summary": {
+    "canonicalValidation": "passed",
+    "englishOnlyValidation": "passed",
+    "sourceLint": "passed",
+    "typecheck": "passed",
+    "migrationValidation": "passed",
+    "safeTests": "passed",
+    "durableTests": "passed",
+    "durableProof": "passed",
+    "baselineEvaluation": "passed",
+    "roastStatic": "partial",
+    "roastRegistryValidation": "passed",
+    "releaseAudit": "passed",
+    "nativeDatabaseTests": "environment_blocked",
+    "productionBuild": "environment_blocked",
+    "playwrightE2E": "not_run"
+  },
+  "counts": {
+    "tasks": 52,
+    "claims": 58,
+    "sources": 28,
+    "adrs": 23,
+    "coverageDomains": 28,
+    "experiments": 15,
+    "migrationFiles": 3,
+    "requiredTablesChecked": 10,
+    "safeTestFilesPassed": 24,
+    "safeTestsPassed": 85,
+    "durableTestFilesPassed": 5,
+    "durableTestsPassed": 12,
+    "baselineEvaluationPassed": 8,
+    "baselineEvaluationTotal": 8,
+    "roastStaticPassed": 26,
+    "roastStaticTotal": 27,
+    "roastFindings": 50,
+    "projectKillers": 20,
+    "roastStatusCounts": {
+      "open": 4,
+      "partially_mitigated": 25,
+      "fixed_in_v8": 13,
+      "fixed_in_v10": 6,
+      "environment_blocked": 2
+    }
+  },
+  "durableProof": {
+    "result": "verified",
+    "injectedCrashObserved": true,
+    "sideEffectCount": 1,
+    "attemptCount": 2,
+    "evidenceHash": "8b7e780af983c618b6105c9a04b784e6d4e562e54367644a6b6df15a1b218567"
+  },
+  "build": {
+    "compile": "passed",
+    "compileSeconds": 30.7,
+    "typeValidityPhase": "passed",
+    "pageDataCollection": "blocked",
+    "blocker": "Missing better-sqlite3 native binding because dependency post-install scripts were intentionally disabled.",
+    "telemetryDisabledByWrapper": true,
+    "evidence": "docs/canonical/evidence/v10-build.txt"
+  },
+  "nativeTestBoundary": {
+    "suites": [
+      "tests/approval-expiry.test.ts",
+      "tests/audit.test.ts",
+      "tests/runner.integration.test.ts"
+    ],
+    "testsCollected": 0,
+    "blocker": "Missing better-sqlite3 native binding.",
+    "evidence": "docs/canonical/evidence/v10-native-tests.txt"
+  },
+  "evidence": {
+    "gateLogs": "docs/canonical/evidence/v10-gates/",
+    "engineeringReport": "docs/canonical/27_V10_HARDENING_ENGINEERING_REPORT.md",
+    "evidenceIndex": "docs/canonical/28_V10_EVIDENCE_INDEX.md",
+    "roastAddendum": "docs/roast/V10_HARDENING_ADDENDUM.md"
+  },
+  "verificationStatus": "implemented_independent_verification_pending"
+}

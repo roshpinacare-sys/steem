@@ -1,0 +1,92 @@
+{
+  "generatedAt": "2026-07-11T10:30:00.000Z",
+  "models": [
+    {
+      "id": "deterministic-local-v1",
+      "provider": "simulation",
+      "model": "deterministic-local-v1",
+      "displayName": "Deterministic Local Runtime",
+      "enabled": true,
+      "local": true,
+      "license": "Repository source license",
+      "contextTokens": 8192,
+      "supportsTools": true,
+      "supportsStructuredOutput": true,
+      "structuredOutputReliability": 1,
+      "toolReliability": 1,
+      "planningQuality": 0.5,
+      "codeQuality": 0.5,
+      "verificationQuality": 0.5,
+      "healthState": "healthy",
+      "availability": 1,
+      "failureRate": 0,
+      "latencyMs": 10,
+      "costPerMillionInput": 0,
+      "costPerMillionOutput": 0,
+      "energyWhPerMillionTokens": 1,
+      "privacyScore": 1,
+      "sovereigntyScore": 1,
+      "evaluationConfidence": 1,
+      "evaluatedAt": "2026-07-11T10:30:00.000Z",
+      "artifactHash": "d1956da4e9d23554d15b28f5c6ad4710554ecab53ec9cb8cb48137bf721f773a",
+      "modelFamily": "deterministic",
+      "artifactFormat": "builtin-source",
+      "minimumRamBytes": 134217728,
+      "supportedCpuArchitectures": [
+        "x64"
+      ],
+      "startupMs": 1,
+      "tokensPerSecond": 500,
+      "locality": "local_authoritative",
+      "requiresCommercialKey": false,
+      "runtimeAdapter": "deterministic-local-runtime"
+    },
+    {
+      "id": "local-medium-profile",
+      "provider": "simulation",
+      "model": "local-medium-profile",
+      "displayName": "Medium Local Model Profile (not executed)",
+      "enabled": true,
+      "local": true,
+      "license": "Repository source license",
+      "contextTokens": 8192,
+      "supportsTools": true,
+      "supportsStructuredOutput": true,
+      "structuredOutputReliability": 1,
+      "toolReliability": 1,
+      "planningQuality": 0.72,
+      "codeQuality": 0.68,
+      "verificationQuality": 0.65,
+      "healthState": "unavailable",
+      "availability": 1,
+      "failureRate": 0,
+      "latencyMs": 10,
+      "costPerMillionInput": 0,
+      "costPerMillionOutput": 0,
+      "energyWhPerMillionTokens": 1,
+      "privacyScore": 1,
+      "sovereigntyScore": 1,
+      "evaluationConfidence": 0.2,
+      "evaluatedAt": "2026-07-11T10:30:00.000Z",
+      "modelFamily": "open-weight-placeholder",
+      "artifactFormat": "gguf",
+      "minimumRamBytes": 10737418240,
+      "supportedCpuArchitectures": [
+        "x64"
+      ],
+      "startupMs": 12000,
+      "tokensPerSecond": 12,
+      "locality": "local_authoritative",
+      "requiresCommercialKey": false,
+      "runtimeAdapter": "deterministic-local-runtime",
+      "quantization": "Q4_K_M",
+      "artifactBytes": 5368709120
+    }
+  ],
+  "executedModels": [
+    "deterministic-local-v1"
+  ],
+  "unexecutedProfiles": [
+    "local-medium-profile"
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "schemaVersion": "1.0.0",
+  "version": "33.56",
+  "generatedAt": "2026-07-24T07:30:00.000Z",
+  "promotionOrder": [
+    "G0",
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7",
+    "G8"
+  ],
+  "gates": [
+    {
+      "id": "G0",
+      "name": "Truth baseline",
+      "status": "passed",
+      "requiredEvidence": [
+        "clean-build",
+        "complete-test-inventory",
+        "test-runner-clean-exit",
+        "archive-digests",
+        "reproducibility-capsule"
+      ],
+      "passCriteria": [
+        "build exit 0",
+        "all discovered tests pass",
+        "authoritative runner exits without force-exit or timeout",
+        "source archive digests pinned"
+      ],
+      "currentFinding": "Three consecutive canonical runs passed 1167/1167 with exit 0 and no timeout/force-exit; the 24-step v32.18 authoritative validation passed after V33 overlay governance was isolated from the v32.18 namespace.",
+      "evidenceRefs": [
+        "release-evidence/v33.0/V33_0_G0_CLOSURE.json",
+        "evidence/runs/v33-g0-authoritative-2/V32_18_EXECUTION_COMPLETION.json"
+      ]
+    },
+    {
+      "id": "G1",
+      "name": "Canonical convergence",
+      "status": "passed",
+      "requiredEvidence": [
+        "source-system-registry",
+        "authority-conflict-map",
+        "contract-registry",
+        "research-boundary",
+        "domain-pack-boundary"
+      ],
+      "passCriteria": [
+        "one canonical authority",
+        "one effect ledger",
+        "one evidence vocabulary",
+        "no unresolved competing promotion engines"
+      ],
+      "currentFinding": "Canonical ownership is resolved for identity, authority, policy, effect truth, evidence, promotion, reviewer trust, research and domain packs. No unresolved authority conflicts remain.",
+      "evidenceRefs": [
+        "v33/governance-state/AUTHORITY_CONFLICT_MAP_V33.json",
+        "v33/governance-state/CONTRACT_REGISTRY_V33.json",
+        "v33/governance-state/CANONICAL_CAPABILITY_MAP_V33.json",
+        "docs/V33_RESEARCH_BOUNDARY.md",
+        "docs/V33_DOMAIN_PACK_BOUNDARY.md"
+      ]
+    },
+    {
+      "id": "G2",
+      "name": "Category and buyer proof",
+      "status": "in-progress",
+      "requiredEvidence": [
+        "structured-interviews",
+        "design-partner-letters",
+        "paid-pilot-evidence",
+        "competitor-displacement-tests"
+      ],
+      "passCriteria": [
+        "15 interviews",
+        "5 urgent funded problem confirmations",
+        "3 design partners",
+        "2 paid pilots"
+      ],
+      "prototypeStatus": "signed-buyer-evidence-contract-and-design-partner-gate-ready-no-external-evidence-imported",
+      "prototypeEvidenceRefs": [
+        "src/product/controlled-pilot-and-market-v33_7.ts",
+        "tests/controlled-pilot-and-market-v33_7.test.ts",
+        "docs/V33_7_CONTROLLED_PILOT_PROVIDER_AND_BUYER_VALIDATION.md",
+        "pilot-kits/v33.7/BUYER_VALIDATION_RUNBOOK.md"
+      ],
+      "currentFinding": "Machine-verifiable buyer evidence contracts and runbooks exist, but imported evidence remains 0/15 interviews, 0/5 urgent funded confirmations, 0/3 design partners and 0/2 paid pilots."
+    },
+    {
+      "id": "G3",
+      "name": "Chat and push UX proof",
+      "status": "in-progress",
+      "requiredEvidence": [
+        "task-flow-study",
+        "approval-comprehension-study",
+        "accessibility-results",
+        "authority-preservation-tests"
+      ],
+      "passCriteria": [
+        ">=70% fewer user steps",
+        "median <=1 approval for ordinary workflow",
+        "approval understood in <10 seconds",
+        "no learned authority expansion"
+      ],
+      "prototypeStatus": "expired-coordinator-takeover-and-loopback-multiprocess-retrieval-proven-external-deployment-and-human-study-not-executed",
+      "prototypeEvidenceRefs": [
+        "src/product/chat-mission.ts",
+        "tests/chat-mission-v33_1.test.ts",
+        "release-evidence/v33.1/V33_1_CHAT_MISSION_PROOF.json",
+        "src/product/mission-conversation-v33_2.ts",
+        "tests/mission-conversation-v33_2.test.ts",
+        "release-evidence/v33.2/V33_2_MISSION_CONTINUITY_PROOF.json",
+        "src/product/device-push-v33_3.ts",
+        "tests/device-push-v33_3.test.ts",
+        "release-evidence/v33.3/V33_3_DEVICE_PUSH_PROOF.json",
+        "docs/V33_3_DEVICE_BOUND_PUSH_AND_USER_FLOW.md",
+        "src/product/reliable-push-v33_4.ts",
+        "tests/reliable-push-v33_4.test.ts",
+        "release-evidence/v33.4/V33_4_RELIABLE_PUSH_PROOF.json",
+        "docs/V33_4_TRANSPORT_NEUTRAL_RELIABLE_PUSH.md",
+        "src/product/push-adapter-qualification-v33_5.ts",
+        "tests/push-adapter-qualification-v33_5.test.ts",
+        "release-evidence/v33.5/V33_5_PUSH_ADAPTER_QUALIFICATION_PROOF.json",
+        "docs/V33_5_PUSH_ADAPTER_QUALIFICATION_AND_MOBILE_SIMULATOR.md",
+        "src/product/human-pilot-readiness-v33_6.ts",
+        "src/web/pwa-approval-server-v33_6.ts",
+        "tests/human-pilot-readiness-v33_6.test.ts",
+        "release-evidence/v33.6/V33_6_HUMAN_PILOT_READINESS_PROOF.json",
+        "docs/V33_6_HUMAN_PILOT_READINESS_AND_EXTERNAL_PROVIDER_KIT.md",
+        "src/product/controlled-pilot-and-market-v33_7.ts",
+        "tests/controlled-pilot-and-market-v33_7.test.ts",
+        "docs/V33_7_CONTROLLED_PILOT_PROVIDER_AND_BUYER_VALIDATION.md",
+        "pilot-kits/v33.7/CONTROLLED_HUMAN_PILOT_RUNBOOK.md",
+        "pilot-kits/v33.7/EXTERNAL_PROVIDER_QUALIFICATION_RUNBOOK.md",
+        "src/app/controlled-human-ux-pilot-v33_30.ts",
+        "tests/controlled-human-ux-pilot-v33_30.test.ts",
+        "scripts/controlled-human-ux-pilot-proof-v33_30.mjs",
+        "release-evidence/v33.30/V33_30_CONTROLLED_HUMAN_UX_PILOT_PROOF.json",
+        "release-evidence/v33.30/V33_30_SYNTHETIC_UX_VERDICT.json",
+        "pilot-kits/v33.30/human-ux-pilot/RUNBOOK.md",
+        "docs/V33_30_CONTROLLED_HUMAN_UX_PILOT_INSTRUMENTATION.md",
+        "src/app/external-human-pilot-evidence-import-v33_31.ts",
+        "tests/external-human-pilot-evidence-import-v33_31.test.ts",
+        "scripts/external-human-pilot-evidence-import-proof-v33_31.mjs",
+        "scripts/verify-external-human-pilot-evidence-import-v33_31.mjs",
+        "release-evidence/v33.31/V33_31_EXTERNAL_HUMAN_PILOT_IMPORT_PROOF.json",
+        "release-evidence/v33.31/V33_31_SYNTHETIC_QUALIFICATION_VERDICT.json",
+        "pilot-kits/v33.31/external-human-pilot-import/RUNBOOK.md",
+        "docs/V33_31_EXTERNAL_HUMAN_PILOT_EVIDENCE_IMPORT.md",
+        "src/app/federated-human-pilot-checkpoint-v33_32.ts",
+        "tests/federated-human-pilot-checkpoint-v33_32.test.ts",
+        "scripts/federated-human-pilot-checkpoint-proof-v33_32.mjs",
+        "scripts/verify-federated-human-pilot-checkpoint-v33_32.mjs",
+        "release-evidence/v33.32/V33_32_FEDERATED_CHECKPOINT_PROOF.json",
+        "pilot-kits/v33.32/federated-human-pilot/RUNBOOK.md",
+        "docs/V33_32_FEDERATED_HUMAN_PILOT_CHECKPOINT.md",
+        "src/app/federated-checkpoint-continuity-v33_33.ts",
+        "tests/federated-checkpoint-continuity-v33_33.test.ts",
+        "scripts/federated-checkpoint-continuity-proof-v33_33.mjs",
+        "scripts/verify-federated-checkpoint-continuity-v33_33.mjs",
+        "release-evidence/v33.33/V33_33_CONTINUITY_PROOF.json",
+        "release-evidence/v33.33/V33_33_INDEPENDENT_VERIFICATION.json",
+        "pilot-kits/v33.33/checkpoint-continuity/RUNBOOK.md",
+        "docs/V33_33_FEDERATED_CHECKPOINT_CONTINUITY.md",
+        "src/app/expired-coordinator-takeover-v33_35.ts",
+        "tests/expired-coordinator-takeover-v33_35.test.ts",
+        "scripts/expired-coordinator-takeover-proof-v33_35.mjs",
+        "scripts/verify-expired-coordinator-takeover-v33_35.mjs",
+        "release-evidence/v33.35/V33_35_EXPIRED_TAKEOVER_PROOF.json",
+        "release-evidence/v33.35/V33_35_INDEPENDENT_VERIFICATION.json",
+        "pilot-kits/v33.35/expired-coordinator-takeover/RUNBOOK.md",
+        "docs/V33_35_EXPIRED_COORDINATOR_TAKEOVER.md"
+      ],
+      "currentFinding": "V33.37 locally proves a signed deployment kit and exact evidence import with durable recovery. No external host or human participant was observed; G3 remains in progress.",
+      "currentEvidence": [
+        "src/app/external-https-monitor-qualification-v33_36.ts",
+        "tests/external-https-monitor-qualification-v33_36.test.ts",
+        "release-evidence/v33.36/V33_36_HTTPS_MONITOR_QUALIFICATION_PROOF.json",
+        "release-evidence/v33.36/V33_36_INDEPENDENT_VERIFICATION.json",
+        "docs/V33_36_EXTERNAL_HTTPS_MONITOR_QUALIFICATION.md"
+      ],
+      "evidence": [
+        "release-evidence/v33.37/V33_37_EXTERNAL_DEPLOYMENT_IMPORT_PROOF.json",
+        "release-evidence/v33.37/V33_37_INDEPENDENT_VERIFICATION.json"
+      ]
+    },
+    {
+      "id": "G4",
+      "name": "Governed engineering product proof",
+      "status": "in-progress",
+      "requiredEvidence": [
+        "real-repository-missions",
+        "effect-receipts",
+        "rollback-game-days",
+        "independent-review",
+        "malicious-repository-campaign"
+      ],
+      "passCriteria": [
+        "3 repositories",
+        "30 missions",
+        "0 unauthorized effects",
+        "100% evidence closure",
+        "reversible missions have verified rollback or compensation"
+      ],
+      "prototypeStatus": "executed-local-controls-and-external-isolation-kit-ready-not-external",
+      "prototypeEvidenceRefs": [
+        "src/repository/chat-engineering-vertical-v33_8.ts",
+        "tests/chat-engineering-vertical-v33_8.test.ts",
+        "release-evidence/v33.8/V33_8_CHAT_ENGINEERING_VERTICAL_PROOF.json",
+        "docs/V33_8_CHAT_TO_REVIEWED_PR_PROPOSAL.md",
+        "src/repository/multi-file-engineering-campaign-v33_9.ts",
+        "tests/multi-file-engineering-campaign-v33_9.test.ts",
+        "release-evidence/v33.9/V33_9_MULTI_FILE_SHADOW_GIT_CAMPAIGN_PROOF.json",
+        "release-evidence/v33.9/V33_9_CAMPAIGN_MISSION_RESULTS.json",
+        "docs/V33_9_MULTI_FILE_SHADOW_GIT_CAMPAIGN.md",
+        "src/repository/external-git-provider-qualification-v33_10.ts",
+        "tests/external-git-provider-qualification-v33_10.test.ts",
+        "release-evidence/v33.10/V33_10_EXTERNAL_GIT_PROVIDER_QUALIFICATION_PROOF.json",
+        "release-evidence/v33.10/V33_10_PROVIDER_REQUEST_TRACES.json",
+        "docs/V33_10_EXTERNAL_GIT_PROVIDER_QUALIFICATION.md",
+        "src/repository/malicious-repository-admission-v33_11.ts",
+        "tests/malicious-repository-admission-v33_11.test.ts",
+        "release-evidence/v33.11/V33_11_MALICIOUS_REPOSITORY_ADMISSION_PROOF.json",
+        "release-evidence/v33.11/V33_11_MALICIOUS_CORPUS_RESULTS.json",
+        "docs/V33_11_MALICIOUS_REPOSITORY_ADMISSION.md",
+        "src/repository/qualified-hostile-code-isolation-v33_12.ts",
+        "tests/qualified-hostile-code-isolation-v33_12.test.ts",
+        "release-evidence/v33.12/V33_12_QUALIFIED_HOSTILE_CODE_ISOLATION_PROOF.json",
+        "release-evidence/v33.12/V33_12_HOSTILE_EXECUTION_RESULTS.json",
+        "docs/V33_12_QUALIFIED_HOSTILE_CODE_ISOLATION.md",
+        "src/repository/isolation-runtime-contract-v33_13.ts",
+        "src/repository/qualified-hostile-code-orchestrator-v33_13.ts",
+        "tests/qualified-isolation-orchestration-v33_13.test.ts",
+        "release-evidence/v33.13/V33_13_QUALIFIED_ISOLATION_ORCHESTRATION_PROOF.json",
+        "docs/V33_13_RUNTIME_ADAPTER_AND_INDEPENDENT_VERIFICATION.md",
+        "src/isolation/external-isolation-qualification-v33_14.ts",
+        "tests/external-isolation-qualification-v33_14.test.ts",
+        "release-evidence/v33.14/V33_14_EXTERNAL_ISOLATION_QUALIFICATION_PROOF.json",
+        "docs/V33_14_EXTERNAL_ISOLATION_QUALIFICATION_KIT.md"
+      ],
+      "currentFinding": "Local repository admission, reviewed PR proposals, malicious corpus handling and isolation references are strong, but externally qualified progress remains 0/3 repositories and 0/30 missions. Unauthorized effects remain zero because external execution is blocked."
+    },
+    {
+      "id": "G5",
+      "name": "External trust qualification",
+      "status": "in-progress",
+      "requiredEvidence": [
+        "kms-hsm",
+        "workload-identity",
+        "postgres-ha-pitr",
+        "isolation",
+        "multi-host-slo",
+        "penetration-test",
+        "independent-witness"
+      ],
+      "passCriteria": [
+        "independent collector/reviewer/witness",
+        "0 unauthorized effects",
+        "declared recovery and revocation SLOs met"
+      ],
+      "prototypeStatus": "external-operator-ceremony-and-unanimous-witness-network-kit-ready-no-live-external-evidence",
+      "prototypeEvidenceRefs": [
+        "release-evidence/v33.12/V33_12_QUALIFIED_HOSTILE_CODE_ISOLATION_PROOF.json",
+        "release-evidence/v33.12/V33_12_HOSTILE_EXECUTION_RESULTS.json",
+        "docs/V33_12_QUALIFIED_HOSTILE_CODE_ISOLATION.md",
+        "src/repository/isolation-runtime-contract-v33_13.ts",
+        "src/repository/qualified-hostile-code-orchestrator-v33_13.ts",
+        "tests/qualified-isolation-orchestration-v33_13.test.ts",
+        "release-evidence/v33.13/V33_13_QUALIFIED_ISOLATION_ORCHESTRATION_PROOF.json",
+        "docs/V33_13_RUNTIME_ADAPTER_AND_INDEPENDENT_VERIFICATION.md",
+        "src/isolation/external-isolation-qualification-v33_14.ts",
+        "tests/external-isolation-qualification-v33_14.test.ts",
+        "release-evidence/v33.14/V33_14_EXTERNAL_ISOLATION_QUALIFICATION_PROOF.json",
+        "release-evidence/v33.14/V33_14_EXTERNAL_QUALIFICATION_CHALLENGE.json",
+        "external-qualification/v33.14/README.md",
+        "src/app/separate-process-lease-authority-v33_19.ts",
+        "src/cli/lease-authority-daemon-v33_19.ts",
+        "tests/separate-process-lease-authority-v33_19.test.ts",
+        "release-evidence/v33.19/V33_19_SEPARATE_PROCESS_MTLS_AUTHORITY_PROOF.json",
+        "docs/V33_19_SEPARATE_PROCESS_MTLS_AUTHORITY.md",
+        "src/app/postgres-durable-authority-v33_21.ts",
+        "tests/postgres-durable-authority-v33_21.test.ts",
+        "scripts/postgres-durable-authority-proof-v33_21.mjs",
+        "release-evidence/v33.21/V33_21_POSTGRES_DURABLE_AUTHORITY_PROOF.json",
+        "release-evidence/v33.21/V33_21_EXTERNAL_QUALIFICATION_CHALLENGE.json",
+        "external-qualification/v33.21/postgresql/RUNBOOK.md",
+        "docs/V33_21_POSTGRESQL_DURABLE_AUTHORITY_ADAPTER_AND_OPERATOR_KIT.md",
+        "src/app/evidence-intake-portal-v33_23.ts",
+        "tests/evidence-intake-portal-v33_23.test.ts",
+        "scripts/signed-evidence-intake-proof-v33_23.mjs",
+        "scripts/verify-offline-evidence-package-v33_23.mjs",
+        "release-evidence/v33.23/V33_23_SIGNED_EVIDENCE_INTAKE_PROOF.json",
+        "release-evidence/v33.23/V33_23_OFFLINE_VERIFICATION_VERDICT.json",
+        "external-qualification/v33.23/evidence-intake/RUNBOOK.md",
+        "docs/V33_23_SIGNED_EXTERNAL_EVIDENCE_INTAKE_AND_OFFLINE_VERIFIER.md",
+        "src/app/external-malware-airgap-v33_24.ts",
+        "tests/external-malware-airgap-v33_24.test.ts",
+        "scripts/external-malware-airgap-proof-v33_24.mjs",
+        "release-evidence/v33.24/V33_24_MALWARE_AIRGAP_PROOF.json",
+        "release-evidence/v33.24/V33_24_EXTERNAL_QUALIFICATION_VERDICT.json",
+        "external-qualification/v33.24/malware-airgap/RUNBOOK.md",
+        "docs/V33_24_EXTERNAL_MALWARE_SCANNER_AND_AIR_GAPPED_TRANSFER.md",
+        "src/app/signature-supply-scanner-federation-v33_25.ts",
+        "tests/signature-supply-scanner-federation-v33_25.test.ts",
+        "scripts/signature-supply-scanner-federation-proof-v33_25.mjs",
+        "release-evidence/v33.25/V33_25_SIGNATURE_SUPPLY_SCANNER_FEDERATION_PROOF.json",
+        "release-evidence/v33.25/V33_25_EXTERNAL_QUALIFICATION_VERDICT.json",
+        "external-qualification/v33.25/scanner-federation/RUNBOOK.md",
+        "docs/V33_25_SIGNATURE_SUPPLY_CHAIN_AND_SCANNER_FEDERATION.md",
+        "src/app/scanner-evidence-transparency-v33_26.ts",
+        "tests/scanner-evidence-transparency-v33_26.test.ts",
+        "scripts/scanner-evidence-transparency-proof-v33_26.mjs",
+        "release-evidence/v33.26/V33_26_SCANNER_EVIDENCE_TRANSPARENCY_PROOF.json",
+        "release-evidence/v33.26/V33_26_EXTERNAL_QUALIFICATION_VERDICT.json",
+        "external-qualification/v33.26/scanner-transparency/RUNBOOK.md",
+        "docs/V33_26_EXTERNAL_SCANNER_EVIDENCE_AND_FEED_TRANSPARENCY.md",
+        "src/app/external-transparency-witness-v33_27.ts",
+        "tests/external-transparency-witness-v33_27.test.ts",
+        "release-evidence/v33.27/V33_27_EXTERNAL_WITNESS_PROOF.json",
+        "release-evidence/v33.27/V33_27_PARAMETER_LEDGER.json",
+        "external-qualification/v33.27/witness-gossip/RUNBOOK.md",
+        "docs/V33_27_EXTERNAL_TRANSPARENCY_WITNESS_AND_PARAMETER_LEDGER.md",
+        "src/app/external-operator-ceremony-witness-network-v33_28.ts",
+        "tests/external-operator-ceremony-witness-network-v33_28.test.ts",
+        "release-evidence/v33.28/V33_28_OPERATOR_CEREMONY_WITNESS_NETWORK_PROOF.json",
+        "external-qualification/v33.28/operator-ceremony/RUNBOOK.md"
+      ],
+      "currentFinding": "Ceremony, scanner, transparency, witness and evidence-import gates are advanced local references. Live external operators, independent witness organizations, HSM/KMS, multi-host recovery and declared external SLO evidence remain absent."
+    },
+    {
+      "id": "G6",
+      "name": "Adaptive shortcut proof",
+      "status": "in-progress",
+      "requiredEvidence": [
+        "shortcut-passport",
+        "holdout-results",
+        "differential-replay",
+        "mutation-fuzz",
+        "drift-revocation",
+        "fallback-test"
+      ],
+      "passCriteria": [
+        "measurable cost/time/approval reduction",
+        "no authority expansion",
+        "automatic revocation on drift",
+        "full-workflow fallback succeeds"
+      ],
+      "prototypeStatus": "proof-carrying-adaptive-shortcuts-shadow-qualified-locally-customer-value-not-measured",
+      "prototypeEvidenceRefs": [
+        "src/repository/proof-carrying-adaptive-execution-v33_15.ts",
+        "src/app/persistent-adaptive-policy-controller-v33_16.ts",
+        "src/app/continuous-adaptive-control-service-v33_17.ts",
+        "release-evidence/v33.15/V33_15_PROOF_CARRYING_ADAPTIVE_EXECUTION_PROOF.json",
+        "release-evidence/v33.16/V33_16_PERSISTENT_ADAPTIVE_POLICY_CONTROLLER_PROOF.json",
+        "release-evidence/v33.17/V33_17_CONTINUOUS_ADAPTIVE_CONTROL_SERVICE_PROOF.json"
+      ],
+      "currentFinding": "V33.15-V33.17 prove one local recurrent workflow class in shadow mode with no authority expansion, automatic drift revocation and full-workflow fallback. Structural local estimates report 76% cost, 82.7% duration and 90% user-step reduction, but no customer, provider-bill or human evidence exists; G6 remains in progress."
+    },
+    {
+      "id": "G7",
+      "name": "Domain pack foundry proof",
+      "status": "not-started",
+      "requiredEvidence": [
+        "pack-sdk",
+        "pack-lifecycle-tests",
+        "scope-isolation",
+        "upgrade-rollback"
+      ],
+      "passCriteria": [
+        "new pack without kernel authority change",
+        "hidden cross-pack state rejected",
+        "pack removal reversible"
+      ]
+    },
+    {
+      "id": "G8",
+      "name": "Commercial scale proof",
+      "status": "not-started",
+      "requiredEvidence": [
+        "paid-revenue",
+        "retention",
+        "gross-margin",
+        "repeatable-deployment",
+        "customer-references"
+      ],
+      "passCriteria": [
+        "repeatable enterprise buyer",
+        "supportable ACV",
+        ">=70% projected gross margin",
+        "retention and expansion evidence"
+      ]
+    }
+  ],
+  "updatedAt": "2026-07-24T07:30:00.000Z"
+}

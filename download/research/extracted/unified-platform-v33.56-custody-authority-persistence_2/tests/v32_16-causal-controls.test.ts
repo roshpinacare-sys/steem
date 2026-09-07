@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import test from 'node:test';
+import { generateSigningIdentity, KeyRegistry, sha256 } from '../src/contracts/crypto.js';
+import { evaluateTournamentTransportV32_16, signTournamentTransportObservationV32_16, type TournamentInvocationV32_16, type TournamentTransportObservationV32_16, type TournamentTransportTrustV32_16 } from '../src/benchmark/external-tournament-transport-v32_16.js';
+import { qualifyWasmRuntimeV32_16, type WasmRuntimeQualificationPolicyV32_16 } from '../src/isolation/wasm-runtime-qualification-v32_16.js';
+import { runLocalProcessFailoverLabV32_16 } from '../src/qualification/local-process-failover-lab-v32_16.js';
+
+const here=dirname(fileURLToPath(import.meta.url));
+const artifacts=join(here,'..','..','isolation','wasm-core','artifacts');
+const allowed=readFileSync(join(artifacts,'allowed.wasm'));
+const infinite=readFileSync(join(artifacts,'infinite.wasm'));
+const hiddenMemory=Buffer.from([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00,0x05,0x03,0x01,0x00,0x01]);
+const wasmPolicy=(overrides:Partial<WasmRuntimeQualificationPolicyV32_16>={}):WasmRuntimeQualificationPolicyV32_16=>({policyDigest:sha256('v32.16-wasm'),maximumModuleBytes:1024*1024,maximumMemoryBytes:131072,maximumExecutionMs:500,requiredRunExport:'run',requiredMemoryExport:'memory',allowedImports:['cap.emit','cap.read_byte'],...overrides});
+function transportFixture(authority:'LOCAL_FIXTURE'|'EXTERNAL_PINNED'='EXTERNAL_PINNED',synthetic=false){
+ const observer=generateSigningIdentity('observer-key'),registry=new KeyRegistry();registry.register(observer.keyId,observer.publicKey);
+ const invocation:TournamentInvocationV32_16={schemaVersion:'32.16',runId:'run',taskId:'task',blindLabel:'blind',providerId:'provider',requestDigest:sha256('request'),responseDigest:sha256('response'),nonce:'nonce',startedAt:'2026-07-20T10:00:00.000Z',completedAt:'2026-07-20T10:00:01.000Z',externalResponseId:'response-id',synthetic};
+ const observation:TournamentTransportObservationV32_16={invocationDigest:sha256(invocation),observerId:'observer',observerOrganizationId:'observer-org',providerId:'provider',providerOrganizationId:'provider-org',transport:'HTTPS',observedAt:'2026-07-20T10:00:02.000Z',externalResponseId:invocation.externalResponseId,requestDigest:invocation.requestDigest,responseDigest:invocation.responseDigest,synthetic};
+ const trust:TournamentTransportTrustV32_16={policyDigest:sha256('transport'),observerAuthorizations:[{observerId:'observer',organizationId:'observer-org',keyId:observer.keyId,keyFingerprint:registry.fingerprint(observer.keyId)!,authority}]};return{observer,registry,invocation,observation,trust};
+}
+
+test('causal WASM visible memory enforcement',async()=>{const report=await qualifyWasmRuntimeV32_16({bytes:hiddenMemory,input:[],policy:wasmPolicy({allowedImports:[]})});assert.deepEqual(report.findings,['wasm-runtime-run-export-invalid','wasm-runtime-memory-export-invalid']);});
+test('causal WASM timeout classification',async()=>{const report=await qualifyWasmRuntimeV32_16({bytes:infinite,input:[],policy:wasmPolicy({allowedImports:[],maximumExecutionMs:50})});assert.deepEqual(report.findings,['wasm-runtime-timeout']);});
+test('causal WASM measured memory limit',async()=>{const report=await qualifyWasmRuntimeV32_16({bytes:allowed,input:[1],policy:wasmPolicy({maximumMemoryBytes:65536})});assert.deepEqual(report.findings,['wasm-runtime-memory-limit-exceeded']);});
+test('causal transport external trust pinning',()=>{const f=transportFixture('LOCAL_FIXTURE',false);const r=evaluateTournamentTransportV32_16({invocation:f.invocation,observation:signTournamentTransportObservationV32_16(f.observation,f.observer),registry:f.registry,trust:f.trust,mode:'EXTERNAL_OBSERVED',now:new Date('2026-07-20T10:00:03Z')});assert.equal(r.findings.includes('transport-external-evidence-insufficient'),true);});
+test('causal transport observer independence',()=>{const f=transportFixture();const bad={...f.observation,observerId:'provider',observerOrganizationId:'provider-org'};const trust={...f.trust,observerAuthorizations:[{...f.trust.observerAuthorizations[0]!,observerId:'provider',organizationId:'provider-org'}]};const r=evaluateTournamentTransportV32_16({invocation:f.invocation,observation:signTournamentTransportObservationV32_16(bad,f.observer),registry:f.registry,trust,mode:'EXTERNAL_OBSERVED',now:new Date('2026-07-20T10:00:03Z')});assert.equal(r.findings.includes('transport-self-attestation'),true);});
+test('causal transport signature verification',()=>{const f=transportFixture();const signed={...signTournamentTransportObservationV32_16(f.observation,f.observer),signature:'AAAA'};const r=evaluateTournamentTransportV32_16({invocation:f.invocation,observation:signed,registry:f.registry,trust:f.trust,mode:'EXTERNAL_OBSERVED',now:new Date('2026-07-20T10:00:03Z')});assert.equal(r.findings.includes('transport-observation-signature-invalid'),true);});
+test('causal transport lineage binding',()=>{const f=transportFixture();const signed=signTournamentTransportObservationV32_16({...f.observation,responseDigest:sha256('other')},f.observer);const r=evaluateTournamentTransportV32_16({invocation:f.invocation,observation:signed,registry:f.registry,trust:f.trust,mode:'EXTERNAL_OBSERVED',now:new Date('2026-07-20T10:00:03Z')});assert.equal(r.findings.includes('transport-lineage-mismatch'),true);});
+test('causal transport external observation validity binding',()=>{const f=transportFixture();const original=signTournamentTransportObservationV32_16(f.observation,f.observer);const signed={...original,signature:`${original.signature.startsWith('A')?'B':'A'}${original.signature.slice(1)}`};const r=evaluateTournamentTransportV32_16({invocation:f.invocation,observation:signed,registry:f.registry,trust:f.trust,mode:'EXTERNAL_OBSERVED',now:new Date('2026-07-20T10:00:03Z')});assert.equal(r.externallyObserved,false);assert.equal(r.findings.includes('transport-external-evidence-insufficient'),true);});
+test('causal failover replication preserves RPO zero',async()=>{const r=await runLocalProcessFailoverLabV32_16({requestCount:40,failAfterRequest:20,maximumRtoMs:2000,maximumRpoWrites:0,requestTimeoutMs:5000});assert.equal(r.state,'DRY_RUN_PASSED');assert.equal(r.rpoWrites,0);});
+test('causal failover RTO policy enforcement',async()=>{const r=await runLocalProcessFailoverLabV32_16({requestCount:20,failAfterRequest:10,maximumRtoMs:1,maximumRpoWrites:0,requestTimeoutMs:5000});assert.equal(r.findings.includes('local-failover-rto-exceeded'),true);});
+test('causal failover child cleanup',async()=>{const r=await runLocalProcessFailoverLabV32_16({requestCount:20,failAfterRequest:10,maximumRtoMs:2000,maximumRpoWrites:0,requestTimeoutMs:5000});assert.equal(r.childProcessesCleaned,true);});

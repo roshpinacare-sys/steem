@@ -1,0 +1,1496 @@
+{
+  "format": "titai-execution-registry",
+  "version": 1,
+  "generatedAt": "2026-07-11T14:02:46.921Z",
+  "packageVersion": "2.1.0-canonical-v16-operational-sovereignty",
+  "counts": {
+    "total": 70,
+    "scripts": 56,
+    "skills": 12,
+    "workflows": 2,
+    "active": 47,
+    "releaseGated": 47,
+    "reviewRequired": 10
+  },
+  "assets": [
+    {
+      "id": "asset-6db8bbc57c812523",
+      "path": "scripts/audit-release.mjs",
+      "kind": "script",
+      "sha256": "487b782b6f9fbf795fff21bb3dfacebbadaa9ea29d7407148d4c47c31b2a5246",
+      "bytes": 1935,
+      "active": true,
+      "triggers": [
+        "npm:release:audit"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-1a910b5b4c53188b",
+      "path": "scripts/backup-application.mjs",
+      "kind": "script",
+      "sha256": "7ed497bbddf815926986bf9b07d8f492f4d77ba622b2bab4f01a3be01919272f",
+      "bytes": 974,
+      "active": true,
+      "triggers": [
+        "npm:backup:create"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-13fdc8aee5786eb0",
+      "path": "scripts/benchmark-v12.ts",
+      "kind": "script",
+      "sha256": "cc90e04de27b24035457554a0536967e1eb0a3126600c12607603962046ad92a",
+      "bytes": 4765,
+      "active": true,
+      "triggers": [
+        "npm:benchmark:v12"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v12"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-e97515fb36893ef9",
+      "path": "scripts/benchmark-v13.ts",
+      "kind": "script",
+      "sha256": "dc17fbe21e174fbc3b954eb01f886381fe04d4af48e8a465c96169267f8da322",
+      "bytes": 2434,
+      "active": true,
+      "triggers": [
+        "npm:benchmark:v13"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v13"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-b968e259f50853d7",
+      "path": "scripts/build-context-pack.mjs",
+      "kind": "script",
+      "sha256": "b86742d1579fb84492ad37286a9213efd7aa09ae53700c60c4ff080d87948eb5",
+      "bytes": 2400,
+      "active": true,
+      "triggers": [
+        "npm:canonical:context"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-d199be78b6bdbc1a",
+      "path": "scripts/build-production.mjs",
+      "kind": "script",
+      "sha256": "8e4e2f3cd431d163b8af6fda4d7cc281eebbeeee31651d637572086c3f39e708",
+      "bytes": 522,
+      "active": true,
+      "triggers": [
+        "npm:build"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-e912e8c3f4ac129c",
+      "path": "scripts/canonical-next.mjs",
+      "kind": "script",
+      "sha256": "bc6d0767bf8b2e9cbd2aa7ae4c6b71abd6433f90f1e56aa7cbded249f90f6b14",
+      "bytes": 628,
+      "active": true,
+      "triggers": [
+        "npm:canonical:next"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-f96bc817c5f633ad",
+      "path": "scripts/evaluate-baseline.ts",
+      "kind": "script",
+      "sha256": "4df5b20a39064c1d9e1a5c7142fc9645315a315c1b31fead79042a1c884d2735",
+      "bytes": 1389,
+      "active": true,
+      "triggers": [
+        "npm:eval:baseline"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-6ab62e014f779bdd",
+      "path": "scripts/fixtures/v14-approval-process-worker.ts",
+      "kind": "script",
+      "sha256": "b8c6846f2cc327f7f8d72dc84b58cb1a4ec83e8ff2f6bce6e2df3d73c4653126",
+      "bytes": 1273,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-7eb9a71a67488bb8",
+      "path": "scripts/fixtures/v14-db-lock-worker.ts",
+      "kind": "script",
+      "sha256": "5b30d2a319768c776dca0cc3d1e3c37b5d8652b97c4cf85de54096ff6ccf5919",
+      "bytes": 1047,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-41c1b60a67c33f5d",
+      "path": "scripts/fixtures/v14-durable-process-worker.ts",
+      "kind": "script",
+      "sha256": "b35df8ad6a22c8126f930a52cd227385a12b77b72131ba100b0e2f457f886eef",
+      "bytes": 1570,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-05349d6eb02ba083",
+      "path": "scripts/fixtures/v14-outbox-process-worker.ts",
+      "kind": "script",
+      "sha256": "139de2baa994c1ca0ee407b0f6bcf7dcf6065112d146cebf2bbb7543f4c00bf9",
+      "bytes": 1252,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-471e457d37253057",
+      "path": "scripts/generate-pilot-evidence-v14.mjs",
+      "kind": "script",
+      "sha256": "5d9f5af5301e3139eeb03b49ca2b6aa17efbe0da9b494d26839567e4c0669bab",
+      "bytes": 4339,
+      "active": true,
+      "triggers": [
+        "npm:pilot:evidence"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/durable-vertical-slice.json",
+        "docs/canonical/evidence/v13/mutation-probes.json",
+        "docs/canonical/evidence/v14",
+        "docs/canonical/evidence/v14/approval-restart-process-proof.json",
+        "docs/canonical/evidence/v14/browser-policy-block.json",
+        "docs/canonical/evidence/v14/build-production.json",
+        "docs/canonical/evidence/v14/build-production.log",
+        "docs/canonical/evidence/v14/clean-restore-proof.json",
+        "docs/canonical/evidence/v14/database-lock-proof.json",
+        "docs/canonical/evidence/v14/disk-full-proof.json",
+        "docs/canonical/evidence/v14/gates/canonical.pass",
+        "docs/canonical/evidence/v14/gates/language.pass",
+        "docs/canonical/evidence/v14/gates/lint.pass",
+        "docs/canonical/evidence/v14/gates/migrations.pass",
+        "docs/canonical/evidence/v14/gates/persistence.pass",
+        "docs/canonical/evidence/v14/multiprocess-lease-proof.json",
+        "docs/canonical/evidence/v14/multiprocess-outbox-proof.json",
+        "docs/canonical/evidence/v14/pilot-failure-matrix.json",
+        "docs/canonical/evidence/v14/test-full.log",
+        "docs/canonical/evidence/v14/test-full.pass"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-577d642d98813473",
+      "path": "scripts/generate-pilot-evidence.mjs",
+      "kind": "script",
+      "sha256": "67ba122bcac793b72b3dafa21a316080304a650aeaaa17305a45d7cb4d3601c6",
+      "bytes": 4626,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v13",
+        "docs/canonical/evidence/v13/browser/e2e-chromium.json",
+        "docs/canonical/evidence/v13/browser/e2e-chromium.log",
+        "docs/canonical/evidence/v13/browser/playwright-list.log",
+        "docs/canonical/evidence/v13/build/production-build-release.json",
+        "docs/canonical/evidence/v13/build/production-build-release.log",
+        "docs/canonical/evidence/v13/gates/canonical.json",
+        "docs/canonical/evidence/v13/gates/canonical.log",
+        "docs/canonical/evidence/v13/gates/durable.json",
+        "docs/canonical/evidence/v13/gates/durable.log",
+        "docs/canonical/evidence/v13/gates/eval.log",
+        "docs/canonical/evidence/v13/gates/language.json",
+        "docs/canonical/evidence/v13/gates/lint.json",
+        "docs/canonical/evidence/v13/gates/typecheck.log",
+        "docs/canonical/evidence/v13/mutation-probes.json",
+        "docs/canonical/evidence/v13/native/native-suites.json",
+        "docs/canonical/evidence/v13/native/native-suites.log",
+        "docs/canonical/evidence/v13/performance-microbenchmarks.json",
+        "docs/canonical/evidence/v13/pilot-failure-matrix.json",
+        "docs/canonical/evidence/v13/test-safe-final.json",
+        "docs/canonical/evidence/v13/test-safe-final.log"
+      ],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-039b556aa769e5fd",
+      "path": "scripts/generate-release-evidence.mjs",
+      "kind": "script",
+      "sha256": "fe8090610db11e2516024880a435e6eb6fbbfe3486e156221a8386c44208c296",
+      "bytes": 5175,
+      "active": true,
+      "triggers": [
+        "npm:release:evidence"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/release",
+        "docs/canonical/evidence/release/",
+        "docs/canonical/evidence/v16/model-evidence-bundle.json"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-bae3765ab31c5398",
+      "path": "scripts/generate-release-manifest.mjs",
+      "kind": "script",
+      "sha256": "91229ee0b723a0c35c619fa7ebc5f0a055e079ae1bbc930c89c707f74f676cf0",
+      "bytes": 4390,
+      "active": true,
+      "triggers": [
+        "npm:release:manifest"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/durable-vertical-slice.json",
+        "docs/canonical/evidence/v16/browser-authenticated/e2e.log",
+        "docs/canonical/evidence/v16/build-final/build.stdout",
+        "docs/canonical/evidence/v16/full-tests-final/summary.json",
+        "docs/canonical/evidence/v16/validation.json"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-6d4bd03f23d32ab3",
+      "path": "scripts/generate-v12-traceability.mjs",
+      "kind": "script",
+      "sha256": "909a777c24794002adf48a670030757581392da9acd5270a4ce97322eabc7bb5",
+      "bytes": 4183,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v12"
+      ],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-fb8874af11797cd1",
+      "path": "scripts/generate-v16-execution-registry.mjs",
+      "kind": "script",
+      "sha256": "5c7bd843f4ad7aaf0eede3440682dc91f2b71f1ecd766e71bc250131a808bb61",
+      "bytes": 3932,
+      "active": true,
+      "triggers": [
+        "npm:v16:assets"
+      ],
+      "dependencies": {
+        "networkHint": true,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "requires_review",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/execution-registry.json"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-a04c3f7932671f02",
+      "path": "scripts/generate-v16-pdf-report.py",
+      "kind": "script",
+      "sha256": "1d0d6b8d8b632db439916e8d8453a11a8fb60aa46c8a1001e7e123daf251a6de",
+      "bytes": 24113,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/breakthrough-hypotheses.json",
+        "docs/canonical/evidence/v16/build-final/result.json",
+        "docs/canonical/evidence/v16/execution-registry.json",
+        "docs/canonical/evidence/v16/full-tests-final/summary.json",
+        "docs/canonical/evidence/v16/hardware/hardware-profile.json",
+        "docs/canonical/evidence/v16/model/local-model-qualification.json",
+        "docs/canonical/evidence/v16/multi-node/result.json",
+        "docs/canonical/evidence/v16/network/process-evidence.json",
+        "docs/canonical/evidence/v16/offline-install-manual/summary.json",
+        "docs/canonical/evidence/v16/sovereign-opportunity-portfolio.json",
+        "docs/canonical/evidence/v16/update-rehearsal/result.json",
+        "docs/canonical/evidence/v16/validation.json"
+      ],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-8ae03baf34a26974",
+      "path": "scripts/lint-source.mjs",
+      "kind": "script",
+      "sha256": "b5f7f1d9856348d770e175d537d3e17744b4e71206df16ada03d5f7ea17e50f2",
+      "bytes": 1843,
+      "active": true,
+      "triggers": [
+        "npm:lint"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-b4a1aaf0e14f3ebd",
+      "path": "scripts/measure-v16-hardware.mjs",
+      "kind": "script",
+      "sha256": "1fc45d70a4a5f226fa74b60c93a91883b54aec49f054631b7ba44815fa768c8d",
+      "bytes": 2713,
+      "active": true,
+      "triggers": [
+        "npm:v16:hardware"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/hardware/hardware-profile.json"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-c8accbc2b5827669",
+      "path": "scripts/migrate.ts",
+      "kind": "script",
+      "sha256": "dc0daa1befed95abfe6758f0c60a26f18d585df3fcc8c82bae9496946052eec6",
+      "bytes": 772,
+      "active": true,
+      "triggers": [
+        "npm:db:migrate"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-3c9a711bbb5ade5b",
+      "path": "scripts/mutation-v12.ts",
+      "kind": "script",
+      "sha256": "114fb3f32c37051d5231697cfba0230835ef2d92ca5e262e6e62a4415b360fec",
+      "bytes": 5232,
+      "active": true,
+      "triggers": [
+        "npm:mutation:v12"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v12"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-7c1419883cc73909",
+      "path": "scripts/mutation-v13.ts",
+      "kind": "script",
+      "sha256": "6a7cf5e256edfc435b57628fd7cab8de35eae0a7c2630b6efd39fdaa6b563022",
+      "bytes": 6234,
+      "active": true,
+      "triggers": [
+        "npm:mutation:v13"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v13"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-a8e2bc985009953f",
+      "path": "scripts/network-audit-preload.cjs",
+      "kind": "script",
+      "sha256": "99fb82101b45ae0ba5d1c0aaf81ced20336ba0de07a07fc86a7a577979c38840",
+      "bytes": 2432,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": true,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "requires_review",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-e5f09c8730ae48aa",
+      "path": "scripts/process-network-audit.py",
+      "kind": "script",
+      "sha256": "eb6a082eb76f8b5b9c1c0fcaeaedbf4421a3c59660e8edb1fb75dd02d7a5dbdf",
+      "bytes": 5386,
+      "active": true,
+      "triggers": [
+        "npm:v16:network-audit"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-1d9adef0db23681f",
+      "path": "scripts/prove-durable-vertical-slice.ts",
+      "kind": "script",
+      "sha256": "95f9bcfbc9fa1e2fd26834ed66fe05ad54c6828dd69f6745e03740a905f27abc",
+      "bytes": 8946,
+      "active": true,
+      "triggers": [
+        "npm:durable:prove"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-a4cbae5e4d5b250b",
+      "path": "scripts/prove-v13-pilot.ts",
+      "kind": "script",
+      "sha256": "7acc1884f6ff66763eae944e9f82d19da450d6fd0fafd9682e9ebb23e51f9ffb",
+      "bytes": 11038,
+      "active": true,
+      "triggers": [
+        "npm:pilot:prove"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v13"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-c3acc7d5b247c3cb",
+      "path": "scripts/prove-v14-approval-restart.ts",
+      "kind": "script",
+      "sha256": "6fb5f3b73d0b8fb714811be6803f74cd24d937ac6903e9d1ca07a9590714da72",
+      "bytes": 5504,
+      "active": true,
+      "triggers": [
+        "npm:pilot:v14:approval"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v14"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-22e2213e8ff38564",
+      "path": "scripts/prove-v14-clean-restore.ts",
+      "kind": "script",
+      "sha256": "dd9965fc19f5821f5a1492359ee1431377bdcdb8409f1f0742d6ebde45e760a3",
+      "bytes": 9279,
+      "active": true,
+      "triggers": [
+        "npm:pilot:v14:restore"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v14"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-54ff8772d37fe7bf",
+      "path": "scripts/prove-v14-db-lock.ts",
+      "kind": "script",
+      "sha256": "06a1be01b94898b8ad71c99c1b636742a86ea48cc2a97aae11ed7f9538156a34",
+      "bytes": 2105,
+      "active": true,
+      "triggers": [
+        "npm:pilot:v14:db-lock"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v14"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-64c9ab2558d89fb5",
+      "path": "scripts/prove-v14-disk-full.ts",
+      "kind": "script",
+      "sha256": "ceaef0de6ec4fe301613bdbbe5096d65a44f36a1175a05201c7d54fc91eeeae2",
+      "bytes": 1523,
+      "active": true,
+      "triggers": [
+        "npm:pilot:v14:disk-full"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v14"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-e8ddf5d300a8b5a6",
+      "path": "scripts/prove-v14-multiprocess.ts",
+      "kind": "script",
+      "sha256": "da1dad6d6f70214ab8dc02fe9c3f636dcb31b5f12dac41d20b547610cd4c9e11",
+      "bytes": 4656,
+      "active": true,
+      "triggers": [
+        "npm:pilot:v14:multiprocess"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v14"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-3a15d750a4a35cd6",
+      "path": "scripts/prove-v14-outbox.ts",
+      "kind": "script",
+      "sha256": "a7794eb372e38844628f3146725d21b4a1fd8bd46a6702baa2ace989fef63100",
+      "bytes": 3192,
+      "active": true,
+      "triggers": [
+        "npm:pilot:v14:outbox"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v14"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-54ccc913a913eb96",
+      "path": "scripts/prove-v14-pilot.ts",
+      "kind": "script",
+      "sha256": "44c6d692b36be4b8ef3c8951d2611c14892d7d090621f379c3ffb2b7f2b86359",
+      "bytes": 8872,
+      "active": true,
+      "triggers": [
+        "npm:pilot:v14:matrix"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v13/pilot-failure-matrix.json",
+        "docs/canonical/evidence/v14"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-7a197685331433c3",
+      "path": "scripts/prove-v15-sovereignty.ts",
+      "kind": "script",
+      "sha256": "d5c1e5619581561f9e9c93dfb4f478af3fc303e3a3125d942a43cf26fa398c07",
+      "bytes": 19889,
+      "active": true,
+      "triggers": [
+        "npm:sovereignty:prove"
+      ],
+      "dependencies": {
+        "networkHint": true,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "requires_review",
+      "evidencePaths": [
+        "docs/canonical/evidence/v15"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-2d68de2fb42891e6",
+      "path": "scripts/prove-v16-isolated-node.ts",
+      "kind": "script",
+      "sha256": "d28c391afb433f1090c416421b6e631074bc948c4e8216aff364fab21083692c",
+      "bytes": 4483,
+      "active": true,
+      "triggers": [
+        "npm:v16:node:prove"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/multi-node"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-ae4aadc2708337cc",
+      "path": "scripts/prove-v16-offline-install.mjs",
+      "kind": "script",
+      "sha256": "7de2aeb65c502b03d7960d77e2599e0d5c0efbb3fc5e124928e2bce19f1d6d53",
+      "bytes": 7291,
+      "active": true,
+      "triggers": [
+        "npm:v16:offline-install"
+      ],
+      "dependencies": {
+        "networkHint": true,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "requires_review",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/offline-install",
+        "docs/canonical/evidence/v16/offline-isolated-tests"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-836aee772b344c77",
+      "path": "scripts/prove-v16-update-migration.ts",
+      "kind": "script",
+      "sha256": "7028c1f04b30a285798ff869c0e9844553b7c4dd78a9c7e32125f5a3cdfb7cf1",
+      "bytes": 5191,
+      "active": true,
+      "triggers": [
+        "npm:v16:update-rehearsal"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/update-rehearsal"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-c07ff5eb6837630b",
+      "path": "scripts/qualify-v16-local-model.mjs",
+      "kind": "script",
+      "sha256": "6397acc8853d2b169ad139e70321b84e483b98fdf83e3b76e2ba54d275a878ae",
+      "bytes": 2560,
+      "active": true,
+      "triggers": [
+        "npm:v16:model:qualify"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/model/local-model-qualification.json"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-6e7b48ed9d43f485",
+      "path": "scripts/restore-application.mjs",
+      "kind": "script",
+      "sha256": "6674c6cefca7b4340ddf12120cc83db13ce38c548a9666680890231d457160e7",
+      "bytes": 736,
+      "active": true,
+      "triggers": [
+        "npm:backup:restore"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-ffa7f3d659502e39",
+      "path": "scripts/roast-dynamic.mjs",
+      "kind": "script",
+      "sha256": "da66427928aab108433c5f823a84d0b0cf7b236a1b0c5753d95b527749633cad",
+      "bytes": 3840,
+      "active": true,
+      "triggers": [
+        "npm:roast:dynamic"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-fc69b07e7a385187",
+      "path": "scripts/roast-project.mjs",
+      "kind": "script",
+      "sha256": "92884fcc5a1f2d34d8515ed5ac9befd72b359fce0cab332f8d4ef603da00f199",
+      "bytes": 19336,
+      "active": true,
+      "triggers": [
+        "npm:roast:static",
+        "npm:roast:strict"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/release/SBOM.cyclonedx.json",
+        "docs/canonical/evidence/v12/targeted-mutation-probes.json"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-39062c412be757b2",
+      "path": "scripts/run-complete-tests.mjs",
+      "kind": "script",
+      "sha256": "fe717d49f1ecffe5cdea63ebde275a672a4e5c00ae4f2258da05db06b3e907a2",
+      "bytes": 4518,
+      "active": true,
+      "triggers": [
+        "npm:test"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v16/full-tests"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-ff840142e804c72b",
+      "path": "scripts/run-safe-tests.mjs",
+      "kind": "script",
+      "sha256": "cef55bf5eb5d18da69bd0550bc7c60d42cc0291d90a6071923443ce27ec85155",
+      "bytes": 745,
+      "active": true,
+      "triggers": [
+        "npm:test:safe"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-dc31c45b12f01153",
+      "path": "scripts/seed.ts",
+      "kind": "script",
+      "sha256": "1c7bc8d28079f82ab725165a7ee9ff512489e68e2c1bd4288a7489481931e95f",
+      "bytes": 10405,
+      "active": true,
+      "triggers": [
+        "npm:seed"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-64c9a438993e1e94",
+      "path": "scripts/v16-node-worker.ts",
+      "kind": "script",
+      "sha256": "891a9ef22447a28986c212d133466fe13b5801ab9dc98547153924da93bf7d15",
+      "bytes": 1102,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-938a5e6520f280dd",
+      "path": "scripts/validate-canonical.mjs",
+      "kind": "script",
+      "sha256": "9c9eaed993d9543ac819dd5c80767674a050b44840040a806284c90d210f08fb",
+      "bytes": 6943,
+      "active": true,
+      "triggers": [
+        "npm:canonical:validate"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-e335eaddef479a9d",
+      "path": "scripts/validate-ci-pins.mjs",
+      "kind": "script",
+      "sha256": "238f1b5baa64b852f29e5d40f4b08d8db4e0b4b00efd705cb9182af43705213f",
+      "bytes": 1229,
+      "active": true,
+      "triggers": [
+        "npm:ci:pins"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-e6f4f49eead7761b",
+      "path": "scripts/validate-english-only.mjs",
+      "kind": "script",
+      "sha256": "06d1372d50c45ff0c7180a5a57268752d23947c45c69ca776e6252f5622fc07e",
+      "bytes": 1843,
+      "active": true,
+      "triggers": [
+        "npm:language:validate"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-20bb9b548cabe208",
+      "path": "scripts/validate-migrations.mjs",
+      "kind": "script",
+      "sha256": "50de23f7444124122108ff1c4408f866443f53cf477fdd3dbb68aefb9787c369",
+      "bytes": 3996,
+      "active": true,
+      "triggers": [
+        "npm:db:migrations:validate"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-14c3fdcd948d4c63",
+      "path": "scripts/validate-roast.mjs",
+      "kind": "script",
+      "sha256": "19e85a88593d488f1b178f24cadddff8a3c7ab5bfe7c45309fda4fbc5031a1a3",
+      "bytes": 2813,
+      "active": true,
+      "triggers": [
+        "npm:roast:validate"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-466c11fa1bbae413",
+      "path": "scripts/verify-audit.ts",
+      "kind": "script",
+      "sha256": "dfa6cbecc4f929e917ad1c91496e58839b63af268222c8f945fb76254b80aa46",
+      "bytes": 498,
+      "active": true,
+      "triggers": [
+        "npm:verify-audit"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-3547adf3cf66f190",
+      "path": "scripts/verify-pilot-candidate.mjs",
+      "kind": "script",
+      "sha256": "ec03a37e16b9b5251f796df5554cebfc2161794e46de83e9bd561233054b0e83",
+      "bytes": 1578,
+      "active": true,
+      "triggers": [
+        "npm:pilot:verify"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-ad97ef3c1dba51d5",
+      "path": "scripts/verify-v15-sovereignty.mjs",
+      "kind": "script",
+      "sha256": "b79e6c22853952b601d5b1077d68db78b3f071f723ced09146bdff6a68ebdbd6",
+      "bytes": 2894,
+      "active": true,
+      "triggers": [
+        "npm:sovereignty:verify"
+      ],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/v15-final/v15-validation.json",
+        "docs/canonical/evidence/v15/v15-sovereignty-summary.json"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    },
+    {
+      "id": "asset-b77aef50b6253773",
+      "path": "scripts/verify-v16-release.mjs",
+      "kind": "script",
+      "sha256": "7b0c0121b1db2fa4dafc68c823ad54c579a287bc7140eff5ad211459584ba506",
+      "bytes": 3835,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [
+        "docs/canonical/evidence/release/RELEASE_MANIFEST.json"
+      ],
+      "releaseGate": false,
+      "recommendation": "review_or_deprecate"
+    },
+    {
+      "id": "asset-eeb7e630fe33f558",
+      "path": "docs/canonical/skills/architecture-decision.SKILL.md",
+      "kind": "skill",
+      "sha256": "2e6f553ae8435d8585a03383e267c07e6f483f2ff1cc6e7894197962fa7d427f",
+      "bytes": 884,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-fa9369bab82a1e26",
+      "path": "docs/canonical/skills/canonical-orchestrator.SKILL.md",
+      "kind": "skill",
+      "sha256": "781ae8f810a4e1888f3810147c6226746a85cc5278c3f8fb5faccc62e7eb7062",
+      "bytes": 888,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-962df23bb006e3e0",
+      "path": "docs/canonical/skills/evidence-verifier.SKILL.md",
+      "kind": "skill",
+      "sha256": "770987d4dc6ebb04deeb15c0d8579b81f60b0f579e9a2626cfca258cc52939cb",
+      "bytes": 869,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-0fe7fb92ade3f80d",
+      "path": "docs/canonical/skills/legal-license-review.SKILL.md",
+      "kind": "skill",
+      "sha256": "d2b0415e353c4602390693c88abc62f9aed173de5a8ac9231f97fe040d1eefac",
+      "bytes": 906,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-97e048876bbd7958",
+      "path": "docs/canonical/skills/memory-governor.SKILL.md",
+      "kind": "skill",
+      "sha256": "7ed5c5cb2670dae287844c9ad534e0952861ef3afb843c37e977551e77303128",
+      "bytes": 889,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-84916a1df084d327",
+      "path": "docs/canonical/skills/operator-sre.SKILL.md",
+      "kind": "skill",
+      "sha256": "a4e0b347fcdb55386aae1e54a51d239f40e090616fcc66794c92aa649f2c3a7c",
+      "bytes": 878,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-e64071b430ff17fe",
+      "path": "docs/canonical/skills/performance-energy.SKILL.md",
+      "kind": "skill",
+      "sha256": "45d4c96a02757258dee5d85242f9b67a917be7d5ec656be5dd350427f9b02bec",
+      "bytes": 919,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-93102e12e0de8ae9",
+      "path": "docs/canonical/skills/product-strategist.SKILL.md",
+      "kind": "skill",
+      "sha256": "e6548f8d2095121f81df38050a0bd728367c7aa2446c18616499ae063a75a97e",
+      "bytes": 914,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-3902914c3db193d0",
+      "path": "docs/canonical/skills/research-compiler.SKILL.md",
+      "kind": "skill",
+      "sha256": "190a92223ff0a15f7d94bb2eb07b94b7464aa12b0e94d71741121f2c22243501",
+      "bytes": 913,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-e62fb1d65fc42e68",
+      "path": "docs/canonical/skills/resilience-engineer.SKILL.md",
+      "kind": "skill",
+      "sha256": "dd0246e52cd328036799907c2dfff8c1265753f6777211e00d1ceac842ad56ac",
+      "bytes": 881,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-8c1fdbad06ef2558",
+      "path": "docs/canonical/skills/security-red-team.SKILL.md",
+      "kind": "skill",
+      "sha256": "6c6dec445beaf42e9491f9ece77f21208d9fda4426de64ffb05ac5b8989764af",
+      "bytes": 911,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-c6be69d8d4bf927b",
+      "path": "docs/canonical/skills/sovereign-platform.SKILL.md",
+      "kind": "skill",
+      "sha256": "afb5e0501ffd44bb85c1de2bdb8b0ad5f4fa32e5f127afa5d0531ece2f4f864c",
+      "bytes": 902,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": false,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": false
+      },
+      "offlineCapability": "offline_capable",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-b803fcb7f17ed923",
+      "path": ".github/workflows/ci.yml",
+      "kind": "workflow",
+      "sha256": "47d77dce1df0fa62163bb77392596f89b31c14dfe7d9279a5881b2ae5202c0d9",
+      "bytes": 2535,
+      "active": false,
+      "triggers": [],
+      "dependencies": {
+        "networkHint": true,
+        "nativeHint": false,
+        "packageLifecycleScriptsEnabled": true
+      },
+      "offlineCapability": "requires_review",
+      "evidencePaths": [],
+      "releaseGate": false,
+      "recommendation": "retain_as_reference"
+    },
+    {
+      "id": "asset-d89803df5870505d",
+      "path": ".github/workflows/pilot-validation.yml",
+      "kind": "workflow",
+      "sha256": "062230e9df4fddd6d7ad809cb88917ee64bc8378cb690dae249d811087dfa810",
+      "bytes": 3560,
+      "active": true,
+      "triggers": [
+        "ci:workflow-reference"
+      ],
+      "dependencies": {
+        "networkHint": true,
+        "nativeHint": true,
+        "packageLifecycleScriptsEnabled": true
+      },
+      "offlineCapability": "requires_review",
+      "evidencePaths": [
+        "docs/canonical/evidence/v14",
+        "docs/canonical/evidence/v14/ci",
+        "docs/canonical/evidence/v14/ci/kernel.txt",
+        "docs/canonical/evidence/v14/ci/node-version.txt",
+        "docs/canonical/evidence/v14/ci/npm-version.txt"
+      ],
+      "releaseGate": true,
+      "recommendation": "retain_and_test"
+    }
+  ]
+}

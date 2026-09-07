@@ -1,0 +1,14 @@
+services:
+  qodo:
+    build: .
+    env_file: .env
+    environment:
+      - OBJECTIVE=${OBJECTIVE:-}
+      - REPO=${REPO:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL:-}
+      - UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN:-}
+      - QODO_SKILL_ID=${QODO_SKILL_ID:-}
+      - QODO_PRIVACY_MODE=${QODO_PRIVACY_MODE:-}
+      - QODO_HIVE_SHARE=${QODO_HIVE_SHARE:-}

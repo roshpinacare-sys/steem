@@ -1,0 +1,46 @@
+TITAI v18 CAPABILITY FOUNDRY — WINDOWS PORTABLE INSTALLER
+
+Requirements
+------------
+- Windows 10 or Windows 11, 64-bit.
+- Node.js 22.16.0 or newer, including npm.
+- Internet access during the first installation for locked npm packages.
+- At least 4 GB of free disk space during installation.
+
+Installation
+------------
+1. Extract the ZIP to a normal writable folder. Do not run it from inside the ZIP.
+2. Double-click INSTALL.cmd.
+3. Choose a password of at least 12 characters.
+4. Wait until installation, migrations, seed, production build, and audit finish.
+5. Double-click START.cmd.
+6. Sign in at http://127.0.0.1:3210
+   Email: demo@titai.dev
+   Password: the password entered during installation.
+
+Operation
+---------
+START.cmd              Start the local server and open the browser.
+STOP.cmd               Stop the local server.
+VERIFY.cmd             Run fast installation and integrity checks.
+VERIFY_DEEP.cmd        Run the complete v18 validation suite.
+REPAIR.cmd             Reinstall locked dependencies and rebuild without deleting data.
+BACKUP.cmd             Create an encrypted local backup.
+RESTORE.cmd            Restore an encrypted backup after explicit confirmation.
+UNINSTALL_KEEP_DATA.cmd Remove runtime files but preserve data and secrets.
+UNINSTALL_REMOVE_ALL.cmd Remove runtime files and all local data after confirmation.
+
+Security
+--------
+- The server binds to 127.0.0.1 by default and is not exposed to the network.
+- Public registration is disabled.
+- Random authentication and encryption secrets are generated locally.
+- The first-login password is not stored in FIRST_LOGIN.txt.
+- npm lifecycle scripts are disabled during dependency installation.
+- No commercial AI API key is required; deterministic simulation works immediately.
+- Local or commercial models can be configured later in Settings.
+
+Important
+---------
+This portable installer contains the complete TITAI v18 source release and all v18 fixes.
+It does not include local model weights, browser binaries, or proprietary software.

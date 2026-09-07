@@ -1,0 +1,2117 @@
+{
+  "schemaVersion": 1,
+  "project": "Titai Canonical Agent Platform",
+  "release": "TITAI v18 Sovereign Capability Foundry",
+  "auditDate": "2026-07-11",
+  "method": "Repository-grounded adversarial audit updated after v12 step-level durable recovery, lease fencing, approval compare-and-set, hash-bound verification, verification-aware routing, governed-memory ablation, risk-adjusted autonomy, pilot-readiness truth gates, property/race probes, targeted mutation probes, and six-mode dynamic Roast.; v13 pilot convergence, isolated-lane validation, fail-closed readiness, and build-boundary audit",
+  "ratingScale": {
+    "critical": "Can invalidate security, data integrity, recoverability, or truthful operation.",
+    "high": "Material production risk or major missing control.",
+    "medium": "Important weakness with narrower blast radius or compensating controls.",
+    "low": "Quality or maintainability issue with limited direct risk."
+  },
+  "topProjectKillers": [
+    "F-078",
+    "F-070",
+    "F-077",
+    "F-079",
+    "F-081",
+    "F-083",
+    "F-069",
+    "F-001",
+    "F-002",
+    "F-003",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-007",
+    "F-012",
+    "F-013",
+    "F-014",
+    "F-017",
+    "F-020",
+    "F-095"
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "title": "Detached in-memory execution cannot survive process loss",
+      "severity": "critical",
+      "status": "partially_mitigated",
+      "category": "durability",
+      "confidence": "high",
+      "description": "A feature-flagged durable envelope and SQLite durable primitives now exist, but granular step resume and active restart recovery remain incomplete.",
+      "impact": "Long-running or side-effecting jobs can disappear, duplicate, or remain permanently inconsistent after deployment, crash, or upgrade.",
+      "evidence": [
+        "src/lib/engine/start.ts",
+        "src/lib/engine/runner.ts",
+        "src/lib/db/schema.ts"
+      ],
+      "canonicalTasks": [
+        "DUR-001",
+        "DUR-002",
+        "DUR-003",
+        "INF-002"
+      ],
+      "recommendation": "Complete native multi-process crash tests and replace the single-step envelope with granular checkpoints and fencing.",
+      "acceptanceTest": "Kill the worker at every checkpoint boundary and prove the run resumes exactly once with preserved ownership and evidence."
+    },
+    {
+      "id": "F-002",
+      "title": "Side effects lack persisted idempotency and atomic evidence",
+      "severity": "critical",
+      "status": "partially_mitigated",
+      "category": "durability",
+      "confidence": "high",
+      "description": "The v9 portable core now persists deterministic side-effect receipts and proves crash replay without duplication. The production runner still lacks the SQLite transactional receipt, event, and audit integration.",
+      "impact": "A crash after a side effect but before acknowledgement can repeat irreversible work or create evidence that disagrees with reality.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/lib/engine/events.ts",
+        "src/lib/engine/audit.ts",
+        "src/lib/db/schema.ts",
+        "src/lib/durable/engine.ts",
+        "docs/canonical/evidence/durable-vertical-slice.json"
+      ],
+      "canonicalTasks": [
+        "DUR-001",
+        "DUR-002",
+        "CAP-002"
+      ],
+      "recommendation": "Migrate the production runner to the portable contract with a SQLite compare-and-set lease and transactional outbox.",
+      "acceptanceTest": "Inject a crash after external success but before event commit and prove the retry does not repeat the effect."
+    },
+    {
+      "id": "F-003",
+      "title": "Deployment model conflicts with globally shared mutable data",
+      "severity": "critical",
+      "status": "partially_mitigated",
+      "category": "identity-tenancy",
+      "confidence": "high",
+      "description": "Authentication is multi-user, but policies, templates, and parts of audit/configuration are global rather than tenant-owned. Administrative restrictions reduce some exposure but do not establish a complete tenancy model.",
+      "impact": "One user can be affected by another user's global configuration or data; future multi-user deployment risks cross-tenant leakage and confused authority.",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "src/app/api/policies/route.ts",
+        "src/app/api/templates/route.ts",
+        "src/app/api/audit/verify/route.ts"
+      ],
+      "canonicalTasks": [
+        "IAM-001",
+        "DAT-001"
+      ],
+      "recommendation": "Choose and enforce either explicit single-owner mode or workspace/tenant ownership across every mutable record and query.",
+      "acceptanceTest": "Create two tenants and prove every read, write, audit, template, skill, run, and artifact is isolated under adversarial identifiers."
+    },
+    {
+      "id": "F-004",
+      "title": "HTTP and provider endpoints allowed server-side request forgery",
+      "severity": "critical",
+      "status": "fixed_in_v8",
+      "category": "security-egress",
+      "confidence": "high",
+      "description": "User-influenced HTTP and provider base URLs previously had no private-network, loopback, metadata, DNS-rebinding, or redirect boundary.",
+      "impact": "An agent could probe internal services, cloud metadata, or local control planes.",
+      "evidence": [
+        "src/lib/security/egress.ts",
+        "src/lib/engine/tools/httpFetch.ts",
+        "src/lib/engine/gateway.ts",
+        "tests/egress.test.ts"
+      ],
+      "canonicalTasks": [
+        "THR-001",
+        "CAP-001"
+      ],
+      "recommendation": "Keep destination and redirect validation, DNS resolution checks, and explicit local-model exceptions under policy.",
+      "acceptanceTest": "Run the egress suite against loopback, RFC1918, link-local, metadata, IPv6, encoded addresses, mixed DNS answers, and redirect chains."
+    },
+    {
+      "id": "F-005",
+      "title": "Invalid or cyclic plans could be reported as completed",
+      "severity": "critical",
+      "status": "fixed_in_v8",
+      "category": "runtime-correctness",
+      "confidence": "high",
+      "description": "The original scheduler could reach no-ready-step state while unfinished nodes remained and still finish the run successfully.",
+      "impact": "A structurally impossible plan could produce a false success signal and misleading evidence.",
+      "evidence": [
+        "src/lib/engine/plan.ts",
+        "src/lib/engine/runner.ts",
+        "tests/plan.test.ts"
+      ],
+      "canonicalTasks": [
+        "LIF-001",
+        "EVAL-001"
+      ],
+      "recommendation": "Retain preflight plan validation and fail closed when unfinished work has no executable node.",
+      "acceptanceTest": "Test duplicate nodes, unknown edges, self-dependencies, cycles, excessive steps, and runtime deadlock."
+    },
+    {
+      "id": "F-006",
+      "title": "No tested sovereign backup and restore path",
+      "severity": "critical",
+      "status": "fixed_in_v10",
+      "category": "recovery",
+      "confidence": "high",
+      "description": "The v10 package creates a consistent SQLite snapshot, encrypts it with scrypt and AES-256-GCM, verifies integrity and required tables, restores atomically, preserves an overwritten database, and includes positive and negative restore tests.",
+      "impact": "Loss or corruption of the SQLite database, keys, artifacts, or model configuration can be unrecoverable.",
+      "evidence": [
+        "docs/canonical/20_DATA_LIFECYCLE_CONTRACT.md",
+        "docs/canonical/24_HONEST_LIMITATIONS.md",
+        "src/lib/durable/backup.ts",
+        "docs/canonical/evidence/durable-vertical-slice.json",
+        "src/lib/backup/application-backup.ts",
+        "scripts/backup-application.mjs",
+        "scripts/restore-application.mjs",
+        "tests/application-backup.test.ts",
+        "docs/canonical/decisions/ADR-0023-encrypted-application-database-backup.md"
+      ],
+      "canonicalTasks": [
+        "OPS-001"
+      ],
+      "recommendation": "Run periodic clean-deployment RTO/RPO drills and store the passphrase separately from the backup.",
+      "acceptanceTest": "Restore the encrypted backup into a clean target, verify the sentinel data and database checks, then prove wrong-key, tamper, and unauthorized-overwrite attempts fail closed."
+    },
+    {
+      "id": "F-007",
+      "title": "Drizzle ORM remains on a version with a high-severity advisory",
+      "severity": "high",
+      "status": "open",
+      "category": "supply-chain",
+      "confidence": "high",
+      "description": "The current dependency range resolves below the audited fixed line identified by npm audit for identifier-related SQL injection.",
+      "impact": "Unsafe identifier construction in affected paths can turn application input into SQL structure rather than data.",
+      "evidence": [
+        "package.json",
+        "docs/roast/evidence/npm-audit.json"
+      ],
+      "canonicalTasks": [
+        "SUP-001"
+      ],
+      "recommendation": "Upgrade Drizzle ORM to a supported non-vulnerable release, regenerate/migrate safely, and execute database integration tests.",
+      "acceptanceTest": "npm audit contains no high advisory for Drizzle and all migration/query/integration tests pass on a clean install."
+    },
+    {
+      "id": "F-008",
+      "title": "Any authenticated user could mutate global policy",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "authorization",
+      "confidence": "high",
+      "description": "The policy update path previously had an ineffective administrative check while changing system-wide policy.",
+      "impact": "A normal user could weaken approval requirements for all users.",
+      "evidence": [
+        "src/app/api/policies/route.ts"
+      ],
+      "canonicalTasks": [
+        "IAM-001",
+        "POL-001"
+      ],
+      "recommendation": "Retain explicit administrative authorization and later tenant-scope policy records.",
+      "acceptanceTest": "A non-admin receives a denial and cannot change persisted policy; an authorized admin creates an attributable audit event."
+    },
+    {
+      "id": "F-009",
+      "title": "Skill identifiers enabled cross-user prompt access or attachment",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "authorization",
+      "confidence": "high",
+      "description": "Direct skill fetch and agent skill replacement did not consistently verify ownership.",
+      "impact": "A user who guessed an identifier could read or attach another user's procedural prompt material.",
+      "evidence": [
+        "src/app/api/skills/[skillId]/route.ts",
+        "src/app/api/agents/[agentId]/route.ts"
+      ],
+      "canonicalTasks": [
+        "IAM-001",
+        "SKL-001"
+      ],
+      "recommendation": "Keep owner/built-in checks on both reads and relationship writes.",
+      "acceptanceTest": "Attempt direct reads and attachment with another user's skill identifier and prove denial without existence leakage."
+    },
+    {
+      "id": "F-010",
+      "title": "New or empty agents inherited every tool",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "capability-security",
+      "confidence": "high",
+      "description": "Agent creation and runtime fallback could translate absent or empty tool configuration into the full registry.",
+      "impact": "A minimally configured agent could unexpectedly gain network or write authority.",
+      "evidence": [
+        "src/lib/engine/tools/index.ts",
+        "src/app/api/agents/route.ts",
+        "src/lib/engine/start.ts"
+      ],
+      "canonicalTasks": [
+        "CAP-001",
+        "CAP-002"
+      ],
+      "recommendation": "Keep an explicit low-risk default allowlist and treat an empty list as no capabilities.",
+      "acceptanceTest": "Create agents with omitted and empty tool lists; prove only documented tools can execute."
+    },
+    {
+      "id": "F-011",
+      "title": "Catch-all policy allowed medium-risk actions automatically",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "human-oversight",
+      "confidence": "high",
+      "description": "The default policy set included a broad catch-all automatic path that weakened the documented fallback behavior.",
+      "impact": "Risky actions could bypass human review despite the UI implying otherwise.",
+      "evidence": [
+        "src/lib/engine/policy.ts",
+        "tests/policy.test.ts"
+      ],
+      "canonicalTasks": [
+        "POL-001",
+        "UX-001"
+      ],
+      "recommendation": "Keep fail-closed fallback policy and require explicit, narrow auto-approval rules.",
+      "acceptanceTest": "Unknown and medium/high-risk actions resolve to human review or denial in policy tests."
+    },
+    {
+      "id": "F-012",
+      "title": "Runs and approvals have no complete wall-clock deadline model",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "reliability",
+      "confidence": "high",
+      "description": "Runs now accept explicit wall-clock deadlines and output/context budgets; approvals persist an expiry timestamp and are expired by local timers and boot recovery. A durable timer service and restart-safe continuation are still absent.",
+      "impact": "A run can occupy resources indefinitely or remain pending forever after user abandonment.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/app/api/approvals/[approvalId]/route.ts",
+        "src/lib/db/schema.ts",
+        "src/app/api/runs/route.ts",
+        "src/lib/db/index.ts",
+        "drizzle/0001_v10_hardening.sql"
+      ],
+      "canonicalTasks": [
+        "DUR-001",
+        "REL-001",
+        "PERF-001"
+      ],
+      "recommendation": "Add persisted deadlines, timeout ownership, cancellation propagation, and deterministic terminal states.",
+      "acceptanceTest": "Advance a fake clock across model, tool, approval, and run deadlines and prove exact terminal events and released leases."
+    },
+    {
+      "id": "F-013",
+      "title": "Run event sequence allocation is race-prone",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "integrity",
+      "confidence": "high",
+      "description": "Run event sequence allocation and insertion now execute under BEGIN IMMEDIATE with a unique run/sequence constraint and an atomic outbox record. Native multi-process contention tests remain blocked in this environment.",
+      "impact": "Concurrent writers can duplicate or reorder sequence numbers and break replay evidence.",
+      "evidence": [
+        "src/lib/engine/events.ts",
+        "src/lib/db/schema.ts",
+        "drizzle/0001_v10_hardening.sql",
+        "scripts/validate-migrations.mjs"
+      ],
+      "canonicalTasks": [
+        "DUR-002",
+        "OBS-001"
+      ],
+      "recommendation": "Use a transactionally allocated sequence or append-only event table with a unique run/sequence constraint and retry.",
+      "acceptanceTest": "Run concurrent appenders and prove contiguous unique ordering under load and injected transaction retries."
+    },
+    {
+      "id": "F-014",
+      "title": "Audit hash-chain append is race-prone and not externally anchored",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "audit-integrity",
+      "confidence": "high",
+      "description": "Audit hash-chain read, hash calculation, append, and outbox insertion now run in one immediate transaction. External anchoring and native concurrent-writer tests remain.",
+      "impact": "Concurrent events can fork the chain; a database administrator can rewrite the entire chain and recompute hashes.",
+      "evidence": [
+        "src/lib/engine/audit.ts",
+        "scripts/verify-audit.ts",
+        "src/lib/db/schema.ts",
+        "drizzle/0001_v10_hardening.sql"
+      ],
+      "canonicalTasks": [
+        "OBS-001",
+        "SEC-002"
+      ],
+      "recommendation": "Serialize append, add uniqueness, sign periodic roots, and optionally export roots to independent storage.",
+      "acceptanceTest": "Generate concurrent audit writes, verify one linear chain, then mutate history and prove signed-root verification fails."
+    },
+    {
+      "id": "F-015",
+      "title": "Disabled provider configurations were still eligible",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "provider-routing",
+      "confidence": "high",
+      "description": "Provider activation status was not consistently enforced during dispatch or provider tests.",
+      "impact": "An operator could believe a provider was disabled while the system still sent data to it.",
+      "evidence": [
+        "src/lib/engine/gateway.ts",
+        "src/lib/engine/runner.ts",
+        "src/app/api/providers/test/route.ts"
+      ],
+      "canonicalTasks": [
+        "PROV-001",
+        "PROV-002"
+      ],
+      "recommendation": "Retain enabled checks at every provider resolution boundary.",
+      "acceptanceTest": "Disable each provider and prove dispatch, health test, and fallback routing never contact it."
+    },
+    {
+      "id": "F-016",
+      "title": "Database migration failure was tolerated",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "startup-integrity",
+      "confidence": "high",
+      "description": "Migration errors were logged but startup could continue against an unknown schema.",
+      "impact": "The application could write incompatible data or fail later in less diagnosable ways.",
+      "evidence": [
+        "src/lib/db/index.ts"
+      ],
+      "canonicalTasks": [
+        "OPS-001",
+        "INF-001"
+      ],
+      "recommendation": "Keep startup fail-closed for required schema migrations.",
+      "acceptanceTest": "Force a migration failure and prove the process refuses readiness without serving mutation routes."
+    },
+    {
+      "id": "F-017",
+      "title": "Fetched content remains a prompt-injection channel",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "agent-security",
+      "confidence": "high",
+      "description": "Fetched data is now labeled untrusted and egress-limited, but untrusted text still enters model context without a fully enforced authority separation or content transformation policy.",
+      "impact": "A malicious page can attempt to override instructions, induce tool use, or exfiltrate context.",
+      "evidence": [
+        "src/lib/engine/tools/httpFetch.ts",
+        "src/lib/engine/runner.ts",
+        "docs/canonical/07_SECURITY_TRUST_SAFETY.md"
+      ],
+      "canonicalTasks": [
+        "CAP-001",
+        "CAP-002",
+        "THR-001"
+      ],
+      "recommendation": "Separate data from instructions, apply trust labels in the internal protocol, and require policy authorization independent of model text.",
+      "acceptanceTest": "Use adversarial fetched pages that request secrets and destructive tools; prove zero authority escalation and no protected-context leakage."
+    },
+    {
+      "id": "F-018",
+      "title": "Native database integration tests cannot run in the constrained environment",
+      "severity": "high",
+      "status": "environment_blocked",
+      "category": "verification",
+      "confidence": "high",
+      "description": "The safe install deliberately skips native post-install scripts, leaving better-sqlite3 unavailable for three database-backed suites.",
+      "impact": "Critical approval expiry, audit, and runner integration behavior is not independently executed in this environment.",
+      "evidence": [
+        "docs/roast/evidence/v8-full-tests.txt",
+        "docs/canonical/24_HONEST_LIMITATIONS.md"
+      ],
+      "canonicalTasks": [
+        "EVAL-002"
+      ],
+      "recommendation": "Run the blocked suites on an approved clean Linux CI image with pinned Node headers and a trusted prebuilt/native toolchain.",
+      "acceptanceTest": "All database suites pass from a clean lockfile install and publish logs, environment digest, and database reset evidence."
+    },
+    {
+      "id": "F-019",
+      "title": "Production build did not complete end-to-end in the audit environment",
+      "severity": "high",
+      "status": "environment_blocked",
+      "category": "release-verification",
+      "confidence": "high",
+      "description": "The production build compiles and completes type validation, but page-data collection cannot load the absent better-sqlite3 native binding in the constrained environment.",
+      "impact": "A source-level and compile-level green result does not prove deployable application startup or route data collection.",
+      "evidence": [
+        "docs/canonical/evidence/v10-build.txt",
+        "scripts/build-production.mjs"
+      ],
+      "canonicalTasks": [
+        "EVAL-002",
+        "INF-001"
+      ],
+      "recommendation": "Run the build with the verified native binding on a trusted CI or development host, then execute startup and browser E2E gates.",
+      "acceptanceTest": "A clean install completes the production build, starts the server, and passes Playwright without hidden network or native-binding errors."
+    },
+    {
+      "id": "F-020",
+      "title": "User data export, correction, and deletion are not implemented end-to-end",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "data-governance",
+      "confidence": "high",
+      "description": "User export, password-confirmed deletion, owned-data cascade, governed-memory correction/deletion, and logical audit redaction overlays are implemented. Native end-to-end deletion, backup propagation, and legal retention validation remain.",
+      "impact": "Users cannot exercise data rights reliably and deleted data may survive in logs, artifacts, or backups.",
+      "evidence": [
+        "docs/canonical/20_DATA_LIFECYCLE_CONTRACT.md",
+        "src/lib/db/schema.ts",
+        "src/app/api/account/export/route.ts",
+        "src/app/api/account/delete/route.ts",
+        "src/app/api/memory/route.ts",
+        "src/lib/engine/audit.ts",
+        "docs/canonical/data/DATA_INVENTORY.json"
+      ],
+      "canonicalTasks": [
+        "DAT-001",
+        "OPS-001",
+        "MEM-001"
+      ],
+      "recommendation": "Implement data inventory-backed export and deletion workflows with tombstone/backup semantics and audit evidence.",
+      "acceptanceTest": "Create a user with all data classes, export it, delete it, search every primary/derived store, restore an older backup, and prove policy-compliant handling."
+    },
+    {
+      "id": "F-021",
+      "title": "Custom templates are globally visible and mutable",
+      "severity": "high",
+      "status": "fixed_in_v10",
+      "category": "identity-tenancy",
+      "confidence": "high",
+      "description": "Custom templates now carry an owner identifier; listing and creation expose only built-in templates plus the authenticated user's templates.",
+      "impact": "Private workflows or proprietary prompts can be exposed or changed across users.",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "src/app/api/templates/route.ts",
+        "drizzle/0001_v10_hardening.sql"
+      ],
+      "canonicalTasks": [
+        "IAM-001"
+      ],
+      "recommendation": "Separate immutable built-ins from tenant-owned custom templates and scope every query.",
+      "acceptanceTest": "Two-user route tests prove private templates cannot be listed, read, updated, or referenced cross-tenant."
+    },
+    {
+      "id": "F-022",
+      "title": "Audit access is restricted but audit data remains globally modeled",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "identity-tenancy",
+      "confidence": "high",
+      "description": "The route now restricts entries to administrators, but audit rows lack a complete tenant/workspace ownership model and delegated audit roles.",
+      "impact": "A global administrator becomes a high-value data aggregation point and tenant-level audit cannot be safely delegated.",
+      "evidence": [
+        "src/app/api/audit/verify/route.ts",
+        "src/lib/db/schema.ts"
+      ],
+      "canonicalTasks": [
+        "IAM-001",
+        "OBS-001"
+      ],
+      "recommendation": "Add tenant/workspace dimensions and explicit audit-reader roles while preserving system-level security audit separation.",
+      "acceptanceTest": "Tenant auditors see only their workspace; system auditors see redacted cross-tenant metadata under separate authorization."
+    },
+    {
+      "id": "F-023",
+      "title": "Registration remains open with weak abuse controls",
+      "severity": "high",
+      "status": "fixed_in_v10",
+      "category": "authentication",
+      "confidence": "high",
+      "description": "Registration now bootstraps only the first administrator by default, remains closed afterward unless explicitly enabled, supports an invite token, enforces a twelve-character minimum, and uses rate limiting without trusting proxy headers by default.",
+      "impact": "An exposed installation can be populated by unauthorized users and amplified against local or paid model resources.",
+      "evidence": [
+        "src/app/api/register/route.ts",
+        "src/lib/auth/password.ts",
+        "src/lib/rate-limit.ts",
+        ".env.example"
+      ],
+      "canonicalTasks": [
+        "IAM-001",
+        "SEC-002"
+      ],
+      "recommendation": "Add explicit registration mode, invitation/first-owner bootstrap, stronger password checks, throttling, and non-enumerating responses.",
+      "acceptanceTest": "Unauthenticated registration is denied in closed mode; invite reuse, enumeration, weak passwords, and burst attempts fail safely."
+    },
+    {
+      "id": "F-024",
+      "title": "Secret encryption lacks documented rotation and context binding",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "cryptography",
+      "confidence": "medium",
+      "description": "Provider secrets now use versioned AES-GCM records, HKDF purpose separation, and user/provider context binding with legacy decryption compatibility. Automated rotation, revocation, and custody recovery are not complete.",
+      "impact": "A leaked master key or ciphertext relocation can expose all provider credentials with limited recovery options.",
+      "evidence": [
+        "src/lib/crypto.ts",
+        "docs/canonical/07_SECURITY_TRUST_SAFETY.md",
+        "src/app/api/providers/route.ts",
+        "src/lib/engine/runner.ts",
+        "tests/crypto.test.ts"
+      ],
+      "canonicalTasks": [
+        "SEC-002"
+      ],
+      "recommendation": "Introduce key IDs, rotation, AEAD associated data, scoped decrypt authority, secure backup handling, and revocation drills.",
+      "acceptanceTest": "Rotate from key A to B without downtime, prove old ciphertext migration, reject swapped record context, and restore credentials securely."
+    },
+    {
+      "id": "F-025",
+      "title": "Run creation has no client idempotency contract",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "api-reliability",
+      "confidence": "high",
+      "description": "Run creation accepts a user-scoped Idempotency-Key, serializes create-or-reuse under BEGIN IMMEDIATE, rejects key reuse with a different request, and has a unique database constraint. Native concurrent API tests remain blocked.",
+      "impact": "Network retries or double clicks can duplicate expensive or destructive work.",
+      "evidence": [
+        "src/app/api/runs/route.ts",
+        "src/lib/db/schema.ts",
+        "src/lib/engine/runner.ts",
+        "drizzle/0001_v10_hardening.sql"
+      ],
+      "canonicalTasks": [
+        "DUR-002"
+      ],
+      "recommendation": "Accept scoped idempotency keys, persist request/result hashes, and return the original run for safe retries.",
+      "acceptanceTest": "Send the same request concurrently and repeatedly; prove exactly one run and a deterministic replay response."
+    },
+    {
+      "id": "F-026",
+      "title": "Approval expiry is not owned by a durable timer",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "human-oversight",
+      "confidence": "high",
+      "description": "Approval expiry is persisted and enforced by local wait timers and startup sweeping, but no independent durable timer worker owns expiry while the application is offline.",
+      "impact": "Expired approvals can remain pending or resume ambiguously, blocking work and weakening policy guarantees.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/app/api/approvals/[approvalId]/route.ts",
+        "tests/approval-expiry.test.ts",
+        "src/lib/db/index.ts",
+        "src/lib/db/schema.ts"
+      ],
+      "canonicalTasks": [
+        "DUR-003",
+        "UX-001"
+      ],
+      "recommendation": "Persist approval deadlines and let a durable worker own expiry, cancellation, and notification.",
+      "acceptanceTest": "Restart before and after expiry and prove one deterministic expired transition and no later execution."
+    },
+    {
+      "id": "F-027",
+      "title": "Restart semantics for pending approvals are incomplete",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "recovery",
+      "confidence": "high",
+      "description": "A serializable revision-checked approval wait contract now proves one-decision and expiry semantics, but the active runner still cannot resume it after restart.",
+      "impact": "An approved action may never resume or may be reissued incorrectly after restart.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/lib/db/schema.ts",
+        "src/lib/durable/approval-continuation.ts",
+        "tests/approval-continuation.test.ts"
+      ],
+      "canonicalTasks": [
+        "DUR-003"
+      ],
+      "recommendation": "Persist the wait contract, durable timer, continuation pointer, and requeue behavior in the active runner.",
+      "acceptanceTest": "Restart with a pending approval, decide it from another process, and prove the exact continuation resumes once."
+    },
+    {
+      "id": "F-028",
+      "title": "Configured maximum plan size was not enforced",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "resource-governance",
+      "confidence": "high",
+      "description": "The planner schema previously accepted plans beyond the configured step limit.",
+      "impact": "A model could create runaway work graphs and consume disproportionate resources.",
+      "evidence": [
+        "src/lib/engine/plan.ts",
+        "tests/plan.test.ts"
+      ],
+      "canonicalTasks": [
+        "LIF-001",
+        "PERF-001"
+      ],
+      "recommendation": "Keep max-step enforcement at parse/validation time.",
+      "acceptanceTest": "Generate plans at limit, limit+1, and extreme sizes; prove bounded parse time and clear rejection."
+    },
+    {
+      "id": "F-029",
+      "title": "Tool iteration exhaustion could be treated as success",
+      "severity": "high",
+      "status": "fixed_in_v8",
+      "category": "runtime-correctness",
+      "confidence": "high",
+      "description": "A step could leave the model still requesting tools after the loop budget but continue toward completion.",
+      "impact": "Incomplete or looping work could be presented as successful.",
+      "evidence": [
+        "src/lib/engine/runner.ts"
+      ],
+      "canonicalTasks": [
+        "LIF-001",
+        "EVAL-002"
+      ],
+      "recommendation": "Fail the step and run with explicit budget-exhausted evidence.",
+      "acceptanceTest": "Use a model fixture that always requests another tool and prove deterministic failure at the configured limit."
+    },
+    {
+      "id": "F-030",
+      "title": "Usage accounting could double-count tokens",
+      "severity": "medium",
+      "status": "fixed_in_v8",
+      "category": "economics",
+      "confidence": "high",
+      "description": "Token usage could be recorded both through provider events and response usage aggregation.",
+      "impact": "Cost, capacity, and model-routing decisions could be based on inflated telemetry.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/lib/engine/event-types.ts"
+      ],
+      "canonicalTasks": [
+        "OBS-001",
+        "PERF-001"
+      ],
+      "recommendation": "Use one authoritative accounting path with reconciliation fields.",
+      "acceptanceTest": "Replay a response with provider usage events and summary usage; prove totals equal the provider bill once."
+    },
+    {
+      "id": "F-031",
+      "title": "Rejected approval did not close the tool evidence chain",
+      "severity": "medium",
+      "status": "fixed_in_v8",
+      "category": "evidence-integrity",
+      "confidence": "high",
+      "description": "A rejected action produced a model-facing result but no matching tool.result event.",
+      "impact": "Evidence reconstruction reported an unmatched call and could not explain the human decision path.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/lib/engine/evidence-summary.ts"
+      ],
+      "canonicalTasks": [
+        "UX-002",
+        "OBS-001"
+      ],
+      "recommendation": "Emit a terminal tool result representing rejection without executing the tool.",
+      "acceptanceTest": "Reject an approval and prove call/result pairing, no side effect, and visible human-decision evidence."
+    },
+    {
+      "id": "F-032",
+      "title": "Prompts and objectives are duplicated into persistent evidence without minimization",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "category": "privacy",
+      "confidence": "high",
+      "description": "Full system prompts and run objectives are no longer duplicated into run-start events or audit payloads; hashes and character counts are stored instead. The objective remains once in the run record because it is operational input, and broader retention controls remain.",
+      "impact": "Sensitive business data can persist longer and in more stores than users expect.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/lib/engine/audit.ts",
+        "src/lib/engine/events.ts",
+        "src/app/api/account/export/route.ts"
+      ],
+      "canonicalTasks": [
+        "DAT-001",
+        "OBS-001"
+      ],
+      "recommendation": "Store references/hashes and redacted summaries by default; define an explicit secure evidence retention mode for full content.",
+      "acceptanceTest": "Insert known sensitive markers and prove default logs/events/audit omit them while authorized artifact storage remains traceable."
+    },
+    {
+      "id": "F-033",
+      "title": "Artifact writes had no practical size ceiling",
+      "severity": "medium",
+      "status": "fixed_in_v8",
+      "category": "resource-governance",
+      "confidence": "high",
+      "description": "The write-artifact tool accepted unbounded content.",
+      "impact": "A model could exhaust memory, disk, database capacity, or UI rendering.",
+      "evidence": [
+        "src/lib/engine/tools/writeArtifact.ts"
+      ],
+      "canonicalTasks": [
+        "CAP-002",
+        "PERF-001"
+      ],
+      "recommendation": "Keep a documented byte cap and later add streaming/object storage where justified.",
+      "acceptanceTest": "Attempt boundary, boundary+1, and multibyte payloads and prove exact size enforcement."
+    },
+    {
+      "id": "F-034",
+      "title": "Policy regular expressions can create denial of service",
+      "severity": "medium",
+      "status": "fixed_in_v10",
+      "category": "policy-engine",
+      "confidence": "medium",
+      "description": "Policy patterns pass a bounded safe-regex compiler that rejects oversized expressions, backreferences, lookarounds, nested quantifiers, repeated wildcards, and malformed patterns before evaluation.",
+      "impact": "Catastrophic backtracking can block the Node.js event loop during authorization.",
+      "evidence": [
+        "src/lib/engine/policy.ts",
+        "src/app/api/policies/route.ts",
+        "src/lib/security/safe-regex.ts",
+        "tests/safe-regex.test.ts"
+      ],
+      "canonicalTasks": [
+        "POL-001",
+        "SEC-002"
+      ],
+      "recommendation": "Use constrained glob/pattern semantics or safe-regex validation and bounded evaluation.",
+      "acceptanceTest": "Submit known pathological expressions and long inputs; prove bounded latency or rejection."
+    },
+    {
+      "id": "F-035",
+      "title": "Rate limiting is process-local and trusts client forwarding headers",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "category": "abuse-control",
+      "confidence": "high",
+      "description": "Forwarding headers are ignored unless proxy trust is explicitly enabled. Rate-limit state remains process-local and therefore is not a distributed production control.",
+      "impact": "Attackers can bypass limits across workers/restarts or by rotating forged header values.",
+      "evidence": [
+        "src/lib/rate-limit.ts",
+        "src/app/api/runs/route.ts",
+        "src/app/api/providers/test/route.ts",
+        "tests/rate-limit.test.ts"
+      ],
+      "canonicalTasks": [
+        "IAM-001",
+        "INF-002"
+      ],
+      "recommendation": "Use authenticated principal/workspace keys and a shared limiter or documented single-process boundary; configure trusted proxies explicitly.",
+      "acceptanceTest": "Exercise multiple workers, restarts, spoofed headers, users, and IPs; prove the intended global and per-user budget."
+    },
+    {
+      "id": "F-036",
+      "title": "Security headers improved but CSP remains absent",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "category": "browser-security",
+      "confidence": "high",
+      "description": "The application now sends a Content Security Policy and baseline headers. The compatibility policy still permits inline scripts and styles, and browser-level enforcement tests remain.",
+      "impact": "A future injection bug has fewer browser-side containment barriers.",
+      "evidence": [
+        "next.config.ts"
+      ],
+      "canonicalTasks": [
+        "THR-001"
+      ],
+      "recommendation": "Add nonce/hash-based CSP, report-only rollout, and route tests without breaking Next.js runtime behavior.",
+      "acceptanceTest": "Production responses include the approved CSP and Playwright confirms no required script/style violations."
+    },
+    {
+      "id": "F-037",
+      "title": "Source lint is intentionally shallow and build ignores ESLint",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "category": "code-quality",
+      "confidence": "high",
+      "description": "Build no longer suppresses ESLint and the non-interactive source lint checks merge markers, dangerous directives, dynamic code execution, malformed JSON, and client/server boundaries. A full semantic ESLint ruleset remains absent.",
+      "impact": "Common correctness, React, security, and accessibility defects can pass CI.",
+      "evidence": [
+        "scripts/lint-source.mjs",
+        "next.config.ts",
+        "package.json"
+      ],
+      "canonicalTasks": [
+        "EVAL-002",
+        "SUP-001"
+      ],
+      "recommendation": "Adopt a pinned non-interactive ESLint configuration plus targeted security/accessibility rules and keep the fast scanner as an additional gate.",
+      "acceptanceTest": "A clean install runs lint non-interactively; seeded violations fail with stable diagnostics."
+    },
+    {
+      "id": "F-038",
+      "title": "No generated SBOM, model inventory, or build provenance",
+      "severity": "high",
+      "status": "fixed_in_v10",
+      "category": "supply-chain",
+      "confidence": "high",
+      "description": "The release pipeline generates a CycloneDX SBOM, license inventory, model inventory, and source-tree build provenance with hashes.",
+      "impact": "Operators cannot reliably identify vulnerable components, licenses, models, plugins, or reproduce the artifact.",
+      "evidence": [
+        "package.json",
+        "docs/canonical/14_ACCEPTANCE_GATES.md",
+        "scripts/generate-release-evidence.mjs",
+        "docs/canonical/evidence/release/SBOM.cyclonedx.json",
+        "docs/canonical/evidence/release/LICENSE_INVENTORY.json",
+        "docs/canonical/evidence/release/MODEL_INVENTORY.json",
+        "docs/canonical/evidence/release/BUILD_PROVENANCE.json"
+      ],
+      "canonicalTasks": [
+        "SUP-001",
+        "MOD-001"
+      ],
+      "recommendation": "Generate CycloneDX/SPDX, license inventory, model/plugin hashes, and build provenance during release.",
+      "acceptanceTest": "The extracted ZIP contains validated inventories matching the lockfile and shipped artifacts, signed or hashed in the release manifest."
+    },
+    {
+      "id": "F-039",
+      "title": "Observability lacks traces, SLOs, and capacity evidence",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "observability",
+      "confidence": "high",
+      "description": "A local metrics endpoint now reports status counts, latency percentiles, token usage, approval expiry, outbox backlog, durable-job state, and SLO evaluations. Cross-boundary traces, energy measurement, historical capacity series, and telemetry retention remain.",
+      "impact": "Operators cannot answer why work is slow, expensive, failing, or saturating resources.",
+      "evidence": [
+        "src/lib/engine/event-types.ts",
+        "docs/canonical/09_EVALUATION_OBSERVABILITY.md",
+        "src/lib/observability/metrics.ts",
+        "src/app/api/metrics/route.ts",
+        "tests/metrics.test.ts"
+      ],
+      "canonicalTasks": [
+        "OBS-001",
+        "OBS-002",
+        "PERF-001"
+      ],
+      "recommendation": "Add redacted trace correlation, metrics, usage reconciliation, queue measures, SLOs, and local dashboards.",
+      "acceptanceTest": "A benchmark run yields traceable p50/p95/p99 latency, queue depth, failure classes, token/cost totals, and an SLO verdict."
+    },
+    {
+      "id": "F-040",
+      "title": "Governed memory architecture is documentation-only",
+      "severity": "high",
+      "status": "fixed_in_v11",
+      "category": "memory",
+      "confidence": "high",
+      "description": "Governed memory is implemented and integrated into prompt assembly with owner filtering, expiry, token budgets, quarantine, provenance labeling, corrections, and deletion.",
+      "impact": "Long-running agents either forget important context or accumulate untrusted, stale, contradictory, or cross-user material.",
+      "evidence": [
+        "docs/canonical/06_DATA_MEMORY_KNOWLEDGE.md",
+        "src/lib/db/schema.ts",
+        "src/lib/memory/governed-memory.ts",
+        "src/app/api/memory/route.ts",
+        "src/components/memory/memory-ledger.tsx",
+        "tests/governed-memory.test.ts",
+        "docs/canonical/decisions/ADR-0022-governed-local-memory-baseline.md",
+        "src/lib/memory/prompt-context.ts",
+        "tests/memory-prompt-context.test.ts"
+      ],
+      "canonicalTasks": [
+        "MEM-001",
+        "MEM-002",
+        "MEM-003"
+      ],
+      "recommendation": "Maintain ablation and poisoning evaluations before expanding automatic memory creation.",
+      "acceptanceTest": "Create contradictory, expired, private, corrected, and deleted memories; prove scoring, provenance, isolation, and removal behavior."
+    },
+    {
+      "id": "F-041",
+      "title": "Provider selection is not a measured capability router",
+      "severity": "high",
+      "status": "fixed_in_v11",
+      "category": "model-routing",
+      "confidence": "high",
+      "description": "Model capability profiles, hard eligibility constraints, deterministic utility scoring, explicit fallback, no-eligible failure, persistence, API control, and run-level rationale are implemented.",
+      "impact": "Critical work can be dispatched by static configuration rather than demonstrated fitness.",
+      "evidence": [
+        "src/lib/engine/gateway.ts",
+        "src/lib/engine/providers",
+        "docs/canonical/05_REASONING_AND_INTELLIGENCE.md",
+        "src/lib/models/router.ts",
+        "src/lib/models/db-routing.ts",
+        "tests/model-router.test.ts"
+      ],
+      "canonicalTasks": [
+        "MOD-001",
+        "PROV-001",
+        "PROV-002"
+      ],
+      "recommendation": "Populate profiles through repeatable benchmark runs and invalidate stale evaluations.",
+      "acceptanceTest": "Given constrained tasks and unavailable models, route to the Pareto-eligible candidate or return no-eligible-model without silent downgrade."
+    },
+    {
+      "id": "F-042",
+      "title": "Test portfolio is too narrow for the threat and failure model",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "evaluation",
+      "confidence": "high",
+      "description": "The safe portfolio now includes lifecycle, evidence, egress, durable execution, backup/restore, memory, regex, tool-schema, metrics, context-budget, graph, crypto, and policy tests. Native database, browser, accessibility, load, and broad fault-injection suites remain incomplete.",
+      "impact": "The system can pass 47 safe tests while remaining unsafe under realistic operation.",
+      "evidence": [
+        "tests",
+        "e2e",
+        "docs/canonical/14_ACCEPTANCE_GATES.md",
+        "tests/application-backup.test.ts",
+        "tests/governed-memory.test.ts",
+        "tests/metrics.test.ts",
+        "tests/context-budget.test.ts"
+      ],
+      "canonicalTasks": [
+        "EVAL-002",
+        "REL-001"
+      ],
+      "recommendation": "Build layered adversarial and fault-injection suites tied to every high/critical finding.",
+      "acceptanceTest": "Each high/critical finding has a failing regression before repair and a passing independent verification after repair."
+    },
+    {
+      "id": "F-043",
+      "title": "End-to-end tests are brittle smoke checks",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "category": "evaluation",
+      "confidence": "high",
+      "description": "The Playwright suite now uses operator-supplied credentials, semantic readiness conditions, and coverage for run evidence, agent evaluation, and governed-memory lifecycle. Isolated database fixtures, repeated parallel/serial execution, accessibility assertions, and measured flake-rate evidence remain.",
+      "impact": "The suite is materially less brittle, but shared-state and unexecuted browser coverage can still conceal authorization, recovery, accessibility, or concurrency regressions.",
+      "evidence": [
+        "e2e/smoke.spec.ts",
+        "playwright.config.ts",
+        ".github/workflows/ci.yml"
+      ],
+      "canonicalTasks": [
+        "EVAL-002",
+        "UX-001"
+      ],
+      "recommendation": "Add per-run isolated databases and users, deterministic fixture teardown, accessibility checks, authorization negatives, restart recovery, and repeated serial/parallel flake measurement.",
+      "acceptanceTest": "Run the E2E suite repeatedly in serial and parallel modes against isolated state, including accessibility, authorization, offline, and recovery cases, with a bounded measured flake rate."
+    },
+    {
+      "id": "F-044",
+      "title": "Seed workflow is destructive and includes known demo credentials",
+      "severity": "medium",
+      "status": "fixed_in_v10",
+      "category": "operations",
+      "confidence": "high",
+      "description": "The seed refuses to run unless a destructive-seed flag is set, requires an operator-supplied twelve-character demo password, and no longer contains fallback application secrets or prints credentials.",
+      "impact": "Running it in the wrong environment can destroy data or create an easily guessed account.",
+      "evidence": [
+        "scripts/seed.ts",
+        "playwright.config.ts",
+        ".env.example"
+      ],
+      "canonicalTasks": [
+        "OPS-001",
+        "SEC-002"
+      ],
+      "recommendation": "Require explicit development/test environment, random ephemeral credentials, targeted fixture cleanup, and destructive confirmation guards.",
+      "acceptanceTest": "Attempt seed in production mode and against a non-empty protected database; prove hard refusal and no mutation."
+    },
+    {
+      "id": "F-045",
+      "title": "Evidence percentage measures structure, not truth",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "category": "evidence-quality",
+      "confidence": "high",
+      "description": "The UI originally risked presenting event-shape completeness as overall evidence quality. It is now labeled structural coverage, but semantic correctness and verifier independence remain separate unfinished controls.",
+      "impact": "Users can over-trust a complete-looking ledger even when outputs are wrong or self-verified.",
+      "evidence": [
+        "src/components/runs/evidence-ledger.tsx",
+        "src/lib/engine/evidence-summary.ts"
+      ],
+      "canonicalTasks": [
+        "UX-002",
+        "EVAL-002"
+      ],
+      "recommendation": "Keep structural labeling and add claim-level evidence, verifier identity, reproducibility, contradiction, and semantic evaluation.",
+      "acceptanceTest": "Show a structurally complete but deliberately false run and prove the UI does not label it verified."
+    },
+    {
+      "id": "F-046",
+      "title": "Most canonical capabilities remain blocked or unimplemented",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "program-execution",
+      "confidence": "high",
+      "description": "v9 and v10 implement durable contracts, SQLite persistence primitives, transactional outbox, governed memory, encrypted restore, lifecycle controls, observability, data export/deletion, budgets, and release provenance. Production worker cutover, measured routing, delegated identity, and full native/browser verification remain.",
+      "impact": "Documentation volume can be mistaken for platform maturity, obscuring the implementation gap.",
+      "evidence": [
+        "docs/canonical/tasks/TASKS.json",
+        "docs/canonical/16_TRACEABILITY_MATRIX.md",
+        "docs/canonical/26_V9_DURABLE_ENGINEERING_REPORT.md",
+        "src/lib/durable/sqlite-store.ts",
+        "src/lib/backup/application-backup.ts",
+        "src/lib/memory/governed-memory.ts"
+      ],
+      "canonicalTasks": [
+        "CAN-001"
+      ],
+      "recommendation": "Expose implemented-versus-designed status prominently and execute dependency-unblocking vertical slices rather than adding parallel documents.",
+      "acceptanceTest": "A release dashboard derives status from code/test evidence and cannot count designed-only tasks as delivered capability."
+    },
+    {
+      "id": "F-047",
+      "title": "SQLite and web-process topology limit safe scale and failover",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "infrastructure",
+      "confidence": "high",
+      "description": "SQLite now has immediate-transaction serialization, persisted durable schemas, a repository-owned adapter, outbox leases, and migration checks. The web process still launches the production runner and there is no tested worker fleet or failover topology.",
+      "impact": "Multi-process deployment, failover, concurrent writers, and horizontal scaling can corrupt assumptions or lose work.",
+      "evidence": [
+        "src/lib/db/index.ts",
+        "src/lib/engine/start.ts",
+        "docs/canonical/08_INFRASTRUCTURE_SOVEREIGNTY.md",
+        "src/lib/durable/sqlite-store.ts",
+        "src/lib/durable/outbox.ts",
+        "src/lib/engine/runner.ts",
+        "scripts/validate-migrations.mjs"
+      ],
+      "canonicalTasks": [
+        "INF-001",
+        "INF-002",
+        "DUR-001"
+      ],
+      "recommendation": "Define supported single-node limits, separate durable worker execution, and introduce a tested persistence profile before scaling out.",
+      "acceptanceTest": "Run load and failover tests at documented limits; unsupported topologies must fail configuration validation."
+    },
+    {
+      "id": "F-048",
+      "title": "No tested Content Security Policy",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "browser-security",
+      "confidence": "high",
+      "description": "A CSP is configured and scanned, but it retains unsafe-inline compatibility directives and has not passed browser-level nonce, third-party, or violation-report testing.",
+      "impact": "Cross-site scripting impact is not meaningfully contained at the browser policy layer.",
+      "evidence": [
+        "next.config.ts",
+        "scripts/roast-project.mjs"
+      ],
+      "canonicalTasks": [
+        "THR-001"
+      ],
+      "recommendation": "Design and roll out report-only then enforced CSP with route-level automated checks.",
+      "acceptanceTest": "All production pages load under enforced CSP with no unauthorized script, style, frame, connect, image, or font source."
+    },
+    {
+      "id": "F-049",
+      "title": "Tool arguments are not uniformly governed by explicit versioned schemas",
+      "severity": "high",
+      "status": "fixed_in_v11",
+      "category": "capability-security",
+      "confidence": "high",
+      "description": "Tools declare versioned schemas and capabilities; arguments are validated, allowlists enforced, and execution is bounded by timeout and output size.",
+      "impact": "Malformed, oversized, ambiguous, or injected arguments can reach tool implementations inconsistently.",
+      "evidence": [
+        "src/lib/engine/tools/index.ts",
+        "src/lib/engine/types.ts",
+        "src/lib/engine/tools/validate.ts",
+        "src/lib/engine/runner.ts",
+        "tests/tool-arguments.test.ts",
+        "src/lib/engine/tool-runtime.ts",
+        "tests/tool-runtime.test.ts"
+      ],
+      "canonicalTasks": [
+        "CAP-001",
+        "CAP-002",
+        "DEV-001"
+      ],
+      "recommendation": "Add OS-level isolation for high-risk tools and maintain mutation tests for schema bypass.",
+      "acceptanceTest": "Fuzz every tool with invalid types, extra fields, oversized values, Unicode edge cases, and schema-version mismatch."
+    },
+    {
+      "id": "F-050",
+      "title": "Context and output budgets are incomplete",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "category": "context-engineering",
+      "confidence": "high",
+      "description": "Run requests now bound context and output tokens; context assembly deterministically preserves mandatory messages and recent complete segments under budget. Adaptive stopping, cache isolation, and omission-quality benchmarks remain.",
+      "impact": "Long histories or retrieved content can crowd out policy/current facts, increase cost, and degrade correctness.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "docs/canonical/05_REASONING_AND_INTELLIGENCE.md",
+        "src/app/api/runs/route.ts",
+        "src/lib/engine/context-budget.ts",
+        "tests/context-budget.test.ts"
+      ],
+      "canonicalTasks": [
+        "CTX-001",
+        "RSN-001",
+        "RSN-002"
+      ],
+      "recommendation": "Implement mandatory-context reservation, measured selection, output ceilings, and bounded planner/critic/verifier stopping.",
+      "acceptanceTest": "Run adversarial long-context cases and prove mandatory policy/current code facts survive while cost and latency remain within budget."
+    },
+    {
+      "id": "F-051",
+      "title": "Stale workers could commit after lease takeover when identity was reused",
+      "severity": "critical",
+      "status": "fixed_in_v12",
+      "confidence": "high",
+      "category": "recovery failure",
+      "description": "Durable mutations previously checked worker identity and lease time but did not bind commits to a monotonically increasing fencing token. A restarted worker using the same identity could race a newer lease holder.",
+      "impact": "Split-brain workers could overwrite checkpoints or complete a job after losing authority, invalidating exactly-once and recovery claims.",
+      "recommendation": "Require a fencing token on every lease-bound mutation and reject stale tokens in memory and SQLite adapters.",
+      "acceptanceTest": "Acquire a lease twice with the same worker identity after expiry; token 1 must be rejected and token 2 must commit.",
+      "evidence": [
+        "src/lib/durable/types.ts",
+        "src/lib/durable/memory-store.ts",
+        "src/lib/durable/sqlite-store.ts",
+        "tests/durable-fencing.test.ts",
+        "tests/v12-property-race.test.ts"
+      ],
+      "canonicalTasks": [
+        "DUR-005"
+      ]
+    },
+    {
+      "id": "F-052",
+      "title": "Approval resolution lacked a cross-process compare-and-set revision",
+      "severity": "high",
+      "status": "fixed_in_v12",
+      "confidence": "high",
+      "category": "agent-control failure",
+      "description": "The active approval row had a status but no revision. Competing processes could both observe pending before one committed a terminal decision.",
+      "impact": "A stale operator action or concurrent process could overwrite or contradict the authoritative human decision.",
+      "recommendation": "Persist an approval revision and update terminal status only when id, prior status, and revision all match. Return a conflict to stale clients.",
+      "acceptanceTest": "Two resolutions using the same expected revision must yield one successful transition and one approval_revision_conflict.",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "src/lib/engine/runner.ts",
+        "src/app/api/approvals/[approvalId]/route.ts",
+        "drizzle/0006_v12_fencing_and_verification.sql"
+      ],
+      "canonicalTasks": [
+        "DUR-006"
+      ]
+    },
+    {
+      "id": "F-053",
+      "title": "Verification decisions were not immutably bound to tested source and release artifacts",
+      "severity": "high",
+      "status": "fixed_in_v12",
+      "confidence": "high",
+      "category": "verification failure",
+      "description": "Run evidence and human review existed, but there was no immutable attestation binding requirement revision, source tree, test output, artifact, builder, verifier, and release candidate.",
+      "impact": "A verification label could outlive or refer to different code and test evidence, creating false release confidence.",
+      "recommendation": "Create hash-bound verification attestations, reject builder/verifier identity collisions, and expose absent verification in the interface.",
+      "acceptanceTest": "Changing any bound field must invalidate the evidence hash; self-verification must be rejected.",
+      "evidence": [
+        "src/lib/verification/attestation.ts",
+        "src/app/api/runs/[runId]/verify/route.ts",
+        "src/components/runs/verification-panel.tsx",
+        "tests/verification-attestation.test.ts"
+      ],
+      "canonicalTasks": [
+        "VER-002"
+      ]
+    },
+    {
+      "id": "F-054",
+      "title": "Runtime calm could be mistaken for release or pilot readiness",
+      "severity": "high",
+      "status": "fixed_in_v12",
+      "confidence": "high",
+      "category": "design deception",
+      "description": "Operational metrics showed local state but did not explicitly gate build, native tests, browser E2E, accessibility, restart recovery, tenant isolation, or extracted-package evidence.",
+      "impact": "An operator could interpret zero failures in an empty or lightly used system as evidence that the release was pilot-ready.",
+      "recommendation": "Add a conservative evidence gate that treats unknown release evidence as blocking and separates runtime health from release classification.",
+      "acceptanceTest": "Healthy empty metrics with unknown release facts must remain DEVELOPMENT ONLY; controlled pilot requires every hard fact.",
+      "evidence": [
+        "src/lib/release/pilot-readiness.ts",
+        "src/components/operations/control-room.tsx",
+        "tests/pilot-readiness.test.ts"
+      ],
+      "canonicalTasks": [
+        "UX-004"
+      ]
+    },
+    {
+      "id": "F-055",
+      "title": "Model routing did not distinguish verification quality or unhealthy candidates",
+      "severity": "high",
+      "status": "fixed_in_v12",
+      "confidence": "high",
+      "category": "agent-control failure",
+      "description": "The measured router scored planning and coding capabilities but lacked an explicit verifier-quality signal and health state.",
+      "impact": "Verification tasks could select a strong builder but weak reviewer, or choose an unavailable model if other metrics were attractive.",
+      "recommendation": "Record verification quality and health, apply task-class weighting, and reject unavailable candidates as a hard constraint.",
+      "acceptanceTest": "A verification task must select the eligible high-verification model and reject an unavailable higher-scoring model.",
+      "evidence": [
+        "src/lib/models/router.ts",
+        "src/lib/models/db-routing.ts",
+        "src/app/api/models/route.ts",
+        "tests/model-router.test.ts"
+      ],
+      "canonicalTasks": [
+        "MOD-003"
+      ]
+    },
+    {
+      "id": "F-056",
+      "title": "Active approval waits were process-local and could not resume after restart",
+      "severity": "critical",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "recovery failure",
+      "description": "The approval row survived, but the active model/tool continuation originally lived in process memory. v13 adds deterministic continuation keys, durable pause/requeue, revision compare-and-set, expiry, and checkpoint metadata for the bounded pilot path.",
+      "impact": "A restart during a risky action could leave the run permanently waiting or tempt an operator to repeat a side effect.",
+      "recommendation": "Execute native restart integration in the isolated lane and prove the exact approved step resumes once after process replacement.",
+      "acceptanceTest": "Persist a pending approval, terminate the process, restart, resolve the expected revision, and prove one side effect and one terminal durable state.",
+      "evidence": [
+        "src/lib/engine/runner.ts",
+        "src/app/api/approvals/[approvalId]/route.ts",
+        "tests/durable-approval-restart.test.ts"
+      ],
+      "canonicalTasks": [
+        "DUR-007",
+        "PILOT-001"
+      ]
+    },
+    {
+      "id": "F-057",
+      "title": "Pilot resources lacked a complete tenant and workspace boundary",
+      "severity": "critical",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "tenant isolation failure",
+      "description": "v13 persists tenant, workspace, owner, and visibility across pilot resources and centralizes personal-scope resolution, but full multi-process and browser authorization testing is pending.",
+      "impact": "Resource identifiers could cross user or workspace boundaries even when individual routes appeared owner-filtered.",
+      "recommendation": "Run native cross-tenant API, search, artifact, approval, verification, export, backup, and restore tests, including mutations that remove predicates.",
+      "acceptanceTest": "Every cross-tenant read and write must fail, and removing one tenant predicate must make the suite fail.",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "src/lib/auth/pilot-scope.ts",
+        "tests/tenant-isolation-property.test.ts",
+        "drizzle/0007_v13_pilot_scope.sql"
+      ],
+      "canonicalTasks": [
+        "IAM-002",
+        "PILOT-001"
+      ]
+    },
+    {
+      "id": "F-058",
+      "title": "Pilot readiness could be implied by static or missing evidence",
+      "severity": "high",
+      "status": "fixed_in_v13",
+      "confidence": "high",
+      "category": "misleading success",
+      "description": "v13 derives pilot readiness from run, durable job, receipt, approval, model, memory, capability, artifact, reconciliation, verification, and release evidence. Unknown evidence is blocking.",
+      "impact": "Operators could interpret an incomplete checklist or completed run as proof that the release was safe for pilot use.",
+      "recommendation": "Keep fail-closed evidence semantics and regression tests for every unknown gate.",
+      "acceptanceTest": "Removing any mandatory evidence item must change the run to blocked and identify the missing evidence.",
+      "evidence": [
+        "src/lib/release/pilot-run-gates.ts",
+        "src/lib/release/pilot-run-evidence.ts",
+        "tests/pilot-run-gates.test.ts"
+      ],
+      "canonicalTasks": [
+        "PILOT-001",
+        "PILOT-002"
+      ]
+    },
+    {
+      "id": "F-059",
+      "title": "Database initialization during module import broke production build discovery",
+      "severity": "high",
+      "status": "fixed_in_v13",
+      "confidence": "high",
+      "category": "build reproducibility",
+      "description": "The database was opened eagerly when API modules were imported during Next.js page-data collection. v13 opens SQLite lazily on first real database operation and forces authenticated application rendering to remain dynamic.",
+      "impact": "A clean source build required a native runtime binding even when no database query was executed, preventing reproducible packaging and hiding build/runtime boundaries.",
+      "recommendation": "Retain lazy initialization and verify the complete build in both source-safe and native CI lanes.",
+      "acceptanceTest": "Import the database module without a native binding and complete `next build` without opening SQLite.",
+      "evidence": [
+        "src/lib/db/index.ts",
+        "src/app/[locale]/(app)/layout.tsx",
+        "tests/db-lazy-initialization.test.ts",
+        "docs/canonical/evidence/v13/build/production-build-after-lazy-db.log"
+      ],
+      "canonicalTasks": [
+        "VAL-001",
+        "INF-002"
+      ]
+    },
+    {
+      "id": "F-060",
+      "title": "Native persistence validation is unavailable on the protected host",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "release verification",
+      "description": "v14 runs the complete persistence suite through Node 22 built-in SQLite without downloading or building a new binary. The better-sqlite3 native lane remains available in pinned CI but is not locally proven.",
+      "impact": "SQLite transactions, multi-process races, migrations, durable approval restart, and production runtime behavior are not locally proven.",
+      "recommendation": "Run the pinned isolated validation workflow and attach dependency provenance, native results, migrations, build, and resource metrics.",
+      "acceptanceTest": "The isolated lane must install from lockfile, run all native suites, and publish machine-readable evidence with exact package and binary provenance.",
+      "evidence": [
+        "src/lib/db/sqlite-client.ts",
+        "tests/sqlite-driver-fallback.test.ts",
+        "tests/canonical-migrations.test.ts",
+        "docs/canonical/evidence/v14/test-full.log"
+      ],
+      "canonicalTasks": [
+        "VAL-001",
+        "TST-004",
+        "PILOT-002"
+      ]
+    },
+    {
+      "id": "F-061",
+      "title": "Browser, accessibility, and visual regression gates are not executed locally",
+      "severity": "high",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "accessibility blocker",
+      "description": "Chromium is installed, but organization-managed policy sets URLBlocklist to [\"*\"], blocking localhost before application navigation. The managed policy was not modified or bypassed.",
+      "impact": "Keyboard, focus, responsive, accessibility, restart, reconciliation, and operator-truth behavior are not browser-verified.",
+      "recommendation": "Execute Chromium, Firefox, mobile, accessibility, and visual regression in the pinned disposable CI lane.",
+      "acceptanceTest": "All pilot browser scenarios must pass with screenshots, traces, accessibility results, and responsive evidence.",
+      "evidence": [
+        "playwright.config.ts",
+        "e2e/smoke.spec.ts",
+        "docs/canonical/evidence/v14/browser-policy-block.json",
+        ".github/workflows/pilot-validation.yml"
+      ],
+      "canonicalTasks": [
+        "VAL-001",
+        "UX-003",
+        "PILOT-002"
+      ]
+    },
+    {
+      "id": "F-062",
+      "title": "Final verification is not yet independently bound to the released ZIP hash",
+      "severity": "critical",
+      "status": "open",
+      "confidence": "high",
+      "category": "verification failure",
+      "description": "v13 includes a hash-bound verifier that rejects incomplete evidence, but no operationally separate verifier has accepted a final archive after native and browser gates.",
+      "impact": "The builder could package source that differs from tested evidence or overstate readiness.",
+      "recommendation": "Freeze the release, execute all isolated gates, bind evidence to the archive hash, and run a distinct verifier invocation that attempts rejection.",
+      "acceptanceTest": "A distinct verifier identity must accept the exact final ZIP SHA-256 with all required evidence hashes and no hidden critical limitation.",
+      "evidence": [
+        "scripts/verify-pilot-candidate.mjs",
+        "docs/canonical/evidence/v13/pilot-evidence-bundle.json"
+      ],
+      "canonicalTasks": [
+        "PILOT-002",
+        "EVAL-002"
+      ]
+    },
+    {
+      "id": "F-063",
+      "title": "Live remote model conversations remain outside restart-safe pilot execution",
+      "severity": "critical",
+      "status": "accepted_risk",
+      "confidence": "high",
+      "category": "agent-control failure",
+      "description": "The bounded pilot supports simulation and local artifact generation. Remote provider dialogue state is not serialized as durable model intents and immutable response references.",
+      "impact": "A restart during a live remote model interaction can require re-execution, consume additional cost, or produce a non-equivalent response.",
+      "recommendation": "Deny live-provider pilot execution until model request intents, response references, replay policy, cost accounting, and privacy scope are durable.",
+      "acceptanceTest": "Terminate before and after a remote response and prove deterministic continuation or explicit reconciliation without silent re-request.",
+      "evidence": [
+        "docs/canonical/41_V13_PILOT_SCOPE.md",
+        "docs/canonical/42_V13_ARCHITECTURE_DELTA.md"
+      ],
+      "canonicalTasks": [
+        "DUR-003",
+        "MOD-002"
+      ]
+    },
+    {
+      "id": "F-064",
+      "title": "Runtime migration discovery applied only the first declared schema change",
+      "severity": "critical",
+      "status": "fixed_in_v14",
+      "confidence": "high",
+      "category": "data-loss risk",
+      "description": "The legacy migration journal listed only 0000 even though later SQL migrations existed. Runtime startup therefore could create an outdated schema while source validation merely counted files.",
+      "impact": "Production startup could omit durable, memory, tenancy, verification, and approval columns, creating runtime failures and misleading release evidence.",
+      "recommendation": "Keep ordered SQL files canonical, persist each filename and SHA-256, and reject migration drift.",
+      "acceptanceTest": "Apply all migrations to a clean database, rerun idempotently, and fail after modifying a historical migration.",
+      "evidence": [
+        "src/lib/db/migrations.ts",
+        "tests/canonical-migrations.test.ts",
+        "drizzle/0008_v14_runtime_alignment.sql"
+      ],
+      "canonicalTasks": [
+        "VAL-003"
+      ]
+    },
+    {
+      "id": "F-065",
+      "title": "Static generation inherited an unbounded host CPU count",
+      "severity": "high",
+      "status": "fixed_in_v14",
+      "confidence": "high",
+      "category": "performance collapse",
+      "description": "Next.js inferred a very large CPU count in the container and spawned excessive static-generation workers.",
+      "impact": "Builds could stall, exhaust memory, or interfere with other workloads on high-core-count hosts.",
+      "recommendation": "Keep explicit bounded build concurrency and record build duration and route metrics.",
+      "acceptanceTest": "Complete the production build with two workers and a successful exit.",
+      "evidence": [
+        "next.config.ts",
+        "docs/canonical/evidence/v14/build-production.json",
+        "docs/canonical/evidence/v14/build-production.log"
+      ],
+      "canonicalTasks": [
+        "TST-005"
+      ]
+    },
+    {
+      "id": "F-066",
+      "title": "Demo seed referenced tenant and workspace identifiers without creating the scope rows",
+      "severity": "high",
+      "status": "fixed_in_v14",
+      "confidence": "high",
+      "category": "tenant isolation failure",
+      "description": "The seeded runs carried personal tenant and workspace identifiers while the tenants, workspaces, and memberships tables remained empty.",
+      "impact": "Demo and E2E state could appear scoped while lacking the membership records used by backend authorization.",
+      "recommendation": "Create the personal pilot scope before seeding scoped agents or runs.",
+      "acceptanceTest": "Seed a clean database and verify tenant, workspace, membership, run, approval, and artifact scope survive backup and restore.",
+      "evidence": [
+        "scripts/seed.ts",
+        "src/lib/auth/pilot-scope.ts",
+        "docs/canonical/evidence/v14/clean-restore-proof.json"
+      ],
+      "canonicalTasks": [
+        "IAM-002",
+        "DR-002"
+      ]
+    },
+    {
+      "id": "F-067",
+      "title": "The local browser executable is governed by a deny-all URL policy",
+      "severity": "high",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "accessibility blocker",
+      "description": "The installed Chromium returns ERR_BLOCKED_BY_ADMINISTRATOR for localhost because its managed URLBlocklist contains a wildcard deny rule.",
+      "impact": "Browser E2E, keyboard, responsive, offline, accessibility, and visual-regression claims cannot be made from this host.",
+      "recommendation": "Execute the pinned browser lane in a disposable CI worker and retain the local block as a release blocker.",
+      "acceptanceTest": "The same frozen candidate passes Chromium browser, accessibility, offline, and responsive tests in the disposable lane.",
+      "evidence": [
+        "docs/canonical/evidence/v14/browser-policy-block.json",
+        ".github/workflows/pilot-validation.yml"
+      ],
+      "canonicalTasks": [
+        "PILOT-003"
+      ]
+    },
+    {
+      "id": "F-068",
+      "title": "Restore interruption after target displacement lacked a rollback proof",
+      "severity": "high",
+      "status": "fixed_in_v14",
+      "confidence": "high",
+      "category": "recovery failure",
+      "description": "The restore implementation had rollback code, but no deterministic kill-point proved that the original target is restored after displacement and before commit.",
+      "impact": "An interrupted restore could have been claimed atomic without evidence at the most dangerous boundary.",
+      "recommendation": "Retain explicit fault injection and regression coverage around target displacement.",
+      "acceptanceTest": "Inject failure immediately after displacement and verify the original target bytes remain available.",
+      "evidence": [
+        "src/lib/backup/application-backup.ts",
+        "tests/application-backup.test.ts"
+      ],
+      "canonicalTasks": [
+        "DR-002"
+      ]
+    },
+    {
+      "id": "F-069",
+      "title": "Full-process outbound network behavior is not independently audited",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "security-egress",
+      "description": "The sovereign network guard proves declared adapter policy, but no packet- or syscall-level audit has observed the complete application during startup, build, workflow execution, and shutdown with outbound traffic denied.",
+      "impact": "An undeclared dependency or library call could escape the application-level guard and invalidate air-gap claims.",
+      "recommendation": "Extend process attribution to Windows and an unrestricted browser/model lane; increase sampling or add firewall event evidence.",
+      "acceptanceTest": "The full pilot workflow records zero unexpected remote connection across application, browser, model, and child processes.",
+      "evidence": [
+        "docs/canonical/evidence/v16/network/process-evidence.json"
+      ],
+      "canonicalTasks": [
+        "SOV-015"
+      ]
+    },
+    {
+      "id": "F-070",
+      "title": "No real local generative model artifact has been benchmarked",
+      "severity": "critical",
+      "status": "open",
+      "confidence": "high",
+      "category": "model-routing",
+      "description": "The deterministic local runtime proves contracts and zero-key orchestration, while the medium local model is only a hardware profile and was not downloaded or executed.",
+      "impact": "Model sovereignty, task quality, tool reliability, memory behavior, latency, and hardware feasibility remain unproven for a useful generative workload.",
+      "recommendation": "Benchmark at least one license-reviewed local model artifact in a disposable environment and bind its hash, runtime, quality, memory, latency, and energy evidence to the registry.",
+      "acceptanceTest": "A real local model completes the sovereign golden workflow and adversarial structured-output tasks without commercial keys.",
+      "evidence": [
+        "src/lib/sovereignty/model-runtime.ts",
+        "docs/canonical/evidence/v15/sovereign-model-registry.json"
+      ],
+      "canonicalTasks": [
+        "SOV-007"
+      ]
+    },
+    {
+      "id": "F-071",
+      "title": "Energy-aware scheduling uses estimates rather than measured hardware data",
+      "severity": "high",
+      "status": "open",
+      "confidence": "high",
+      "category": "economics",
+      "description": "The placement and energy policy contracts are implemented, but power, thermal, load, and task-energy values are synthetic estimates.",
+      "impact": "Energy-saving, thermal-protection, and local-versus-remote break-even decisions may be materially wrong on target hardware.",
+      "recommendation": "Collect repeated wall-power or trusted telemetry measurements for idle, model load, inference, retrieval, backup, and restore.",
+      "acceptanceTest": "Measured profiles include confidence intervals and alter routing only within validated bounds.",
+      "evidence": [
+        "src/lib/sovereignty/node-placement.ts",
+        "docs/canonical/evidence/v15/sovereign-hardware-energy.json"
+      ],
+      "canonicalTasks": [
+        "SOV-008"
+      ]
+    },
+    {
+      "id": "F-072",
+      "title": "Clean offline installation still depends on an unbuilt dependency bundle",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "supply-chain",
+      "description": "The source release and signed update are self-contained, but a new machine still requires JavaScript packages, system prerequisites, browser artifacts, and any real model artifact from external sources.",
+      "impact": "Loss of public registries or model hubs prevents clean installation and disaster recovery onto replacement hardware.",
+      "recommendation": "Package or separately verify a compatible Node runtime and prove installation on the target clean machine.",
+      "acceptanceTest": "A clean target installs source, runtime, dependencies, browser and model artifacts with public registries denied.",
+      "evidence": [
+        "docs/canonical/evidence/v16/offline-install-manual/summary.json"
+      ],
+      "canonicalTasks": [
+        "SOV-014"
+      ]
+    },
+    {
+      "id": "F-073",
+      "title": "Signed air-gap bundles were replayable and ignored local key revocation",
+      "severity": "high",
+      "status": "fixed_in_v15",
+      "confidence": "high",
+      "category": "capability-security",
+      "description": "Signature validation alone accepted a copied task or result repeatedly and could not reject a compromised node key.",
+      "impact": "An attacker or operator error could repeat bounded work, duplicate local writes, or accept evidence from a revoked offline node.",
+      "recommendation": "Retain purpose-scoped trust checks and a durable replay ledger at the acceptance boundary.",
+      "acceptanceTest": "A new process instance rejects a consumed bundle, and a revoked key is rejected before payload acceptance.",
+      "evidence": [
+        "src/lib/sovereignty/replay-ledger.ts",
+        "src/lib/sovereignty/trust-store.ts",
+        "src/lib/sovereignty/airgap-handoff.ts",
+        "tests/sovereign-replay-trust.test.ts"
+      ],
+      "canonicalTasks": [
+        "SOV-011"
+      ]
+    },
+    {
+      "id": "F-074",
+      "title": "Offline update migration execution is declared but not automatically rehearsed",
+      "severity": "high",
+      "status": "fixed_in_v16",
+      "confidence": "high",
+      "category": "supply-chain",
+      "description": "The signed update format lists migration files and validation commands, and file apply/rollback is proven, but the update engine does not execute migrations or capture a reversible database rehearsal.",
+      "impact": "A source update may apply successfully while its schema change fails or cannot be rolled back.",
+      "recommendation": "Keep migration rehearsal as a release gate for every signed update.",
+      "acceptanceTest": "A real previous-version database migrates, validates, rolls back, and preserves prior data.",
+      "evidence": [
+        "docs/canonical/evidence/v16/update-rehearsal/result.json"
+      ],
+      "canonicalTasks": [
+        "SOV-017"
+      ]
+    },
+    {
+      "id": "F-075",
+      "title": "Root and signing keys lack protected hardware custody and rotation proof",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "cryptography",
+      "description": "Context-separated keys, signing identities, validity, purpose and revocation are implemented, but root keys and private signing keys remain process memory or PEM material in the proof harness.",
+      "impact": "Host compromise could expose all software-protected sovereign identities and backup keys.",
+      "recommendation": "Implement optional OS keychain or TPM-backed adapters, rotation ceremonies, recovery-key separation, and secret-access audit.",
+      "acceptanceTest": "Rotate installation, tenant, backup, and signing keys without losing authorized data; revoked versions cannot sign or decrypt new material.",
+      "evidence": [
+        "src/lib/sovereignty/key-hierarchy.ts",
+        "src/lib/sovereignty/trust-store.ts",
+        "tests/sovereign-key-hierarchy.test.ts"
+      ],
+      "canonicalTasks": [
+        "SOV-004"
+      ]
+    },
+    {
+      "id": "F-076",
+      "title": "Monolithic test orchestration retains an open handle after all suites report",
+      "severity": "medium",
+      "status": "fixed_in_v16",
+      "confidence": "high",
+      "category": "reliability",
+      "description": "The complete Vitest run reports every suite as passing but does not terminate within the bounded window; split deterministic runs terminate and prove all tests.",
+      "impact": "CI can hang after successful tests, wasting capacity and obscuring real timeouts.",
+      "recommendation": "Retain isolated per-file execution as release authority and diagnose the monolithic command separately.",
+      "acceptanceTest": "Every discovered test file exits in a bounded child process and the aggregate gate exits zero.",
+      "evidence": [
+        "docs/canonical/evidence/v16/full-tests-final/summary.json"
+      ],
+      "canonicalTasks": [
+        "SOV-018"
+      ]
+    },
+    {
+      "id": "F-077",
+      "title": "Real browser and accessibility evidence is blocked by managed navigation policy",
+      "severity": "high",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "accessibility",
+      "description": "Authenticated Chromium tests reach the browser but every localhost navigation is rejected with ERR_BLOCKED_BY_ADMINISTRATOR.",
+      "impact": "Keyboard, focus, responsive, offline, failure-state, and screen-reader behavior cannot be promoted from contracts to runtime evidence.",
+      "recommendation": "Run the frozen source in a disposable browser environment without the managed deny-all URL policy; do not alter the protected host policy.",
+      "acceptanceTest": "Chromium and a second engine complete the sovereign workflow, accessibility scan, keyboard flow, and visual states.",
+      "evidence": [
+        "docs/canonical/evidence/v16/browser-authenticated/e2e.log"
+      ],
+      "canonicalTasks": [
+        "SOV-021"
+      ]
+    },
+    {
+      "id": "F-078",
+      "title": "No real local generative model executed despite a complete runtime contract",
+      "severity": "critical",
+      "status": "open",
+      "confidence": "high",
+      "category": "sovereignty",
+      "description": "The local runtime lifecycle and candidate profile exist, but qualification found no signed model artifact and no loopback runtime endpoint.",
+      "impact": "Reasoning quality, structured output, tool behavior, memory use, latency, RAM, and energy remain unproven for sovereign intelligence.",
+      "recommendation": "Execute the hash-verified candidate or another licensed local model on the target mini-PC and run the canonical benchmark.",
+      "acceptanceTest": "A real local model passes quality, authorization, structured output, tool, memory, recovery, latency, and hardware thresholds.",
+      "evidence": [
+        "docs/canonical/evidence/v16/model/local-model-qualification.json"
+      ],
+      "canonicalTasks": [
+        "SOV-019"
+      ]
+    },
+    {
+      "id": "F-079",
+      "title": "Portable key custody is not equivalent to OS or hardware-backed custody",
+      "severity": "high",
+      "status": "open",
+      "confidence": "high",
+      "category": "secrets",
+      "description": "v16 separates and encrypts key purposes, but private material remains exportable after passphrase-based decryption and no TPM or OS keychain adapter was proven.",
+      "impact": "Filesystem or passphrase compromise can expose signing and encryption material required for high-value sovereign operation.",
+      "recommendation": "Implement and validate a target-platform OS keychain or hardware-backed adapter with recovery and rotation drills.",
+      "acceptanceTest": "Non-exportable or OS-protected keys sign, rotate, revoke, recover, and reject cross-purpose use on target hardware.",
+      "evidence": [
+        "src/lib/sovereignty/portable-keystore.ts",
+        "docs/canonical/57_V16_HONEST_LIMITATIONS.md"
+      ],
+      "canonicalTasks": [
+        "SOV-020"
+      ]
+    },
+    {
+      "id": "F-080",
+      "title": "Offline retrieval fallback has no semantic embedding comparison",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "memory",
+      "description": "The governed BM25 fallback is local and safe, but no local embedding or reranking model was available for quality comparison.",
+      "impact": "Lexical retrieval may miss semantically relevant evidence or overvalue repeated terms.",
+      "recommendation": "Benchmark lexical, local embedding, hybrid, reranked, and disabled retrieval on a fixed sovereign task corpus.",
+      "acceptanceTest": "A selected strategy improves precision and task correctness without increasing unsafe-action or context-contamination rates.",
+      "evidence": [
+        "src/lib/sovereignty/local-retrieval.ts",
+        "tests/sovereign-local-retrieval.test.ts"
+      ],
+      "canonicalTasks": [
+        "SOV-016"
+      ]
+    },
+    {
+      "id": "F-081",
+      "title": "Offline installation still assumes a compatible preinstalled Node runtime",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "supply-chain",
+      "description": "Locked dependencies install from a verified cache without registry access, but Node and platform-level prerequisites are not included in a signed installation bundle.",
+      "impact": "A clean bare machine cannot yet be installed from TITAI media alone.",
+      "recommendation": "Create platform-specific signed runtime bundles or a verified installer manifest and prove installation on the target machine.",
+      "acceptanceTest": "A clean target with no public network installs the runtime, dependencies, source, migrations and application from signed media.",
+      "evidence": [
+        "docs/canonical/evidence/v16/offline-install-manual/summary.json"
+      ],
+      "canonicalTasks": [
+        "SOV-014"
+      ]
+    },
+    {
+      "id": "F-082",
+      "title": "Physical multi-node and long-disconnection conflict behavior remains unproven",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "multi-agent",
+      "description": "A separate worker process and signing identity passed capability, scope, integrity, and replay checks on one host; two physical nodes and long-disconnection conflict semantics were not exercised.",
+      "impact": "Network partitions, clock differences, deletion propagation, and divergent authoritative state may behave differently across machines.",
+      "recommendation": "Run the signed lease on the user's mini-PC or a second VM and test revocation, deadlines, stale results and conflicting offline changes.",
+      "acceptanceTest": "Two isolated nodes complete and reintegrate work under failure without cross-scope access or silent conflict merge.",
+      "evidence": [
+        "docs/canonical/evidence/v16/multi-node/result.json"
+      ],
+      "canonicalTasks": [
+        "SOV-022"
+      ]
+    },
+    {
+      "id": "F-083",
+      "title": "Energy-aware routing has no target-hardware measurement",
+      "severity": "high",
+      "status": "open",
+      "confidence": "high",
+      "category": "energy",
+      "description": "The current environment reports CPU and RAM but exposes no supported energy counter and is not the user's target mini-PC.",
+      "impact": "Energy utility values may be inaccurate and must not control model or node selection.",
+      "recommendation": "Measure idle, load, model startup, inference, retrieval, backup, restore and thermal behavior on the target hardware.",
+      "acceptanceTest": "Hardware-provenance measurements provide bounded confidence and remain advisory until thresholds are validated.",
+      "evidence": [
+        "docs/canonical/evidence/v16/hardware/hardware-profile.json"
+      ],
+      "canonicalTasks": [
+        "SOV-023"
+      ]
+    },
+    {
+      "id": "F-084",
+      "title": "The initial isolated test runner contained invalid JavaScript syntax",
+      "severity": "medium",
+      "status": "fixed_in_v16",
+      "confidence": "high",
+      "category": "developer-platform",
+      "description": "A TypeScript non-null assertion was accidentally placed in an .mjs file, preventing the new authoritative test command from starting.",
+      "impact": "A release-control improvement could itself have become an unexecuted documentation claim.",
+      "recommendation": "Run node syntax validation for every JavaScript release script and retain the executed full-suite evidence.",
+      "acceptanceTest": "The corrected runner starts, executes every discovered test in a bounded child process, and exits zero.",
+      "evidence": [
+        "scripts/run-complete-tests.mjs",
+        "docs/canonical/evidence/v16/full-tests-final/summary.json"
+      ],
+      "canonicalTasks": [
+        "SOV-018"
+      ]
+    },
+    {
+      "id": "F-085",
+      "title": "Physical pilot labels could be satisfied by simulated evidence",
+      "severity": "critical",
+      "status": "fixed_in_v17",
+      "confidence": "high",
+      "category": "release-integrity",
+      "description": "Earlier readiness structures did not encode which gates require real hardware, browser, model, or separated-machine execution.",
+      "impact": "A future implementation could relabel deterministic or same-host proof as a physical pilot pass.",
+      "recommendation": "Enforce gate-specific execution kinds, release hashes and machine separation.",
+      "acceptanceTest": "Simulation, static analysis, estimates, same-host verifier and one-node records are rejected even when labeled passed.",
+      "evidence": [
+        "src/lib/sovereignty/physical-pilot.ts",
+        "tests/physical-pilot.test.ts"
+      ],
+      "canonicalTasks": [
+        "SOV-024"
+      ]
+    },
+    {
+      "id": "F-086",
+      "title": "Offline installer archive is not yet a trusted complete artifact",
+      "severity": "critical",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "deployment",
+      "description": "v17 can build a platform-specific staging tree with runtime, build, dependencies and migrations, but the bounded environment did not complete a trusted distributable archive and external clean-target proof.",
+      "impact": "A clean sovereign machine cannot yet be provisioned from one independently verified bundle.",
+      "recommendation": "Run the signed installer builder on a disposable target, use a trusted signing key, include separately governed browser/model artifacts, and prove install, repair and uninstall without network.",
+      "acceptanceTest": "A complete bundle verifies, installs, starts, restores and uninstalls on a clean target with no public network.",
+      "evidence": [
+        "scripts/build-v17-offline-installer.mjs",
+        "scripts/prove-v17-offline-installer.mjs",
+        "docs/canonical/evidence/v17/installer/proof.json"
+      ],
+      "canonicalTasks": [
+        "SOV-025"
+      ]
+    },
+    {
+      "id": "F-087",
+      "title": "Real local model benchmark remains unavailable",
+      "severity": "critical",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "model-runtime",
+      "description": "The 30-case qualification lane exists but no signed GGUF artifact and loopback runtime endpoint are available.",
+      "impact": "Local intelligence quality, safety, throughput and energy remain unproven.",
+      "recommendation": "Run the signed model collector on the target Mini-PC using a hash-verified official artifact and loopback runtime.",
+      "acceptanceTest": "The real model meets structured-output, task-success and high-risk refusal thresholds.",
+      "evidence": [
+        "scripts/qualify-v17-local-model.ts",
+        "docs/canonical/evidence/v17/model/qualification.json"
+      ],
+      "canonicalTasks": [
+        "SOV-026"
+      ]
+    },
+    {
+      "id": "F-088",
+      "title": "OS or hardware key custody is not executed",
+      "severity": "critical",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "security",
+      "description": "The hash-pinned helper contract exists, but the current environment has no TPM device, DPAPI, or Linux Secret Service backend.",
+      "impact": "High-value signing and encryption keys remain protected only by the portable encrypted fallback.",
+      "recommendation": "Execute a reviewed hash-pinned custody helper on the target OS and prove rotation, revocation, recovery and wrong-purpose denial.",
+      "acceptanceTest": "At least one OS or hardware backend passes all custody tests and is shown in the UI.",
+      "evidence": [
+        "src/lib/sovereignty/os-key-custody.ts",
+        "docs/canonical/evidence/v17/os-custody/capabilities.json"
+      ],
+      "canonicalTasks": [
+        "SOV-027"
+      ]
+    },
+    {
+      "id": "F-089",
+      "title": "Browser policy prevents real UI and accessibility proof",
+      "severity": "critical",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "accessibility",
+      "description": "The managed Chromium environment applies URLBlocklist star and prevents loopback navigation.",
+      "impact": "Golden workflow, keyboard, focus, screen-reader, responsive, offline and visual evidence are unavailable.",
+      "recommendation": "Run the signed browser collector in an unrestricted disposable environment using Playwright-managed browser artifacts.",
+      "acceptanceTest": "Chromium and a secondary engine complete the workflow with no critical accessibility failure.",
+      "evidence": [
+        "scripts/collect-v17-browser-evidence.mjs",
+        "docs/canonical/evidence/v17/browser/evidence.json"
+      ],
+      "canonicalTasks": [
+        "SOV-028"
+      ]
+    },
+    {
+      "id": "F-090",
+      "title": "Two-machine execution remains unproven",
+      "severity": "critical",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "distributed-systems",
+      "description": "Only one privacy-preserving machine fingerprint was collected; same-host process separation cannot prove physical node independence.",
+      "impact": "Node trust, failure isolation and external verification remain vulnerable to common-host failure and hidden shared state.",
+      "recommendation": "Collect signed profiles and execute a scoped task across two distinct machines or separately administered hosts.",
+      "acceptanceTest": "Two distinct fingerprints pass registration, task binding, replay, revocation, failure and reintegration checks.",
+      "evidence": [
+        "scripts/collect-v17-node-profile.mjs",
+        "scripts/verify-v17-two-node-evidence.mjs",
+        "docs/canonical/evidence/v17/nodes/current-node.json"
+      ],
+      "canonicalTasks": [
+        "SOV-029"
+      ]
+    },
+    {
+      "id": "F-091",
+      "title": "Drizzle dependency versions were stale and unvalidated",
+      "severity": "high",
+      "status": "fixed_in_v17",
+      "confidence": "high",
+      "category": "supply-chain",
+      "description": "The repository previously retained drizzle-orm 0.44.6 and drizzle-kit 0.31.5 because real candidate artifacts had not been acquired and tested.",
+      "impact": "The release carried a known dependency-upgrade blocker and could not claim current migration-tool validation.",
+      "recommendation": "Acquire exact candidate artifacts, record integrity, update lockfile and run all behavioral gates.",
+      "acceptanceTest": "drizzle-orm 0.45.2 and drizzle-kit 0.31.10 pass typecheck, migrations, persistence tests and production build with rollback material preserved.",
+      "evidence": [
+        "package.json",
+        "package-lock.json",
+        "docs/canonical/evidence/v17/dependencies"
+      ],
+      "canonicalTasks": [
+        "SOV-030"
+      ]
+    },
+    {
+      "id": "F-092",
+      "title": "Control plane previously treated same-host isolated execution as multi-node proof",
+      "severity": "high",
+      "status": "fixed_in_v17",
+      "confidence": "high",
+      "category": "operator-truth",
+      "description": "The default control-plane snapshot marked multiNodeExecution true based on separate-process evidence from one host.",
+      "impact": "Operators could infer physical failure isolation that had not been established.",
+      "recommendation": "Default multi-node readiness to blocked until two distinct machine fingerprints are verified.",
+      "acceptanceTest": "The default control plane reports multi-node blocked while preserving full-suite clean-exit truth.",
+      "evidence": [
+        "src/lib/sovereignty/control-plane.ts",
+        "tests/sovereignty-control-plane-v16.test.ts"
+      ],
+      "canonicalTasks": [
+        "SOV-024",
+        "SOV-029"
+      ]
+    },
+    {
+      "id": "F-093",
+      "title": "Foundry candidates were initially ephemeral across process restart",
+      "severity": "high",
+      "status": "fixed_in_v18",
+      "confidence": "high",
+      "category": "persistence",
+      "description": "The first v18 Foundry API generated capability candidates in memory without a canonical persistent record.",
+      "impact": "Operator work could disappear after refresh or restart, and candidate state could not be audited durably.",
+      "recommendation": "Persist candidates with tenant, workspace, owner, specification hash, candidate hash and lifecycle state.",
+      "acceptanceTest": "SQLite proof shows idempotent candidate persistence, restart-safe records and cross-scope isolation.",
+      "evidence": [
+        "src/lib/capabilities/persistence.ts",
+        "drizzle/0010_v18_capability_foundry.sql",
+        "docs/canonical/evidence/v18/persistence-proof.json"
+      ],
+      "canonicalTasks": [
+        "CAP-005"
+      ]
+    },
+    {
+      "id": "F-094",
+      "title": "Capability timestamp column mapping drift could break runtime registry reads",
+      "severity": "high",
+      "status": "fixed_in_v18",
+      "confidence": "high",
+      "category": "database",
+      "description": "A generic timestamp helper mapped importedAt and installedAt to created_at while the migration created imported_at and installed_at.",
+      "impact": "The registry could pass TypeScript yet fail at runtime on real SQLite queries.",
+      "recommendation": "Map physical column names explicitly and add a schema contract regression test.",
+      "acceptanceTest": "The schema test verifies imported_at, installed_at and created_at names and the real SQLite persistence proof passes.",
+      "evidence": [
+        "src/lib/db/schema.ts",
+        "tests/capability-persistence-schema-v18.test.ts",
+        "docs/canonical/evidence/v18/persistence-proof.json"
+      ],
+      "canonicalTasks": [
+        "CAP-005"
+      ]
+    },
+    {
+      "id": "F-095",
+      "title": "Restricted Node subprocess is not a hostile-code security boundary",
+      "severity": "critical",
+      "status": "open",
+      "confidence": "high",
+      "category": "sandbox",
+      "description": "The v18 restricted subprocess applies static checks, filtered environment, timeout and output ceilings, but does not prove kernel-enforced filesystem, process, memory or network isolation against malicious native or runtime escape behavior.",
+      "impact": "Activating arbitrary untrusted packages could expose host files, secrets or network access beyond the declared manifest.",
+      "recommendation": "Keep high-risk and untrusted package classes disabled until an OS, WASI, container or remote disposable sandbox is independently proven.",
+      "acceptanceTest": "A hostile package suite cannot escape filesystem, process, environment, memory or network limits under an independently observed isolation boundary.",
+      "evidence": [
+        "src/lib/capabilities/sandbox.ts",
+        "tests/capability-sandbox-v18.test.ts",
+        "docs/canonical/evidence/v18/V18_SANDBOX_EVIDENCE.json"
+      ],
+      "canonicalTasks": [
+        "CAP-006"
+      ]
+    },
+    {
+      "id": "F-096",
+      "title": "Monolithic Vitest remains unreliable as the authoritative release command",
+      "severity": "high",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "test-infrastructure",
+      "description": "The all-in-one Vitest process can report completed assertions while retaining an open handle or exceeding the execution window.",
+      "impact": "A green assertion summary may not prove deterministic teardown or a clean release process.",
+      "recommendation": "Retain the isolated per-file runner as release authority and continue diagnosing the monolithic handle leak.",
+      "acceptanceTest": "The authoritative isolated runner executes every test file in a separate bounded process with zero failures and zero timeouts; the monolithic command later exits cleanly as an additional gate.",
+      "evidence": [
+        "scripts/run-complete-tests.mjs",
+        "docs/canonical/evidence/v18/full-tests/summary.json"
+      ],
+      "canonicalTasks": [
+        "CAP-009"
+      ]
+    },
+    {
+      "id": "F-097",
+      "title": "Capability publisher key is proof custody rather than production custody",
+      "severity": "high",
+      "status": "accepted_risk",
+      "confidence": "high",
+      "category": "key-custody",
+      "description": "The v18 package publisher identity is generated for the evidence run and proves signing semantics, but it is not protected by OS or hardware-backed production custody.",
+      "impact": "The controlled subsystem package can be verified, but publisher compromise resistance and operational rotation are not production-proven.",
+      "recommendation": "Move publisher signing to the approved OS or hardware custody backend and preserve revocation and recovery evidence.",
+      "acceptanceTest": "A non-exportable or OS-protected publisher key signs, rotates and revokes packages on the target installation without plaintext private-key exposure.",
+      "evidence": [
+        "docs/canonical/evidence/v18/packages/titai-local-document-toolpack-1.0.0/PUBLISHER_TRUST.json",
+        "docs/canonical/evidence/v18/V18_CAPABILITY_FOUNDRY_EVIDENCE.json"
+      ],
+      "canonicalTasks": [
+        "CAP-001",
+        "CAP-002"
+      ]
+    },
+    {
+      "id": "F-098",
+      "title": "Self-improvement proof is a controlled lifecycle model, not autonomous patch execution",
+      "severity": "medium",
+      "status": "partially_mitigated",
+      "confidence": "high",
+      "category": "self-improvement",
+      "description": "v18 proves proposal freezing, role separation, evidence gates, canary and rollback state transitions, but the proof does not autonomously edit and validate an arbitrary repository worktree.",
+      "impact": "The safety control plane is implemented, while broad self-hosted code improvement remains less mature than the product label may imply.",
+      "recommendation": "Retain bounded wording and require a future real worktree patch experiment before claiming general self-improvement.",
+      "acceptanceTest": "A weakness discovered from raw evidence is patched in an isolated worktree, independently tested, canaried and rolled back using the same pipeline.",
+      "evidence": [
+        "src/lib/improvement/lab.ts",
+        "docs/canonical/evidence/v18/V18_SELF_IMPROVEMENT_EVIDENCE.json"
+      ],
+      "canonicalTasks": [
+        "CAP-007"
+      ]
+    },
+    {
+      "id": "F-099",
+      "title": "Capability OS browser and accessibility workflow is not physically verified",
+      "severity": "high",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "product-verification",
+      "description": "The Capability OS UI, Mission Studio and Foundry surfaces compile and have contract tests, but browser E2E, keyboard, accessibility and responsive behavior remain blocked by the managed browser environment.",
+      "impact": "Operator usability and accessibility cannot be promoted from static or source evidence alone.",
+      "recommendation": "Run the v17 physical browser collector against the v18 routes in an unmanaged disposable browser environment.",
+      "acceptanceTest": "Chromium and a secondary engine complete the Capability Foundry workflow with accessibility, keyboard and visual-regression evidence.",
+      "evidence": [
+        "src/components/capability-os/capability-operating-system.tsx",
+        "src/app/[locale]/(app)/capability-os/page.tsx",
+        "docs/canonical/evidence/v17/browser/evidence.json"
+      ],
+      "canonicalTasks": [
+        "CAP-010"
+      ]
+    },
+    {
+      "id": "F-100",
+      "title": "Subsystem verifier remains same-host process separation rather than external-host independence",
+      "severity": "high",
+      "status": "environment_blocked",
+      "confidence": "high",
+      "category": "verification",
+      "description": "The v18 verifier is an evidence-only separate process with a separate Ed25519 identity, but it runs on the same execution host.",
+      "impact": "The subsystem release decision is cryptographically bound and conflict-separated, yet common-host compromise and hidden environment dependence are not excluded.",
+      "recommendation": "Re-run the final verifier bundle on a separately administered host or VM and compare the resulting attestation.",
+      "acceptanceTest": "A distinct host fingerprint independently extracts the final ZIP, verifies all files and package signatures, reruns required gates and signs the same decision.",
+      "evidence": [
+        "scripts/verify-v18-release.mjs",
+        "docs/canonical/66_V18_EVIDENCE_INDEX.md"
+      ],
+      "canonicalTasks": [
+        "CAP-008"
+      ]
+    }
+  ]
+}

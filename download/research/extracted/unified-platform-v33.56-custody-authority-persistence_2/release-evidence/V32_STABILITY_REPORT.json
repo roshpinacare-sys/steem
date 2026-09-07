@@ -1,0 +1,84 @@
+{
+  "version": "32.5",
+  "ownerRole": "Flakiness and Stability Investigator",
+  "status": "passed",
+  "startedAt": "2026-07-18T10:27:38.993651Z",
+  "inventory": {
+    "sourceTestFiles": 134,
+    "compiledTestFiles": 134,
+    "missing": [],
+    "extra": []
+  },
+  "warmup": {
+    "iteration": 0,
+    "status": "passed",
+    "startedAt": "2026-07-18T10:27:38.993683Z",
+    "exitCode": 0,
+    "timedOut": false,
+    "durationMs": 19431.446,
+    "testWallMs": 19431.459,
+    "tests": 736,
+    "passed": 736,
+    "failed": 0,
+    "log": "evidence/generated/v32-stability-run-0.tap.log",
+    "logSha256": "d77fdb7e96663b3dd25ec51c93181c9ae03a4d8c88c5e4bdabd66c0cc13a634b"
+  },
+  "runs": [
+    {
+      "iteration": 1,
+      "status": "passed",
+      "startedAt": "2026-07-18T10:27:58.425942Z",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 19395.51,
+      "testWallMs": 19395.522,
+      "tests": 736,
+      "passed": 736,
+      "failed": 0,
+      "log": "evidence/generated/v32-stability-run-1.tap.log",
+      "logSha256": "262481cb63b52e71a33fdb8d33ad74507bb7e01ac5dba27949869b5c181c12c1"
+    },
+    {
+      "iteration": 2,
+      "status": "passed",
+      "startedAt": "2026-07-18T10:28:17.822171Z",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 19898.796,
+      "testWallMs": 19898.805,
+      "tests": 736,
+      "passed": 736,
+      "failed": 0,
+      "log": "evidence/generated/v32-stability-run-2.tap.log",
+      "logSha256": "bb949af2631286fa3ec9ae41a7d97987a21f73f13f0f0f9c3a7feef07d97f79f"
+    },
+    {
+      "iteration": 3,
+      "status": "passed",
+      "startedAt": "2026-07-18T10:28:37.721426Z",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 18857.471,
+      "testWallMs": 18857.483,
+      "tests": 736,
+      "passed": 736,
+      "failed": 0,
+      "log": "evidence/generated/v32-stability-run-3.tap.log",
+      "logSha256": "67031904efd92576beead7a90eab7423a2d50a79cbe918f62b52179019997f32"
+    }
+  ],
+  "statistics": {
+    "medianWallMs": 19395.522,
+    "meanWallMs": 19383.937,
+    "minWallMs": 18857.483,
+    "maxWallMs": 19898.805,
+    "coefficientOfVariation": 0.0219
+  },
+  "flakeCount": 0,
+  "forceExitDisabled": true,
+  "sharedResultFileEliminated": true,
+  "limitations": [
+    "One unscored warm-up plus three measured local executions reduces cold-cache distortion but does not establish long-term flake probability across operating systems and hardware.",
+    "The stability harness executes Node TAP directly to avoid nested-runner handle leaks and shared-result races."
+  ]
+}

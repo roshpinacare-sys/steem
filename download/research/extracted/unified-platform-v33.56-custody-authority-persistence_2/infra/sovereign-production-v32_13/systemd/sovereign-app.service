@@ -1,0 +1,30 @@
+[Unit]
+Description=Sovereign Evidence-Carrying Execution Fabric
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sovereign
+Group=sovereign
+WorkingDirectory=/opt/sovereign/current
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/sovereign/app.env
+ExecStart=/usr/bin/node /opt/sovereign/current/dist/src/cli/private-pilot-server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/sovereign /var/log/sovereign
+CapabilityBoundingSet=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
