@@ -15,10 +15,11 @@
  */
 
 import { motion } from "framer-motion";
-import { ArrowLeftRight, Boxes, Coins, DoorOpen, ExternalLink, Flame, KeyRound, ArrowDownToLine, Landmark, Network, Radio, Scale, ShieldCheck, Sprout, Swords, TriangleAlert, Users, Wallet, Activity } from "lucide-react";
+import { ArrowLeftRight, Boxes, Coins, DoorOpen, ExternalLink, Flame, KeyRound, ArrowDownToLine, Landmark, Network, Radio, Scale, ShieldCheck, Sprout, Swords, TriangleAlert, Users, Wallet, Activity, Cable } from "lucide-react";
 import type { ReactNode } from "react";
 import { Panel, SectionHead, Stat, HashText, LiveDot, EmptyState, fmtClock } from "./primitives";
 import { useSaosEconomy, useRelayDoors, useTruthPath, useTronDex, useHarvest, useDexQuality, useWallets, useVault } from "@/hooks/use-weave";
+import { useRoshpina } from "@/hooks/use-roshpina";
 import { cn } from "@/lib/utils";
 
 type WrappedRow = { supply: number; locked: number; holders?: number };
@@ -297,6 +298,8 @@ export function Sovereign() {
   const { data: wl } = useWallets();
   /* 114 — THE-VAULT + THE-DEPOSITS: הכספת-המוצפנת · תיבת-ההפקדות (הנמל-פתוח לכל-הרשתות) */
   const { data: vt } = useVault();
+  /* 116 — THE-BRIDGE: גשר-רושפינה — הקונסולה-הפרטית מדברת אל-השרשרת-הריבונית */
+  const { data: rb } = useRoshpina();
 
   if (loading && !data) {
     return (
@@ -1163,6 +1166,48 @@ export function Sovereign() {
               {vt.deposits.poolsOpened.length > 0 ? (
                 <div className="hash text-[10px] text-emerald bg-emerald/10 px-1.5 rounded inline-block">בריכות-נפתחו-אוטומטית: {vt.deposits.poolsOpened.join(" · ")}</div>
               ) : null}
+            </div>
+          ) : null}
+
+          {/* 116 — THE-BRIDGE: גשר-רושפינה — הליקוט-החי: עוגני-הביקורת של-הקונסולה-הפרטית
+              (רושפינה) מגיעים-לכאן, נאמתים-קשוח, נעגנים-פומבית-על-STEEM (אפס-עמלה)
+              ונזרקים-על-הספר-הריבוני כ-attest · fail-closed: שורה-רעה = הסגר-מנומק */}
+          {rb?.ok && rb.bridge ? (
+            <div className="mt-3 rounded-lg bg-emerald/5 border border-emerald/20 px-3 py-2.5">
+              <div className="flex items-center gap-2 flex-wrap mb-2">
+                <Cable className="size-3.5 text-emerald" />
+                <span className="font-display text-xs font-bold text-ink">THE-BRIDGE — גשר-רושפינה · הקונסולה-מדברת-אל-השרשרת</span>
+                <LiveDot tone={rb.bridge.daemonAlive ? "green" : "gold"} />
+                <span className="text-[11px] text-ink-2">
+                  {rb.bridge.daemonAlive
+                    ? "ליקוט-חי (טיק 5 דק׳) · " + rb.bridge.consumedTotal + " עוגנים-נאספו"
+                    : "הגשר-סטלה — הגרדיאן-ישכים-אותו"}
+                </span>
+                {rb.bridge.quarantined > 0 ? (
+                  <span className="text-[10px] text-rose bg-rose/10 px-1.5 rounded">הסגר: {rb.bridge.quarantined}</span>
+                ) : null}
+                {rb.bridge.consumedTotal > 0 ? (
+                  <span className="hash text-[10px] text-emerald bg-emerald/10 px-1.5 rounded ms-auto">עוגנים-כפולים: {rb.bridge.consumedTotal} (STEEM+ספר)</span>
+                ) : null}
+              </div>
+
+              {rb.anchors.length > 0 ? (
+                <div className="space-y-1 max-h-40 overflow-y-auto pe-1">
+                  {rb.anchors.map((a) => (
+                    <div key={a.headHash} className="rounded bg-ink-2/30 px-2 py-1 text-[10px] flex items-center gap-2 flex-wrap">
+                      <span className="hash text-emerald font-bold">{a.tenantId}</span>
+                      <span className="text-ink-2">h{a.height}</span>
+                      <span className="hash text-ink" title={a.headHash}>{a.headHash.slice(0, 14)}…</span>
+                      <span className={cn("hash", a.onBook === "injected" ? "text-emerald" : "text-gold")}>{a.onBook === "injected" ? "ספר ✓" : "ספר-ממתין"}</span>
+                      <span className="hash text-ink-2 ms-auto" title={a.hostTxid}>STEEM {a.hostTxid.slice(0, 14)}… · {fmtClock(a.consumedAt)}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-[10px] text-ink-2 rounded bg-ink-2/30 px-2 py-1.5">
+                  התור-ריק-עדיין — כל-פעולה-כלכלית-בקונסולת-רושפינה (העברה · הצבה · שחרור) מאריכה-את-שרשרת-הביקורת-החתומה-שלה, והראש-החדש-מגיע-לכאן-לעיגון-פומבי-כפול.
+                </div>
+              )}
             </div>
           ) : null}
         </Panel>
