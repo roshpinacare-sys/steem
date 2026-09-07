@@ -725,6 +725,14 @@ export type VaultData = {
     chains: VaultChainHealth[];
     pending: { key: string; chain: string; agent: string; sym: string; human: number; ticks: number }[];
     events: DepositEvent[];
+    preflight: {
+      at: string | null;
+      ready: boolean;
+      mission: string | null;
+      checksOk: number;
+      checksTotal: number;
+      checks: { name: string; ok: boolean; detail: string }[];
+    } | null;
   };
   sendTo: { evm: string; tron: string; sol: string; btc: string } | null;
 };
