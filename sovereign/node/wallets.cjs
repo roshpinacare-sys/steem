@@ -110,8 +110,10 @@ function b58check(payload) {
   return bs58.encode(Buffer.concat([p, h2.slice(0, 4)]));
 }
 
-/* ── גזירה — idempotent: אותו-זרע = אותן-כתובות, לעולם-לא-מחדשים ── */
-function derive({ quiet } = {}) {
+/* ── גזירה — idempotent: אותו-זרע = אותן-כתובות, לעולם-לא-מחדשים ──
+ * 115: force=true קיים-רק-בתוך-rotate() — גזירה-מאולצת-עם-דיגסט-חדש.
+ * ה-guard נשאר-ברירת-מחדל: לא-מחליפים-זהות-על-בר-מה. */
+function derive({ quiet, force } = {}) {
   let seedDoc;
   try { seedDoc = VAULT.readMember('wallets-seed.json'); } // 114 — הזרע-מהכספת
   catch (_) {
@@ -157,20 +159,47 @@ function derive({ quiet } = {}) {
   let prevPub = null;
   try { prevPub = JSON.parse(fs.readFileSync(PUB, 'utf8')); } catch (_) {}
   const digest = sha256hex(canon({ agents: pub.agents.map(({ agent, evm, tron, sol, btc }) => ({ agent, evm, tron, sol, btc })) }));
-  if (prevPub && prevPub.manifestDigest && prevPub.manifestDigest !== digest) {
+  if (prevPub && prevPub.manifestDigest && prevPub.manifestDigest !== digest && !force) {
     dlog('derive GUARD: existing digest ' + prevPub.manifestDigest.slice(0, 12) + '… != re-derived ' + digest.slice(0, 12) + '… — keeping existing public file (זרע-שונה? לא-מחליפים-זהות-על-בר-מה)');
     prevPub.derivedAt = prevPub.derivedAt || priv.derivedAt;
     fs.writeFileSync(PUB, JSON.stringify(prevPub, null, 2));
     return { priv, pub: prevPub, agents: agents.map((n, i) => ({ agent: n, idx: i })) };
   }
-  pub.manifestDigest = (prevPub && prevPub.manifestDigest) || digest;
-  if (prevPub && prevPub.anchor) pub.anchor = prevPub.anchor; // העיגון-ההיסטורי-נשמר-תמיד
+  pub.manifestDigest = (prevPub && prevPub.manifestDigest && !force) ? prevPub.manifestDigest : digest;
+  if (prevPub && prevPub.anchor && !force) pub.anchor = prevPub.anchor; // העיגון-ההיסטורי-נשמר-תמיד
   pub.derivedAt = prevPub?.derivedAt || priv.derivedAt;
   fs.mkdirSync(path.dirname(PRIV), { recursive: true });
   fs.writeFileSync(PRIV, JSON.stringify(priv, null, 2), { mode: 0o600 });
   fs.writeFileSync(PUB, JSON.stringify(pub, null, 2));
   if (!quiet) dlog('derive: ' + agents.length + ' agents × 10 networks · digest ' + pub.manifestDigest.slice(0, 16) + '… · private→' + PRIV + ' · public→' + PUB);
   return { priv, pub, agents };
+}
+
+/* ── 115 — רוטציה-ריבונית-מפורשת: v1-מתועד-ומוגן, v2-נגזר-ומעוגן-מחדש ──
+ * לא-שכחה-אלא-מהלך: v1 נשאר-בארכיון-פומבי (כולל-העיגון-ההיסטורי שלו) ככתובות-קבלה-בלבד,
+ * ו-v2 נגזר-מהזרע-הנוכחי, נקשר-לשרשרת-מחדש, ונחתם-בעיגון-חדש-עם-הסבר-ציבורי. */
+async function rotate(reason) {
+  const prevPub = readPub();
+  if (!prevPub.manifestDigest) throw new Error('nothing-to-rotate (no v1 digest)');
+  const v1Path = path.join(HERE, 'wallets-public-v1.json');
+  fs.writeFileSync(v1Path, JSON.stringify({
+    ...prevPub,
+    retired: true,
+    retiredAt: new Date().toISOString(),
+    retiredReason: reason || 'unspecified',
+    policy: 'v1 addresses are RECEIVE-ONLY history — no private keys exist for them anymore (seed lost in the 115 sandbox rollback, before the fleet-seal hole was closed); never fund them',
+  }, null, 2));
+  dlog('rotate: v1 archived → wallets-public-v1.json (digest ' + prevPub.manifestDigest.slice(0, 12) + '… · anchor ' + (prevPub.anchor ? prevPub.anchor.txid.slice(0, 12) + '…' : 'none') + ')');
+  const r = derive({ force: true, quiet: true });
+  const pub = readPub();
+  pub.generation = 2;
+  pub.prevDigest = prevPub.manifestDigest;
+  pub.prevAnchorTxid = (prevPub.anchor && prevPub.anchor.txid) || null;
+  pub.rotation = { at: new Date().toISOString(), reason: reason || 'unspecified', note: 'seed rotation after sandbox rollback — the Task-113 seed was created after the last fleet seal and the seal trigger only watched vault.json/.env mtimes (hole closed in 115); v1 addresses retired receive-only, zero funds ever deposited' };
+  delete pub.anchor; // העיגון-החדש-ייחתם-ב-once() הקרוב
+  fs.writeFileSync(PUB, JSON.stringify(pub, null, 2));
+  dlog('rotate: v2 derived · digest ' + pub.manifestDigest.slice(0, 12) + '… · generation 2 · registry+public written — manifest anchor will fire on next once()');
+  return pub;
 }
 
 /* ── המניפסט הפומבי (העגינה-על-המארח) ── */
@@ -192,6 +221,7 @@ async function manifest() {
     agents: pub.agents.map(({ agent, evm, tron, sol, btc }) => ({ agent, evm, tron, sol, btc })),
     note: 'sovereign multi-chain wallet identity: evm(7 nets: eth/bsc/polygon/arbitrum/optimism/base/avalanche) + tron + sol + btc(p2wpkh) per agent — derived from one sovereign seed, anchored on the host chain, zero fee',
   };
+  if (pub.generation) { payload.generation = pub.generation; payload.prevDigest = pub.prevDigest || null; payload.rotation = pub.rotation && pub.rotation.reason; }
   const op = ['custom_json', { required_auths: [], required_posting_auths: [ACCOUNT], id: 'saos', json: JSON.stringify(payload) }];
   const conf = await steem.broadcast.sendAsync({ operations: [op], extensions: [] }, [wif]);
   const txid = conf && conf.id;
@@ -345,6 +375,7 @@ function status() {
   const cmd = process.argv[2] || 'status';
   try {
     if (cmd === 'derive') derive();
+    else if (cmd === 'rotate') await rotate(process.argv[3] || 'operator-directed rotation');
     else if (cmd === 'manifest') { derive({ quiet: true }); await manifest(); }
     else if (cmd === 'inject') { await injectWallets(); }
     else if (cmd === 'verify') await verifyAnchor();

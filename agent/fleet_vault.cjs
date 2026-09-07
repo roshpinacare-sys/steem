@@ -42,9 +42,16 @@ function bundleFiles() {
     bundle.files['keys/vault.json'] = fs.readFileSync(path.join(KEYS_DIR, 'vault.json'), 'utf8');
   }
   if (fs.existsSync(KEYS_DIR)) {
+    // 115 — seal EVERY key file regardless of extension: the Task-113 wallet seed
+    // (wallets-seed.json) was created AFTER the last seal and the sandbox wiped
+    // before a reseal — the .json-only filter + the vault.json-only mtime trigger
+    // in guardian were exactly the holes that lost the anchored seed. Never again:
+    // every file under keys/ travels inside the envelope.
     for (const f of fs.readdirSync(KEYS_DIR)) {
-      if (!f.endsWith('.json') || f === 'vault.json') continue;
-      bundle.files['keys/' + f] = fs.readFileSync(path.join(KEYS_DIR, f), 'utf8');
+      if (f === 'vault.json') continue;
+      const abs = path.join(KEYS_DIR, f);
+      if (!fs.statSync(abs).isFile()) continue;
+      bundle.files['keys/' + f] = fs.readFileSync(abs, 'utf8');
     }
   }
   if (fs.existsSync(path.join(AGENT_DIR, '.env'))) {
