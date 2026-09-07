@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-07T19:31:47.655Z",
+  "at": "2026-09-07T21:31:36.009Z",
   "cycle": 15,
   "mode": "live+local",
-  "durationMs": 11445,
+  "durationMs": 7068,
   "claims": [
     {
       "rank": 1,
@@ -12,17 +12,17 @@
         {
           "name": "LIVE · walk-the-book: 100 BEE cost",
           "pass": true,
-          "evidence": "gate=59.5629 SWAP.HIVE · askTop=0.59060922 · depth=26 rungs · sufficient=true (claim: 58-60)"
+          "evidence": "gate=59.5395 SWAP.HIVE · askTop=0.59043922 · depth=26 rungs · sufficient=true (claim: 58-60)"
         },
         {
           "name": "LIVE · best-ask in 0.578-0.600 band",
           "pass": true,
-          "evidence": "ask=0.59060922 (claim: 0.580-0.596 · rank-4: 0.584)"
+          "evidence": "ask=0.59043922 (claim: 0.580-0.596 · rank-4: 0.584)"
         },
         {
           "name": "ARITH · first-buy 2.5 SWAP.HIVE → BEE",
           "pass": true,
-          "evidence": "2.5/0.590609 = 4.23 BEE (claim: ~4.3)"
+          "evidence": "2.5/0.590439 = 4.23 BEE (claim: ~4.3)"
         },
         {
           "name": "LOCAL · genesis trigger code (gate 100.5 · precision 3 · maxSupply 1e9 · issue 1e6 · staking+delegation+market)",
@@ -32,12 +32,12 @@
         {
           "name": "LIVE+LOCAL · ladder progress (BEE held / bought-ever / runs)",
           "pass": true,
-          "evidence": "BEE live=6.1400887 · boughtEver=4.2345 · runs=142 (bee_wall: 2.04/100)"
+          "evidence": "BEE live=6.1400887 · boughtEver=4.2345 · runs=145 (bee_wall: 2.04/100)"
         },
         {
           "name": "LIVE · RC regen → time-to-250M",
           "pass": true,
-          "evidence": "RC 550M / 26G · regen ~214M/h · to-250M ≈ reached (claim: ~עד-שעה ל-250M)"
+          "evidence": "RC 745M / 26G · regen ~214M/h · to-250M ≈ reached (claim: ~עד-שעה ל-250M)"
         }
       ]
     },
@@ -49,7 +49,7 @@
         {
           "name": "LIVE · LEO:SWAP.HIVE book has depth",
           "pass": true,
-          "evidence": "29 asks · top-10 depth ≈ 693.11 SWAP.HIVE · bestAsk=0.08172972"
+          "evidence": "28 asks · top-10 depth ≈ 693.62 SWAP.HIVE · bestAsk=0.08172999"
         },
         {
           "name": "LIVE · SPORTS:SWAP.HIVE book has depth",
@@ -71,7 +71,7 @@
     {
       "rank": 3,
       "title": "חיילים כצמדים — צבא נזילות מדורג",
-      "verdict": "failed",
+      "verdict": "verified",
       "checks": [
         {
           "name": "LOCAL · liqCycle loop wired in daemon",
@@ -85,8 +85,8 @@
         },
         {
           "name": "LOCAL · daemon liq loop healthy",
-          "pass": false,
-          "evidence": "status=error · lpSupply=undefined · lastRun=2026-09-07T19:31:42.196Z"
+          "pass": true,
+          "evidence": "status=ok · lpSupply=5.18323 · lastRun=2026-09-07T21:11:29.789Z"
         },
         {
           "name": "LOCAL · live path ops verified (pool_add/order/fill by soldiers)",
@@ -118,7 +118,7 @@
         {
           "name": "LIVE · BEE ask (rank-4 claim 0.584)",
           "pass": true,
-          "evidence": "ask=0.590609 HIVE (claim 0.584, סובלנות ±0.01)"
+          "evidence": "ask=0.590439 HIVE (claim 0.584, סובלנות ±0.01)"
         },
         {
           "name": "LOCAL · token-economy params await genesis",
@@ -167,7 +167,7 @@
         {
           "name": "LIVE · curation→SP rail (treasury power on Steem)",
           "pass": true,
-          "evidence": "headcorner: 8.644 vests → ≈5348.8 SP · received=0.4 · delegated=2.0 (fuel-line: האצלות 5,347 SP)"
+          "evidence": "headcorner: 8.644 vests → ≈5348.9 SP · received=0.4 · delegated=2.0 (fuel-line: האצלות 5,347 SP)"
         },
         {
           "name": "LOCAL · console screens vs footer claim",
@@ -177,7 +177,7 @@
         {
           "name": "LOCAL · console reporting fresh",
           "pass": true,
-          "evidence": "updatedAt=2026-09-07T19:31:42.926Z · loops=31"
+          "evidence": "updatedAt=2026-09-07T21:31:32.595Z · loops=38"
         }
       ]
     }
@@ -197,11 +197,11 @@
     }
   ],
   "summary": {
-    "verified": 2,
+    "verified": 3,
     "corrected": 3,
-    "failed": 1,
+    "failed": 0,
     "total": 6,
     "checks": 27,
-    "checksPassed": 25
+    "checksPassed": 26
   }
 }
