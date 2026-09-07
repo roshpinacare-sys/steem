@@ -97,6 +97,15 @@ const OPS = Object.keys(GAS);
 /* ── עזרים שלמים ── */
 const µ = (n) => Math.round(n * 1000);           // SAOS/STEEM → micro
 const fromµ = (n) => n / 1000;
+/* 117 — דיוק-פר-סמל: bookScale ב-assetMeta מגדיר את-יחידת-הספר-לסמל (ברירת-מחדל 1000 = µ,
+ * כל-הסמלים-הקיימים-נשארים-µ ללא-שינוי — הווקטורים-הקדושים-נשארים-byte-זהים).
+ * מטבעות-רשת-אמת (ETH 18 ספרות · SOL 9 · BTC 8) נרשמים-עם-bookScale=1e9 (ננו) —
+ * הפקדת-$1 (≈0.00033 ETH) מיוצגת-בכנות-על-הספר במקום-להידחות-כ-µ=0.
+ * הגנת-הגיבוי-נשמרת-מעצמה: mint ו-lockedDelta תמיד-באותו-scale — היחס-שלם. */
+const bookScaleOf = (st, sym) => {
+  const m = st.assetMeta && st.assetMeta[sym];
+  return (m && Number.isInteger(m.bookScale) && m.bookScale >= 1 && m.bookScale <= 1e18) ? m.bookScale : 1000;
+};
 const acct = (st, name) => {
   st.accounts[name] = st.accounts[name] || { saos: 0, steem: 0, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 };
   return st.accounts[name];
@@ -263,11 +272,11 @@ function applyTx(st, tx) {
       const ISSUER = st.meta.issuer || 'treasury';
       if (String(tx.issuer || '').toLowerCase() !== ISSUER) return { ok: false, gas, err: 'issuer' };
       if (!tx.ref || st.wrapped[sym] && st.wrapped[sym].refs && st.wrapped[sym].refs[tx.ref]) return { ok: false, gas, err: 'ref' };
-      const a = µ(Number(tx.amount));
+      const a = Math.round(Number(tx.amount) * bookScaleOf(st, sym));
       if (!(a > 0)) return { ok: false, gas, err: 'amount' };
       const w = st.wrapped[sym] = st.wrapped[sym] || { locked: 0, supply: 0, refs: {} };
       // שמור-על-טהור: לא-נוגעים במצב לפני-שכל-הבדיקות עברו (מרוצף-מטה)
-      const candLocked = w.locked + (tx.lockedDelta ? µ(Number(tx.lockedDelta)) : 0);
+      const candLocked = w.locked + (tx.lockedDelta ? Math.round(Number(tx.lockedDelta) * bookScaleOf(st, sym)) : 0);
       const newRatio = (w.supply + a) / Math.max(candLocked, 1);
       if (newRatio > 1.0001) return { ok: false, gas, err: 'under-backed' };
       w.locked = candLocked;
@@ -280,7 +289,7 @@ function applyTx(st, tx) {
     }
     case 'wrap_burn': {
       const sym = String(tx.symbol || '').toUpperCase();
-      const a = µ(Number(tx.amount));
+      const a = Math.round(Number(tx.amount) * bookScaleOf(st, sym));
       if (!(a > 0)) return { ok: false, gas, err: 'amount' };
       const w = st.wrapped[sym];
       if (!w) return { ok: false, gas, err: 'no-symbol' };
@@ -300,7 +309,7 @@ function applyTx(st, tx) {
       const w = st.wrapped[sym];
       if (!w) return { ok: false, gas, err: 'no-symbol' };
       if (!tx.ref || (w.refs && w.refs[tx.ref])) return { ok: false, gas, err: 'ref' };
-      const d = µ(Number(tx.lockedDelta));
+      const d = Math.round(Number(tx.lockedDelta) * bookScaleOf(st, sym));
       if (!(d > 0)) return { ok: false, gas, err: 'delta' };
       const newRatio = w.supply / Math.max(w.locked + d, 1);
       if (newRatio > 1.0001) return { ok: false, gas, err: 'under-backed' };
@@ -319,7 +328,7 @@ function applyTx(st, tx) {
       const w = st.wrapped[sym];
       if (!w) return { ok: false, gas, err: 'no-symbol' };
       if (!tx.ref || (w.refs && w.refs[tx.ref])) return { ok: false, gas, err: 'ref' };
-      const d = µ(Number(tx.lockedDelta));
+      const d = Math.round(Number(tx.lockedDelta) * bookScaleOf(st, sym));
       if (!(d > 0)) return { ok: false, gas, err: 'delta' };
       if (w.locked - d < 0) return { ok: false, gas, err: 'over-release' };
       const newRatio = w.supply / Math.max(w.locked - d, 1);
@@ -509,7 +518,7 @@ function applyTx(st, tx) {
       const sym = String(tx.symbol || '').toUpperCase();
       if (!/^[A-Z0-9-]{2,12}$/.test(sym)) return { ok: false, gas, err: 'bad-symbol' };
       if (!st.assetMeta || !st.assetMeta[sym]) return { ok: false, gas, err: 'no-symbol' };
-      const a = µ(Number(tx.amount));
+      const a = Math.round(Number(tx.amount) * bookScaleOf(st, sym));
       if (!(a > 0)) return { ok: false, gas, err: 'amount' };
       const from = acct(st, String(tx.from || '').toLowerCase());
       const to = acct(st, String(tx.to || '').toLowerCase());
