@@ -43,6 +43,66 @@ function readJson<T>(p: string): T | null {
   }
 }
 
+/**
+ * 117e — תוויות-התקינות של-כתובות-הראש (אפס-סודות: כתובות-פומביות-בלבד).
+ * EVM: חישוב-EIP-55 (keccak-256 — דרך-ה-ethersUtils המובנה-של-tronweb)
+ * והשוואה-לכתובת-מהרישום · TRON: base58check · SOL: base58→32בייט (ed25519) ·
+ * BTC: פורמט-bech32. fail-open-כנה: אם-הבדיקה-עצמה-נכשלת, הדגל-שקר — לא-שקר-מנומס.
+ */
+type HeadValidity = {
+  evmChecksumOk: boolean;
+  evmChecksummed: string;
+  tronOk: boolean;
+  solBytesOk: boolean;
+  btcFormatOk: boolean;
+};
+
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+function headValidity(head: { evm: string; tron: string; sol: string; btc: string }): HeadValidity {
+  const out: HeadValidity = { evmChecksumOk: false, evmChecksummed: "", tronOk: false, solBytesOk: false, btcFormatOk: false };
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const TW = require("tronweb") as {
+      utils?: {
+        ethersUtils?: { keccak256?: (h: string) => string };
+        crypto?: { isAddressValid?: (a: string) => boolean };
+      };
+    };
+    const eu = TW.utils?.ethersUtils;
+    if (eu?.keccak256 && /^0x[0-9a-fA-F]{40}$/.test(head.evm)) {
+      const lower = head.evm.toLowerCase().slice(2);
+      const hash = eu.keccak256(lower);
+      let cs = "";
+      for (let i = 0; i < 40; i++) {
+        const nib = Number.parseInt(hash[i], 16);
+        cs += nib >= 8 ? lower[i].toUpperCase() : lower[i];
+      }
+      out.evmChecksummed = "0x" + cs;
+      out.evmChecksumOk = "0x" + cs === head.evm;
+    }
+    out.tronOk = !!TW.utils?.crypto?.isAddressValid?.(head.tron);
+  } catch (_) {
+    /* דגלים-נשארים-false — כנות */
+  }
+  try {
+    let n = BigInt(0);
+    for (const c of head.sol) {
+      const i = B58.indexOf(c);
+      if (i < 0) throw new Error("bad-char");
+      n = n * 58n + BigInt(i);
+    }
+    let hex = n.toString(16);
+    if (hex.length % 2) hex = "0" + hex;
+    const leadZeros = head.sol.length - head.sol.replace(/^1+/, "").length;
+    out.solBytesOk = leadZeros + hex.length / 2 === 32;
+  } catch (_) {
+    /* דגלים-כנים */
+  }
+  out.btcFormatOk = /^bc1[a-z0-9]{20,71}$/.test(head.btc);
+  return out;
+}
+
 export async function GET() {
   const verify = readJson<{
     at?: string;
@@ -150,6 +210,7 @@ export async function GET() {
           tron: head.tron,
           sol: head.sol,
           btc: head.btc,
+          validity: headValidity(head),
         }
       : null,
   });
