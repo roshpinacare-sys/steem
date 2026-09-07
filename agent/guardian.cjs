@@ -392,7 +392,25 @@ function youngestNextAgeSec() {
 }
 function healWeb(res) {
   try {
-    if (webAlive()) { res.actions.push('web-ok(3000)'); return; }
+    if (webAlive()) {
+      /* 117f — מיחזור-יזום: Turbopack אוגר-זיכרון-עצמי-מחוץ-לערימת-V8 (ה-OOM-היה-ב-rss-1.63GB-עם-תקרת-ערימה-1024).
+       * שרת-בן->45 דק' = ממוחזר-בתכנון-לפני-ה-OOM — הדף-חוזר-תוך-~15 שניות והזיכרון-מתאפס. */
+      const age = youngestNextAgeSec();
+      if (age > 2700) {
+        try { sh('pkill', ['-f', 'next-server']); sh('pkill', ['-f', 'next dev']); } catch (_) {}
+        const outR = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
+        const r = spawn(process.execPath, [path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'), 'dev', '-p', '3000'], {
+          cwd: ROOT, detached: true, stdio: ['ignore', outR, outR],
+          env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=1024' }),
+        });
+        r.unref();
+        res.actions.push('WEB-RECYCLED(age ' + age + 's · pid ' + r.pid + ')');
+        log('web :3000 proactive recycle (age ' + age + 's — native-mem growth) → pid ' + r.pid);
+        return;
+      }
+      res.actions.push('web-ok(3000 · age ' + age + 's)');
+      return;
+    }
     // young process alive? it is compiling — never kill, never double-spawn (warming grace)
     const age = youngestNextAgeSec();
     if (age >= 0 && age < 180) { res.actions.push('web-warming(age ' + age + 's · no-kill)'); return; }
