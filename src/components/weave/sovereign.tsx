@@ -1235,6 +1235,70 @@ export function Sovereign() {
               )}
             </div>
           ) : null}
+
+          {/* 117 — THE-SWAP: ניסוי-ההמרה — TRX ⇄ ETH/SOL-אמת. המפעיל: ״נסה להחליף את ה-TRX —
+              הוא עדיין בארנק מחכה לניסוי שלך״. הסקר-החי כן: המלאי-הנשלט, הדלתות-הנעולות,
+              ציטוטי-הספק, ומה-בדיוק-ידליק-את-ההמרה. אפס-פאסה — כל-מספר-נמדד-חי. */}
+          {sw?.ok && sw.verdict ? (
+            <div className="mt-3 rounded-lg bg-gold/5 border border-gold/25 px-3 py-2.5">
+              <div className="flex items-center gap-2 flex-wrap mb-2">
+                <ArrowLeftRight className="size-3.5 text-gold" />
+                <span className="font-display text-xs font-bold text-ink">THE-SWAP — ניסוי-ההמרה · TRX ⇄ ETH/SOL-אמת</span>
+                <LiveDot tone={sw.fresh ? "green" : "gold"} />
+                <span className={cn(
+                  "text-[10px] px-1.5 rounded font-bold",
+                  sw.verdict === "EXECUTABLE" ? "text-emerald bg-emerald/10"
+                  : sw.verdict.startsWith("SWAP-BLOCKED") ? "text-rose bg-rose/10"
+                  : "text-gold bg-gold/10"
+                )}>{sw.verdict.split(" (")[0]}</span>
+                <span className="text-[10px] text-ink-2 ms-auto">סקר {fmtClock(sw.surveyedAt ?? sw.at)}</span>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
+                <div className="rounded bg-ink-2/30 px-2 py-1.5">
+                  <div className="text-[9px] text-ink-2">מחיר-אמת (בינאנס)</div>
+                  <div className="hash text-[11px] text-ink">TRX ${sw.prices.trx ?? "—"}</div>
+                  <div className="hash text-[9px] text-ink-2">ETH ${sw.prices.eth?.toLocaleString() ?? "—"} · SOL ${sw.prices.sol ?? "—"}</div>
+                </div>
+                <div className="rounded bg-ink-2/30 px-2 py-1.5">
+                  <div className="text-[9px] text-ink-2">מלאי-נשלט (24 דלתות-חי)</div>
+                  <div className={cn("hash text-[11px]", sw.inventory.allZero ? "text-rose" : "text-emerald")}>{sw.inventory.controlledTrx ?? "—"} TRX {sw.inventory.allZero ? "(אפס-מדוד)" : ""}</div>
+                  <div className="hash text-[9px] text-ink-2">≈ ${sw.inventory.controlledUsd ?? "0"}</div>
+                </div>
+                <div className="rounded bg-rose/5 border border-rose/20 px-2 py-1.5">
+                  <div className="text-[9px] text-rose">דלתות-גשר-ישנות — נעולות</div>
+                  <div className="hash text-[11px] text-ink">{sw.locked.trx ?? "—"} TRX ≈ ${sw.locked.usd ?? "—"}</div>
+                  <div className="text-[9px] text-ink-2">מנומניק אבד-ברולבק-115</div>
+                </div>
+                <div className="rounded bg-ink-2/30 px-2 py-1.5">
+                  <div className="text-[9px] text-ink-2">ChangeNOW-מינימום (keyless ✓)</div>
+                  <div className="hash text-[10px] text-ink">→ETH: {sw.provider?.changenow.minAmounts?.trx_eth?.minAmount ?? "—"} TRX</div>
+                  <div className="hash text-[10px] text-ink">→SOL: {sw.provider?.changenow.minAmounts?.trx_sol?.minAmount ?? "—"} TRX</div>
+                </div>
+              </div>
+
+              {/* מסלולי-$1 — האומדנים-האמתיים כולל-עלות-הפיזור-על-סכומים-קטנים */}
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] mb-2">
+                <span className="hash text-ink-2">אומדן-רגל-$1 (3.1 TRX):</span>
+                <span className="hash text-ink">→ETH {sw.provider?.changenow.estimates?.["3.1_trx_eth"]?.est ?? "—"} (10-60 דק׳)</span>
+                <span className="hash text-ink">→SOL {sw.provider?.changenow.estimates?.["3.1_trx_sol"]?.est ?? "—"} (10-60 דק׳)</span>
+                <span className="text-gold">עלות-פיזור-מדודה על-רגל-$1 ≈ 18% — רגל-גדולה (15.4 TRX): ≈3-5%</span>
+              </div>
+
+              {/* מה-ידליק-את-ההמרה — הכנות-המלאה */}
+              <div className="rounded bg-ink-2/30 px-2 py-1.5 text-[10px] leading-relaxed">
+                <span className="font-bold text-ink">מה-ידליק-את-ההמרה:</span>{" "}
+                <span className={sw.mandate?.active ? "text-emerald" : "text-rose"}>מנדט-{sw.mandate?.active ? "✓" : "✗"}</span> ·{" "}
+                <span className={sw.providerKey?.present ? "text-emerald" : "text-gold"}>מפתח-ספק-{sw.providerKey?.present ? "✓" : "✗ (ChangeNOW-מפתח-חינם → agent/.env SWAP_CHANGENOW_KEY)"}</span> ·{" "}
+                <span className={sw.inventory.allZero ? "text-rose" : "text-emerald"}>
+                  {sw.inventory.allZero
+                    ? "כסף-נשלט-✗ (ה-TRX-על-הדלתות-הישנות-ממתין-לגיבוי-טרום-רולבק של agent/keys/tron-mnemonic.txt — או-הפקדה-חדשה-לכל-דלת-v2)"
+                    : "כסף-נשלט-✓"}
+                </span>
+                {" "}→ התשלום-נוחת-על-כתובות-headcorner-v2 (ETH/SOL) וה-DEPOSITS-מטביע-1:1-אוטומטית.
+              </div>
+            </div>
+          ) : null}
         </Panel>
       ) : null}
 
