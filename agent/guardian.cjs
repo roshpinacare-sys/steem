@@ -390,13 +390,27 @@ function youngestNextAgeSec() {
     return Number.isFinite(n) && n >= 0 ? n : -1;
   } catch (_) { return -1; }
 }
+/* 117g — מדידת-rss-חיה של-next-server. הלקח-המדוד-פעמיים-היום: Turbopack אוגר-זיכרון-טבעי
+ * מחוץ-לערימת-V8 — תקרת---max-old-space-size לא-חוסמת-rss (OOM-אמת ב-rss-1.3GB עם-תקרה-1024).
+ * המיחזור-לפי-גיל (2700ש׳) מאחר-כשהצמדת-קימפול-כבדה-מנפחת-מהר. מיחזור-מופעל-rss:
+ * מעל-900MB — ממוחזר-מיד-בתכנון, לפני-שה-OOM-הקרנל-מחליט-בשבילנו. */
+function nextRssKb() {
+  try {
+    const out = sh('bash', ['-c', "ps -eo rss,args 2>/dev/null | grep 'next-server' | grep -v grep | sort -rn | head -1 | awk '{print $1}'"], { timeout: 6_000 });
+    const n = parseInt(String(out).trim(), 10);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  } catch (_) { return 0; }
+}
 function healWeb(res) {
   try {
     if (webAlive()) {
       /* 117f — מיחזור-יזום: Turbopack אוגר-זיכרון-עצמי-מחוץ-לערימת-V8 (ה-OOM-היה-ב-rss-1.63GB-עם-תקרת-ערימה-1024).
        * שרת-בן->45 דק' = ממוחזר-בתכנון-לפני-ה-OOM — הדף-חוזר-תוך-~15 שניות והזיכרון-מתאפס. */
       const age = youngestNextAgeSec();
-      if (age > 2700) {
+      /* 117g — מיחזור-מופעל-rss: גם-אם-השרת-צעיר, rss>900MB = פצצה-מתקתקת (נמדד-חי:
+       * 1.3GB-תוך-~8 דק' אחרי-קימפול-כל-הנתיבים) → מיחזור-מיד. הגיל-עדיין-מגן-בנפרד. */
+      const rssKb = nextRssKb();
+      if (age > 2700 || rssKb > 900_000) {
         try { sh('pkill', ['-f', 'next-server']); sh('pkill', ['-f', 'next dev']); } catch (_) {}
         const outR = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
         const r = spawn(process.execPath, [path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'), 'dev', '-p', '3000'], {
@@ -404,8 +418,8 @@ function healWeb(res) {
           env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=1024' }),
         });
         r.unref();
-        res.actions.push('WEB-RECYCLED(age ' + age + 's · pid ' + r.pid + ')');
-        log('web :3000 proactive recycle (age ' + age + 's — native-mem growth) → pid ' + r.pid);
+        res.actions.push('WEB-RECYCLED(age ' + age + 's · rss ' + Math.round(rssKb / 1024) + 'MB · pid ' + r.pid + ')');
+        log('web :3000 proactive recycle (age ' + age + 's · rss ' + Math.round(rssKb / 1024) + 'MB — native-mem growth) → pid ' + r.pid);
         return;
       }
       res.actions.push('web-ok(3000 · age ' + age + 's)');

@@ -135,8 +135,11 @@ function journalHousekeep() {
   } catch (_) {}
 }
 
-/* ── אתחול: replay מלא מהג'נזיס+ארכיון (פעם-אחת; אחר-כך תושב) ── */
-function boot() {
+/* ── 117g — שחזור-קרנל-מלא (ג'נזיס+ארכיון+חלון) — נקרא-מ-boot וממגן-התנגשות-הראש ──
+ * הלקח-המדוד-חי (117g): הזרקת-מפעיל (pool_x הסוופ-הראשון) נבנתה על-זנב-הדיסק, אבל-התושב-שלנו
+ * שהה-על-גובה-קודם ובנה-בלוק-מתחרה-באותו-גובה — ה-de-dup last-wins של-הארכיון בלע-את-ההזרקה.
+ * החוק-החדש: הדיסק-הוא-הסמכות — כל-סתירה-בין-תושב-לדיסק = resync מלא כנה, לא-המשך-על-ליניאגה-מתה. */
+function rebuildKernelState() {
   const genesis = JSON.parse(fs.readFileSync(GENESIS_FILE, 'utf8'));
   chainState = N.loadChain();
   let replay = chainState.blocks;
@@ -147,7 +150,6 @@ function boot() {
     if (full.length) {
       const have = new Set(full.map((b) => b.height));
       for (const wb of chainState.blocks) if (!have.has(wb.height)) full.push(wb);
-      /* 99b-heal: דה-דופ לפי גובה — כפילויות-ארכיון היו מוחלות פעמיים ב-boot-המנוע */
       const seenB = new Set();
       const dedupB = [];
       for (const b of full) { if (seenB.has(b.height)) continue; seenB.add(b.height); dedupB.push(b); }
@@ -162,6 +164,12 @@ function boot() {
   st.meta.height = last ? last.height : 0;
   st.meta.lastBlockHash = last ? last.hash : null;
   if (last && last.time) st.meta.lastTime = last.time;
+  return last;
+}
+
+/* ── אתחול: replay מלא מהג'נזיס+ארכיון (פעם-אחת; אחר-כך תושב) ── */
+function boot() {
+  rebuildKernelState();
   nodeSt = N.loadNodeState();
   const g = G();
   ledgerLoad(g); // הפנקס-הריבוני — שורד-כתיבות-פעימה
@@ -195,7 +203,22 @@ function syncFromDisk() {
     const tail = archiveTail();
     for (const b of tail) if (b && b.height) residentArchH = Math.max(residentArchH || 0, b.height);
     if ((residentArchH || 0) <= st.meta.height) return;
-    const fresh = tail.filter((b) => b && b.height > st.meta.height).sort((a, b) => a.height - b.height);
+    /* 117g — מגן-התנגשות-ראש: הדיסק-הוא-הסמכות. בלוק-על-הדיסק-בגובה-התושב-עם-hash-אחר
+     * (כותב-מתחרה השתלט-על-הגובה) או-fresh-ראשון-שאינו-ממשיך-את-התושב (prevHash-שבור)
+     * = ליניאגת-התושב מתה → resync מלא כנה מהדיסק (לא-המשך-על-ענף-שנזרק).
+     * last-wins-עקבי: השורה-האחרונה-בקובץ-לכל-גובה = הקנונית (אותו-דוקטרינה-כמו-ה-heal). */
+    const byH = new Map();
+    for (const b of tail) if (b && Number.isInteger(b.height)) byH.set(b.height, b);
+    const atResident = byH.get(st.meta.height);
+    const fresh0 = byH.get(st.meta.height + 1);
+    const sameHeightConflict = !!(atResident && st.meta.lastBlockHash && atResident.hash && atResident.hash !== st.meta.lastBlockHash);
+    const breakConflict = !!(fresh0 && fresh0.prevHash && st.meta.lastBlockHash && fresh0.prevHash !== st.meta.lastBlockHash);
+    if (sameHeightConflict || breakConflict) {
+      const last = rebuildKernelState();
+      log('grid98 HEAD-CONFLICT' + (sameHeightConflict ? ' (same-height h' + st.meta.height + ')' : '') + (breakConflict ? ' (prevHash break at h' + (st.meta.height + 1) + ')' : '') + ' → FULL resync from disk → h=' + (last ? last.height : st.meta.height) + ' (117g, honest)');
+      return;
+    }
+    const fresh = [...byH.values()].filter((b) => b.height > st.meta.height).sort((a, b) => a.height - b.height);
     for (const b of fresh) {
       for (const tx of (b.txs || [])) K.applyTx(st, tx);
       if (b.time) st.meta.lastTime = b.time;

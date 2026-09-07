@@ -24,6 +24,84 @@ const DEP = path.join(NODE, "deposits-state.json");
 const DEP_LOG = path.join(NODE, "deposits.log");
 const PREFLIGHT = path.join(NODE, "deposits-preflight.json");
 const SWAP_ATTEST = path.join(NODE, "theswap-attest.json"); // 117f — מחירים-חיים-מעד-ההצמדה (להערכת-שווי-הצינור)
+const SNAP = path.join(NODE, "state-snapshot.json"); // 117g — סנפשוט-הקרנל (poolsX · accounts · meta)
+const CHAIN = path.join(NODE, "chain.json"); // 117g — חלון-השרשרת החי (הסוופים-על-בריכות-האמת)
+
+/**
+ * 117g — THE-FIRST-TRADE · בריכות-האמת. ההפקדות-האמת (ETH+SOL) הומנטו 1:1 ונזרעו-לבריכות
+ * מול-WSTEEM; הסוופ-הראשון עליהן עבר-חי (pool_x B2A · בלוק 54108). כאן: הבריכות-חיות
+ * (עתודות-אנושיות · מחיר-גומלין · עמלה) + יומן-הסוופים-על-בריכות-האמת מחלון-השרשרת
+ * (ה-out-המבוצע מתוך-results-הבלוק — אפס-המצאות: מה-שהקרנל-ביצע-זה-מה-שמוצג).
+ * סקאלות-ספר: מטבעות-רשת-אמת=ננו (1e9) · מורשת (WSTEEM/SAOS)=µ (1e3).
+ */
+const SCALE: Record<string, number> = { WETH: 1e9, WSOL: 1e9, WSTEEM: 1e3, SAOS: 1e3 };
+const REAL_PAIRS = new Set(["WETH/WSTEEM", "WSOL/WSTEEM"]);
+
+type SnapPool = { a: number; b: number; lpSupply: number; feeBps: number; symA: string; symB: string };
+type ChainBlock = { height: number; time: string; txs?: { type?: string; pair?: string; side?: string; inAmt?: number; taker?: string; ref?: string }[]; results?: { ok?: boolean; out?: number }[] };
+
+function xNetwork() {
+  const snap = readJson<{
+    height?: number;
+    st?: { poolsX?: Record<string, SnapPool>; meta?: { swapsX?: number }; accounts?: Record<string, { wrapped?: Record<string, number> }> };
+  }>(SNAP);
+  const st = snap?.st || {};
+  const poolsX = st.poolsX || {};
+  const pools = Object.entries(poolsX)
+    .filter(([pair]) => REAL_PAIRS.has(pair))
+    .map(([pair, p]) => {
+      const sa = SCALE[p.symA] || 1e3;
+      const sb = SCALE[p.symB] || 1e3;
+      const humanA = p.a / sa;
+      const humanB = p.b / sb;
+      return {
+        pair,
+        humanA,
+        humanB,
+        feeBps: p.feeBps,
+        lpSupply: p.lpSupply,
+        priceBperA: p.a > 0 ? humanB / humanA : null, // כמה-המטבע-השני-עולה-ליחידת-A
+      };
+    });
+  const chain = readJson<{ blocks?: ChainBlock[] }>(CHAIN);
+  const trades: {
+    h: number; at: string; pair: string; side: string; taker: string | null;
+    inSym: string; inHuman: number; outSym: string; out: number | null; outHuman: number | null;
+    ok: boolean; ref: string | null;
+  }[] = [];
+  for (const b of (chain?.blocks || []).slice(-200)) {
+    (b.txs || []).forEach((tx, i) => {
+      if (tx?.type !== "pool_x" || !REAL_PAIRS.has(String(tx.pair))) return;
+      const [A, B] = String(tx.pair).split("/");
+      const inSym = tx.side === "A2B" ? A : B;
+      const outSym = tx.side === "A2B" ? B : A;
+      const r = (b.results || [])[i];
+      trades.push({
+        h: b.height,
+        at: b.time,
+        pair: String(tx.pair),
+        side: String(tx.side || ""),
+        taker: tx.taker || null,
+        inSym,
+        inHuman: Number(tx.inAmt || 0) / (SCALE[inSym] || 1e3),
+        outSym,
+        out: r?.out ?? null,
+        outHuman: r?.out != null ? r.out / (SCALE[outSym] || 1e3) : null,
+        ok: !!r?.ok,
+        ref: tx.ref || null,
+      });
+    });
+  }
+  const hcWrapped = (st.accounts?.headcorner || {}).wrapped || {};
+  const h = (s: string) => (hcWrapped[s] != null ? hcWrapped[s] / (SCALE[s] || 1e3) : null);
+  return {
+    swapsX: st.meta?.swapsX ?? null,
+    snapHeight: snap?.height ?? null,
+    pools,
+    trades: trades.reverse().slice(0, 12), // החדש-ראשון
+    treasury: { WETH: h("WETH"), WSOL: h("WSOL"), WSTEEM: h("WSTEEM") },
+  };
+}
 
 const CHAIN_LABELS: Record<string, string> = {
   ethereum: "Ethereum",
@@ -200,6 +278,7 @@ export async function GET() {
       errors: verify?.errors || [],
       ceremony: "AES-256-GCM · scrypt N=2^15 · מפתח-אב-chmod600 · טקס-גזירה-מחדש 12×4 מול-העיגון-על-STEEM",
     },
+    xnet: xNetwork(),
     deposits: {
       watcherAlive,
       watcherAgeSec: Number.isFinite(ageMs) ? Math.round(ageMs / 1000) : null,
