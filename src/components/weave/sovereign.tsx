@@ -1363,6 +1363,63 @@ export function Sovereign() {
               {vt.deposits.poolsOpened.length > 0 ? (
                 <div className="hash text-[10px] text-emerald bg-emerald/10 px-1.5 rounded inline-block">בריכות-נפתחו-אוטומטית: {vt.deposits.poolsOpened.join(" · ")}</div>
               ) : null}
+
+              {/* 117g — THE-FIRST-TRADE: הסוופ-האמת-הראשון על-בריכות-האמת + הבריכות-חיות-עכשיו.
+                  המעגל-נסגר: הפקדה-אמת → מינט-1:1 → בריכה → סחר-חי. ה-out-המוצג = ה-out-שהקרנל
+                  ביצע-בפועל (מ-results-הבלוק) — אפס-המצאות. */}
+              {vt.xnet && (vt.xnet.trades.length > 0 || vt.xnet.pools.length > 0) ? (
+                <div className="rounded-lg bg-emerald/10 border border-emerald/25 px-3 py-2.5 mt-2">
+                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                    <ArrowLeftRight className="size-3.5 text-emerald" />
+                    <span className="font-display text-xs font-bold text-ink">בריכות-האמת-נסחרות — המעגל-נסגר: הפקדה → מינט → בריכה → סחר</span>
+                    {vt.xnet.swapsX != null ? <span className="hash text-[10px] text-emerald bg-emerald/15 px-1.5 rounded">{vt.xnet.swapsX} סוופי-x-על-הספר</span> : null}
+                  </div>
+                  {(() => {
+                    const fx = (v: number | null | undefined) => (v == null ? "—" : String(Number(v.toPrecision(9))));
+                    return (
+                      <>
+                        <div className="space-y-1 mb-2">
+                          {vt.xnet.trades.slice(0, 4).map((t) => (
+                            <div key={t.h + t.pair} className="rounded bg-ink-2/30 px-2 py-1.5 text-[10px] flex items-center gap-2 flex-wrap">
+                              <span className="hash font-bold text-emerald">{t.pair}</span>
+                              <span className="hash text-ink">{fx(t.inHuman)} {t.inSym}</span>
+                              <span className="text-ink-2">→</span>
+                              <span className="hash text-ink font-bold">{fx(t.outHuman)} {t.outSym}</span>
+                              <span className="hash text-ink-2">h{t.h}</span>
+                              <span className="text-ink-2 ms-auto">{fmtClock(t.at)}</span>
+                              {t.ref ? <span className="text-gold text-[9px] w-full" title={t.ref}>{t.ref}</span> : null}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                          {vt.xnet.pools.map((p) => {
+                            const [A, B] = p.pair.split("/");
+                            return (
+                              <div key={p.pair} className="rounded bg-ink-2/30 border border-emerald/15 px-2 py-1.5 text-[10px]">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="hash font-bold text-ink">{p.pair}</span>
+                                  <span className="hash text-[9px] text-emerald bg-emerald/10 px-1 rounded">{p.feeBps}bps</span>
+                                  <span className="hash text-[9px] text-ink-2 ms-auto">lp {String(p.lpSupply)}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
+                                  <span className="hash text-ink-2">{A} <span className="text-ink">{fx(p.humanA)}</span></span>
+                                  <span className="hash text-ink-2">{B} <span className="text-ink">{fx(p.humanB)}</span></span>
+                                  <span className="hash text-emerald" title={"מחיר-גומלין-חי-מה-AMM"}>1 {A} = {fx(p.priceBperA)} {B}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {vt.xnet.treasury.WETH != null || vt.xnet.treasury.WSOL != null ? (
+                          <div className="hash text-[10px] text-ink-2 mt-1.5">
+                            אוצר-הראש-על-הספר: WETH {fx(vt.xnet.treasury.WETH)} · WSOL {fx(vt.xnet.treasury.WSOL)} · WSTEEM {fx(vt.xnet.treasury.WSTEEM)}
+                          </div>
+                        ) : null}
+                      </>
+                    );
+                  })()}
+                </div>
+              ) : null}
             </div>
           ) : null}
 

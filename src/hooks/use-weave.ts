@@ -714,6 +714,18 @@ export type VaultData = {
     errors: string[];
     ceremony: string;
   };
+  /* 117g — בריכות-האמת-החיות + יומן-הסוופים עליהן (הצומת-הוא-הסמכות · ה-API מציג-בלבד) */
+  xnet: {
+    swapsX: number | null;
+    snapHeight: number | null;
+    pools: { pair: string; humanA: number; humanB: number; feeBps: number; lpSupply: number; priceBperA: number | null }[];
+    trades: {
+      h: number; at: string; pair: string; side: string; taker: string | null;
+      inSym: string; inHuman: number; outSym: string; out: number | null; outHuman: number | null;
+      ok: boolean; ref: string | null;
+    }[];
+    treasury: { WETH: number | null; WSOL: number | null; WSTEEM: number | null };
+  } | null;
   deposits: {
     watcherAlive: boolean;
     watcherAgeSec: number | null;
