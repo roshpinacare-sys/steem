@@ -487,6 +487,8 @@ function applyTx(st, tx) {
         chain: String(tx.chain || 'tron').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 16),
         contract,
         decimals: Number.isInteger(tx.decimals) && tx.decimals >= 0 && tx.decimals <= 18 ? tx.decimals : 6,
+        // 117 — יחידת-הספר-לסמל (ברירת-מחדל 1000 = µ מורשת · מטבעות-רשת-אמת נרשמים 1e9 ננו)
+        bookScale: Number.isInteger(tx.bookScale) && tx.bookScale >= 1 && tx.bookScale <= 1e18 ? tx.bookScale : 1000,
         ref: tx.ref,
         note: String(tx.note || '').slice(0, 160),
       };
