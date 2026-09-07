@@ -23,6 +23,7 @@ const PUB = path.join(NODE, "wallets-public.json");
 const DEP = path.join(NODE, "deposits-state.json");
 const DEP_LOG = path.join(NODE, "deposits.log");
 const PREFLIGHT = path.join(NODE, "deposits-preflight.json");
+const SWAP_ATTEST = path.join(NODE, "theswap-attest.json"); // 117f — מחירים-חיים-מעד-ההצמדה (להערכת-שווי-הצינור)
 
 const CHAIN_LABELS: Record<string, string> = {
   ethereum: "Ethereum",
@@ -168,6 +169,10 @@ export async function GET() {
   // כתובות-ההפקדה של-הראש (headcorner) — לאן-המפעיל-שולח-את-האיתריום-והסולנה
   const head = pub?.agents?.find((a) => a.agent === "headcorner") || null;
 
+  // 117f — מחירי-הצמדה-חיים (double-read attest) — להערכת-שווי-$-של-הצינור-בדף
+  const attest = readJson<{ prices?: Record<string, number> }>(SWAP_ATTEST);
+  const prices = attest?.prices || null;
+
   const chains = dep?.rpcHealth
     ? Object.entries(dep.rpcHealth).map(([key, h]) => ({
         key,
@@ -204,6 +209,7 @@ export async function GET() {
       mintedTotal: dep?.minted || 0,
       poolsOpened: dep?.poolsOpened || [],
       chains,
+      prices,
       pending: dep?.pending || [],
       events: (dep?.events || []).slice(0, 24),
       preflight: preflight
