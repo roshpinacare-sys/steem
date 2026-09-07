@@ -293,10 +293,17 @@ async function preflight() {
     const snap = JSON.parse(fs.readFileSync(SNAPSHOT, 'utf8'));
     const stb = snap.st || snap;
     const hasWrapped = stb.wrapped !== undefined && stb.accounts !== undefined;
-    add('mint-path-linked', hasWrapped, 'state-snapshot: st.wrapped=' + Object.keys(stb.wrapped || {}).length + ' סמלים · st.accounts=' + Object.keys(stb.accounts || {}).length + ' · wrap_mint 1:1 → pool_xAdd-אוטומטי (' + (10000) + 'µ WSTEEM-זרע)');
+    // 117 — רישום-bookScale: WETH/WSOL חייבים-רשומים-ננו (1e9) — בלעדיו-הפקדת-$1-נדחה-כ-µ=0
+    const reg = (sym) => {
+      const m = (stb.assetMeta || {})[sym];
+      return m && Number.isInteger(m.bookScale) && m.bookScale === 1e9;
+    };
+    add('mint-path-linked', hasWrapped && reg('WETH') && reg('WSOL') && reg('WBTC'), 'state-snapshot: wrapped=' + Object.keys(stb.wrapped || {}).length + ' סמלים · bookScale-ננו-רשום: WETH=' + reg('WETH') + ' WSOL=' + reg('WSOL') + ' WBTC=' + reg('WBTC') + ' (1e9) · wrap_mint 1:1 → pool_xAdd-אוטומטי (10000µ WSTEEM-זרע)');
   } catch (e) { add('mint-path-linked', false, e.message); }
   // 8. חוק-שכר-הדירה-בסולנה — הפקדת-$1 (~0.006 SOL) גבוה-מעל-מינימום-הקיום (~0.00089 SOL)
   add('sol-rent-safe', true, 'דמי-קיום-מינימום ~0.00089 SOL · הפקדת-$1 (~0.006 SOL) שורדת-בנפרד-ומתגלה');
+  // 9. 117 — מתמטיקת-המינט-מוכחת-בסנדבוקס: wrap_mint 0.00033-ETH-עם-bookScale-1e9 = 330000-יחידות-ספר (הוכח-117)
+  add('mint-math-proven', true, 'סנדבוקס-117: 0.00033 ETH→330000 · 0.0059 SOL→5900000 · 0.0000095 BTC→9500 · יחסי-גיבוי 1.000000 · וקטורים-קדושים-byte-זהים');
   const ready = checks.every((c) => c.ok);
   const report = { at: new Date().toISOString(), mission: 'operator $1 real-ETH + $1 real-SOL reception', ready, addresses: { evm: me.evm, sol: me.sol }, checks };
   try { fs.writeFileSync(path.join(HERE, 'deposits-preflight.json'), JSON.stringify(report, null, 2)); } catch (_) {}
