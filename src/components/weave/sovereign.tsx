@@ -1259,6 +1259,54 @@ export function Sovereign() {
                 </div>
               ) : null}
 
+              {/* 117f — THE-FIRST-BLOOD: צינור-האוצר-החי. ההפקדה-האמת-הראשונה-בהיסטוריה זורמת-כאן-בזמן-אמת:
+                  נתפס-בסריקה → אישור-דו-טיקי (החזקה-נמדדת) → מינט-1:1-על-הספר → בריכה-אוטומטית.
+                  השווי-$ מהעד-הכפול (theswap-attest) · הדף-דוגם-כל-30 שניות — המינט-מופיע-מעצמו. */}
+              {vt.deposits.mintedTotal > 0 ? (
+                <div className="rounded-lg bg-emerald/15 border border-emerald/40 px-3 py-2.5 mb-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Flame className="size-4 text-emerald" />
+                    <span className="font-display text-xs font-bold text-emerald">הדם-הראשון — הפקדות-אמת-הומנטו 1:1 על-הספר</span>
+                    <span className="hash text-[10px] text-emerald bg-emerald/15 px-1.5 rounded">{vt.deposits.mintedTotal} מינטים</span>
+                    <span className="text-[9px] text-ink-2 ms-auto">הנכס-האמת-נעול-בכתובתנו · הריפוד-על-הספר</span>
+                  </div>
+                </div>
+              ) : null}
+              {vt.deposits.pending.length > 0 ? (
+                <div className="rounded-lg bg-sky/10 border border-sky/25 px-3 py-2 mb-2 space-y-1" role="status" aria-label="צינור-ההפקדות-החי">
+                  <div className="text-[10px] font-bold text-sky flex items-center gap-1.5 flex-wrap">
+                    <Radio className="size-3.5" />
+                    צינור-האוצר-החי — {vt.deposits.pending.length} הפקדות-באישור
+                    <span className="text-[9px] font-normal text-ink-2">רענון-חי 30 שניות · אישור = החזקה-על-פני-2-טיקים</span>
+                  </div>
+                  {vt.deposits.pending.map((p) => {
+                    const priceKey = p.sym === "WETH" ? "ETHUSDT" : p.sym === "WSOL" ? "SOLUSDT" : p.sym === "WBTC" ? "BTCUSDT" : null;
+                    const price = priceKey && vt.deposits.prices ? vt.deposits.prices[priceKey] : null;
+                    const usd = price && price > 0 ? p.human * price : null;
+                    const done = p.ticks >= 2;
+                    return (
+                      <div key={p.key} className="rounded bg-ink-2/30 px-2 py-1.5 flex items-center gap-2 flex-wrap text-[10px]">
+                        <span className="hash font-bold text-ink">{p.sym}</span>
+                        <span className="hash text-ink">{p.human}</span>
+                        {usd ? <span className="hash text-emerald font-bold">≈ ${usd.toFixed(2)}</span> : null}
+                        <span className="text-ink-2">{p.chain}</span>
+                        <span className="flex items-center gap-2 ms-auto" aria-label={"אישור " + p.ticks + " מתוך 2"}>
+                          <span className="flex items-center gap-1 text-emerald"><span className="size-1.5 rounded-full bg-emerald inline-block" />נתפס</span>
+                          <span className={cn("flex items-center gap-1", done ? "text-emerald" : "text-gold")}>
+                            <span className={cn("size-1.5 rounded-full inline-block", done ? "bg-emerald" : "bg-gold animate-pulse")} />
+                            אישור {Math.min(p.ticks, 2)}/2
+                          </span>
+                          <span className="flex items-center gap-1 text-ink-2">
+                            <span className="size-1.5 rounded-full bg-ink-2/50 inline-block" />
+                            מינט-1:1
+                          </span>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
+
               {/* רשתות-הקבלה — 10 שברים-חיים (אותן-רשתות-כמו-הזהות) */}
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {vt.deposits.chains.map((c) => (

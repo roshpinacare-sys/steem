@@ -723,7 +723,8 @@ export type VaultData = {
     mintedTotal: number;
     poolsOpened: string[];
     chains: VaultChainHealth[];
-    pending: { key: string; chain: string; agent: string; sym: string; human: number; ticks: number }[];
+    prices?: Record<string, number> | null;
+    pending: { key: string; chain: string; agent: string; sym: string; human: number; raw?: string; firstTick?: number; ticks: number }[];
     events: DepositEvent[];
     preflight: {
       at: string | null;
