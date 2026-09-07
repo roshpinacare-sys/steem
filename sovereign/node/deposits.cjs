@@ -156,19 +156,25 @@ function mintWraps(confirmed, state) {
   if (!r.done) { dlog('mint: inject not applied — will retry next tick (הדדופ-שומר-עלינו-מכפילויות)'); return { minted: 0, pools: [] }; }
   state.minted = (state.minted || 0) + txs.length;
   // בריכה-ראשונה-לסמל-חדש: WSTEEM-מול-הסמל (headcorner עשיר-WSTEEM — נזילות-מיידית-לכל-הפקדה)
+  // 117 — amountA תמיד-ביחידות-הספר-של-הסמל (bookScale: µ=1000 מורשת · ננו=1e9 למטבעות-רשת-אמת)
   const pools = [];
   const SEED_WSTEEM = 10000; // µ
+  const scaleOf = (sym) => {
+    const m = (st.assetMeta || {})[sym];
+    return (m && Number.isInteger(m.bookScale) && m.bookScale >= 1) ? m.bookScale : 1000;
+  };
   const fresh = confirmed.filter((c) => !(st.poolsX || {})[c.sym + '/WSTEEM'] && !(c.sym + '/WSTEEM').match(/^WSTEEM\//) && c.sym !== 'WSTEEM');
   const seenPool = new Set();
   const poolTxs = [];
   for (const c of fresh) {
     if (seenPool.has(c.sym)) continue;
     seenPool.add(c.sym);
-    const haveSym = µ(c.human);
+    const scale = scaleOf(c.sym);
+    const haveSym = Math.round(Number(c.human) * scale); // יחידות-ספר-שלמות של הסמל
     if (haveSym <= 0) continue;
     if ((me.wrapped && (me.wrapped[c.sym] || 0)) + haveSym < haveSym) { /* המינט-לעיל-הגיע-לסוכן — הבריכה-תיפתח-בטיק-הבא-כשהיתרה-נראית-על-הספר */ continue; }
-    poolTxs.push({ type: 'pool_xAdd', owner: ACCOUNT, pair: c.sym + '/WSTEEM', amountA: haveSym / 1000, amountB: SEED_WSTEEM / 1000, at: new Date().toISOString() });
-    pools.push(c.sym + '/WSTEEM(' + haveSym + 'µ+' + SEED_WSTEEM + 'µ)');
+    poolTxs.push({ type: 'pool_xAdd', owner: ACCOUNT, pair: c.sym + '/WSTEEM', amountA: haveSym, amountB: SEED_WSTEEM, at: new Date().toISOString() });
+    pools.push(c.sym + '/WSTEEM(' + haveSym + '+' + SEED_WSTEEM + 'µ)');
   }
   if (poolTxs.length) {
     const rp = inject(poolTxs, 'pools:' + poolTxs.length);
