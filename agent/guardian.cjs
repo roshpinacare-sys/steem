@@ -419,11 +419,21 @@ function healFleetKeys(res) {
   const fleetPresent = fs.existsSync(vault);
   const sealed = fs.existsSync(enc) && fs.existsSync(meta);
   if (fleetPresent && sealed) {
-    const vM = fs.statSync(vault).mtimeMs, eM = fs.statSync(enc).mtimeMs;
-    // (82) .env counts too — a stale seal once resurrected DRY_RUN=true over a REAL .env
+    // 115 — the reseal trigger now scans EVERY file under keys/ (any extension):
+    // the Task-113 hole — wallets-seed.json created after the last seal never
+    // triggered a reseal (only vault.json/.env mtimes were compared) and the
+    // sandbox wipe consumed the anchored seed. Newest-mtime across the whole
+    // keyset is the trigger; a future wipe can then never lose a young key.
+    let newestM = fs.statSync(vault).mtimeMs;
+    try {
+      for (const f of fs.readdirSync(path.join(AGENT_DIR, 'keys'))) {
+        const m = fs.statSync(path.join(AGENT_DIR, 'keys', f)).mtimeMs;
+        if (m > newestM) newestM = m;
+      }
+    } catch (_) {}
     let envM = 0;
     try { envM = fs.statSync(path.join(AGENT_DIR, '.env')).mtimeMs; } catch (_) {}
-    if (vM > eM || envM > eM) {
+    if (newestM > fs.statSync(enc).mtimeMs || envM > fs.statSync(enc).mtimeMs) {
       const out = spawnDetached('fleet_vault.cjs', ['--seal'], AGENT_DIR);
       res.actions.push(out ? 'auto-RESEAL-fired(keys-newer)' : 'reseal-FAILED');
     } else res.actions.push('fleet-ok(sealed-fresh)');
