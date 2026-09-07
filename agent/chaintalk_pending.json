@@ -4576,8 +4576,8 @@
     },
     {
       "id": "REAN-103-r25p1",
-      "status": "rejected",
-      "issuedAt": "2026-09-07T13:50:24.089Z",
+      "status": "pending",
+      "issuedAt": "2026-09-07T14:50:24.047Z",
       "issuer": "headcorner",
       "ops": [
         {
@@ -4588,19 +4588,70 @@
           "amountB": 0.536,
           "ref": "rean103:r25:add:WSBD",
           "mirror": "g98-reanchor",
-          "note": "REANCHOR-103 r25: השלמת-צד-SAOS → יחס 537.0 ≈ אורקל 537.4"
+          "note": "REANCHOR-103 r25: השלמת-צד-SAOS → יחס 537.0 ≈ אורקל 536.9"
         }
-      ],
-      "appliedHeight": 51851,
-      "appliedAt": "2026-09-07T14:08:30.375Z",
-      "results": [
+      ]
+    },
+    {
+      "id": "ORACLE-106-2026090714",
+      "status": "pending",
+      "issuedAt": "2026-09-07T14:50:24.429Z",
+      "issuer": "headcorner",
+      "ops": [
         {
-          "type": "pool_xAdd",
-          "ref": "rean103:r25:add:WSBD",
-          "ok": false,
-          "err": "insufficient",
-          "orderId": null,
-          "filled": null
+          "type": "asset_price",
+          "issuer": "headcorner",
+          "symbol": "WTRX",
+          "px": 334886000,
+          "unit": "USD",
+          "src": "coingecko:tron",
+          "at": "2026-09-07T14:50:24.429Z",
+          "ref": "o106:px:WTRX:2026090714",
+          "note": "oracle-106 hourly live quote 0.334886 USD"
+        },
+        {
+          "type": "asset_price",
+          "issuer": "headcorner",
+          "symbol": "WSTEEM",
+          "px": 45943380,
+          "unit": "USD",
+          "src": "coingecko:steem",
+          "at": "2026-09-07T14:50:24.429Z",
+          "ref": "o106:px:WSTEEM:2026090714",
+          "note": "oracle-106 hourly live quote 0.04594338 USD"
+        },
+        {
+          "type": "asset_price",
+          "issuer": "headcorner",
+          "symbol": "WSBD",
+          "px": 425028000,
+          "unit": "USD",
+          "src": "coingecko:steem-dollars",
+          "at": "2026-09-07T14:50:24.429Z",
+          "ref": "o106:px:WSBD:2026090714",
+          "note": "oracle-106 hourly live quote 0.425028 USD"
+        },
+        {
+          "type": "asset_price",
+          "issuer": "headcorner",
+          "symbol": "PHIVE",
+          "px": 45890290,
+          "unit": "USD",
+          "src": "coingecko:hive",
+          "at": "2026-09-07T14:50:24.429Z",
+          "ref": "o106:px:PHIVE:2026090714",
+          "note": "oracle-106 hourly live quote 0.04589029 USD"
+        },
+        {
+          "type": "asset_price",
+          "issuer": "headcorner",
+          "symbol": "ENERGY",
+          "px": 45943380,
+          "unit": "USD",
+          "src": "coingecko:steem",
+          "at": "2026-09-07T14:50:24.429Z",
+          "ref": "o106:px:ENERGY:2026090714",
+          "note": "oracle-106 hourly live quote 0.04594338 USD · SP≈STEEM 1:1"
         }
       ]
     }
