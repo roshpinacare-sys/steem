@@ -389,7 +389,7 @@ function healWeb(res) {
     const out = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
     const child = spawn(process.execPath, [path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'), 'dev', '-p', '3000'], {
       cwd: ROOT, detached: true, stdio: ['ignore', out, out],
-      env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=1536' }),
+      env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=1024' }),
     });
     child.unref();
     // short confirm-poll (~12s) — never blocks long; next cycle re-verifies anyway
