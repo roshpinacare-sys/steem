@@ -2882,3 +2882,21 @@ Stage Summary:
 - The operator's instinct was exactly right — and the rollback is now understood, reversed, and impossible to repeat silently: origin points at the true private lineage (cc2456b), so every future guardian heal pushes the environment FORWARD, never backward into Task-26 amnesia.
 - Nothing of 117c was lost: the private remote carried everything (the push-everything discipline paid for itself), and the restored runtime re-proved its health end-to-end — kernel vectors, guardian self-heal (live OOM→revive proof), theswap daemon, chain sync, and the browser-verified swap venue.
 - Standing state: dev :3000 up · guardian slots 1+2 alive · theswap watch pid 3619 · origin/main = cc2456b · worklog continuous 116→117d.
+
+---
+Task ID: 117e
+Agent: Z.ai Code (SAOS operator)
+Task: "מה הכתובות של sol והeth גם שלח וגם תעשה שיהיה הכתובות בדף שאני יוכל להיות וודאי · וודא שהן תקינות אכן מוכנות · אני שולח · דחוף לגיטהאב את העדכון תמיד בסוף כל סשן" — the operator is about to send REAL funds; the doors must be published, proven valid, and copyable with certainty.
+
+Work Log:
+- THE ADDRESSES (headcorner idx2, THE-DEPOSITS reception doors): ETH/EVM×7 0x2767e8146c11baD1d9B0784f11325375195c1b0f · SOL 9knfnFMLmhUNjKRDbR1BmVnVkq4BRczyYjJ7BqiZSgiL · (also on the same block: TRX TG6SrsMJjRqnqAyYM8kGZu1rgkpsgizKEn · BTC bc1qf7czhpnpkc8mwx32r5gleqw0kj99j823822pmg).
+- CUSTODY-LINEAGE PROOF FIRST (the thing that matters after a rollback): the wallets-registry re-derived LIVE from the restored vault (19:51Z, post-restore) yields EXACTLY the same headcorner addresses as the preflight published at 15:10Z — the seed survived, the doors are the same doors, nothing drifted.
+- VALIDATION BATTERY (all green): EIP-55 checksum recomputed = registry address ✓ · SOL base58 → exactly 32 bytes (valid ed25519 pubkey) ✓ · ETH live RPC (ethereum-rpc.publicnode.com): balance 0, nonce 0 — clean receive-ready EOA (receiving needs no activation) ✓ · SOL live mainnet-beta: getBalance 0, account uninitialized (system-transfer creates it; $1≈0.006 SOL ≫ rent-exempt floor) ✓ · deposits.cjs binds reception to ACCOUNT='headcorner' exactly ✓ · THE-DEPOSITS preflight re-confirmed ready 10/10 via /api/ops/vault ✓ · deposits watch daemon alive (pid 2677).
+- PAGE UPGRADE (so a human can be CERTAIN): the "לאן-שולחים" block rebuilt — CopyAddrRow component per address (label + full mono address + one-click copy that ALWAYS copies from the API value, never from rendered text) + server-computed validity badges: EIP-55 ✓ / ed25519·32B ✓ / base58check ✓ / bech32 ✓ — with honest "לא-חושב" state if a check cannot run (never a silent lie) · ETH+SOL rows highlighted green (the $1-mission doors) with the live-ready line beneath · /api/ops/vault now computes validity zero-secrets: keccak-256 via js-sha3 (new dep, 2 packages), TRON base58check verified locally (sha256d + 0x41 prefix, node:crypto), SOL base58→32B, BTC bech32 regex.
+- HONEST BUGS CAUGHT AND FIXED DURING VERIFICATION: (1) first EIP-55 implementation indexed the keccak hash WITH its 0x prefix → false mismatch — fixed and re-proven; (2) tronweb's bundler-interop inside the Next route yielded no utils (tronComputed=false) — replaced by the dependency-free local base58check + js-sha3, deterministic in bundle.
+- BROWSER E2E (agent-browser): block renders on #sovereign/chain with all four rows + badges ✓ · copy button click → state flips green (writeText resolved) ✓ · 0 page errors, 0 console errors ✓ · mobile 390px: scrollWidth=390 zero overflow, copy button measured exactly 44×44px (touch doctrine) ✓ · screenshots docs/117e-deposit-addresses.png + docs/117e-deposit-addresses-mobile.png.
+- Pushed to roshpinacare-sys/steem (private) per the standing "always push at session end" law.
+
+Stage Summary:
+- The operator has certainty: the ETH/SOL doors are published in chat AND on the page, one-click copyable from the API source of truth, each stamped with a server-computed validity proof, with live mainnet readiness re-confirmed (preflight 10/10) — and the custody lineage proven unbroken across the rollback (fresh derivation = published addresses).
+- The doors are watched by THE-DEPOSITS (tick every 5 min, 2-tick confirm, wrap 1:1 auto, auto-pool on first mint) — a real deposit will be detected, minted, and traded on our own venue.

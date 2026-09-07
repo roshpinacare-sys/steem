@@ -71,6 +71,48 @@ const fmtAgoShort = (iso?: string | null) => {
 /* ציטוט-אורקל: px-על-הספר הוא nano-USD שלם (1e-9) — ההמרה-היחידה-הנכונה */
 const pxToUsd = (px?: number | null) => (px && px > 0 ? px / 1e9 : null);
 
+/* 117e — שורת-כתובת-קבלה-עם-העתקה-בקליק: המפעיל-שולח-אמת-אל-הנמל וצריך-להיות-וודאי.
+ * ההעתקה-תמיד-מה-API-עצמו (לעולם-מהטקסט-המוצג) · תווית-תקינות-מהשרת (EIP-55 / ed25519) ·
+ * ירוק-עמוק לראשיות-של-המשימה (ETH+SOL). */
+function CopyAddrRow({ label, nets, addr, validLabel, primary }: { label: string; nets: string; addr: string; validLabel?: string | null; primary?: boolean }) {
+  const [copied, setCopied] = useState(false);
+  const copy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(addr);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (_) {
+      /* clipboard-חסום — הכתובת-המלאה-ב-title לסימון-ידני */
+    }
+  }, [addr]);
+  const ok = !!validLabel && validLabel.endsWith("✓");
+  return (
+    <div className={cn("flex items-center gap-2 rounded px-2 py-1.5 min-w-0", primary ? "bg-emerald/10 border border-emerald/20" : "bg-ink-2/20")}>
+      <span className={cn("text-[10px] font-bold shrink-0", primary ? "text-emerald" : "text-ink")}>{label}</span>
+      <span className={cn("hash text-[11px] truncate min-w-0 flex-1 text-ink", primary && "font-bold")} title={addr + " · " + nets}>
+        {addr}
+      </span>
+      {validLabel ? (
+        <span className={cn("hash text-[9px] px-1 rounded shrink-0 hidden sm:inline", ok ? "text-emerald bg-emerald/10" : "text-gold bg-gold/10")} title={nets}>
+          {validLabel}
+        </span>
+      ) : null}
+      <button
+        onClick={copy}
+        aria-label={"העתק כתובת " + label}
+        className={cn(
+          "shrink-0 rounded flex items-center justify-center transition-colors",
+          "min-w-11 min-h-11 p-2 sm:min-w-0 sm:min-h-0 sm:p-1",
+          copied ? "text-emerald bg-emerald/15" : "text-ink-2 hover:text-ink hover:bg-ink-2/30"
+        )}
+      >
+        {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+      </button>
+      <span className={cn("text-[9px] shrink-0 w-9 transition-opacity", copied ? "text-emerald opacity-100" : "opacity-0")}>{copied ? "הועתק" : ""}</span>
+    </div>
+  );
+}
+
 /* 105 — כיסוי-חי במתמטיקת-הקרנל: coverBp = locked/supply (הביטחונות-ליחידה-המונפקת).
  * היחס-הקודם (supply/locked) היה הפוך — הציג מגובה-200%-כ-50% ומגובה-143%-כ-69% (דימום-חי).
  * ירוק ≥100% · זהוב "כמעט" ≥99% · רוז חסר · אפס-הנפקה מוצהר-בכנות. */
@@ -1230,18 +1272,25 @@ export function Sovereign() {
                 ))}
               </div>
 
-              {/* לאן-שולחים — כתובות-הראש (headcorner) להפקדות אמת */}
+              {/* לאן-שולחים — כתובות-הראש (headcorner) להפקדות אמת · 117e: העתקה-בקליק
+                  + תוויות-תקינות-מהשרת (EIP-55 · ed25519·32B · base58check · bech32) ·
+                  ETH+SOL מודגשות-ירוק — הדלתות-של-משימת-$1-אמת */}
               {vt.sendTo ? (
-                <div className="rounded-lg bg-ink-2/30 px-3 py-2 mb-2 space-y-1">
-                  <div className="text-[10px] text-ink-2 mb-1">כתובות-הקבלה של-הראש (headcorner) — להפקדת-ETH/SOL וכל-רשת-מובילה · אותה-כתובת-EVM משרתת 7 רשתות:</div>
-                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px]">
-                    <span className="hash text-ink-2" title={"EVM ×7 (Ethereum·BSC·Polygon·Arbitrum·Optimism·Base·Avalanche) · " + vt.sendTo.evm}>evm×7 <span className="text-ink">{vt.sendTo.evm}</span></span>
+                <div className="rounded-lg bg-ink-2/30 px-3 py-2.5 mb-2 space-y-1">
+                  <div className="text-[10px] text-ink-2 mb-1">
+                    כתובות-הקבלה של-הראש (headcorner) — שליחת-אמת ישירות-אל-הנמל · כפתור-ההעתקה מעתיק-את-הכתובת-המלאה ללוח · אותה-כתובת-EVM משרתת 7 רשתות:
                   </div>
-                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px]">
-                    <span className="hash text-ink-2" title={"Tron · " + vt.sendTo.tron}>tron <span className="text-ink">{vt.sendTo.tron}</span></span>
-                    <span className="hash text-ink-2" title={"Solana · " + vt.sendTo.sol}>sol <span className="text-ink">{vt.sendTo.sol}</span></span>
-                    <span className="hash text-ink-2" title={"Bitcoin P2WPKH · " + vt.sendTo.btc}>btc <span className="text-ink">{vt.sendTo.btc}</span></span>
+                  <CopyAddrRow label="EVM×7" nets="Ethereum · BSC · Polygon · Arbitrum · Optimism · Base · Avalanche" addr={vt.sendTo.evm} validLabel={vt.sendTo.validity ? (vt.sendTo.validity.evmComputed ? (vt.sendTo.validity.evmChecksumOk ? "EIP-55 ✓" : "checksum-לא-תואם") : "לא-חושב") : null} primary={!!vt.deposits.preflight?.ready} />
+                  <CopyAddrRow label="SOL" nets="Solana mainnet-beta" addr={vt.sendTo.sol} validLabel={vt.sendTo.validity ? (vt.sendTo.validity.solBytesOk ? "ed25519·32B ✓" : "פורמט-לא-תקין") : null} primary={!!vt.deposits.preflight?.ready} />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                    <CopyAddrRow label="TRX" nets="Tron" addr={vt.sendTo.tron} validLabel={vt.sendTo.validity ? (vt.sendTo.validity.tronComputed ? (vt.sendTo.validity.tronOk ? "base58check ✓" : "פורמט-לא-תקין") : "לא-חושב") : null} />
+                    <CopyAddrRow label="BTC" nets="Bitcoin P2WPKH" addr={vt.sendTo.btc} validLabel={vt.sendTo.validity ? (vt.sendTo.validity.btcFormatOk ? "bech32 ✓" : "פורמט-לא-תקין") : null} />
                   </div>
+                  {vt.deposits.preflight?.ready ? (
+                    <div className="text-[9px] text-emerald flex items-center gap-1">
+                      <ShieldCheck className="size-3" /> שתי-הדלתות-הראשיות (ETH+SOL) נבדקו-חי מול-המיינט ומוכנות-לקבל — כל-הפקדה-תתגלה ותנופק 1:1 על-הספר
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
 
