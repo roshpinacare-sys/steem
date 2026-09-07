@@ -734,6 +734,18 @@ export type VaultData = {
       checks: { name: string; ok: boolean; detail: string }[];
     } | null;
   };
-  sendTo: { evm: string; tron: string; sol: string; btc: string } | null;
+  sendTo: {
+    evm: string;
+    tron: string;
+    sol: string;
+    btc: string;
+    validity?: {
+      evmChecksumOk: boolean;
+      evmChecksummed: string;
+      tronOk: boolean;
+      solBytesOk: boolean;
+      btcFormatOk: boolean;
+    };
+  } | null;
 };
 export const useVault = () => usePolling<VaultData>("/api/ops/vault", 30000);

@@ -15,7 +15,7 @@
  */
 
 import { motion } from "framer-motion";
-import { ArrowLeftRight, Boxes, Coins, DoorOpen, ExternalLink, Flame, KeyRound, ArrowDownToLine, Landmark, Network, Radio, Scale, ShieldCheck, Sprout, Swords, TriangleAlert, Users, Wallet, Activity, Cable } from "lucide-react";
+import { ArrowLeftRight, Boxes, Coins, DoorOpen, ExternalLink, Flame, KeyRound, ArrowDownToLine, Landmark, Network, Radio, Scale, ShieldCheck, Sprout, Swords, TriangleAlert, Users, Wallet, Activity, Cable, Copy, Check } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, SectionHead, Stat, HashText, LiveDot, EmptyState, fmtClock } from "./primitives";
