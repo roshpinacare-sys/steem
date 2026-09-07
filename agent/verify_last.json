@@ -1,13 +1,13 @@
 {
-  "at": "2026-09-07T15:22:45.962Z",
+  "at": "2026-09-07T16:52:13.583Z",
   "account": "headcorner",
-  "verdict": "125/159",
+  "verdict": "123/157",
   "allPass": false,
   "results": [
     {
       "name": "DEX · custom_json bus ops replayed",
       "pass": false,
-      "evidence": "orders=0 cancels=0 mints=1 in last 1201 ops (newestIdx=48950)"
+      "evidence": "orders=0 cancels=0 mints=1 in last 1201 ops (newestIdx=49139)"
     },
     {
       "name": "Economy · autonomous heartbeat mints",
@@ -42,7 +42,7 @@
     {
       "name": "Bridge · Steem→Hive op anchors (fleet-routed 53)",
       "pass": true,
-      "evidence": "66 anchors on Hive across 11 signers (@headcorner:5 @cashmachine:7 @haran:1 @israelnews:3) · last txid be75188de2f50654327e351343153acc64940ae8"
+      "evidence": "65 anchors on Hive across 11 signers (@headcorner:5 @cashmachine:7 @haran:1 @israelnews:3) · last txid be75188de2f50654327e351343153acc64940ae8"
     },
     {
       "name": "Bridge · proof-of-reserve checkpoint",
@@ -52,7 +52,7 @@
     {
       "name": "Bridge · source stream (Steem saos ops)",
       "pass": true,
-      "evidence": "34 saos ops in Steem window — mirrored northbound"
+      "evidence": "25 saos ops in Steem window — mirrored northbound"
     },
     {
       "name": "Identity · vault key == on-chain posting authority",
@@ -72,7 +72,7 @@
     {
       "name": "Sidechain · HE asset inventory",
       "pass": true,
-      "evidence": "8 tokens · ≈ 5.2748 SWAP.HIVE measured"
+      "evidence": "8 tokens · ≈ 5.8229 SWAP.HIVE measured"
     },
     {
       "name": "Active · vault ACTIVE_WIF == on-chain authority",
@@ -82,7 +82,7 @@
     {
       "name": "External · HE settlements (real counterparties)",
       "pass": true,
-      "evidence": "SWAP.HIVE settled 0.58003982 · fills: AFIT 5968.00000000@0.00014900=0.88923200"
+      "evidence": "SWAP.HIVE settled 0.05000000 · fills: AFIT 5968.00000000@0.00014900=0.88923200"
     },
     {
       "name": "Bilateral · bid order on-chain (buy side)",
@@ -112,12 +112,12 @@
     {
       "name": "Empire · key-references scan (dual-chain)",
       "pass": true,
-      "evidence": "scanned 2026-09-07T15:20:26.955Z · Steem 12 · Hive 12 · controllable-now 24"
+      "evidence": "scanned 2026-09-07T16:50:27.106Z · Steem 12 · Hive 12 · controllable-now 24"
     },
     {
       "name": "Empire · SP treasury truth ( vests ≈ SP)",
       "pass": true,
-      "evidence": "totalSP=5619.076 on Steem · totalHP=24.941 on Hive — the real treasury, not the liquid wallet"
+      "evidence": "totalSP=5619.099 on Steem · totalHP=24.941 on Hive — the real treasury, not the liquid wallet"
     },
     {
       "name": "Empire · minted agent alive on-chain",
@@ -222,7 +222,7 @@
     {
       "name": "GENESIS · token ladder advancing (live conversions with effect-proof)",
       "pass": true,
-      "evidence": "run #139 · 3/3 steps effect-verified · BEE 5.245/100 · ever-bought 3.339"
+      "evidence": "run #141 · 3/3 steps effect-verified · BEE 6.140/100 · ever-bought 4.234"
     },
     {
       "name": "CONTRACTS · HE denial surface mapped (broadcast≠acceptance — state-delta proven)",
@@ -242,12 +242,12 @@
     {
       "name": "LIQ · AMM pool contract exists on-chain (pool_init replayed from public history)",
       "pass": true,
-      "evidence": "pair SAOS:STEEM · feeBps=30 · lpSupply=5.088406"
+      "evidence": "pair SAOS:STEEM · feeBps=30 · lpSupply=5.118812"
     },
     {
       "name": "LIQ · pool reserves & k derived (x·y=k)",
       "pass": true,
-      "evidence": "reserves 29.286 SAOS / 0.2 STEEM · k=5.8572 · mid=0.006829"
+      "evidence": "reserves 29.461 SAOS / 0.2 STEEM · k=5.8922 · mid=0.006789"
     },
     {
       "name": "LIQ · fee capture measured (30bps into reserves)",
@@ -282,7 +282,7 @@
     {
       "name": "FLEET · sovereign pace ping on-chain (soldier-signed fleet_ping)",
       "pass": true,
-      "evidence": "txid=6abd4df2e928… · block=109374666 · bot=wog · seq=20 · signer=wog · pingsToday=33"
+      "evidence": "txid=c5bee6474e62… · block=109376650 · bot=israelnews · seq=7 · signer=israelnews · pingsToday=38"
     },
     {
       "name": "FACTORY-V2 · deterministic identity re-derivable + operator rescue anchor",
@@ -397,7 +397,7 @@
     {
       "name": "VALUELOCK-53 · permanent liquidity lock live — pool_lock is a contract semantic the chain never had",
       "pass": true,
-      "evidence": "locked LP 5.06353 (permanent, fee-earning) · 92.635 SAOS locked cumulatively · depth 28.805→28.805 · pool_lock op on-chain 1e70af315e560f88…"
+      "evidence": "locked LP 5.104721 (permanent, fee-earning) · 92.81 SAOS locked cumulatively · depth 29.039→29.039 · pool_lock op on-chain 878a58c34ac8904f…"
     },
     {
       "name": "POR-53 · proof-of-reserve checkpoint carried by soldier key on Hive — RC-choke of the treasury routed around",
@@ -412,7 +412,7 @@
     {
       "name": "HIVE-ROUTE-53 · soldier-routed Hive anchors (treasury RC rationed — carried by fleet)",
       "pass": false,
-      "evidence": "lastHiveVia=@headcorner · txid=cf4909cc8b8ce4f6… · re-fetched on-chain=true · at=2026-09-07T15:20:36.910Z"
+      "evidence": "lastHiveVia=@headcorner · txid=cf4909cc8b8ce4f6… · re-fetched on-chain=true · at=2026-09-07T16:05:35.744Z"
     },
     {
       "name": "REFLEX-54 · block-reflex trigger proven on-chain (pre-signed swarm engine)",
@@ -507,7 +507,7 @@
     {
       "name": "BALANCE-60 · empire balance sheet — full treasury census measured from the chains (12 accounts × 2 chains)",
       "pass": true,
-      "evidence": "live re-census (same-basis, head): 5348.77 SP / 10.87 HP vs evidence 5348.77 / 10.87 (drift 0.00% / 0.02% — ≤5% gate) · fleet RC 1582G/day · treasury measured: hive.fund 28.4M HIVE · steem.dao 1.11 STEEM (SPS dead — nega"
+      "evidence": "live re-census (same-basis, head): 5348.79 SP / 10.87 HP vs evidence 5348.79 / 10.87 (drift 0.00% / 0.02% — ≤5% gate) · fleet RC 1582G/day · treasury measured: hive.fund 28.4M HIVE · steem.dao 1.11 STEEM (SPS dead — nega"
     },
     {
       "name": "CURATION-60 · curation flywheel switched ON — first real optimized-window vote signed and verified on-chain",
@@ -522,7 +522,7 @@
     {
       "name": "ENGINE-60 · Hive-Engine smart contracts — real market buy matched & settled; our Engine wallet is live economy access",
       "pass": true,
-      "evidence": "Engine wallet re-read live: BEE 5.24470050 (dust was 0.7609 → +0.1 filled) · SWAP.HIVE 0.58003982 (2.5315 → −0.0581 paid) · market contract matched & settled our buy 0.1 BEE @ 0.58094 — smart-contract execution layer PRO"
+      "evidence": "Engine wallet re-read live: BEE 6.14008870 (dust was 0.7609 → +0.1 filled) · SWAP.HIVE 0.05000000 (2.5315 → −0.0581 paid) · market contract matched & settled our buy 0.1 BEE @ 0.58094 — smart-contract execution layer PRO"
     },
     {
       "name": "HYP-60 · hypothesis engine — 20+ verifiable points across energy/economic/sovereign/autonomous axes with live-injected statuses",
@@ -572,12 +572,12 @@
     {
       "name": "LOOP-62 · paymaster loop LIVE in the daemon — fuel policy + memo-intent ledger armed",
       "pass": true,
-      "evidence": "status=ok · standby — treasury Hive mana 0.02G < gate 0.55G (wall-28 — regen window) · relay txids: steem e669b0 · intents=35"
+      "evidence": "status=ok · standby — treasury Hive mana 0.05G < gate 0.55G (wall-28 — regen window) · relay txids: steem e669b0 · intents=35"
     },
     {
       "name": "WRAP-63 · WSBD-1 wrapped SBD — 100% backing lock re-verified on-chain + mint+pool tx landed",
       "pass": true,
-      "evidence": "lock 0.26 SBD blk=109293564 (self-transfer memo saos:xlock:WSBD) · mint 0.26 WSBD + pool_init + pool_add blk=109293718 · fair 10.318318 STEEM (book-anchored 10.318318)"
+      "evidence": "lock 0.26 SBD blk=109293564 (self-transfer memo saos:xlock:WSBD) · mint 0.26 WSBD + pool_init + pool_add blk=109293718 · fair 10.295398 STEEM (book-anchored 10.295398)"
     },
     {
       "name": "XFEE-63 · value-from-orders LIVE — 30bps pool fee captured on-chain on every swap, split LP+treasury",
@@ -612,7 +612,7 @@
     {
       "name": "ORACLE-64 · dual-source live oracle (Binance + Coinbase) — divergence measured, prices drive the synthetics",
       "pass": true,
-      "evidence": "BTC $79103 · ETH $2485 · XRP $1.3953 · DOGE $0.0902 · divergence 0.189%"
+      "evidence": "BTC $79011 · ETH $2481 · XRP $1.3951 · DOGE $0.0901 · divergence 0.167%"
     },
     {
       "name": "SYNTH-64 · leading-market synthetics (WBTC/WETH/WXRP/WDOGE) — real collateral locks re-verified on-chain, floor-mints oracle-anchored, live asks on the book",
@@ -627,7 +627,7 @@
     {
       "name": "LOOP-64 · wrapped loop carries Task 64 — t64 boot applied, ENERGY fee-capture daily + synth collateral-ratio guard (oracle-gated top-ups)",
       "pass": true,
-      "evidence": "status=ok · t64=true · assets=WSBD,PHIVE,ENERGY,WBTC,WETH,WXRP,WDOGE · oracle=2026-09-07T15:05:30.562Z"
+      "evidence": "status=ok · t64=true · assets=WSBD,PHIVE,ENERGY,WBTC,WETH,WXRP,WDOGE · oracle=2026-09-07T16:45:30.622Z"
     },
     {
       "name": "MICRODEX-65 · soldiers self-sign DEX ops with their OWN posting keys — fill/order/pool_swap verified on-chain via get_transaction (posting-auth == soldier)",
@@ -635,14 +635,9 @@
       "evidence": "6/90 txids verified with soldier posting-auth: @wic sfill 0.05 @0.017045 ← headcorner #5290 · @wog sfill 0.05 @0.016711 ← headcorner #5831 · @woq sfill 0.05 @0.017117 ← headcorner #5828 · @tov order-buy 0.2 @0.016155 · w"
     },
     {
-      "name": "REPLAY-65 · the DEX replay scans the whole fleet (multi-account union) — soldier ops enter the book, a non-treasury bid rests on the book, and a soldier↔soldier trade exists",
+      "name": "MICRODEX-65 block",
       "pass": false,
-      "evidence": "accountsScanned=13 · extraOps=407 · non-treasury best-bid: true · soldier↔soldier trade on the book: false · pool swaps=4"
-    },
-    {
-      "name": "LOOP-65 · daemon loop 25 (microdex) live — autonomous soldier employment every 20 min with chain-as-ledger idempotence",
-      "pass": true,
-      "evidence": "status=ok · beats=288 · opsToday=90 · bySoldier={\"cashmachine\":10,\"haran\":10,\"lsa\":10,\"macrame\":10,\"siq\":10,\"tov\":10,\"wic\":10,\"wog\":10,\"woq\":10}"
+      "evidence": "Cannot read properties of null (reading 'pools')"
     },
     {
       "name": "ROUNDTRIP-66 · full wrapped lifecycle cross-chain — HIVE lock → PHIVE mint → on-chain credit payment → trade (delivery to soldier) → holding-required burn → HIVE unlock (memo binds the burn txid) → unlock-ack — 7/7 txids verified on 2 chains with 1:1 conservation (supply == locked, ratio 100%)",
@@ -662,12 +657,12 @@
     {
       "name": "BUDGET-66 · soldiers at full potential — op budget raised 4→10/soldier/day on MEASURED evidence (RC cost per op 0.008–0.275% vs regen ~20%/day — 20× headroom) + fair rotation (least-employed first) + wall 5/beat",
       "pass": true,
-      "evidence": "walls 5/beat · 10/soldier/day · active 9 soldiers · beats 288 · rcCost/op avg 0.073% (measured [{\"by\":\"cashmachine\",\"delta\":0.1},{\"by\":\"haran\",\"delta\":0.064},{\"by\":\"lsa\",\"delta\":0.092}])"
+      "evidence": "walls 5/beat · 10/soldier/day · active 9 soldiers · beats 299 · rcCost/op avg 0.073% (measured [{\"by\":\"cashmachine\",\"delta\":0.1},{\"by\":\"haran\",\"delta\":0.064},{\"by\":\"lsa\",\"delta\":0.092}])"
     },
     {
       "name": "EFF-66 · energy→value ledger measured — all system ops are RC/posting-funded (liquid cost ≈ 0) while captured fees accumulate and finance participant yield: the machine converts regenerated energy into on-chain value, measured per-op",
       "pass": true,
-      "evidence": "fees captured: base 0.000300 + wrapped 0.023557 STEEM · yield distributed 0.007 · liquid cost of ops 0 (posting/RC rails) · RC/op measured 0.073%"
+      "evidence": "fees captured: base 0.000000 + wrapped 0.023857 STEEM · yield distributed 0.007 · liquid cost of ops 0 (posting/RC rails) · RC/op measured 0.073%"
     },
     {
       "name": "LOOP-66 · daemon loop 26 (yield) live — periodic fee-funded contribution-measured distribution, idempotent per day",
@@ -682,17 +677,17 @@
     {
       "name": "LP-67 · soldiers as LPs with their OWN keys — the new rotation slot (pool_add single-sided) put fleet-owned liquidity into the pool: multi-owner depth compounds (LP earns fees → yield score rises → more yield → more LP)",
       "pass": false,
-      "evidence": "pool 29.039 SAOS / 0.202643 STEEM · lpSupply 5.111762 · non-treasury LP holders: 1 (tov:0.007041) · swaps 4"
+      "evidence": "pool — · lpSupply — · non-treasury LP holders: 0 () · swaps —"
     },
     {
       "name": "LOOP-67 · daemon loop 27 (merchant) live — standing memo-commerce service scanned every 15 min with multi-node freshest-page race + genesis cutoff + state idempotence",
       "pass": true,
-      "evidence": "status=ok · detail=sales 1 · revenue 0.001 STEEM · verified 1/1 · beats 154"
+      "evidence": "status=ok · detail=sales 1 · revenue 0.001 STEEM · verified 1/1 · beats 158"
     },
     {
       "name": "HIVEPING-67 · soldiers sign the saos bus ON HIVE with their own keys (chain_id swap, posting auth) — rotation armed with RC-gate and patient retry; pings fire as soldier Hive-RC regenerates (drained by 61-64 anchor traffic, regen ~20%/day)",
       "pass": true,
-      "evidence": "pings landed 2/2 · beats 288 · mechanism live (RC-gated rotation: drain-proof, fuel-honest) · last: @tov txid 7846dc9754c77ecea6816d4f635efa63106ddc2e"
+      "evidence": "pings landed 2/2 · beats 299 · mechanism live (RC-gated rotation: drain-proof, fuel-honest) · last: @tov txid 7846dc9754c77ecea6816d4f635efa63106ddc2e"
     },
     {
       "name": "GENESIS-68 · SAOS-NET genesis derived-from-EVIDENCE (not invented): the opening state is a live derivation of the verified replay — DEX multi-account + wrapped + fleet — every number carrying its source, sealed by canonical sha256",
@@ -707,12 +702,12 @@
     {
       "name": "SAOSNET-68 · the sovereign node is LIVE and ANCHORED: blocks extend locally, checkpoint stateRoot every 12 blocks anchored on Steem (head→fleet-fallback anchor-writer — anchoring never stops even when treasury RC is choked at 3%)",
       "pass": true,
-      "evidence": "height=52210 · cps=64 · steem-anchor=7bc431f6ceacf5… · stateRoot=224cdcbfa55bd4…"
+      "evidence": "height=52703 · cps=64 · steem-anchor=c186626e07a880… · stateRoot=9b1aad738a9b41…"
     },
     {
       "name": "ATTEST-68 · soldiers are the VALIDATORS: each signed attest of the checkpoint stateRoot with their OWN posting key (custom_json saos:net/v1 action=attest, required_posting_auths==soldier) — quorum v0=3 proven on-chain",
       "pass": true,
-      "evidence": "attests 3/3 verified · validators: @cashmachine✓ @haran✓ @israelnews✓"
+      "evidence": "attests 3/3 verified · validators: @woq✓ @cashmachine✓ @haran✓"
     },
     {
       "name": "PHOENIX-68 · REINCARNATION guarantee measured: one command proves the empire can rise from a wiped environment — repo+origin, secrets presence (never read), runtime, sovereign kernel vectors, genesis, node, anchors",
@@ -722,22 +717,22 @@
     {
       "name": "LOOP-68 · daemon loop 28 (saosnet) live — sovereign beat every 15 min: heartbeat block with live empire metrics → checkpoint every 12 → anchor + soldier attests (RC-gated, honest)",
       "pass": true,
-      "evidence": "status=ok · detail=height 52199 · root b1081a56bc… · cps 64 · last@52188 steem=57ac87368c · verified 1046"
+      "evidence": "status=ok · detail=height 52686 · root d77d268e00… · cps 64 · last@52668 steem=c186626e07 · verified 1140"
     },
     {
       "name": "MIRROR-69 · STAGE-1 mirror live — real host economy flows INTO the sovereign chain: merchant sales (delivery transfer + host-boundary steemPay), fee-funded yield payouts, soldier LP adds — each carrying its host txid as ref (double-ledger dedupe: cursors + on-chain refs)",
       "pass": true,
-      "evidence": "mirrored 168 events (sales 1 · yields 10 · pool_adds 60 · pool_swaps 97) · failed-honest 841 · height 52210"
+      "evidence": "mirrored 168 events (sales 1 · yields 10 · pool_adds 60 · pool_swaps 97) · failed-honest 857 · height 52703"
     },
     {
       "name": "STAGE1-69 · two checkpoints anchored on-chain (heights 12 + 24) and BOTH reproducible from the canonical block history by deterministic block-hash rebuild — the race-discovery (dual beats → siblings) was fixed with a beat-lock, chain verified 27/27",
       "pass": true,
-      "evidence": "anchored cps: @51108=4651ba6725… @51120=7e799c8fa1… @51144=1ac9eb8317… @51156=4ac7604a9a… @51192=55bc2df845… @51204=1e9559689b… @51216=a36cc0f122… @51228=91793409e4… @51252=9da1deda03… @51264=fd9fb0df15… @51288=97d6b70f9"
+      "evidence": "anchored cps: @51636=8acc621e4e… @51648=938116adc5… @51660=e56a245def… @51672=0f7b085f63… @51684=003e973b18… @51696=3c0ffe39e0… @51708=738b46da95… @51828=41c7946b6a… @51840=89004f404f… @51852=a8ae799ffa… @51864=601041f66"
     },
     {
       "name": "LOOP-69 · daemon loop 28 sovereign beat continues autonomously — mirror engine inside the beat, lock-serialized, attest budget persisted (wall 3/soldier/day), anchors fleet-fallback when head RC choked",
       "pass": true,
-      "evidence": "status=ok · beats=1678 · detail=height 52199 · root b1081a56bc… · cps 64 · last@52188 steem=57ac87368c · verified 1046"
+      "evidence": "status=ok · beats=1697 · detail=height 52686 · root d77d268e00… · cps 64 · last@52668 steem=c186626e07 · verified 1140"
     },
     {
       "name": "SOVFLO-70 · evidence-derived float live — every soldier account opened on the sovereign chain from MEASURED host truth (dex-ledger SAOS + live liquid STEEM), daily-idempotent refs (flo:/fls:<acct>:<day>), host boundary account marking net flow (negative = flowing in)",
@@ -757,22 +752,22 @@
     {
       "name": "LOOP-70 · the sovereign chain moves without pause — every 15-min beat now carries economy blocks (floats→orders→ask→fills→matcher→yield) on top of heartbeats; checkpoint+anchor+attests every 12 blocks",
       "pass": true,
-      "evidence": "status=ok · height 52210 · beats 1678 · sov-note=fees-below-payout-floor"
+      "evidence": "status=ok · height 52703 · beats 1697 · sov-note=fees-below-payout-floor"
     },
     {
       "name": "EXPLORER-71 · the network documents ITSELF on the host chain — every 2nd beat the node publishes a public custom_json (saos:net/v1 action=explorer) with the full network digest (height, stateRoot, genesis, book, fees, yield, boundary, last checkpoint+anchor txid) sealed by a cryptographic digest sha256(canonicalJSON(core)); anyone on Steem can follow and verify SAOS-NET without touching our server",
       "pass": true,
-      "evidence": "publications 24 (verified 9) · last digest 898481f04667… · txid cc1ef711995ad0… · explorer live-integrity in /api/ops/sovexplorer (full kernel replay)"
+      "evidence": "publications 24 (verified 10) · last digest 898481f04667… · txid cc1ef711995ad0… · explorer live-integrity in /api/ops/sovexplorer (full kernel replay)"
     },
     {
       "name": "ROTATION-71 · fair validator rotation LIVE (stage-3 groundwork) — attest order is DERIVED FROM THE CHAIN (round=floor(height/12), offset=round mod |army|) instead of army order; over-budget/low-RC validators skip honestly; the rotation itself is proven on-chain (payload.round + public attest txids) — the same law that will pick stage-3 block producers",
       "pass": true,
-      "evidence": "checkpoints 64 · distinct validator-sets so far 10 · next-round offset @next-cp = 5 · current validators: @cashmachine @haran @israelnews (round-derived order; diversity grows as budget walls rotate)"
+      "evidence": "checkpoints 64 · distinct validator-sets so far 10 · next-round offset @next-cp = 0 · current validators: @woq @cashmachine @haran (round-derived order; diversity grows as budget walls rotate)"
     },
     {
       "name": "PRODUCE-72 · rotating block-producer mandate LIVE (stage-3) — the chain-enforced law producer(round)=roster[floor(height/12) mod |roster|] picked the mandated head, the mandated soldier signed action=produce on the host with their own key, and the kernel registers one-producer-per-round (dup-round guard, rotation vectors b8ee2ee8, sacred vectors 366ad477 unbroken)",
       "pass": true,
-      "evidence": "produces 3 · heads so far 3 (@cashmachine @tov @wic) · law-abides ✓ · vectors OK · misses (honest) 26"
+      "evidence": "produces 3 · heads so far 3 (@tov @wic @cashmachine) · law-abides ✓ · vectors OK · misses (honest) 26"
     },
     {
       "name": "ROSTER-72 · the producer roster is PUBLIC — sorted army roster + sha256 digest published on the host chain (custom_json action=roster, get_transaction verified) and carried in every explorer publication; any third party can verify the rotation law from the host chain alone",
@@ -780,14 +775,9 @@
       "evidence": "|roster| 10 · digest 85a1fd4b6127… (canonical ✓) · pubs 4 · txid 2a22dfeda93b93… · law: producer(round)=roster[floor(h/12) mod 10]"
     },
     {
-      "name": "EXPLORER-73a · account drill-down LIVE — any name anywhere in the explorer is a doorway: ?a=name scans the WHOLE chain and returns every op touching the account with its exact role (from/to/owner/taker/maker/issuer/yield/validator/producer), balances from the replayed state, orders, fills, produce rounds and attests — zero guessing, every role derived from the tx itself",
-      "pass": true,
-      "evidence": "@host ops=1 (roles ✓ true) · yield-received 0 · gas-paid 120 · producer @cashmachine rounds=1 · activity-cap 1 · chain h=512"
-    },
-    {
-      "name": "EXPLORER-73b · verify-pack — the explorer HOLDS THE EVIDENCE: ?export=verify returns genesis + full chain + all checkpoints + stateRoot + rotation roster in one canonical JSON sealed by digest=sha256(canon(core)) over the kernel itself, with step-by-step third-party replay instructions — anyone can rebuild the chain and the roots without touching our server",
+      "name": "EXPLORER-73 block",
       "pass": false,
-      "evidence": "pack blocks 512 · checkpoints 64 · digest ff4c96a99529… recomputed MATCH ✓ · integrity.ok=false · steps=5"
+      "evidence": "fetch failed"
     },
     {
       "name": "BEE-WALL-74a · the 100-BEE gate is MEASURED, not feared — bee_wall.cjs scans the whole fleet (13+ accounts × 2 chains + HE wallets), walks the live BEE sellBook for the exact 100-BEE cost, measures every fuel component (SWAP.HIVE + liquid + dust-with-bids), derives the income rate from the genesis-ladder history, names the binding constraint honestly, and records the sovereign reframe (SAOS-NET already hosts the token; BEE = optional host-listing) + the measured negative knowledge (no live STEEM→HIVE bridge)",
@@ -797,7 +787,7 @@
     {
       "name": "BEE-WALL-74b · the FLEET ROUTER (RC-drought path) is LIVE and resumable — head hands the asset to a soldier (verified balance delta), the soldier executes the HE op with their OWN active key + OWN Hive RC pool (the wall: HE ops cost ~150-280M RC, head's mana is drained by the daemon, Hive has no RC delegation — measured), the product returns home; phases (idle→transferred→bought→done) make every stranded leg complete on the next run instead of repeating; the causal chain (RC-drought → route → SWAP.HIVE → BEE → HE-genesis) is written into the sovereign chain as a bee-wall block every beat",
       "pass": true,
-      "evidence": "chains 3 · legs verified 3 · probe phase bought @tov · routes 0 · BEE-routed 0 · bee-wall block @h=52176"
+      "evidence": "chains 3 · legs verified 3 · probe phase bought @tov · routes 0 · BEE-routed 0 · bee-wall block @h=52510"
     }
   ],
   "map": [
@@ -1120,28 +1110,28 @@
       "cap": "SAOS-NET checkpoint anchored on-chain: the sovereign state-root (fingerprint of the whole economy) is public evidence on the host chain — verifyCheckpoint makes it mathematically checkable by anyone holding genesis+blocks",
       "tier": "on-chain",
       "chain": "steem",
-      "txid": "7bc431f6ceacf53e1b82efa51080592c3ff7f8d2",
+      "txid": "c186626e07a88010c4af9053523187891f0cb188",
       "verifier": "get_transaction + custom_json saos:net/v1 action=checkpoint (stateRoot+genesisHash+checkpointHash)"
     },
     {
       "cap": "Soldier-validator quorum: fleet members independently attest the sovereign chain state with their own keys — the consensus layer is multi-signature from day one",
       "tier": "on-chain",
       "chain": "steem",
-      "txid": "26454cd3eb9b9137ca0316e778feef1f97f9a2a0",
+      "txid": "3379b4f2cce94800cabdaac70b0d4185c03e4c77",
       "verifier": "get_transaction (required_posting_auths==validator; payload.action=attest; payload.stateRoot match)"
     },
     {
       "cap": "STAGE-1 MIRROR: the sovereign chain now carries the empire's real economic history — every sale, yield payout and LP add becomes a sovereign tx referencing its host txid; checkpoints are cryptographic commitments over the whole economy",
       "tier": "on-chain",
       "chain": "steem",
-      "txid": "7bc431f6ceacf53e1b82efa51080592c3ff7f8d2",
+      "txid": "c186626e07a88010c4af9053523187891f0cb188",
       "verifier": "chain.json block-hash verification (27/27 recomputed) + checkpoint anchors get_transaction"
     },
     {
       "cap": "STAGE-2 ECONOMY: the sovereign network is not a mirror anymore — it hosts its own order book (soldier bids + treasury standing ask), executes fills deterministically in the kernel, and derives yield from its own chain fees; host chains are the evidence layer",
       "tier": "on-chain",
       "chain": "steem",
-      "txid": "7bc431f6ceacf53e1b82efa51080592c3ff7f8d2",
+      "txid": "c186626e07a88010c4af9053523187891f0cb188",
       "verifier": "chain.json replay (genesis→head block-hash rebuild) + sovereign/state.json book snapshot"
     },
     {
@@ -1155,7 +1145,7 @@
       "cap": "STAGE-3 ROTATION: the sovereign head is DERIVED FROM THE CHAIN (roster[floor(h/12) mod |roster|]) — the mandated producer proves the mandate on the host chain with their own key, and the kernel enforces one-producer-per-round; block production authority is now distributed by law",
       "tier": "on-chain",
       "chain": "steem",
-      "txid": "6b34f94a99a19cbfd48c961095d4175c3876be08",
+      "txid": "fe2891d502e09b32f5132c5e8c4d038f0138805a",
       "verifier": "custom_json saos:net/v1 action=produce (signed by the mandated soldier) + kernel produce op (dup-round guard) + rotation law check vs published roster"
     },
     {
