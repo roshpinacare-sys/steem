@@ -212,7 +212,7 @@ async function seed(args) {
   let bU = args.b != null ? Math.round(+args.b) : Math.floor((usdA / priceB) * scaleOf(st, B));
   if (!(aU > 0) || !(bU > 0)) return slog('seed BLOCKED — amounts: a=' + aU + ' b=' + bU);
   if (balA < aU || balB < bU) return slog('seed BLOCKED — balances: ' + A + '=' + balA + '/' + aU + ' · ' + B + '=' + balB + '/' + bU);
-  const tx = { type: 'pool_xAdd', owner: ACCOUNT, pair, amountA: aU, amountB: bU, feeBps: fee, at: new Date().toISOString() };
+  const tx = { type: 'pool_xAdd', owner: ACCOUNT, pair, amountA: aU, amountB: bU, feeBps: fee, raw: true, at: new Date().toISOString() }; // raw=true — יחידות-ספר-גולמיות (117c)
   slog('seed: ' + pair + ' a=' + aU + ' b=' + bU + ' feeBps=' + fee + ' (market: TRX=$' + px.TRXUSDT + ' STEEM=$' + px.STEEMUSDT + ')');
   const r = inject([tx], 'seed:' + pair);
   if (r.done) {
@@ -233,7 +233,7 @@ function swap(args) {
   if (!me) return slog('swap BLOCKED — taker not on book: ' + taker);
   const balOf = (sym) => sym === 'SAOS' ? (me.saos || 0) : sym === 'STEEM' ? (me.steem || 0) : ((me.wrapped || {})[sym] || 0);
   if (balOf(q.in.sym) < q.in.units) return slog('swap BLOCKED — taker ' + taker + ' ' + q.in.sym + '=' + balOf(q.in.sym) + ' < ' + q.in.units);
-  const tx = { type: 'pool_x', pair, side: q.side, inAmt: q.in.units, taker, at: new Date().toISOString() };
+  const tx = { type: 'pool_x', pair, side: q.side, inAmt: q.in.units, taker, raw: true, at: new Date().toISOString() }; // raw=true — יחידות-ספר-גולמיות (117c)
   slog('swap: ' + taker + ' ' + q.in.human + ' ' + q.in.sym + ' → ' + q.out.human + ' ' + q.out.sym + ' (feeBps=' + q.feeBps + ', impact=' + q.impactPct + '%)');
   const r = inject([tx], 'swap:' + pair + ':' + q.side);
   if (r.done) {

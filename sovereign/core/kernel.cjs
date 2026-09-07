@@ -605,7 +605,10 @@ function applyTx(st, tx) {
       const m = /^([A-Z0-9.\-]{2,12})\/([A-Z0-9.\-]{2,12})$/.exec(pair);
       if (!m || m[1] === m[2]) return { ok: false, gas, err: 'bad-pair' };
       const A = m[1], B = m[2];
-      const inA = µ(Number(tx.amountA || 0)), inB = µ(Number(tx.amountB || 0));
+      /* 117c — raw-תעודה: tx.raw:true → יחידות-ספר-גולמיות-שלמות (בלי-µ-כפילה) —
+       * הדיוק-הננו-נדרש למטבעות-אמת (bookScale 1e9) · בלי-raw ההתנהגות-זהה-בית */
+      const raw = tx.raw === true;
+      const inA = raw ? Math.floor(Number(tx.amountA || 0)) : µ(Number(tx.amountA || 0)), inB = raw ? Math.floor(Number(tx.amountB || 0)) : µ(Number(tx.amountB || 0));
       if (inA < 0 || inB < 0 || inA + inB <= 0) return { ok: false, gas, err: 'amount' };
       const o = acct(st, String(tx.owner || '').toLowerCase());
       const bal = (acc, sym) => sym === 'SAOS' ? acc.saos : sym === 'STEEM' ? acc.steem : (acc.wrapped[sym] || 0);
@@ -637,7 +640,7 @@ function applyTx(st, tx) {
       const p = (st.poolsX || {})[pair];
       if (!p || !(p.a > 0) || !(p.b > 0)) return { ok: false, gas, err: 'no-pair' };
       const side = tx.side === 'A2B' ? 'A2B' : tx.side === 'B2A' ? 'B2A' : null;
-      const inAmt = µ(Number(tx.inAmt));
+      const inAmt = tx.raw === true ? Math.floor(Number(tx.inAmt)) : µ(Number(tx.inAmt)); // 117c raw-תעודה — אותו-חוזה כמו-pool_xAdd
       if (!side || !(inAmt > 0)) return { ok: false, gas, err: 'bad-swap' };
       const A = p.symA, B = p.symB;
       const t = String(tx.taker || '').toLowerCase();
