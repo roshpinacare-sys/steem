@@ -1332,10 +1332,28 @@ async function beat() {
     const anchorBlk = replayBlocks.find((b) => b.height === s.height);
     return !!(anchorBlk && anchorBlk.hash === s.lastBlockHash);
   };
+  /* 117c — חוק-הדם (bloodline-law): anchor-בגובה-אחד אינו ראיה — התראת-האמנזיה-החיה
+   * (היום: דמון-ישן-קרנל בלע tx.raw/raw-pool גידל ליניאגה-שכחה; ה-anchor-בגובה-היחיד
+   * אימת אותה והיא ניצחה ב-dedup). תיקון-השורש: ליניאגה מתקבלת רק אם כל-הבלוקים
+   * מעל-הסנפשוט בארכיון יוצרים רצף-prevHash אחיד מאחרונת-הסנפשוט ועד-ראש-הארכיון.
+   * שבר-אחד = הליניאגה לא ראתה את הארכיון כמות-שהוא → נדחה בכנות → replay-מלא. */
+  const bloodlineOk = (s) => {
+    let expectHash = s.lastBlockHash;
+    const above = replayBlocks.filter((b) => b.height > s.height).sort((a, b) => a.height - b.height);
+    for (const b of above) {
+      if (b.prevHash !== expectHash) return b.height; // שבר-הדם — הגובה-הכוזב
+      expectHash = b.hash;
+    }
+    return 0; // דם-טהור
+  };
   for (const p of [rootPath, snapPath, snapPrev]) {
     try {
       const s = JSON.parse(fs.readFileSync(p, 'utf8'));
-      if (anchorOk(s)) { snap = s; if (p !== rootPath) log('beat restore from ' + path.basename(p) + ' at h' + s.height); break; }
+      if (anchorOk(s)) {
+        const breakAt = bloodlineOk(s);
+        if (breakAt) { log('beat restore candidate ' + path.basename(p) + ' REJECTED — bloodline break at h' + breakAt + ' (117c, honest) → full-replay'); continue; }
+        snap = s; if (p !== rootPath) log('beat restore from ' + path.basename(p) + ' at h' + s.height); break;
+      }
       log('beat restore candidate ' + path.basename(p) + ' REJECTED (anchor hash mismatch at h' + (s && s.height) + ') — honest');
     } catch (_) { /* קובץ-חסר/שחות — השכבה-הבאה בשרשרת */ }
   }
