@@ -1117,6 +1117,28 @@ export function Sovereign() {
                 ) : null}
               </div>
 
+              {/* 117 — מוכנות-הקבלה למשימת-$1-אמת: עיגון-חי על-ETH+SOL אמת, ספי-אבק-מתחת-$1,
+                  בזלינות-במקום, מסילת-מינט-מקושרת — הפקדת-המפעיל-תתגלה-ותנופק 1:1 */}
+              {vt.deposits.preflight ? (
+                <div className={cn("rounded-lg px-3 py-2 mb-2", vt.deposits.preflight.ready ? "bg-emerald/10 border border-emerald/25" : "bg-gold/10 border border-gold/25")}>
+                  <div className="flex items-center gap-2 flex-wrap text-[10px]">
+                    <ShieldCheck className={cn("size-3.5", vt.deposits.preflight.ready ? "text-emerald" : "text-gold")} />
+                    <span className={cn("font-bold", vt.deposits.preflight.ready ? "text-emerald" : "text-gold")}>
+                      {vt.deposits.preflight.ready ? "מוכן-לקבלת-$1-אמת (ETH+SOL)" : "מוכנות-חלקית — בדוק-את-הסעיפים"}
+                    </span>
+                    <span className="hash text-ink-2">בדיקות-חיות: {vt.deposits.preflight.checksOk}/{vt.deposits.preflight.checksTotal}</span>
+                    {vt.deposits.preflight.at ? <span className="text-ink-2 ms-auto">טיסת-מוכנות {fmtClock(vt.deposits.preflight.at)}</span> : null}
+                  </div>
+                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] mt-1">
+                    {vt.deposits.preflight.checks.filter((c) => ["ethereum-live", "solana-live", "eth-threshold-$1", "sol-threshold-$1", "detection-cadence"].includes(c.name)).map((c) => (
+                      <span key={c.name} className={cn("hash", c.ok ? "text-emerald" : "text-rose")} title={c.detail}>
+                        {c.ok ? "✓" : "✗"} {c.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               {/* רשתות-הקבלה — 10 שברים-חיים (אותן-רשתות-כמו-הזהות) */}
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {vt.deposits.chains.map((c) => (
