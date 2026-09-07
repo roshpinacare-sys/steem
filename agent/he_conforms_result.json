@@ -1,0 +1,116 @@
+{
+  "at": "2026-09-04T14:02:04.911Z",
+  "account": "headcorner",
+  "summary": {
+    "total": 13,
+    "walls": 12,
+    "allows": 0,
+    "passCount": 12
+  },
+  "asserts": [
+    {
+      "id": "xfer-insufficient",
+      "op": "tokens:transfer {\"from\":\"headcorner\",\"to\":\"cashmachine\",\"symbol\":\"AFIT\",\"quantity\":\"5\",\"memo\":\"conforms-1\"",
+      "expect": "reject",
+      "got": "contract-level reject (state unchanged)",
+      "pass": true,
+      "evidence": "denial surface confirmed: balance is dust (<5) — balances+books identical pre/post (broadcast accepted, contract refused)"
+    },
+    {
+      "id": "xfer-negative",
+      "op": "tokens:transfer {\"from\":\"headcorner\",\"to\":\"cashmachine\",\"symbol\":\"AFIT\",\"quantity\":\"-1\",\"memo\":\"conforms-2",
+      "expect": "reject",
+      "got": "contract-level reject (state unchanged)",
+      "pass": true,
+      "evidence": "denial surface confirmed: negative quantity — balances+books identical pre/post (broadcast accepted, contract refused)"
+    },
+    {
+      "id": "xfer-zero",
+      "op": "tokens:transfer {\"from\":\"headcorner\",\"to\":\"cashmachine\",\"symbol\":\"AFIT\",\"quantity\":\"0\",\"memo\":\"conforms-3\"",
+      "expect": "measure",
+      "got": "contract-level reject (state unchanged)",
+      "pass": true,
+      "evidence": "denial surface confirmed: is 0 a legal quantity? — balances+books identical pre/post (broadcast accepted, contract refused)"
+    },
+    {
+      "id": "xfer-unknown-account",
+      "op": "tokens:transfer {\"from\":\"headcorner\",\"to\":\"saosnobody9x\",\"symbol\":\"AFIT\",\"quantity\":\"0.0001\",\"memo\":\"confo",
+      "expect": "reject",
+      "got": "contract-level reject (state unchanged)",
+      "pass": true,
+      "evidence": "denial surface confirmed: recipient never existed — balances+books identical pre/post (broadcast accepted, contract refused)"
+    },
+    {
+      "id": "xfer-unknown-symbol",
+      "op": "tokens:transfer {\"from\":\"headcorner\",\"to\":\"cashmachine\",\"symbol\":\"NOPE1\",\"quantity\":\"1\",\"memo\":\"conforms-5",
+      "expect": "reject",
+      "got": "contract-level reject (state unchanged)",
+      "pass": true,
+      "evidence": "denial surface confirmed: symbol not registered — balances+books identical pre/post (broadcast accepted, contract refused)"
+    },
+    {
+      "id": "xfer-precision",
+      "op": "tokens:transfer {\"from\":\"headcorner\",\"to\":\"cashmachine\",\"symbol\":\"AFIT\",\"quantity\":\"0.00001\",\"memo\":\"confo",
+      "expect": "reject",
+      "got": "contract-level reject (state unchanged)",
+      "pass": true,
+      "evidence": "denial surface confirmed: precision 4 — 5th decimal — balances+books identical pre/post (broadcast accepted, contract refused)"
+    },
+    {
+      "id": "xfer-min-unit",
+      "op": "tokens:transfer {\"from\":\"headcorner\",\"to\":\"cashmachine\",\"symbol\":\"AFIT\",\"quantity\":\"0.0001\",\"memo\":\"confor",
+      "expect": "allow",
+      "got": "chain-level reject: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 156035915 RC, needs 174327105 RC. Please wait to transact or power up HIVE.",
+      "pass": false,
+      "evidence": "broadcast rejected by the chain itself — payer has not enough RC mana for transaction:has_mana: Account: headcorner has 156035915 R"
+    },
+    {
+      "id": "stake-insufficient",
+      "op": "tokens:stake {\"from\":\"headcorner\",\"to\":\"headcorner\",\"symbol\":\"AFIT\",\"quantity\":\"999\"}",
+      "expect": "reject",
+      "got": "contract-level reject (state unchanged)",
+      "pass": true,
+      "evidence": "denial surface confirmed: stake beyond balance — balances+books identical pre/post (broadcast accepted, contract refused)"
+    },
+    {
+      "id": "sell-insufficient",
+      "op": "market:sell {\"symbol\":\"AFIT\",\"quantity\":\"9999\",\"price\":\"0.00001\"}",
+      "expect": "reject",
+      "got": "chain-level reject: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 8236901 RC, needs 140093363 RC. Please wait to transact or power up HIVE.",
+      "pass": true,
+      "evidence": "broadcast rejected by the chain itself — payer has not enough RC mana for transaction:has_mana: Account: headcorner has 8236901 RC,"
+    },
+    {
+      "id": "buy-unfunded",
+      "op": "market:buy {\"symbol\":\"BEE\",\"quantity\":\"50000\",\"price\":\"0.5\"}",
+      "expect": "reject",
+      "got": "chain-level reject: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 9555299 RC, needs 137578490 RC. Please wait to transact or power up HIVE.",
+      "pass": true,
+      "evidence": "broadcast rejected by the chain itself — payer has not enough RC mana for transaction:has_mana: Account: headcorner has 9555299 RC,"
+    },
+    {
+      "id": "sell-zero-price",
+      "op": "market:sell {\"symbol\":\"AFIT\",\"quantity\":\"0.1\",\"price\":\"0\"}",
+      "expect": "reject",
+      "got": "chain-level reject: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 10873697 RC, needs 136573493 RC. Please wait to transact or power up HIVE.",
+      "pass": true,
+      "evidence": "broadcast rejected by the chain itself — payer has not enough RC mana for transaction:has_mana: Account: headcorner has 10873697 RC"
+    },
+    {
+      "id": "cancel-unknown",
+      "op": "market:cancel {\"type\":\"sell\",\"id\":\"nonexistent-order-0000\"}",
+      "expect": "reject",
+      "got": "chain-level reject: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 12192095 RC, needs 137079160 RC. Please wait to transact or power up HIVE.",
+      "pass": true,
+      "evidence": "broadcast rejected by the chain itself — payer has not enough RC mana for transaction:has_mana: Account: headcorner has 12192095 RC"
+    },
+    {
+      "id": "issue-not-issuer",
+      "op": "tokens:issue {\"symbol\":\"SAOS\",\"to\":\"headcorner\",\"quantity\":\"1\"}",
+      "expect": "reject",
+      "got": "chain-level reject: payer has not enough RC mana for transaction:has_mana: Account: headcorner has 13510493 RC, needs 139097843 RC. Please wait to transact or power up HIVE.",
+      "pass": true,
+      "evidence": "broadcast rejected by the chain itself — payer has not enough RC mana for transaction:has_mana: Account: headcorner has 13510493 RC"
+    }
+  ]
+}

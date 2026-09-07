@@ -1,0 +1,250 @@
+{
+  "measuredAt": "2026-09-02T14:46:29Z",
+  "rpc": "https://api.steemit.com",
+  "mode": "read-only, zero money ops",
+  "dollar_convention": "SBD≈$1 assumption; income flows valued at internal-market top bid; fee_usd at operative feed (per task spec)",
+  "ticket": {
+    "account_creation_fee_raw": "3.000 STEEM",
+    "source": "condenser_api.get_chain_properties (DGP does not expose account_creation_fee on this node)",
+    "fee_steem": 3.0,
+    "feed_sbd_per_steem": 0.104326,
+    "fee_sbd_at_feed": 0.312979,
+    "fee_usd_at_feed": 0.312979,
+    "assumption": "SBD≈$1 — ticket upper-bound value, NOT a proven market price (market price of accounts is off-chain — פער-אמת)",
+    "headcorner_pending_claimed_accounts": 0,
+    "global_pending_claimed_accounts": null,
+    "global_pending_claimed_accounts_reason": "השדה הגלובלי לא חשוף ב-DGP של הצומת הזה (נבדק: אין מפתח כזה) — נמדד לכל מפעל בנפרד",
+    "available_account_subsidies": 27230789,
+    "head_block": 109230740,
+    "cross_check_task19_feed_0_104326": 0.104326
+  },
+  "rc": {
+    "raw_response_shape": {
+      "response_top_keys": [
+        "rc_accounts"
+      ],
+      "rc_account_record_keys": [
+        "account",
+        "max_rc",
+        "max_rc_creation_adjustment",
+        "rc_manabar"
+      ]
+    },
+    "accounts": {
+      "headcorner": {
+        "max_rc": 9003078053421,
+        "current_mana": 9003078053421,
+        "rc_pct": 100.0,
+        "vesting_shares_raw": "8601598.987647 VESTS",
+        "vesting_sp": 5320.6,
+        "pending_claimed_accounts": 0
+      },
+      "justyy": {
+        "max_rc": 4745675863482112,
+        "current_mana": 958678598418142,
+        "rc_pct": 20.2,
+        "vesting_shares_raw": "2744814227.905815 VESTS",
+        "vesting_sp": 1697839.9,
+        "pending_claimed_accounts": 309831
+      },
+      "upvu": {
+        "max_rc": 16601229473811389,
+        "current_mana": 16595430147524538,
+        "rc_pct": 99.97,
+        "vesting_shares_raw": "881102485.145127 VESTS",
+        "vesting_sp": 545017.2,
+        "pending_claimed_accounts": 698210
+      }
+    },
+    "headcorner_max_rc_over_justyy": 0.001897,
+    "headcorner_max_rc_over_upvu": 0.000542,
+    "inferred_claims_per_day": {
+      "method": "same op (claim_account), same 5-day RC regen window; anchor = measured sustainable rate of the reference factory × (headcorner max_rc / reference max_rc)",
+      "justyy_anchored_165x": 0.3,
+      "upvu_anchored_275x": 0.1,
+      "range_note": "RANGE, not a point estimate: reference factories also spend RC on other ops (justyy posts/votes, upvu votes/transfers ~84/day), and RC cost per claim is NOT yet measured — pending A2 (one signed claim_account logging RC before/after). If A2 shows cost C RC/claim, exact sustainable rate = max_rc/5 / C.",
+      "pending_a2_tag": "ממתין ל-A2"
+    },
+    "bounds_refined": {
+      "lower_claims_per_day": 0.31,
+      "upper_claims_per_day": 3.1,
+      "lower_method": "same RC-budget fraction as justyy → naive ratio (165 × max_rc ratio)",
+      "upper_method": "headcorner all-in on claims AND claims consume only ~10% of justyy's regen budget",
+      "cost_per_claim_upper_bound_rc_justyy_anchor": 5752334379978,
+      "cost_per_claim_upper_bound_rc_upvu_anchor": 12073621435499,
+      "headcorner_regen_per_day": 1800615610684,
+      "ticket_usd_projection": {
+        "per_claim_usd": 0.313,
+        "per_day_usd_lower": 0.098,
+        "per_day_usd_upper": 0.98,
+        "warning": "ערך-עליון של הטיקט (account_creation_fee) בלבד — לא מחיר-שוק; מונטיז אמיתי הוא rail חוץ-שרשרת (פער-אמת)"
+      }
+    },
+    "refill_per_day_max_rc_over_5": 1800615610684,
+    "cross_check_task19_regen_1_8e12": {
+      "task19_value": 1800000000000.0,
+      "measured_now": 1800615610684,
+      "consistent": true
+    }
+  },
+  "curation": {
+    "ops_scanned": 2100,
+    "n_curation_rewards": 879,
+    "window": {
+      "first_reward_day": "2024-11-21",
+      "last_reward_day": "2026-02-28"
+    },
+    "total_sp_window": 42.8086,
+    "active_days": 113,
+    "sp_per_active_day": 0.37884,
+    "sp_per_calendar_day_of_window": 0.37884,
+    "own_sp_formula": "vesting_shares − delegated_vesting_shares + received_vesting_shares",
+    "own_sp": 5567.7,
+    "apr_pct_on_own_sp_when_active": 2.48,
+    "usd_per_active_day_bid": 0.0373,
+    "usd_per_month_bid": 1.135,
+    "bid_used_sbd_per_steem": 0.098524,
+    "vp_current_pct": 98.0,
+    "voting_mana_raw": "8821036158359",
+    "per_active_day_top5": {
+      "2025-09-02": 1.1947,
+      "2025-10-05": 0.8232,
+      "2025-10-06": 0.8201,
+      "2025-09-09": 0.7909,
+      "2025-09-28": 0.7837
+    },
+    "note": "SP/day 'active' = mean over UTC days that had ≥1 curation reward (dormant days excluded — the account is dormant since ~2/2026); calendar-day mean given too for honesty"
+  },
+  "pending_claim": {
+    "reward_vesting_balance_raw": "42533.621148 VESTS",
+    "reward_steem_raw": "0.000 STEEM",
+    "reward_sbd_raw": "0.000 SBD",
+    "pending_sp": 26.31,
+    "pending_usd_bid": 2.592,
+    "bid_used": 0.098524,
+    "cross_check_task19_26_3sp": {
+      "task19_value_sp": 26.3,
+      "consistent": true,
+      "note": "אם שונה — ייתכן שהמפעיל תבע בינתיים; הערך בפועל רשום"
+    }
+  },
+  "rental": {
+    "headcorner_outgoing_delegations": [],
+    "delegation_done": false,
+    "delegated_out_sp": 0,
+    "verdict": "לא בוצע עדיין — המפעיל לא הקצה עדיין 1,000 SP ל-upvu",
+    "upvu_bank_sample": {
+      "ops_scanned": 1000,
+      "window_first": "2026-08-30T00:16:09",
+      "window_last": "2026-09-02T00:16:15",
+      "window_days": 3.0,
+      "transfers_in_sample": 991,
+      "transfers_per_day": 330.3,
+      "steem_paid_per_day": 5690.02,
+      "transfers_to_headcorner": []
+    },
+    "apr_recheck": "4.15% מהמדידה המקורית (17) נשאר הייחוס; רענון מלא של ה-APR מצריך דגימת-משלמים כבדה — המדד הזול היום: מכונת התשלומים upvu.bank חיה (קצב נמדד לעיל) ואין delegation שלנו שהשתנתה",
+    "projection_1000sp": {
+      "sp_delegated": 1000,
+      "apr_reference_pct": 4.15,
+      "apr_reference_source": "docs/RENTAL_SCAN.md (Task 17) — measured median over 13 paid samples",
+      "sp_per_year": 41.5,
+      "usd_per_year_bid": 4.09,
+      "usd_per_month_bid": 0.341
+    }
+  },
+  "agent_rpc": {
+    "method": "static code reading of agent/agent.cjs v0.2.0 (ספירת קריאות בקוד — לא מדידת רשת)",
+    "note_shared_cache": "v2: קאש TTL-15s משותף ל-get_accounts/rc_api — 5 לופים באותו-חלון = קריאה אחת; +1 קריאת rc חד-פעמית בהפעלה",
+    "note_feed_skip": "דילוג על get_order_book כשהפיד זהה עד 9 ספרות — בפועל נדיר (ה-quote = current_supply שגדל בכל בלוק, ROAST), לכן הטבלה סופרת מלוא-הקריאות",
+    "table": [
+      {
+        "loop": "claim (claim_reward_balance)",
+        "calls_per_cycle": 2,
+        "rpc_calls": [
+          "get_dynamic_global_properties",
+          "get_accounts (cached, TTL 15s)"
+        ],
+        "interval_min_default": 60,
+        "runs_only_if": "תמיד (גם ניטור-בלבד); חתימה רק עם POSTING_WIF",
+        "calls_per_hour": 2.0
+      },
+      {
+        "loop": "watch (BOT-3 window)",
+        "calls_per_cycle": 2,
+        "rpc_calls": [
+          "get_feed_history",
+          "get_order_book(50) — מדולג אם הפיד לא זז"
+        ],
+        "interval_min_default": 5,
+        "runs_only_if": "always",
+        "calls_per_hour": 24.0
+      },
+      {
+        "loop": "transfer-watch",
+        "calls_per_cycle": 1,
+        "rpc_calls": [
+          "get_account_history(-1,100)"
+        ],
+        "interval_min_default": 5,
+        "runs_only_if": "always",
+        "calls_per_hour": 12.0
+      },
+      {
+        "loop": "curation skeleton",
+        "calls_per_cycle": 4,
+        "rpc_calls": [
+          "get_accounts (cached) + get_discussions_by_created ×3 default tags"
+        ],
+        "interval_min_default": 30,
+        "runs_only_if": "CURATION_ENABLED=true (default false)",
+        "calls_per_hour": 8.0
+      },
+      {
+        "loop": "factory B1 (claim_account)",
+        "calls_per_cycle": 1,
+        "rpc_calls": [
+          "rc_api.find_rc_accounts (cached); בזמן תביעה בפועל: 5 קריאות + שידור"
+        ],
+        "interval_min_default": 30,
+        "runs_only_if": "FACTORY_ENABLED=true + ACTIVE_WIF (default false)",
+        "calls_per_hour": 2.0
+      }
+    ],
+    "total_per_5min_cycle": 4.0,
+    "total_per_hour_all_enabled": 48.0,
+    "total_per_hour_default_off": 38.0,
+    "verdict": "יעיל — ~38 קריאות/שעה ברירת-מחדל (~46 עם קוראציה+מפעל) הוא זעיר לצומת ציבורי; אין בזבוז (הקאש המשותף והשערים RC/VP מונעים קריאות-מיותר; דילוג-ה-book נדיר-תועלת אך לא מזיק)"
+  },
+  "market": {
+    "bid_top": 0.098524,
+    "ask_top": 0.098687,
+    "spread_pct": 0.166,
+    "vwap_edge_pct_100sbd": -9.35,
+    "vwap_filled": true,
+    "method": "same math as agent.cjs execEdge / market-snapshot.ts: sell 100/feed STEEM into bids",
+    "vol24h": {
+      "trades": 0,
+      "sbd": 0,
+      "steem": 0,
+      "usd_at_feed": 0.0,
+      "possibly_truncated": false,
+      "window_days": 1,
+      "newest_trade": null
+    },
+    "vol48h": {
+      "trades": 270,
+      "sbd": 69.79,
+      "steem": 697.52,
+      "usd_at_feed": 142.56,
+      "possibly_truncated": false,
+      "window_days": 2,
+      "newest_trade": "2026-08-31T18:28:27"
+    },
+    "vol_note": "get_recent_trades_by_account לא נבדק/לא זמין זול — get_trade_history בלבד",
+    "cross_check": {
+      "feed_0_104326": 0.104326,
+      "roast_window": "צפוי סגור (edge שלילי) — מתעדכן מהערך החי"
+    }
+  }
+}

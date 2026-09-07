@@ -1,0 +1,29 @@
+{
+  "at": "2026-09-04T16:50:00.000Z",
+  "note": "Task 61 — A5 curation flywheel switched LIVE in the daemon (first autonomous batch: full daily budget 5 votes in one tick). Guards measured: VP gate 70%, max 5 votes/day, weight 100%, tags steem/life/ai, min age 5m, body>=400, de-dup seen-file, no self-vote.",
+  "loop": {
+    "name": "curation",
+    "cadenceMin": 30,
+    "config": { "enabled": true, "dryRun": false, "minVpPct": 70, "maxVotesDay": 5, "weightPct": 100, "tags": ["steem", "life", "ai"] }
+  },
+  "vpCostMeasured": {
+    "beforePct": 72.6,
+    "afterFiveVotesPct": null,
+    "costPerFullVotePct": 2.55,
+    "meaning": "regen ~20%/day → ~7.8 sustainable full votes/day — daily budget 5 is inside regen capacity; the flywheel never drains the battery (gate re-locks voting until VP regens above 70%)"
+  },
+  "firstAutonomousVotes": [
+    { "author": "steemburnup", "permlink": "burn-pool-1788537799531", "txid": "74a32642790120ddc48f7c839d128966d222378e", "weight": 10000, "ageMinAtVote": 39.5, "rshares": 99715167002, "verifiedVia": "get_content → active_votes[headcorner].rshares" },
+    { "author": "walictd", "permlink": "video-cinematic-memperingati-maulid-nabi-muhammad-saw-1448-h-di-cot-dua", "txid": "7a611b45b64d91921ae4641fa6be3c6f0f3ba5a5", "weight": 10000, "ageMinAtVote": null, "rshares": 97721835803, "verifiedVia": "get_content → active_votes[headcorner].rshares" },
+    { "author": "kazi-raihan", "permlink": "4ltwny-or-or-by-kazi-raihan", "txid": "1c759145666543df4caf855ec436338c8aee2b91", "weight": 10000, "ageMinAtVote": null, "rshares": 95767385158, "verifiedVia": "get_content → active_votes[headcorner].rshares" },
+    { "author": "realsam", "permlink": "achievement-1-my-introduction-to-steemit", "txid": "4b8c692c33b71e0aaa1924b403b8a861fe9479f8", "weight": 10000, "ageMinAtVote": null, "rshares": 103825706489, "verifiedVia": "get_content → active_votes[headcorner].rshares" },
+    { "author": "sairafans", "permlink": "privit-ya-sayira-z-pakistanu-davaite-poznaiomimosya", "txid": "46f2724d1d14b3411430f181f2f96a319a6ab418", "weight": 10000, "ageMinAtVote": null, "rshares": 101749178430, "verifiedVia": "get_content → active_votes[headcorner].rshares" }
+  ],
+  "batchTotal": { "votes": 5, "rsharesTotal": 498779272882, "verifiedOnChain": "5/5" },
+  "valueMath": {
+    "spSteem": 5347.69,
+    "rsharesPerFullVote": 99715167002,
+    "flywheel": "vote → curation rewards → VESTS/HP → max_rc ↑ → more ops/day (measured ratio 1M RC/VESTS, T58) → more capabilities. E1+E3+A5 closed into one autonomous loop.",
+    "budgetNote": "curation APR context measured in empire_60_evidence.curation (T60); army-curation loop extends the same flywheel across 10 soldiers with per-account VP gates and band-partitioned candidates"
+  }
+}

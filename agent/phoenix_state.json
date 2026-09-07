@@ -1,0 +1,92 @@
+{
+  "at": "2026-09-05T01:39:38.848Z",
+  "verdict": "REINCARNATION-READY",
+  "passed": 14,
+  "total": 14,
+  "checks": [
+    {
+      "area": "repo",
+      "name": "origin defined",
+      "pass": true,
+      "detail": "https://***@github.com/dudududi144-source/steem.git"
+    },
+    {
+      "area": "repo",
+      "name": "branch=main",
+      "pass": true,
+      "detail": "main"
+    },
+    {
+      "area": "repo",
+      "name": "worktree clean or gitkeeper pending",
+      "pass": true,
+      "detail": "10 pending files (gitkeeper catches in ≤30m)"
+    },
+    {
+      "area": "repo",
+      "name": "gitkeeper last result",
+      "pass": true,
+      "detail": "committed @ 2026-09-05T01:31:54.249Z"
+    },
+    {
+      "area": "secrets",
+      "name": "agent/.env present",
+      "pass": true,
+      "detail": "POSTING_WIF/ACTIVE_WIF (content never read here)"
+    },
+    {
+      "area": "secrets",
+      "name": "vault.json present",
+      "pass": true,
+      "detail": "12 accounts (soldiers+delegations)"
+    },
+    {
+      "area": "runtime",
+      "name": "daemon status fresh",
+      "pass": true,
+      "detail": "100s old · 27 loops"
+    },
+    {
+      "area": "runtime",
+      "name": "dev server responds",
+      "pass": true,
+      "detail": "GET /api/state → 200"
+    },
+    {
+      "area": "sovereign",
+      "name": "kernel present",
+      "pass": true,
+      "detail": "sovereign/core/kernel.cjs"
+    },
+    {
+      "area": "sovereign",
+      "name": "kernel self-test vectors",
+      "pass": true,
+      "detail": "final=366ad47703426892…"
+    },
+    {
+      "area": "sovereign",
+      "name": "genesis + hash",
+      "pass": true,
+      "detail": "genesisHash=5a8b98311c8333ef… · supply=126.682 SAOS"
+    },
+    {
+      "area": "sovereign",
+      "name": "node state (height>0)",
+      "pass": true,
+      "detail": "height=44 · cps=3 · verified=17"
+    },
+    {
+      "area": "anchors",
+      "name": "last checkpoint steem-anchored",
+      "pass": true,
+      "detail": "txid d4f26c2eab0699a29e46e2d0dd683ffc26645b3e"
+    },
+    {
+      "area": "anchors",
+      "name": "quorum attests verified ≥2",
+      "pass": true,
+      "detail": "3/3 verified (@cashmachine @haran @lsa)"
+    }
+  ]
+}
