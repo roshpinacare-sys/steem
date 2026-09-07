@@ -1,35 +1,42 @@
 {
-  "at": "2026-09-07T15:20:28.879Z",
+  "at": "2026-09-07T16:05:53.785Z",
   "dry": false,
-  "run": 139,
+  "run": 140,
   "ladder": {
     "bee": {
       "before": 5.2447005,
-      "after": 5.2447005
+      "after": 6.1400887
     },
     "swapHive": {
       "before": 0.58003982,
-      "after": 0.58003982
+      "after": 0.05
     },
-    "totalBeeBoughtEver": 3.33908792,
+    "totalBeeBoughtEver": 4.234476119999999,
     "createThreshold": 100,
-    "progressPct": 5.2447005
+    "progressPct": 6.1400887
   },
   "steps": [
     {
-      "step": "rc-gate",
+      "step": "hive→swap.hive",
       "ok": true,
-      "detail": "Hive RC estimated 153028190 < 280M — ladder waits ≈36min for regen · nothing lost"
+      "detail": "9.632 HIVE pegged → SWAP.HIVE=0.58003982 · tx ?",
+      "txid": null
     },
     {
-      "step": "buy BEE",
+      "step": "buy BEE#1",
       "ok": true,
-      "detail": "skipped — RC gate (regen in progress)"
+      "detail": "0.89538820@0.59196650 · tx ?",
+      "txid": null
+    },
+    {
+      "step": "buy BEE·settle",
+      "ok": true,
+      "detail": "BEE 5.2447 → 6.1401 (Δ+0.8954) · ladder 6.14/100 · total bought ever 4.2345"
     },
     {
       "step": "genesis gate",
       "ok": true,
-      "detail": "5.24/100 BEE · RC-gated — autonomous rerun when regen completes"
+      "detail": "6.14/100 BEE — ladder continues (release trickle feeds the next runs)"
     }
   ],
   "token": {
