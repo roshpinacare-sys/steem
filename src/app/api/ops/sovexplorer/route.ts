@@ -349,17 +349,26 @@ export async function GET(req: NextRequest) {
   };
 
   const accountRows = Object.entries(accounts)
-    .map(([name, a]) => ({
-      name,
-      saos: (a.saos ?? 0) / 1000,
-      steem: (a.steem ?? 0) / 1000,
-      lockedSaos: (a.lockedSaos ?? 0) / 1000,
-      lockedSteem: (a.lockedSteem ?? 0) / 1000,
-      lp: (a.lp ?? 0) / 1e6,
-      wrapped: Object.fromEntries(Object.entries(a.wrapped ?? {}).map(([sym, v]) => [sym, (v as number) / 1000])),
-      credits: (a.credits ?? 0) / 1000,
-      boundary: name === "host",
-    }))
+    .map(([name, a]) => {
+      // 117 — דיוק-פר-סמל: חלוקה-לפי-bookScale (µ=1000 מורשת · ננו=1e9 למטבעות-רשת-אמת)
+      const meta = (st.assetMeta ?? {}) as Record<string, Record<string, unknown>>;
+      const scaleOf = (sym: string) => {
+        const m = meta[sym];
+        const s = m && typeof m === "object" ? (m.bookScale as unknown) : null;
+        return typeof s === "number" && Number.isInteger(s) && s >= 1 ? s : 1000;
+      };
+      return {
+        name,
+        saos: (a.saos ?? 0) / 1000,
+        steem: (a.steem ?? 0) / 1000,
+        lockedSaos: (a.lockedSaos ?? 0) / 1000,
+        lockedSteem: (a.lockedSteem ?? 0) / 1000,
+        lp: (a.lp ?? 0) / 1e6,
+        wrapped: Object.fromEntries(Object.entries(a.wrapped ?? {}).map(([sym, v]) => [sym, (v as number) / scaleOf(sym)])),
+        credits: (a.credits ?? 0) / 1000,
+        boundary: name === "host",
+      };
+    })
     .sort((x, y) => Number(y.boundary) - Number(x.boundary) || y.saos + y.steem - (x.saos + x.steem));
 
   const fillRows: Record<string, unknown>[] = [];
