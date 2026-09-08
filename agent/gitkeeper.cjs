@@ -202,22 +202,17 @@ function runOnce() {
   // 3. stage everything (gitignore is the iron law for secrets)
   try { sh('git add -A'); } catch (e) { state.error = 'add failed: ' + String(e.message || e).slice(0, 120); writeState(state); log('ABORT · ' + state.error); return state; }
   // belt + suspenders: even if gitignore ever regresses, these never go up
-  try { sh('git reset -q -- agent/.env agent/keys upload/ 2>/dev/null || true'); } catch (_) {}
+  // (117g — fleet_keys.enc/meta joined the iron law: task-16 burned them)
+  try { sh('git reset -q -- agent/.env agent/keys upload/ agent/fleet_keys.enc agent/fleet_keys.meta.json 2>/dev/null || true'); } catch (_) {}
 
   // 4. SECRET GATE — scan staged diff
-  //    (82) fleet_keys.enc is EXEMPT — it is the AES-256-GCM sealed fleet
-  //    bundle (opaque ciphertext + random base64url pass that no plaintext
-  //    scan can judge); scanning it would only false-positive on cipher bytes.
+  //    (117g — the (82) exemption is DEAD: fleet_keys.enc no longer reaches
+  //    staging at all (gitignore + unstaged above). The gate now scans EVERY
+  //    staged byte — no file is above suspicion.
   let staged = '';
   try { staged = sh('git diff --cached', { timeout: 60_000, maxBuffer: 64 * 1024 * 1024 }); } catch (_) {}
   if (staged) {
-    const gateable = staged
-      .split('\ndiff --git ')
-      .filter((chunk, i) => {
-        const head = i === 0 ? chunk.split('\n')[0] : 'diff --git ' + chunk.split('\n')[0];
-        return !/b\/(agent\/)?fleet_keys\.enc\b/.test(head);
-      })
-      .join('\ndiff --git ');
+    const gateable = staged; // 117g — full scan: no exemptions, no blind spots
     for (const { name, re } of SECRET_PATTERNS) {
       const m = gateable.match(re);
       if (m) {
