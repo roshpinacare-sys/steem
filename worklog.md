@@ -3121,3 +3121,27 @@ Stage Summary:
 - 10/10-chains-ok-ראשון-בהיסטוריה (מסילת-הטרון-הפסיקה-לשקר-degraded)
 - פער-דקס-#1-מהסקר-סגור (minOut); השורש-האנטי-אמנזיה-כבר-לא-מזדקן; ציד-המפתח-הישן-ברקע-עם-אורקל-קריפטוגרפי
 - פתוחים-ל-המשך: סוויפ-הזוגות-רץ (אם-MATCH → הדלתות-מתעוררות-אוטומטית-עד-ה-RESEAL); הקצאת-trondex-למשפחת-registry; אינוונטר-העמלות-החיצוניות
+
+---
+Task ID: 117k-b (RESOLUTION)
+Agent: steem-repo-sovereign-agent
+Task: המשך-117k — המנדט-החדש-מהמפעיל: "יש חיבור להכל · קח החלטות במקומי · תבחן תיקיות תשחזר — ארנק-חייל של-הפרויקט · גישה-חכמה-למפתחות-שכל-הסוכנים-יעבדו-אבל-בטוח"
+
+Work Log:
+- **C2 נפתר-מהשורש**: קריאה-מולטימודאלית-ישירה-של-התמונה (IMG-20260905-WA0025.jpg) ע"י-הסוכן-עצמו (בלי-VLM-עוטף) → 12-המילים-זוהו; legacy-verify.cjs (אורקל-חדש) הוכיח: checksum-תקף + שתי-הכתובות-נגזרו — **הבעיה-היחידה הייתה טבלת-EXPECT-הפוכה (idx0=TAzZZ · idx1=TRKSt)**; הסריקות-היו-נכונות-אך-נכשלו-תמיד-בבדיקה-הראשונה
+- מפתח-נזרע: agent/keys/tron-legacy-mnemonic.txt (0600 · gitignored×2 · חבר-כספת-ריבונית vault-lib MEMBERS) → guardian RESEAL אוטומטי (fleet files=9)
+- recover2 (סריקת-זוגות) נהרג — המשימה-הסתיימה; EXPECT-בשני-הסקריפטים-תוקן
+- **אמת-על-השרשרת**: 13:23:27Z המפעיל-איחד-17.38-TRX משתי-הדלתות → **TG6Srs = דלת-הפקדות-הרשמית-של-headcorner (idx2-v2)** — נגזר-ואומת-מקומית מ-wallets-seed; יתרה-17.599234-TRX בתוך-המערכת; שארית-0.65-TRX על-הישנות (trondex-מודד-חי: legacy sun=650000)
+- **THE-KEY-BROKER** (mini-services/key-broker · פורט 3040 · localhost-בלבד · bun --hot): 8-דלתות · חתימת-digest-בלבד (מפתח-לא-עוזב-תהליך) · טוקן 0600 + rate-limit 240/min + אודיט JSONL + hot-reload; הוכחת-E2E key-broker-proof.cjs: **ALL-GREEN 13/13** (ecrecover→כתובת לכל-דלתה + 401/400 שליליים) — de10e9e
+- **kernel minOut הורחב** ל-pool_swap (sell/buy) + pool_swapw (sell/buy) — אותו-חוזה-של-pool_x: וקטורי-הקודש 366ad477 שלמים + בדיקה-התנהגותית (REJECT לפני-מוטציה · בלי-שדה=זהה) — 34eacb2
+- **deposits re-baseline כן**: tron/headcorner 17599234→0 עם-תיעוד-corrections (ה-117i-אידה-את-ההפקדה-האמת-בחלון-הקורא-השבור; כעת-מוכרת) → tick#263: **deposits:1** — צינור-ההטבעה-בדרך (2-tick→wrap_mint→בריכה)
+- trondex: כיסוי-מדידה-חוזר-לדלתות-הישנות (בלוק-כנות-נפרד · לא-נמדד→rejected · אפס-מפתחות-בקריאה)
+- דוק: המילים-מעולם-לא-נדפסו-בלוג/גיט/צ׳אט — git grep מוכיח-נקי; תיקון-עצמי-מיידי-אחרי-שיבוש-זניח-בטיוטת-ה-doc
+
+Stage Summary:
+- **C2 CLOSED** — אין-עוד-מפתח-אבוד-ברשת; המערכת-שולטת-קריפטוגרפית-בכל-8-הדלתות
+- **17.599234 TRX (≈$5.9) = גיבוי-חוץ-אמת-ראשון** — בתוך-דלת-הפקדות-רשמית, בצינור-הטבעה
+- THE-KEY-BROKER = תשתית-הגישה-למפתחות-לכל-הסוכנים (בטוחה · מבוקרת · מאומתת)
+- commits: 936a9f4 (recovery+EXPECT) · de10e9e (broker) · 34eacb2 (minOut×4) · a6a4c43 (postmortem §6) · 59755b6 (audit flip)
+- **הטבעה-בפועל (ההוכחה)**: tick#264 (21:37:18Z): `inject[deposits:1] OK · confirmed:1 · minted:1` — 17599µ-WTRX הוטבעו-ל-headcorner (ref `dep:tron:headcorner:10c8b02…` בספר · headcorner WTRX=28657µ) · המעגל-החוץ→מנוע-סגור-רשמית
+- guardian healKeyBroker: בדיקת-חיות-לפי-פורט (3040) אחרי-pgrep-שקרן-נמדד (cmdline-בונ-ללא-נתיב → EADDRINUSE-loop); kill→detect→respawn E2E (pid 32094) — 0a6c40c
