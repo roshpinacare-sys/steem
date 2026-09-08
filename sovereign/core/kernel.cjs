@@ -237,6 +237,8 @@ function applyTx(st, tx) {
         const net = inAmt - fee;
         const out = Math.floor(net * p.steem / (p.saos + net));
         if (!(out > 0)) return { ok: false, gas, err: 'dust' };
+        // 117k — minOut-אופציונלי (אותו-חוזה-של-pool_x): tx-ישן-בלי-השדה = התנהגות-זהה-ביט-ביט (replay-safe)
+        if (tx.minOut !== undefined && !(out >= Math.floor(Number(tx.minOut)))) return { ok: false, gas, err: 'minOut' };
         const feeToLp = Math.floor(fee / 2), feeToTr = fee - feeToLp;
         // שימור: inAmt == (net + feeToLp) + feeToTr — כל-המיקרו נספרים
         o.saos -= inAmt;
@@ -254,6 +256,8 @@ function applyTx(st, tx) {
         const net = inAmt - fee;
         const out = Math.floor(net * p.saos / (p.steem + net));
         if (!(out > 0)) return { ok: false, gas, err: 'dust' };
+        // 117k — minOut-אופציונלי (אותו-חוזה-של-pool_x): replay-safe
+        if (tx.minOut !== undefined && !(out >= Math.floor(Number(tx.minOut)))) return { ok: false, gas, err: 'minOut' };
         const feeToLp = Math.floor(fee / 2), feeToTr = fee - feeToLp;
         o.steem -= inAmt;
         p.steem += net; p.saos -= out;
@@ -571,6 +575,8 @@ function applyTx(st, tx) {
         const net = inAmt - fee;
         const out = Math.floor(net * p.saos / (p.wtrx + net));
         if (!(out > 0)) return { ok: false, gas, err: 'dust' };
+        // 117k — minOut-אופציונלי (אותו-חוזה-של-pool_x): tx-ישן-בלי-השדה = התנהגות-זהה-ביט-ביט (replay-safe)
+        if (tx.minOut !== undefined && !(out >= Math.floor(Number(tx.minOut)))) return { ok: false, gas, err: 'minOut' };
         const feeToLp = Math.floor(fee / 2), feeToTr = fee - feeToLp;
         o.wrapped.WTRX -= inAmt;
         p.wtrx += net; p.saos -= out;
@@ -585,6 +591,8 @@ function applyTx(st, tx) {
         const net = inAmt - fee;
         const out = Math.floor(net * p.wtrx / (p.saos + net));
         if (!(out > 0)) return { ok: false, gas, err: 'dust' };
+        // 117k — minOut-אופציונלי (אותו-חוזה-של-pool_x): replay-safe
+        if (tx.minOut !== undefined && !(out >= Math.floor(Number(tx.minOut)))) return { ok: false, gas, err: 'minOut' };
         const feeToLp = Math.floor(fee / 2), feeToTr = fee - feeToLp;
         o.saos -= inAmt;
         p.saos += net; p.wtrx -= out;
