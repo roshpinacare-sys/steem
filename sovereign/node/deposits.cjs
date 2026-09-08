@@ -82,20 +82,47 @@ async function balEvm(addrs, chain, tick) {
   const j = await rpcPost(chain.rpc, { jsonrpc: '2.0', id: 1, method: 'eth_getBalance', params: [addrs.evm, 'latest'] });
   return { raw: BigInt(j.result), unit: 'wei', via: chain.rpc[0] };
 }
-async function balTron(addrs, chain, tick) {
+const TRON_FULL_HOSTS = ['https://api.tronstack.io', 'https://tron.stackwallet.com']; // 117k — מסלול-מפלה wallet/getaccount
+async function balTron(addrs, chain, tick, prevRawStr) {
   /* 117i — כנות-קריאה: data ריקה איננה "יתרה-אפס" — היא "לא-נקרא".
    * השקר-השקט (data:[] → 0) כופף-בזלינה → הקריאה-הבאה-נראתה-כהפקדה-שלמה → מינט-כפול-לא-מגובה.
+   * 117k — המשך-הריפוי (שני-ממצאים-חיים):
+   *  (א) ריבוי-מארחים — /v1-על-כל-chain.rpc ואז wallet/getaccount על-TRON_FULL_HOSTS.
+   *  (ב) data:[] + success:true = חשבון-שמעולם-לא-הופעל (אפס-אמת) — אבל-רק-אם-לא-ידוע-שמומן
+   *      (baseline>0 שעבר-מהקורא). הבחנה-זו מבטלת-את-הדריכה-התמידית: 11-מתוך-12-פורטים
+   *      לא-מופעלים → הם-הפילו-את-מסילת-הטרון-ל-'degraded'-בכל-טיק-על-לא-כלום.
    * חשבון-שהיה-ממומן-והתרוקן-לגמרי מגיע-עם-אובייקט-חשבון-אמת (balance:0) — רק-קריאות-כושלות
    * מחזירות data ריקה. קריאה-שלא-ניתן-לאמת את אמינותה = זריקה → הטיק-מדלג, הבזלינה-נשמרת. */
-  let j = null;
-  try {
-    const r = await fetch(chain.rpc[0] + '/v1/accounts/' + addrs.tron);
-    if (!r.ok) throw new Error('trongrid ' + r.status);
-    j = await r.json();
-  } catch (e) { throw new Error('trondegraded:' + String(e.message || e).slice(0, 60)); }
-  const d = j && j.data && j.data[0];
-  if (!d) throw new Error('trondegraded:empty-data(לא-קוראים-לא-אומרים-אפס)');
-  return { raw: BigInt(d.balance || 0), unit: 'sun', via: 'trongrid' };
+  const wasFunded = (() => { try { return prevRawStr !== undefined && prevRawStr !== null && BigInt(prevRawStr) > 0n; } catch (_) { return false; } })();
+  let fundedUnreadable = false;
+  /* מסלול-1: /v1/accounts (REST) — כל-המארחים-ברשימה */
+  for (const host of (chain.rpc || [])) {
+    try {
+      const r = await fetch(host + '/v1/accounts/' + addrs.tron, { signal: AbortSignal.timeout(9000) });
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (!j || j.success !== true) continue;
+      const d = j.data && j.data[0];
+      if (d) return { raw: BigInt(d.balance || 0), unit: 'sun', via: 'v1:' + new URL(host).host };
+      if (wasFunded) { fundedUnreadable = true; continue; } // פורט-ממומן-נקרא-ריק = עמום — מנסים-מסלול-2
+      return { raw: 0n, unit: 'sun', via: 'v1-unactivated:' + new URL(host).host }; // מעולם-לא-הופעל → אפס-אמת
+    } catch (_) { /* מארח-הבא */ }
+  }
+  /* מסלול-2: wallet/getaccount (מארחים-מלאים — מגיבים-גם-כש-/v1-מווסת) */
+  for (const host of TRON_FULL_HOSTS) {
+    try {
+      const r = await fetch(host + '/wallet/getaccount', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: addrs.tron, visible: true }), signal: AbortSignal.timeout(9000) });
+      if (!r.ok) continue;
+      const acc = await r.json();
+      if (acc && acc.address) return { raw: BigInt(acc.balance || 0), unit: 'sun', via: 'getaccount:' + new URL(host).host };
+      if (acc && Object.keys(acc).length === 0) {
+        if (wasFunded) { fundedUnreadable = true; continue; }
+        return { raw: 0n, unit: 'sun', via: 'getaccount-unactivated:' + new URL(host).host };
+      }
+    } catch (_) {}
+    await new Promise((r2) => setTimeout(r2, 250));
+  }
+  throw new Error('trondegraded:' + (fundedUnreadable ? 'funded-port-unreadable(לא-קוראים-לא-אומרים-אפס)' : 'all-hosts-failed'));
 }
 async function balSol(addrs, chain, tick) {
   // devnet-ראשית (שם-אכן-מנסים-לתדלק) · mainnet-beta-שנית — שניהם-נאמנים-לקבלה
@@ -216,7 +243,7 @@ async function tick({ forceSol } = {}) {
       const key = chain.key + '/' + name;
       let cur;
       try {
-        cur = await READERS[chain.family](a, chain, tickN);
+        cur = await READERS[chain.family](a, chain, tickN, state.last[key]); // 117k — baseline עובר-לקורא (הבחנת-מומן/לא-מופעל)
         state.rpcHealth[chain.key] = { at: new Date().toISOString(), ok: true, via: cur.via };
       } catch (e) {
         state.rpcHealth[chain.key] = { at: new Date().toISOString(), ok: false, err: String(e.message || e).slice(0, 80) };

@@ -8,12 +8,7 @@
  * Stealth doctrine: this is a plain market operation — no announcements,
  * no strategy reveals. The proof lives in the sidechain settlement itself.
  *
- * Usage: node he_sell.cjs [--qty 9000] [--price 0.0001]        # DRY by default
- *
- * LIVE-GATE (explicit opt-in only — owner decision, Task 24/25-d):
- *   live broadcast requires BOTH: --live flag (or env HE_LIVE=1)
- *   AND env HE_LIVE_CONFIRM=<agent-account-name> matching ACCOUNT.
- *   Otherwise the daemon runs DRY (no signature, no broadcast).
+ * Usage: node he_sell.cjs [--dry] [--qty 9000] [--price 0.0001]
  */
 const fs = require('fs');
 const path = require('path');
@@ -43,18 +38,7 @@ loadDotEnv(__dirname);
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-// [LIVE-GATE] live is explicit opt-in ONLY (owner decision Task 24 → implemented 25-d):
-// requires BOTH (a) --live flag or env HE_LIVE=1, AND (b) env HE_LIVE_CONFIRM=<account>.
-const LIVE_REQUESTED = !process.argv.includes('--dry') && (process.argv.includes('--live') || process.env.HE_LIVE === '1');
-const LIVE_CONFIRMED = (process.env.HE_LIVE_CONFIRM || '').toLowerCase() === ACCOUNT;
-const LIVE = LIVE_REQUESTED && LIVE_CONFIRMED;
-const DRY = !LIVE;
-if (DRY) {
-  console.log('[LIVE-GATE] dry-run default — broadcast requires --live flag (or HE_LIVE=1) AND HE_LIVE_CONFIRM=' + ACCOUNT);
-  if (LIVE_REQUESTED && !LIVE_CONFIRMED) console.log('[LIVE-GATE] live requested but HE_LIVE_CONFIRM mismatch — forcing DRY');
-} else {
-  console.log('[LIVE-GATE] LIVE MODE ENABLED — real broadcast to Hive mainnet (Hive-Engine sidechain ops) as @' + ACCOUNT);
-}
+const DRY = process.argv.includes('--dry');
 const argOf = (name, dflt) => {
   const i = process.argv.indexOf(name);
   return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : dflt;

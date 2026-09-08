@@ -735,6 +735,28 @@ async function boot() {
   nodeSt.checkpoints = nodeSt.checkpoints.filter((c, i, arr) => i === arr.length - 1 || arr[i + 1].height !== c.height);
   if (nodeSt.checkpoints.length > 64) nodeSt.checkpoints = nodeSt.checkpoints.slice(-64);
 
+  /* 117k — קידום-שורש-אוטומטי (סגירת-הסיכון-המתועד-ב-117c §4): קו-ההתחלה-השורשי-האנטי-אמנזיה
+   * התקדם-רק-בהפעלה-מחדש ונשאר-מאחור (נמדד-חי: h55,832 מול-ראש-62,074). מעכשיו: כל-50
+   * צ'קפוינטים (≈600-בלוקים) השורש-מקודם-אטומית לגובה-הצ'קפוינט — בדיוק-המבנה-ש-restore
+   * מאמת (height + lastBlockHash-מהחלון-החי). כשל-כתיבה-לא-מפריע-לייצור (כנות-בלוג). */
+  try {
+    const CPS_PER_PROMOTION = 50;
+    const cpIndex = Math.floor(cp.height / CHECKPOINT_EVERY);
+    if (cp.height > 0 && cpIndex % CPS_PER_PROMOTION === 0) {
+      const blk = (chainState.blocks || []).filter((b) => b.height <= cp.height).pop();
+      if (blk && blk.hash) {
+        const rootPath = path.join(NODE_DIR, 'state-root.json');
+        const curRoot = (() => { try { return JSON.parse(fs.readFileSync(rootPath, 'utf8')); } catch (_) { return null; } })();
+        if (!curRoot || !Number.isInteger(curRoot.height) || curRoot.height < cp.height) {
+          const tmp2 = rootPath + '.tmp';
+          fs.writeFileSync(tmp2, JSON.stringify({ height: cp.height, lastBlockHash: blk.hash, stateRoot: cp.stateRoot, promotedAt: new Date().toISOString(), st }));
+          fs.renameSync(tmp2, rootPath);
+          log('state-root AUTO-PROMOTED h' + cp.height + ' (117k — כל-' + CPS_PER_PROMOTION + '-צ׳קפוינטים · נגד-אמנזיה)');
+        }
+      }
+    }
+  } catch (_) {}
+
   // אימות-פתוחים (anchor-Steem + attests)
   if (LIVE) {
     for (const a of attests) if (a.txid) { const v = await verifyTxid(a.txid); a.verified = v.verified; a.node = v.node; if (v.verified) nodeSt.verified.push(a.txid); else nodeSt.pendingVerifies.push({ txid: a.txid, kind: 'attest', by: a.validator, at: new Date().toISOString() }); }
@@ -1275,6 +1297,28 @@ async function maybeCheckpoint(nodeSt, st, chainState, time) {
   }
   nodeSt.checkpoints = nodeSt.checkpoints.filter((c, i, arr) => i === arr.length - 1 || arr[i + 1].height !== c.height);
   if (nodeSt.checkpoints.length > 64) nodeSt.checkpoints = nodeSt.checkpoints.slice(-64);
+
+  /* 117k — קידום-שורש-אוטומטי במסלול-החי (maybeCheckpoint — הנתיב-שהדמון-באמת-מריץ;
+   * הגרסה-ב-boot נתנה-רק-את-צ'קפוינט-האתחול). כל-50-צ'קפוינטים (≈600-בלוקים):
+   * השורש-האנטי-אמנזיה-מקודם-אטומית לגובה-הצ'קפוינט — המבנה-ש-restore מאמת
+   * (height+lastBlockHash-מהחלון-החי). כשל-כתיבה לא מפריע לייצור. */
+  try {
+    const CPS_PER_PROMOTION = 50;
+    const cpIndex = Math.floor(cp.height / CHECKPOINT_EVERY);
+    if (cp.height > 0 && cpIndex % CPS_PER_PROMOTION === 0) {
+      const blk = (chainState.blocks || []).filter((b) => b.height <= cp.height).pop();
+      if (blk && blk.hash) {
+        const rootPath2 = path.join(NODE_DIR, 'state-root.json');
+        const curRoot = (() => { try { return JSON.parse(fs.readFileSync(rootPath2, 'utf8')); } catch (_) { return null; } })();
+        if (!curRoot || !Number.isInteger(curRoot.height) || curRoot.height < cp.height) {
+          const tmp2 = rootPath2 + '.tmp';
+          fs.writeFileSync(tmp2, JSON.stringify({ height: cp.height, lastBlockHash: blk.hash, stateRoot: cp.stateRoot, promotedAt: new Date().toISOString(), st }));
+          fs.renameSync(tmp2, rootPath2);
+          log('state-root AUTO-PROMOTED h' + cp.height + ' (117k — כל-' + CPS_PER_PROMOTION + '-צ׳קפוינטים · נגד-אמנזיה)');
+        }
+      }
+    }
+  } catch (_) {}
 }
 
 async function beat() {

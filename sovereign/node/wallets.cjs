@@ -187,7 +187,7 @@ async function rotate(reason) {
     retired: true,
     retiredAt: new Date().toISOString(),
     retiredReason: reason || 'unspecified',
-    policy: 'v1 addresses are RECEIVE-ONLY history — no private keys exist for them anymore (seed lost in the 115 sandbox rollback, before the fleet-seal hole was closed); never fund them',
+    policy: 'v1 generation — RECEIVE-ONLY until proven otherwise. Policy history: written at rotate time as "seed lost"; correction 117k: the CURRENT vault holds the ORIGINAL seed (restored 117i, verify 12/12) and these v1 addresses are a DIFFERENT generation (interim seed) — their keys are not in the current vault, though sealed-history recovery remains an open possibility (docs/117j-NETWORK-AUDIT.md M4). Route new deposits to current registry ports only',
   }, null, 2));
   dlog('rotate: v1 archived → wallets-public-v1.json (digest ' + prevPub.manifestDigest.slice(0, 12) + '… · anchor ' + (prevPub.anchor ? prevPub.anchor.txid.slice(0, 12) + '…' : 'none') + ')');
   const r = derive({ force: true, quiet: true });

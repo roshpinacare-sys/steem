@@ -658,6 +658,10 @@ function applyTx(st, tx) {
       const outRes = side === 'A2B' ? p.b : p.a;
       const out = Math.floor(net * outRes / (inRes + net));
       if (!(out > 0)) return { ok: false, gas, err: 'dust' };
+      /* 117k — מגן-slippage (ממצא-מוביל-בסקר-הדקס): בלי-תקרת-סליפאג', סוופ-על-בריכה-מוטעית
+       * מתמלא-בכל-מחיר. minOut-אופציונלי-ביחידות-ספר: tx-ישן-בלי-השדה = התנהגות-זהה-ביט-ביט
+       * (replay-safe) · tx-חדש-עם-השדה → השוואה-לפני-כל-שינוי-מצב — REJECT-כנה 'minOut'. */
+      if (tx.minOut !== undefined && !(out >= Math.floor(Number(tx.minOut)))) return { ok: false, gas, err: 'minOut' };
       const outSym = side === 'A2B' ? B : A;
       const feeToLp = Math.floor(fee / 2), feeToTr = fee - feeToLp;
       debit(o, inSym, inAmt);
