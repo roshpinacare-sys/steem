@@ -3076,3 +3076,26 @@ Stage Summary:
 - The identity is ONE again: anchored manifest = vault seed = door keys (12/12), tombstones corrected (tron-mnemonic was never lost — it slept in the fleet seal)
 - Survival law established by evidence: git is the persistence layer of this machine; sealed envelopes live in the private repo; plaintext stays out
 - origin/main pushed with the full 117i chain
+
+---
+Task ID: 117j
+Agent: steem-repo-sovereign-agent (main orchestrator + 2 Explore subagents)
+Task: סקר-רשת-מקיף לפי-בקשת-הבעלים — כל-התיקיות, מה-הושג, ממצאים-קריטיים, דקס, מיקרו-גריד, צעדים-באים + תיקון-מה-שאפשר-היום
+
+Work Log:
+- הפעלת-שני-סוקרים-בלתי-תלויים: (2-a) מלאי-מודולים-מלא על-כל-העצים sovereign/agent/src/docs/download; (2-b) דקס-עמוק + גריד/מיקרו-גריד + רווחיות
+- אימות-ידני-של-כל-ממצא-קריטי-לפני-נגיעה (harvest.cjs:315, trondex.cjs:83-110, relay-fails.json, package.json:6, agent.cjs:4578)
+- **C3 תוקן (08c687d)**: harvest singleWriter התאים-למעטפת-sh-שלעצמו → watch-מעולם-לא-ביצע-pass; טריק-[h]arvest → אימות-חי: ה-pass-האמת-הראשון-בהיסטוריה רץ-19:39:42 (fees=2 · inject pools:117+grid:11 OK)
+- **C1 תוקן (41d0847)**: trondex שלוש-שכבות-כנות — ריבוי-מארחים (3-hosts), {}-צורה-ריקה=מדידה-כושלת-ולא-אפס (סוגר-נתיב-השמדה: מדידה-חלקית→under-measure→burn-כיסוי-משתמשים), DROP-GUARD-80%-עם---force, משפחת-גזירה-בשקיפות-בקובץ-החי; אימות-חי: 6/6-unmeasurable→REJECTED-כנה-במקום-'zero-sum'-שקר-שקט
+- **זומבי-נוקה (6274a38)**: relay-fails TTL-6h-מתנקה-עצמו (count=30-על-דלת-שכבר-ירתה-בהצלחה-הזין-באנר-כנות-בנתוני-עבר) + ניקוי-מיידי
+- **M7 (aa303f1)**: dev-entrypoint-heap-1536→1024-יישור-לדוקטרינת-OOM
+- **M5 (f99e499)**: weaveBatch proof=BROKEN→status-'degraded'-ולא-'ok'-שקר
+- **המסמך-המנהלי (6a52ade)**: docs/117j-NETWORK-AUDIT.md — מלוא-המפה, הישגים, ממצאים-מדורגים, פערי-דקס (אין-minOut! אופטיקת-PnL-פנימית-מול-0.13-SAOS-עמלות-אמת), מיקרו-גריד-8-רעיונות-מגובים-בקוד-קיים, מפת-דרך-3-שלבים
+- הריגת-watch-ישנים → guardian-החזיר-בקוד-החדש (trondex-20065, harvest-20074) · E2E: relay-API-ok(h62317-sent=9) · trondex-API-ok · page-200
+
+Stage Summary:
+- 6-commits-היום: 08c687d 41d0847 6274a38 aa303f1 f99e499 6a52ade
+- הכלכלה-הפנימית-התעוררה: THE-HARVEST-חי-לראשונה (זיהוי-עמלות→הזרקה-על-הספר)
+- אמת-מכשירית: trondex-כבר-לא-מסוגל-לשקר (ריבוי-מארחים+אין-אמת-חלקית+פוסק-צניחה)
+- פתוחים-הקריטיים-מתועדים-לבעלים: 19.13-TRX-על-דלתות-דור-קודם (C2-החלטה), minOut-בקרנל, deposits-TRON-מארחים, download/-327MB-בגיט, תג-external/internal-ל-PnL
+- המסמך-המנחה-לכל-הסוכנים: docs/117j-NETWORK-AUDIT.md
