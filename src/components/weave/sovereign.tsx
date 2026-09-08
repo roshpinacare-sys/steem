@@ -637,6 +637,36 @@ export function Sovereign() {
             </div>
           </div>
 
+          {/* 117g — כנות-חסימה: דלת-בתור-שנכשלה — הסיבה-האמת + סריקת-השולחים + הדרך-לפתוח */}
+          {(() => {
+            const blocked = (rd.doors || []).find((d) => d.status === "queued" && d.failCount > 0);
+            if (!blocked) return null;
+            const ss = rd.senderScan;
+            const noFunds = /no-funded-sender/.test(blocked.lastErr || "");
+            return (
+              <div className="rounded-lg bg-rose/10 border border-rose/20 px-3 py-2.5 mb-3">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose mb-1">
+                  <TriangleAlert className="size-3.5" />
+                  דלת {blocked.ref} ({blocked.via.toUpperCase()}) ממתינה — {blocked.failCount} ניסיונות · הסיבה-האמת:
+                </div>
+                <div className="text-[10px] hash text-ink-2 break-all mb-1.5">{blocked.lastErr || "—"}</div>
+                {ss ? (
+                  <div className="text-[10px] text-ink-2 leading-relaxed">
+                    סריקת-שולחים-חיה: <span className="hash font-bold text-ink">{ss.doorsScanned}</span> דלתות-נשלטות ·{" "}
+                    <span className="hash font-bold text-ink">{ss.fundedDoors}</span> ממומנות ·{" "}
+                    <span className="hash font-bold text-ink">{ss.withBandwidth}</span> עם-רוחב-פס
+                    {ss.at ? ` · נסרק ${ss.ageSec != null ? ss.ageSec + "ש׳" : ""} לפני` : ""}
+                  </div>
+                ) : null}
+                {noFunds ? (
+                  <div className="text-[10px] text-gold leading-relaxed mt-1">
+                    הדלת-תיפתח-אוטומטית-ברגע-שנמל-TRON-כלשהו-מהרישום-יקבל-הפקדה — ה-watcher-סורק-כל-5 דק' · כל-הפקדה = שולח-חי + מינט-WTRX-1:1.
+                  </div>
+                ) : null}
+              </div>
+            );
+          })()}
+
           {/* שרשרת-הדלתות — כל-דלת: רשת · סטטוס · txid אמת · קישור-אימות-חוץ */}
           {rd.doors.length > 0 ? (
             <div className="space-y-1.5 max-h-80 overflow-y-auto pe-1">

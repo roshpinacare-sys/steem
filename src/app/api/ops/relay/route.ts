@@ -13,6 +13,16 @@ export const dynamic = "force-dynamic";
 const ROOT = process.cwd();
 const SNAP = path.join(ROOT, "sovereign", "node", "state-snapshot.json");
 const DOORLOG = path.join(ROOT, "sovereign", "node", "relay-doors.log");
+const FAILS = path.join(ROOT, "sovereign", "node", "relay-fails.json");
+const SENDERS = path.join(ROOT, "sovereign", "node", "relay-senders.json");
+
+function readJson<T>(p: string, fallback: T): T {
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf8")) as T;
+  } catch (_) {
+    return fallback;
+  }
+}
 
 export async function GET() {
   try {
@@ -21,9 +31,12 @@ export async function GET() {
     const relay = st.relay || { nextBy: {}, open: {}, log: [], sent: 0, issued: 0 };
     const open = Object.values(relay.open || {}) as Array<Record<string, unknown>>;
 
+    const fails = readJson<Record<string, { count?: number; lastAt?: number; lastErr?: string }>>(FAILS, {});
+
     const doors = open
       .map((r) => {
         const payload = (r.payload || {}) as Record<string, unknown>;
+        const f = fails[String(r.ref)] || {};
         return {
           ref: String(r.ref),
           via: String(r.via),
@@ -39,6 +52,8 @@ export async function GET() {
           spentSun: (r.spentSun as number) || null,
           gasPaidµ: (r.gasPaidµ as number) || null,
           refundµ: (r.refundµ as number) || null,
+          failCount: Number(f.count || 0),
+          lastErr: f.lastErr || null,
         };
       })
       .sort((a, b) => a.ref.localeCompare(b.ref, "en", { numeric: true }));
@@ -54,6 +69,21 @@ export async function GET() {
       relayerAlive = doorLogAgeSec < 180; // tick 45s — 3 דק' = מת
     } catch (_) {}
 
+    /* 117g — סריקת-השולחים-החיה (מה-cache-של-ה-relayer) — כנות-מלאה-למפעיל */
+    type ScanDoor = { family?: string; idx?: number; address?: string; bal?: number; freeLeft?: number; activated?: boolean; err?: string };
+    const scan = readJson<{ at?: number; pick?: { family: string; idx: number; address: string; bal: number; freeLeft: number } | null; reason?: string; doors?: ScanDoor[] } | null>(SENDERS, null);
+    const senderScan = scan
+      ? {
+          at: scan.at ? new Date(scan.at).toISOString() : null,
+          ageSec: scan.at ? Math.round((Date.now() - scan.at) / 1000) : null,
+          reason: scan.reason || null,
+          pick: scan.pick || null,
+          doorsScanned: (scan.doors || []).length,
+          fundedDoors: (scan.doors || []).filter((x) => Number(x.bal || 0) > 0).length,
+          withBandwidth: (scan.doors || []).filter((x) => Number(x.freeLeft || 0) >= 300).length,
+        }
+      : null;
+
     return NextResponse.json(
       {
         ok: true,
@@ -68,6 +98,7 @@ export async function GET() {
         relayerAlive,
         doorLogAgeSec,
         doors,
+        senderScan,
         remoteProof: {
           steem: steemProof ? { txid: steemProof.txid, ref: steemProof.ref, verify: "https://steemscan.com/transaction/" + steemProof.txid } : null,
           tron: tronProof ? { txid: tronProof.txid, ref: tronProof.ref, verify: "https://tronscan.org/#/transaction/" + tronProof.txid } : null,
