@@ -303,7 +303,7 @@ export function EconSec({ data }: Sec) {
         <div className="grid grid-cols-3 gap-4">
           <Stat label="צד SAOS" value={fmtµ(p.poolW.saos * 1_000_000)} />
           <Stat label="צד WTRX" value={fmtµ(p.poolW.wtrx * 1_000_000)} tone="violet" />
-          <Stat label="מחיר-מקורי" value={(p.poolW.saos && p.poolW.wtrx ? (p.poolW.wtrx / p.poolW.saos).toFixed(3) : "—") + " TRX/SAOS"} tone="emerald" />
+          <Stat label="מחיר-בריכה" value={p.poolW.saos && p.poolW.wtrx ? (p.poolW.wtrx / p.poolW.saos).toFixed(3) : "—"} sub="TRX לכל SAOS" tone="emerald" />
         </div>
       </Panel>
 
