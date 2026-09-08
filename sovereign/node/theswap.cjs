@@ -235,8 +235,10 @@ function swap(args) {
   if (!me) return slog('swap BLOCKED — taker not on book: ' + taker);
   const balOf = (sym) => sym === 'SAOS' ? (me.saos || 0) : sym === 'STEEM' ? (me.steem || 0) : ((me.wrapped || {})[sym] || 0);
   if (balOf(q.in.sym) < q.in.units) return slog('swap BLOCKED — taker ' + taker + ' ' + q.in.sym + '=' + balOf(q.in.sym) + ' < ' + q.in.units);
-  const tx = { type: 'pool_x', pair, side: q.side, inAmt: q.in.units, taker, raw: true, at: new Date().toISOString() }; // raw=true — יחידות-ספר-גולמיות (117c)
-  slog('swap: ' + taker + ' ' + q.in.human + ' ' + q.in.sym + ' → ' + q.out.human + ' ' + q.out.sym + ' (feeBps=' + q.feeBps + ', impact=' + q.impactPct + '%)');
+  /* 117k — סגירת-פער-הדקס-#1: ההוצאה-מוגנת-ב-minOut מהציטוט (יחידות-ספר). אם-הבריכה-
+   * השתנתה-בין-ציטוט-לביצוע (מישהו-סחר-לפנינו) הקרנל-דוחה-בכנות 'minOut' — אף-צד-לא-נפגע. */
+  const tx = { type: 'pool_x', pair, side: q.side, inAmt: q.in.units, minOut: Math.floor(q.out.units * 0.995), taker, raw: true, at: new Date().toISOString() }; // raw=true · minOut=ציטוט−0.5%-סובלנות-עמלה/סיבוב
+  slog('swap: ' + taker + ' ' + q.in.human + ' ' + q.in.sym + ' → ' + q.out.human + ' ' + q.out.sym + ' (feeBps=' + q.feeBps + ', impact=' + q.impactPct + '%, minOut=' + tx.minOut + ')');
   const r = inject([tx], 'swap:' + pair + ':' + q.side);
   if (r.done) {
     recordState((s) => s.swaps = [{ at: tx.at, taker, pair, side: q.side, inUnits: q.in.units, inSym: q.in.sym, inHuman: q.in.human, outUnits: q.out.units, outSym: q.out.sym, outHuman: q.out.human, feeBps: q.feeBps, quoteImpactPct: q.impactPct }].concat(s.swaps || []).slice(0, 50));
