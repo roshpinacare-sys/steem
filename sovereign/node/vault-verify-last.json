@@ -1,32 +1,9 @@
 {
-  "at": "2026-09-08T12:41:44.480Z",
-  "ok": true,
-  "checks": {
-    "seedShape": true,
-    "steemAccounts": "absent(RETIRED — .env-wif-flows)",
-    "selfManifest": "ok",
-    "roster": "selfManifest",
-    "anchoredMatch": "0/12",
-    "anchoredPublic": true,
-    "registryMatch": "absent(DERIVABLE-ON-DEMAND from wallets-seed)"
-  },
-  "errors": [],
-  "mode": "envelope",
-  "envelopeDigest": "26bfa6ba76803c9e959526da2142283502f50f0bc7c400bcfd256a012689d7b3",
-  "sealedAt": "2026-09-08T12:21:10.750Z",
-  "absent": {
-    "wallets-registry.json": "DERIVABLE-ON-DEMAND(from wallets-seed via wallets.cjs recipe)",
-    "vault.json": "RETIRED(STEEM creds flow from agent/.env POSTING_WIF · roster readers all catch-degrade)",
-    "tron-mnemonic.txt": "LOST-FOREVER(115-rollback · postmortem 5da5cfb · bridge retired — doors re-founded on sovereign seed 117h)"
-  },
-  "degraded": true,
-  "anchoredDigest": "4442c2b92ccc08fabffee0f174e3938b298d71dde3b42a0809ce7c455c3b77bc",
-  "anchoredTxid": "9f593bdc88a62c7a7fcd568ef0edf50bbf20f96d",
-  "identitySplit": {
-    "anchoredFile": "4442c2b92ccc08fa…(v1 · seed lost in 115-rollback + 117h sandbox restart · ports receive-only by policy)",
-    "sealedSeed": "07ff00806426399f…(v2 · controls relay doors · derive GUARD keeps public file v1)",
-    "documented": true,
-    "note": "the GUARD refused silent identity swap — the public file stays v1 (honest), the envelope seals v2 (honest); deposits to v1 ports still mint 1:1 internally, on-chain funds at v1 remain receive-only"
-  },
-  "ms": 522
+  "at": "2026-09-08T13:15:33.653Z",
+  "ok": false,
+  "checks": {},
+  "errors": [
+    "vault envelope missing: /home/z/my-project/agent/keys/vault.enc"
+  ],
+  "ms": 0
 }
