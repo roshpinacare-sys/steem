@@ -530,6 +530,17 @@ export type RelayDoor = {
   spentSun: number | null;
   gasPaidµ: number | null;
   refundµ: number | null;
+  failCount: number;
+  lastErr: string | null;
+};
+export type RelaySenderScan = {
+  at: string | null;
+  ageSec: number | null;
+  reason: string | null;
+  pick: { family: string; idx: number; address: string; bal: number; freeLeft: number } | null;
+  doorsScanned: number;
+  fundedDoors: number;
+  withBandwidth: number;
 };
 export type RelayDoorsData = {
   ok: boolean;
@@ -544,6 +555,7 @@ export type RelayDoorsData = {
   relayerAlive: boolean;
   doorLogAgeSec: number | null;
   doors: RelayDoor[];
+  senderScan: RelaySenderScan | null;
   remoteProof: {
     steem: { txid: string; ref: string; verify: string } | null;
     tron: { txid: string; ref: string; verify: string } | null;
