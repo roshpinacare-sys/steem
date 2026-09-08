@@ -1,20 +1,19 @@
 {
-  "at": "2026-09-08T12:09:49.628Z",
-  "ok": false,
+  "at": "2026-09-08T12:29:43.864Z",
+  "ok": true,
   "checks": {
     "seedShape": true,
     "steemAccounts": "absent(RETIRED — .env-wif-flows)",
-    "roster": "wallets-public(anchored)",
+    "selfManifest": "ok",
+    "roster": "selfManifest",
     "anchoredMatch": "0/12",
     "anchoredPublic": true,
     "registryMatch": "absent(DERIVABLE-ON-DEMAND from wallets-seed)"
   },
-  "errors": [
-    "mismatch public:[cashmachine,haran,headcorner,israelnews,lsa,macrame,siq,tov,wic,wog,woq,ynet]"
-  ],
+  "errors": [],
   "mode": "envelope",
-  "envelopeDigest": "d9cc5dffe63e65a8343efa3a86499a34c4481fb84980097a66ffe240b4660026",
-  "sealedAt": "2026-09-08T12:09:43.585Z",
+  "envelopeDigest": "26bfa6ba76803c9e959526da2142283502f50f0bc7c400bcfd256a012689d7b3",
+  "sealedAt": "2026-09-08T12:21:10.750Z",
   "absent": {
     "wallets-registry.json": "DERIVABLE-ON-DEMAND(from wallets-seed via wallets.cjs recipe)",
     "vault.json": "RETIRED(STEEM creds flow from agent/.env POSTING_WIF · roster readers all catch-degrade)",
@@ -23,5 +22,11 @@
   "degraded": true,
   "anchoredDigest": "4442c2b92ccc08fabffee0f174e3938b298d71dde3b42a0809ce7c455c3b77bc",
   "anchoredTxid": "9f593bdc88a62c7a7fcd568ef0edf50bbf20f96d",
-  "ms": 386
+  "identitySplit": {
+    "anchoredFile": "4442c2b92ccc08fa…(v1 · seed lost in 115-rollback + 117h sandbox restart · ports receive-only by policy)",
+    "sealedSeed": "07ff00806426399f…(v2 · controls relay doors · derive GUARD keeps public file v1)",
+    "documented": true,
+    "note": "the GUARD refused silent identity swap — the public file stays v1 (honest), the envelope seals v2 (honest); deposits to v1 ports still mint 1:1 internally, on-chain funds at v1 remain receive-only"
+  },
+  "ms": 493
 }
