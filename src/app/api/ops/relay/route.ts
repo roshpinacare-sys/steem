@@ -71,19 +71,21 @@ export async function GET() {
 
     /* 117g — סריקת-השולחים-החיה (מה-cache-של-ה-relayer) — כנות-מלאה-למפעיל */
     type ScanDoor = { family?: string; idx?: number; address?: string; bal?: number; freeLeft?: number; activated?: boolean; err?: string };
-    const scan = readJson<{ at?: number; pick?: { family: string; idx: number; address: string; bal: number; freeLeft: number } | null; reason?: string; doors?: ScanDoor[] } | null>(SENDERS, null);
+    const scan = readJson<{ at?: number; pick?: { family: string; idx: number; address: string; bal: number; freeLeft: number } | null; reason?: string; readsFailed?: number; degraded?: boolean; doors?: ScanDoor[] } | null>(SENDERS, null);
     const senderScan = scan
       ? {
           at: scan.at ? new Date(scan.at).toISOString() : null,
           ageSec: scan.at ? Math.round((Date.now() - scan.at) / 1000) : null,
           reason: scan.reason || null,
           pick: scan.pick || null,
+          readsFailed: Number(scan.readsFailed || 0),
+          degraded: !!scan.degraded,
           doorsScanned: (scan.doors || []).length,
           fundedDoors: (scan.doors || []).filter((x) => Number(x.bal || 0) > 0).length,
           withBandwidth: (scan.doors || []).filter((x) => Number(x.freeLeft || 0) >= 300).length,
-          /* 117h — דלתות-הדלק: הכתובות-הנשלטות-באמת (v2 · נגזרות-מהכספת). הפקדת-TRX
-           * לכתובת-כזו = הדלת-נפתחת-אוטומטית. נמלי-ההפקדות-הציבוריים (v1) הם
-           * receive-only — המפתחות-שלהם-אבדו (ראו identity-split ב-vault). */
+          /* 117i — זהות-מרופאת: הזרע-הריבוני-המקורי (v1) חולץ-מחותמת-הצי בגיט-היסטוריה
+           * (749e7db) ואומת 12/12 מול-המניפסט-המעוגן. הדלתות-הנשלטות = נמלי-ההפקדות
+           * המעוגנים. הפקדת-TRX-לנמל כלשהו = הדלת-נפתחת-אוטומטית. */
           fuelDoors: (scan.doors || [])
             .filter((x) => x.address)
             .map((x) => ({ family: x.family || "?", idx: x.idx ?? -1, address: x.address, bal: Number(x.bal || 0), freeLeft: Number(x.freeLeft || 0) })),
