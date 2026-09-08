@@ -49,7 +49,15 @@ export default function Home() {
       if (h) setSection(h);
       setHydrated(true);
     }, 0);
-    return () => clearTimeout(t);
+    const onHash = () => {
+      const h = parseHash();
+      if (h) setSection(h);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("hashchange", onHash);
+    };
   }, []);
   useEffect(() => {
     if (!hydrated) return;
