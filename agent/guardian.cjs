@@ -328,6 +328,24 @@ function healDex(res) {
     log('trondex operator missing — spawned watch (pid ' + pid + ')');
   } catch (_) { res.actions.push('dex-check-skipped'); }
 }
+/* 117k — THE-KEY-BROKER תמיד-חי: שער-החתימה-הריבוני (mini-services/key-broker · בונ · פורט 3040).
+ * בדיקת-חיות-לפי-פורט (cmdline-של-בונ לא-מכיל-נתיב — pgrep-שקרן נמדד): health 200 = חי.
+ * localhost-בלבד + טוקן — אם-מת-מקימים-אותו (המפתחות-נטענים-מהכספת-בכל-עלייה מחדש). */
+function healKeyBroker(res) {
+  try {
+    let alive = false;
+    try {
+      const h = sh('bash', ['-c', 'curl -s -m 3 http://127.0.0.1:3040/health 2>/dev/null'], { timeout: 8_000 });
+      alive = /"ok":true/.test(String(h));
+    } catch (_) { alive = false; }
+    if (alive) { res.actions.push('key-broker-alive'); return; }
+    const out = fs.openSync(LOG, 'a');
+    const child = spawn('bun', ['run', 'dev'], { cwd: path.join(ROOT, 'mini-services', 'key-broker'), detached: true, stdio: ['ignore', out, out] });
+    child.unref();
+    res.actions.push(child.pid ? 'KEY-BROKER-SPAWNED(pid ' + child.pid + ')' : 'key-broker-spawn-FAILED');
+    log('key-broker dead — spawned bun (pid ' + (child.pid || '?') + ')');
+  } catch (_) { res.actions.push('key-broker-check-skipped'); }
+}
 function healSibling(res) {
   try {
     if (pgrepAlive('sibling.cjs watch')) { res.actions.push('sibling-verifier-alive'); return; }
@@ -559,6 +577,7 @@ function main() {
     healEngine(res);
     healRelay(res);  // 108 — THE-DOOR relayer תמיד-חי (דבר-גורר-דבר)
     healDex(res);    // 110 — מפעיל-הדקס תמיד-חי (THE-DEX)
+    healKeyBroker(res); // 117k — שער-החתימה-הריבוני תמיד-חי (THE-KEY-BROKER · 8 דלתות)
     healSibling(res); // 110 — מאמת-האח תמיד-חי (אימות-הדדי)
     healHarvest(res); // 111 — קוצר-הערך תמיד-חי (THE-HARVEST)
     healWallets(res); // 113 — ארנקי-הצבא תמיד-חי (THE-WALLETS: עיגון+תקצוב+תדלוק idempotent)
