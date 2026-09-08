@@ -4570,8 +4570,11 @@ async function weaveBatchCycle() {
   try {
     const { runWeaveBatch } = require('./weave_batch.cjs');
     const r = await runWeaveBatch({ dry: CONFIG.dryRun });
+    /* 117j-כנות: proof=BROKEN אינו 'ok' — הסטטוס-מתדרדר-ל-'degraded' כדי-שלוחן-הבריאות
+     * לא-יציג-לולאה-שבורה-כתקינה (השיעור-מ-guardian-'harvest-alive'-ששיקר). */
+    const proofBroken = !!(r.proof && r.proof.ok === false);
     updateLoop('weaveBatch', {
-      status: 'ok',
+      status: proofBroken ? 'degraded' : 'ok',
       detail: 'live=' + r.liveStamps + ' · total=' + r.totalStamps +
         (r.request ? ' · seal-request(' + r.request.count + ')' + (r.request.written ? ' WRITTEN' : ' pending') : '') +
         (r.anchored ? ' · anchored seq=' + r.anchored.seq + ' (' + r.anchored.chains + '/3 chains)' : '') +
