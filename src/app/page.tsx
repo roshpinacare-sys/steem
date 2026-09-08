@@ -1,233 +1,112 @@
 "use client";
 
 /**
- * הנול — רשת-האמת הציבורית · הפלטפורמה.
+ * 117m — SAOS-NET COMMAND · מרכז-הבקרה הריבוני
  *
- * ארבעה מקטעים (סטודיו · תעודות · עדים · מערכת) — וכל-העומק יורד לתוכם.
- * המצב חי ב-URL: כל-מסך, בלוק ותעודה — קישור-שיתוף אמיתי.
- *   #studio/loom · #certs/lookup?h=<hash> · #witnesses/book?block=679 · #system/checkpoints
+ * עיצוב-חדש-לגמרי (לא-שיפור-הקיים): חדר-בקרה-כהה ברמת-מכשיר,
+ * mobile-first (ניווט-תחתון + safe-area) ומחשב-מלא (מסילת-צד),
+ * הכל-חי מה-NEXUS-API (אפס-סימולציה · סקר-5-שניות).
+ *
+ * המצב חי ב-URL: #control · #deposits · #doors · #shield · #econ
  */
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useWeaveStatus } from "@/hooks/use-weave";
-import { WeaveFooter, WeaveHeader, MobileNav, NavRail, SubTabs, type SectionId } from "@/components/weave/chrome";
-import { LoomHero, BatcherReceipt, SealsTimeline, AnchorsStrip } from "@/components/weave/loom";
-import { StampStudio } from "@/components/weave/studio";
-import { SecretStamp } from "@/components/weave/secret";
-import { Achievements } from "@/components/weave/achievements";
-import { Certificates } from "@/components/weave/certificates";
-import { VerifyLab, ForgerChallenge } from "@/components/weave/verify-lab";
-import { Ledger } from "@/components/weave/ledger";
-import { Witnesses } from "@/components/weave/witnesses";
-import { System, CheckpointAxis } from "@/components/weave/system";
-import { Sovereign } from "@/components/weave/sovereign";
-import { About } from "@/components/weave/about";
-import type { Certificate } from "@/hooks/use-weave";
+import { useNexus } from "@/hooks/use-nexus";
+import { BottomNav, DesktopRail, NexusFooter, NexusHeader, type SectionId } from "@/components/nexus/shell";
+import { ControlSec, DepositsSec, DoorsSec, EconSec, ShieldSec } from "@/components/nexus/sections";
 
-const DEFAULT_SUB: Record<SectionId, string> = {
-  studio: "loom",
-  certs: "lookup",
-  witnesses: "anchors",
-  system: "engine",
-  sovereign: "chain",
-};
+const VALID: SectionId[] = ["control", "deposits", "doors", "shield", "econ"];
 
-/** פענוח hash מה-URL: #section/sub?key=val&… */
-function parseHash(): { section: SectionId; sub?: string; params: Record<string, string> } | null {
+function parseHash(): SectionId | null {
   if (typeof window === "undefined") return null;
-  const raw = window.location.hash.replace(/^#\/?/, "");
-  if (!raw) return null;
-  const [path, query] = raw.split("?");
-  const [section, sub] = path.split("/");
-  const valid = ["studio", "certs", "witnesses", "system", "sovereign"];
-  if (!valid.includes(section)) return null;
-  const params: Record<string, string> = {};
-  for (const [k, v] of new URLSearchParams(query || "")) params[k] = v;
-  return { section: section as SectionId, sub, params };
+  const raw = window.location.hash.replace(/^#\/?/, "").split("/")[0];
+  return (VALID as string[]).includes(raw) ? (raw as SectionId) : null;
 }
 
+const TITLES: Record<SectionId, string> = {
+  control: "בקרה",
+  deposits: "הפקדות",
+  doors: "דלתות",
+  shield: "מגן",
+  econ: "כלכלה",
+};
+
 export default function Home() {
-  const { data: status, loading } = useWeaveStatus();
-  const [section, setSection] = useState<SectionId>("studio");
-  const [sub, setSub] = useState<Record<SectionId, string>>(DEFAULT_SUB);
-  const [certHash, setCertHash] = useState<string | null>(null);
-  const [focusBlock, setFocusBlock] = useState<number | null>(null);
-  // התעודה האחרונה שנטענה — משותפת למעבדת-האימות ולאתגר-המזייף
-  const [cert, setCert] = useState<{ certificate: Certificate; verifier?: string } | null>(null);
+  const { data, error, loading } = useNexus(5000);
+  const [section, setSection] = useState<SectionId>("control");
   const [hydrated, setHydrated] = useState(false);
 
-  const navigate = useCallback((s: SectionId, subId?: string) => {
+  const navigate = useCallback((s: SectionId) => {
     setSection(s);
-    if (subId) setSub((p) => ({ ...p, [s]: subId }));
-    else setSub((p) => (p[s] === DEFAULT_SUB[s] ? p : { ...p, [s]: DEFAULT_SUB[s] }));
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // שחזור-מצב מה-URL — קישור-שיתוף אמיתי (פעם-אחת בטעינה · מחוץ-ל-sync-render — חוק-ה-hooks)
+  // שחזור-מצב-מה-URL + סנכרון (כל-מסך=קישור)
   useEffect(() => {
-    const t = setTimeout(() => {
-      const h = parseHash();
-      if (h) {
-        setSection(h.section);
-        if (h.sub) setSub((p) => ({ ...p, [h.section]: h.sub }));
-        if (h.params.h) setCertHash(h.params.h);
-        if (h.params.block) setFocusBlock(Number(h.params.block));
-      }
-      setHydrated(true);
-    }, 0);
-    return () => clearTimeout(t);
+    const h = parseHash();
+    if (h) setSection(h);
+    setHydrated(true);
   }, []);
-
-  // ניווט-חוזר באותו-טאב: קישור-שיתוף שנדבק · חץ אחורה/קדימה — מתנווטים בלי טעינה מחדש
-  useEffect(() => {
-    const onHash = () => {
-      const h = parseHash();
-      if (!h) return;
-      setSection(h.section);
-      if (h.sub) setSub((p) => ({ ...p, [h.section]: h.sub }));
-      if (h.params.h !== undefined) setCertHash(h.params.h || null);
-      if (h.params.block !== undefined) setFocusBlock(h.params.block ? Number(h.params.block) : null);
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
-
-  // סנכרון ה-URL עם המסך — כל-מסך הוא קישור
   useEffect(() => {
     if (!hydrated) return;
-    const params: string[] = [];
-    if (section === "certs" && sub.certs === "lookup" && certHash) params.push(`h=${certHash}`);
-    if (section === "witnesses" && sub.witnesses === "book" && focusBlock != null) params.push(`block=${focusBlock}`);
-    const qs = params.length ? `?${params.join("&")}` : "";
-    const next = `#${section}/${sub[section]}${qs}`;
-    if (window.location.hash !== next) {
-      window.history.replaceState(null, "", next);
-    }
-  }, [section, sub, certHash, focusBlock, hydrated]);
+    const next = "#" + section;
+    if (window.location.hash !== next) window.history.replaceState(null, "", next);
+    document.title = `SAOS-NET COMMAND · ${TITLES[section]}`;
+  }, [section, hydrated]);
 
-  const setSubOf = useCallback(
-    (s: string) => {
-      setSub((p) => ({ ...p, [section]: s }));
-    },
-    [section]
-  );
-
-  const openCertificate = useCallback(
-    (h: string) => {
-      setCertHash(h);
-      navigate("certs", "lookup");
-    },
-    [navigate]
-  );
-
-  const openBlock = useCallback(
-    (h: number) => {
-      setFocusBlock(h);
-      navigate("witnesses", "book");
-    },
-    [navigate]
-  );
-
-  // עדכון-כותרת-מסמך לפי מקטע (a11y)
-  useEffect(() => {
-    const titles: Record<SectionId, string> = {
-      studio: "הנול — סטודיו האריגה",
-      certs: "הנול — תעודות ואימות-חי",
-      witnesses: "הנול — העדים הציבוריים",
-      system: "הנול — לב-המערכת וציר-האימות",
-      sovereign: "הנול — ריבונות SAOS-NET",
-    };
-    document.title = titles[section] + " · רשת-האמת הציבורית";
-  }, [section]);
+  const fleetServices = data?.fleet.services ?? [];
+  const fleetOk = fleetServices.filter((s) => s.ok).length;
 
   return (
-    <>
-      <WeaveHeader status={status} onNavigate={navigate} />
+    <div className="nexus-bg flex min-h-screen flex-col">
+      <NexusHeader
+        saosHeight={data?.meta.saosHeight ?? 0}
+        tronHeight={data?.tron.height ?? 0}
+        fleetOk={fleetOk}
+        fleetTotal={fleetServices.length}
+        chainsOk={data?.deposits.chainsOk ?? 0}
+        chainsTotal={data?.deposits.chainsTotal ?? 10}
+        at={data?.at ?? ""}
+      />
 
-      <main className="flex-1 w-full">
-        <div className="mx-auto max-w-7xl px-4 md:px-6 py-6 md:py-10 grid lg:grid-cols-[230px_minmax(0,1fr)] gap-8">
-          <aside aria-label="ניווט-צד">
-            <NavRail active={section} sub={sub[section]} onNavigate={navigate} onSub={setSubOf} status={status} />
+      <main className="w-full flex-1 pb-24 md:pb-8">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-4 md:px-6 md:py-8 lg:grid-cols-[210px_minmax(0,1fr)]">
+          <aside aria-label="מסילת-ניווט" className="hidden md:block">
+            <DesktopRail active={section} onNavigate={navigate} />
           </aside>
 
-          <section aria-label="תוכן" className="min-w-0">
-            <SubTabs section={section} active={sub[section]} onSub={setSubOf} />
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={section + ":" + sub[section]}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.26, ease: "easeOut" }}
-              >
-                {/* ══ סטודיו ══ */}
-                {section === "studio" && (
-                  <>
-                    {sub.studio === "loom" && (
-                      <div className="space-y-8">
-                        <LoomHero
-                          status={status}
-                          loading={loading}
-                          onStamp={() => navigate("studio", "stamp")}
-                          onForge={() => navigate("certs", "forge")}
-                          onIntegrity={() => navigate("system", "checkpoints")}
-                          onOpenBlock={openBlock}
-                        />
-                        <BatcherReceipt status={status} />
-                      </div>
-                    )}
-                    {sub.studio === "wins" && <Achievements />}
-                    {sub.studio === "stamp" && <StampStudio onVerify={openCertificate} onOpenBlock={openBlock} />}
-                    {sub.studio === "secret" && <SecretStamp onVerify={openCertificate} />}
-                    {sub.studio === "about" && <About onStamp={() => navigate("studio", "stamp")} onVerify={() => navigate("certs", "lookup")} onBook={() => navigate("witnesses", "book")} />}
-                  </>
-                )}
-
-                {/* ══ תעודות ══ */}
-                {section === "certs" && (
-                  <>
-                    {sub.certs === "lookup" && (
-                      <Certificates initialHash={certHash} onCertLoaded={setCert} setCertHash={setCertHash} />
-                    )}
-                    {sub.certs === "lab" && <VerifyLab cert={cert?.certificate ?? null} onNeedCert={() => setSubOf("lookup")} />}
-                    {sub.certs === "forge" && <ForgerChallenge cert={cert?.certificate ?? null} onNeedCert={() => setSubOf("lookup")} />}
-                    {sub.certs === "seals" && <SealsTimeline status={status} onOpenBlock={openBlock} />}
-                  </>
-                )}
-
-                {/* ══ עדים ══ */}
-                {section === "witnesses" && (
-                  <>
-                    {sub.witnesses === "anchors" && <AnchorsStrip status={status} />}
-                    {sub.witnesses === "quorum" && <Witnesses />}
-                    {sub.witnesses === "book" && <Ledger focusBlock={focusBlock} onVerify={openCertificate} />}
-                  </>
-                )}
-
-                {/* ══ מערכת ══ */}
-                {section === "system" && (
-                  <>
-                    {sub.system === "engine" && <System />}
-                    {sub.system === "checkpoints" && <CheckpointAxis />}
-                  </>
-                )}
-
-                {/* ══ ריבונות (99b) — SAOS-NET: מטבעות-עטופים · זירת-גריד · עוגנים ══ */}
-                {section === "sovereign" && (
-                  <>
-                    {sub.sovereign === "chain" && <Sovereign />}
-                  </>
-                )}
-              </motion.div>
-            </AnimatePresence>
+          <section aria-label="תוכן-ראשי" className="min-w-0">
+            {error && !data && (
+              <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200" role="alert">
+                קשר-ל-NEXUS-נפל: {error} — הסקר-ממשיך-בכנות
+              </div>
+            )}
+            {loading && !data ? (
+              <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3">
+                <div className="relative flex h-12 w-12 items-center justify-center">
+                  <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-500/20" aria-hidden />
+                  <span className="h-3 w-3 rounded-full bg-emerald-400" aria-hidden />
+                </div>
+                <p className="font-mono text-xs uppercase tracking-[0.3em] text-zinc-500">linking the nexus…</p>
+              </div>
+            ) : data ? (
+              <AnimatePresence mode="wait">
+                <motion.div key={section} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22, ease: "easeOut" }}>
+                  {section === "control" && <ControlSec data={data} />}
+                  {section === "deposits" && <DepositsSec data={data} />}
+                  {section === "doors" && <DoorsSec data={data} />}
+                  {section === "shield" && <ShieldSec data={data} />}
+                  {section === "econ" && <EconSec data={data} />}
+                </motion.div>
+              </AnimatePresence>
+            ) : null}
           </section>
         </div>
       </main>
 
-      <WeaveFooter status={status} onNavigate={navigate} />
-      <MobileNav active={section} onNavigate={(s) => navigate(s)} />
-    </>
+      <NexusFooter at={data?.at ?? ""} />
+      <BottomNav active={section} onNavigate={navigate} />
+    </div>
   );
 }
