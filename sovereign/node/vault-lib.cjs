@@ -53,7 +53,7 @@ function readMemberFile(name) {
  * חברים-חסרים-על-הדיסק לא-מפילים-את-האיטום — הם-נרשמים-במעטפת (env.absent)
  * עם-סיבה-כנה (אבד/פר-הזמן/נגזר-לפי-דרישה) והאמת-נשמרת-בלי-להמציא-תוכן.
  * תנאי-היסוד: wallets-seed.json חייב-להיות-קיים (גרעין-הזהות). */
-function seal() {
+function seal(selfManifest) {
   fs.mkdirSync(KEYS, { recursive: true });
   const bundle = { sealedAt: new Date().toISOString(), members: {} };
   const absent = {};
@@ -90,8 +90,9 @@ function seal() {
     digest: sha256hex(ct.toString('hex')),
     members: Object.fromEntries(Object.entries(bundle.members).map(([k, v]) => [k, { sha256: sha256hex(v.content), bytes: v.bytes, kind: v.kind }])),
     absent,
+    selfManifest: selfManifest || null,
     sealedAt: bundle.sealedAt,
-    note: 'SAOS sovereign vault envelope — one encrypted truth for all army keys (117h: degraded-honest seal — absent members memorialized, never fabricated)',
+    note: 'SAOS sovereign vault envelope — one encrypted truth for all army keys (117h: degraded-honest seal — absent members memorialized, never fabricated; selfManifest = self-attested identity of the sealed seed)',
   };
   const tmp = ENC + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(env, null, 2), { mode: 0o600 });
