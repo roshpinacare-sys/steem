@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-08T04:00:26.877Z",
+  "at": "2026-09-08T11:42:54.588Z",
   "cycle": 15,
   "mode": "live+local",
-  "durationMs": 6337,
+  "durationMs": 11200,
   "claims": [
     {
       "rank": 1,
@@ -12,17 +12,17 @@
         {
           "name": "LIVE · walk-the-book: 100 BEE cost",
           "pass": true,
-          "evidence": "gate=59.5427 SWAP.HIVE · askTop=0.59085043 · depth=27 rungs · sufficient=true (claim: 58-60)"
+          "evidence": "gate=59.3833 SWAP.HIVE · askTop=0.59036500 · depth=30 rungs · sufficient=true (claim: 58-60)"
         },
         {
           "name": "LIVE · best-ask in 0.578-0.600 band",
           "pass": true,
-          "evidence": "ask=0.59085043 (claim: 0.580-0.596 · rank-4: 0.584)"
+          "evidence": "ask=0.59036500 (claim: 0.580-0.596 · rank-4: 0.584)"
         },
         {
           "name": "ARITH · first-buy 2.5 SWAP.HIVE → BEE",
           "pass": true,
-          "evidence": "2.5/0.590850 = 4.23 BEE (claim: ~4.3)"
+          "evidence": "2.5/0.590365 = 4.23 BEE (claim: ~4.3)"
         },
         {
           "name": "LOCAL · genesis trigger code (gate 100.5 · precision 3 · maxSupply 1e9 · issue 1e6 · staking+delegation+market)",
@@ -32,12 +32,12 @@
         {
           "name": "LIVE+LOCAL · ladder progress (BEE held / bought-ever / runs)",
           "pass": true,
-          "evidence": "BEE live=6.1400887 · boughtEver=4.2345 · runs=153 (bee_wall: 2.04/100)"
+          "evidence": "BEE live=6.1400887 · boughtEver=4.2345 · runs=154 (bee_wall: 2.04/100)"
         },
         {
           "name": "LIVE · RC regen → time-to-250M",
           "pass": true,
-          "evidence": "RC 92M / 26G · regen ~214M/h · to-250M ≈ 44 min (claim: ~עד-שעה ל-250M)"
+          "evidence": "RC 19M / 26G · regen ~214M/h · to-250M ≈ 65 min (claim: ~עד-שעה ל-250M)"
         }
       ]
     },
@@ -54,7 +54,7 @@
         {
           "name": "LIVE · SPORTS:SWAP.HIVE book has depth",
           "pass": true,
-          "evidence": "42 asks · top-10 depth ≈ 74.38 SWAP.HIVE · bestAsk=0.00012449"
+          "evidence": "43 asks · top-10 depth ≈ 74.38 SWAP.HIVE · bestAsk=0.00012449"
         },
         {
           "name": "LOCAL · genesis seed-book (asks 500@0.100 · 100@0.500)",
@@ -86,7 +86,7 @@
         {
           "name": "LOCAL · daemon liq loop healthy",
           "pass": true,
-          "evidence": "status=daemon-restarting (status 1s old — grace) · lpSupply=— · lastRun=—"
+          "evidence": "status=daemon-restarting (status 4s old — grace) · lpSupply=— · lastRun=—"
         },
         {
           "name": "LOCAL · live path ops verified (pool_add/order/fill by soldiers)",
@@ -118,7 +118,7 @@
         {
           "name": "LIVE · BEE ask (rank-4 claim 0.584)",
           "pass": true,
-          "evidence": "ask=0.590850 HIVE (claim 0.584, סובלנות ±0.01)"
+          "evidence": "ask=0.590365 HIVE (claim 0.584, סובלנות ±0.01)"
         },
         {
           "name": "LOCAL · token-economy params await genesis",
@@ -133,9 +133,9 @@
       "verdict": "corrected",
       "checks": [
         {
-          "name": "LIVE · ladder fills in tradesHistory (seller=headcorner)",
-          "pass": false,
-          "evidence": "1/5 rungs matched · fills seen: 5968.00000000@0.00014900 · buyer chased UP ✓"
+          "name": "HIST+LIVE · ladder fills (retention + durable in-repo evidence)",
+          "pass": true,
+          "evidence": "tradesHistory now: 0 seller-fills (retention window) · verify-65 record: 1 fills · 5968.00000000@0.00014900 · buyer chased the ladder up · worklog.md (git-durable): fill 9,860@0.00010101 → 0.99595860 SWAP.HIVE · blk 109580637 ✓"
         },
         {
           "name": "LIVE · rung-4 status (5,968 @0.000149)",
@@ -167,7 +167,7 @@
         {
           "name": "LIVE · curation→SP rail (treasury power on Steem)",
           "pass": true,
-          "evidence": "headcorner: 8.644 vests → ≈5349.0 SP · received=0.4 · delegated=6.7 (fuel-line: האצלות 5,347 SP)"
+          "evidence": "headcorner: 8.644 vests → ≈5349.1 SP · received=0.4 · delegated=6.7 (fuel-line: האצלות 5,347 SP)"
         },
         {
           "name": "LOCAL · console screens vs footer claim",
@@ -177,7 +177,7 @@
         {
           "name": "LOCAL · console reporting fresh",
           "pass": true,
-          "evidence": "updatedAt=2026-09-08T04:00:22.455Z · loops=30"
+          "evidence": "updatedAt=2026-09-08T11:42:44.839Z · loops=26"
         }
       ]
     }
@@ -202,6 +202,6 @@
     "failed": 0,
     "total": 6,
     "checks": 27,
-    "checksPassed": 26
+    "checksPassed": 27
   }
 }

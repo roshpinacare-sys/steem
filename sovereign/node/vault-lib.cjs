@@ -28,6 +28,13 @@ const ENC = path.join(KEYS, 'vault.enc');
 const MASTER = path.join(KEYS, '.vaultkey');
 const VERIFY_LAST = path.join(__dirname, 'vault-verify-last.json');
 
+/* 117h — מצבות-כנות לחברים-שאינם: לא-ממציאים-תוכן, לא-מסתירים-אובדן. */
+const ABSENT_NOTES = {
+  'tron-mnemonic.txt': 'LOST-FOREVER(115-rollback · postmortem 5da5cfb · bridge retired — doors re-founded on sovereign seed 117h)',
+  'vault.json': 'RETIRED(STEEM creds flow from agent/.env POSTING_WIF · roster readers all catch-degrade)',
+  'wallets-registry.json': 'DERIVABLE-ON-DEMAND(from wallets-seed via wallets.cjs recipe)',
+};
+
 /* חברי-הכספת — כל-חומר-המפתחות-הריבוני */
 const MEMBERS = [
   { name: 'wallets-seed.json', kind: 'json' },      // הזרע-הריבוני (113)
@@ -42,14 +49,24 @@ function readMemberFile(name) {
   return fs.readFileSync(path.join(KEYS, name), 'utf8');
 }
 
-/* ── איטום: 4 קבצים → מעטפת-אחת-מוצפנת + מפתח-אב ── */
+/* ── איטום: מה-שחי → מעטפת-אחת-מוצפנת + מפתח-אב · 117h — סמנטיקת-גרועה-כנה:
+ * חברים-חסרים-על-הדיסק לא-מפילים-את-האיטום — הם-נרשמים-במעטפת (env.absent)
+ * עם-סיבה-כנה (אבד/פר-הזמן/נגזר-לפי-דרישה) והאמת-נשמרת-בלי-להמציא-תוכן.
+ * תנאי-היסוד: wallets-seed.json חייב-להיות-קיים (גרעין-הזהות). */
 function seal() {
   fs.mkdirSync(KEYS, { recursive: true });
   const bundle = { sealedAt: new Date().toISOString(), members: {} };
+  const absent = {};
   for (const m of MEMBERS) {
-    const raw = readMemberFile(m.name);
+    let raw = null;
+    try { raw = readMemberFile(m.name); } catch (_) { raw = null; }
+    if (raw === null) {
+      absent[m.name] = ABSENT_NOTES[m.name] || 'missing-at-seal';
+      continue;
+    }
     bundle.members[m.name] = { kind: m.kind, bytes: Buffer.byteLength(raw), content: raw };
   }
+  if (!bundle.members['wallets-seed.json']) throw new Error('seal-refused: no wallets-seed.json (גרעין-הזהות)');
   // אם-קיימת-מעטפת-קודמת — אותו-מפתח-אב (איטום-חוזר-בלי-סיבוב-מפתחות)
   let master = null;
   try { master = fs.readFileSync(MASTER, 'utf8').trim(); } catch (_) {}
@@ -72,15 +89,16 @@ function seal() {
     ct: ct.toString('hex'),
     digest: sha256hex(ct.toString('hex')),
     members: Object.fromEntries(Object.entries(bundle.members).map(([k, v]) => [k, { sha256: sha256hex(v.content), bytes: v.bytes, kind: v.kind }])),
+    absent,
     sealedAt: bundle.sealedAt,
-    note: 'SAOS sovereign vault envelope — one encrypted truth for all army keys',
+    note: 'SAOS sovereign vault envelope — one encrypted truth for all army keys (117h: degraded-honest seal — absent members memorialized, never fabricated)',
   };
   const tmp = ENC + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(env, null, 2), { mode: 0o600 });
   fs.renameSync(tmp, ENC);
   _cache = null; // איטום-חדש → cache-פסול
   // טקסט-מסתובב-סביב-הזהות (סודות-לא-נכתבים)
-  return { ok: true, digest: env.digest, members: env.members, sealedAt: env.sealedAt };
+  return { ok: true, digest: env.digest, members: env.members, absent, sealedAt: env.sealedAt };
 }
 
 /* ── פתיחה: מעטפת-קודם · fallback-טקסט-פשוט (גלגל-הצלה-תפעולי) ──
@@ -128,13 +146,15 @@ function openVault({ allowPlaintext = true } = {}) {
   return opened;
 }
 
-/* ── שחזור: מעטפת → קבצי-טקסט-פשוט (הרפואה-של-הכספת) ── */
+/* ── שחזור: מעטפת → קבצי-טקסט-פשוט (הרפואה-של-הכספת) · 117h — חבר-שלא-נאטם מדולג בכנות ── */
 function restore(only) {
   const v = openVault({ allowPlaintext: false });
-  const out = [];
+  const out = [], skipped = [];
   for (const m of MEMBERS) {
     if (only && m.name !== only) continue;
-    const raw = v.get(m.name);
+    let raw = null;
+    try { raw = v.get(m.name); } catch (_) { raw = null; }
+    if (raw === null) { skipped.push(m.name + '(absent-from-envelope)'); continue; }
     const content = typeof raw === 'string' ? raw : JSON.stringify(raw, null, 2);
     const p = path.join(KEYS, m.name);
     const tmp = p + '.restore.tmp';
@@ -142,26 +162,27 @@ function restore(only) {
     fs.renameSync(tmp, p);
     out.push(m.name + '(' + Buffer.byteLength(content) + 'B)');
   }
-  return { ok: true, restored: out, digest: v.digest };
+  return { ok: true, restored: out, skipped, digest: v.digest };
 }
 
 /* ── סטטוס-ציבורי (אפס-סודות) — ל-API ול-guardian ── */
 function status() {
-  let sealed = false, digest = null, sealedAt = null, members = {}, masterOk = false;
+  let sealed = false, digest = null, sealedAt = null, members = {}, absent = {}, masterOk = false;
   try {
     const env = JSON.parse(fs.readFileSync(ENC, 'utf8'));
-    sealed = true; digest = env.digest; sealedAt = env.sealedAt; members = env.members || {};
+    sealed = true; digest = env.digest; sealedAt = env.sealedAt; members = env.members || {}; absent = env.absent || {};
     masterOk = fs.existsSync(MASTER);
   } catch (_) {}
   let verifyLast = null;
   try { verifyLast = JSON.parse(fs.readFileSync(VERIFY_LAST, 'utf8')); } catch (_) {}
-  return { sealed, digest, sealedAt, masterOk, members, verifyLast };
+  return { sealed, digest, sealedAt, masterOk, members, absent, verifyLast };
 }
 
 /* ── עוזרי-קריאה-תפעוליים — כל-ה-daemons-קוראים-דרך-הכספת (envelope→plaintext) ── */
 function readMnemonic() {
   try { const v = openVault(); return String(v.get('tron-mnemonic.txt')).trim().split(/\s+/).join(' '); } catch (_) {}
-  return fs.readFileSync(path.join(KEYS, 'tron-mnemonic.txt'), 'utf8').trim().split(/\s+/).join(' ');
+  try { return fs.readFileSync(path.join(KEYS, 'tron-mnemonic.txt'), 'utf8').trim().split(/\s+/).join(' '); } catch (_) {}
+  throw new Error('tron-mnemonic-lost(115-rollback · postmortem 5da5cfb — doors re-founded on sovereign seed 117h)'); // כנות-במקום-ENOENT
 }
 function readMember(name) {
   // envelope → plaintext (שני-המקורות-נאמנים; המעטפת-מגובה-ב-restore)
@@ -171,4 +192,4 @@ function readMember(name) {
   return m && m.kind === 'json' ? JSON.parse(raw) : raw;
 }
 
-module.exports = { seal, openVault, restore, status, readMnemonic, readMember, MEMBERS, ENC, MASTER, VERIFY_LAST, sha256hex };
+module.exports = { seal, openVault, restore, status, readMnemonic, readMember, MEMBERS, ABSENT_NOTES, ENC, MASTER, VERIFY_LAST, sha256hex };

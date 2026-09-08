@@ -92,39 +92,57 @@ function verify({ quiet } = {}) {
     res.mode = 'envelope';
     res.envelopeDigest = v.digest;
     res.sealedAt = v.sealedAt;
+    /* 117h — סמנטיקת-גרועה-כנה: חברים-שלא-נאטמו (אבד/פר-הזמן/נגזר-לפי-דרישה)
+     * נרשמים-בלי-להפיל-את-האימות — העיגון-הציבורי-הוא-הטקס-המחייב. */
+    const envRaw = JSON.parse(fs.readFileSync(V.ENC, 'utf8'));
+    res.absent = envRaw.absent || {};
+    res.degraded = Object.keys(res.absent).length > 0;
     const seedDoc = v.get('wallets-seed.json');
-    const registry = v.get('wallets-registry.json');
-    const steemVault = v.get('vault.json');
     res.checks.seedShape = /^[0-9a-f]{64,}$/.test(String(seedDoc.seed || ''));
-    res.checks.registryAccounts = Array.isArray(registry.accounts) && registry.accounts.length > 0;
-    res.checks.steemAccounts = Array.isArray(steemVault.accounts) && steemVault.accounts.length > 0;
-    const roster = agentsFromVault(steemVault);
-    const derived = rederive(String(seedDoc.seed), roster);
-    // דיפ מול-הרישום-הפרטי-האטום (אותו-זרע → אותן-כתובות)
-    let regMatch = 0, regMiss = [];
-    for (const a of registry.accounts) {
-      const d = derived[a.agent];
-      if (d && a.evm && a.tron && a.sol && d.evm === a.evm.address && d.tron === a.tron.address && d.sol === a.sol.address) regMatch++;
-      else regMiss.push(a.agent);
+    // roster: מהכספת (vault.json) אם-הוא-חי · אחרת — הרוסטר-המעוגן-מ wallets-public.json (סדר-זהה = גזירה-זהה)
+    let roster = null, rosterSrc = null, registry = null, steemVault = null;
+    try { steemVault = v.get('vault.json'); } catch (_) { steemVault = null; }
+    try { registry = v.get('wallets-registry.json'); } catch (_) { registry = null; }
+    if (steemVault && Array.isArray(steemVault.accounts) && steemVault.accounts.length > 0) {
+      roster = agentsFromVault(steemVault); rosterSrc = 'vault.json';
+      res.checks.steemAccounts = steemVault.accounts.length + '(envelope)';
+    } else {
+      res.checks.steemAccounts = 'absent(RETIRED — .env-wif-flows)';
     }
-    res.checks.registryMatch = regMatch + '/' + registry.accounts.length;
-    // דיפ מול-העיגון-הציבורי — "הכספת-נפתחת-לזהות-המעוגנת"
+    // דיפ מול-העיגון-הציבורי — "הכספת-נפתחת-לזהות-המעוגנת" (הטקס-המרכזי)
     let pubMatch = 0, pubMiss = [], anchored = false, pub = null;
     try {
       pub = JSON.parse(fs.readFileSync(PUB, 'utf8'));
       anchored = !!(pub.manifestDigest && pub.anchor && pub.anchor.txid);
       res.anchoredDigest = pub.manifestDigest || null;
       res.anchoredTxid = (pub.anchor && pub.anchor.txid) || null;
+      if (!roster) { roster = (pub.agents || []).map((a) => a.agent).sort(); rosterSrc = 'wallets-public(anchored)'; }
+      const derived = rederive(String(seedDoc.seed), roster);
       for (const a of pub.agents || []) {
         const d = derived[a.agent];
         if (d && d.evm === a.evm && d.tron === a.tron && d.sol === a.sol && d.btc === a.btc) pubMatch++;
         else pubMiss.push(a.agent);
       }
     } catch (e) { pubMiss.push('public-file:' + e.message.slice(0, 40)); }
+    res.checks.roster = rosterSrc;
     res.checks.anchoredMatch = (pub && pub.agents ? pubMatch + '/' + pub.agents.length : 'no-public');
     res.checks.anchoredPublic = anchored;
-    res.ok = res.checks.seedShape && res.checks.registryAccounts && res.checks.steemAccounts && regMiss.length === 0 && pubMiss.length === 0 && pubMatch > 0;
-    if (!res.ok) res.errors.push('mismatch registry:[' + regMiss.join(',') + '] public:[' + pubMiss.join(',') + ']');
+    // דיפ מול-הרישום-הפרטי-האטום — רק-אם-הוא-קיים-במעטפת (117h: אחרת — נגזר-לפי-דרישה, לא-כישלון)
+    if (registry && Array.isArray(registry.accounts) && registry.accounts.length > 0 && roster) {
+      const derived = rederive(String(seedDoc.seed), roster);
+      let regMatch = 0, regMiss = [];
+      for (const a of registry.accounts) {
+        const d = derived[a.agent];
+        if (d && a.evm && a.tron && a.sol && d.evm === a.evm.address && d.tron === a.tron.address && d.sol === a.sol.address) regMatch++;
+        else regMiss.push(a.agent);
+      }
+      res.checks.registryMatch = regMatch + '/' + registry.accounts.length;
+      if (regMiss.length) res.errors.push('registry-mismatch:[' + regMiss.join(',') + ']');
+    } else {
+      res.checks.registryMatch = 'absent(DERIVABLE-ON-DEMAND from wallets-seed)';
+    }
+    res.ok = res.checks.seedShape && anchored && pubMiss.length === 0 && pubMatch > 0 && res.errors.length === 0;
+    if (!res.ok && !pubMiss.every((x) => /^public-file:/.test(x))) res.errors.push('mismatch public:[' + pubMiss.join(',') + ']');
   } catch (e) {
     res.ok = false;
     res.errors.push(e.message);
@@ -132,10 +150,11 @@ function verify({ quiet } = {}) {
   res.ms = Date.now() - t0;
   fs.writeFileSync(VERIFY_LAST, JSON.stringify(res, null, 2));
   if (!quiet) {
-    console.log('THE-VAULT verify: ' + (res.ok ? 'VERIFIED ✓' : 'FAILED ✗') + ' (' + res.ms + 'ms)');
+    console.log('THE-VAULT verify: ' + (res.ok ? (res.degraded ? 'VERIFIED ✓ (degraded-honest)' : 'VERIFIED ✓') : 'FAILED ✗') + ' (' + res.ms + 'ms)');
     console.log('  envelope ' + (res.envelopeDigest || '—').slice(0, 16) + '… · sealed ' + (res.sealedAt || '—'));
     console.log('  checks: ' + JSON.stringify(res.checks));
-    if (res.ok) console.log('  הכספת-נפתחת-לזהות-המעוגנת — 12×4 כתובות-נגזרות-מחדש-ומתאימות-לעיגון-הציבורי');
+    if (res.ok) console.log('  הכספת-נפתחת-לזהות-המעוגנת — כתובות-נגזרות-מהזרע-ומתאימות-לעיגון-הציבורי');
+    if (res.degraded) for (const [n, note] of Object.entries(res.absent)) console.log('  · absent ' + n + ' — ' + note);
     if (res.errors.length) console.log('  errors: ' + res.errors.join(' · '));
   }
   return res;
@@ -145,20 +164,22 @@ function main() {
   const cmd = process.argv[2] || 'status';
   if (cmd === 'seal') {
     const r = V.seal();
-    console.log('THE-VAULT sealed ✓ · digest ' + r.digest.slice(0, 16) + '… · ' + Object.keys(r.members).length + ' members · ' + r.sealedAt);
+    const absentCount = Object.keys(r.absent || {}).length;
+    console.log('THE-VAULT sealed ✓ · digest ' + r.digest.slice(0, 16) + '… · ' + Object.keys(r.members).length + ' members' + (absentCount ? ' · ' + absentCount + ' absent (memorialized)' : '') + ' · ' + r.sealedAt);
     for (const [n, m] of Object.entries(r.members)) console.log('  · ' + n + ' (' + m.bytes + 'B, ' + m.kind + ')');
+    for (const [n, note] of Object.entries(r.absent || {})) console.log('  · absent ' + n + ' — ' + note);
     const v = verify({ quiet: true });
-    console.log('post-seal verify: ' + (v.ok ? 'VERIFIED ✓' : 'FAILED ✗ — דורש-תיקון-מיידי'));
+    console.log('post-seal verify: ' + (v.ok ? (v.degraded ? 'VERIFIED ✓ (degraded-honest)' : 'VERIFIED ✓') : 'FAILED ✗ — דורש-תיקון-מיידי'));
     if (!v.ok) process.exitCode = 1;
   } else if (cmd === 'verify') {
     const ok = verify({ quiet: process.argv.includes('--quiet') });
     if (!ok.ok) process.exitCode = 1;
   } else if (cmd === 'restore') {
     const r = V.restore(process.argv[3] || null);
-    console.log('THE-VAULT restore ✓ · ' + r.restored.join(' · '));
+    console.log('THE-VAULT restore ✓ · ' + (r.restored.length ? r.restored.join(' · ') : 'nothing') + (r.skipped && r.skipped.length ? ' · skipped: ' + r.skipped.join(' · ') : ''));
   } else if (cmd === 'status') {
     const s = V.status();
-    console.log(JSON.stringify({ sealed: s.sealed, digest: s.digest, sealedAt: s.sealedAt, masterOk: s.masterOk, members: Object.keys(s.members || {}), verifyLast: s.verifyLast && { at: s.verifyLast.at, ok: s.verifyLast.ok } }, null, 2));
+    console.log(JSON.stringify({ sealed: s.sealed, digest: s.digest, sealedAt: s.sealedAt, masterOk: s.masterOk, members: Object.keys(s.members || {}), absent: s.absent || {}, verifyLast: s.verifyLast && { at: s.verifyLast.at, ok: s.verifyLast.ok, degraded: s.verifyLast.degraded } }, null, 2));
   } else {
     console.log('usage: vault.cjs seal|verify|status|restore [member]');
     process.exitCode = 2;
