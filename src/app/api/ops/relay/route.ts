@@ -81,6 +81,12 @@ export async function GET() {
           doorsScanned: (scan.doors || []).length,
           fundedDoors: (scan.doors || []).filter((x) => Number(x.bal || 0) > 0).length,
           withBandwidth: (scan.doors || []).filter((x) => Number(x.freeLeft || 0) >= 300).length,
+          /* 117h — דלתות-הדלק: הכתובות-הנשלטות-באמת (v2 · נגזרות-מהכספת). הפקדת-TRX
+           * לכתובת-כזו = הדלת-נפתחת-אוטומטית. נמלי-ההפקדות-הציבוריים (v1) הם
+           * receive-only — המפתחות-שלהם-אבדו (ראו identity-split ב-vault). */
+          fuelDoors: (scan.doors || [])
+            .filter((x) => x.address)
+            .map((x) => ({ family: x.family || "?", idx: x.idx ?? -1, address: x.address, bal: Number(x.bal || 0), freeLeft: Number(x.freeLeft || 0) })),
         }
       : null;
 
