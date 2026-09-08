@@ -1,5 +1,5 @@
 {
-  "tick": 221,
+  "tick": 222,
   "last": {
     "ethereum/cashmachine": "200000000000000",
     "ethereum/haran": "200000000000000",
@@ -133,7 +133,7 @@
       "human": 0,
       "unit": "sun",
       "addr": "TG6SrsMJjRqnqAyYM8kGZu1rgkpsgizKEn",
-      "note": "117i correction: pending 17.599234 removed \u2014 born from degraded-read baseline clobber (data:[] \u2192 0 lie); balTron now throws on empty-data; the 18.704234 false-deposit evaporated via the 2-tick hold rule after the door settlement spend; real backing = 17.599234 TRX live"
+      "note": "117i correction: pending 17.599234 removed — born from degraded-read baseline clobber (data:[] → 0 lie); balTron now throws on empty-data; the 18.704234 false-deposit evaporated via the 2-tick hold rule after the door settlement spend; real backing = 17.599234 TRX live"
     },
     {
       "at": "2026-09-08T17:40:03.233Z",
@@ -161,10 +161,10 @@
       "agent": "headcorner",
       "sym": "WTRX",
       "raw": "5",
-      "human": 5e-06,
+      "human": 0.000005,
       "unit": "sun",
       "addr": "TG6SrsMJjRqnqAyYM8kGZu1rgkpsgizKEn",
-      "note": "under-dust (\u05de\u05ea\u05d5\u05e2\u05d3-\u05d1\u05dc\u05d9-\u05de\u05d9\u05e0\u05d8)"
+      "note": "under-dust (מתועד-בלי-מינט)"
     },
     {
       "at": "2026-09-08T13:40:48.288Z",
@@ -172,10 +172,10 @@
       "agent": "headcorner",
       "sym": "WTRX",
       "raw": "6",
-      "human": 6e-06,
+      "human": 0.000006,
       "unit": "sun",
       "addr": "TG6SrsMJjRqnqAyYM8kGZu1rgkpsgizKEn",
-      "note": "under-dust (\u05de\u05ea\u05d5\u05e2\u05d3-\u05d1\u05dc\u05d9-\u05de\u05d9\u05e0\u05d8)"
+      "note": "under-dust (מתועד-בלי-מינט)"
     },
     {
       "at": "2026-09-08T13:25:38.777Z",
@@ -430,61 +430,60 @@
   ],
   "rpcHealth": {
     "ethereum": {
-      "at": "2026-09-08T17:39:54.081Z",
+      "at": "2026-09-08T17:46:42.400Z",
       "ok": true,
       "via": "https://ethereum-rpc.publicnode.com"
     },
     "bsc": {
-      "at": "2026-09-08T17:39:55.176Z",
+      "at": "2026-09-08T17:46:43.209Z",
       "ok": true,
       "via": "https://bsc-rpc.publicnode.com"
     },
     "polygon": {
-      "at": "2026-09-08T17:39:56.027Z",
+      "at": "2026-09-08T17:46:44.055Z",
       "ok": true,
       "via": "https://polygon-bor-rpc.publicnode.com"
     },
     "arbitrum": {
-      "at": "2026-09-08T17:39:57.201Z",
+      "at": "2026-09-08T17:46:45.411Z",
       "ok": true,
       "via": "https://arbitrum-one-rpc.publicnode.com"
     },
     "optimism": {
-      "at": "2026-09-08T17:39:57.994Z",
+      "at": "2026-09-08T17:46:46.298Z",
       "ok": true,
       "via": "https://optimism-rpc.publicnode.com"
     },
     "base": {
-      "at": "2026-09-08T17:39:59.859Z",
+      "at": "2026-09-08T17:46:47.613Z",
       "ok": true,
       "via": "https://base-rpc.publicnode.com"
     },
     "avalanche": {
-      "at": "2026-09-08T17:40:02.352Z",
+      "at": "2026-09-08T17:46:49.940Z",
       "ok": true,
       "via": "https://avalanche-c-chain-rpc.publicnode.com"
     },
     "tron": {
-      "at": "2026-09-08T17:40:03.877Z",
-      "ok": true,
-      "via": "trongrid"
+      "at": "2026-09-08T17:46:50.929Z",
+      "ok": false,
+      "err": "trondegraded:trongrid 429"
     },
     "solana": {
-      "at": "2026-09-08T17:40:04.555Z",
-      "ok": true,
-      "via": "https://api.mainnet-beta.solana.com"
+      "at": "2026-09-08T17:46:50.929Z",
+      "note": "skip (תדמור-מול-תקרות — סיבוב-כל-2-טיקים)"
     },
     "bitcoin": {
-      "at": "2026-09-08T17:40:06.061Z",
+      "at": "2026-09-08T17:46:52.040Z",
       "ok": true,
       "via": "mempool.space"
     }
   },
-  "lastTickAt": "2026-09-08T17:40:06.061Z",
+  "lastTickAt": "2026-09-08T17:46:52.040Z",
   "minted": 15,
   "poolsOpened": [
-    "WETH/WSTEEM(4009816+10000\u00b5)",
-    "WETH/WSTEEM(4009816+10000\u00b5)",
-    "WSOL/WSTEEM(96126117+10000\u00b5)"
+    "WETH/WSTEEM(4009816+10000µ)",
+    "WETH/WSTEEM(4009816+10000µ)",
+    "WSOL/WSTEEM(96126117+10000µ)"
   ]
 }
