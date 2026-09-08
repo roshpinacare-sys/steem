@@ -8,6 +8,11 @@
  * Cost: zero ops fees. Risk: none (reversible only via re-stake after).
  *
  * Result → agent/he_unstake_result.json
+ *
+ * LIVE-GATE (explicit opt-in only — owner decision, Task 24/25-d):
+ *   live broadcast requires BOTH: --live flag (or env HE_LIVE=1)
+ *   AND env HE_LIVE_CONFIRM=<agent-account-name> matching ACCOUNT.
+ *   Otherwise the daemon runs DRY (no signature, no broadcast).
  */
 const fs = require('fs');
 const path = require('path');
@@ -36,7 +41,18 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-const DRY = process.argv.includes('--dry');
+// [LIVE-GATE] live is explicit opt-in ONLY (owner decision Task 24 → implemented 25-d):
+// requires BOTH (a) --live flag or env HE_LIVE=1, AND (b) env HE_LIVE_CONFIRM=<account>.
+const LIVE_REQUESTED = !process.argv.includes('--dry') && (process.argv.includes('--live') || process.env.HE_LIVE === '1');
+const LIVE_CONFIRMED = (process.env.HE_LIVE_CONFIRM || '').toLowerCase() === ACCOUNT;
+const LIVE = LIVE_REQUESTED && LIVE_CONFIRMED;
+const DRY = !LIVE;
+if (DRY) {
+  console.log('[LIVE-GATE] dry-run default — broadcast requires --live flag (or HE_LIVE=1) AND HE_LIVE_CONFIRM=' + ACCOUNT);
+  if (LIVE_REQUESTED && !LIVE_CONFIRMED) console.log('[LIVE-GATE] live requested but HE_LIVE_CONFIRM mismatch — forcing DRY');
+} else {
+  console.log('[LIVE-GATE] LIVE MODE ENABLED — real broadcast to Hive mainnet (Hive-Engine sidechain ops) as @' + ACCOUNT);
+}
 const SYMBOLS = (process.argv.find((a) => a.startsWith('--symbols=')) || '--symbols=SPORTS,WAIV')
   .split('=')[1].split(',').map((s) => s.trim()).filter(Boolean);
 
