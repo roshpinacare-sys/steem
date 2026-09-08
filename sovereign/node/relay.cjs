@@ -164,20 +164,48 @@ function controlledTronDoors() {
   return list;
 }
 
-/* סריקת-שולחים — עם-cache-של-10 דק' (חסכון-429). מחזיר-את-השולח-הנבחר-או-null+סיבה-כנה. */
+/* סריקת-שולחים — עם-cache-של-10 דק' (חסכון-429). מחזיר-את-השולח-הנבחר-או-null+סיבה-כנה.
+ * 117i — שיעור-החיים-מההתחיות: קריאת-RPC-שנכשלת איננה "יתרה-אפס" — היא "לא-נקרא".
+ * הפיצוץ-השקט היה-השקר-הכי-גרוע-של-הדלת: burst של 36 קריאות-רצופות → 429 →
+ * catch(()=>({})) → כל-הדלתות-נראו-ריקות → "no-funded-sender" בזמן-ש-18.7-TRX-ישבו-על-הדלת.
+ * התיקון: קצב-בין-דלתות · ניסיון-חוזר-אחד · דלת-שלא-נקראה נושאת err ולא bal=0 ·
+ * סריקה-מדורגת לא-נשמרת-ל-10-דק' אלא-ל-60-שנ' — הדלת-מנסה-שוב-מהר. */
+const SCAN_HOSTS = ['https://api.trongrid.io'];
+const SCAN_PACE_MS = 350;      // בין-דלתות — בלי-ברסט, בלי-429
+const SCAN_RETRY_MS = 600;     // ניסיון-שני-לדלת-שנכשלה
+const DEGRADED_TTL_MS = 60_000;
+
+async function readAccountWithFallback(tw, address) {
+  let lastErr = null;
+  for (const host of SCAN_HOSTS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const acc = await tw.trx.getAccount(address);
+        if (acc && typeof acc === 'object' && Object.keys(acc).length) return { acc, via: host };
+        return { acc: acc || {}, via: host }; // {} = חשבון-לא-מופעל — תשובה-לגיטימית
+      } catch (e) { lastErr = e; }
+      if (attempt === 0) await new Promise((r) => setTimeout(r, SCAN_RETRY_MS));
+    }
+  }
+  throw lastErr || new Error('rpc-unreachable');
+}
+
 async function scanTronSender(amountSun, needHeadroom) {
   let cache = null;
   try { cache = JSON.parse(fs.readFileSync(SENDERS_CACHE, 'utf8')); } catch (_) {}
-  if (cache && (Date.now() - Number(cache.at || 0)) < SENDERS_TTL_MS) {
+  if (cache && (Date.now() - Number(cache.at || 0)) < (cache.degraded ? DEGRADED_TTL_MS : SENDERS_TTL_MS)) {
     return { pick: cache.pick, reason: cache.reason, cached: true, doors: (cache.doors || []).length, cachedAt: cache.at };
   }
   const doors = [];
-  let funded = 0, bestBal = 0, bestBalAddr = null;
-  for (const d of controlledTronDoors()) {
+  let funded = 0, bestBal = 0, bestBalAddr = null, readsFailed = 0;
+  const list = controlledTronDoors();
+  for (let i = 0; i < list.length; i++) {
+    const d = list[i];
+    if (i > 0) await new Promise((r) => setTimeout(r, SCAN_PACE_MS)); // קצב — לא-להציף-את-הציבורי
     try {
       const c = d.mk();
       if (!c.address) continue;
-      const acc = await c.tw.trx.getAccount(c.address).catch(() => ({}));
+      const { acc } = await readAccountWithFallback(c.tw, c.address);
       const res = await c.tw.trx.getAccountResources(c.address).catch(() => ({}));
       const bal = Number((acc && acc.balance) || 0);
       const freeLeft = Math.max(0, Number((res && res.freeNetLimit) || 0) - Number((res && res.freeNetUsed) || 0));
@@ -185,16 +213,24 @@ async function scanTronSender(amountSun, needHeadroom) {
       doors.push({ family: d.family, idx: d.idx, address: c.address, bal, freeLeft, activated });
       if (bal > 0) funded++;
       if (bal > bestBal) { bestBal = bal; bestBalAddr = c.address; }
-    } catch (_) { doors.push({ family: d.family, idx: d.idx, err: 'unreadable' }); }
+    } catch (e) {
+      readsFailed++;
+      doors.push({ family: d.family, idx: d.idx, err: 'rpc-failed(' + String((e && e.message) || e).slice(0, 40) + ')' });
+    }
   }
   const need = amountSun + needHeadroom;
   const pick = doors.find((x) => x.bal >= need && x.freeLeft >= 300) || null;
-  const reason = pick ? 'ok' : (funded === 0
-    ? 'no-funded-sender(doors=' + doors.length + ' · richest=' + bestBalAddr + '@' + bestBal + 'sun)'
-    : 'no-free-bandwidth(funded=' + funded + ' · richest=' + bestBalAddr + '@' + bestBal + 'sun)');
-  const snap = { at: Date.now(), pick: pick ? { family: pick.family, idx: pick.idx, address: pick.address, bal: pick.bal, freeLeft: pick.freeLeft } : null, reason, doors };
+  const degradedNote = readsFailed > 0 ? ' · reads-failed=' + readsFailed + '/' + list.length : '';
+  const reason = pick
+    ? ('ok' + (readsFailed > 0 ? '(degraded' + degradedNote + ')' : ''))
+    : (readsFailed > 0 && funded === 0
+      ? 'scan-degraded(reads-failed=' + readsFailed + '/' + list.length + ' · לא-קוראים-לא-אומרים-ריקים)'
+      : (funded === 0
+        ? 'no-funded-sender(doors=' + doors.length + ' · richest=' + bestBalAddr + '@' + bestBal + 'sun)'
+        : 'no-free-bandwidth(funded=' + funded + ' · richest=' + bestBalAddr + '@' + bestBal + 'sun' + degradedNote + ')'));
+  const snap = { at: Date.now(), pick: pick ? { family: pick.family, idx: pick.idx, address: pick.address, bal: pick.bal, freeLeft: pick.freeLeft } : null, reason, readsFailed, degraded: readsFailed > 0, doors };
   try { fs.writeFileSync(SENDERS_CACHE, JSON.stringify(snap)); } catch (_) {}
-  return { pick: snap.pick, reason, cached: false, doors: doors.length, cachedAt: snap.at };
+  return { pick: snap.pick, reason, cached: false, doors: doors.length, cachedAt: snap.at, readsFailed };
 }
 function invalidateSenderCache() { try { fs.unlinkSync(SENDERS_CACHE); } catch (_) {} }
 
