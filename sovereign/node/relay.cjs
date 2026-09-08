@@ -52,6 +52,7 @@ const ACCOUNT = S.ACCOUNT;           // 'headcorner' — מפעיל-הצומת �
 const steem = require(path.join(ROOT, 'node_modules', 'steem'));
 const TronWeb = require(path.join(ROOT, 'node_modules', 'tronweb'));
 const VAULT = require(path.join(HERE, 'vault-lib.cjs')); // 114 — הקריאה-דרך-הכספת (envelope→plaintext)
+const SHIELD = require(path.join(HERE, 'shield.cjs')); // 117l — המגן: אנטי-פישינג/מתחזים/קוד-זדוני (שער-מקדים-לביצוע)
 const RPC = 'https://api.trongrid.io';
 /* 117h — KEYFILE/קריאת-מנמוניק-legacy הוסרו: המנמוניק נשחת-ב-115 (postmortem 5da5cfb)
  * וכל-חומר-הדלתות נגזר-מהזרע-הריבוני (למטה) — אין-עוד-תלות-במפתח-מת. */
@@ -300,6 +301,14 @@ async function doorBlurt(r) {
 }
 
 async function executeRelay(r) {
+  /* 117l — THE-SHIELD: השער-לפני-כל-ביצוע (אנטי-פישינג/מתחזים/קוד-זדוני).
+   * BLOCK → הדלת-לא-נפתחת · WARN → מבוצע-עם-רעש-כנה-בלוג. אפס-מפתחות-במגן. */
+  try {
+    const gate = await SHIELD.guardRelay(r);
+    if (gate.verdict === 'BLOCK') throw new Error('shield-BLOCK: ' + gate.reasons.join(';'));
+    if (gate.verdict === 'WARN') dlog('SHIELD ⚠ ' + r.ref + ' :: ' + gate.reasons.join(';'));
+  } catch (e) { if (/shield-BLOCK/.test(e.message)) { dlog('DOOR ⛔ SHIELD-BLOCK ' + r.ref + ' :: ' + e.message); throw e; } /* shield-fail ≠ block — open-path-fail-לא-מפיל-ביצוע */ }
+  SHIELD.markActivity(r.via, r.ref); // T6 velocity ledger
   if (r.via === 'steem') return doorSteem(r);
   if (r.via === 'tron') return doorTron(r);
   if (r.via === 'blurt') return doorBlurt(r);
