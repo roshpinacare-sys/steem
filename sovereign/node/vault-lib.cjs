@@ -41,6 +41,7 @@ const MEMBERS = [
   { name: 'wallets-registry.json', kind: 'json' },  // המפתחות-הפרטיים-של-12-הסוכנים (113)
   { name: 'vault.json', kind: 'json' },             // כספת-הצבא-הSTEEM (הרוסטר-הקנוני)
   { name: 'tron-mnemonic.txt', kind: 'text' },      // מנמוניק-טרון (הגשר-והדקס)
+  { name: 'tron-legacy-mnemonic.txt', kind: 'text' }, // 117k — מנמוניק-טרון-הישן (הושחזר-מהתמונה · דלתות TAzZZ/TRKSt · 19.13 TRX)
 ];
 
 function sha256hex(s) { return crypto.createHash('sha256').update(s).digest('hex'); }
