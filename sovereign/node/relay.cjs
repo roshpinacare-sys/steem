@@ -235,7 +235,21 @@ async function scanTronSender(amountSun, needHeadroom) {
 function invalidateSenderCache() { try { fs.unlinkSync(SENDERS_CACHE); } catch (_) {} }
 
 /* ספר-כשלים-מקומי (נסיגה-רכה) — לא-נוגע-בספר-הריבוני */
-function readFails() { try { return JSON.parse(fs.readFileSync(FAILS_FILE, 'utf8')); } catch (_) { return {}; } }
+/* 117j: ספר-הכשלון-מתנקה-מעצמו — רשומה-ישנה-מ-6-שעות היא-זומבי (הדלת-הצליחה-מאז
+ * או-התור-התפנה) — היא-מזינה-באנר-הכנות-בממשק נתוני-'ריץ'-שקריים (נמדד: count=30
+ * על-דלת-שכבר-ירתה-בהצלחה). ניקוי-בקריאה = ה-UI-רואה-רק-כשלים-חיים. */
+const FAILS_TTL_MS = 6 * 3600 * 1000;
+function readFails() {
+  try {
+    const f = JSON.parse(fs.readFileSync(FAILS_FILE, 'utf8'));
+    let dirty = false;
+    for (const k of Object.keys(f)) {
+      if (Date.now() - Number((f[k] || {}).lastAt || 0) > FAILS_TTL_MS) { delete f[k]; dirty = true; }
+    }
+    if (dirty) saveFails(f);
+    return f;
+  } catch (_) { return {}; }
+}
 function saveFails(f) { try { fs.writeFileSync(FAILS_FILE, JSON.stringify(f)); } catch (_) {} }
 function failBump(ref, err) { const f = readFails(); f[ref] = { count: ((f[ref] || {}).count || 0) + 1, lastAt: Date.now(), lastErr: String(err).slice(0, 160) }; saveFails(f); return f[ref]; }
 function failClear(ref) { const f = readFails(); if (f[ref]) { delete f[ref]; saveFails(f); } }
