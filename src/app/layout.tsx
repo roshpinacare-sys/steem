@@ -22,18 +22,19 @@ const jet = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "הנול · רשת-האמת הציבורית — SAOS-NET",
+  title: "SAOS-NET COMMAND · מרכז-הבקרה הריבוני",
   description:
-    "THE WEAVE — רשת-אמת ציבורית ריבונית: חותמת קיום על כל דבר, אריגה שעתית לשורש-מרקל, איטום מתמטי על הספר הריבוני, ועיגון ציבורי על Steem · Hive · TRON · Blurt.",
-  keywords: ["SAOS-NET", "THE WEAVE", "רשת-אמת", "חותמות-קיום", "מרקל", "Steem", "Hive", "TRON", "Blurt"],
+    "מרכז-בקרה-חי לרשת-האמת הריבונית: הספר · רכבת-ההפקדות הרב-שרשרתית · דלתות-הריליי · THE-SHIELD · כלכלת-הגריד — הכל-נמדד-חי, אפס-סימולציה.",
+  keywords: ["SAOS-NET", "COMMAND", "מרכז-בקרה", "TRON", "deposits", "relay-doors", "shield", "הפקדות", "ריבונות"],
   authors: [{ name: "SAOS — headcorner" }],
   icons: { icon: "/weave-mark.svg" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0907",
+  themeColor: "#09090b",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
