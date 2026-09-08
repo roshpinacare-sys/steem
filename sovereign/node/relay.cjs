@@ -22,6 +22,7 @@
  * ═══════════════════════════════════════════════════════════════════════════ */
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 require('dns').setDefaultResultOrder('ipv4first'); // HE lesson: family-4 first
 const { spawnSync } = require('child_process');
 
@@ -31,6 +32,20 @@ const SNAPSHOT = path.join(HERE, 'state-snapshot.json');
 const DOORLOG = path.join(HERE, 'relay-doors.log');
 const TICK = 45000;
 const MAX_TRIES = 50;
+
+/* 117g — תובנה-חיה: הדלת-נתקעה-שעות-על-"no-free-bandwidth" כשהאמת-היא
+ * שהשולחים-הקבועים [1,0] ריקים-לגמרי (0 TRX) — והודעת-השגיאה-שיקרה.
+ * התיקון-המשולש: (1) גילוי-שולח-חי-על-פני-כל-הדלתות-הנשלטות (relay-idx 0..5
+ * + 12 דלתות-הרישום-הריבוני — הכל-מהכספת, אפס-מפתחות-בקוד) · (2) כנות:
+ * no-funded-sender ≠ no-free-bandwidth · (3) נסיגה-רכה-מקומית — דלת-שנכשלה
+ * נסה-כל-15 דק' במקום-כל-45 שניות (ספר-fails מקומי — הספר-הריבוני-לא-מתלכלך). */
+const SENDERS_CACHE = path.join(HERE, 'relay-senders.json');
+const FAILS_FILE = path.join(HERE, 'relay-fails.json');
+const SENDERS_TTL_MS = 600_000;   // 10 דק' — מנגנון-ה-cache חוסך-~36 קריאות-RPC-לניסיון
+const BACKOFF_AFTER = 8;          // אחרי-8 כשלות-רצופות
+const BACKOFF_MS = 900_000;       // 15 דק' נסיגה-רכה
+const ACTIVATION_HEADROOM_SUN = 1_500_000; // העברה-לכתובת-לא-מופעלת = עמלת-הפעלה-מהשולח
+const FEE_HEADROOM_SUN = 60_000;
 
 const S = require(path.join(HERE, 'saosnet.cjs'));
 const ACCOUNT = S.ACCOUNT;           // 'headcorner' — מפעיל-הצומת ומנפיק-הדלתות
@@ -109,23 +124,95 @@ function deriveIdx(idx) {
   try { if (typeof tw.setTimeout === 'function') tw.setTimeout(20000); } catch (_) {}
   return { tw, address: tw.defaultAddress && tw.defaultAddress.base58 };
 }
+
+/* 117g — דלתות-הרישום-הריבוני (12 סוכנים): אותו-זרע-ריבוני, גזירת-tron|44/195 —
+ * אותו-מתכון-בתים-כמו-wallets.cjs (sha256(seed+'|tron|44/195') → m/44'/195'/0'/0/i).
+ * אלה-אותן-כתובות-שה-watcher-סוקר-להפקדות — הפקדת-TRX-לנמל-כלשהו = דלת-ה-relayer
+ * מקבלת-שולח-חי-אוטומטית. המעגל נסגר. */
+function sha256buf(s) { return crypto.createHash('sha256').update(String(s)).digest(); }
+function b58c(payload) {
+  const bs58 = require(path.join(ROOT, 'node_modules', 'bs58'));
+  const p = Buffer.from(payload);
+  const h1 = crypto.createHash('sha256').update(p).digest();
+  const h2 = crypto.createHash('sha256').update(h1).digest(); // double-sha (הלקח-113)
+  return bs58.encode(Buffer.concat([p, h2.slice(0, 4)]));
+}
+function deriveRegistryTron(i) {
+  const ethers = require(path.join(ROOT, 'node_modules', 'ethers'));
+  const seed = String(VAULT.readMember('wallets-seed.json').seed || '');
+  if (!/^[0-9a-f]{64,}$/.test(seed)) throw new Error('bad-seed');
+  const tronRoot = ethers.HDNodeWallet.fromSeed(sha256buf(seed + '|tron|44/195'));
+  const tronW = tronRoot.derivePath("m/44'/195'/0'/0/" + i);
+  const tw = new TronWeb({ fullHost: RPC, privateKey: tronW.privateKey.slice(2) });
+  try { if (typeof tw.setTimeout === 'function') tw.setTimeout(20000); } catch (_) {}
+  const tronPubU = ethers.SigningKey.computePublicKey(tronW.privateKey, false).slice(4);
+  const kec = ethers.keccak256(Buffer.from(tronPubU, 'hex'));
+  const addr = b58c(Buffer.concat([Buffer.from([0x41]), Buffer.from(kec.slice(-40), 'hex')]));
+  return { tw, address: addr };
+}
+function controlledTronDoors() {
+  const list = [];
+  for (const idx of [0, 1, 2, 3, 4, 5]) list.push({ family: 'relay-idx', idx, mk: () => deriveIdx(idx) });
+  for (let i = 0; i < 12; i++) list.push({ family: 'registry', idx: i, mk: () => deriveRegistryTron(i) });
+  return list;
+}
+
+/* סריקת-שולחים — עם-cache-של-10 דק' (חסכון-429). מחזיר-את-השולח-הנבחר-או-null+סיבה-כנה. */
+async function scanTronSender(amountSun, needHeadroom) {
+  let cache = null;
+  try { cache = JSON.parse(fs.readFileSync(SENDERS_CACHE, 'utf8')); } catch (_) {}
+  if (cache && (Date.now() - Number(cache.at || 0)) < SENDERS_TTL_MS) {
+    return { pick: cache.pick, reason: cache.reason, cached: true, doors: (cache.doors || []).length, cachedAt: cache.at };
+  }
+  const doors = [];
+  let funded = 0, bestBal = 0, bestBalAddr = null;
+  for (const d of controlledTronDoors()) {
+    try {
+      const c = d.mk();
+      if (!c.address) continue;
+      const acc = await c.tw.trx.getAccount(c.address).catch(() => ({}));
+      const res = await c.tw.trx.getAccountResources(c.address).catch(() => ({}));
+      const bal = Number((acc && acc.balance) || 0);
+      const freeLeft = Math.max(0, Number((res && res.freeNetLimit) || 0) - Number((res && res.freeNetUsed) || 0));
+      const activated = !!(acc && acc.address);
+      doors.push({ family: d.family, idx: d.idx, address: c.address, bal, freeLeft, activated });
+      if (bal > 0) funded++;
+      if (bal > bestBal) { bestBal = bal; bestBalAddr = c.address; }
+    } catch (_) { doors.push({ family: d.family, idx: d.idx, err: 'unreadable' }); }
+  }
+  const need = amountSun + needHeadroom;
+  const pick = doors.find((x) => x.bal >= need && x.freeLeft >= 300) || null;
+  const reason = pick ? 'ok' : (funded === 0
+    ? 'no-funded-sender(doors=' + doors.length + ' · richest=' + bestBalAddr + '@' + bestBal + 'sun)'
+    : 'no-free-bandwidth(funded=' + funded + ' · richest=' + bestBalAddr + '@' + bestBal + 'sun)');
+  const snap = { at: Date.now(), pick: pick ? { family: pick.family, idx: pick.idx, address: pick.address, bal: pick.bal, freeLeft: pick.freeLeft } : null, reason, doors };
+  try { fs.writeFileSync(SENDERS_CACHE, JSON.stringify(snap)); } catch (_) {}
+  return { pick: snap.pick, reason, cached: false, doors: doors.length, cachedAt: snap.at };
+}
+function invalidateSenderCache() { try { fs.unlinkSync(SENDERS_CACHE); } catch (_) {} }
+
+/* ספר-כשלים-מקומי (נסיגה-רכה) — לא-נוגע-בספר-הריבוני */
+function readFails() { try { return JSON.parse(fs.readFileSync(FAILS_FILE, 'utf8')); } catch (_) { return {}; } }
+function saveFails(f) { try { fs.writeFileSync(FAILS_FILE, JSON.stringify(f)); } catch (_) {} }
+function failBump(ref, err) { const f = readFails(); f[ref] = { count: ((f[ref] || {}).count || 0) + 1, lastAt: Date.now(), lastErr: String(err).slice(0, 160) }; saveFails(f); return f[ref]; }
+function failClear(ref) { const f = readFails(); if (f[ref]) { delete f[ref]; saveFails(f); } }
+
 async function doorTron(r) {
   const toIdx = Math.floor(Number((r.payload || {}).toIdx));
   if (!Number.isInteger(toIdx) || toIdx < 0 || toIdx > 5) throw new Error('relay-tron-toIdx-0..5-only');
   const amountSun = Math.max(1000, Math.min(30000, Math.floor(Number((r.payload || {}).amountSun) || 5000)));
-  /* 110 — מאגר-שולחים-לפי-רוחב-פס (הלקח-107-מהעוגנים): הרכזת (idx1) יכולה-להיות-יבשה-היום
-   * (Bandwidth-חינם 600B/יום נשרף) — עוברים-לכתובת-הבריכה-העשירה (idx0) באותו-יום.
-   * הבטיחות-נשמרת: גם-השולח-וגם-היעד כתובות-גזורות-משלנו (0..5) בלבד. */
-  let me = null;
-  for (const idx of [1, 0]) {
-    const cand = deriveIdx(idx);
-    const res = await cand.tw.trx.getAccountResources(cand.address).catch(() => ({}));
-    const freeLeft = Math.max(0, Number(res.freeNetLimit || 0) - Number(res.freeNetUsed || 0));
-    if (freeLeft >= 300) { me = cand; break; } // transfer ≈270B
-  }
-  if (!me) throw new Error('no-free-bandwidth-today(hub+pool)');
   const to = deriveIdx(toIdx);
-  if (!me.tw.isAddress(to.address)) throw new Error('bad-derive');
+  if (!to.address || !to.tw.isAddress(to.address)) throw new Error('bad-derive');
+  /* 117g — האם-היעד-מופעל? כתובת-לא-מופעלת = עמלת-הפעלה-מהשולח (דורש-יתרה-גדולה-יותר) */
+  const toAcc = await to.tw.trx.getAccount(to.address).catch(() => ({}));
+  const toActivated = !!(toAcc && toAcc.address);
+  const headroom = toActivated ? FEE_HEADROOM_SUN : ACTIVATION_HEADROOM_SUN;
+  /* 110→117g — מאגר-שולחים-חי-על-פני-כל-הדלתות-הנשלטות (היה: [1,0] קבועות-וריקות).
+   * הבטיחות-נשמרת: כל-שולח-אפשרי-נגזר-מהכספת-שלנו · היעד-עודנו-idx-0..5-בלבד. */
+  const scan = await scanTronSender(amountSun, headroom);
+  if (!scan.pick) throw new Error(scan.reason);
+  const me = (scan.pick.family === 'registry') ? deriveRegistryTron(scan.pick.idx) : deriveIdx(scan.pick.idx);
+  if (me.address === to.address) throw new Error('sender==receiver(would-be-noop)');
   const unsigned = await me.tw.transactionBuilder.sendTrx(to.address, amountSun, me.address);
   const signed = await me.tw.trx.sign(unsigned, me.tw.defaultAddress.privateKey);
   const bro = await me.tw.trx.sendRawTransaction(signed);
@@ -136,7 +223,8 @@ async function doorTron(r) {
     await new Promise((r) => setTimeout(r, 3000));
     try { const info = await me.tw.trx.getTransactionInfo(bro.txid); if (info && info.receipt) { spentSun = Math.max(0, Number(info.receipt.net_fee || 0)); if (info.blockNumber) break; } } catch (_) {}
   }
-  return { txid: String(bro.txid), spentSun };
+  invalidateSenderCache(); // השולח-השתמש-ברוחב-הפס — הסריקה-הבאה-חייבת-להיות-חיה
+  return { txid: String(bro.txid), spentSun, sender: me.address };
 }
 
 /* ── דלת BLURT — צמתים-ציבוריים מתים (נמדד 108) — שקיפות: נשאר-בתור ── */
@@ -167,7 +255,16 @@ async function passOnce() {
   const queued = Object.values(relay.open || {}).filter((r) => r.status === 'queued').sort((a, b) => a.ref.localeCompare(b.ref, 'en', { numeric: true }));
   if (!queued.length) { dlog('pass: no queued relays · sent=' + relay.sent + ' issued=' + relay.issued); return { done: 0 }; }
   let done = 0;
+  const fails = readFails();
   for (const r of queued.slice(0, 3)) {
+    /* 117g — נסיגה-רכה: דלת-שנכשלה-8 פעמים-רצופות-נסה-כל-15 דק' (ולא-כל-45 שניות).
+     * מפסיק-את-שטף-הלוג-ושומר-על-מכסות-ה-RPC. דלת-כזו-עדיין-חיה — רק-נושמת-לאט. */
+    const f = fails[r.ref];
+    if (f && f.count >= BACKOFF_AFTER && (Date.now() - f.lastAt) < BACKOFF_MS) {
+      const leftSec = Math.round((BACKOFF_MS - (Date.now() - f.lastAt)) / 1000);
+      if (((f.count || 0) % 20) === 0) dlog('DOOR ⏸ ' + r.ref + ' (backoff · count=' + f.count + ' · next-in~' + leftSec + 's · last: ' + (f.lastErr || '').slice(0, 80) + ')');
+      continue;
+    }
     try {
       const res = await executeRelay(r);
       const txid = typeof res === 'string' ? res : res.txid;
@@ -181,9 +278,10 @@ async function passOnce() {
           acks.push({ type: 'relay', issuer: ACCOUNT, seq: (relay.nextBy[ACCOUNT] || 1), via: String(nx.via), act: String(nx.act), payload: Object.assign({}, nx.payload || {}, { depth: depth - 1, from: r.ref, chain: 'door-chain' }) });
         } else { dlog('chain-end: depth exhausted after ' + r.ref); }
       }
-      if (inject(acks, r.ref)) { done++; dlog('DOOR ✓ ' + r.ref + ' via=' + r.via + ' act=' + r.act + ' txid=' + txid); }
+      if (inject(acks, r.ref)) { done++; failClear(r.ref); dlog('DOOR ✓ ' + r.ref + ' via=' + r.via + ' act=' + r.act + ' txid=' + txid); }
     } catch (e) {
-      dlog('DOOR ✗ ' + r.ref + ' via=' + r.via + ' :: ' + e.message + (r.tries >= MAX_TRIES ? ' · STALLED(max-tries)' : ' · retry-in-next-pass'));
+      const st = failBump(r.ref, e.message);
+      dlog('DOOR ✗ ' + r.ref + ' via=' + r.via + ' :: ' + e.message + ' (count=' + st.count + (st.count >= BACKOFF_AFTER ? ' · backoff-15m' : ' · retry-in-next-pass') + ')');
     }
   }
   return { done };
@@ -198,7 +296,8 @@ function cmdStatus() {
     queued: open.filter((r) => r.status === 'queued').length,
     nextSeqBy: relay.nextBy || {},
     gasSettledSun: relay.gasSettledSun || 0,
-    doors: open.map((r) => ({ ref: r.ref, via: r.via, act: r.act, status: r.status, txid: r.txid || null, tries: r.tries || 0, chain: (r.payload || {}).chain || null, from: (r.payload || {}).from || null, budgetSun: (r.payload || {}).budgetSun || null, escrowµ: r.escrowµ || null, spentSun: r.spentSun || null, gasPaidµ: r.gasPaidµ || null, refundµ: r.refundµ || null })),
+    doors: open.map((r) => ({ ref: r.ref, via: r.via, act: r.act, status: r.status, txid: r.txid || null, tries: r.tries || 0, chain: (r.payload || {}).chain || null, from: (r.payload || {}).from || null, budgetSun: (r.payload || {}).budgetSun || null, escrowµ: r.escrowµ || null, spentSun: r.spentSun || null, gasPaidµ: r.gasPaidµ || null, refundµ: r.refundµ || null, failCount: (readFails()[r.ref] || {}).count || 0, lastErr: (readFails()[r.ref] || {}).lastErr || null })),
+    senderScan: (() => { try { const c = JSON.parse(fs.readFileSync(SENDERS_CACHE, 'utf8')); return { at: new Date(c.at).toISOString(), reason: c.reason, pick: c.pick || null, doorsScanned: (c.doors || []).length, fundedDoors: (c.doors || []).filter((x) => x.bal > 0).length }; } catch (_) { return null; } })(),
   }, null, 2));
 }
 
@@ -218,6 +317,21 @@ function cmdIssue(argv) {
 async function main() {
   const argv = process.argv.slice(2);
   if (argv.includes('status')) return cmdStatus();
+  if (argv.includes('scan')) {
+    /* 117g — בדיקת-סריקת-שולחים-קריאה-בלבד (אפס-שידור) — עוקף-cache-לכפיית-חי */
+    const get = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 ? Number(argv[i + 1]) : d; };
+    const amountSun = get('amount', 5000);
+    const toIdx = get('to-idx', 2);
+    const to = deriveIdx(toIdx);
+    const toAcc = await to.tw.trx.getAccount(to.address).catch(() => ({}));
+    const toActivated = !!(toAcc && toAcc.address);
+    const headroom = toActivated ? FEE_HEADROOM_SUN : ACTIVATION_HEADROOM_SUN;
+    try { fs.unlinkSync(SENDERS_CACHE); } catch (_) {}
+    const scan = await scanTronSender(amountSun, headroom);
+    const live = JSON.parse(fs.readFileSync(SENDERS_CACHE, 'utf8'));
+    console.log(JSON.stringify({ toIdx, to: to.address, toActivated, headroom, amountSun, pick: scan.pick, reason: scan.reason, cached: scan.cached, doors: live.doors }, null, 2));
+    return;
+  }
   if (argv.includes('issue')) return cmdIssue(argv);
   if (argv.includes('once')) { const r = await passOnce(); console.log('relay pass done=' + r.done); return; }
   if (argv.includes('watch')) {
@@ -227,6 +341,6 @@ async function main() {
     setInterval(loop, TICK);
     return;
   }
-  console.log('usage: relay.cjs status | issue --via steem --act post --payload \'{}\' | once | watch');
+  console.log('usage: relay.cjs status | scan [--amount sun --to-idx 0..5] | issue --via steem --act post --payload \'{}\' | once | watch');
 }
 main().catch((e) => { dlog('FATAL ' + ((e && e.message) || e)); process.exit(1); });
