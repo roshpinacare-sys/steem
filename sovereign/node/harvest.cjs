@@ -308,11 +308,17 @@ function status() {
     ' · live-cursors{book.feesµ=' + (node && node.book ? node.book.feesµ : '?') + ',grid.feeIncomeµ=' + (g ? g.feeIncomeµ : '?') + '}');
 }
 
-/* ── משמעת-כותב-יחיד (הלקח-מ-110b): פקודה-ידנית-מסרבת-לרוץ-במקביל-ל-watch-חי ── */
+/* ── משמעת-כותב-יחיד (הלקח-מ-110b): פקודה-ידנית-מסרבת-לרוץ-במקביל-ל-watch-חי ──
+ * 117j-תיקון-עצמי: pgrep -f 'harvest.cjs' היה-מתאים-גם-למעטפת-sh-שלעצמו
+ * (sh -c "pgrep -f 'harvest.cjs'" מכיל-את-המחרוזת) → pid-זר-חדש-בכל-פעימה
+ * → watch-מעולם-לא-ביצע-pass-אחד-אמת (נמדד: "כותב-אחר-חי" כל-90ש׳ מאז-העלאה).
+ * התיקון: טריק-הסוגריים [h] — הרגקס-מוצא-'harvest.cjs'-אמת-בלבד, והמעטפת-עצמה
+ * מכילה-'[h]arvest.cjs'-מילולי-שאינו-נתפס. דיסציפלינת-הכותב-היחיד-נשמרת-במלואה:
+ * 'once'-ידני שמופעל-מקרן-ה-guardian עדיין-רואה-את-watch-האמת ונסוג-כנות. */
 function singleWriter(who) {
   try {
     const { execSync } = require('child_process');
-    const out = execSync("pgrep -f 'harvest.cjs' || true", { encoding: 'utf8' });
+    const out = execSync("pgrep -f '[h]arvest\\.cjs' || true", { encoding: 'utf8' });
     const pids = out.split('\n').map((s) => Number(s.trim())).filter((n) => n && n !== process.pid);
     if (pids.length) { dlog(who + ': כותב-אחר-חי (pid ' + pids.join(',') + ') — נסוג (משמעת-כותב-יחיד)'); return false; }
   } catch (_) { /* pgrep-חסר → נמשיך (הקרנל-אוכף-בכל-מקרה) */ }
