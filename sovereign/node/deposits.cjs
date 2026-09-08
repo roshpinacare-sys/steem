@@ -83,10 +83,19 @@ async function balEvm(addrs, chain, tick) {
   return { raw: BigInt(j.result), unit: 'wei', via: chain.rpc[0] };
 }
 async function balTron(addrs, chain, tick) {
-  const r = await fetch(chain.rpc[0] + '/v1/accounts/' + addrs.tron);
-  const j = await r.json();
+  /* 117i — כנות-קריאה: data ריקה איננה "יתרה-אפס" — היא "לא-נקרא".
+   * השקר-השקט (data:[] → 0) כופף-בזלינה → הקריאה-הבאה-נראתה-כהפקדה-שלמה → מינט-כפול-לא-מגובה.
+   * חשבון-שהיה-ממומן-והתרוקן-לגמרי מגיע-עם-אובייקט-חשבון-אמת (balance:0) — רק-קריאות-כושלות
+   * מחזירות data ריקה. קריאה-שלא-ניתן-לאמת את אמינותה = זריקה → הטיק-מדלג, הבזלינה-נשמרת. */
+  let j = null;
+  try {
+    const r = await fetch(chain.rpc[0] + '/v1/accounts/' + addrs.tron);
+    if (!r.ok) throw new Error('trongrid ' + r.status);
+    j = await r.json();
+  } catch (e) { throw new Error('trondegraded:' + String(e.message || e).slice(0, 60)); }
   const d = j && j.data && j.data[0];
-  return { raw: BigInt((d && d.balance) || 0), unit: 'sun', via: 'trongrid' };
+  if (!d) throw new Error('trondegraded:empty-data(לא-קוראים-לא-אומרים-אפס)');
+  return { raw: BigInt(d.balance || 0), unit: 'sun', via: 'trongrid' };
 }
 async function balSol(addrs, chain, tick) {
   // devnet-ראשית (שם-אכן-מנסים-לתדלק) · mainnet-beta-שנית — שניהם-נאמנים-לקבלה
