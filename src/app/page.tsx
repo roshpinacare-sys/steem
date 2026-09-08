@@ -42,11 +42,14 @@ export default function Home() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // שחזור-מצב-מה-URL + סנכרון (כל-מסך=קישור)
+  // שחזור-מצב-מה-URL (מחוץ-ל-sync-render — חוק-ה-hooks) + סנכרון (כל-מסך=קישור)
   useEffect(() => {
-    const h = parseHash();
-    if (h) setSection(h);
-    setHydrated(true);
+    const t = setTimeout(() => {
+      const h = parseHash();
+      if (h) setSection(h);
+      setHydrated(true);
+    }, 0);
+    return () => clearTimeout(t);
   }, []);
   useEffect(() => {
     if (!hydrated) return;
