@@ -126,6 +126,29 @@ function syncRepo(res) {
   }
   if (!behind && !diverged) { res.actions.push('ahead-unpushed(gitkeeper-will-push)'); res.headAfter = headBefore; return; }
 
+  // 117g — STATE-RESCUE: the reset is law for CODE, never for LIVE STATE.
+  // Observed 04:03Z: divergence-heal rolled the deposits watcher back from
+  // tick 158 to 153 (state file reverted to the last committed version) —
+  // daemons respawned INTO THE PAST. The disk is the authority (117g lesson):
+  // snapshot every modified state file before the reset, restore right after.
+  // Code files still reset to origin — the ledger never travels back in time.
+  const RESCUE_PATTERNS = [/^sovereign\/node\/[^/]+\.(json|jsonl|log)$/, /^agent\/[^/]+\.(json|log)$/];
+  const SECRET_RE = /fleet_keys|(^|\/)keys\/|\.env($|\b)|^upload\//;
+  const rescue = (() => {
+    try {
+      const st = sh('git', ['status', '--porcelain'], { timeout: 20_000 });
+      const files = st.split('\n').map((l) => l.slice(3).trim().replace(/^"|"$/g, '')).filter(Boolean)
+        .filter((p) => RESCUE_PATTERNS.some((re) => re.test(p)) && !SECRET_RE.test(p));
+      if (!files.length) return null;
+      const dir = path.join(ROOT, 'agent', 'rescue', new Date().toISOString().replace(/[:.]/g, '-'));
+      fs.mkdirSync(dir, { recursive: true });
+      let saved = 0;
+      for (const f of files) { try { fs.copyFileSync(path.join(ROOT, f), path.join(dir, f.replace(/\//g, '__'))); saved++; } catch (_) {} }
+      return saved ? { dir, files, saved } : null;
+    } catch (_) { return null; }
+  })();
+  if (rescue) res.actions.push('state-rescued(' + rescue.saved + ' files · ' + path.basename(rescue.dir) + ')');
+
   // heal: stash unpushed noise (recoverable), then hard-reset to origin
   try {
     sh('git', ['stash', 'push', '-u', '-m', 'guardian-pre-heal ' + new Date().toISOString()], { timeout: 30_000 });
@@ -133,7 +156,14 @@ function syncRepo(res) {
   } catch (_) { /* nothing to stash or stash failed — reset is still safe */ }
   try {
     sh('git', ['reset', '--hard', 'origin/main'], { timeout: 30_000 });
-    res.actions.push(diverged ? 'DIVERGENCE-HEALED(reset→origin/main)' : 'ROLLBACK-HEALED(reset→origin/main)');
+    /* 117g — the living ledger goes back BEFORE anything reads it: daemons
+     * respawn below and must find the present, not the past. */
+    if (rescue) {
+      let rn = 0;
+      for (const f of rescue.files) { try { fs.copyFileSync(path.join(rescue.dir, f.replace(/\//g, '__')), path.join(ROOT, f)); rn++; } catch (_) {} }
+      if (rn) res.actions.push('state-restored(' + rn + ')');
+    }
+    res.actions.push(diverged ? 'DIVERGENCE-HEALED(reset→origin/main · state-kept)' : 'ROLLBACK-HEALED(reset→origin/main · state-kept)');
     res.headAfter = sh('git', ['rev-parse', '--short', 'HEAD']);
     log('ANTI-ROLLBACK: ' + headBefore + ' → ' + res.headAfter + ' (origin ' + origin + ')');
     // rolling upgrade: the daemon that survived in memory runs pre-heal code —
