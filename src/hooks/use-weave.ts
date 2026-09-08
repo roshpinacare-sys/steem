@@ -541,6 +541,7 @@ export type RelaySenderScan = {
   doorsScanned: number;
   fundedDoors: number;
   withBandwidth: number;
+  fuelDoors: { family: string; idx: number; address: string; bal: number; freeLeft: number }[];
 };
 export type RelayDoorsData = {
   ok: boolean;

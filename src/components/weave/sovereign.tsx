@@ -658,9 +658,23 @@ export function Sovereign() {
                     {ss.at ? ` · נסרק ${ss.ageSec != null ? ss.ageSec + "ש׳" : ""} לפני` : ""}
                   </div>
                 ) : null}
-                {noFunds ? (
+                {noFunds && ss?.fuelDoors?.length ? (
+                  <div className="mt-1.5 rounded-md bg-ink-2/40 px-2 py-1.5">
+                    <div className="text-[10px] text-ink font-bold mb-1">
+                      דלתות-הדלק (v2 · נגזרות-מהכספת) — הפקדת-TRX-לכתובת-כזו = דלת-נפתחת-אוטומטית:
+                    </div>
+                    {ss.fuelDoors.slice(0, 3).map((f) => (
+                      <div key={f.family + ":" + f.idx} className="text-[10px] hash text-ink-2 break-all">
+                        {f.family}:{f.idx} · {f.address} · {f.bal}sun
+                      </div>
+                    ))}
+                    <div className="text-[9px] text-ink-2 mt-1 leading-relaxed">
+                      (+{Math.max(0, ss.fuelDoors.length - 3)} עוד-ב-API · נמלי-ההפקדות-הציבוריים (v1) הם receive-only — הפקדה-שם ממינטת 1:1 אך אינה מדליקה דלת)
+                    </div>
+                  </div>
+                ) : noFunds ? (
                   <div className="text-[10px] text-gold leading-relaxed mt-1">
-                    הדלת-תיפתח-אוטומטית-ברגע-שנמל-TRON-כלשהו-מהרישום-יקבל-הפקדה — ה-watcher-סורק-כל-5 דק' · כל-הפקדה = שולח-חי + מינט-WTRX-1:1.
+                    הסריקה-הבאה-כל-10 דק׳ · כל-שולח-ממומן-מהכספת = דלת-חיה.
                   </div>
                 ) : null}
               </div>
