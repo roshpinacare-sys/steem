@@ -33,6 +33,11 @@ const STATE_SNAP = path.join(HERE, 'state-snapshot.json');
 const TRON_HOSTS = ['https://api.trongrid.io', 'https://api.tronstack.io', 'https://tron.stackwallet.com']; // 117j: כשל-מארח לא משבית מדידה
 const ADDRS = 6; // כספת-הגשר — 6 כתובות גזורות m/44'/195'/0'/0/{0..5}
 const MEASURE_FAMILY = "HDNodeWallet.fromPhrase · m/44'/195'/0'/0/{0..5}"; // 117j: שקיפות-משפחת-גזירה
+/* 117k — דלתות-הישן-המשוחזרות (המפתח: agent/keys/tron-legacy-mnemonic.txt · בכספת+fleet-seal).
+ * מדידה-בכתובת-ציבורית-בלבד (קריאה — אפס-מפתחות-כאן). הסדר-נמדד-ב-legacy-verify.cjs:
+ * idx0=TAzZZ (רכזת) · idx1=TRKSt (שדרן). */
+const LEGACY_DOORS = ['TAzZZkrwBXk59iRya7esnKVJeV1xLtqkGr', 'TRKStC5HbWzqdnrWDfc4vYNfgQgyZuQKP4'];
+const LEGACY_FAMILY = "legacy-mnemonic · m/44'/195'/0'/0/{0,1} · idx0=TAzZZ · idx1=TRKSt";
 const DROP_GUARD_RATIO = 0.8; // 117j: מדידה-שצונחת-מעל-20% מהטובה-הקודמת = חשודה-עד-הוכחה
 
 function log(msg) {
@@ -113,9 +118,34 @@ async function measureVault() {
     sun += b;
   }
   try { const nb = await fetch(TRON_HOSTS[0] + '/wallet/getnowblock', { signal: AbortSignal.timeout(9000) }).then((r) => r.json()); block = Number((nb && nb.block_header && nb.block_header.raw_data && nb.block_header.raw_data.number) || 0); } catch (_) {}
+  /* 117k — מדידת-דלתות-הישן (בלוק-כנות-נפרד): אותו-משמעת אפס-אמת-חלקית —
+   * דלת-שלא-נענתה → כל-הבלוק-הישן- rejected (לא-אפס!). הדלתות-האלה-מופעלות-על-השרשרת —
+   * success+ריק עבורן = תשובה-סותרת → נספר-ככשל-מדידה. */
+  let legacy;
+  {
+    let lsun = 0, lbad = 0; const lper = [];
+    for (const addr of LEGACY_DOORS) {
+      let b = 0, measured = false;
+      for (const host of TRON_HOSTS) {
+        if (measured) break;
+        try {
+          const r = await fetch(host + '/v1/accounts/' + addr, { signal: AbortSignal.timeout(9000) }).then((x) => x.json());
+          const acc = r && r.data && r.data[0];
+          if (acc && typeof acc === 'object') { b = Math.max(b, Number(acc.balance || 0)); measured = true; break; }
+        } catch (_) { /* מארח-הבא */ }
+        await new Promise((r2) => setTimeout(r2, 1100));
+      }
+      if (!measured) lbad++;
+      lper.push({ addr, sun: b, measured });
+      lsun += b;
+    }
+    legacy = lbad > 0 ? { rejected: true, reason: 'unmeasurable-' + lbad, per: lper } : { sun: lsun, per: lper, family: LEGACY_FAMILY };
+    log('measure: legacy doors ' + (legacy.rejected ? 'REJECTED(' + legacy.reason + ') — no partial truth' : 'sun=' + legacy.sun + ' (TAzZZ+TRKSt · recovered 117k)'));
+  }
   // 110-מדוד-חי (השיעור-מ-h40837): מדידה-חלקית = נזק — כתובת-אחת-שלא-נמדדה פוסלת-את-המדידה-כולה
-  if (bad > 0) { log('measure: ' + bad + '/' + ADDRS + ' addresses unmeasurable (throttle/empty-shape, hosts tried: ' + TRON_HOSTS.length + ') — measurement REJECTED (no partial truth)'); return { sun: -1, block, per, at: new Date().toISOString(), rejected: true, reason: 'unmeasurable-' + bad }; }
-  const out = { sun, block, per, at: new Date().toISOString(), family: MEASURE_FAMILY, note: 'legacy doors TAzZZ/TRKSt (19.13 TRX) NOT covered — see docs/117-TRX-POSTMORTEM.md' };
+  if (bad > 0) { log('measure: ' + bad + '/' + ADDRS + ' addresses unmeasurable (throttle/empty-shape, hosts tried: ' + TRON_HOSTS.length + ') — measurement REJECTED (no partial truth)'); return { sun: -1, block, per, at: new Date().toISOString(), rejected: true, reason: 'unmeasurable-' + bad, legacy };
+  }
+  const out = { sun, block, per, at: new Date().toISOString(), family: MEASURE_FAMILY, legacy, note: '117k: legacy doors COVERED (read-only) · operator backing lives on TG6Srs (deposits door, headcorner idx2) — see docs/117-TRX-POSTMORTEM.md RESOLUTION' };
   if (sun > 0 || dropGuardOk(sun)) {
     if (sun > 0) { try { fs.writeFileSync(LIVE_FILE, JSON.stringify(out)); } catch (_) {} } // מקור-חי-ל-API — רק-מדידה-אמת
     else log('measure: clean-zero (all doors measured, activated-empty) — NOT overwriting live file (drop-guard conservative)');
