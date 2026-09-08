@@ -53,7 +53,8 @@ const steem = require(path.join(ROOT, 'node_modules', 'steem'));
 const TronWeb = require(path.join(ROOT, 'node_modules', 'tronweb'));
 const VAULT = require(path.join(HERE, 'vault-lib.cjs')); // 114 — הקריאה-דרך-הכספת (envelope→plaintext)
 const RPC = 'https://api.trongrid.io';
-const KEYFILE = path.join(ROOT, 'agent', 'keys', 'tron-mnemonic.txt');
+/* 117h — KEYFILE/קריאת-מנמוניק-legacy הוסרו: המנמוניק נשחת-ב-115 (postmortem 5da5cfb)
+ * וכל-חומר-הדלתות נגזר-מהזרע-הריבוני (למטה) — אין-עוד-תלות-במפתח-מת. */
 
 const dlog = (m) => {
   const line = '[' + new Date().toISOString() + '] ' + m;
@@ -115,11 +116,17 @@ async function doorSteem(r) {
   return { txid: String(txid), spentSun: 0 }; // steem: אפס-עמלה מובנה (RC בלבד)
 }
 
-/* ── דלת TRON — העברה-קטנה על Bandwidth-חינם, רק-לכתובות-גזורות-משלנו (בטיחות) ── */
+/* ── דלת TRON — העברה-קטנה על Bandwidth-חינם, רק-לכתובות-גזורות-משלנו (בטיחות) ──
+ * 117h — deriveIdx מאותחל-על-הזרע-הריבוני: היה-נגזר-ממנמוניק-הגשר-הlegacy (מת-ב-115,
+ * postmortem 5da5cfb) — ה-ENOENT-שלו-היה-השקר-האחרון-של-הדלת. המשפחה relay-idx 0..5
+ * נוסדת-מחדש-על-נתיב-עצמאי-מהזרע: sha256(seed+'|tron|relay|44/195') → m/44'/195'/0'/0/i.
+ * כתובות-חדשות-לגמרי (הישנות-שריד-היסטורי-חסר-מפתחות) · שליטה-מלאה-מהכספת-האחת. */
 function deriveIdx(idx) {
   const ethers = require(path.join(ROOT, 'node_modules', 'ethers'));
-  const mnemonic = VAULT.readMnemonic(); // 114 — מהכספת (envelope→plaintext)
-  const w = ethers.HDNodeWallet.fromPhrase(mnemonic, undefined, "m/44'/195'/0'/0/" + idx);
+  const seed = String(VAULT.readMember('wallets-seed.json').seed || '');
+  if (!/^[0-9a-f]{64,}$/.test(seed)) throw new Error('bad-seed');
+  const root = ethers.HDNodeWallet.fromSeed(sha256buf(seed + '|tron|relay|44/195'));
+  const w = root.derivePath("m/44'/195'/0'/0/" + idx);
   const tw = new TronWeb({ fullHost: RPC, privateKey: w.privateKey.slice(2) });
   try { if (typeof tw.setTimeout === 'function') tw.setTimeout(20000); } catch (_) {}
   return { tw, address: tw.defaultAddress && tw.defaultAddress.base58 };
