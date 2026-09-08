@@ -20,9 +20,10 @@ const OUT = path.join(ROOT, 'agent', 'keys', 'tron-legacy-mnemonic.txt');
 const BS58 = require(path.join(ROOT, 'node_modules', 'bs58'));
 const { ethers } = require(path.join(ROOT, 'node_modules', 'ethers'));
 
+/* 117k-תיקון: הסדר-האמיתי-הפוך (נמדד-ב-legacy-verify.cjs): idx0=TAzZZ · idx1=TRKSt */
 const EXPECT = [
-  { idx: 0, addr: 'TRKStC5HbWzqdnrWDfc4vYNfgQgyZuQKP4' },
-  { idx: 1, addr: 'TAzZZkrwBXk59iRya7esnKVJeV1xLtqkGr' },
+  { idx: 0, addr: 'TAzZZkrwBXk59iRya7esnKVJeV1xLtqkGr' },
+  { idx: 1, addr: 'TRKStC5HbWzqdnrWDfc4vYNfgQgyZuQKP4' },
 ];
 function log(msg) { console.log('[recover2] ' + msg); }
 

@@ -25,10 +25,13 @@ const OUT = path.join(ROOT, 'agent', 'keys', 'tron-legacy-mnemonic.txt');
 const BS58 = require(path.join(ROOT, 'node_modules', 'bs58'));
 const { ethers } = require(path.join(ROOT, 'node_modules', 'ethers'));
 
-/* יעדי-אימות (ציבוריים — על-השרשרת, ב-postmortem): */
+/* יעדי-אימות (ציבוריים — על-השרשרת, ב-postmortem):
+ * 117k-תיקון: הסדר-האמיתי-נמדד-בפועל (legacy-verify.cjs · checksum תקף + שתי-הכתובות-נגזרו):
+ * idx0=TAzZZ · idx1=TRKSt. הטבלה-הקודמת-הייתה-הפוכה — זו-הייתה-הסיבה-שהסריקות-לא-מצאו-כלום
+ * (matchWordsNoCheck-דרש-idx0=TRKSt-וקיבל-כתובת-אחרת → תמיד-false). */
 const EXPECT = [
-  { idx: 0, addr: 'TRKStC5HbWzqdnrWDfc4vYNfgQgyZuQKP4', tag: 'שדרן-גשר-ישן' },
-  { idx: 1, addr: 'TAzZZkrwBXk59iRya7esnKVJeV1xLtqkGr', tag: 'רכזת-גשר-ישנה' },
+  { idx: 0, addr: 'TAzZZkrwBXk59iRya7esnKVJeV1xLtqkGr', tag: 'רכזת-גשר-ישנה' },
+  { idx: 1, addr: 'TRKStC5HbWzqdnrWDfc4vYNfgQgyZuQKP4', tag: 'שדרן-גשר-ישן' },
 ];
 
 function log(msg) { console.log('[legacy-recover] ' + msg); }
