@@ -372,7 +372,7 @@ async function selftest() {
     const n = BigInt('0x' + payload21.toString('hex')) + BigInt(i);
     const p = Buffer.from(n.toString(16).padStart(42, '0'), 'hex');
     const h = crypto.createHash('sha256').update(crypto.createHash('sha256').update(p).digest()).digest();
-    const cand = BS58.encode(Buffer.concat([Buffer.from([0x41]), p, h.subarray(0, 4)]));
+    const cand = BS58.encode(Buffer.concat([p, h.subarray(0, 4)])); /* p=0x41+hash20 · +chk4 = 25B */
     if (cand !== door && validTronAddr(cand) && cand.slice(0, 8) === door.slice(0, 8)) mimicAddr = cand;
   }
   t('door-mimic-address-valid-and-constructable', !!mimicAddr && validTronAddr(mimicAddr) && mimicAddr !== door);
