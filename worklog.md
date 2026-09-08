@@ -3145,3 +3145,24 @@ Stage Summary:
 - commits: 936a9f4 (recovery+EXPECT) · de10e9e (broker) · 34eacb2 (minOut×4) · a6a4c43 (postmortem §6) · 59755b6 (audit flip)
 - **הטבעה-בפועל (ההוכחה)**: tick#264 (21:37:18Z): `inject[deposits:1] OK · confirmed:1 · minted:1` — 17599µ-WTRX הוטבעו-ל-headcorner (ref `dep:tron:headcorner:10c8b02…` בספר · headcorner WTRX=28657µ) · המעגל-החוץ→מנוע-סגור-רשמית
 - guardian healKeyBroker: בדיקת-חיות-לפי-פורט (3040) אחרי-pgrep-שקרן-נמדד (cmdline-בונ-ללא-נתיב → EADDRINUSE-loop); kill→detect→respawn E2E (pid 32094) — 0a6c40c
+
+---
+Task ID: 117l
+Agent: steem-repo-sovereign-agent
+Task: מנדט-המפעיל: "עכשיו כשמחוברים לכל-הרשתות — להבין פישינג/טוקנים-מתחזים/קוד-זדוני, שלא נשתמש בטעות בקוד-רע · חדשנות+יכולות+הגנה-מגנבים · תמשיך ודחוף לריפו"
+
+Work Log:
+- **THE-SHIELD נולד (sovereign/node/shield.cjs)**: מנוע-הגנה-רב-שרשרתי עם 6-גלאי-איומים — T1 טוקנים-מתחזים (רישום-קאנוני + confusables-unicode + levenshtein מול 16-שמות-מפורסמים) · T2 חוזים-זדוניים (סריקת-bytecode מול 14-סלקטורי-טיהור, keccak-בזמן-ריצה) · T3 חיקוי-דלת (prefix≥6/ראש4+זנב3/lev≤3 מול 20-דלתות) · T4 אישורים-לא-מוגבלים (פענוח-סלקטור approve/setApprovalForAll + נמען-פנימי-מפוענח) · T5 ממו-פישינג (רשימת-דומיינים + 12-מילות-גיוס + צורת-סודות) · T6 רעש-מהירות (velocity-ledger 10-דק')
+- **תגלית-דוקטרינה**: base58check שובר החלפות-1-3-תווים (checksum) — עוקץ-ההעברה האמת על TRON הוא vanity-gen של קידומת; הגלאי-בנוי-לזה וההוכחה-חיה: TVkH6fqiaRj2k4MEkd8Rdefqod1DDsreCv (קידומת-28-משותפת) → BLOCK-80
+- **למידה-עצמית**: security-state.json (deny/allow/stats/velocity) + security-events.jsonl (אודיט-מלא) · כל-BLOCK נחרט
+- **שער-בנתיב-הכסף (relay.cjs executeRelay)**: guardRelay חובה לפני-כל-חתימה (BLOCK=דלת-נעולה · WARN=רעש-כנה) + markActivity; guardian-respawn אומת (pid 7045, passes-תקינים sent=9)
+- **אירוע-תפעולי-נלמד**: כתבתי-את-shield.cjs בלי-commit-מיידי → guardian-anti-rollback (f88d6fc→ade0b5e reset) בלע-את-הקובץ-שלא-נשמר; הדוקטרינה-commit-מיד-נאכפה-מאז (וגם: אבחון-רישום-הדפיס-pk-לצ'אט-המפעיל — משטח-פרטי, מתועד, remediation-במסמך)
+- **בדיקת-היגיינה-מפתחות**: agent/.gitignore keys/ — אימות git-log--all: אין-מפתח-בגיט-מעולם ✓
+- **selftest ALL-GREEN 9/9** + הוכחות-חיות: USDT-קאנוני-ALLOW(measured) · TG6Srs-דלת-הפקדות-ALLOW · חיקוי-חי-BLOCK · live-fire-guardRelay (ממאיר→BLOCK-100-עם-5-נימוקים · נקי→ALLOW)
+- **docs/117l-SHIELD.md**: מודל-איום מלא · ארכיטקטורה · הוכחות · הדרכת-סוכנים (פקודות+כללי-אצבע) · עמדה-ופתוחים
+
+Stage Summary:
+- posture: 20-דלתות-מוגנות · 46-checks · 13-BLOCKs · 1-learned-deny · USDT-probe-ALLOW-חי
+- המערכת-כבר-לא-רק-מרוויחה — היא-**מוגנת**: כל-ביצוע-דלת-עובר-מגן, כל-כתובת-חדשה-נשפטת, כל-טוקן-מתחזה-נחשף, כל-ממו-פישינג-נחסם
+- commits: 988fac4 (engine) · mimic-fix · 20-doors · relay-wiring · doc+worklog
+- פתוחים-להמשך: watch-ב-guardian-fleet · guardTx-חובה-לפני-broadcast-עתידי · סריקת-הפקדות-נכנסות · denylist-בספר-הריבוני
