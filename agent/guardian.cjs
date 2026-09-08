@@ -368,9 +368,17 @@ function healVault(res) {
     const enc = path.join(vaultDir, 'vault.enc');
     const members = ['wallets-seed.json', 'wallets-registry.json', 'vault.json', 'tron-mnemonic.txt'];
     // רפואה-קודמת-לטקס: חבר-חסר-על-הדיסק → שחזור-מהמעטפת (אם-יש-מעטפת)
+    // 117h — מודע-מעטפת: רק-חברים-שנאטמו-באמת משוחזרים; חברים-שלא-נאטמו (אבד/פר-הזמן) — מצבת-שורה-אחת, בלי-ניסיונות-שווא.
     if (fs.existsSync(enc)) {
+      let presentMembers = null;
+      try { presentMembers = Object.keys(JSON.parse(fs.readFileSync(enc, 'utf8')).members || {}); } catch (_) { presentMembers = null; }
       for (const m of members) {
         if (!fs.existsSync(path.join(vaultDir, m))) {
+          if (presentMembers && !presentMembers.includes(m)) {
+            if (!res.vaultAbsentLogged) res.vaultAbsentLogged = [];
+            if (!res.vaultAbsentLogged.includes(m)) { log('VAULT-ABSENT ' + m + ' :: לא-נאטם (אבד/פר-הזמן) — מצבת-הכספת, ללא-שחזור'); res.vaultAbsentLogged.push(m); }
+            continue;
+          }
           const r = sh('node', [path.join(ROOT, 'sovereign', 'node', 'vault.cjs'), 'restore', m], { timeout: 60_000 });
           log('VAULT-RESTORE ' + m + ' :: ' + String(r || '').slice(0, 120));
           res.actions.push('vault-restored(' + m + ')');
