@@ -3166,3 +3166,23 @@ Stage Summary:
 - המערכת-כבר-לא-רק-מרוויחה — היא-**מוגנת**: כל-ביצוע-דלת-עובר-מגן, כל-כתובת-חדשה-נשפטת, כל-טוקן-מתחזה-נחשף, כל-ממו-פישינג-נחסם
 - commits: 988fac4 (engine) · mimic-fix · 20-doors · relay-wiring · doc+worklog
 - פתוחים-להמשך: watch-ב-guardian-fleet · guardTx-חובה-לפני-broadcast-עתידי · סריקת-הפקדות-נכנסות · denylist-בספר-הריבוני
+
+---
+Task ID: 117m
+Agent: steem-repo-sovereign-agent
+Task: מנדט-המפעיל: "תחדש את כל ה-UI — עיצוב-חדש-לגמרי (לא-שיפור) · בחן-כל-הקוד-והתיקיות · ברמת-הקוד-וההתקדמות · מקצועי-ומפחיד · mobile-first (הפלאפון-קודם) · מחשב-גם · דחוף"
+
+Work Log:
+- **סקר-מלא**: ה-UI-הישן ("הנול") נתקע-על-הקונספט-הישן-בזמן-שהרשת-התפתחה (deposits/relay/shield/broker/grid/harvest); מיפיתי-את-כל-מקורות-הנתונים-החיים: state-snapshot(st.relay/wrapped/poolsX/poolW/fees/meta) · deposits-state(tick/rpcHealth-10-chains/events/minted) · grid98-state(rounds-56K/trades/treasuryPnl) · harvest-cursor · security-state · state-root · guardian.log(GUARD-DONE-fleet-parse) · broker-/health+/doors · TRON-getnowblock-ריבוי-מארחים
+- **THE-NEXUS-API** (/api/nexus): מצבר-חי-של-כל-מדינות-הרשת + בדיקות-חיות (TRON-block-חי · broker-health · fleet-parse מ-guardian.log) · cache-4s · אפס-מפתחות-ללקוח; נמדד-חי: tron-86079649 · broker-8-doors · 10/10-chains · 22-services
+- **SAOS-NET COMMAND** (עיצוב-חדש-לגמרי): לילה-צינק-עמוק + אמרלד-ריבוני + סריג-סריקה-עדין; פאנלים-עם-זוויות-HUD; מספרים-מונו-טבליים; mobile-first — ניווט-תחתון-קבוע (safe-area-inset) · מחשב — מסילת-צד-RTL · ראש-דביק עם ticker-חי (SAOS/TRX/CHAINS + פעימת-צי) · footer-דביק-mt-auto
+- **5-מסכים**: CONTROL (hero-4-גבהים-חיים+מחוונים+הצי-המלא+מה-קורה-עכשיו) · DEPOSITS (10-שרשראות-חיות+הזנת-אירועים) · DOORS (8-דלתות-העתקה-בלחיצה+זרם-ריליי) · SHIELD (T1-T6-ENFORCED+LIVE-FIRE-PROVEN+רשימת-אסורים) · ECON (AMM+13-בריכות-גלילה-אופקית+נכסים-עטופים-טבלה+גריד-התלוויות+harvest)
+- **E2E-דפדפן-אומת**: מובייל-390px (כל-5-הטאבים-צולמו·נתונים-חיים-זורמים-TRON-מתעדכן-בין-צילומים) · דסקטופ-1440px (ticker+rail+footer-דביק) · לחיצת-ניווט-תחתון→#deposits→רינדור · אפס-שגיאות-קונסולה · dev-log-נקי
+- **תיקונים-בדרך**: hashchange-listener (כל-מסך=קישור-אמיתי) · setState-מחוץ-ל-sync-render (חוק-hooks) · חיתוך-מחיר-בריכה
+- ה-UI-הישן-לא-נמחק-מההיסטוריה (git-משמר) — הדף-הראשי-עבר-לגמרי-ל-COMMAND
+
+Stage Summary:
+- הרשת-סוף-סוף-**נראית-כמו-שהיא**: מרכז-בקרה-רציני-ברמת-מכשירים, הכל-חי-מהמדינה-האמת, אפס-מוק-אפס-סימולציה
+- mobile-first אמת: בטלפון-עכשיו-מסך-ראשי-שלם-עם-ניווט-אגודל, במחשב-מסילה-ורוחב-מלא
+- commits: nexus-API · hook+primitives · shell · sections · page+tokens · hashchange · price-fix
+- פתוחים: ספארק-ליין-היסטוריה (deposits/grid זמן-אמת) · עומק-תתי-מסך-לכל-מודול · dark/light-toggle (כרגע-כהה-בלבד-לפי-הדוקטרינה)
