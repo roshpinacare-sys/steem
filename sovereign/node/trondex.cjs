@@ -30,8 +30,10 @@ const HERE = __dirname;
 const LOG = path.join(HERE, 'trondex.log');
 const LIVE_FILE = path.join(HERE, 'trondex-live.json');
 const STATE_SNAP = path.join(HERE, 'state-snapshot.json');
-const TRON_RPC = 'https://api.trongrid.io';
+const TRON_HOSTS = ['https://api.trongrid.io', 'https://api.tronstack.io', 'https://tron.stackwallet.com']; // 117j: כשל-מארח לא משבית מדידה
 const ADDRS = 6; // כספת-הגשר — 6 כתובות גזורות m/44'/195'/0'/0/{0..5}
+const MEASURE_FAMILY = "HDNodeWallet.fromPhrase · m/44'/195'/0'/0/{0..5}"; // 117j: שקיפות-משפחת-גזירה
+const DROP_GUARD_RATIO = 0.8; // 117j: מדידה-שצונחת-מעל-20% מהטובה-הקודמת = חשודה-עד-הוכחה
 
 function log(msg) {
   const line = '[' + new Date().toISOString() + '] trondex: ' + msg;
@@ -76,7 +78,14 @@ function dexState() {
 }
 
 /* ── מדידת-כספת-חי (טרונגריד) — מקור-האמת-החוץ
- * 110-מדוד: טרונגריד-מווסת (429) — מדידה-אפסית-לא-דורסת-מדידה-טובה-קודמת */
+ * 110-מדוד: טרונגריד-מווסת (429) — מדידה-אפסית-לא-דורסת-מדידה-טובה-קודמת
+ * 117j-שלוש-שכבות-כנות (השיעור-מ-doorTron-v2):
+ *  1) ריבוי-מארחים — 429-במארח-אחד לא הופך את-הכספת-לאפס.
+ *  2) צורה-ריקה-{} = מדידה-כושלת (לא אפס): חשבון-שהופעל-משיב-עם-שדה-address;
+ *    כספת-שקיבלה-TRX-בהיסטוריה לעולם לא מוחזרת-{}-אמת → {}-חוזר = וויסות.
+ *    מדידה-חלקית (דלת-אחת-אמת + שאר-{}) = אסור — היא-מייצרת-איום-השמדה:
+ *    under-measure → reconcile-רואה-"over-issue" → wrap_burn-של-כיסוי-משתמשים.
+ *  3) נתונים-מהימנים-בלבד נכתבים לקובץ-החי, עם-משפחת-הגזירה-בשקיפות-מלאה. */
 async function measureVault() {
   const TronWeb = require(path.join(ROOT(), 'node_modules', 'tronweb'));
   const ethers = require(path.join(ROOT(), 'node_modules', 'ethers'));
@@ -84,40 +93,60 @@ async function measureVault() {
   let sun = 0, block = 0, per = [], bad = 0;
   for (let i = 0; i < ADDRS; i++) {
     const w = ethers.HDNodeWallet.fromPhrase(mnemonic, undefined, "m/44'/195'/0'/0/" + i);
-    const tw = new TronWeb({ fullHost: TRON_RPC, privateKey: w.privateKey.slice(2) });
-    const addr = tw.defaultAddress.base58;
-    /* 110-מדוד-חי: טרונגריד-תחת-וויסות מחזיר {} שקט (אפס-שקרי) או זורק — ההגנה:
-     * עד-3-מדידות-לכתובת ונלקח-המקסימום (אפס-שקרי-הוא-הכשל-היחיד; יתרה-אמת-יציבה). */
-    let b = 0, err = 0;
-    for (let t = 0; t < 3; t++) {
-      try { const acc = await tw.trx.getAccount(addr).catch(() => ({})); b = Math.max(b, Number(acc.balance || 0)); if (Number(acc.balance || 0) > 0) break; }
-      catch (_) { err++; }
-      await new Promise((r) => setTimeout(r, 1200));
+    let b = 0, measured = false, doorAddr = null;
+    for (const host of TRON_HOSTS) {
+      if (measured && doorAddr) break;
+      const tw = new TronWeb({ fullHost: host, privateKey: w.privateKey.slice(2) });
+      doorAddr = tw.defaultAddress.base58; // גזירת-כתובת-אינה-תלוית-בהצלחת-המארח
+      for (let t = 0; t < 2 && !measured; t++) {
+        try {
+          const acc = await tw.trx.getAccount(doorAddr).catch(() => ({}));
+          if (acc && typeof acc === 'object' && Object.keys(acc).length) { b = Math.max(b, Number(acc.balance || 0)); measured = true; break; }
+          // {} — חשבון-שמעולם-לא-הופעל או תשובת-וויסות-שקטה: עבור-דלתות-הכספת-שקיבלו-כסף
+          // בהיסטוריה זה-כשל-מדידה-ולא-אפס (117j: השיעור-מ-'null@0sun'-של-relay-117i)
+        } catch (_) { /* מארח-הבא */ }
+        await new Promise((r) => setTimeout(r, 1100));
+      }
     }
-    if (err >= 3) bad++;
-    per.push({ idx: i, addr, sun: b });
+    if (!measured) bad++;
+    per.push({ idx: i, addr: doorAddr, sun: b, measured });
     sun += b;
   }
-  try { const nb = await fetch(TRON_RPC + '/wallet/getnowblock', { signal: AbortSignal.timeout(9000) }).then((r) => r.json()); block = Number((nb && nb.block_header && nb.block_header.raw_data && nb.block_header.raw_data.number) || 0); } catch (_) {}
+  try { const nb = await fetch(TRON_HOSTS[0] + '/wallet/getnowblock', { signal: AbortSignal.timeout(9000) }).then((r) => r.json()); block = Number((nb && nb.block_header && nb.block_header.raw_data && nb.block_header.raw_data.number) || 0); } catch (_) {}
   // 110-מדוד-חי (השיעור-מ-h40837): מדידה-חלקית = נזק — כתובת-אחת-שלא-נמדדה פוסלת-את-המדידה-כולה
-  if (bad > 0) { log('measure: ' + bad + '/' + ADDRS + ' addresses unmeasurable (throttle) — measurement REJECTED (no partial truth)'); return { sun: -1, block, per, at: new Date().toISOString(), rejected: true }; }
-  const out = { sun, block, per, at: new Date().toISOString() };
-  if (sun > 0) {
-    try { fs.writeFileSync(LIVE_FILE, JSON.stringify(out)); } catch (_) {} // מקור-חי-ל-API — רק-מדידה-אמת (אפס = 429/תקלה, שומרים-את-הטובה-הקודמת)
-  } else {
-    log('measure: zero-sum (trongrid 429/throttle) — keeping last-good live file');
+  if (bad > 0) { log('measure: ' + bad + '/' + ADDRS + ' addresses unmeasurable (throttle/empty-shape, hosts tried: ' + TRON_HOSTS.length + ') — measurement REJECTED (no partial truth)'); return { sun: -1, block, per, at: new Date().toISOString(), rejected: true, reason: 'unmeasurable-' + bad }; }
+  const out = { sun, block, per, at: new Date().toISOString(), family: MEASURE_FAMILY, note: 'legacy doors TAzZZ/TRKSt (19.13 TRX) NOT covered — see docs/117-TRX-POSTMORTEM.md' };
+  if (sun > 0 || dropGuardOk(sun)) {
+    if (sun > 0) { try { fs.writeFileSync(LIVE_FILE, JSON.stringify(out)); } catch (_) {} } // מקור-חי-ל-API — רק-מדידה-אמת
+    else log('measure: clean-zero (all doors measured, activated-empty) — NOT overwriting live file (drop-guard conservative)');
   }
+  if (sun === 0) log('measure: zero-sum CLEAN (every door answered with real shape) — keeping last-good live file, no reconcile on zero');
   return out;
+}
+/* 117j: פוסק-הצניחה — מדידה-נקייה-שצונחת-מעל-20% מהטובה-הקודמת מסומנת-חשודה
+ * (מגן-על-reconcile-מפני-burn-הרסני-על-מדידה-כוזבת). */
+function dropGuardOk(nextSun) {
+  try {
+    const last = JSON.parse(fs.readFileSync(LIVE_FILE, 'utf8'));
+    if (Number(last.sun) > 0 && nextSun >= 0 && nextSun < Number(last.sun) * DROP_GUARD_RATIO) {
+      log('measure: DROP-GUARD — clean measurement ' + nextSun + ' sun is <80% of last-good ' + last.sun + ' sun (family=' + MEASURE_FAMILY + ') — suspicious, manual --force required for reconcile');
+      return false;
+    }
+  } catch (_) { /* אין-קובץ-קודם */ }
+  return true;
 }
 function ROOT() { return path.join(HERE, '..', '..'); }
 
-/* ── reconcile: פיוס-כיסוי-חי 1:1 ── */
+/* ── reconcile: פיוס-כיסוי-חי 1:1 ──
+ * 117j: reconcile פועל רק על מדידה-נקייה-שעברה-את-פוסק-הצניחה (--force מדלג-על-הפוסק-במפורש). */
 async function reconcile(dry) {
+  const force = process.argv.includes('--force');
   const d = dexState();
   const w = d.wrapped.WTRX;
   if (!w) { log('reconcile: no-WTRX-wrapped (abort honest)'); return null; }
   const live = await measureVault();
   if (live.rejected || !(live.sun > 0)) { log('reconcile: measurement rejected — NO reconciliation on partial/zero data'); return null; }
+  if (!force && !dropGuardOk(live.sun)) { log('reconcile: DROP-GUARD held — no reconcile on suspicious under-measure (rerun with --force to override consciously)'); return null; }
   // סקאלת-הקרנל: 1 יחידה = 1000 µ → 1 WTRX = 1000 µ = 1e6 sun → 1 µ = 1000 sun
   const supply = w.supply || 0, locked = w.locked || 0, liveMu = Math.round(live.sun / 1000);
   log('reconcile: supply=' + supply + 'µ locked=' + locked + 'µ live=' + liveMu + 'µ (' + live.sun + ' sun · tron blk ' + live.block + ') · ratio=' + (locked > 0 ? (supply / locked).toFixed(4) : '—'));
