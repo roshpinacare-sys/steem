@@ -3342,10 +3342,16 @@ async function hivePowerCycle() {
       const lu = Number(rca.rc_manabar.last_update_time) || 0;
       rcCur = Math.min(rcMax, stored + Math.floor(((Math.floor(Date.now() / 1000) - lu) * rcMax) / (5 * 86400)));
     } catch (_) { /* rc probe fail — treat as drained */ }
-    const RC_GATE = 1.2e9;
+    // Task 27 deadlock fix (owner directive "obtain HIVE, close the resource corner"):
+    // the old blanket gate (1.2G RC) blocked the power-up itself — the CURE —
+    // while the anchor drains RC ≈ regen forever (measured live 2026-09-08: one
+    // custom_json costs ~124M RC). New gate = broadcast FEASIBILITY only (150M
+    // ≈ one op), so withdraw/power-up fire as soon as a single op is affordable;
+    // the anchor floor belongs to the anchor loop, not to the cure.
+    const RC_GATE = 1.5e8;
     if (rcCur < RC_GATE) {
       const etaMin = Math.ceil(((RC_GATE - rcCur) * 5 * 86400) / rcMax / 60);
-      updateLoop('hivePower', { status: 'rc-waiting', detail: 'Hive RC ' + r6d(rcCur / 1e6) + 'M < 1,200M · שחזור ≈' + etaMin + ' דק' + ' · SWAP.HIVE=' + r6d(swapBal), counters: { stage: st.stage, variant: st.variant } });
+      updateLoop('hivePower', { status: 'rc-waiting', detail: 'Hive RC ' + r6d(rcCur / 1e6) + 'M < ' + r6d(RC_GATE / 1e6) + 'M (די לפעולה אחת) · שחזור ≈' + etaMin + ' דק' + ' · SWAP.HIVE=' + r6d(swapBal), counters: { stage: st.stage, variant: st.variant } });
       saveHivePowerState(st);
       return;
     }

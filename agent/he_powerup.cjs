@@ -30,7 +30,9 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-const AMOUNT = process.argv.find((a) => a.startsWith('--amount')) ? process.argv[process.argv.indexOf('--amount') + 1] : '1.400';
+const AMOUNT_RAW = process.argv.find((a) => a.startsWith('--amount')) ? process.argv[process.argv.indexOf('--amount') + 1] : '1.400';
+// Task 27: --amount ALL → power up the whole liquid balance (owner directive:
+// "obtain HIVE and close the resource corner" — the 9.682 HIVE must not sit).
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] powerup: ' + msg); }
 
@@ -63,6 +65,39 @@ function rpcV4(urlStr, body) {
 
 async function main() {
   if (!ACTIVE_WIF) return log('no ACTIVE_WIF');
+
+  // ── authority pre-verification (Task 27): derive → compare live chain —
+  //    abort BEFORE any broadcast on mismatch (names/pubkeys only, never WIFs)
+  const derivedPub = steem.auth.wifToPublic(ACTIVE_WIF);
+  const accPre = await rpcV4(HIVE_RPC, { jsonrpc: '2.0', method: 'condenser_api.get_accounts', params: [[ACCOUNT]], id: 10 });
+  const chainActive = accPre[0].active.key_auths[0][0];
+  if (derivedPub !== chainActive) {
+    log('REFUSED: authority-mismatch — envelope ACTIVE_WIF derives ' + derivedPub.slice(0, 11) + '… but ' + ACCOUNT + ' HIVE active authority is ' + chainActive.slice(0, 11) + '… (nothing broadcast)');
+    process.exit(2);
+  }
+  log('authority ✓ envelope ACTIVE_WIF matches on-chain active authority for ' + ACCOUNT);
+
+  // ── RC feasibility: one op costs ~124M RC (measured 2026-09-08); wait honestly
+  let AMOUNT = AMOUNT_RAW;
+  if (String(AMOUNT).toUpperCase() === 'ALL') {
+    const liquid = parseFloat(String(accPre[0].balance || '0').split(' ')[0]) || 0;
+    AMOUNT = (Math.floor(liquid * 1000) / 1000).toFixed(3);
+    log('ALL → ' + AMOUNT + ' HIVE (full liquid balance)');
+  }
+  const rcPre = await rpcV4(HIVE_RPC, { jsonrpc: '2.0', method: 'rc_api.find_rc_accounts', params: { accounts: [ACCOUNT] }, id: 11 });
+  const rcA = rcPre.rc_accounts[0];
+  const rcMaxN = Number(rcA.max_rc) || 0;
+  const stored = Number(rcA.rc_manabar.current_mana) || 0;
+  const regen = Math.floor(((Math.floor(Date.now() / 1000) - Number(rcA.rc_manabar.last_update_time)) * rcMaxN) / (5 * 86400));
+  const manaNow = Math.min(rcMaxN, stored + regen);
+  const OP_COST = 1.5e8; // ≈ one broadcast (measured ~124M custom_json; financial ops similar)
+  if (manaNow < OP_COST) {
+    const etaMin = Math.ceil(((OP_COST - manaNow) * 5 * 86400) / (Number(rcA.max_rc) || 1) / 60);
+    log('REFUSED: RC ' + manaNow + ' < ' + OP_COST + ' (one op) — שחזור ≈' + etaMin + ' דק. Re-run then. (nothing broadcast)');
+    process.exit(3);
+  }
+  log('RC feasibility ✓ ' + manaNow + ' ≥ ' + OP_COST);
+
   const op = ['transfer_to_vesting', { from: ACCOUNT, to: ACCOUNT, amount: AMOUNT + ' HIVE' }];
   const dgp = await rpcV4(HIVE_RPC, { jsonrpc: '2.0', method: 'condenser_api.get_dynamic_global_properties', params: [], id: 2 });
   const tx = {
