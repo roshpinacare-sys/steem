@@ -54,7 +54,24 @@ const OUR_DOORS = [
   'TAzZZkrwBXk59iRya7esnKVJeV1xLtqkGr', // legacy:0
   'TRKStC5HbWzqdnrWDfc4vYNfgQgyZuQKP4', // legacy:1
 ];
-const OUR_EXACT = new Set(OUR_DOORS);
+/* דלתות-הרישום (12 סוכנים · מתוך-wallets-registry.json — כתובות-ציבוריות-בלבד;
+ * המגן מגן-גם-עליהן מפישינג-חיקוי · TG6Srs = דלת-ההפקדות-הרשמית) */
+const REGISTRY_DOORS = [
+  'TT7whWFon5EdDVFUBUUP9EY6y3VCtL7Bre',
+  'TMaxNtRVdBmXyQUdsHFRaAm1jPpFAG9d7K',
+  'TG6SrsMJjRqnqAyYM8kGZu1rgkpsgizKEn',
+  'TQErSnQCdTTtL3Tf8KiX2FxFhbhYQCDx3F',
+  'TJ57aAHB44NiwT8up5y7P3Fcfko6vbcbYK',
+  'TJg2YiPuczmz72nJq5tmT2vrod5BDgZDmS',
+  'TNgaDWYknRz46deiLkXdUXhn3gjcobnxhE',
+  'TL7EvaXWtYQwuQdEDpkgGJCryY8t5PRzwH',
+  'TBR2ffp74mp9oUinrA4BbjKKTttFr5Ng2u',
+  'TLDEWjWWyTCWrtaEk9CmJG68NgPMjKLuZp',
+  'TDCXLokdY1PGjKEMtWG7we9Dt8279hF46m',
+  'TVESRr1TX1RaKzsN6TKszutJBFDPEGPx1e',
+];
+const ALL_PROTECTED = [...OUR_DOORS, ...REGISTRY_DOORS];
+const OUR_EXACT = new Set(ALL_PROTECTED);
 
 /* ── רישום-קאנוני: טוקנים-ותיקים-מוכרים על TRON (הכתובת-היא-האמת, לא-השם) ── */
 const KNOWN_TOKENS = {
@@ -210,7 +227,7 @@ async function checkAddress(addr) {
   /* חיקוי-דלת: base58check שובר החלפות-1-3-תווים — התבניות-האמת:
    * (א) קידומת-זהה ≥6 (vanity-gen של הראש) · (ב) ראש≥4+זנב≥3 (הצגת 'TVkH…kjL') · (ג) lev קטן */
   let best = { d: 99, door: null, prefix: 0, suffix: 0, rank: -1 };
-  for (const d of OUR_DOORS) {
+  for (const d of ALL_PROTECTED) {
     const dd = lev(addr, d);
     let p = 0; while (p < 34 && addr[p] === d[p]) p++;
     let s = 0; while (s < 34 - p && addr[33 - s] === d[33 - s]) s++;
@@ -348,7 +365,7 @@ async function posture() {
   const st = loadState();
   const lines = [];
   lines.push('THE-SHIELD posture @ ' + new Date().toISOString());
-  lines.push('  doors-protected: ' + OUR_DOORS.length + ' · hosts: ' + HOSTS.length + ' · danger-fns: ' + DANGER_FNS.length);
+  lines.push('  doors-protected: ' + ALL_PROTECTED.length + ' (8-broker + 12-registry) · hosts: ' + HOSTS.length + ' · danger-fns: ' + DANGER_FNS.length);
   lines.push('  stats: checks=' + (st.stats.checks || 0) + ' blocks=' + (st.stats.blocks || 0) + ' warns=' + (st.stats.warns || 0));
   lines.push('  learned: deny=' + st.deny.length + ' allow=' + st.allow.length);
   const vel = velocityCheck();
