@@ -5642,7 +5642,7 @@
     },
     {
       "id": "REAN-103-r32p1",
-      "status": "pending",
+      "status": "rejected",
       "issuedAt": "2026-09-07T23:53:50.353Z",
       "issuer": "headcorner",
       "ops": [
@@ -5656,11 +5656,23 @@
           "mirror": "g98-reanchor",
           "note": "REANCHOR-103 r32: השלמת-צד-SAOS → יחס 540.0 ≈ אורקל 540.3"
         }
+      ],
+      "appliedHeight": 54592,
+      "appliedAt": "2026-09-08T00:10:34.424Z",
+      "results": [
+        {
+          "type": "pool_xAdd",
+          "ref": "rean103:r32:add:WSBD",
+          "ok": false,
+          "err": "insufficient",
+          "orderId": null,
+          "filled": null
+        }
       ]
     },
     {
       "id": "ORACLE-106-2026090723",
-      "status": "pending",
+      "status": "applied",
       "issuedAt": "2026-09-07T23:53:50.737Z",
       "issuer": "headcorner",
       "ops": [
@@ -5718,6 +5730,50 @@
           "at": "2026-09-07T23:53:50.737Z",
           "ref": "o106:px:ENERGY:2026090723",
           "note": "oracle-106 hourly live quote 0.0454302 USD · SP≈STEEM 1:1"
+        }
+      ],
+      "appliedHeight": 54624,
+      "appliedAt": "2026-09-08T00:15:21.544Z",
+      "results": [
+        {
+          "type": "asset_price",
+          "ref": "o106:px:WTRX:2026090723",
+          "ok": true,
+          "err": null,
+          "orderId": null,
+          "filled": null
+        },
+        {
+          "type": "asset_price",
+          "ref": "o106:px:WSTEEM:2026090723",
+          "ok": true,
+          "err": null,
+          "orderId": null,
+          "filled": null
+        },
+        {
+          "type": "asset_price",
+          "ref": "o106:px:WSBD:2026090723",
+          "ok": true,
+          "err": null,
+          "orderId": null,
+          "filled": null
+        },
+        {
+          "type": "asset_price",
+          "ref": "o106:px:PHIVE:2026090723",
+          "ok": true,
+          "err": null,
+          "orderId": null,
+          "filled": null
+        },
+        {
+          "type": "asset_price",
+          "ref": "o106:px:ENERGY:2026090723",
+          "ok": true,
+          "err": null,
+          "orderId": null,
+          "filled": null
         }
       ]
     }
