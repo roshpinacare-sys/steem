@@ -27,6 +27,43 @@ const ENVP = path.join(AGENT, ".env");
 const ACCOUNT = (process.env.AGENT_ACCOUNT || "headcorner").toLowerCase();
 const ROLES = ["owner", "active", "posting", "memo"] as const;
 
+/* 117p6 — מלאות-הצי: תמצית-ביקורת-האימות (agent/soldier_auth_audit.cjs — רץ-חיצונית).
+ * כנות-מלאה: זו-תוצאת-הביקורת-האחרונה (mtime), לא-בדיקה-חיה. אפס-חומר-מפתח — רק-בוליאנים. */
+type AuditRow = {
+  name?: string;
+  viaHeadOnly?: boolean;
+  steem?: { exists?: boolean; posting?: boolean; headPosting?: boolean };
+  hive?: { exists?: boolean; posting?: boolean; active?: boolean; owner?: boolean; headPosting?: boolean };
+};
+function fleetSummary() {
+  try {
+    const p = path.join(AGENT, "soldier_auth_audit.json");
+    const rows = JSON.parse(fs.readFileSync(p, "utf8")) as AuditRow[];
+    let hiveFull = 0;
+    const viaHead: string[] = [];
+    const dead: string[] = [];
+    for (const r of rows) {
+      if (!r.name || String(r.name).toLowerCase() === ACCOUNT) continue;
+      const h = r.hive;
+      const s = r.steem;
+      if (h?.headPosting || s?.headPosting) viaHead.push(String(r.name));
+      if (h?.posting && h?.active && h?.owner) hiveFull++;
+      if (!h?.posting && !h?.headPosting) dead.push(String(r.name));
+    }
+    return {
+      auditedAt: fs.statSync(p).mtime.toISOString(),
+      total: rows.filter((r) => r.name && String(r.name).toLowerCase() !== ACCOUNT).length,
+      hiveFull,
+      viaHead,
+      dead,
+      rails: { steemAttest: viaHead.length > 0 ? "head-anchor+via-head" : "head-only", hiveAnchor: "fleet+via-head" },
+      refresh: "node agent/soldier_auth_audit.cjs",
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
 type ChainPubs = Record<string, string>;
 
 function readJson<T>(p: string, fallback: T): T {
@@ -123,6 +160,7 @@ export async function GET() {
       headEntry: !!head,
       live,
       soldiers,
+      fleet: fleetSummary(),
       seal: { enc: fs.existsSync(path.join(AGENT, "fleet_keys.enc")), meta: fs.existsSync(path.join(AGENT, "fleet_keys.meta.json")) },
       broker,
       guardianAgeS,
