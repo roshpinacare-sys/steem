@@ -102,3 +102,10 @@ agent/keys/
 # Disaster recovery = download/KEYS-BACKUP-*.tar.enc (operator password, chat-only) + THE-GATE paste.
 agent/fleet_keys.enc
 agent/fleet_keys.meta.json
+
+# 117p5 — repo slimming: research dumps + repo-snapshots stay LOCAL-ONLY (git never carries
+# extracted archives / npm caches / recursive repo copies again; ~250MB of tracked bloat removed).
+# KEPT TRACKED: download/KEYS-BACKUP-*.tar.enc + README — the disaster-recovery lifeline.
+download/research/
+download/recovery/
+download/task26-pre-restore-backup.tar.gz
