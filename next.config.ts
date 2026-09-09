@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  /* 117n — dev-indicator כבוי: כפתור-ה-dev-tools-מכסה-את-ניווט-התחתון-במובייל */
+  devIndicators: false,
 };
 
 export default nextConfig;
