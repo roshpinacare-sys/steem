@@ -3328,3 +3328,25 @@ Stage Summary:
 
 ### commits
 263c34e (117p5a) → 05f9afb (117p5b) → 117p5c-css → 117p5c-primitives → 117p5c-shell → 117p5c-gate → 117p5c-page → docs+worklog (pushed)
+
+---
+Task ID: 117p6
+Agent: Z.ai Code (fleet-fullness + blockers-crack)
+Task: "צריך לוודא שכולם יהיו מלאים בכל דרך בצע ודחוף מה עוד חוסם אותנו ומגביל? פתרונות? נסה לפצח דחוף לריפו"
+
+Work Log:
+- **ביקורת-מלאה-מול-השרשרת (agent/soldier_auth_audit.cjs — כלים-חדש)**: לכל 11 החיילים נגזרו-פומביות מהכספת והושוו-מול-owner/active/posting-חי-על-Steem+Hive. תוצאה: Hive-מלא 9/11 (cashmachine haran israelnews lsa macrame siq wic wog woq — כל-4-התפקידים+head-in-posting) · ynet: ללא-מפתחות-משלו אך headcorner-יושב-ב-posting-auth-שלו-בשתי-השרשראות · tov: מת-בשתיהן · Steem: 0/10 — החשבונות-מ-2018-03-26 עם-מפתחות-מקוריים-שלעולם-לא-סונכרנו-לכספת.
+- **ציד-מפתחות-Steem-האבודים**: 35-pubkeys-מהשרשרת → rg-על-כל-הדיסק (0) + git cat-file --batch-all-objects (16,087-אובייקטים כולל-לא-נגישים → 0). מסקנה: המפתחות-המקוריים-לא-קיימים-במכונה — אצל-המפעיל-בלבד (רשומות-2018). recovery_account=steem (לא-שלנו) → דלת-הריקוש-סגורה.
+- **הפיצוח — via-head (ynet)**: rail-proof-חי — custom_json-בשם-ynet-נחתם-במפתח-הראש: STEEM txid=bdeb5d34806a453498205bceda1ad81cc885e148 ✓ + HIVE block=109772569 ✓ (ynet-RC=100% STEEM). הסמכות-הייתה-שם-כל-הזמן — אף-אחד-לא-חיבר.
+- **saosnet.cjs 117p6a**: loadArmyPosting→viaHead (ynet-נכלל) · signWifFor(chain) · ארבעת-אתרי-החתימה (attest/anchorSteem/anchorHive/produce) דרך-העוזר · viaHead-קודם-בתור-העיגון · לוג-כנות (via-head).
+- **באג-שורשי-שהתגלה-ותוקן — ENV-קפוא**: grid98-התושב עלה-17:48 בתוך-חלון-השריפה (אחרי-reset, לפני-שחזור-19:13) → loadDotEnv-קרא-.env-שלד → POSTING_WIF-ריק-לכל-החיים → מסילת-עיגון-הראש-מתה-בשקט (אפס-ניסיונות-head-anchor-בלוג-מאז-17:48; "no anchor-writer fuel" היה-הסימפטום). תיקון: envLive-TTL-30ש׳ (Proxy-על-ENV) — שינוי-.env-נקלט-בלי-ריסטרט.
+- **ריסטרט-grid98** (kill+ביטול-נעילה-תקועה-2509+nohup) → ביט-ידני (--beat --live) הוכיח-במסלול-הייצור: attest ✓ @ynet via-head txid=4a0d89b9… · steem-anchor ✓ txid=90652805… (הראש!) · hive-anchor ✓ via @ynet · pending-steem-anchor-VERIFIED-ע"י-השרשרת · explorer-pub ✓. אחר-כך-הראש-ממשיך-לירות-בביטים-השגרתיים (txid=6f749d1a…) · מנעול-מונע-ביט-כפול.
+- **gate API+UI 117p6c**: fleet-summary (מלאות-הצי: Hive-מלא-N/N · דרך-הראש · מתים-גלויים-בכנות · auditedAt) — כרטיס-חי-ב-THE-GATE עם-צילום-ראיה (docs/shot-117p6-gate-fleet.png · mobile).
+- **soldier_repair.cjs 117p6b**: כלי-השלמת-המלאות-למפעיל — בהמסר-מפתח-2018 (owner/active) מריץ-account_update2-ל-Steem/Hive: מתקין-מפתחות-כספת+headcorner-in-posting (טופולוגיה-זהה-ל-Hive). Dry-run-ברירת-מחדל · קלט-נסתר (אפס-היסטוריית-shell).
+- **lint:chunked 117p6d**: eslint-מלא=SIGKILL-OOM → חלוקה-ל-7-חתיכות (api/sections/components...) עם-1024MB-תקרה → נקי-100%-יציאה-0. + audit:fleet-script.
+- **דלק-RC-נמדד**: Steem: head=100% ynet=100% (מלא). Hive: כל-הצי-רוקן (0-21%, regen~20%/יום) — עיגוני-Hive-מוגבלים-עד-התחדשות; ynet-21% מאפשר-via-head-trickle-מעל-השער-20%.
+
+Stage Summary:
+- **"שכולם-מלאים": המקסימום-האפשרי-הושג-היום** — ראש 10/10 מלא · Hive-צי 9-חיילים-מלאים · ynet-חי-דרך-הראש-בשתי-השרשראות (attest+anchors-מוכחים-על-שרשרת-ציבורית) · מסילת-עיגון-הראש-הוקמה-לתחייה (באג-ENV) · tov+9-מפתחות-Steem=תלויים-מפעיל-בלבד (כלי-התיקון-מוכן-לרגע-המסירה).
+- **החוסמים-שנותרו (כולם-חוץ-מכלי)**: (1) מפתחות-2018-של-9-חיילי-Steem+tov — אצל-המפעיל; soldier_repair.cjs-משלים-בדקות. (2) Hive-RC-ריק-צי-ית — חוסם-עיגוני-Hive-זמני (regen-טבעי או-power-up-אוצר). (3) זיכרון-4GB: eslint-מקוטע-פתר-את-הבדיקה; שיאי-קימפול-דף-נשארים-בקו-האדום (code-split-עתידי).
+- commits: dd6d505 (117p6a) · soldier_repair (117p6b) · 3d57f92 (117p6c) · lint-chunked (117p6d/d2) · evidence+worklog
