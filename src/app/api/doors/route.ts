@@ -22,25 +22,34 @@ const num = (v: unknown, d = 0): number => (typeof v === "number" && Number.isFi
 type DoorRec = { id: string; family: string; address: string; path?: string; balSun: number | null; balTrx: number | null };
 
 let cache: { at: number; body: J } | null = null;
-const TTL = 12_000;
+const TTL = 30_000;
 
-async function tronBalance(addr: string): Promise<number | null> {
-  for (const host of TRON_HOSTS) {
+async function tronBalance(addr: string, hostIdx = 0): Promise<number | null> {
+  const order = [TRON_HOSTS[hostIdx % 3], TRON_HOSTS[(hostIdx + 1) % 3], TRON_HOSTS[(hostIdx + 2) % 3]];
+  let netFails = 0;
+  for (const host of order) {
     try {
       const r = await fetch(host + "/wallet/getaccount", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ address: addr, visible: true }),
-        signal: AbortSignal.timeout(3500),
+        signal: AbortSignal.timeout(4000),
       });
+      if (!r.ok) {
+        netFails++;
+        continue;
+      }
       const j = (await r.json()) as J;
       if (typeof j.balance === "number") return j.balance;
-      return 0; // חשבון-קיים-בשרשרת-עם-אפס — אמת
+      // {} = החשבון-לא-קיים-בשרשרת (מעולם-לא-הופעל/נוקזה-ונמחק) → אפס-אמת, לא-כשל-מדידה
+      if (j && typeof j === "object") return 0;
+      return 0;
     } catch {
-      /* מארח-הבא */
+      netFails++;
     }
   }
-  return null;
+  // אם-כל-המארחים-לא-ענו-ברשת — אז-בלבד זה "לא-נמדד"
+  return netFails >= order.length ? null : 0;
 }
 
 async function brokerDoors(): Promise<DoorRec[]> {
@@ -89,14 +98,12 @@ export async function GET() {
   for (const d of all) if (d.address && !uniq.has(d.address)) uniq.set(d.address, d);
   const doors = [...uniq.values()];
 
-  // יתרות-חיות — במקביל (20-כתובות · 3-מארחים)
-  await Promise.all(
-    doors.map(async (d) => {
-      const b = await tronBalance(d.address);
-      d.balSun = b;
-      d.balTrx = b === null ? null : b / 1_000_000;
-    })
-  );
+  // יתרות-חיות — סדרתי-עם-סבב-מארחים (אנטי-rate-limit · פיזור-עומס-על-3-צמתים)
+  for (let i = 0; i < doors.length; i++) {
+    const b = await tronBalance(doors[i].address, i);
+    doors[i].balSun = b;
+    doors[i].balTrx = b === null ? null : b / 1_000_000;
+  }
 
   const body: J = {
     ok: true,
