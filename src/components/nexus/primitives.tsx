@@ -3,6 +3,7 @@
 /**
  * 117m — NEXUS primitives · שפת-המכשירים של מרכז-הבקרה
  * פאנלים-שער-זווית · מספרים-מונו · נקודות-חי · שבבי-מצב · פסי-עומק
+ * 117p5c — sheen-חוצה על פאנלים · EmptyState אחיד · Stat עם-סמל
  */
 
 import type { ReactNode } from "react";
@@ -69,12 +70,13 @@ export function Micro({ children, className }: { children: ReactNode; className?
   return <div className={cn("text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-500", className)}>{children}</div>;
 }
 
-/* ── פאנל-שער-זווית (HUD) · 117q — עומק + זוהר-רך ── */
-export function Panel({ children, className, corners = true }: { children: ReactNode; className?: string; corners?: boolean }) {
+/* ── פאנל-שער-זווית (HUD) · 117q — עומק + זוהר-רך · 117p5c — ברק-חוצה ── */
+export function Panel({ children, className, corners = true, sheen = true }: { children: ReactNode; className?: string; corners?: boolean; sheen?: boolean }) {
   return (
     <div className={cn(
       "relative rounded-lg border border-zinc-800/80 bg-zinc-900/50 backdrop-blur-sm",
       "transition-all duration-300 hover:border-emerald-500/25 hover:shadow-[0_0_24px_-6px_rgba(16,185,129,0.18)]",
+      sheen && "sheen",
       className
     )}>
       {/* הדגשת-קצה-עליון — עומק-בלי-רעש */}
@@ -119,6 +121,26 @@ export function Bar({ pct, tone = "emerald" }: { pct: number; tone?: "emerald" |
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
       <div className={cn("h-full rounded-full transition-all duration-500", map[tone])} style={{ width: p + "%" }} />
+    </div>
+  );
+}
+
+/* ── מצב-ריק אחיד · 117p5c ── */
+export function EmptyState({ icon, title, sub, tone = "zinc" }: { icon?: ReactNode; title: string; sub?: string; tone?: "zinc" | "emerald" | "violet" }) {
+  const ring = {
+    zinc: "border-zinc-800 bg-zinc-900/40 text-zinc-500",
+    emerald: "border-emerald-500/30 bg-emerald-500/[0.07] text-emerald-300",
+    violet: "border-violet-500/30 bg-violet-500/[0.07] text-violet-300",
+  } as const;
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 px-4 py-8 text-center">
+      {icon && (
+        <div className={cn("flex h-11 w-11 items-center justify-center rounded-lg border", ring[tone])} aria-hidden>
+          {icon}
+        </div>
+      )}
+      <p className="text-sm font-semibold text-zinc-400">{title}</p>
+      {sub && <p className="max-w-[280px] text-xs leading-relaxed text-zinc-600">{sub}</p>}
     </div>
   );
 }
