@@ -463,8 +463,25 @@ function healDeposits(res) {
 function webAlive() {
   try {
     const out = sh('curl', ['-s', '-o', '/dev/null', '-w', '%{http_code}', '--max-time', '4', 'http://127.0.0.1:3000/api/weave/status'], { timeout: 8_000 });
-    return /^2/.test(String(out).trim());
+    if (!/^2/.test(String(out).trim())) return false;
+    /* 117p2 — גם-הדף-עצמו: פאניקת-טורבופק (קורופשן-קאש) משאירה-API-חי-אבל-דף-500.
+     * בלי-הבדיקה-הזו הגרדיאן-מאמין-שהרשת-חיה-והמפעיל-רואה-500. */
+    const out2 = sh('curl', ['-s', '-o', '/dev/null', '-w', '%{http_code}', '--max-time', '6', 'http://127.0.0.1:3000/'], { timeout: 12_000 });
+    return /^2/.test(String(out2).trim());
   } catch (_) { return false; }
+}
+/* 117p2 — השתקה-אחרי-הריגה + טיהור-קאש-טורבופק לפני-השכמה. הלקח-המדוד: pkill-בזמן-כתיבת-DB-
+ * המשימות-המתמשך-משאיר-קורופשן-שמפיץ-פאניקה-בכל-השכמה-הבאה (500-לופ). חוק: אחרי-כל-הריגה —
+ * מחכים-לפורט-משתחרר, קאש-טורבופק-נמחק-תמיד, ו-.next-מלא-נמחק-אם-סימן-פאניקה-ביומן. */
+function settleAndCleanCache(res) {
+  try { sh('bash', ['-c', 'for i in $(seq 1 10); do ss -tln 2>/dev/null | grep -q ":3000 " || exit 0; sleep 0.4; done; exit 0'], { timeout: 8_000 }); } catch (_) {}
+  try { sh('rm', ['-rf', path.join(ROOT, '.next', 'dev', 'cache')]); } catch (_) {}
+  try {
+    const tail = sh('bash', ['-c', 'tail -40 ' + path.join(ROOT, 'dev.log') + " 2>/dev/null | grep -c 'corrupted database'"], { timeout: 6_000 });
+    if (parseInt(String(tail).trim(), 10) > 0) {
+      try { sh('rm', ['-rf', path.join(ROOT, '.next')]); res.actions.push('NEXT-FULL-WIPE(panic-marker)'); } catch (_) {}
+    }
+  } catch (_) {}
 }
 function pgrepAlive(pat) { try { return /\d/.test(sh('pgrep', ['-f', pat])); } catch (_) { return false; } }
 /* 117f — גיל-התהליך-הצעיר-ביותר (שניות): מודע-חימום. שרת-שזה-עתה-עלה מתקמפל-דפים 10-30 שניות
@@ -499,6 +516,7 @@ function healWeb(res) {
       const rssKb = nextRssKb();
       if (age > 2700 || rssKb > 900_000) {
         try { sh('pkill', ['-f', 'next-server']); sh('pkill', ['-f', 'next dev']); } catch (_) {}
+        settleAndCleanCache(res); /* 117p2 */
         const outR = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
         const r = spawn(process.execPath, [path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'), 'dev', '-p', '3000'], {
           cwd: ROOT, detached: true, stdio: ['ignore', outR, outR],
@@ -518,6 +536,7 @@ function healWeb(res) {
     // dead port but stuck OLD process? clear it so the revival owns the port
     const stuck = pgrepAlive('next-server') || pgrepAlive('next dev');
     if (stuck) { try { sh('pkill', ['-f', 'next-server']); sh('pkill', ['-f', 'next dev']); } catch (_) {} }
+    settleAndCleanCache(res); /* 117p2 */
     const out = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
     const child = spawn(process.execPath, [path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'), 'dev', '-p', '3000'], {
       cwd: ROOT, detached: true, stdio: ['ignore', out, out],
