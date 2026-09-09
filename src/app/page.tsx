@@ -88,6 +88,12 @@ export default function Home() {
 
   return (
     <div className="nexus-bg flex min-h-screen flex-col">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:right-4 focus:top-4 focus:z-50 focus:rounded-md focus:border focus:border-emerald-500/50 focus:bg-zinc-950 focus:px-3 focus:py-2 focus:text-sm focus:text-emerald-300"
+      >
+        דלג-לתוכן-הראשי
+      </a>
       <NexusHeader
         saosHeight={data?.meta.saosHeight ?? 0}
         tronHeight={data?.tron.height ?? 0}
@@ -100,7 +106,7 @@ export default function Home() {
       />
       <SubNav section={loc.section} sub={loc.sub} onNavigate={navigateSub} />
 
-      <main className="flex w-full flex-1 pb-28 md:pb-8">
+      <main id="main-content" className="flex w-full flex-1 pb-28 md:pb-8">
         <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-4 md:px-6 md:py-8 lg:grid-cols-[210px_minmax(0,1fr)]">
           <aside aria-label="מסילת-ניווט" className="hidden md:block">
             <DesktopRail active={loc.section} sub={loc.sub} onNavigate={navigate} />
