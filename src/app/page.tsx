@@ -10,11 +10,34 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNexus } from "@/hooks/use-nexus";
 import { BottomNav, DesktopRail, NexusFooter, NexusHeader, SECTIONS, SubNav, type SectionId, type SubId, SUBS } from "@/components/nexus/shell";
-import { BookSec, ControlSec, DepositsSec, DoorsSec, EconSec, GateSec, ShieldSec, SystemSec } from "@/components/nexus/sections";
+import { ControlSec } from "@/components/nexus/sections/control";
 import { PulseStrip } from "@/components/nexus/activity";
+
+/* 117p6 — CODE-SPLIT-זיכרון: 7-המסכים-שאינם-נחיתה נטענים-דינמית (chunk-לכל-מסך).
+ * עומס-הקומפילציה-הקרה-של-dev-היה-1.45GB-פסגה-על-מכונת-4GB (קצה-OOM) —
+ * כעת-נקודת-הכניסה-מקמפלת-רק-control + מסגרת; כל-מסך-מקומפל-בפעם-הראשונה-שנכנסים-אליו. */
+function SecSkeleton() {
+  return (
+    <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3" role="status" aria-label="טוען-מסך">
+      <div className="relative flex h-10 w-10 items-center justify-center">
+        <span className="absolute h-full w-full animate-ping rounded-full bg-emerald-500/15" aria-hidden />
+        <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" aria-hidden />
+      </div>
+      <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600">loading module…</p>
+    </div>
+  );
+}
+const BookSec = dynamic(() => import("@/components/nexus/sections/book").then((m) => m.BookSec), { ssr: false, loading: SecSkeleton });
+const ShieldSec = dynamic(() => import("@/components/nexus/sections/shield").then((m) => m.ShieldSec), { ssr: false, loading: SecSkeleton });
+const DoorsSec = dynamic(() => import("@/components/nexus/sections/doors").then((m) => m.DoorsSec), { ssr: false, loading: SecSkeleton });
+const DepositsSec = dynamic(() => import("@/components/nexus/sections/deposits").then((m) => m.DepositsSec), { ssr: false, loading: SecSkeleton });
+const EconSec = dynamic(() => import("@/components/nexus/sections/econ").then((m) => m.EconSec), { ssr: false, loading: SecSkeleton });
+const SystemSec = dynamic(() => import("@/components/nexus/sections/system").then((m) => m.SystemSec), { ssr: false, loading: SecSkeleton });
+const GateSec = dynamic(() => import("@/components/nexus/sections/gate").then((m) => m.GateSec), { ssr: false, loading: SecSkeleton });
 
 const VALID = SECTIONS.map((s) => s.id) as SectionId[];
 
