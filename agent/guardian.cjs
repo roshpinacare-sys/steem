@@ -355,6 +355,37 @@ function healSibling(res) {
   } catch (_) { res.actions.push('sibling-check-skipped'); }
 }
 
+/* 117o — OWNER-AUTH WATCH: ערנות-בעלות — כל-שינוי ב-last_owner_update של החשבון-הראשי
+ * (בשתי-השרשרות) מוכרז-חירום. הלקח-מהתקרית-117o: הסבת-מפתחות-רכה בסנדבוקס-אחר עברה
+ * בשקט. בסיס-ראשון נשמר; שינוי ללא-אישור-מפעיל = OWNER-ALERT על-כל-המשטחים. */
+function watchOwnerAuth(res) {
+  const ACC = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+  const STATE_FILE = path.join(AGENT_DIR, 'owner_watch_state.json');
+  const FLAG = path.join(AGENT_DIR, 'OWNER-ALERT.flag');
+  const q = (url, acc) => sh('bash', ['-c', 'curl -s -m 8 ' + url + " -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"condenser_api.get_accounts\",\"params\": [[\\\"" + acc + "\\\"]],\"id\":1}' 2>/dev/null"], { timeout: 10_000 });
+  try {
+    const cur = {};
+    try { cur.steem = JSON.parse(String(q('https://api.steemit.com', ACC))).result[0].last_owner_update || 'never'; } catch (_) { cur.steem = null; }
+    try { cur.hive = JSON.parse(String(q('https://api.hive.blog', ACC))).result[0].last_owner_update || 'never'; } catch (_) { cur.hive = null; }
+    let prev = null;
+    try { prev = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')); } catch (_) {}
+    if (!prev || (!prev.steem && !prev.hive)) {
+      fs.writeFileSync(STATE_FILE, JSON.stringify({ at: new Date().toISOString(), steem: cur.steem, hive: cur.hive }, null, 2) + '\n');
+      res.actions.push('owner-baseline(' + cur.steem + '/' + cur.hive + ')');
+      return;
+    }
+    const changed = (cur.steem && prev.steem && cur.steem !== prev.steem) || (cur.hive && prev.hive && cur.hive !== prev.hive);
+    if (changed) {
+      fs.writeFileSync(FLAG, JSON.stringify({ at: new Date().toISOString(), was: prev, now: cur }, null, 2) + '\n');
+      log('🚨 OWNER-AUTH CHANGED on @' + ACC + ' · was ' + prev.steem + '/' + prev.hive + ' · now ' + cur.steem + '/' + cur.hive + ' — if the operator did not rotate: the account is under takeover, 30-day recovery window');
+      res.actions.push('🚨OWNER-ALERT(was ' + prev.steem + '→now ' + cur.steem + ')');
+    } else {
+      res.actions.push('owner-auth-unchanged');
+    }
+    if (cur.steem || cur.hive) fs.writeFileSync(STATE_FILE, JSON.stringify({ at: new Date().toISOString(), steem: cur.steem || prev.steem, hive: cur.hive || prev.hive }, null, 2) + '\n');
+  } catch (_) { res.actions.push('owner-watch-skipped'); }
+}
+
 /* 111 — HARVEST-ALWAYS-UP: קוצר-הערך תמיד-חי — מזהה-דלתאות-עמלות, סורק-מסילה,
  * משחרר-גלגל-החוזר. בלעדיו-הקציר-מתאדה (אותה-תבנית כמו-שחרור-האנרגיה של-האח W23). */
 function healHarvest(res) {
@@ -578,6 +609,7 @@ function main() {
     healRelay(res);  // 108 — THE-DOOR relayer תמיד-חי (דבר-גורר-דבר)
     healDex(res);    // 110 — מפעיל-הדקס תמיד-חי (THE-DEX)
     healKeyBroker(res); // 117k — שער-החתימה-הריבוני תמיד-חי (THE-KEY-BROKER · 8 דלתות)
+    watchOwnerAuth(res); // 117o — ערנות-בעלות: כל-שינוי-owner בשתי-השרשרות = חירום (לקח-התקרית)
     healSibling(res); // 110 — מאמת-האח תמיד-חי (אימות-הדדי)
     healHarvest(res); // 111 — קוצר-הערך תמיד-חי (THE-HARVEST)
     healWallets(res); // 113 — ארנקי-הצבא תמיד-חי (THE-WALLETS: עיגון+תקצוב+תדלוק idempotent)
