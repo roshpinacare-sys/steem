@@ -33,6 +33,8 @@ export type NexusData = {
   grid: { at: string; ticks: number; rounds: number; tradesToday: number; txsToday: number; treasuryPnlµ: number; treasuryPnlTodayµ: number; leaderboard: Array<{ name: string; pnlµ: number }> };
   harvest: { feesTotalµ: number; releases: number; railCredited: number; gridFeeµ: number };
   shield: { stats: { checks?: number; blocks?: number; warns?: number }; deny: string[]; allow: string[]; velocity: number };
+  book: { head: number };
+  relayOps: { failsCount: number; degraded: boolean; lastPick: { address?: string; bal?: number; family?: string } };
 };
 
 export function useNexus(ms = 5000) {
