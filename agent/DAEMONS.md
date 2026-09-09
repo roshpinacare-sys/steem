@@ -1,9 +1,14 @@
 # DAEMONS.md — live/dry contract for agent/ broadcast daemons
 
-**Status**: LIVE-GATE contract in force since Task 25-d (2026-09-08), per owner decision
-"דגל --live מפורש + לוג רועש" (docs/owner-decisions.md, Task 24 — live-default demoted to explicit opt-in).
+**Status**: LIVE-GATE contract in force since Task 25-d (2026-09-08), **rolled out to the FULL
+broadcast surface in Task 28-b (2026-09-09)**, per owner decision "דגל --live מפורש + לוג רועש"
+(docs/owner-decisions.md, Task 24 — live-default demoted to explicit opt-in).
 
-## The gate contract (implemented)
+> Task 25-d per-file gates (he_sell/he_unstake) were WIPED by a runtime auto-save snapshot
+> (reverted to live-default). Task 28-b re-established them — and the rest of the surface —
+> through the durable shared module `agent/lib/live_gate.cjs` (durable channel = origin/main).
+
+## The gate contract (implemented — single source of truth: `agent/lib/live_gate.cjs`)
 
 Trading daemons are **DRY by default**. Real broadcast happens only when the gate is satisfied by BOTH:
 
@@ -30,12 +35,84 @@ When live IS enabled → an equally loud line is printed **before any broadcast 
 
 Legacy `--dry` is still accepted and always forces DRY (wins over `--live`/`HE_LIVE=1`).
 
-## Gated daemons (Task 25-d)
+Five daemons keep their own historical explicit-enable flag, which the shared module treats as
+the `--live` equivalent (still ANDed with `HE_LIVE_CONFIRM`): `chaintalk.cjs`, `chaintalk95.cjs`,
+`econ96.cjs`, `wrap96.cjs` and `blurt99.cjs` use `--run`. In DRY mode those daemons spawn their
+`saosnet`/`microdex` children WITHOUT `--live` (children stay DRY too).
 
-| Daemon | Gate (file:line) | Broadcast call (file:line) | Network |
+## Gated daemons — full rollout (Task 28-b)
+
+All rows below are **DRY by default** via `agent/lib/live_gate.cjs` (`resolveLiveGate` + `announceGate`;
+the acting account is passed from each daemon's own `AGENT_ACCOUNT`/fixed constant).
+
+| Daemon | Default | Gate mechanism | Network |
 |---|---|---|---|
-| `agent/he_sell.cjs` | he_sell.cjs:46-57 | he_sell.cjs:150 (`condenser_api.broadcast_transaction`, active auth) | Hive mainnet / Hive-Engine sidechain |
-| `agent/he_unstake.cjs` | he_unstake.cjs:44-55 | he_unstake.cjs:119 (inside `heOp()`, active auth) | Hive mainnet / Hive-Engine sidechain |
+| `agent/he_sell.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Hive mainnet / Hive-Engine sidechain |
+| `agent/he_unstake.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Hive mainnet / Hive-Engine sidechain |
+| `agent/anchor.cjs` | DRY | live_gate (CLI) | Steem + Hive + Blurt (weave anchors) |
+| `agent/blurt_revive.cjs` | DRY | live_gate (CLI) | Blurt |
+| `agent/blurt99.cjs` | DRY | live_gate (`--run` = enable) | Blurt |
+| `agent/bridge_test.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem ↔ Hive bridge |
+| `agent/cascade.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem (custom_json) |
+| `agent/chain_attest.cjs` | DRY | live_gate (CLI; `--read` mode announces nothing) | Steem + Hive |
+| `agent/chaintalk.cjs` | DRY | live_gate (`--run` = enable; children demoted to DRY) | Steem (custom_json) + SAOS-NET |
+| `agent/chaintalk95.cjs` | DRY | live_gate (`--run` = enable; children demoted to DRY) | Steem (custom_json) + SAOS-NET |
+| `agent/fixpw102.cjs` | DRY | live_gate (`{account: ACCOUNT}`; saosnet beat demoted to DRY) | SAOS-NET (via saosnet child) |
+| `agent/oracle106.cjs` | DRY | live_gate (`{account: ACCOUNT}`; saosnet beat demoted to DRY) | SAOS-NET (via saosnet child) |
+| `agent/rean106.cjs` | DRY | live_gate (`{account: ACCOUNT}`; saosnet beats demoted to DRY) | SAOS-NET (via saosnet child) |
+| `agent/reanchor103.cjs` | DRY | live_gate (`{account: ACCOUNT}`; saosnet beats demoted to DRY) | SAOS-NET (via saosnet child) |
+| `agent/cross_shard.cjs` | DRY | live_gate (CLI) | Steem + Hive (shard custom_json) |
+| `agent/econ96.cjs` | DRY | live_gate (`--run` = enable; children demoted to DRY) | Steem (custom_json) + SAOS-NET |
+| `agent/energy_ops.cjs` | DRY | live_gate (`{account: OPERATOR}`; broadcast modes refused in DRY) | Steem (RC/HP ops) |
+| `agent/escrow_rail.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY aborts before escrow ops) | Steem (escrow) |
+| `agent/factory_create.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem (account factory) |
+| `agent/factory_v2.cjs` | DRY | live_gate (`{account: OPERATOR}`) | Steem (account factory) |
+| `agent/fleet_voice.cjs` | DRY | live_gate (`{account: HEAD}`) | Steem (custom_json) |
+| `agent/fuel_line.cjs` | DRY | live_gate (CLI) | Steem (transfers) |
+| `agent/grid79.cjs` | DRY | live_gate (`{account: HEAD}`) | Hive-Engine + Steem |
+| `agent/harden58.cjs` | DRY | live_gate (`{account: OPERATOR}`; DRY refuses all steps) | Steem + Hive (authority anchors) |
+| `agent/harden_topology.cjs` | DRY | live_gate + `DRY_RUN=true` still honored as extra DRY force | Steem (account_update) |
+| `agent/he_conforms.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY exits before probes) | Hive-Engine |
+| `agent/he_fleet_sell.cjs` | DRY | live_gate (`{account: HEAD}`) | Hive-Engine |
+| `agent/he_genesis.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Hive (converts) + Hive-Engine |
+| `agent/he_ladder.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Hive-Engine |
+| `agent/he_powerup.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY stops before `transfer_to_vesting`) | Hive mainnet |
+| `agent/hive_publish_watch.cjs` | DRY | live_gate (`{account: 'headcorner'}`; DRY skips publication) | Hive (comment op) |
+| `agent/hive_rc_heal.cjs` | DRY | live_gate (`{account: HEAD}`, resolved in `main()`) | Hive (delegate_vesting_shares) |
+| `agent/keyrotate.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem + Hive (authority update) |
+| `agent/limits_probe.cjs` | DRY | live_gate + `DRY_RUN=true` still honored as extra DRY force | Steem (custom_json probes) |
+| `agent/limits_probe2.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY skips probes) | Steem (custom_json probes) |
+| `agent/linkage.cjs` | DRY | live_gate (CLI; only `--fix` announces, and fixes are skipped in DRY) | Steem + Hive (account_update) |
+| `agent/liq_seed.cjs` | DRY | live_gate (CLI) | Steem (transfers) |
+| `agent/merchant.cjs` | DRY | live_gate (`{account: 'headcorner'}`) | Steem (transfers) |
+| `agent/microdex.cjs` | DRY | live_gate (CLI) | Steem (custom_json) |
+| `agent/mint_borrow.cjs` | DRY | live_gate (`{account: OPERATOR}`) | Steem (account create + transfer) |
+| `agent/muster.cjs` | DRY | live_gate (CLI) | Steem (escrow transfers) |
+| `agent/net_kv.cjs` | DRY | live_gate + `DRY_RUN=true` still honored as extra DRY force | Steem (kv custom_json) |
+| `agent/net_registry.cjs` | DRY | live_gate + `DRY_RUN=true` still honored as extra DRY force | Steem (custom_json) |
+| `agent/net_site.cjs` | DRY | live_gate + `DRY_RUN=true` still honored as extra DRY force | Steem (custom_json) |
+| `agent/paymaster.cjs` | DRY | live_gate (CLI; `--fuel` gets gated dry flag, other modes abort in DRY) | Steem (meta-tx relay/fuel) |
+| `agent/perf_bench.cjs` | DRY | live_gate (CLI; inclusion probes + anchor skipped in DRY) | Steem + Hive |
+| `agent/post_announce.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem (post/comment) |
+| `agent/probe_agent.cjs` | DRY | live_gate (`{account: NAME}`; vote skipped in DRY) | Steem (vote) |
+| `agent/publish_spec58.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY skips publication) | Steem + Hive (posts) |
+| `agent/rc_sovereign.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem (delegate_rc) + Hive |
+| `agent/reflex.cjs` | DRY | live_gate (`{account: ACCOUNT}`; `LIVE=GATE.live`) | Steem (custom_json) |
+| `agent/retc_test.cjs` | DRY | live_gate (`{account: 'headcorner'}`; DRY before delegate test) | Hive (delegate_rc) |
+| `agent/roundtrip.cjs` | DRY | live_gate (`{account: 'headcorner'}`) | Steem (transfers) |
+| `agent/sovereign_60_live.cjs` | DRY | live_gate (`{account: OPERATOR}`; DRY refuses execution) | Steem + Hive + Hive-Engine |
+| `agent/sovereign_fix59.cjs` | DRY | live_gate (`{account: OPERATOR}`; DRY refuses execution) | Steem + Hive + Hive-Engine |
+| `agent/sovereign_ops.cjs` | DRY | live_gate (`{account: OPERATOR}`) | Steem + Hive |
+| `agent/sovereign_runner.cjs` | DRY | live_gate (CLI) | Steem (custom_json workload) |
+| `agent/test-factory.cjs` | DRY | live_gate (CLI; negative-key test exits in DRY) | Steem |
+| `agent/test-pipeline.cjs` | DRY | live_gate (CLI; negative-key test exits in DRY) | Steem |
+| `agent/value_lock.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem (custom_json) |
+| `agent/weave95_finish.cjs` | DRY | live_gate (CLI; anchor skipped with honest error in DRY) | Steem (custom_json) + SAOS-NET |
+| `agent/weave_batch.cjs` | DRY | live_gate (CLI, passed into `runWeaveBatch({dry})`) | Steem + Hive + Blurt |
+| `agent/wrap96.cjs` | DRY | live_gate (`--run` = enable; children demoted to DRY) | Steem (custom_json) + SAOS-NET |
+| `agent/wrapped.cjs` | DRY | live_gate (missing WIFs still force DRY, as before) | Steem + Hive |
+| `agent/yield.cjs` | DRY | live_gate (`{account: 'headcorner'}`) | Steem (transfers) |
+| `agent/ynet_rescue_ping.cjs` | DRY | live_gate (CLI; DRY before broadcast) | Steem + Hive (rescue ping) |
 
 Safe examples:
 
@@ -48,17 +125,30 @@ node agent/he_sell.cjs --live --qty 9000 --price 0.0001   # + env HE_LIVE_CONFIR
 HE_LIVE=1 HE_LIVE_CONFIRM=headcorner node agent/he_unstake.cjs
 ```
 
-## Blast radius note (Task 25-d evidence)
+### Already-safe by construction (no gate wired — verified read-only / DRY-default)
 
-A repo sweep (`rg "broadcast_transaction|broadcast\(" agent/ -g '*.cjs' -g '*.js'`) found **40
-broadcast-capable files** under `agent/` (he_sell, he_unstake, agent.cjs, mint_borrow.cjs, reflex.cjs,
-factory_v2.cjs, paymaster.cjs, he_genesis.cjs, limits_probe*.cjs, …). The Task 24/25-d gate was applied
-**only to he_sell.cjs + he_unstake.cjs** (bounded scope). Several of the others still use the
-live-default pattern `const DRY = process.argv.includes('--dry')` (e.g. value_lock.cjs:43,
-sovereign_ops.cjs:47, mint_borrow.cjs:51, he_genesis.cjs:54, grid79.cjs:32, cascade.cjs:46,
-fleet_voice.cjs:30, post_announce.cjs:50) or `DRY_RUN` env defaults-to-live (net_site/net_kv/
-net_registry/limits_probe/harden_topology). Rolling this same gate out to the remaining 38 files is a
-queued follow-up — do NOT run any of them live until they carry the gate.
+| Daemon | Default | Mechanism + evidence | Network |
+|---|---|---|---|
+| `agent/agent.cjs` | DRY | `dryRun: parseBool(process.env.DRY_RUN, true)` (agent.cjs:102) — DRY unless operator flips env; children it spawns (`mint_borrow.cjs --live`, `reflex.cjs --live`) re-resolve the shared gate themselves, so a bare `--live` from the parent still lands DRY | orchestrator |
+| `agent/he_report.cjs` | read-only | report generator; `blurtBroadcast` appears only inside a report string literal (he_report.cjs:361), zero call sites | — |
+| `agent/probe106.cjs` | read-only | probe; `blurtBroadcast` only in a status string (probe106.cjs:108), zero call sites | — |
+| `agent/empire_60.cjs` | read-only | self-documented: "READ-ONLY: zero broadcasts, zero secrets in output" (empire_60.cjs:22) | — |
+| `agent/energy_census.cjs` | read-only | self-documented: "READ-ONLY: no broadcasts, no secrets printed" (energy_census.cjs:6) | — |
+| `agent/forkscan.cjs` | read-only | self-documented: "Nothing is signed, nothing is broadcast" (forkscan.cjs:16) | — |
+| `agent/voice_probe.cjs` | read-only | self-documented: "No keys, no broadcasts — pure measurement" (voice_probe.cjs:12) | — |
+| `agent/verify_pendings.cjs` | read-only | backfill verifier; the word "broadcast" only in output strings about historical txs | — |
+| `agent/verify_selfhost.cjs` | read-only | verifies the latest chain_attest broadcast (read-back only) | — |
+| `agent/verify_system.cjs` | read-only | system verifier: broadcasts only referenced in evidence strings/proof-map, zero broadcast API calls | — |
+| `agent/audit65.cjs`, `agent/batch_reverify.cjs`, `agent/bee_wall.cjs`, `agent/blurt_probe.cjs`, `agent/fuel_map.cjs`, `agent/hive_rc.cjs`, `agent/hive_withdraw_diag.cjs`, `agent/hive_withdraw_trace.cjs`, `agent/keyscan.cjs`, `agent/probe64.cjs`, `agent/rc_map_measure.cjs`, `agent/rebuild.cjs`, `agent/salvo_reverify.cjs`, `agent/verify15.cjs`, `agent/verify_worldlog.cjs`, `agent/wblurt_recon.cjs` | read-only | matched the `condenser_api` sweep but contain ZERO broadcast indicators (steem.broadcast / broadcast_transaction / grapheneBroadcast / blurtBroadcast / client.broadcast) — pure RPC reads | — |
+| `agent/cloud_heartbeat.cjs` | orchestrator | spawns gated children (`agent/agent.cjs` DRY-default, `agent/chain_attest.cjs` gated — env `HE_LIVE*` propagates); its direct `saosnet.cjs --beat --live` line is part of the documented saosnet out-of-scope below | — |
+
+### Known out-of-scope broadcast surface (documented, not gated in 28-b)
+
+- `sovereign/node/saosnet.cjs` — the live node: `const LIVE = process.argv.includes('--live')`
+  (saosnet.cjs:29), broadcasts via `steem.broadcast.sendAsync` + `condenser_api.broadcast_transaction`.
+  It is the RUNTIME's own loop process (started by the runtime with explicit `--live`, not by an
+  agent operator), and agent/ parents now only hand it `--live` when their own gate is satisfied.
+  Gating it would silently flip the live fleet loop to DRY — an owner-level decision, queued as follow-up.
 
 ## hivePower / he_powerup — Task 27 (RC-deadlock fix + ALL mode + authority gate)
 
@@ -84,8 +174,8 @@ the anchor loop's concern, not the cure's.
 Runbook (the ONE command that closes the resource corner, on the live runtime):
 
 ```bash
-node agent/he_powerup.cjs --amount ALL
-# expected: authority ✓ → ALL → 9.xxx HIVE → RC feasibility ✓ → broadcast ✓
+HE_LIVE_CONFIRM=headcorner node agent/he_powerup.cjs --amount ALL --live
+# expected: [LIVE-GATE] LIVE MODE ENABLED … → authority ✓ → ALL → 9.xxx HIVE → RC feasibility ✓ → broadcast ✓
 # effect: max_rc 25.6G → ~40G (+~55% regen/day) → Hive anchor cadence ~25min → ~16min, then hivePower FSM un-sticks
 ```
 

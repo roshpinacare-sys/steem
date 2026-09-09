@@ -40,7 +40,11 @@ loadDotEnv(__dirname);
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
 const CONSOLE = process.env.CONSOLE_URL || 'http://localhost:3000';
-const DRY = process.argv.includes('--dry');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 const STATE_PATH = path.join(__dirname, 'value_lock_state.json');
 const RESULT_PATH = path.join(__dirname, 'value_lock_result.json');
 

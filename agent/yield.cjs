@@ -20,8 +20,12 @@ const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
-const LIVE = process.argv.includes('--live');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
+const LIVE = GATE.live;
 const ACCOUNT = 'headcorner';
+announceGate(GATE, log);
+
 const OUT = path.join(__dirname, 'yield_state.json');
 const LOG = path.join(__dirname, 'yield.log');
 const LOCAL_API = 'http://127.0.0.1:3000';
