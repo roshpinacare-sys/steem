@@ -21,6 +21,15 @@ type GateResp = {
   headEntry?: boolean;
   live?: { steem: Record<string, boolean> | null; hive: Record<string, boolean> | null };
   soldiers?: number;
+  fleet?: {
+    auditedAt?: string;
+    total?: number;
+    hiveFull?: number;
+    viaHead?: string[];
+    dead?: string[];
+    rails?: { steemAttest?: string; hiveAnchor?: string };
+    refresh?: string;
+  } | null;
   seal?: { enc: boolean; meta: boolean };
   broker?: boolean;
   guardianAgeS?: number | null;
@@ -157,6 +166,36 @@ function Connect() {
           <VerifyRow label="Steem" row={g?.live?.steem ?? null} />
           <VerifyRow label="Hive" row={g?.live?.hive ?? null} />
         </div>
+        {g?.fleet && (
+          <div className="mt-3 rounded-md border border-zinc-800/70 bg-zinc-950/50 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-zinc-300">מלאות-הצי (ביקורת-אימות-מול-השרשרת)</span>
+              <span dir="ltr" className="font-mono text-[10px] text-zinc-600">
+                {g.fleet.auditedAt ? new Date(g.fleet.auditedAt).toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" }) : ""}
+              </span>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+              <span className={cn("inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono", (g.fleet.hiveFull ?? 0) >= (g.fleet.total ?? 1) - 1 ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" : "border-amber-500/40 bg-amber-500/10 text-amber-300")}>
+                <CheckCircle2 className="h-3 w-3" aria-hidden />
+                Hive-מלא {g.fleet.hiveFull}/{g.fleet.total}
+              </span>
+              {(g.fleet.viaHead || []).length > 0 && (
+                <span className="inline-flex items-center gap-1 rounded border border-emerald-500/40 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-emerald-300">
+                  <Link2 className="h-3 w-3" aria-hidden />
+                  דרך-הראש: {g.fleet.viaHead.join(", ")}
+                </span>
+              )}
+              {(g.fleet.dead || []).map((d) => (
+                <span key={d} className="inline-flex items-center gap-1 rounded border border-rose-500/40 bg-rose-500/10 px-1.5 py-0.5 font-mono text-rose-300">
+                  <XCircle className="h-3 w-3" aria-hidden />@{d}
+                </span>
+              ))}
+            </div>
+            <Micro className="mt-2 block">
+              מסילות-חיות (הוכח-117p6): עיגון-Steem בראש · attests ל-ynet-דרך-הראש · עיגון-Hive צי+דרך-הראש. מפתחות-Steem-מקוריים (2018) אצל-המפעיל — soldier_repair.cjs משלים-מיידית-בהמסרם.
+            </Micro>
+          </div>
+        )}
         {g?.backup?.file && (
           <div className="mt-3 flex items-center justify-between gap-2 rounded-md border border-zinc-800/70 bg-zinc-950/60 px-3 py-2">
             <div className="min-w-0 text-[11px] text-zinc-500">

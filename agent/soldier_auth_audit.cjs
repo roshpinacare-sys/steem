@@ -33,7 +33,19 @@ async function main() {
     const postingWif = (stWifs.posting && stWifs.posting.wif) || stWifs.posting || null;
     const activeWif  = (stWifs.active  && stWifs.active.wif)  || stWifs.active  || null;
     const ownerWif   = (stWifs.owner   && stWifs.owner.wif)   || stWifs.owner   || null;
-    if (!postingWif && !activeWif) { rows.push({ name, note: 'no-wifs' }); continue; }
+    if (!postingWif && !activeWif) {
+      /* 117p6 — חשבונות-ללא-מפתח-משלו (ynet): נבדק-בכל-זאת — האם-הראש-יושב-ב-posting-auth
+       * (מסילת-via-head, הוכח-חי 117p6). כנות-מלאה במטריצה. */
+      const st = await getAccount('https://api.steemit.com', name);
+      const hv = await getAccount('https://api.hive.blog', name);
+      const stRes = st ? { exists: true, posting: false, active: false, owner: false, headPosting: !!(st.posting && st.posting.account_auths.some(([acc]) => acc === 'headcorner')), chainPosting: st.posting && st.posting.key_auths.map(([k]) => mask(k)).join(',') } : { exists: false };
+      const hvRes = hv ? { exists: true, posting: false, active: false, owner: false, headPosting: !!(hv.posting && hv.posting.account_auths.some(([acc]) => acc === 'headcorner')), chainPosting: hv.posting && hv.posting.key_auths.map(([k]) => mask(k)).join(',') } : { exists: false };
+      rows.push({ name, viaHeadOnly: true, steem: stRes, hive: hvRes });
+      console.log(`@${name} (no-wifs · via-head-only)`);
+      console.log(`  STEEM  exists=${stRes.exists} head-in-posting=${stRes.headPosting} | chain-posting:${stRes.chainPosting || '∅'}`);
+      console.log(`  HIVE   exists=${hvRes.exists} head-in-posting=${hvRes.headPosting} | chain-posting:${hvRes.chainPosting || '∅'}`);
+      continue;
+    }
 
     const derived = {
       posting: postingWif ? pk(postingWif) : null,
