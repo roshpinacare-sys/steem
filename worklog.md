@@ -3372,3 +3372,26 @@ Stage Summary:
 - שתי-פריצות-מבניות-הונחו: anti-rogue-seed (מניעת-אסון-עתידי-בכל-reset) + code-split (זיכרון-4GB).
 - commits: 1df979b (recovery) → 44c8d13 (rogue-guard) → 20da2f7 (hygiene) → 420cebe (code-split) → worklog+evidence
 - evidence: docs/shot-117p6-landing.png · shot-117p6-gate.png · shot-117p6-mobile.png · shot-117p6-system.png
+
+---
+Task ID: 117p8
+Agent: Z.ai Code (main)
+Task: המפתח נמצא בשחזור — לשחזר את tov, להשיג/לחבר הכל, לצפין את כל-המפתחות בזיפ+סיסמה לתיקיית-הזיפים בגיטהאב, לתקן ולחבר כל-מה-שנאבד בלי-לשבור-את-המערכת, ולדחוף לריפו
+
+Work Log:
+- RECON: HEAD=af06244=origin/main (gitkeeper loop 21) · gate חי: connected·11-soldiers·seal-enc·broker-ok · **dead:["tov"]** זוהה כיעד
+- פורנזיקה-מלאה של @tov: live-pubs נשלפו משתי-השרשראות (steem: STM6GxKC/STM7q6Ud/STM8QuHf/STM5M2vU · hive: STM72T4de/STM4wCC3/STM6Mg3t/STM62qAy) — steem≠hive ⇒ המפתחות הוחלפו-בנפרד-אחרי-הפורק
+- נסרקו ונבדקו: 839 קבצי-דיסק (42 WIF תקפים) · כל-3-דורות KEYS-BACKUP בהיסטוריית-git (0cdbe66/a7c467e/9de34db) · 3 חותמות-fleet_keys.enc (06:37/07:30/22:41) נפתחו-GCM · vault.enc-V1 נבדק-envelope · עץ download/recovery בהיסטוריה (709 blobs) · pickaxe-מלא (STM6Dx3b → רק-dd6d505=דוח-אודיט) — **טיהור-filter-repo מלא, אפס-מפתחות-בהיסטוריה**
+- **באג-פורנזי שתוקן**: גזירת-pubkey ידנית השתמשה ב-subarray(1) עם-checksum וב-RIPEMD160-vs-sha256d לכתובות — תוקן ל-steem.auth.wifToPublic; ההתאמות-האמיתיות: 36/42 (9 חיילים מלאים-היב ✓)
+- upload/: הדקור.txt=ראש (8 מפתחות 52-char **פגומי-צ'קסאם** — brute-force תו-בודד 0/8) · Ynet.txt=WIF תקף שלא-תואם-לאף-חשבון-חי · חח.txt=רשימות-github · Roshcaregt.txt=טוקן-github
+- **VLM לתמונת-WhatsApp שהועלתה (IMG-20260905-WA0025.jpg)**: מסך-"Back Up Mnemonic · Security Wallet" — 12 מילים → **זהה ל-tron-legacy-mnemonic.txt**! נבדקו 5,014 גזירות (BIP44 coin-sweep 0..2500 · seed-hashes · getPrivateKeys × כל-החשבונות) — אפס-התאמות למפתחות-steem/hive
+- עדות-היסטורית: command_seen.json — ping by=tov txid=2b2387cc ב-2026-09-03 ⇒ tov היה-חי במערכת-לפני-שהכספת-נבנתה (5-9); המפתחות-מהעידן-ההוא נמחו-ב-reset
+- **פסק-דין-פורנזי (אטום)**: מפתחות-החיים-של @tov לא-קיימים באף-מקור מקומי/git/גיבויים/גזירות. reset_account=null · account_auths ריקים בשתי-השרשראות ⇒ אין-דרך-התאוששות-שרשרת. המפתח **אצל-המפעיל** — soldier_repair.cjs מוכן (הדבקה-נסתרת → אימות-שליטה → account_update2 + head-in-posting)
+- **KEYS-ZIP-2026-09-09.zip.enc נבנה ונדחף**: 18 קבצים (כל-agent/keys · .env · חותמת+מטא · עדות-רוטציה · קבצי-upload של-המפעיל · MANIFEST) · AES-256-CBC pbkdf2-300k · roundtrip-אומת (diff תואם) · sha256-צפוי ב-README-HE · **סיסמה נמסרה בצ'אט בלבד**
+
+Stage Summary:
+- הזיפ-המוצפן עם כל-המפתחות בתיקיית-הזיפים (download/) ונדחף לגיטהאב — הוראת-המפעיל מולאה
+- tov: לא-ניתן-לשחזור מהחומר-הקיים (הוכח-פורנזית); נדרשת-הדבקה-אחת מהמפעיל → תיקון-מלא בדקות
+- 11/11 חשבונות ממופים: ראש 10/10 · 9-מלאי-היב · ynet via-head · tov ממתין-מפתח
+- לידה-טכנית: תיקון-גזירת-pubkey (RIPEMD160) + crack_tov.cjs ככלי-פורנזיקה-חוזר
+- commits: c6ce6c5 (KEYS-ZIP) · push מבוצע בסוף-הסבב
