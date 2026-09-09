@@ -96,7 +96,7 @@ export function NexusHeader({
     <header className="sticky top-0 z-40 border-b border-zinc-800/70 bg-zinc-950/85 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 md:px-6">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-500/10">
+          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-500/10 shadow-[0_0_16px_-2px_rgba(16,185,129,0.35)]">
             <Activity className="h-4 w-4 text-emerald-300" aria-hidden />
           </div>
           <div className="min-w-0 leading-tight">
@@ -264,7 +264,7 @@ export function BottomNav({ active, onNavigate }: { active: SectionId; onNavigat
   );
 }
 
-/* ── מסילת-צד-מחשב · תתי-תפריטים-פתוחים-למסך-הפעיל ── */
+/* ── מסילת-צד-מחשב · תתי-תפריטים-פתוחים-למסך-הפעיל · 117q — מדריך-עין+זרוע-פעילה ── */
 export function DesktopRail({
   active,
   sub,
@@ -280,24 +280,33 @@ export function DesktopRail({
         const Icon = s.icon;
         const on = active === s.id;
         return (
-          <div key={s.id}>
+          <div key={s.id} className="relative">
+            {on && <span aria-hidden className="absolute inset-y-1 right-0 w-0.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />}
             <button
               onClick={() => onNavigate(s.id)}
               aria-current={on ? "page" : undefined}
               className={cn(
-                "group flex w-full items-center gap-3 rounded-md border px-3 py-2.5 text-right transition-all",
-                on ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-200" : "border-transparent text-zinc-500 hover:border-zinc-800 hover:bg-zinc-900/60 hover:text-zinc-300"
+                "group flex w-full items-center gap-3 rounded-md border px-3 py-2.5 text-right transition-all duration-200",
+                on
+                  ? "border-emerald-500/40 bg-gradient-to-l from-emerald-500/[0.13] to-emerald-500/[0.04] text-emerald-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                  : "border-transparent text-zinc-500 hover:border-zinc-800 hover:bg-zinc-900/60 hover:text-zinc-300"
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", on ? "text-emerald-300" : "text-zinc-600 group-hover:text-zinc-400")} aria-hidden />
+              <Icon className={cn("h-4 w-4 shrink-0 transition-colors", on ? "text-emerald-300" : "text-zinc-600 group-hover:text-zinc-400")} aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold leading-tight">{s.label}</span>
                 <span dir="ltr" className="block text-[9px] uppercase tracking-[0.22em] text-zinc-600">{s.en}</span>
               </span>
-              {on && <ChevronDown className="h-3.5 w-3.5 text-emerald-400/70" aria-hidden />}
+              <ChevronDown
+                aria-hidden
+                className={cn(
+                  "h-3.5 w-3.5 shrink-0 transition-all duration-300",
+                  on ? "rotate-180 text-emerald-400/80 opacity-100" : "text-zinc-700 opacity-0 group-hover:opacity-60"
+                )}
+              />
             </button>
             {on && (
-              <div className="mb-1 ml-4 mt-0.5 flex flex-col gap-0.5 border-r border-zinc-800 pr-2" role="tablist" aria-label="תתי-תפריט">
+              <div className="mb-1.5 ml-4 mt-1 flex flex-col gap-0.5 border-r border-zinc-800/80 pr-3" role="tablist" aria-label="תתי-תפריט">
                 {SUBS[s.id].map((u) => {
                   const onSub = u.id === sub;
                   return (
@@ -307,10 +316,19 @@ export function DesktopRail({
                       aria-selected={onSub}
                       onClick={() => onNavigate(s.id, u.id)}
                       className={cn(
-                        "rounded px-2 py-1.5 text-right text-xs transition-colors",
-                        onSub ? "bg-emerald-500/10 font-bold text-emerald-300" : "text-zinc-600 hover:bg-zinc-900/60 hover:text-zinc-400"
+                        "relative flex items-center gap-2 rounded px-2 py-1.5 text-right text-xs transition-all duration-150",
+                        onSub
+                          ? "bg-emerald-500/10 font-bold text-emerald-300"
+                          : "text-zinc-600 hover:bg-zinc-900/60 hover:text-zinc-400"
                       )}
                     >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "h-1 w-1 shrink-0 rounded-full transition-all duration-150",
+                          onSub ? "bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.8)]" : "bg-zinc-700"
+                        )}
+                      />
                       {u.label}
                     </button>
                   );

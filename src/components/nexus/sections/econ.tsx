@@ -24,16 +24,16 @@ function Pools({ data }: { data: NexusData }) {
       </Panel>
       <Panel className="p-4 md:p-5">
         <SecHead icon={<Layers className="h-4 w-4" />} title={`${p.poolsX.length}-בריכות-צולבות`} sub="שוק-פנימי-ריבוני · עמלות-נזרעות-לLP" />
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 nexus-scroll-x">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
           {p.poolsX.map((x) => (
-            <div key={x.pair} className="w-40 shrink-0 rounded-md border border-zinc-800/70 bg-zinc-900/40 p-3" dir="ltr">
+            <div key={x.pair} className="rounded-md border border-zinc-800/70 bg-zinc-900/40 p-3 transition-colors hover:border-emerald-500/25" dir="ltr">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-zinc-100">{x.pair}</span>
-                <span className="font-mono text-[9px] text-zinc-600">{x.feeBps}bps</span>
+                <span className="truncate font-mono text-xs font-bold text-zinc-100">{x.pair}</span>
+                <span className="shrink-0 font-mono text-[9px] text-zinc-600">{x.feeBps}bps</span>
               </div>
               <div className="mt-1.5 space-y-0.5 font-mono text-[10px] text-zinc-500">
-                <div className="flex justify-between"><span>{x.symA}</span><span className="tabular-nums text-zinc-300">{fmtCompact(x.a)}</span></div>
-                <div className="flex justify-between"><span>{x.symB}</span><span className="tabular-nums text-zinc-300">{fmtCompact(x.b)}</span></div>
+                <div className="flex justify-between"><span className="truncate">{x.symA}</span><span className="tabular-nums text-zinc-300">{fmtCompact(x.a)}</span></div>
+                <div className="flex justify-between"><span className="truncate">{x.symB}</span><span className="tabular-nums text-zinc-300">{fmtCompact(x.b)}</span></div>
                 <div className="flex justify-between"><span>LP</span><span className="tabular-nums">{fmtCompact(x.lp)}</span></div>
               </div>
             </div>
