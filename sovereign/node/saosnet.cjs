@@ -197,16 +197,30 @@ function loadDotEnv(dir) {
   } catch (_) {}
   return out;
 }
-const ENV = loadDotEnv(AGENT_DIR);
+/* 117p6 — ENV-חי: קריאה-מחדש-עדינה (TTL 30ש׳). ה-ENV-הקבוע-בזמן-require שיקר-עלינו:
+ * grid98-התושב עלה בתוך-חלון-השריפה (17:48) כש-.env-היה-שלד → מסילת-הראש-מתה-בשקט
+ * (אפס-ניסיונות-head-anchor בלוג). עכשיו: שינוי-.env נקלט-תוך-30ש׳ בלי-ריסטרט. */
+let _envTTL = 0; let _envCache = loadDotEnv(AGENT_DIR);
+function envLive(k) { const t = Date.now(); if (t - _envTTL > 30000) { _envCache = loadDotEnv(AGENT_DIR); _envTTL = t; } return _envCache[k] || ''; }
+const ENV = new Proxy({}, { get: (_t, k) => envLive(String(k)) });
 
 function loadArmyPosting() {
   try {
     const v = JSON.parse(fs.readFileSync(path.join(AGENT_DIR, 'keys', 'vault.json'), 'utf8'));
     return (v.accounts || [])
       .filter((a) => a && a.username && String(a.username).toLowerCase() !== ACCOUNT)
-      .map((a) => ({ username: String(a.username).toLowerCase(), postingWif: (a.keys && a.keys.posting && a.keys.posting.wif) || '' }))
-      .filter((a) => a.postingWif);
+      /* 117p6 — viaHead: חייל-בלי-מפתח-משלו-בכספת (ynet) שהראש יושב-ב-posting-auth-שלו
+       * על-השרשרת (הוכח-חי: STEEM txid bdeb5d34… + HIVE block 109772569 — rail-proof).
+       * נחתם-במפתח-הראש, required_posting_auths נשאר-החייל, ה-RC נצרך-אצל-החייל. */
+      .map((a) => ({ username: String(a.username).toLowerCase(), postingWif: (a.keys && a.keys.posting && a.keys.posting.wif) || '', viaHead: !((a.keys && a.keys.posting && a.keys.posting.wif)) }))
+      .filter((a) => a.postingWif || a.viaHead);
   } catch (_) { return []; }
+}
+
+/* 117p6 — בחירת-מפתח-חתימה לחייל: משלו אם-יש, אחרת מפתח-הראש (viaHead). */
+function signWifFor(s, chain) {
+  if (s && s.postingWif) return s.postingWif;
+  return chain === 'hive' ? envLive('HIVE_POSTING_WIF') : envLive('POSTING_WIF');
 }
 
 function rpcNode(node, method, params, timeout = 15000) {
@@ -305,10 +319,12 @@ async function anchorSteem(payload) {
     } else log('steem-anchor head RC ' + rc.toFixed(0) + '% < ' + RC_GATE_HEAD + '% → fleet fallback');
   }
   const army = loadArmyPosting();
-  for (const s of army.slice(0, 4)) {
+  /* 117p6 — viaHead-קודם: חייל-בלי-מפתח-משלו נראה-מייד (ולא-נבלע-מאחורי-4-הראשונים) */
+  const fleetSorted = army.slice().sort((a, b) => (b.viaHead ? 1 : 0) - (a.viaHead ? 1 : 0));
+  for (const s of fleetSorted.slice(0, 4)) {
     const rc = await rcPct(s.username);
     if (rc < RC_GATE_ATTEST) continue;
-    try { return { txid: await anchorWith(s.username, s.postingWif), by: s.username }; }
+    try { return { txid: await anchorWith(s.username, signWifFor(s, 'steem')), by: s.username, viaHead: !!s.viaHead }; }
     catch (e) { log('steem-anchor @' + s.username + ' FAIL: ' + String((e && e.message) || e).slice(0, 90)); }
   }
   return { skip: 'no anchor-writer fuel (head+fleet)' };
@@ -336,7 +352,7 @@ async function anchorHiveViaFleet(payload) {
       };
       const prev = steem.config.get('chain_id');
       let signed;
-      try { steem.config.set('chain_id', HIVE_CHAIN_ID); signed = steem.auth.signTransaction(tx, [s.postingWif]); }
+      try { steem.config.set('chain_id', HIVE_CHAIN_ID); signed = steem.auth.signTransaction(tx, [signWifFor(s, 'hive')]); }
       finally { steem.config.set('chain_id', prev); }
       await hiveRpcCall('condenser_api.broadcast_transaction', [signed]);
       return { txid: null, by: s.username, pending: true }; // txid מההיסטוריה-מאוחר (עיכוב-אינדוקס)
@@ -368,11 +384,11 @@ async function soldierAttest(checkpointHash, height, stateRoot, nodeSt) {
     if (rc < RC_GATE_ATTEST) { log('attest @' + s.username + ' skip RC ' + rc.toFixed(0) + '%'); continue; }
     const payload = { action: 'attest', net: NET, height, round, checkpointHash, stateRoot, validator: s.username };
     try {
-      const conf = await steem.broadcast.sendAsync({ operations: [netOp(payload, s.username)], extensions: [] }, [s.postingWif]);
+      const conf = await steem.broadcast.sendAsync({ operations: [netOp(payload, s.username)], extensions: [] }, [signWifFor(s, 'steem')]);
       const txid = (conf && conf.id) || null;
-      fired.push({ validator: s.username, txid, verified: false });
+      fired.push({ validator: s.username, txid, verified: false, viaHead: !!s.viaHead });
       budget[day] = budget[day] || {}; budget[day][s.username] = (budget[day][s.username] || 0) + 1;
-      log('attest ✓ @' + s.username + ' txid=' + txid);
+      log('attest ✓ @' + s.username + (s.viaHead ? ' via-head' : '') + ' txid=' + txid);
       await new Promise((res) => setTimeout(res, 3400));
     } catch (e) { log('attest @' + s.username + ' FAIL: ' + String((e && e.message) || e).slice(0, 90)); }
   }
@@ -485,9 +501,9 @@ async function produceForRound(nodeSt, st, nextHeight) {
   if (rc < RC_GATE_PRODUCE) { rot.rounds[r] = { round: r, producer: mandated, height: nextHeight, ref: null, hostTxid: null, verified: false, miss: 'rc-low' }; rot.misses++; log('produce r' + r + ' MISS @' + mandated + ' RC ' + rc.toFixed(0) + '%'); return null; }
   const payload = { action: 'produce', net: NET, round: r, height: nextHeight, producer: mandated, genesisHash: nodeSt.genesisHash, time: new Date().toISOString() };
   try {
-    const conf = await steem.broadcast.sendAsync({ operations: [netOp(payload, s.username)], extensions: [] }, [s.postingWif]);
+    const conf = await steem.broadcast.sendAsync({ operations: [netOp(payload, s.username)], extensions: [] }, [signWifFor(s, 'steem')]);
     const txid = (conf && conf.id) || null;
-    log('produce ✓ r' + r + ' head=@' + mandated + ' txid=' + txid);
+    log('produce ✓ r' + r + ' head=@' + mandated + (s.viaHead ? ' via-head' : '') + ' txid=' + txid);
     return { round: r, producer: mandated, height: nextHeight, ref: 'prc:' + r + ':' + (txid || 'pending'), hostTxid: txid };
   } catch (e) {
     rot.rounds[r] = { round: r, producer: mandated, height: nextHeight, ref: null, hostTxid: null, verified: false, miss: 'broadcast-fail' };
