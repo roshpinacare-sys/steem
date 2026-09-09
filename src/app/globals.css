@@ -299,3 +299,79 @@ header.sticky::after {
   pointer-events: none;
   background: linear-gradient(180deg, rgba(16, 185, 129, 0.05), transparent 55%);
 }
+
+/* ═════════ 117p5c — שכבת-ליטוש · נשימה · נגישות ═════════ */
+
+/* ברק-חוצה (light-sweep) — עובר על הפאנל ברגע-ה-hover, נותן-חיות-בלי-רעש */
+.sheen {
+  position: relative;
+  overflow: hidden;
+}
+.sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.055) 50%, transparent 58%);
+  transform: translateX(-120%);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sheen:hover::before {
+  transform: translateX(120%);
+}
+
+/* כניסה-רכה (לגיליון-עוד, כרטיסים-קופצים) — CSS בלבד, אפס-JS */
+.rise-in {
+  animation: rise-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-in {
+  animation: fade-in 0.2s ease-out both;
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* טבעת-לוגו-נושמת בראש */
+.logo-breathe::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  animation: logo-pulse 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes logo-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.06); }
+}
+
+/* מקשי-מקלדת — טבעת-מיקוד אמרלד ברורה (נגישות) */
+:where(button, a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid rgba(16, 185, 129, 0.65);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* כבוד-למי-שמבקש-שקט-תנועתי (prefers-reduced-motion) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
