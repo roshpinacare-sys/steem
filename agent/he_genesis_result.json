@@ -1,7 +1,7 @@
 {
-  "at": "2026-09-08T23:16:01.373Z",
+  "at": "2026-09-09T00:01:02.151Z",
   "dry": false,
-  "run": 162,
+  "run": 163,
   "ladder": {
     "bee": {
       "before": 6.1400887,
@@ -17,19 +17,19 @@
   },
   "steps": [
     {
-      "step": "rc-gate",
-      "ok": true,
-      "detail": "Hive RC estimated 166708820 < 280M — ladder waits ≈32min for regen · nothing lost"
+      "step": "hive→swap.hive",
+      "ok": false,
+      "detail": "failed: missing required active authority:s.check_authority( id ): Missing Active Authority headcornerTransaction failed to validate using both new "
     },
     {
       "step": "buy BEE",
       "ok": true,
-      "detail": "skipped — RC gate (regen in progress)"
+      "detail": "budget 0.000 SWAP.HIVE < 0.05 — nothing to buy this run (swap=0.050, reserve=0.05)"
     },
     {
       "step": "genesis gate",
       "ok": true,
-      "detail": "6.14/100 BEE · RC-gated — autonomous rerun when regen completes"
+      "detail": "6.14/100 BEE — ladder continues (release trickle feeds the next runs)"
     }
   ],
   "token": {
