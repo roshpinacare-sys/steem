@@ -572,7 +572,10 @@ function healFleetKeys(res) {
     return;
   }
   if (!fleetPresent && sealed) {
-    // THE ZERO-TOUCH RESTORE — sandbox wiped keys, private repo still holds the seal
+    // LOCAL restore — seal now lives machine-local only (117p: keys fully out of repo).
+    // After a sandbox reset the seal is NOT in the fresh clone → operator restores via
+    // THE-GATE paste (UI: #gate/connect) or decrypts download/KEYS-BACKUP-*.tar.enc
+    // (operator password, chat-only). No silent path, no key material in git. Ever.
     try {
       sh(process.execPath, [path.join(AGENT_DIR, 'fleet_vault.cjs'), '--open'], { cwd: AGENT_DIR, timeout: 60_000 });
       res.actions.push('FLEET-RESTORED-FROM-SEAL(zero-touch)');
