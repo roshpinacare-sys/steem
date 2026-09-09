@@ -60,17 +60,21 @@ async function brokerDoors(): Promise<DoorRec[]> {
 function registryDoors(): DoorRec[] {
   try {
     const r = JSON.parse(fs.readFileSync(REGISTRY, "utf8")) as { accounts?: Array<J> };
-    return (r.accounts || []).map((a, i) => {
-      const addr = String(a.tron || "");
-      return {
-        id: "reg:" + i,
-        family: "registry",
-        address: addr,
-        path: String(a.agent || "agent"),
-        balSun: null,
-        balTrx: null,
-      };
-    }).filter((d) => d.address.length > 20);
+    return (r.accounts || [])
+      .map((a, i) => {
+        const t = (a.tron && typeof a.tron === "object" ? (a.tron as J) : {}) as J;
+        const addr = String(t.address || a.tron || "");
+        const agent = String(a.agent || "agent");
+        return {
+          id: "reg:" + i,
+          family: "registry",
+          address: addr,
+          path: agent,
+          balSun: null,
+          balTrx: null,
+        };
+      })
+      .filter((d) => d.address.length > 20);
   } catch {
     return [];
   }

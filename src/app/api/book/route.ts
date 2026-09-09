@@ -63,34 +63,63 @@ function tailBlocks(bytes = 1_500_000): BlockRec[] {
   }
 }
 
-/** קפיצה-לגובה — byte-seek משוערך (הבלוקים-סדרתיים-בקובץ) */
+/** קפיצה-לגובה — חיפוש-איטרטיבי-בינארי (הבלוקים-סדרתיים-בקובץ, צפיפות-לא-אחידה) */
 function blockAtHeight(h: number): BlockRec | null {
   try {
     const st = fs.statSync(ARCHIVE);
+    const win = 200_000;
+    const readWindow = (start: number): { minH: number; maxH: number; lines: string[] } => {
+      const buf = Buffer.alloc(win);
+      const fd = fs.openSync(ARCHIVE, "r");
+      fs.readSync(fd, buf, 0, win, start);
+      fs.closeSync(fd);
+      const lines = buf.toString("utf8").split("\n").filter(Boolean);
+      let minH = Infinity;
+      let maxH = 0;
+      for (const l of lines) {
+        try {
+          const hh = (JSON.parse(l) as { height?: number }).height || 0;
+          if (hh) {
+            if (hh < minH) minH = hh;
+            if (hh > maxH) maxH = hh;
+          }
+        } catch { /* גבול-שורה-שבורה */ }
+      }
+      return { minH, maxH, lines };
+    };
     // זנב-קבוע ראשון — רוב-הבקשות-חיות-שם
     const tail = tailBlocks(400_000);
+    const inTail = tail.find((b) => b.height === h);
+    if (inTail) return inTail;
     const oldest = tail.length ? tail[tail.length - 1].height : 0;
-    if (h >= oldest) return tail.find((b) => b.height === h) || null;
-    // byte-seek משוערך לפי יחס-גובה/גובה-הזנב
-    const guess = Math.floor((st.size * h) / Math.max(1, oldest));
-    const win = Math.min(st.size, 1_500_000);
-    const start = Math.max(0, Math.min(st.size - win, guess - win / 2));
-    const buf = Buffer.alloc(win);
-    const fd = fs.openSync(ARCHIVE, "r");
-    fs.readSync(fd, buf, 0, win, start);
-    fs.closeSync(fd);
-    const lines = buf.toString("utf8").split("\n").filter(Boolean);
-    let best: BlockRec | null = null;
-    let bestD = Infinity;
-    for (const l of lines) {
-      const b = parseLine(l);
-      if (b && Math.abs(b.height - h) < bestD) {
-        best = b;
-        bestD = Math.abs(b.height - h);
-        if (bestD === 0) break;
+    if (h > oldest) return null;
+    // חיפוש-בינארי-על-פוזיציית-בייט (הגבהים-מונוטוניים-בקובץ-סדרתי)
+    let lo = 0;
+    let hi = Math.max(0, st.size - win);
+    let pos = Math.max(lo, Math.min(hi, Math.floor((st.size * h) / Math.max(1, oldest)) - win / 2));
+    for (let it = 0; it < 12; it++) {
+      const { minH, maxH, lines } = readWindow(pos);
+      if (minH === Infinity) break;
+      if (h >= minH && h <= maxH) {
+        // חילוץ-מדויק-מהחלון
+        let best: BlockRec | null = null;
+        let bestD = Infinity;
+        for (let i = lines.length - 1; i >= 0; i--) {
+          const b = parseLine(lines[i]);
+          if (b && Math.abs(b.height - h) < bestD) {
+            best = b;
+            bestD = Math.abs(b.height - h);
+            if (bestD === 0) break;
+          }
+        }
+        return best;
       }
+      if (h > maxH) lo = Math.min(hi, pos + Math.max(1, Math.floor(win / 2)));
+      else hi = Math.max(lo, pos - Math.max(1, Math.floor(win / 2)));
+      if (lo === hi && pos === lo) break;
+      pos = Math.round((lo + hi) / 2);
     }
-    return best && bestD <= 40 ? best : null;
+    return null;
   } catch {
     return null;
   }
