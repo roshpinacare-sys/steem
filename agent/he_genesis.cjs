@@ -51,7 +51,11 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-const DRY = process.argv.includes('--dry');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 const NO_HBD = process.argv.includes('--no-convert-hbd');
 const argOf = (n, d) => {
   const i = process.argv.indexOf(n);

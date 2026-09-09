@@ -24,9 +24,14 @@ const ACCOUNT = 'headcorner';
 
 const DEV_ACT = 5;   // מעשה-מעל-סטייה-זו (%)
 const DEV_OK = 12;   // יעד-סובלנות (%)
-const DRY = process.argv.includes('--dry');
+// LIVE-GATE (Task 28-b): DRY by default — beats drive saosnet mutations, so the shared gate
+// is required here too (--dry always wins). See DAEMONS.md.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry;
 
 const log = (m) => console.log('[rean103] ' + m);
+announceGate(GATE, log);
 const readJSON = (p, d) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (_) { return d; } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const snap = () => { const s = readJSON(SNAP, null); if (!s || !s.st) throw new Error('no snapshot'); return s.st; };
@@ -85,7 +90,7 @@ function issueMission(id, ops) {
   log('issued ' + id + ' ops=' + ops.length);
 }
 function beatOnce(label) {
-  const r = spawnSync('node', ['saosnet.cjs', '--live'], { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
+  const r = spawnSync('node', ['saosnet.cjs'].concat(DRY ? [] : ['--live']), { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
   log('beat(' + label + ') exit=' + r.status);
   return r.status === 0;
 }

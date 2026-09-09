@@ -94,7 +94,11 @@ const ENV = loadDotEnv(__dirname);
 const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 steem.api.setOptions({ url: ENV.RPC_URL || 'https://api.steemit.com' });
 const POSTING_WIF = ENV.POSTING_WIF || '';
-const DRY = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry || String(process.env.DRY_RUN || '').toLowerCase() === 'true';
+announceGate(Object.assign({}, GATE, { live: !DRY, dry: DRY }), log);
+
 const VERIFY_ONLY = process.argv.includes('--verify-only');
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] registry: ' + msg); }

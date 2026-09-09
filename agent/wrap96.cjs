@@ -59,6 +59,13 @@ const readJSON = (p, d) => { try { return JSON.parse(fs.readFileSync(p, 'utf8'))
 const writeJSON = (p, o) => fs.writeFileSync(p, JSON.stringify(o, null, 2) + '\n');
 const sha = (o) => crypto.createHash('sha256').update(typeof o === 'string' ? o : JSON.stringify(o)).digest('hex');
 
+// LIVE-GATE (Task 28-b): DRY by default — --run is this daemon's explicit-enable,
+// the shared gate adds the HE_LIVE_CONFIRM layer (--dry always wins). See DAEMONS.md.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv.concat(process.argv.includes('--run') ? ['--live'] : []), { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 function httpsGet(url, timeout = 20000) {
   return new Promise((resolve, reject) => {
     https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 SAOS-96', Accept: 'application/json' }, timeout }, (r) => {
@@ -170,7 +177,7 @@ function issueMission(id, ops) {
 
 async function beatOnce(label) {
   log('beat (' + label + '): spawning saosnet --live …');
-  const r = spawnSync('node', ['saosnet.cjs', '--live'], { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
+  const r = spawnSync('node', ['saosnet.cjs'].concat(DRY ? [] : ['--live']), { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
   const tail = String(r.stdout || '').split('\n').filter(Boolean).slice(-3).join(' | ');
   log('beat (' + label + ') exit=' + r.status + ' · ' + tail.slice(0, 220));
   return { exit: r.status, tail };
@@ -192,6 +199,7 @@ async function bookScanRefs(refs) {
 /* M6 — עוגן-Steem custom_json (אפס-עמלה) */
 async function anchorSteem(digest, summary) {
   if (!POSTING_WIF) return { error: 'no POSTING_WIF', txid: null };
+  if (DRY) return { error: 'DRY (live-gate) — anchor not broadcast', txid: null, dry: true };
   const nonce = crypto.randomBytes(6).toString('hex');
   const payload = { t: 'wrap-anchor', v: 96, n: nonce, digest, summary, ts: new Date().toISOString() };
   let txid = null;

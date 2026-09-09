@@ -64,6 +64,13 @@ const readJSON = (p, dflt) => { try { return JSON.parse(fs.readFileSync(p, 'utf8
 const writeJSON = (p, o) => { fs.writeFileSync(p, JSON.stringify(o, null, 2) + '\n'); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// LIVE-GATE (Task 28-b): DRY by default — --run is this daemon's explicit-enable,
+// the shared gate adds the HE_LIVE_CONFIRM layer (--dry always wins). See DAEMONS.md.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv.concat(process.argv.includes('--run') ? ['--live'] : []), { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 function httpsPost(urlStr, body, timeoutMs = 15000) {
   const u = new URL(urlStr);
   const payload = JSON.stringify(body);
@@ -97,7 +104,7 @@ async function rpcNode(urlStr, method, params, timeoutMs = 20000) {
 
 /* צעד-עזר: פעימה-חיה של הצומת (spawn מסונכרן — המנעול מגן מפני-כפילות) */
 function runBeat(timeoutMs = 300000) {
-  const r = spawnSync('node', ['saosnet.cjs', '--live'], { cwd: NODE_DIR, timeout: timeoutMs, encoding: 'utf8' });
+  const r = spawnSync('node', ['saosnet.cjs'].concat(DRY ? [] : ['--live']), { cwd: NODE_DIR, timeout: timeoutMs, encoding: 'utf8' });
   return { ok: r.status === 0, tail: String(r.stdout || '').split('\n').filter(Boolean).slice(-6).join(' | ') || String(r.stderr || '').slice(0, 160) };
 }
 
@@ -151,7 +158,7 @@ function nodeState() {
 function soldierRound() {
   const before = readJSON(path.join(AGENT_DIR, 'microdex_state.json'), { txids: [] });
   const nBefore = (before.txids || []).length;
-  const r = spawnSync('node', ['microdex.cjs', '--live'], { cwd: AGENT_DIR, timeout: 300000, encoding: 'utf8' });
+  const r = spawnSync('node', ['microdex.cjs'].concat(DRY ? [] : ['--live']), { cwd: AGENT_DIR, timeout: 300000, encoding: 'utf8' });
   const after = readJSON(path.join(AGENT_DIR, 'microdex_state.json'), { txids: [] });
   const fresh = (after.txids || []).slice(nBefore);
   return { exit: r.status, newOps: fresh.length, fresh, tail: String(r.stdout || '').split('\n').filter(Boolean).slice(-4).join(' | ') };
@@ -160,6 +167,7 @@ function soldierRound() {
 /* S6 — עוגן-המשימה על Steem (custom_json — אפס-STEEM-נז) */
 async function anchorMission(payloadDigest, summary) {
   if (!POSTING_WIF) return { error: 'no POSTING_WIF' };
+  if (DRY) return { error: 'DRY (live-gate) — anchor not broadcast', dry: true };
   const nonce = crypto.randomBytes(6).toString('hex');
   const payload = { t: 'chaintalk-anchor', v: 94, n: nonce, digest: payloadDigest, summary, ts: new Date().toISOString() };
   const txid = await new Promise((resolve, reject) => {

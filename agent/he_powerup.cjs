@@ -30,6 +30,11 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 const AMOUNT_RAW = process.argv.find((a) => a.startsWith('--amount')) ? process.argv[process.argv.indexOf('--amount') + 1] : '1.400';
 // Task 27: --amount ALL → power up the whole liquid balance (owner directive:
 // "obtain HIVE and close the resource corner" — the 9.682 HIVE must not sit).
@@ -97,6 +102,11 @@ async function main() {
     process.exit(3);
   }
   log('RC feasibility ✓ ' + manaNow + ' ≥ ' + OP_COST);
+
+  if (DRY) {
+    log('[DRY] LIVE-GATE — would transfer_to_vesting ' + AMOUNT + ' HIVE → HP — nothing broadcast');
+    return;
+  }
 
   const op = ['transfer_to_vesting', { from: ACCOUNT, to: ACCOUNT, amount: AMOUNT + ' HIVE' }];
   const dgp = await rpcV4(HIVE_RPC, { jsonrpc: '2.0', method: 'condenser_api.get_dynamic_global_properties', params: [], id: 2 });

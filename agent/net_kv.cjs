@@ -82,7 +82,11 @@ const ENV = loadDotEnv(__dirname);
 const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 steem.api.setOptions({ url: ENV.RPC_URL || 'https://api.steemit.com' });
 const POSTING_WIF = ENV.POSTING_WIF || '';
-const DRY = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry || String(process.env.DRY_RUN || '').toLowerCase() === 'true';
+announceGate(Object.assign({}, GATE, { live: !DRY, dry: DRY }), log);
+
 const argOf = (name, dflt) => { const i = process.argv.indexOf(name); return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : dflt; };
 
 const MAX_OP_JSON = 8000; // measured wall: 8192 — keep 192B headroom for envelope
