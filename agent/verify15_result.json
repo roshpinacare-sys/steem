@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-08T23:16:09.522Z",
+  "at": "2026-09-09T01:16:02.411Z",
   "cycle": 15,
   "mode": "live+local",
-  "durationMs": 5227,
+  "durationMs": 5371,
   "claims": [
     {
       "rank": 1,
@@ -12,17 +12,17 @@
         {
           "name": "LIVE · walk-the-book: 100 BEE cost",
           "pass": true,
-          "evidence": "gate=59.5647 SWAP.HIVE · askTop=0.59058486 · depth=24 rungs · sufficient=true (claim: 58-60)"
+          "evidence": "gate=59.6064 SWAP.HIVE · askTop=0.59165606 · depth=23 rungs · sufficient=true (claim: 58-60)"
         },
         {
           "name": "LIVE · best-ask in 0.578-0.600 band",
           "pass": true,
-          "evidence": "ask=0.59058486 (claim: 0.580-0.596 · rank-4: 0.584)"
+          "evidence": "ask=0.59165606 (claim: 0.580-0.596 · rank-4: 0.584)"
         },
         {
           "name": "ARITH · first-buy 2.5 SWAP.HIVE → BEE",
           "pass": true,
-          "evidence": "2.5/0.590585 = 4.23 BEE (claim: ~4.3)"
+          "evidence": "2.5/0.591656 = 4.23 BEE (claim: ~4.3)"
         },
         {
           "name": "LOCAL · genesis trigger code (gate 100.5 · precision 3 · maxSupply 1e9 · issue 1e6 · staking+delegation+market)",
@@ -32,12 +32,12 @@
         {
           "name": "LIVE+LOCAL · ladder progress (BEE held / bought-ever / runs)",
           "pass": true,
-          "evidence": "BEE live=6.1400887 · boughtEver=4.2345 · runs=162 (bee_wall: 2.04/100)"
+          "evidence": "BEE live=6.1400887 · boughtEver=4.2345 · runs=164 (bee_wall: 2.04/100)"
         },
         {
           "name": "LIVE · RC regen → time-to-250M",
           "pass": true,
-          "evidence": "RC 167M / 26G · regen ~214M/h · to-250M ≈ 23 min (claim: ~עד-שעה ל-250M)"
+          "evidence": "RC 594M / 26G · regen ~214M/h · to-250M ≈ reached (claim: ~עד-שעה ל-250M)"
         }
       ]
     },
@@ -54,7 +54,7 @@
         {
           "name": "LIVE · SPORTS:SWAP.HIVE book has depth",
           "pass": true,
-          "evidence": "41 asks · top-10 depth ≈ 76.87 SWAP.HIVE · bestAsk=0.0001234"
+          "evidence": "43 asks · top-10 depth ≈ 73.60 SWAP.HIVE · bestAsk=0.00012421"
         },
         {
           "name": "LOCAL · genesis seed-book (asks 500@0.100 · 100@0.500)",
@@ -71,7 +71,7 @@
     {
       "rank": 3,
       "title": "חיילים כצמדים — צבא נזילות מדורג",
-      "verdict": "verified",
+      "verdict": "failed",
       "checks": [
         {
           "name": "LOCAL · liqCycle loop wired in daemon",
@@ -86,12 +86,12 @@
         {
           "name": "LOCAL · daemon liq loop healthy",
           "pass": true,
-          "evidence": "status=daemon-restarting (status 0s old — grace) · lpSupply=— · lastRun=—"
+          "evidence": "status=ok · lpSupply=0 · lastRun=2026-09-09T00:56:00.044Z"
         },
         {
           "name": "LOCAL · live path ops verified (pool_add/order/fill by soldiers)",
-          "pass": true,
-          "evidence": "90/90 txids verified=true · e.g. pool_swapw 0.002 WTRX→SAOS f3d6758b7f50…"
+          "pass": false,
+          "evidence": "0/0 txids verified=true · e.g. —"
         },
         {
           "name": "LOCAL · escrow rail on-chain (transfer→approve→…)",
@@ -118,7 +118,7 @@
         {
           "name": "LIVE · BEE ask (rank-4 claim 0.584)",
           "pass": true,
-          "evidence": "ask=0.590585 HIVE (claim 0.584, סובלנות ±0.01)"
+          "evidence": "ask=0.591656 HIVE (claim 0.584, סובלנות ±0.01)"
         },
         {
           "name": "LOCAL · token-economy params await genesis",
@@ -167,7 +167,7 @@
         {
           "name": "LIVE · curation→SP rail (treasury power on Steem)",
           "pass": true,
-          "evidence": "headcorner: 8.644 vests → ≈5349.3 SP · received=0.4 · delegated=6.7 (fuel-line: האצלות 5,347 SP)"
+          "evidence": "headcorner: 8.644 vests → ≈5349.3 SP · received=0.4 · delegated=6.6 (fuel-line: האצלות 5,347 SP)"
         },
         {
           "name": "LOCAL · console screens vs footer claim",
@@ -177,7 +177,7 @@
         {
           "name": "LOCAL · console reporting fresh",
           "pass": true,
-          "evidence": "updatedAt=2026-09-08T23:16:06.625Z · loops=28"
+          "evidence": "updatedAt=2026-09-09T01:15:56.920Z · loops=38"
         }
       ]
     }
@@ -197,11 +197,11 @@
     }
   ],
   "summary": {
-    "verified": 3,
+    "verified": 2,
     "corrected": 3,
-    "failed": 0,
+    "failed": 1,
     "total": 6,
     "checks": 27,
-    "checksPassed": 27
+    "checksPassed": 26
   }
 }
