@@ -113,10 +113,40 @@ function b58check(payload) {
 /* ── גזירה — idempotent: אותו-זרע = אותן-כתובות, לעולם-לא-מחדשים ──
  * 115: force=true קיים-רק-בתוך-rotate() — גזירה-מאולצת-עם-דיגסט-חדש.
  * ה-guard נשאר-ברירת-מחדל: לא-מחליפים-זהות-על-בר-מה. */
+/* 117p6 — ANTI-ROGUE-SEED: אסור לטבוע זהות-חדשה כשקיימים מקורות-שחזור-מוצפנים.
+ * האסון-שנמדד (117p6): sandbox-reset מחק-את-המפתחות → derive() יצר זרע-אקראי-חדש
+ * → הצומת-פיצל-מצב-שלם-מזהות-שודד. מעתה: כשיש fleet-seal/גיבור/מעטפת-כספת —
+ * טביעת-זרע-חדשה נחסמת וה-watch ממתין לשחזור (retry טבעי). יצירה-אקראית מותרת
+ * רק בעולם-אמיתי-ריק (אף-מקור-שחזור-לא-קיים). */
+const ROGUE_RECOVERY_SOURCES = [
+  path.join(ROOT, 'agent', 'fleet_keys.enc'),
+  path.join(ROOT, 'agent', 'keys', 'vault.enc'),
+];
+function rogueRecoverySourceExists() {
+  if (ROGUE_RECOVERY_SOURCES.some((p) => { try { return fs.statSync(p).size > 0; } catch (_) { return false; } })) return true;
+  try {
+    const dl = path.join(ROOT, 'download');
+    return fs.readdirSync(dl).some((f) => /^KEYS-BACKUP-.*\.tar\.enc$/.test(f));
+  } catch (_) { return false; }
+}
+function blockRogueSeed(reason) {
+  const marker = {
+    at: new Date().toISOString(),
+    blocked: true,
+    reason,
+    note: 'derive() refused to mint a NEW sovereign seed because encrypted recovery sources exist. Restore from fleet-seal/backup — never regenerate identity.',
+  };
+  try { fs.writeFileSync(path.join(ROOT, 'agent', 'ROGUE-SEED-BLOCKED.json'), JSON.stringify(marker, null, 2), { mode: 0o644 }); } catch (_) {}
+  dlog('derive: ROGUE-SEED-BLOCKED — ' + reason);
+  throw new Error('rogue-seed-blocked: ' + reason + ' (מקורות-שחזור-קיימים — שחזר, אל-תטביע-זהות-חדשה)');
+}
 function derive({ quiet, force } = {}) {
   let seedDoc;
   try { seedDoc = VAULT.readMember('wallets-seed.json'); } // 114 — הזרע-מהכספת
   catch (_) {
+    if (rogueRecoverySourceExists()) {
+      blockRogueSeed('vault-seed-missing-but-recovery-sources-exist');
+    }
     seedDoc = { seed: crypto.randomBytes(48).toString('hex'), createdAt: new Date().toISOString(), note: 'SOVEREIGN ROOT — never commit, never regenerate' };
     fs.mkdirSync(path.dirname(KEYFILE), { recursive: true });
     fs.writeFileSync(KEYFILE, JSON.stringify(seedDoc, null, 2), { mode: 0o600 });
