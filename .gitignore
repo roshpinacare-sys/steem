@@ -109,3 +109,9 @@ agent/fleet_keys.meta.json
 download/research/
 download/recovery/
 download/task26-pre-restore-backup.tar.gz
+
+# 117p5 — chain-archive separation: the live jsonl grows ~1.8MB/30min (~86MB/day) and gitkeeper
+# used to carry a FULL new blob every loop. Survival now travels as the compressed seal
+# (chain-archive-seal.jsonl.gz + seal-state, tracked); restore-after-wipe is automatic
+# (sovereign/node/seal_archive.cjs, hooked into gitkeeper step 0b).
+sovereign/node/chain-archive.jsonl

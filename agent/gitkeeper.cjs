@@ -169,6 +169,14 @@ function runOnce() {
   const prev = readState();
   const state = { at: new Date().toISOString(), branch: BRANCH };
 
+  // 0b. 117p5 — seal the chain-archive BEFORE staging: the live jsonl is now
+  //    local-only (gitignored); survival travels as chain-archive-seal.jsonl.gz.
+  //    Handles restore-after-wipe too. Never fatal.
+  try {
+    const sealOut = sh('node ' + JSON.stringify(path.join(REPO, 'sovereign', 'node', 'seal_archive.cjs')), { timeout: 150_000 });
+    log(String(sealOut).trim().split('\n')[0] || 'seal ok');
+  } catch (e) { log('seal failed (non-fatal): ' + String(e.message || e).slice(0, 80)); }
+
   // 0. git available? repo exists?
   try {
     state.head = sh('git rev-parse --short HEAD');
