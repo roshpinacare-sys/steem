@@ -3292,3 +3292,39 @@ Stage Summary:
 - COMMAND-II-עכשיו-נושם: דופק-חי-בכל-מסך · עומק-וזוהר-עדין · אפס-שטח-מת · אפס-חיתוכי-קצה
 - הרשת-לא-עוד-שותקת-4-דק' במקרה-קריסה — bypass-מיידי
 - Commits: 6f3f215 (design+guardian) · 79eadcd (evidence) — pushed
+
+---
+
+## 117p5 — בחינת-הכל (תיקיות+זיפים) · חיזוק-המערכת · חיזוק-העיצוב
+
+**תאריך**: 2026-09-09 · **HEAD בסיום**: ראה git log · **סטטוס**: 🟢 LIVE
+
+### 1. בחינת-כל-התיקיות + הזיפים (בדיקת-סודות מוסתרת)
+- נסרקו כל הארכיונים (12): download/research/zips/* · recovery/steem-main.zip · task26 tar.gz · KEYS-BACKUP tar.enc (חתום-לא-נפתח).
+- שיטה: חילוץ-ל-/tmp → סריקת WIF/ELM/mnemonic → אימות-checksum-bs58 → **תוצאה: 0 מפתח-תקף בשום-ארכיון**. כל-ההתאמות: fixture-ציבורי של steem-js או בס58-פסול-צ'קסאם.
+- task26 tar.gz: תקינות-אושרה (gzip -t OK). KEYS-BACKUP: sha256 5753a90c… יציב.
+- עקובים-בגיט: 7 התאמות-WIF כולן steem.min.js-fixture / בס58-שקרי-ב-bun.lock. נקי.
+
+### 2. חיזוק-המערכת
+- **117p5a — רזולוציית-מאגר**: untrack ל-**10,591 קבצים** (download/research/extracted 9,881 + recovery/steem-main עותק-ריפו-מלא 709 + task26 53MB). הזיפים נשארים-מקומית; KEYS-BACKUP נשאר-נעקב (חמצן-חירום). .gitignore חדש-סעיף-117p5.
+- **117p5b — הפרדת-חי/חותם**: chain-archive.jsonl (74MB, צמיחה ~86MB/יום-ב-.git!) יצא-מהעקיבה. הישרדות = chain-archive-seal.jsonl.gz (**7.8MB, דחיסה 90%**) + seal-state. `sovereign/node/seal_archive.cjs`: שחזור-אוטומטי-מ-wipe (survival-first) + חותם-חדש בסף 128MB/20h. חובר-ל-gitkeeper שלב-0b (לפני add -A, לעולם-לא-פטאלי). roundtrip-אומת.
+- **שחזור-מפתחות-בפועל (שוב!)**: סנדבוקס-reset 17:47 שרף את agent/keys (נשארו 2/13) + fleet_keys.enc. החמצן-שרד-בריפו → פענוח pbkdf2-300k → 13 קבצים 0600 → guardian **auto-RESEAL-fired(keys-newer) · vault-verified · anchoredMatch 12/12 · registryMatch 12/12 · owner-auth-unchanged** → THE-GATE: **11 חיילים · 10/10 חי (Steem+Hive × owner/active/posting/memo) · seal enc+meta · ברוקר-חי**. הדוקטרינה עמדה-במבחן-בפעם-השנייה.
+- **kernel-OOM אמיתי במהלך-העבודה**: next-server (1.39GB) נהרג-ע"י-הקרנל → guardian WEB-REVIVED תוך ~2.3 דק (settleAndCleanCache עבד). הריפוי-העצמי מ-117p2 מאומת-בשדה.
+
+### 3. חיזוק-העיצוב (117p5c)
+- **globals.css**: שכבת-ליטוש — `.sheen` (ברק-חוצה ב-hover) · `.rise-in`/`.fade-in` (כניסה-רכה CSS-טהור) · `.logo-breathe` (טבעת-לוגו-נושמת) · טבעות-מיקוד-אמרלד (נגישות-מקלדת) · **prefers-reduced-motion** מלא.
+- **primitives**: Panel+sheen (ניתן-לכיבוי) · **EmptyState** אחיד (אייקון+כותרת+משנה, 3-גונים).
+- **shell**: גיליון-עוד — rise-in + ידית-גרירה + טשטוש · ניווט-תחתון — active:scale-90 + זוהר-סמל-פעיל · רגל — דוקטרינה ("אפס-סימולציה · אפס-מפתחות-בגיט") · גרסה **r117p5**.
+- **THE-GATE**: גיבור-חשבון — **טבעת-זהות דטרמיניסטית** (גרדיאנט-משם, אפס-רשת) + מחובר-מאז + **שב-מגן-מלא N/N** (זוהר-כש-הכל-ירוק) + שורת-גיבוי (שם+sha256-קידומת+0600) · ספינר-חיבור (Loader2) · EmptyState לתיבת-סוכנים/משימות · סמלי-סטטוס-למשימות · רשימות max-h-96.
+- **page**: קישור-דילוג-לתוכן (sr-only→focus) + עוגן main-content.
+
+### 4. אימות-E2E (agent-browser)
+- שולחן-עבודה: בקרה+שער ✓ · מובייל 390×844: שער+דופק+ניווט-תחתון ✓ · גיליון-עוד ✓.
+- צילומי-עדות: docs/shot-117p5-*.png (7).
+
+### תצפיות-פתוחות
+- saosnet soldier-attest FAIL "Missing Posting Authority" (@wog @woq @cashmachine @haran @israelnews @lsa @macrame) — מצב-טופולוגיה-קיים (החיילים-לא-העבירו-posting-auth-לראש), לא-קשור-למפתחות. דורש-החלטת-מפעיל.
+- eslint מלא נהרג-SIGKILL (OOM) — סריקה-ממוקדת-עברה-נקי. לשקול-הרצה-עם-זיכרון-פנוי-גדול.
+
+### commits
+263c34e (117p5a) → 05f9afb (117p5b) → 117p5c-css → 117p5c-primitives → 117p5c-shell → 117p5c-gate → 117p5c-page → docs+worklog (pushed)
