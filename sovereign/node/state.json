@@ -1,19 +1,11 @@
 {
   "netVersion": "saos-net/0",
   "genesisHash": "5a8b98311c8333efd361fc88972d3f0936216d6ff0e6d39ea7d8e30a35a12ad8",
-  "height": 103791,
-  "stateRoot": "da8ee320efc2effff6ea77249cb4f14796954407d42188177fba1bec44beb5cd",
-  "lastBlockHash": "6e66a34669faccf3799e3bdcd47c4d722bd02d5dfd07dea44bcd37b2c6e77055",
+  "height": 103887,
+  "stateRoot": "3e77b1f8c2573223f13590d4c503235497c883fd9b54517556eedb865e560c24",
+  "lastBlockHash": "b3f35e70eb585fd0d0d558a24dc6c2bcae78fe86687830ad07439d74e86647c4",
   "beats": 2556,
   "checkpoints": [
-    {
-      "height": 96360,
-      "stateRoot": "42a0e77d4d7c70bdf1880cf4775321913aabb3f197bb63097dad0e0d770c6967",
-      "checkpointHash": "7e56df87dba7d86b1702a80a53c0a4bc2e41e24e97dd06bff5148bbc5bd24fd9",
-      "anchors": {},
-      "attests": [],
-      "at": "2026-09-09T18:53:18.243Z"
-    },
     {
       "height": 96456,
       "stateRoot": "5f927df0654313121db1d65bb463ac5848c3c41752dd29d0128ebde1cf050ba1",
@@ -683,6 +675,22 @@
         }
       ],
       "at": "2026-09-09T21:48:32.869Z"
+    },
+    {
+      "height": 103800,
+      "stateRoot": "ba9de549e9a61f24cc14eb51022901cd05b7b8953b64b0978a8f3abf0ff091a4",
+      "checkpointHash": "0d72b19b5b5495be91df943b7e196c46e5cd9d2706ad1d262c06fe4b55e72902",
+      "anchors": {
+        "steem": "1fb40ade8fa90e8116a9dc5e06c6e45294adc31d"
+      },
+      "attests": [
+        {
+          "by": "ynet",
+          "txid": "fa0eb2cb947755c7721203599cfaf83eb0c7daf5",
+          "verified": true
+        }
+      ],
+      "at": "2026-09-09T21:54:11.405Z"
     }
   ],
   "pendingVerifies": [
@@ -760,6 +768,11 @@
       "txid": "e03ef768569a8f168780610fdda01652d5fa6c37",
       "kind": "steem-anchor",
       "at": "2026-09-09T21:48:32.869Z"
+    },
+    {
+      "txid": "1fb40ade8fa90e8116a9dc5e06c6e45294adc31d",
+      "kind": "steem-anchor",
+      "at": "2026-09-09T21:54:11.405Z"
     }
   ],
   "verified": [
@@ -2881,7 +2894,8 @@
     "fc187904127a266efe27b986b956e3d9ffb6abf5",
     "d200c6a5adcc8b331e6277a3c4e965a2aa39cfe2",
     "9bf89acc0c14657798adfba60e16862b89db7ce4",
-    "d78690af05e7006c6139880d326834e46dd870a2"
+    "d78690af05e7006c6139880d326834e46dd870a2",
+    "fa0eb2cb947755c7721203599cfaf83eb0c7daf5"
   ],
   "attestBudget": {
     "2026-09-05": {
@@ -2932,10 +2946,10 @@
       "israelnews": 42
     },
     "2026-09-09": {
-      "ynet": 19
+      "ynet": 20
     }
   },
-  "updatedAt": "2026-09-09T21:53:28.161Z",
+  "updatedAt": "2026-09-09T21:55:37.594Z",
   "mirrorCursors": {
     "sales": [
       "9b980eb0182842e53c433a33a9bd3196a37c134d",
@@ -3701,7 +3715,7 @@
     },
     "measuredAt": "2026-09-06T22:02:22.627Z"
   },
-  "archiveHeight": 103791,
+  "archiveHeight": 103887,
   "wrappedSummary": {
     "WSBD": {
       "supply": 0.26,
@@ -3850,18 +3864,18 @@
   },
   "_feesTrSeen": 10,
   "grid98": {
-    "at": "2026-09-09T21:53:20.131Z",
+    "at": "2026-09-09T21:55:29.517Z",
     "day": "2026-09-09",
-    "ticks": 16735,
-    "rounds": 93222,
-    "tradesToday": 10071,
-    "txsToday": 26912,
+    "ticks": 16743,
+    "rounds": 93317,
+    "tradesToday": 10287,
+    "txsToday": 27312,
     "baseTrades": 5714,
     "baseTxs": 0,
-    "ratePerMin": 16.3,
-    "extrapolatedDay": 23472,
-    "treasuryPnlµ": 13075335374,
-    "treasuryPnlTodayµ": 2524528413,
+    "ratePerMin": 16.6,
+    "extrapolatedDay": 23904,
+    "treasuryPnlµ": 13075335362,
+    "treasuryPnlTodayµ": 2524528401,
     "soldierPnlµ": {
       "wic": 10,
       "wog": 269116144,
@@ -3993,7 +4007,7 @@
     "realizedSinceStepµ": 6302,
     "lastStepTick": 2275,
     "skippedForEdge": 1063513,
-    "rejected": 290554,
+    "rejected": 290579,
     "edgeLeak": 248803,
     "bench": {
       "at": "2026-09-09T20:35:04.532Z",
@@ -4005,7 +4019,7 @@
       "note": "measured kernel applyTx-throughput replaying real archive txs on cloned state — chain mechanism ceiling; sustained-live trade rate is economy/budget-bound and reported separately"
     },
     "disk": {
-      "freeMB": 7779
+      "freeMB": 7754
     },
     "paused": null,
     "pools": {
@@ -4013,75 +4027,21 @@
     },
     "myFills": [
       {
-        "who": "woq",
-        "side": "sell",
-        "px": 0.01725,
-        "amtµ": 1100
-      },
-      {
-        "who": "macrame",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 4459
-      },
-      {
-        "who": "siq",
-        "side": "sell",
-        "px": 0.017232,
-        "amtµ": 1963
-      },
-      {
         "who": "cashmachine",
         "side": "sell",
-        "px": 0.017267,
-        "amtµ": 8664
-      },
-      {
-        "who": "wic",
-        "side": "sell",
-        "px": 0.01725,
-        "amtµ": 6959
+        "px": 0.017232,
+        "amtµ": 7680
       },
       {
         "who": "headcorner",
         "side": "sell",
-        "px": 0.017284,
+        "px": 0.01725,
         "amtµ": 20
       },
       {
         "who": "headcorner",
-        "side": "sell",
-        "px": 0.017284,
-        "amtµ": 250
-      },
-      {
-        "who": "macrame",
-        "side": "sell",
-        "px": 0.01725,
-        "amtµ": 4959
-      },
-      {
-        "who": "siq",
         "side": "sell",
         "px": 0.017232,
-        "amtµ": 1793
-      },
-      {
-        "who": "headcorner",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 20
-      },
-      {
-        "who": "headcorner",
-        "side": "sell",
-        "px": 0.01725,
-        "amtµ": 20
-      },
-      {
-        "who": "headcorner",
-        "side": "sell",
-        "px": 0.01725,
         "amtµ": 20
       },
       {
@@ -4094,286 +4054,274 @@
         "who": "woq",
         "side": "sell",
         "px": 0.017232,
-        "amtµ": 1270
-      },
-      {
-        "who": "headcorner",
-        "side": "sell",
-        "px": 0.017302,
-        "amtµ": 20
-      },
-      {
-        "who": "headcorner",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 20
-      },
-      {
-        "who": "haran",
-        "side": "sell",
-        "px": 0.017232,
-        "amtµ": 517
-      },
-      {
-        "who": "headcorner",
-        "side": "sell",
-        "px": 0.017232,
-        "amtµ": 20
-      },
-      {
-        "who": "tov",
-        "side": "sell",
-        "px": 0.017302,
-        "amtµ": 2587
-      },
-      {
-        "who": "haran",
-        "side": "sell",
-        "px": 0.017284,
-        "amtµ": 898
-      },
-      {
-        "who": "cashmachine",
-        "side": "sell",
-        "px": 0.017284,
-        "amtµ": 9144
-      },
-      {
-        "who": "wic",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 6794
-      },
-      {
-        "who": "wog",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 13866
-      },
-      {
-        "who": "woq",
-        "side": "sell",
-        "px": 0.01725,
-        "amtµ": 1119
-      },
-      {
-        "who": "macrame",
-        "side": "sell",
-        "px": 0.01725,
-        "amtµ": 4959
-      },
-      {
-        "who": "siq",
-        "side": "sell",
-        "px": 0.017302,
         "amtµ": 1523
       },
       {
-        "who": "tov",
-        "side": "sell",
-        "px": 0.017284,
-        "amtµ": 2774
-      },
-      {
-        "who": "haran",
-        "side": "sell",
-        "px": 0.017232,
-        "amtµ": 898
-      },
-      {
-        "who": "cashmachine",
-        "side": "sell",
-        "px": 0.017232,
-        "amtµ": 8914
-      },
-      {
-        "who": "wic",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 6794
-      },
-      {
-        "who": "wog",
-        "side": "sell",
-        "px": 0.01725,
-        "amtµ": 13866
-      },
-      {
-        "who": "macrame",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 4939
-      },
-      {
-        "who": "siq",
-        "side": "sell",
-        "px": 0.017232,
-        "amtµ": 1566
+        "who": "headcorner",
+        "side": "buy",
+        "px": 0.017581,
+        "amtµ": 20
       },
       {
         "who": "cashmachine",
         "side": "sell",
         "px": 0.017284,
-        "amtµ": 8555
+        "amtµ": 5000
       },
       {
         "who": "wic",
         "side": "sell",
         "px": 0.017302,
-        "amtµ": 6751
+        "amtµ": 8241
+      },
+      {
+        "who": "wog",
+        "side": "sell",
+        "px": 0.017284,
+        "amtµ": 13808
+      },
+      {
+        "who": "headcorner",
+        "side": "buy",
+        "px": 0.017616,
+        "amtµ": 20
+      },
+      {
+        "who": "headcorner",
+        "side": "buy",
+        "px": 0.017633,
+        "amtµ": 20
       },
       {
         "who": "woq",
         "side": "sell",
-        "px": 0.01725,
-        "amtµ": 1090
+        "px": 0.017267,
+        "amtµ": 1773
       },
       {
         "who": "macrame",
         "side": "sell",
         "px": 0.017267,
-        "amtµ": 4939
+        "amtµ": 3639
       },
       {
         "who": "siq",
         "side": "sell",
+        "px": 0.01725,
+        "amtµ": 1620
+      },
+      {
+        "who": "tov",
+        "side": "sell",
+        "px": 0.01725,
+        "amtµ": 3420
+      },
+      {
+        "who": "haran",
+        "side": "sell",
         "px": 0.017232,
-        "amtµ": 1890
+        "amtµ": 609
       },
       {
         "who": "cashmachine",
         "side": "sell",
-        "px": 0.017267,
-        "amtµ": 8555
+        "px": 0.017232,
+        "amtµ": 7470
       },
       {
-        "who": "wic",
+        "who": "wog",
         "side": "sell",
-        "px": 0.01725,
-        "amtµ": 7251
+        "px": 0.017302,
+        "amtµ": 13808
       },
       {
         "who": "woq",
         "side": "sell",
         "px": 0.017284,
-        "amtµ": 1263
+        "amtµ": 1802
       },
       {
         "who": "macrame",
         "side": "sell",
         "px": 0.01725,
-        "amtµ": 5439
+        "amtµ": 4119
       },
       {
-        "who": "siq",
+        "who": "tov",
         "side": "sell",
-        "px": 0.017232,
-        "amtµ": 1717
+        "px": 0.017267,
+        "amtµ": 3710
       },
       {
         "who": "haran",
         "side": "sell",
-        "px": 0.017302,
-        "amtµ": 529
-      },
-      {
-        "who": "cashmachine",
-        "side": "sell",
-        "px": 0.017267,
-        "amtµ": 9055
+        "px": 0.017232,
+        "amtµ": 883
       },
       {
         "who": "wic",
         "side": "sell",
-        "px": 0.017232,
-        "amtµ": 7104
+        "px": 0.01725,
+        "amtµ": 8241
       },
       {
         "who": "wog",
         "side": "sell",
-        "px": 0.01725,
-        "amtµ": 13199
+        "px": 0.017267,
+        "amtµ": 13808
       },
       {
-        "who": "tov",
+        "who": "siq",
         "side": "sell",
         "px": 0.017284,
-        "amtµ": 2277
+        "amtµ": 937
       },
       {
-        "who": "haran",
+        "who": "tov",
         "side": "sell",
-        "px": 0.017267,
-        "amtµ": 1029
+        "px": 0.01725,
+        "amtµ": 3666
       },
       {
         "who": "cashmachine",
         "side": "sell",
         "px": 0.017232,
-        "amtµ": 9055
+        "amtµ": 7139
       },
       {
         "who": "wic",
         "side": "sell",
         "px": 0.017302,
-        "amtµ": 6983
+        "amtµ": 8186
       },
       {
         "who": "wog",
         "side": "sell",
         "px": 0.017267,
-        "amtµ": 13510
+        "amtµ": 13808
+      },
+      {
+        "who": "macrame",
+        "side": "sell",
+        "px": 0.01725,
+        "amtµ": 3619
       },
       {
         "who": "siq",
         "side": "sell",
-        "px": 0.01725,
-        "amtµ": 1010
+        "px": 0.017232,
+        "amtµ": 1156
       },
       {
-        "who": "tov",
+        "who": "cashmachine",
         "side": "sell",
-        "px": 0.017232,
-        "amtµ": 2777
+        "px": 0.017284,
+        "amtµ": 7054
       },
       {
         "who": "wic",
         "side": "sell",
         "px": 0.017232,
-        "amtµ": 7483
+        "amtµ": 8686
       },
       {
         "who": "wog",
         "side": "sell",
         "px": 0.017267,
-        "amtµ": 13943
+        "amtµ": 14089
       },
       {
         "who": "macrame",
         "side": "sell",
         "px": 0.017302,
-        "amtµ": 4939
+        "amtµ": 3619
       },
       {
         "who": "siq",
         "side": "sell",
-        "px": 0.017284,
-        "amtµ": 1343
+        "px": 0.01725,
+        "amtµ": 1656
       },
       {
         "who": "tov",
         "side": "sell",
+        "px": 0.017267,
+        "amtµ": 3666
+      },
+      {
+        "who": "cashmachine",
+        "side": "sell",
         "px": 0.01725,
-        "amtµ": 2859
+        "amtµ": 7054
+      },
+      {
+        "who": "wic",
+        "side": "sell",
+        "px": 0.017232,
+        "amtµ": 8476
+      },
+      {
+        "who": "woq",
+        "side": "sell",
+        "px": 0.017267,
+        "amtµ": 911
+      },
+      {
+        "who": "macrame",
+        "side": "sell",
+        "px": 0.017232,
+        "amtµ": 4119
+      },
+      {
+        "who": "haran",
+        "side": "sell",
+        "px": 0.017302,
+        "amtµ": 475
+      },
+      {
+        "who": "cashmachine",
+        "side": "sell",
+        "px": 0.017284,
+        "amtµ": 7494
+      },
+      {
+        "who": "wic",
+        "side": "sell",
+        "px": 0.01725,
+        "amtµ": 8367
+      },
+      {
+        "who": "wog",
+        "side": "sell",
+        "px": 0.017267,
+        "amtµ": 13589
+      },
+      {
+        "who": "macrame",
+        "side": "sell",
+        "px": 0.017232,
+        "amtµ": 3822
+      },
+      {
+        "who": "tov",
+        "side": "sell",
+        "px": 0.017267,
+        "amtµ": 3723
+      },
+      {
+        "who": "haran",
+        "side": "sell",
+        "px": 0.01725,
+        "amtµ": 950
       }
     ],
     "legacyBeats": 124,
     "lastLegacyAt": "2026-09-09T20:46:20.569Z",
     "journal": "grid-journal-2026-09-09.jsonl",
-    "ladderOps": 13638,
+    "ladderOps": 13659,
     "sweepsPaused": 3183,
-    "tradesTotal": 15561,
-    "txsTotal": 267516,
+    "tradesTotal": 15777,
+    "txsTotal": 267644,
     "rmDay": {
       "WBTC/SAOS": "2026-09-08",
       "WETH/SAOS": "2026-09-08",
@@ -4388,15 +4336,15 @@
       "WETH/WSTEEM": "2026-09-09",
       "WSOL/WSTEEM": "2026-09-09"
     },
-    "sweepSpendµ": 17880,
-    "sweeps": 31648,
+    "sweepSpendµ": 17892,
+    "sweeps": 31696,
     "poolflows": 183,
     "lockSkips": 20101,
     "lastSkipLogAt": "2026-09-09T21:51:09.324Z",
-    "height": 103775,
-    "stateRoot": "e3acfc38bad2c360",
-    "treasuryPnlSAOS": 13075335.374,
-    "treasuryPnlTodaySAOS": 2524528.413,
+    "height": 103871,
+    "stateRoot": "cbb8ea0a34f357d3",
+    "treasuryPnlSAOS": 13075335.362,
+    "treasuryPnlTodaySAOS": 2524528.401,
     "feeIncomeµ": 179,
     "dutyPct": 99,
     "topDay": {
@@ -4412,22 +4360,22 @@
       "haran": "2026-09-09T20"
     },
     "topUpsµ": 103829,
-    "bigSweeps": 4466,
+    "bigSweeps": 4470,
     "_fillEdges": {
-      "cashmachine": 92422,
-      "wog": 59825,
-      "woq": 12516,
+      "cashmachine": 98155,
+      "wog": 68388,
+      "woq": 13296,
       "lsa": 9697,
-      "macrame": 11700,
+      "macrame": 14756,
       "ynet": 10828,
-      "wic": 15891,
+      "wic": 21242,
       "headcorner": 7485,
-      "siq": 12526,
-      "haran": 7500,
-      "tov": 21918
+      "siq": 13609,
+      "haran": 7860,
+      "tov": 23559
     },
     "_arb": [],
-    "ticksToday": 4622,
+    "ticksToday": 4630,
     "weights": {
       "wog": 2,
       "tov": 0.4
