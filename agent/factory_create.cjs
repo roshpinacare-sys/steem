@@ -30,11 +30,7 @@ function loadDotEnv(dir) {
 loadDotEnv(__dirname);
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const DRY = GATE.dry;
-announceGate(GATE);
-
+const DRY = process.argv.includes('--dry');
 const argOf = (n, d) => { const i = process.argv.indexOf(n); return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : d; };
 const NAME = argOf('--name', 'hcnova1');
 const SP = parseFloat(argOf('--sp', '50'));

@@ -29,11 +29,7 @@ const HIVE_RPC = 'https://api.hive.blog';
 const HE_RPC = 'https://api.hive-engine.com/rpc/contracts';
 const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const NET = 'saos-net/0';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: HEAD });
-const DRY = GATE.dry;
-announceGate(GATE);
-
+const DRY = process.argv.includes('--dry');
 const SKIP_SCAN = process.argv.includes('--skip-scan');
 
 function loadDotEnv(dir) {

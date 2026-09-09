@@ -18,12 +18,6 @@
 const steem = require('steem');
 
 steem.api.setOptions({ url: process.env.RPC_URL ? 'https://' + process.env.RPC_URL.replace(/^https?:\/\//, '') : 'https://api.steemit.com' });
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const DRY = GATE.dry;
-announceGate(GATE);
-if (DRY) { console.log('[DRY] LIVE-GATE — negative-key broadcast test skipped (nothing sent)'); process.exit(0); }
-
 
 const ACCOUNT = process.env.AGENT_ACCOUNT || 'headcorner';
 

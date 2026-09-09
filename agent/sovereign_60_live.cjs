@@ -43,11 +43,6 @@ const hiveCli = new Client('https://api.hive.blog');
 const HE_RPC = { host: 'api.hive-engine.com', path: '/rpc/contracts' };
 
 const log = (m) => console.log('[' + new Date().toISOString() + '] live60: ' + m);
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const toNum = (s) => parseFloat(String(s || '0').replace(/[^\d.]/g, '')) || 0;
 
@@ -263,7 +258,6 @@ async function engineBuy() {
 
 async function main() {
   if (!POSTING_WIF && !ACTIVE_WIF) { console.error('no WIFs in env — abort'); process.exit(1); }
-  if (DRY) { log('[DRY] LIVE-GATE — curation/DHF/engine execution requires the live gate — nothing broadcast'); return; }
   evSet('meta', { startedAt: new Date().toISOString(), note: 'Task 60 LIVE: curation-ON + DHF funding contract + Engine market execution' });
   await curationLive();
   await dhfProposal();

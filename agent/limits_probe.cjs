@@ -44,11 +44,7 @@ const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const STEEM_RPC = process.env.RPC_URL || 'https://api.steemit.com';
 steem.api.setOptions({ url: STEEM_RPC });
 const POSTING_WIF = ENV.POSTING_WIF || '';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const DRY = GATE.dry || String(process.env.DRY_RUN || '').toLowerCase() === 'true';
-announceGate(Object.assign({}, GATE, { live: !DRY, dry: DRY }), log);
-
+const DRY = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] limits: ' + msg); }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

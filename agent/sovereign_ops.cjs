@@ -44,12 +44,8 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
+const DRY = process.argv.includes('--dry');
 const OPERATOR = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
-const DRY = GATE.dry;
-announceGate(GATE);
-
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const OWNER_WIF = process.env.OWNER_WIF || '';
 const POSTING_WIF = process.env.POSTING_WIF || '';

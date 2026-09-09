@@ -44,11 +44,7 @@ function loadDotEnv(dir) {
 loadDotEnv(__dirname);
 
 const STEEM_RPC = 'https://api.steemit.com';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const LIVE = GATE.live;
-announceGate(GATE, log);
-
+const LIVE = process.argv.includes('--live');
 const MODE = process.argv.includes('--chunk') ? 'chunk' : process.argv.includes('--verify') ? 'verify' : 'run';
 const N_WORKLOADS = 40;
 const BATCH_OPS = 4;

@@ -36,11 +36,7 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
+const DRY = process.argv.includes('--dry');
 const SYMBOLS = (process.argv.find((a) => a.startsWith('--symbols=')) || '--symbols=SPORTS,WAIV')
   .split('=')[1].split(',').map((s) => s.trim()).filter(Boolean);
 

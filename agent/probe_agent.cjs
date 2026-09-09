@@ -9,11 +9,6 @@ if(!fs.existsSync(keyPath)) { console.error('no keys for '+NAME); process.exit(1
 const keys = JSON.parse(fs.readFileSync(keyPath,'utf8'));
 const POSTING_WIF = keys.keys.posting.wif;
 const log=m=>console.log('['+new Date().toISOString()+'] probe:'+m);
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: NAME });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
 function rpcV4(url,body){const u=new URL(url);const p=JSON.stringify(body);return new Promise((res,rej)=>{const q=https.request({hostname:u.hostname,path:u.pathname||'/',method:'POST',family:4,headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(p)},timeout:20000},r=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>{try{const j=JSON.parse(d);j.error?rej(new Error(j.error.message)):res(j.result)}catch(_){rej(new Error('bad rpc'))}})});q.on('timeout',()=>q.destroy(new Error('timeout')));q.on('error',rej);q.write(p);q.end()});}
 async function raceRpc(body){const rs=await Promise.allSettled(RPCS.map(u=>rpcV4(u,body).catch(()=>null)));for(const r of rs)if(r.status==='fulfilled'&&r.value)return r.value;throw new Error('all rpcs failed');}
 (async()=>{
@@ -21,8 +16,6 @@ async function raceRpc(body){const rs=await Promise.allSettled(RPCS.map(u=>rpcV4
   const target = (hot||[]).find(p=>p.author!==NAME);
   if(!target) return log('no target found');
   log('voting @'+target.author+'/'+target.permlink.slice(0,30)+'… weight 100% (50 SP effective)');
-  if (DRY) { log('[DRY] LIVE-GATE — vote not broadcast'); return; }
-
   const dgp = await raceRpc({jsonrpc:'2.0',method:'condenser_api.get_dynamic_global_properties',params:[],id:2});
   const tx={ref_block_num:dgp.head_block_number&0xffff,ref_block_prefix:Buffer.from(dgp.head_block_id,'hex').readUInt32LE(4),expiration:new Date(new Date(dgp.time+'Z').getTime()+60000).toISOString().slice(0,19),operations:[['vote',{voter:NAME,author:target.author,permlink:target.permlink,weight:10000}]],extensions:[]};
   const signed=steem.auth.signTransaction(tx,[POSTING_WIF]);

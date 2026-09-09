@@ -57,12 +57,8 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const LIVE = GATE.live;
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
+const LIVE = process.argv.includes('--live');
+const DRY = process.argv.includes('--dry') || !LIVE;
 // Task 55 — external-event reflex: the fleet responds to ARBITRARY chain events
 // (transfers), not only to its own saos triggers. Two modes:
 //   drill — the engine SENDS the external event itself (soldier→treasury transfer

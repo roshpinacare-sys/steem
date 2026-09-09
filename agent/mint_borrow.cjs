@@ -48,12 +48,8 @@ const OPERATOR = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const RPCS = ['https://api.steemit.com', 'https://api.steem.fans', 'https://api.justyy.com', 'https://steem.61bts.com'];
 
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
-const DRY = GATE.dry;
-const LIVE = GATE.live;
-announceGate(GATE);
-
+const DRY = process.argv.includes('--dry');
+const LIVE = process.argv.includes('--live');
 const argOf = (n, d) => { const i = process.argv.indexOf(n); return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : d; };
 const CREATOR = String(argOf('--creator', 'cashmachine')).toLowerCase();
 const NAME = argOf('--name', 'hcnova2');

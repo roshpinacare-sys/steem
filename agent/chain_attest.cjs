@@ -267,12 +267,9 @@ module.exports = { runChainAttest, readLatestAttest, ATTEST_ID };
 
 if (require.main === module) {
   const mode = process.argv.includes('--read') ? 'read' : 'broadcast';
-  const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-  const GATE = resolveLiveGate(process.argv);
-  if (mode !== 'read') announceGate(GATE);
   const p = mode === 'read'
     ? readMode()
-    : runChainAttest({ dry: GATE.dry }).then((r) => ({
+    : runChainAttest({ dry: process.argv.includes('--dry') }).then((r) => ({
         verdict: r.dry ? 'DRY' : 'BROADCAST',
         height: r.height,
         txids: r.txids,
