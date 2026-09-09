@@ -11,7 +11,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
-    "lint:chunked": "for d in src/app src/components src/lib src/hooks; do [ -d \"$d\" ] && NODE_OPTIONS=--max-old-space-size=768 npx eslint \"$d\" || true; done",
+    "lint:chunked": "for d in src/app/api src/app/sections src/app src/components/nexus src/components/ui src/lib src/hooks; do [ -d \"$d\" ] && NODE_OPTIONS=--max-old-space-size=1024 npx eslint \"$d\" || true; done",
     "audit:fleet": "node agent/soldier_auth_audit.cjs"
   },
   "dependencies": {
