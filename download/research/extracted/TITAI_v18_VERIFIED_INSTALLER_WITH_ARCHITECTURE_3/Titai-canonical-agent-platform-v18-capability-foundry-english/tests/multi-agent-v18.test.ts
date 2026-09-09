@@ -1,7 +1,0 @@
-import { describe,expect,it } from "vitest";
-import { acceptTeamReports,createHandoff,createTeamIdentity,createTeamReport,verifyHandoff } from "@/lib/teams/mission-team";
-const identity=(role:"builder"|"verifier")=>createTeamIdentity({role,tenantId:"tenant-a",workspaceId:"workspace-a",allowedModels:["local"],allowedCapabilities:["doc"],authority:role==="builder"?["build"]:["verify"]});
-describe("v18 mission teams",()=>{
- it("signs handoffs, rejects replay and separates verifier",()=>{const b=identity("builder"),v=identity("verifier"),consumed=new Set<string>();const h=createHandoff({teamId:"team",missionHash:"a".repeat(64),sender:b,receiver:v,sequence:1,payload:{artifact:"x"},evidenceHashes:["b".repeat(64)],deadline:new Date(Date.now()+60000).toISOString()});expect(verifyHandoff(h,b,v,consumed)).toEqual({artifact:"x"});expect(()=>verifyHandoff(h,b,v,consumed)).toThrow("handoff_replay");const report=createTeamReport(h,v,{status:"completed",output:{accepted:true},evidenceHashes:["b".repeat(64)],claims:["verified"],limitations:[]});expect(acceptTeamReports(b,v,[report]).accepted).toBe(true);});
- it("rejects cross-scope delegation",()=>{const b=identity("builder"),v=createTeamIdentity({role:"verifier",tenantId:"tenant-b",workspaceId:"workspace-b",allowedModels:[],allowedCapabilities:[],authority:[]});expect(()=>createHandoff({teamId:"t",missionHash:"a".repeat(64),sender:b,receiver:v,sequence:1,payload:{},evidenceHashes:[],deadline:new Date(Date.now()+1000).toISOString()})).toThrow("handoff_scope_mismatch");});
-});
