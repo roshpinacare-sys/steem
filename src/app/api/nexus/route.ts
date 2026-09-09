@@ -128,6 +128,10 @@ export async function GET() {
   const harv = readJ(path.join(NODE, "harvest-cursor.json")) || {};
   const sec = readJ(path.join(NODE, "security-state.json")) || {};
   const root = readJ(path.join(NODE, "state-root.json")) || {};
+  const fails = readJ(path.join(NODE, "relay-fails.json")) || {};
+  const senders = readJ(path.join(NODE, "relay-senders.json")) || {};
+  const book = readJ(path.join(NODE, "chain.json")) || {};
+  const bookBlocks = Array.isArray(book.blocks) ? (book.blocks as unknown[]) : [];
 
   const [tron, broker, fleet] = await Promise.all([
     tronNowBlock(),
@@ -235,6 +239,13 @@ export async function GET() {
       deny: Array.isArray(sec.deny) ? (sec.deny as string[]) : [],
       allow: Array.isArray(sec.allow) ? (sec.allow as string[]) : [],
       velocity: Array.isArray(sec.velocity) ? sec.velocity.length : 0,
+    },
+    book: { head: num(snapJ?.height) || bookBlocks.length },
+    relayOps: {
+      failsCount: Object.keys(obj(fails.fails ?? fails)).length,
+      senders: obj(senders.pick ? { pick: senders.pick } : {}),
+      lastPick: obj(senders.pick),
+      degraded: senders.degraded === true,
     },
   };
 
