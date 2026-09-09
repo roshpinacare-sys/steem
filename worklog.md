@@ -3249,3 +3249,25 @@ Stage Summary:
 - **סוכנים-חיצוניים=API-פתוח-מבוקר**: טוקן+לבנות+אישור-מפעיל — יכולים-לכתוב-ולבצע-קריאה, אפס-מפתחות
 - **הריפו=נקי-ממפתחות-לנצח**: עץ+היסטוריה+דוקטרינה+גרדיאן-מיושרים; הגיבוי-היחיד-בריפו=מוצפן-סיסמת-מפעיל
 - Commits: 43faf0d (backup refresh) · 719562e (THE-GATE+agents) · d77326a (doctrine) · 33c592d (guardian) · filter-repo force-push 7a0dcf5
+
+---
+Task ID: 117p3
+Agent: Z.ai Code (continuation + disaster recovery)
+Task: "תמשיך וודא שאתה על הקומיט האחרון" — verify latest commit + full system health
+
+Work Log:
+- **וידוא-קומיט**: HEAD=30cbb55 = origin/main (already up to date) · אפס-קבצי-מפתחות-מטופלים (0 in git ls-files) · סריקת-WIF-מלאה-על-HEAD: 305-מועמדים-base58 → 1-WIF-אמת-יחיד = ה-fixture-הציבורי-המובנה-של-steem.min.js (5JdeC9… דוגמה-רשמית-של-הספריה, לא-מפתח-משתמש) — הריפו-נקי-ממפתחות-מאומת-מחדש
+- **אסון-התגלה**: השרת-היה-בלופ-מוות (500→הריגה→השכמה→500) — חקירה: (1) Turbopack-persistent-cache-מתקלקל-בהריגת-שרת ("corrupted database" panic) · (2) **הסף-900MB-של-117g-הפך-לופ-מיחזור-אינסופי**: מדידה-חיה — אחרי-קימפול-קר-של-/ הדף-יושב-יציב-על-~1.15GB → כל-מעבר-גרדיאן-הרג-שרת-בריא · (3) **kernel-OOM-אמת** ב-15:03 (next-server ב-1.35GB)
+- **תיקוני-שורש** (commits 5a9bb62 + 9bb3111): turbopack.persistentCaching=false · guardian settleAndCleanCache (המתנה-לפורט + מחיקת-.next/dev/cache-לפני-כל-השכמה + מחיקה-מלאה-אם-סימן-פאניקה) · webAlive-בודק-גם-את-הדף-עצמו (לא-רק-API) · ספי-מיחזור-חדשים-מהמדידה: soft 1.6GB+age>300ש׳ · hard 2.2GB-כל-גיל · תחזוקה 60 דק'
+- **גילוי-האסון-הגדול**: ה-sandbox-אופס-ב-14:34 → גרדיאן-עשה reset→origin/main — והעץ-הטרי-אחרי-filter-repo-**בלי-שום-מפתח-מקומי**: vault.json/‌.env-האמת/fleet_keys.enc+meta/headcorner-recovered.txt — **נמחקו-מהדיסק** (ה-.env-היה-שלד-201-בייט); ה-UI-הציג soldiers:0 + live:null
+- **שחזור-מהגיבוי-המוצפן** (הדוקטרינה-הצילה-אותנו): download/KEYS-BACKUP-2026-09-09.tar.enc sha256=5753a90c… **התאים-בדיוק** (היחידה-ששרדה — על-הדיסק-וב-GitHub) · פענוח-AES-256-CBC/PBKDF2-300k-עם-סיסמת-המפעיל (מוסתר-במלוא-התהליך) · שחזור-13-קבצים-למקומם-ב-0600 · טיהור-טמפורריים (shred)
+- **אימות-חי-מלא**: /api/ops/gate → 8/8-LIVE (owner/active/posting/memo × Steem+Hive כולם true) · soldiers:11 · seal:enc+meta ✓ · broker ✓ · guardian auto-RESEAL-fired (חותמת-חדשה-מקומית 15:14) · vault-verified (sovereign 12/12 anchored) · owner-auth-unchanged (אף-אחד-לא-נגע-בבעלות) · git-status-אפס-קבצי-מפתח (ה-gitignore-מגן)
+- **API-הסוכנים-אומת-חי**: probe-117p3 נרשם → משימת-status-רצה-אוטומטית → gateConnected:true (טוקן-מקומי-0600 שוחזר)
+- **E2E-דפדפן**: THE-GATE מציג מחובר · @headcorner · 11-חיילים · Steem/Hive-4-תפקידים-ירוקים · שער-חתימה-חי · גרדיאן-10ש׳ · צילום-ראיה: docs/shot-117p3-gate-recovered.png
+- **טיהור-תהליכים**: נהרגו-4-דורות-guardian-loop-ישנים (היחידות-נכשלה-בין-דורות) — נשאר-זוג-אחד · זוהה-רק-bun-run-dev-אחד-חוקי (key-broker)
+
+Stage Summary:
+- **הקומיט-האחרון=מאומר** · הריפו-נקי-ממפתחות (כולל-בדיקת-WIF-בינארית-מחדש)
+- **המערכת-שרדה-אסון-מלא**: sandbox-reset-אכל-את-כל-המפתחות-המקומיים → הגיבוי-המוצפן-בריפו (סיסמת-מפעיל-בלבד) שיחזר-הכל → 8/8-חי-מאומת. הדוקטרינה (מפתחות-אף-פעם-לא-בריפו + גיבוי-מוצפן-תמיד-בריפו) הוכחה-בפועל
+- **הלופ-הקטלני-נפתר-מהשורש**: ספי-מיחזור-מהמדידה-האמת + cache-טיהור-לפני-השכמה + בדיקת-דף-אמיתית
+- פתוח: לשקול-הקטנת-גרף-הקימפול-של-הדף (code-split) להפחתת-שיאי-הזיכרון-בקומפילציה
