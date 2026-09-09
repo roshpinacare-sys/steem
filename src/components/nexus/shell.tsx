@@ -10,7 +10,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import {
   Activity, ArrowDownToLine, BookOpen, ChevronDown, Coins, DoorOpen, Gauge,
-  LayoutGrid, Server, ShieldCheck, X,
+  KeyRound, LayoutGrid, Server, ShieldCheck, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LiveDot, fmtInt } from "./primitives";
@@ -24,6 +24,7 @@ export const SECTIONS = [
   { id: "deposits", label: "הפקדות", en: "DEPOSITS", icon: ArrowDownToLine },
   { id: "econ", label: "כלכלה", en: "ECON", icon: Coins },
   { id: "system", label: "מערכת", en: "SYSTEM", icon: Server },
+  { id: "gate", label: "שער", en: "THE-GATE", icon: KeyRound },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]["id"];
@@ -61,6 +62,10 @@ export const SUBS: Record<SectionId, Array<{ id: string; label: string }>> = {
     { id: "logs", label: "לוגים" },
     { id: "inventory", label: "מלוא-האחזקות" },
     { id: "broker", label: "ברוקר" },
+  ],
+  gate: [
+    { id: "connect", label: "התחברות" },
+    { id: "agents", label: "סוכנים" },
   ],
 };
 

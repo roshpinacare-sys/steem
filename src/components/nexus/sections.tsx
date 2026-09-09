@@ -12,3 +12,4 @@ export { EconSec } from "./sections/econ";
 export { BookSec } from "./sections/book";
 export { ShieldSec } from "./sections/shield";
 export { SystemSec } from "./sections/system";
+export { GateSec } from "./sections/gate";

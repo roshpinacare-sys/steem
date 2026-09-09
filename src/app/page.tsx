@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNexus } from "@/hooks/use-nexus";
 import { BottomNav, DesktopRail, NexusFooter, NexusHeader, SECTIONS, SubNav, type SectionId, type SubId, SUBS } from "@/components/nexus/shell";
-import { BookSec, ControlSec, DepositsSec, DoorsSec, EconSec, ShieldSec, SystemSec } from "@/components/nexus/sections";
+import { BookSec, ControlSec, DepositsSec, DoorsSec, EconSec, GateSec, ShieldSec, SystemSec } from "@/components/nexus/sections";
 
 const VALID = SECTIONS.map((s) => s.id) as SectionId[];
 
@@ -37,6 +37,7 @@ const TITLES: Record<SectionId, string> = {
   deposits: "הפקדות",
   econ: "כלכלה",
   system: "מערכת",
+  gate: "שער",
 };
 
 export default function Home() {
@@ -128,6 +129,7 @@ export default function Home() {
                   {loc.section === "deposits" && <DepositsSec data={data} sub={loc.sub} />}
                   {loc.section === "econ" && <EconSec data={data} sub={loc.sub} />}
                   {loc.section === "system" && <SystemSec sub={loc.sub} />}
+                  {loc.section === "gate" && <GateSec sub={loc.sub} />}
                 </motion.div>
               </AnimatePresence>
             ) : null}
