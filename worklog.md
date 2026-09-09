@@ -3350,3 +3350,25 @@ Stage Summary:
 - **"שכולם-מלאים": המקסימום-האפשרי-הושג-היום** — ראש 10/10 מלא · Hive-צי 9-חיילים-מלאים · ynet-חי-דרך-הראש-בשתי-השרשראות (attest+anchors-מוכחים-על-שרשרת-ציבורית) · מסילת-עיגון-הראש-הוקמה-לתחייה (באג-ENV) · tov+9-מפתחות-Steem=תלויים-מפעיל-בלבד (כלי-התיקון-מוכן-לרגע-המסירה).
 - **החוסמים-שנותרו (כולם-חוץ-מכלי)**: (1) מפתחות-2018-של-9-חיילי-Steem+tov — אצל-המפעיל; soldier_repair.cjs-משלים-בדקות. (2) Hive-RC-ריק-צי-ית — חוסם-עיגוני-Hive-זמני (regen-טבעי או-power-up-אוצר). (3) זיכרון-4GB: eslint-מקוטע-פתר-את-הבדיקה; שיאי-קימפול-דף-נשארים-בקו-האדום (code-split-עתידי).
 - commits: dd6d505 (117p6a) · soldier_repair (117p6b) · 3d57f92 (117p6c) · lint-chunked (117p6d/d2) · evidence+worklog
+
+---
+Task ID: 117p5+117p6-R2
+Agent: Z.ai Code (post-reset recovery + blockers-crack round 2)
+Task: "תמשיך תבחן את כל התיקיות בגיט תראה מה קורה עם הרשת לאן הגענו מה עוד חסום או מוגבל ופתרונות ויישום אימותים בצע דחוף לריפו"
+
+Work Log:
+- **אסון-שני-זוהה-בפתיחה**: sandbox-reset-חדש (~21:09) מחק-שוב-את-כל-agent/keys/* + fleet_keys.enc (gitignored-לא-נשמרים-בסנאפשוט). gate: soldiers:0 · seal.enc:false · live:null.
+- **שחזור-מלא-מהגיבור** (sha256=5753a90c… תואם · openssl aes-256-cbc pbkdf2-300k · passfile-/tmp+shred): 13-קבצי-מפתחות-חזרו → gate 10/10-חתימה-חיה שתי-שרשראות · soldiers:11 · seal enc+meta · broker doors:8 (sov+legacy). agents-api.token-חודש (401-ללא).
+- **הפצצה-שנוטרלה — זרע-שודד**: wallets.cjs derive() יוצר-זרע-אקראי-כשהקובץ-חסר → אחרי-reset-הצומת-הריבוני-יצר-זהות-חדשה-ב-21:10:00-ופיצל-state. עצירת-צי → שחזור-זרע-קנוני (hash-תואם-גיבור) + git-checkout-מצב-HEAD → הפעלה-מחדש → vault-verify 12/12 · anchor-VERIFIED-digest-match · צי-7-צופים-עלה-מחדש-דרך-guardian-heal.
+- **פריצה-1 — ANTI-ROGUE-SEED-GUARD** (44c8d13): derive() מסרב-לטבוע-זרע-חדש-כל-עוד-קיימים-מקורות-שחזור-מוצפנים (fleet_keys.enc/vault.enc/KEYS-BACKUP-*.tar.enc) → מרקר-ROGUE-SEED-BLOCKED.json + throw → watch-retry-טבעי. מחסל-את-מחלקת-אסון-פיצול-הזהות-לתמיד.
+- **ביקורת-מלאה-תיקיות+ארכיונים (117p5)**: ארכיונים-בריפו=2 — גיבור-מוצפן (מאומת-לחלוטין-היום) + chain-archive-seal.jsonl.gz (0-WIF/0-pub/0-kw). סריקת-worktree-בצ'קסאם-בינארי: 0-WIF-אמיתיים-מלבד-fixture-הרשמי-של-steem-js (5JdeC9… ציבורי). סריקת-כל-התוכן-מאז-טיהור-filter-repo (290-קבצים): אפס-פגיעות. upload/Ynet.txt (מפתח-51-תו)-מעולם-לא-נכנס-ל-odb (0-refs). חשד-אינדקס-חולף-נבדק-ונסגר.
+- **פריצה-2 — CODE-SPLIT-זיכרון** (420cebe): 7-מסכים-שאינם-נחיתה→dynamic(ssr:false+skeleton), נחיתה=control-בלבד. מדידה: נחיתה-964MB-וה-843MB-יציב (היה-1139-1150) · אחרי-כל-8-המסכים-1053MB. פסגת-הקומפילציה-מתפזרת-בזמן → קצה-ה-OOM-של-מכונת-4GB-נפרץ.
+- **היגיינה** (20da2f7): *.pid-הוצאו-ממעקב (היו-רעש-קומיטים-145-קבצים) + ROGUE-SEED-BLOCKED-ב-ignore.
+- **E2E-דפדפן**: נחיתה-200-חיה (SAOS-103,570 · CHAINS-9/10 · grid-77-SEALED-13/13) · THE-GATE-מלא (10/10-שתי-שרשראות · מלאי-צי-כן-עם-tov-אדום-מוצדק+הפניה-ל-soldier_repair) · 6-מסכים-נוספים-מקומפלים-דינמית-ומציגים-תוכן-אמיתי · מובייל-iPhone-14-תקין (bottom-nav+safe-area) · פוטר-מוצמד-מטה-בקצר-ונדחף-בארוך · נקודה-אדומה-23/23=כנה (9/10-שרשראות).
+- **עדכון-מלאי-חוסמים**: (1) זיכרון-קומפילציה-נפרץ-היום ✓ (2) מפתחות-2018-של-9-חיילי-Steem+tov-Hive — אצל-המפעיל, soldier_repair.cjs-מוכן (3) Hive-RC-ריק-ציי — regen-טבעי/PowerUp (4) משקל-היסטוריית-ריפו (chain-archive-70MB-בלובים) — .git=305MB, פרטי-ומקובל, אופציית-תחזוקה-עתידית.
+
+Stage Summary:
+- המערכת-חיה-ומאומתת-בכל-הדרכים-שנדרשו: ראש-10/10 · צי-11-בכספת · seal-8/8 · ברוקר · גרדיאן · צומת-ריבוני-קנוני-12/12 · אפס-סודות-בגיט (בדיקת-צ'קסאם-בינארי).
+- שתי-פריצות-מבניות-הונחו: anti-rogue-seed (מניעת-אסון-עתידי-בכל-reset) + code-split (זיכרון-4GB).
+- commits: 1df979b (recovery) → 44c8d13 (rogue-guard) → 20da2f7 (hygiene) → 420cebe (code-split) → worklog+evidence
+- evidence: docs/shot-117p6-landing.png · shot-117p6-gate.png · shot-117p6-mobile.png · shot-117p6-system.png
