@@ -350,10 +350,7 @@ module.exports = { runWeaveBatch, replayWeave, independentProof, WEAVE_ANCHOR_ID
 
 if (require.main === module) {
   if (process.argv.includes('--status')) { printStatus(); process.exit(0); }
-  const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-  const GATE = resolveLiveGate(process.argv);
-  announceGate(GATE);
-  runWeaveBatch({ dry: GATE.dry })
+  runWeaveBatch({ dry: process.argv.includes('--dry') })
     .then((r) => {
       console.log('weaveBatch done: ' + (r.notes || []).join(' · '));
       process.exit(0);

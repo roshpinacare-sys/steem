@@ -25,11 +25,6 @@ const ACTIVE_WIF = env.ACTIVE_WIF || '';
 if (!ACTIVE_WIF) { console.error('no active key'); process.exit(1); }
 const hiveCli = new Client([HIVE_RPC]);
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
-const DRY = GATE.dry;
-announceGate(GATE);
-
 
 function rpcV4(urlStr, body) {
   const u = new URL(urlStr);
@@ -62,8 +57,6 @@ const rcMana = async (acct) => {
   const myRc = await rcMana('headcorner');
   out.before = { ynetMax: before && before.max, myMana: myRc && myRc.mana, myMax: myRc && myRc.max };
   console.log('before:', JSON.stringify(out.before));
-  if (DRY) { console.log('[DRY] LIVE-GATE — delegate_rc test would broadcast — nothing sent'); return; }
-
 
   const MAX_RC = 1000000000; // 1G
   const tx = {

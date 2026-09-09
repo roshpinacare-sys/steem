@@ -37,11 +37,7 @@ loadDotEnv(__dirname);
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 steem.api.setOptions({ url: process.env.RPC_URL || 'https://api.steemit.com' });
 const POSTING_WIF = process.env.POSTING_WIF || '';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const DRY = GATE.dry || String(process.env.DRY_RUN || '').toLowerCase() === 'true';
-announceGate(Object.assign({}, GATE, { live: !DRY, dry: DRY }), log);
-
+const DRY = String(process.env.DRY_RUN || '').toLowerCase() === 'true';
 const VERIFY_ONLY = process.argv.includes('--verify');
 const KEY = 'saos://www/index.html';
 const MAX_OP_JSON = 8000; // measured wall 8192 — 192B headroom

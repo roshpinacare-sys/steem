@@ -33,8 +33,7 @@ const crypto = require('crypto');
 const https = require('https');
 const steem = require('steem');
 
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-
+const LIVE = process.argv.includes('--live');
 const PROBE = process.argv.includes('--probe');   // tiny live proof of the full chain (0.05)
 const FORCE = process.argv.includes('--force');   // route even with healthy head RC (real cap)
 const FORCE_CAP = 1.0;
@@ -46,10 +45,6 @@ const OUT_RESULT = path.join(__dirname, 'he_fleet_result.json');
 const OUT_STATE = path.join(__dirname, 'he_fleet_state.json');
 
 const HEAD = 'headcorner';
-const GATE = resolveLiveGate(process.argv, { account: HEAD });
-const LIVE = GATE.live;
-announceGate(GATE, log);
-
 const RC_MIN_HEAD_MARKET = 280000000; // genesis-ladder market-op cost (measured)
 const RC_MIN_HEAD_TRANSFER = 150000000; // transfers are cheaper (measured 143M worst-case)
 const RC_MIN_SOLDIER = 200000000;     // HE market op ≈143M (measured) + headroom

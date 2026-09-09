@@ -39,11 +39,6 @@ const hiveCli = new Client('https://api.hive.blog');
 const SOLDIERS = ['cashmachine', 'haran', 'israelnews', 'lsa', 'macrame', 'siq', 'tov', 'wic', 'wog', 'woq'];
 
 const log = (m) => console.log('[' + new Date().toISOString() + '] fix59: ' + m);
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function evSet(section, data) {
@@ -226,7 +221,6 @@ async function convertFix() {
 
 (async () => {
   log('fix59 — corrective batch · operator @' + OPERATOR);
-  if (DRY) { log('[DRY] LIVE-GATE — corrective batch requires the live gate — nothing broadcast'); return; }
   await fixYnetFuel();
   await fleetRecoveryReal();
   await marketFix();

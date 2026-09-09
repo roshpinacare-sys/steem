@@ -45,11 +45,7 @@ loadDotEnv(__dirname);
 const STEEM_RPC = 'https://api.steemit.com';
 const HIVE_RPC = 'https://api.hive.blog';
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const LIVE = GATE.live;
-announceGate(GATE, log);
-
+const LIVE = process.argv.includes('--live');
 const COLLECT = process.argv.includes('--collect'); // reassembly only (shards already on chain)
 const OBJ = 'saos_state_51';
 const SHARD_TARGET = 650; // bytes per shard payload (op stays << 8192B)

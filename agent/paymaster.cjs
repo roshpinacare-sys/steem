@@ -457,16 +457,11 @@ async function memoBizSov() {
 }
 
 async function main() {
-  const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-  const GATE = resolveLiveGate(process.argv);
-  announceGate(GATE);
-  const DRY = GATE.dry;
-  const dryAbort = (what) => console.log('[DRY] LIVE-GATE — ' + what + ' broadcasts real ops — run with the live gate (see DAEMONS.md)');
   const mode = process.argv[2] || '--relay';
-  if (mode === '--relay') { if (DRY) return dryAbort('relay demo'); return relayDemo(); }
-  if (mode === '--fuel') return fuelCycle(DRY, (process.argv[process.argv.indexOf('--target') + 1] || null), (process.argv[process.argv.indexOf('--vests') + 1] || null));
-  if (mode === '--memo-biz') { if (DRY) return dryAbort('memo-biz'); return memoBiz(); }
-  if (mode === '--memo-biz-sov') { if (DRY) return dryAbort('memo-biz-sov'); return memoBizSov(); }
+  if (mode === '--relay') return relayDemo();
+  if (mode === '--fuel') return fuelCycle(process.argv.includes('--dry'), (process.argv[process.argv.indexOf('--target') + 1] || null), (process.argv[process.argv.indexOf('--vests') + 1] || null));
+  if (mode === '--memo-biz') return memoBiz();
+  if (mode === '--memo-biz-sov') return memoBizSov();
   if (mode === '--fuel-policy') {
     // הלולאה: תדלוק אוטומטי רק כשלקוח רעב והאוצר בריא
     const r = await fuelCycle(true);

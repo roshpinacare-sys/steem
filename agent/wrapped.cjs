@@ -42,11 +42,7 @@ const ACCOUNT = (env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = env.ACTIVE_WIF || '';
 const POSTING_WIF = env.POSTING_WIF || '';
 const HIVE_RPC = env.HIVE_RPC || 'https://api.hive.blog';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const DRY = GATE.dry || !ACTIVE_WIF || !POSTING_WIF;
-announceGate(Object.assign({}, GATE, { live: !DRY, dry: DRY }), log);
-
+const DRY = !ACTIVE_WIF || !POSTING_WIF;
 const STEEM_NODES = ['https://api.steemit.com', 'https://api.justyy.com', 'https://api.steemitdev.com'];
 const HIVE_NODES = ['https://api.openhive.network', 'https://api.hive.blog'];
 

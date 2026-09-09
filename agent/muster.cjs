@@ -14,11 +14,8 @@ const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const LIVE = GATE.live;
+const LIVE = process.argv.includes('--live');
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
-announceGate(GATE, log);
 const ESCROW_CAP = 0.025;   // מקסימום לחייל במסדר-אחד
 const KEEP = 0.01;          // רצפת-שמירה בחייל
 const MIN_WANT = 0.005;     // מתחת-זה אין-טעם ב-broadcast

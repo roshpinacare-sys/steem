@@ -31,8 +31,7 @@ const RESULT_PATH = path.join(AGENT_DIR, 'hive_rc_heal.json');
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
 const HIVE_RPC = process.env.HIVE_RPC || 'https://api.hive.blog';
 
-// LIVE-GATE (Task 28-b): DRY by default — live requires --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM.
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const DRY = process.argv.includes('--dry');
 const HEAD_MIN_PCT = 0.12;      // שער-הראש
 const HEAD_MIN_AVAIL = 600e6;   // יתרת-בטחון לשידור-ה-active
 const HEAD_HP_FLOOR = 6.0;      // רצפת-HP של-הראש
@@ -65,9 +64,6 @@ async function main() {
   const ENV = loadDotEnv(AGENT_DIR);
   const HEAD = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
   const ACTIVE_WIF = ENV.ACTIVE_WIF || '';
-  const GATE = resolveLiveGate(process.argv, { account: HEAD });
-  const DRY = GATE.dry;
-  announceGate(GATE);
   const res = loadResult();
   res.at = new Date().toISOString();
 

@@ -51,11 +51,6 @@ const STEEM_PROBE_SOLDIER = 'wic';
 const HIVE_PROBE_SOLDIER = 'wog';
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] perfbench: ' + msg); }
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
 function sha256(s) { return crypto.createHash('sha256').update(s).digest('hex'); }
 const r3 = (v) => Number(Number(v).toFixed(3));
 const r6 = (v) => Number(Number(v).toFixed(6));
@@ -262,8 +257,7 @@ async function main() {
 
   // 3. Inclusion latency both chains (fresh fleet signatures)
   const incl = { steem: null, hive: null };
-  if (DRY) log('[DRY] LIVE-GATE — inclusion-latency probes + on-chain anchor skipped (nothing broadcast)');
-  const [steemRes, hiveRes] = DRY ? [{ chain: 'steem', error: 'DRY (live-gate)' }, { chain: 'hive', error: 'DRY (live-gate)' }] : await Promise.all([
+  const [steemRes, hiveRes] = await Promise.all([
     steemInclusionLatency(STEEM_PROBE_SOLDIER).catch((e) => ({ chain: 'steem', error: e.message })),
     hiveInclusionLatency(HIVE_PROBE_SOLDIER).catch((e) => ({ chain: 'hive', error: e.message })),
   ]);
@@ -280,9 +274,7 @@ async function main() {
   };
   const digest = sha256(JSON.stringify(report));
   let anchor = null;
-  if (DRY) {
-    anchor = { digest, error: 'DRY (live-gate) — nothing broadcast' };
-  } else if (POSTING_WIF) {
+  if (POSTING_WIF) {
     try {
       const payload = {
         protocol: 'saos/v1', action: 'perf', gen: 2,

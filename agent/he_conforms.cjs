@@ -59,11 +59,6 @@ const COUNTERPARTY = 'cashmachine'; // our own hive account — min-unit settlem
 function log(msg) {
   console.log('[' + new Date().toISOString() + '] he-conforms: ' + msg);
 }
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function rpcV4(urlStr, body) {
@@ -153,7 +148,6 @@ function sameState(a, b, symbols) {
 
 async function main() {
   if (!ACTIVE_WIF) { log('no ACTIVE_WIF'); process.exit(1); }
-  if (DRY) { log('[DRY] LIVE-GATE — HE contract probes broadcast real ops — nothing broadcast'); process.exit(0); }
   const SYMBOLS = [PROBE_SYMBOL, 'BEE', 'SWAP.HIVE'];
   log(`mapping the HE contract denial surface — prober=@${ACCOUNT}, probe token=${PROBE_SYMBOL}, counterparty=@${COUNTERPARTY}`);
 

@@ -59,11 +59,6 @@ function evMerge(section, data) {
   fs.writeFileSync(EV_PATH, JSON.stringify(ev, null, 2) + '\n');
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
 
 async function rcMana(cli, name) {
   const r = await cli.call('rc_api', 'find_rc_accounts', { accounts: [name] });
@@ -429,8 +424,7 @@ async function hiveShare() {
 /* ══════════════ main ══════════════ */
 (async () => {
   const mode = process.argv[2] || '';
-  if (mode === '--battery') return battery(); // read-only by construction (get_required_signatures oracle)
-  if (DRY) { log('[DRY] LIVE-GATE — broadcast modes (--mint/--hive-share/--all) require the live gate — nothing broadcast'); return; }
+  if (mode === '--battery') return battery();
   if (mode === '--mint') return mint();
   if (mode === '--hive-share') return hiveShare();
   if (mode === '--all') { await battery(); await mint(); await hiveShare(); return; }

@@ -15,11 +15,8 @@ const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const LIVE = GATE.live;
+const LIVE = process.argv.includes('--live');
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
-announceGate(GATE);
 const API = (process.env.DEX_API_URL || 'http://127.0.0.1:3000').replace(/\/$/, '');
 const RPC = process.env.STEEM_RPC || 'https://api.steemit.com';
 

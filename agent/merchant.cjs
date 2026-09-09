@@ -19,12 +19,8 @@ const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
-const LIVE = GATE.live;
+const LIVE = process.argv.includes('--live');
 const ACCOUNT = 'headcorner';
-announceGate(GATE, log);
-
 const OUT = path.join(__dirname, 'merchant_state.json');
 const LOG = path.join(__dirname, 'merchant.log');
 const LOCAL_API = 'http://127.0.0.1:3000';
@@ -250,7 +246,7 @@ async function selfDemand() {
   const soldier = String(arg('soldier', 'cashmachine')).toLowerCase();
   const steemAmt = parseFloat(arg('steem', '0.001')) || 0.001;
   const qty = parseFloat(arg('qty', '0.05')) || 0.05;
-  if (LIVE) {
+  if (process.argv.includes('--live')) {
     const v = JSON.parse(fs.readFileSync(path.join(__dirname, 'keys', 'vault.json'), 'utf8'));
     const acc = (v.accounts || []).find((a) => String(a.username).toLowerCase() === soldier);
     const wif = acc && acc.keys && acc.keys.active && (acc.keys.active.wif || acc.keys.active);

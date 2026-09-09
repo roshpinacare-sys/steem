@@ -59,12 +59,8 @@ const RPCS = ['https://api.steemit.com', 'https://api.steem.fans', 'https://api.
 
 const argOf = (n, d) => { const i = process.argv.indexOf(n); return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : d; };
 const hasFlag = (n) => process.argv.includes(n);
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
-const DRY = GATE.dry;
+const DRY = hasFlag('--dry');
 const log = (m) => console.log('[' + new Date().toISOString() + '] factory-v2: ' + m);
-announceGate(GATE, log);
-
 
 const RESULT_PATH = path.join(__dirname, 'factory_v2_result.json');
 function record(action) {

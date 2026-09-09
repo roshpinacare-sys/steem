@@ -33,11 +33,6 @@ const NONCE = Date.now();
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] limits2: ' + msg); }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
 
 function rpcV4(urlStr, body, timeoutMs = 25000) {
   const u = new URL(urlStr);
@@ -78,7 +73,6 @@ async function broadcast(ops, wifs) {
 const probeOp = (i) => ['custom_json', { required_auths: [], required_posting_auths: [ACCOUNT], id: 'saos_probe', json: JSON.stringify({ p: 'saos/limits/v1', n: NONCE, i }) }];
 
 async function main() {
-  if (DRY) { log('[DRY] LIVE-GATE — probe broadcasts skipped (nothing broadcast)'); return; }
   const out = JSON.parse(fs.readFileSync(path.join(__dirname, 'limits.json'), 'utf8'));
   const push = (name, expect, got, verdict, extra) => {
     out.probes.push({ name, expect, got, verdict, ...(extra || {}) });

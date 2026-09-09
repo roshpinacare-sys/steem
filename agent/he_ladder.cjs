@@ -14,6 +14,7 @@ const path = require('path');
 const https = require('https');
 const steem = require('steem');
 
+const LIVE = process.argv.includes('--live');
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
 const HIVE_RPC = process.env.HIVE_RPC || 'https://api.hive.blog';
 const HE_RPC = 'https://api.hive-engine.com/rpc/contracts';
@@ -28,11 +29,6 @@ try {
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 function log(msg) { console.log('[' + new Date().toISOString() + '] ladder: ' + msg); }
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const LIVE = GATE.live;
-announceGate(GATE, log);
-
 
 function rpcV4(urlStr, body) {
   const u = new URL(urlStr);

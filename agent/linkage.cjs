@@ -32,11 +32,6 @@ const WANT_FIX = ARGS.has('--fix');
 const WANT_JSON = ARGS.has('--json');
 const REPORT_PATH = path.join(__dirname, 'linkage_report.json');
 const LOCK_PATH = path.join(__dirname, 'linkage.lock');
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv);
-const DRY = GATE.dry;
-if (WANT_FIX) announceGate(GATE);
-
 // שער-תיקון: מתחת-לאחוז-זה ה-op יידחה בוודאות (נמדד: account_update ≈ 14% ממקס-RC) — חוסך-ניסיונות חינם
 const RC_FIX_MIN_PCT = 0.10;
 const urlsOf = (chain) => (chain === 'steem' ? [STEEM, ...STEEM_FALLBACKS] : [HIVE, ...HIVE_FALLBACKS]);
@@ -290,7 +285,7 @@ async function mainInner() {
       fixes: [],
     };
 
-    if (WANT_FIX && !DRY) {
+    if (WANT_FIX) {
       const activeWif = entry.keys && entry.keys.active && entry.keys.active.wif;
       for (const [chain, st, acc] of [
         ['steem', s, steemBy[u]],

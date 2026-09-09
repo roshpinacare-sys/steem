@@ -47,11 +47,7 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
-const DRY = GATE.dry;
-announceGate(GATE, log);
-
+const DRY = process.argv.includes('--dry');
 const CONSOLE = process.env.CONSOLE_URL || 'http://localhost:3000';
 
 function log(msg) {

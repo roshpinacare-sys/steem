@@ -382,10 +382,7 @@ module.exports = {
 };
 
 if (require.main === module) {
-  const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-  const GATE = resolveLiveGate(process.argv);
-  announceGate(GATE);
-  runAnchor({ dry: GATE.dry })
+  runAnchor({ dry: process.argv.includes('--dry') })
     .then((r) => {
       console.log(JSON.stringify({ at: r.at, evm: r.evm, txids: r.txids, dry: !!r.dry }, null, 2));
       process.exit(0);

@@ -53,14 +53,9 @@ function loadDotEnv(dir) {
 loadDotEnv(AGENT_DIR);
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
-// LIVE-GATE (Task 28-b): --run remains this daemon's explicit-enable; the shared gate
-// adds the HE_LIVE_CONFIRM layer (--dry always wins). See DAEMONS.md.
-const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv.concat(process.argv.includes('--run') ? ['--live'] : []), { account: ACCOUNT });
-const LIVE = GATE.live;
+const LIVE = process.argv.includes('--run');
 
 const log = (m) => console.log('[' + new Date().toISOString() + '] ' + m);
-announceGate(GATE, log);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const readJSON = (p, d) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (_) { return d; } };
 const writeJSON = (p, o) => fs.writeFileSync(p, JSON.stringify(o, null, 2) + '\n');
@@ -239,7 +234,7 @@ function issueMission(id, ops) {
 
 async function beatOnce(label) {
   log('beat (' + label + '): spawning saosnet --live …');
-  const r = spawnSync('node', ['saosnet.cjs'].concat(DRY ? [] : ['--live']), { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
+  const r = spawnSync('node', ['saosnet.cjs', '--live'], { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
   const tail = String(r.stdout || '').split('\n').filter(Boolean).slice(-3).join(' | ');
   log('beat (' + label + ') exit=' + r.status + ' · ' + tail.slice(0, 220));
   return { exit: r.status, tail };
