@@ -25,7 +25,11 @@ const {
   blurtDeadUntil, BLURT_ENDPOINTS, ANCHOR_ID,
 } = anchorMod;
 
-const DRY = process.argv.includes('--dry');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv);
+const DRY = GATE.dry;
+announceGate(GATE);
+
 const RESULT = path.join(__dirname, 'blurt_revive_result.json');
 const SECP = ecurve.getCurveByName('secp256k1');
 

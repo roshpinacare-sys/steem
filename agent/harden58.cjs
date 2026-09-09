@@ -29,6 +29,11 @@ const steemCli = new Client(['https://api.steemit.com', 'https://api.justyy.com'
 const hiveCli = new Client('https://api.hive.blog');
 const log = (m) => console.log('[' + new Date().toISOString() + '] harden58: ' + m);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 
 function vaultKeysFor(account) {
   try {
@@ -90,6 +95,7 @@ async function ynetHivePing() {
 }
 
 (async () => {
+  if (DRY) { log('[DRY] LIVE-GATE — authority anchors + rescue-ping require the live gate — nothing broadcast'); return; }
   const out = { at: new Date().toISOString() };
   try { out.israelnewsSteem = await anchorPostingAuth('steem', steemCli, Buffer.from('0'.repeat(64), 'hex'), 'israelnews'); }
   catch (e) { log('israelnews steem: ' + String(e.message || e).slice(0, 140)); out.israelnewsSteem = { error: String(e.message || e).slice(0, 140) }; }

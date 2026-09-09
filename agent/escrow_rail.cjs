@@ -43,6 +43,11 @@ steem.api.setOptions({ url: STEEM_RPC });
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] ' + msg); }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 
 function rpcV4(urlStr, body) {
   const u = new URL(urlStr);
@@ -111,6 +116,7 @@ async function main() {
   console.log('═'.repeat(74));
   console.log('SAOS ESCROW RAIL · @' + ACCOUNT + ' · escrow_id=' + escrowId + ' · amount=' + amount + ' STEEM');
   console.log('═'.repeat(74));
+  if (DRY) { log('[DRY] LIVE-GATE — escrow rail broadcasts real ops — nothing broadcast'); return; }
 
   const army = loadArmy();
   if (army.length < 2) {

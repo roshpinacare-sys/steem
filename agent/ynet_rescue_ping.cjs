@@ -65,8 +65,14 @@ async function verifyFromChain(rpc, label) {
   return hits.map(h => ({ block: h[1].block, txid: (h[1].trx_id || '').slice(0, 16) + '…', at: h[1].timestamp }));
 }
 
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv);
+const DRY = GATE.dry;
+announceGate(GATE);
+
 (async () => {
   console.log('=== @ynet rescue-ping · operator-delegated signing · LIVE ===');
+  if (DRY) { console.log('[DRY] LIVE-GATE — rescue-ping would broadcast as @ynet (operator-delegated) — nothing sent'); return; }
   // Steem
   try {
     const conf = await broadcastChain(STEEM_RPC, null);

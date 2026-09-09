@@ -43,7 +43,11 @@ loadDotEnv(__dirname);
 
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
-const DRY = process.argv.includes('--dry');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 const RESULT_PATH = path.join(__dirname, 'cascade_result.json');
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] cascade: ' + msg); }
