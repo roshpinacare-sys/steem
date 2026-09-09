@@ -117,17 +117,18 @@ async function main() {
     const acc = accounts[chain];
     if (acc.owner.key_auths[0][0] === OWNER_PUB) { evidence.chains[chain] = { already: true }; continue; }
 
-    // ── A. recover_account ──
+    // ── A. recover_account — new≠recent (חוק-שרשרת): new=מפתח-מאסטר+headcorner ב-account_auths
+    //    (עדיין-נשלט-ע"י-מפתח-המאסטר: threshold-1 · עמוד-תורן-בטיחותי) · recent=מפתח-מאסטר-טהור ──
     const recOp = ['recover_account', {
       account_to_recover: ACCOUNT,
-      new_owner_authority: auth1(OWNER_PUB),
+      new_owner_authority: auth1(OWNER_PUB, [[HEAD, 1]]),
       recent_owner_authority: auth1(OWNER_PUB),
       extensions: [],
     }];
     const d = await dgp(node);
     const recTx = makeTx(d, [recOp]);
     const recSigned = signFor(chain, recTx, [OWNER_WIF]);
-    log(chain.toUpperCase() + ' A/recover: מוכן (חתימה-מקומית-תקינה) · new=recent=' + mask(OWNER_PUB));
+    log(chain.toUpperCase() + ' A/recover: מוכן (חתימה-מקומית-תקינה) · new=מאסטר+head · recent=' + mask(OWNER_PUB));
     if (DRY) { log(chain.toUpperCase() + ' [DRY] לא-משדר'); evidence.chains[chain] = { dry: true }; continue; }
     try {
       await bcast(node, recSigned);
@@ -140,13 +141,13 @@ async function main() {
       continue;
     }
 
-    // ── B. account_update2 — active/posting/memo + head-in-posting ──
+    // ── B. account_update2 — נרמול-הבעלים (מאסטר-טהור) + active/posting/memo + head-in-posting ──
     const updOp = ['account_update2', {
       account: ACCOUNT,
       memo_key: PUBS.memo,
       posting: auth1(PUBS.posting, [[HEAD, 1]]),
       active: auth1(PUBS.active, []),
-      owner: null,
+      owner: auth1(OWNER_PUB, []),
       json_metadata: acc.json_metadata || '',
     }];
     const d2 = await dgp(node);
