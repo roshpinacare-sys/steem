@@ -4,13 +4,14 @@
  * 117p — GATE · שער-החיבור-הריבוני
  * connect (התחברות-מפתחות-המפעיל: הדבקה → אימות-מול-השרשרת → כספת-first → נשאר-מחובר)
  * agents (צירוף-סוכנים-דרך-API: טוקן · הודעות · משימות-לבנות · אישור-מפעיל)
+ * 117p5c — גיבור-חשבון עם-טבעת-זהות · שב-מגן-מלא 8/8 · כפתור-ספינר · מצבי-ריק-אחידים
  */
 
 import { useState } from "react";
-import { Bot, Copy, KeyRound, Link2, PlugZap, Send, ShieldCheck, CheckCircle2, XCircle } from "lucide-react";
+import { Bot, Copy, Inbox, KeyRound, Link2, Loader2, PlugZap, Send, ShieldCheck, CheckCircle2, XCircle, ListChecks } from "lucide-react";
 import { useLive } from "@/hooks/use-live";
 import { cn } from "@/lib/utils";
-import { Chip, Micro, Panel, SecHead, Stat } from "../primitives";
+import { Chip, EmptyState, Micro, Panel, SecHead, Stat } from "../primitives";
 
 type GateResp = {
   ok?: boolean;
@@ -36,6 +37,34 @@ type AgentsResp = {
 };
 
 const ROLE_HE: Record<string, string> = { owner: "בעלים", active: "פעיל", posting: "פוסטינג", memo: "מזכר", _all: "הכל" };
+
+/* טבעת-זהות — גרדיאנט-דטרמיניסטי משם-החשבון (בלי-תמונות, אפס-רשת) */
+function identityHue(name: string): number {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+  return h;
+}
+function IdentityRing({ name, ok }: { name: string; ok: boolean }) {
+  const hue = identityHue(name);
+  return (
+    <div
+      aria-hidden
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 p-[2px] transition-shadow"
+      style={{
+        borderColor: ok ? "rgba(16,185,129,0.65)" : `hsl(${hue} 45% 45% / 0.6)`,
+        boxShadow: ok ? "0 0 18px -2px rgba(16,185,129,0.55)" : `0 0 14px -4px hsl(${hue} 60% 50% / 0.5)`,
+      }}
+    >
+      <span
+        dir="ltr"
+        className="flex h-full w-full items-center justify-center rounded-full text-sm font-black text-white"
+        style={{ background: `linear-gradient(135deg, hsl(${hue} 55% 30%), hsl(${(hue + 40) % 360} 55% 22%))` }}
+      >
+        {(name[0] || "?").toUpperCase()}
+      </span>
+    </div>
+  );
+}
 
 function VerifyRow({ label, row }: { label: string; row: Record<string, boolean> | null }) {
   if (!row) return <div className="flex items-center gap-2 text-xs text-zinc-600">{label}: <Chip tone="zinc">לא-נמדד</Chip></div>;
@@ -87,6 +116,10 @@ function Connect() {
   };
 
   const g = gate.data;
+  const liveRows = [g?.live?.steem, g?.live?.hive].filter(Boolean) as Record<string, boolean>[];
+  const checkedCount = liveRows.reduce((n, r) => n + Object.keys(r).length, 0);
+  const okCount = liveRows.reduce((n, r) => n + Object.values(r).filter(Boolean).length, 0);
+  const fullShield = checkedCount > 0 && okCount === checkedCount;
   return (
     <div className="space-y-4">
       <Panel className="p-4 md:p-5">
@@ -96,6 +129,24 @@ function Connect() {
           sub="חי-מהשרשרת · הכספת-המקומית מול-הסמכויות-האמת"
           extra={g?.connected ? <Chip tone="emerald">מחובר</Chip> : <Chip tone="amber">לא-מחובר</Chip>}
         />
+        {g?.account && (
+          <div className="mb-3 flex items-center gap-3 rounded-lg border border-zinc-800/80 bg-gradient-to-l from-emerald-500/[0.06] to-transparent p-3">
+            <IdentityRing name={g.account} ok={!!g.connected} />
+            <div className="min-w-0 flex-1">
+              <div dir="ltr" className="truncate font-mono text-lg font-bold text-zinc-100">@{g.account}</div>
+              <div className="text-[11px] text-zinc-500">
+                {g.connectedAt ? "מחובר-מאז " + new Date(g.connectedAt).toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" }) : "חשבון-הבית-הריבוני"}
+                {g.headEntry ? " · חתום-בראש-הספר" : ""}
+              </div>
+            </div>
+            {fullShield && (
+              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-bold text-emerald-300 shadow-[0_0_16px_-4px_rgba(16,185,129,0.5)]">
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+                מגן-מלא {okCount}/{checkedCount}
+              </span>
+            )}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
           <Stat label="חשבון-הבית" value={g?.account ? "@" + g.account : "—"} />
           <Stat label="חיילים-בכספת" value={g?.soldiers ?? "—"} tone="emerald" />
@@ -106,8 +157,18 @@ function Connect() {
           <VerifyRow label="Steem" row={g?.live?.steem ?? null} />
           <VerifyRow label="Hive" row={g?.live?.hive ?? null} />
         </div>
+        {g?.backup?.file && (
+          <div className="mt-3 flex items-center justify-between gap-2 rounded-md border border-zinc-800/70 bg-zinc-950/60 px-3 py-2">
+            <div className="min-w-0 text-[11px] text-zinc-500">
+              גיבוי-אסון: <span dir="ltr" className="font-mono text-zinc-400">{g.backup.file}</span>
+              <span dir="ltr" className="hidden font-mono text-zinc-600 md:inline"> · {g.backup.sha256?.slice(0, 12)}…</span>
+              <span className="md:hidden"> · סיסמה-אצלך</span>
+            </div>
+            <span className="shrink-0 font-mono text-[10px] text-zinc-600">0600 · gitignored</span>
+          </div>
+        )}
         <Micro className="mt-3 block">
-          החיבור-נשמר-מקומית (gate-state · vault · .env — אפס-גיט). גיבוי-אסון מוצפן: <span dir="ltr" className="font-mono">{g?.backup?.file}</span> — סיסמה-אצל-המפעיל בלבד.
+          החיבור-נשמר-מקומית (gate-state · vault · .env — אפס-גיט). המפתחות-לעולם-לא-חוזרים-בתשובה.
         </Micro>
       </Panel>
 
@@ -127,9 +188,9 @@ function Connect() {
           <button
             onClick={connect}
             disabled={busy || !paste.trim()}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-emerald-500/50 bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-200 transition-colors hover:bg-emerald-500/25 disabled:opacity-40"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-emerald-500/50 bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-200 transition-all hover:bg-emerald-500/25 active:scale-[0.98] disabled:opacity-40"
           >
-            <Link2 className="h-4 w-4" aria-hidden />
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Link2 className="h-4 w-4" aria-hidden />}
             {busy ? "מאמת-מול-השרשרת…" : "חבר-ואמת"}
           </button>
           <Micro>אפס-שידור · אפס-גיט · לא-נשמר-מפתח-מת · המפתחות-לעולם-לא-חוזרים-בתשובה</Micro>
@@ -220,9 +281,9 @@ curl -X POST <base>/api/agents -H 'x-agent-token: THE-TOKEN' \\
 
       <Panel className="p-4 md:p-5">
         <SecHead icon={<Send className="h-4 w-4" />} title="תיבת-הסוכנים" sub="הודעות-חיות-מהסוכנים-שלנו" extra={<Chip tone="emerald">{live.data?.inbox?.length ?? 0}</Chip>} />
-        <div className="max-h-72 space-y-1.5 overflow-y-auto nexus-scroll pr-1" aria-label="תיבת-הודעות-סוכנים">
+        <div className="max-h-96 space-y-1.5 overflow-y-auto nexus-scroll pr-1" aria-label="תיבת-הודעות-סוכנים">
           {(live.data?.inbox || []).map((m, i) => (
-            <div key={i} className="rounded-md border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-xs">
+            <div key={i} className="rise-in rounded-md border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-xs transition-colors hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
                 <span dir="ltr" className="font-mono font-bold text-violet-300">{m.from || "agent"}</span>
                 <span dir="ltr" className="font-mono text-[10px] text-zinc-600">{m.at ? new Date(m.at).toLocaleTimeString("en-GB") : ""}</span>
@@ -230,7 +291,9 @@ curl -X POST <base>/api/agents -H 'x-agent-token: THE-TOKEN' \\
               <p className="mt-1 break-words text-zinc-300">{m.text}</p>
             </div>
           ))}
-          {!(live.data?.inbox || []).length && <Micro>אין-הודעות-עדיין — הסוכן-הראשון-מוזמן</Micro>}
+          {!(live.data?.inbox || []).length && (
+            <EmptyState tone="violet" icon={<Inbox className="h-5 w-5" />} title="אין-הודעות-עדיין" sub="הסוכן-הראשון-מוזמן — רשום-סוכן למעלה או שלח-curl מהמכונה-שלך" />
+          )}
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <input value={text} onChange={(e) => setText(e.target.value)} placeholder="הודעת-מפעיל-לתיבה (לסוכנים-לקרוא)" className="min-h-[44px] min-w-0 flex-1 rounded-md border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-700 focus:border-emerald-500/50" />
@@ -242,23 +305,28 @@ curl -X POST <base>/api/agents -H 'x-agent-token: THE-TOKEN' \\
 
       <Panel className="p-4 md:p-5">
         <SecHead icon={<ShieldCheck className="h-4 w-4" />} title="משימות-סוכנים" sub="לבנות-לקריאה=רץ-מיד · שאר-ממתין-לאישורך" extra={<Chip tone="amber">{(live.data?.tasks || []).filter((t) => t.status === "pending").length} ממתינות</Chip>} />
-        <div className="max-h-72 space-y-1.5 overflow-y-auto nexus-scroll pr-1">
+        <div className="max-h-96 space-y-1.5 overflow-y-auto nexus-scroll pr-1">
           {(live.data?.tasks || []).map((t, i) => (
-            <div key={i} className="rounded-md border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-xs">
+            <div key={i} className="rounded-md border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-xs transition-colors hover:border-zinc-700">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span dir="ltr" className="font-mono text-zinc-300">{t.from}/{t.command}</span>
-                <span className={cn("font-mono text-[10px]", t.status === "done" || t.status === "auto" ? "text-emerald-300" : t.status === "pending" ? "text-amber-300" : "text-rose-300")}>{t.status}</span>
+                <span className={cn("inline-flex items-center gap-1 font-mono text-[10px]", t.status === "done" || t.status === "auto" ? "text-emerald-300" : t.status === "pending" ? "text-amber-300" : "text-rose-300")}>
+                  {t.status === "done" || t.status === "auto" ? <CheckCircle2 className="h-3 w-3" aria-hidden /> : t.status === "pending" ? <ListChecks className="h-3 w-3" aria-hidden /> : <XCircle className="h-3 w-3" aria-hidden />}
+                  {t.status}
+                </span>
               </div>
               {t.result && <p dir="ltr" className="mt-1 break-words font-mono text-[10px] text-zinc-500">{t.result}</p>}
               {t.status === "pending" && (
                 <div className="mt-1.5 flex gap-1.5">
-                  <button onClick={() => act(t.id, "approve")} className="rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20">אשר-ובצע</button>
-                  <button onClick={() => act(t.id, "reject")} className="rounded border border-rose-500/40 bg-rose-500/10 px-2 py-1 text-[10px] font-bold text-rose-300 hover:bg-rose-500/20">דחה</button>
+                  <button onClick={() => act(t.id, "approve")} className="min-h-[32px] rounded border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 transition-colors hover:bg-emerald-500/20">אשר-ובצע</button>
+                  <button onClick={() => act(t.id, "reject")} className="min-h-[32px] rounded border border-rose-500/40 bg-rose-500/10 px-2 py-1 text-[10px] font-bold text-rose-300 transition-colors hover:bg-rose-500/20">דחה</button>
                 </div>
               )}
             </div>
           ))}
-          {!(live.data?.tasks || []).length && <Micro>אין-משימות</Micro>}
+          {!(live.data?.tasks || []).length && (
+            <EmptyState tone="emerald" icon={<ListChecks className="h-5 w-5" />} title="אין-משימות" sub="משימת-קריאה (status · capabilities) רצה-מיד · שאר-ממתין-לאישורך" />
+          )}
         </div>
       </Panel>
     </div>
