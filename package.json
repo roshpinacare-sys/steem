@@ -10,7 +10,9 @@
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "lint:chunked": "for d in src/app src/components src/lib src/hooks; do [ -d \"$d\" ] && NODE_OPTIONS=--max-old-space-size=768 npx eslint \"$d\" || true; done",
+    "audit:fleet": "node agent/soldier_auth_audit.cjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
