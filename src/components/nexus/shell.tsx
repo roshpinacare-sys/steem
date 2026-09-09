@@ -4,6 +4,7 @@
  * 117n — NEXUS shell II · מעטפת-מפעיל
  * 7-מסכים × תתי-תפריטים אמת: מסילת-מחשב (עם-תתי-קישורים-פתוחים) · סרגל-תת-תפריט דביק ·
  * ניווט-תחתון-מובייל 4+MORE (גיליון-תחתון) · safe-area · hash-routing דו-שלבי (#section/sub)
+ * 117p5c — לוגו-נושם · גיליון-עוד נכנס-רך · משוב-לחיצה בניווט-תחתון · גרסה r117p5
  */
 
 import { useState } from "react";
@@ -96,14 +97,14 @@ export function NexusHeader({
     <header className="sticky top-0 z-40 border-b border-zinc-800/70 bg-zinc-950/85 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 md:px-6">
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-500/10 shadow-[0_0_16px_-2px_rgba(16,185,129,0.35)]">
+          <div className="logo-breathe relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-500/10 shadow-[0_0_16px_-2px_rgba(16,185,129,0.35)]">
             <Activity className="h-4 w-4 text-emerald-300" aria-hidden />
           </div>
           <div className="min-w-0 leading-tight">
             <div className="truncate text-sm font-extrabold tracking-wide text-zinc-100">
               SAOS-NET <span className="text-emerald-400">COMMAND II</span>
             </div>
-            <div className="hidden text-[10px] uppercase tracking-[0.2em] text-zinc-500 sm:block">מרכז-ההפעלה-הריבוני · r117n</div>
+            <div className="hidden text-[10px] uppercase tracking-[0.2em] text-zinc-500 sm:block">מרכז-ההפעלה-הריבוני · r117p5</div>
           </div>
         </div>
 
@@ -176,14 +177,15 @@ export function MoreSheet({
   onNavigate: (s: SectionId) => void;
 }) {
   if (!open) return null;
-  const extra = SECTIONS.filter((s) => !["control", "book", "shield", "doors"].includes(s.id));
+  const extra = SECTIONS.filter((s) => !"control/book/shield/doors".split("/").includes(s.id));
   return (
     <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="מסכים-נוספים">
-      <button aria-label="סגירה" className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-zinc-800 bg-zinc-950 p-4" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}>
+      <button aria-label="סגירה" className="fade-in absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="rise-in absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-zinc-800 bg-zinc-950 p-4 shadow-[0_-12px_48px_-12px_rgba(16,185,129,0.15)]" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}>
+        <div aria-hidden className="mx-auto mb-3 h-1 w-10 rounded-full bg-zinc-800" />
         <div className="mb-3 flex items-center justify-between">
           <span className="text-sm font-bold text-zinc-200">כל-המסכים</span>
-          <button onClick={onClose} aria-label="סגור" className="rounded-md border border-zinc-800 p-1.5 text-zinc-500 hover:text-zinc-300">
+          <button onClick={onClose} aria-label="סגור" className="rounded-md border border-zinc-800 p-1.5 text-zinc-500 transition-colors hover:border-zinc-700 hover:text-zinc-300">
             <X className="h-4 w-4" aria-hidden />
           </button>
         </div>
@@ -196,8 +198,8 @@ export function MoreSheet({
                 key={s.id}
                 onClick={() => { onNavigate(s.id); onClose(); }}
                 className={cn(
-                  "flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-lg border p-2 transition-colors",
-                  on ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-200" : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:text-zinc-200"
+                  "flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-lg border p-2 transition-all active:scale-95",
+                  on ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-200" : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
                 )}
               >
                 <Icon className="h-5 w-5" aria-hidden />
@@ -235,13 +237,13 @@ export function BottomNav({ active, onNavigate }: { active: SectionId; onNavigat
                 onClick={() => onNavigate(s.id)}
                 aria-current={on ? "page" : undefined}
                 className={cn(
-                  "relative flex min-h-[56px] flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] transition-colors",
+                  "relative flex min-h-[56px] flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] transition-all active:scale-90",
                   on ? "text-emerald-300" : "text-zinc-500 hover:text-zinc-300"
                 )}
               >
-                <Icon className="h-5 w-5" aria-hidden />
+                <Icon className={cn("h-5 w-5 transition-transform", on && "drop-shadow-[0_0_6px_rgba(16,185,129,0.7)]")} aria-hidden />
                 <span className="font-medium">{s.label}</span>
-                {on && <span className="absolute top-0 h-0.5 w-6 rounded-full bg-emerald-400" aria-hidden />}
+                {on && <span className="absolute top-0 h-0.5 w-6 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" aria-hidden />}
               </button>
             );
           })}
@@ -249,13 +251,13 @@ export function BottomNav({ active, onNavigate }: { active: SectionId; onNavigat
             onClick={() => setMore(true)}
             aria-current={activeInMore ? "page" : undefined}
             className={cn(
-              "relative flex min-h-[56px] flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] transition-colors",
+              "relative flex min-h-[56px] flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] transition-all active:scale-90",
               activeInMore ? "text-emerald-300" : "text-zinc-500 hover:text-zinc-300"
             )}
           >
             <LayoutGrid className="h-5 w-5" aria-hidden />
             <span className="font-medium">עוד</span>
-            {activeInMore && <span className="absolute top-0 h-0.5 w-6 rounded-full bg-emerald-400" aria-hidden />}
+            {activeInMore && <span className="absolute top-0 h-0.5 w-6 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" aria-hidden />}
           </button>
         </div>
       </nav>
@@ -349,9 +351,12 @@ export function NexusFooter({ at }: { at: string }) {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3 text-[11px] text-zinc-600 md:px-6">
         <div className="flex items-center gap-2">
           <LiveDot ok />
-          <span className="font-mono" dir="ltr">SAOS-NET · headcorner · r117n-command-ii</span>
+          <span className="font-mono" dir="ltr">SAOS-NET · headcorner · r117p5-command-ii</span>
         </div>
-        <span dir="ltr" className="font-mono tabular-nums">{at ? new Date(at).toISOString().slice(0, 19).replace("T", " ") + "Z" : ""}</span>
+        <div className="flex items-center gap-3">
+          <span className="hidden sm:inline">אפס-סימולציה · אפס-מפתחות-בגיט · כל-המפתחות-בכספת</span>
+          <span dir="ltr" className="font-mono tabular-nums">{at ? new Date(at).toISOString().slice(0, 19).replace("T", " ") + "Z" : ""}</span>
+        </div>
       </div>
     </footer>
   );
