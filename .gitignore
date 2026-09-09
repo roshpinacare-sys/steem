@@ -115,3 +115,7 @@ download/task26-pre-restore-backup.tar.gz
 # (chain-archive-seal.jsonl.gz + seal-state, tracked); restore-after-wipe is automatic
 # (sovereign/node/seal_archive.cjs, hooked into gitkeeper step 0b).
 sovereign/node/chain-archive.jsonl
+
+# 117p6 — runtime pid files: never track (churn noise every restart)
+*.pid
+agent/ROGUE-SEED-BLOCKED.json
