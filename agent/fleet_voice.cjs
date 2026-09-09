@@ -27,7 +27,11 @@ const steem = require('steem');
 
 const STEEM_RPC = process.env.STEEM_RPC || 'https://api.steemit.com';
 const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
-const DRY = process.argv.includes('--dry');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: HEAD });
+const DRY = GATE.dry;
+announceGate(GATE);
+
 const countArg = process.argv[process.argv.indexOf('--count') + 1];
 const COUNT = Math.max(1, Math.min(6, parseInt(countArg || '3', 10) || 3));
 const onlySoldier = (() => {

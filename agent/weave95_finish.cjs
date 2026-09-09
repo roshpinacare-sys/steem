@@ -39,6 +39,12 @@ const writeJSON = (p, o) => fs.writeFileSync(p, JSON.stringify(o, null, 2) + '\n
 const sha = (o) => crypto.createHash('sha256').update(JSON.stringify(o)).digest('hex');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// LIVE-GATE (Task 28-b): DRY by default — broadcast requires the live gate. See DAEMONS.md.
+const { resolveLiveGate, announceGate } = require("./lib/live_gate.cjs");
+const GATE = resolveLiveGate(process.argv);
+const DRY = GATE.dry;
+announceGate(GATE);
+
 function httpsPost(url, body) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify(body);
@@ -84,7 +90,7 @@ async function main() {
   /* 2. פעימה (עם-המתנה-לנעילה — פעימת-הדמון-המתוכננת עלולה-להחזיק-אותה) */
   let applied = false, lastTail = '';
   for (let i = 0; i < 8 && !applied; i++) {
-    const r = spawnSync('node', ['saosnet.cjs', '--live'], { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
+    const r = spawnSync('node', ['saosnet.cjs'].concat(DRY ? [] : ['--live']), { cwd: NODE_DIR, timeout: 300000, encoding: 'utf8' });
     lastTail = String(r.stdout || '').split('\n').filter(Boolean).slice(-2).join(' | ');
     log('beat#' + (i + 1) + ' exit=' + r.status + ' · ' + lastTail.slice(0, 160));
     const pfNow = readJSON(PENDING, { missions: [] });
@@ -114,7 +120,7 @@ async function main() {
   /* 4. עוגן-Steem (custom_json — אפס-עמלה) + ניבוי */
   let anchor = { txid: null, found: null, error: null };
   try {
-    if (POSTING_WIF) {
+    if (POSTING_WIF && !DRY) {
       const nonce = crypto.randomBytes(6).toString('hex');
       const summary = 'WEAVE-95 complete · vault ' + verify.locked + ' TRX/6 measured · cover-fixed · redeem-loop closed h' + verify.burnHeight + ' · delegated ' + verify.delegations + ' subjects → @' + ACCOUNT + ' (keys untouched)';
       const payload = { t: 'weave-anchor', v: 95, n: nonce, digest: sha({ verify, summary }), summary, ts: new Date().toISOString() };
@@ -136,7 +142,7 @@ async function main() {
         }
       }
       anchor = { txid, found: foundA, error: foundA ? null : 'not-found-in-history (honest)', summary, digest: payload.digest.slice(0, 16) + '…' };
-    } else anchor = { txid: null, error: 'no POSTING_WIF' };
+    } else anchor = { txid: null, error: DRY ? 'DRY (live-gate) — anchor not broadcast' : 'no POSTING_WIF' };
   } catch (e) { anchor = { txid: null, error: String((e && e.message) || e).slice(0, 140) }; }
   log('anchor: ' + JSON.stringify({ txid: anchor.txid, found: anchor.found && anchor.found.block, err: anchor.error }));
 

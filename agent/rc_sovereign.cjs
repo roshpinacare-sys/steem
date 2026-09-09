@@ -39,7 +39,11 @@ const STEEM_RPC = 'https://api.steemit.com';
 const HIVE_RPC = 'https://api.hive.blog';
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-const LIVE = process.argv.includes('--live');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const LIVE = GATE.live;
+announceGate(GATE, log);
+
 const MODE = process.argv.includes('--salvo') ? 'salvo' : process.argv.includes('--batch') ? 'batch' : process.argv.includes('--hive-powerup') ? 'hive-powerup' : 'map';
 const SALVO_SIZE = parseInt(process.env.SALVO_SIZE || "10", 10);   // 52 — כל-הצי (10×4 = 40 ops/block)
 const BATCH_OPS = 4;    // ops inside ONE tx (per-account block budget is 5)

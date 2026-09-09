@@ -16,8 +16,11 @@ const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
-const LIVE = process.argv.includes('--live');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv);
+const LIVE = GATE.live;
 const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+announceGate(GATE, log);
 const SP_PER_SOLDIER = 50;
 const FUEL_STEEM = 0.03;
 const OUT = path.join(__dirname, 'fuel_result.json');

@@ -35,7 +35,11 @@ const argOf = (n) => {
   const i = args.indexOf(n);
   return i >= 0 ? args[i + 1] : null;
 };
-const DRY = args.includes('--dry');
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(args, { account: ACCOUNT });
+const DRY = GATE.dry;
+announceGate(GATE, log);
+
 const target = (argOf('--account') || '').toLowerCase().replace(/^@/, '');
 const chainsWanted = (argOf('--chains') || 'steem,hive').split(',').map((s) => s.trim());
 
