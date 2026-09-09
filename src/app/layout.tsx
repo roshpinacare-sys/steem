@@ -22,10 +22,10 @@ const jet = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SAOS-NET COMMAND · מרכז-הבקרה הריבוני",
+  title: "SAOS-NET COMMAND II · מרכז-ההפעלה-הריבוני",
   description:
-    "מרכז-בקרה-חי לרשת-האמת הריבונית: הספר · רכבת-ההפקדות הרב-שרשרתית · דלתות-הריליי · THE-SHIELD · כלכלת-הגריד — הכל-נמדד-חי, אפס-סימולציה.",
-  keywords: ["SAOS-NET", "COMMAND", "מרכז-בקרה", "TRON", "deposits", "relay-doors", "shield", "הפקדות", "ריבונות"],
+    "מרכז-הפעלה-חי לרשת-האמת הריבונית: סייר-הספר (66k+ בלוקים) · בודק-המגן-החי · דלתות-עם-יתרות-רשת · רכבת-ההפקדות · כלכלת-הגריד · מציג-לוגים — הכל-נמדד-חי, אפס-סימולציה.",
+  keywords: ["SAOS-NET", "COMMAND II", "מרכז-הפעלה", "TRON", "explorer", "shield-scanner", "relay-doors", "deposits", "ריבונות"],
   authors: [{ name: "SAOS — headcorner" }],
   icons: { icon: "/weave-mark.svg" },
 };
