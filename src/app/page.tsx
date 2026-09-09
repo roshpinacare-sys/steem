@@ -14,6 +14,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useNexus } from "@/hooks/use-nexus";
 import { BottomNav, DesktopRail, NexusFooter, NexusHeader, SECTIONS, SubNav, type SectionId, type SubId, SUBS } from "@/components/nexus/shell";
 import { BookSec, ControlSec, DepositsSec, DoorsSec, EconSec, GateSec, ShieldSec, SystemSec } from "@/components/nexus/sections";
+import { PulseStrip } from "@/components/nexus/activity";
 
 const VALID = SECTIONS.map((s) => s.id) as SectionId[];
 
@@ -99,13 +100,13 @@ export default function Home() {
       />
       <SubNav section={loc.section} sub={loc.sub} onNavigate={navigateSub} />
 
-      <main className="w-full flex-1 pb-24 md:pb-8">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-4 md:px-6 md:py-8 lg:grid-cols-[210px_minmax(0,1fr)]">
+      <main className="flex w-full flex-1 pb-28 md:pb-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-4 md:px-6 md:py-8 lg:grid-cols-[210px_minmax(0,1fr)]">
           <aside aria-label="מסילת-ניווט" className="hidden md:block">
             <DesktopRail active={loc.section} sub={loc.sub} onNavigate={navigate} />
           </aside>
 
-          <section aria-label="תוכן-ראשי" className="min-w-0">
+          <section aria-label="תוכן-ראשי" className="flex min-w-0 flex-col">
             {error && !data && (
               <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200" role="alert">
                 קשר-ל-NEXUS-נפל: {error} — הסקר-ממשיך-בכנות
@@ -133,6 +134,7 @@ export default function Home() {
                 </motion.div>
               </AnimatePresence>
             ) : null}
+            <PulseStrip />
           </section>
         </div>
       </main>

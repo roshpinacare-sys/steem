@@ -58,8 +58,18 @@ function acquireLock() {
   try {
     const raw = JSON.parse(fs.readFileSync(LOCK, 'utf8'));
     if (Date.now() - Number(raw.at) < LOCK_TTL_MS) {
-      log('skip — fresh guard holds the lock (pid ' + raw.pid + ', mode ' + raw.mode + ')');
-      return false;
+      /* 117q — חריג-דופק-מהיר: הרשת-מתה-מוות-ברורה (פורט-3000-סירב + אפס-תהליכי-next) =
+       * לא-מיחזור-פעיל ולא-חימום — המתנה-עד-4-דק' לסוף-TTL גוזרת-על-המפעיל שקט-מת. דורסים-נעילה. */
+      let hardDead = false;
+      try {
+        const port = execFileSync('bash', ['-c', 'curl -s -o /dev/null -w "%{http_code}" --max-time 3 http://127.0.0.1:3000/ 2>/dev/null || true; echo; pgrep -f "next-server|next dev" >/dev/null && echo PROC || echo NOPROC'], { timeout: 10_000, encoding: 'utf8' });
+        hardDead = /(^|\n)000/.test(port) && /NOPROC/.test(port);
+      } catch (_) {}
+      if (!hardDead) {
+        log('skip — fresh guard holds the lock (pid ' + raw.pid + ', mode ' + raw.mode + ')');
+        return false;
+      }
+      log('LOCK-BYPASS(web-hard-dead) — סורקים-את-הנעילה-להשכמה-מיידית');
     }
   } catch (_) { /* no lock */ }
   try { fs.writeFileSync(LOCK, JSON.stringify({ at: Date.now(), pid: process.pid, mode: MODE })); } catch (_) {}

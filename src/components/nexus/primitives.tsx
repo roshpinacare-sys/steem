@@ -69,10 +69,16 @@ export function Micro({ children, className }: { children: ReactNode; className?
   return <div className={cn("text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-500", className)}>{children}</div>;
 }
 
-/* ── פאנל-שער-זווית (HUD) ── */
+/* ── פאנל-שער-זווית (HUD) · 117q — עומק + זוהר-רך ── */
 export function Panel({ children, className, corners = true }: { children: ReactNode; className?: string; corners?: boolean }) {
   return (
-    <div className={cn("relative rounded-lg border border-zinc-800/80 bg-zinc-900/50 backdrop-blur-sm transition-colors hover:border-zinc-700", className)}>
+    <div className={cn(
+      "relative rounded-lg border border-zinc-800/80 bg-zinc-900/50 backdrop-blur-sm",
+      "transition-all duration-300 hover:border-emerald-500/25 hover:shadow-[0_0_24px_-6px_rgba(16,185,129,0.18)]",
+      className
+    )}>
+      {/* הדגשת-קצה-עליון — עומק-בלי-רעש */}
+      <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-white/[0.07] to-transparent" />
       {corners && (
         <>
           <span aria-hidden className="absolute -top-px -left-px h-2.5 w-2.5 border-t border-l border-emerald-500/50 rounded-tl-lg" />
@@ -122,7 +128,7 @@ export function SecHead({ icon, title, sub, extra }: { icon: ReactNode; title: s
   return (
     <div className="mb-4 flex items-start justify-between gap-3">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">{icon}</div>
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-[0_0_14px_-4px_rgba(16,185,129,0.4)]">{icon}</div>
         <div>
           <h2 className="text-base font-bold leading-tight text-zinc-100 md:text-lg">{title}</h2>
           <p className="text-xs text-zinc-500">{sub}</p>

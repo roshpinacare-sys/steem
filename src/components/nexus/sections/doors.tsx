@@ -36,7 +36,7 @@ function Vault() {
           icon={<DoorOpen className="h-4 w-4" />}
           title="כספת-הזהויות · יתרות-חיות-מהרשת"
           sub="8-דלתות-ברוקר + 12-דלתות-רישום · יתרות-נמדדו-עכשיו-מול-TRON-ריבוי-מארחים"
-          extra={<Chip ok={!!d?.brokerAlive}>{d?.brokerAlive ? "BROKER-ALIVE" : "BROKER-DOWN"}</Chip>}
+          extra={<span className={d && !d.brokerAlive ? "animate-pulse" : ""}><Chip ok={!!d?.brokerAlive}>{d?.brokerAlive ? "BROKER-ALIVE" : "BROKER-DOWN"}</Chip></span>}
         />
         <div className="mb-4 grid grid-cols-3 gap-4 border-b border-zinc-800/70 pb-4">
           <Stat label="סך-TRX-בדלתות" value={d ? d.totalTrx.toFixed(4) : "—"} tone="violet" sub={d ? `${d.measured}/${doors.length} נמדדו` : ""} />
