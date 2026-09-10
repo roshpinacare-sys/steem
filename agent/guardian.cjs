@@ -534,9 +534,11 @@ function healWeb(res) {
         try { sh('pkill', ['-f', 'next-server']); sh('pkill', ['-f', 'next dev']); } catch (_) {}
         settleAndCleanCache(res); /* 117p2 */
         const outR = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
+        /* 117p8-R7-OOM (מדוד-חי 05:03): הקרנל-הרג-next-server ב-global-OOM — anon-rss:1016MB
+         * (בדיוק-תקרת-הערימה-1024) על-מארח-4GB עמוס-דימונים. תקרה-זמינה-יותר-לסביבה: 896. */
         const r = spawn(process.execPath, [path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'), 'dev', '-p', '3000'], {
           cwd: ROOT, detached: true, stdio: ['ignore', outR, outR],
-          env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=1024' }),
+          env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=896' }),
         });
         r.unref();
         res.actions.push('WEB-RECYCLED(age ' + age + 's · rss ' + Math.round(rssKb / 1024) + 'MB · pid ' + r.pid + ')');
@@ -556,7 +558,7 @@ function healWeb(res) {
     const out = fs.openSync(path.join(ROOT, 'dev.log'), 'a');
     const child = spawn(process.execPath, [path.join(ROOT, 'node_modules', 'next', 'dist', 'bin', 'next'), 'dev', '-p', '3000'], {
       cwd: ROOT, detached: true, stdio: ['ignore', out, out],
-      env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=1024' }),
+      env: Object.assign({}, process.env, { NODE_OPTIONS: '--max-old-space-size=896' }),
     });
     child.unref();
     // short confirm-poll (~12s) — never blocks long; next cycle re-verifies anyway
