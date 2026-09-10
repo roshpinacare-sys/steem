@@ -1,11 +1,6 @@
 {
-  "ts": "2026-09-10T06:22:06.363Z",
+  "ts": "2026-09-10T06:59:40.416Z",
   "findings": [
-    {
-      "sev": "CRITICAL",
-      "id": "block-hash",
-      "msg": "100127 בלוקים שה-hash שלהם ≠ מחושב (ראשון: h1)"
-    },
     {
       "sev": "CRITICAL",
       "id": "fork-dups",
@@ -14,67 +9,55 @@
     {
       "sev": "HIGH",
       "id": "archive-gaps",
-      "msg": "29165 גבהים חסרים בספר (22.8%) ב-26 פערים — doctrine-replay מג'נזיס בלתי-אפשרי על הדיסק"
+      "msg": "29165 גבהים חסרים בספר (22.34%) ב-26 פערים — doctrine-replay מג'נזיס בלתי-אפשרי על הדיסק"
     },
     {
       "sev": "CRITICAL",
       "id": "walk-hash",
-      "msg": "replay-מסע: hash שבור בגובה 126013"
+      "msg": "replay-מסע: hash שבור בגובה 130016"
     },
     {
       "sev": "CRITICAL",
       "id": "buy-fill-inverted",
-      "msg": "9230 מילויים-מוצלחים על הזמנות-buy רצו בענף-הפוך (Σ=532369µ SAOS הועבר מבעלים→taker במקום taker→בעלים)"
+      "msg": "9636 מילויים-מוצלחים על הזמנות-buy רצו בענף-הפוך (Σ=541161µ SAOS הועבר מבעלים→taker במקום taker→בעלים)"
     },
     {
       "sev": "HIGH",
       "id": "supply",
-      "msg": "Σ(saos)=25716 ≠ supply=126682 בגובה 127865"
+      "msg": "Σ(saos)=25020 ≠ supply=126682 בגובה 130556"
     },
     {
       "sev": "HIGH",
       "id": "negatives",
-      "msg": "יתרות-שליליות: headcorner:lockedSteem:-31 · cashmachine:lockedSteem:-59 · ynet:lockedSteem:-78 · wic:lockedSteem:-97 · wog:lockedSteem:-87 · woq:lockedSteem:-65 · lsa:lockedSteem:-71 · macrame:lockedSteem:-47"
+      "msg": "יתרות-שליליות: headcorner:lockedSteem:-101 · cashmachine:lockedSteem:-442 · ynet:lockedSteem:-223 · wic:lockedSteem:-271 · wog:lockedSteem:-239 · woq:lockedSteem:-280 · lsa:lockedSteem:-159 · macrame:lockedSteem:-193"
     }
   ],
   "seal": {
     "sealedAt": "2026-09-09T19:06:31.016Z",
     "archiveBytes": 77631617,
-    "currentBytes": 80345322,
+    "currentBytes": 82856103,
     "restoredAt": "2026-09-10T06:00:18.280Z",
     "prefixMatch": true,
     "gzMatch": true
   },
   "window": {
-    "first": 127286,
-    "last": 127865,
+    "first": 130033,
+    "last": 130556,
     "n": 512
   },
   "blockHashCheck": {
-    "checked": 98753,
-    "badHash": 100127,
-    "badHashSample": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10
-    ]
+    "checked": 101391,
+    "method": "walk-based (K.buildBlock) — see walk/walkFromRootfile findings"
   },
   "dups": {
-    "identical": 1371,
+    "identical": 1363,
     "conflicting": 3
   },
   "coverage": {
-    "uniqueHeights": 98753,
-    "maxH": 127918,
+    "uniqueHeights": 101391,
+    "maxH": 130556,
     "missing": 29165,
-    "missingPct": 22.8,
+    "missingPct": 22.34,
     "ranges": [
       [
         703,
@@ -184,30 +167,42 @@
     "rangeCount": 26
   },
   "rootfile": {
-    "height": 126000,
-    "declared": "e867a1e16283491c9e1906017e9b35ff964e688b5dbfd924b58eb7212dcd8002",
-    "computed": "e867a1e16283491c9e1906017e9b35ff964e688b5dbfd924b58eb7212dcd8002",
+    "height": 129000,
+    "declared": "38bd6eeeb2f81724bc1ddd912ae8c59a3a8fce6617dfbd17025219b55c9720bb",
+    "computed": "38bd6eeeb2f81724bc1ddd912ae8c59a3a8fce6617dfbd17025219b55c9720bb",
     "ok": true
   },
   "walk": {
-    "from": 126001,
-    "walked": 12,
-    "to": 126012,
-    "hashBreak": 126013,
+    "from": 129001,
+    "walked": 1015,
+    "to": 130015,
+    "hashBreak": 130016,
     "linkBreak": null,
-    "snapshotCheck": "skipped (walk head 126012 vs snap 127865)"
+    "snapshotCheck": "skipped (walk head 130015 vs snap 130556)"
   },
   "checkpoints": {
-    "checked": 0,
+    "checked": 7,
     "bad": 0,
     "sample": []
   },
   "fillForensics": {
-    "sellSide": 4452,
-    "buySide": 9230,
+    "sellSide": 4747,
+    "buySide": 9636,
     "unknownSide": 27,
-    "buyFillTotalµ": 532369,
+    "buyFillTotalµ": 541161,
     "topBuyOrderIds": [
+      [
+        15833,
+        46
+      ],
+      [
+        15862,
+        44
+      ],
+      [
+        15798,
+        34
+      ],
       [
         5880,
         32
@@ -217,40 +212,28 @@
         27
       ],
       [
-        5561,
-        25
-      ],
-      [
-        5634,
-        25
-      ],
-      [
-        10481,
-        25
-      ],
-      [
-        4324,
-        24
+        15662,
+        26
       ]
     ]
   },
   "invariants": {
-    "atHeight": 127865,
-    "sumSaos": 25716,
+    "atHeight": 130556,
+    "sumSaos": 25020,
     "supply": 126682,
     "supplyOk": false,
     "negatives": [
-      "headcorner:lockedSteem:-31",
-      "cashmachine:lockedSteem:-59",
-      "ynet:lockedSteem:-78",
-      "wic:lockedSteem:-97",
-      "wog:lockedSteem:-87",
-      "woq:lockedSteem:-65",
-      "lsa:lockedSteem:-71",
-      "macrame:lockedSteem:-47",
-      "siq:lockedSteem:-138",
-      "tov:lockedSteem:-96",
-      "haran:lockedSteem:-83"
+      "headcorner:lockedSteem:-101",
+      "cashmachine:lockedSteem:-442",
+      "ynet:lockedSteem:-223",
+      "wic:lockedSteem:-271",
+      "wog:lockedSteem:-239",
+      "woq:lockedSteem:-280",
+      "lsa:lockedSteem:-159",
+      "macrame:lockedSteem:-193",
+      "siq:lockedSteem:-224",
+      "tov:lockedSteem:-479",
+      "haran:lockedSteem:-252"
     ]
   },
   "weave": {

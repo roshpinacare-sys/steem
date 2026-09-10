@@ -1,17 +1,31 @@
 {
-  "at": "2026-09-10T06:00:14.418Z",
+  "at": "2026-09-10T07:00:14.214Z",
   "mode": "DRY",
   "account": "headcorner",
   "anchorId": "saos.weave.v1",
   "scan": {
-    "height": 512,
-    "blocksKept": 512,
+    "height": 102290,
+    "blocksKept": 102290,
     "truncated": true,
     "liveStamps": 0,
-    "totalStamps": 0,
-    "nextSeq": 1,
-    "lastSeal": null,
-    "sealsRing": []
+    "totalStamps": 1,
+    "nextSeq": 2,
+    "lastSeal": {
+      "seq": 1,
+      "root": "d7da3243a19e9d1b68d1fd312f0e6f72d0492deed65eb0f0d5e2e97c0064bd8c",
+      "count": 1,
+      "at": "2026-09-06T00:20:53.384Z"
+    },
+    "sealsRing": [
+      {
+        "seq": 1,
+        "root": "d7da3243a19e9d1b68d1fd312f0e6f72d0492deed65eb0f0d5e2e97c0064bd8c",
+        "count": 1,
+        "from": 1,
+        "to": 1,
+        "at": "2026-09-06T00:20:53.384Z"
+      }
+    ]
   },
   "request": null,
   "anchored": {
@@ -26,8 +40,8 @@
     },
     "tron": {
       "via": "checkpoint",
-      "cpHeight": 121776,
-      "stateRoot": "a73fc5cbfc92937cba1a286f9d87447bb4635c7f903f2712cbf28be31513200b",
+      "cpHeight": 125052,
+      "stateRoot": "0b3cfa72ae8c82c8a358e0e998283f58dafd629c306a26668ce60760d3f4c278",
       "note": "root carried inside stateRoot → anchored by tronbridge daily rail"
     },
     "proof": {
@@ -36,8 +50,8 @@
     }
   },
   "notes": [
-    "scan: height=512 · kept=512 (TRUNCATED) · live=0 · total=0 · seals=0 · replay-rejected=2329",
-    "anchor seq=2: 0/3 chains · skips: DRY · tron=cp#121776",
+    "scan: height=102290 · kept=102290 (TRUNCATED) · live=0 · total=1 · seals=1 · replay-rejected=327862",
+    "anchor seq=2: 0/3 chains · skips: DRY · tron=cp#125052",
     "independent-proof: BROKEN — leaf-count 0 != seal.count 1"
   ]
 }
