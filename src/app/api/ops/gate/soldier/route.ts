@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { spawn } from "child_process";
 import { createRequire } from "module";
+import { derivePubQuietly } from "@/lib/wif";
 
 export const dynamic = "force-dynamic";
 
@@ -201,7 +202,7 @@ export async function POST(req: Request) {
         const wif = sheet[c][r];
         if (!wif) continue;
         let pub = "";
-        try { pub = lib.auth.wifToPublic(wif); } catch (_) { verify[c][r] = false; continue; }
+        try { pub = derivePubQuietly(wif, (w) => lib.auth.wifToPublic(w)) ?? ""; } catch (_) { verify[c][r] = false; continue; }
         pubs[c][r] = pub;
         verify[c][r] = !!chain[c] && pub === chain[c]![r];
         if (verify[c][r]) liveMatches++;

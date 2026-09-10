@@ -222,7 +222,9 @@ export async function POST(req: NextRequest) {
   }
 
   // ── derive / match ────────────────────────────────────────────────────────
-  const isWif = WIF_RE.test(secret);
+  /* P5… = פורמט-גרפן (P + WIF) — מנורמל ל-WIF רגיל לפני-זיהוי/גזירה/אחסון (R18b) */
+  const wifNormalized = secret.replace(/^P(?=[5JKL][1-9A-HJ-NP-Za-km-z]{50})/, "");
+  const isWif = WIF_RE.test(wifNormalized);
   let matches;
   const wifFor: Partial<Record<KeyRole, string>> = {};
   let ephemeralOwnerWif: string | undefined;
@@ -232,7 +234,7 @@ export async function POST(req: NextRequest) {
     let pub: string;
     try {
       const mod = await import("steem");
-      pub = (mod.default ?? mod).auth.wifToPublic(secret);
+      pub = derivePubQuietly(wifNormalized, (w) => (mod.default ?? mod).auth.wifToPublic(w)) ?? "";
     } catch {
       return NextResponse.json({ ok: false, error: "WIF לא תקין" }, { status: 400 });
     }
@@ -260,8 +262,8 @@ export async function POST(req: NextRequest) {
       },
       steemControls: rolePub[role] === pub,
     }));
-    for (const m of matches) if (m.steemControls) wifFor[m.role] = secret;
-    if (matches.find((m) => m.role === "owner")?.steemControls) ephemeralOwnerWif = secret;
+    for (const m of matches) if (m.steemControls) wifFor[m.role] = wifNormalized;
+    if (matches.find((m) => m.role === "owner")?.steemControls) ephemeralOwnerWif = wifNormalized;
   } else {
     const derived = await deriveAllRoles(username, secret);
     if (!derived) {
