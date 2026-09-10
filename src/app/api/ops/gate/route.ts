@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { createRequire } from "module";
+import { derivePubQuietly } from "@/lib/wif";
 
 export const dynamic = "force-dynamic";
 
@@ -111,8 +112,9 @@ function parseSheet(paste: string): { steem: Record<string, string>; hive: Recor
     const t = line.trim();
     if (/^HIVE$/i.test(t)) { cur = "hive"; continue; }
     if (/^STEEM$/i.test(t)) { cur = "steem"; continue; }
-    const m = t.match(/^([A-Za-z_]+)\s*[=:]\s*([5JKL][1-9A-HJ-NP-Za-km-z]{50,51})\s*$/);
-    if (m) out[cur][m[1].toLowerCase()] = m[2];
+    const m = t.match(/^([A-Za-z_]+)\s*[=:]\s*([5PJKL][1-9A-HJ-NP-Za-km-z]{49,51})\s*$/);
+    /* P5… = פורמט-גרפן (P + WIF) — מנורמל ל-WIF רגיל (51, מתחיל-ב-5) לפני-שמירה/גזירה (R18b — יישור-מול-פאנל-החיילים) */
+    if (m) out[cur][m[1].toLowerCase()] = m[2].replace(/^P(?=[5JKL])/, "");
   }
   return out;
 }
@@ -133,7 +135,7 @@ export async function GET() {
         for (const r of ROLES) {
           const wif = head.keys[set]?.[r]?.wif;
           let pub: string | null = null;
-          try { pub = wif ? steemLib().auth.wifToPublic(wif) : null; } catch (_) { pub = null; }
+          try { pub = wif ? derivePubQuietly(wif, (w) => steemLib().auth.wifToPublic(w)) : null; } catch (_) { pub = null; }
           row[r] = !!pub && pub === chain[set]![r];
         }
         row._all = ROLES.every((r) => row[r]);
@@ -198,7 +200,7 @@ export async function POST(req: Request) {
         const wif = sheet[set][r];
         if (!wif) continue;
         let pub = "";
-        try { pub = lib.auth.wifToPublic(wif); } catch (_) { verify[set][r] = false; continue; }
+        try { pub = derivePubQuietly(wif, (w) => lib.auth.wifToPublic(w)) ?? ""; } catch (_) { verify[set][r] = false; continue; }
         pubs[set][r] = pub;
         verify[set][r] = !!chain[set] && pub === chain[set]![r];
         if (r === "owner" && verify[set][r]) ownerLive = true;
