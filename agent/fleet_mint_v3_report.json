@@ -1,7 +1,24 @@
 {
- "at": "2026-09-10T02:31:33.254Z",
+ "at": "2026-09-10T02:40:43.057Z",
  "dry": false,
  "steps": [],
  "minted": [],
- "error": "transaction.operations = claim_rewards,[object Object]\t cause: value required operation undefined undefined \n stack: Error: value required operation undefined undefined\n    at Object.required (/home/z/my-project/agent/node_modules/steem/lib/auth/serializer/src/validation.js:43:19)\n    at Object.appendByteBuffer (/home/z/my-project/agent/node_modules/steem/lib/auth/serializer/src/types.js:1056:15)\n    at Object.appendByteBuffer (/home/z/my-project/agent/node_modules/steem/lib/auth/serializer/src/types.js:609:30)\n    at Serializer.appendByteBuffer (/home/z/my-project/agent/node_modules/steem/lib/auth/serializer/src/serializer.js:71:26)\n    at Serializer.toByteBuffer (/home/z/my-project/agent/node_modules/steem/lib/auth/serializer/src/serializer.js:198:18)\n    at Serializer.toBuffer (/home/z/my-project/agent/node_modules/steem/lib/auth/serializer/src/serializer.js:204:36)\n    at Auth.signTransaction (/home/z/my-project/agent/node_modules/steem/lib/auth/index.js:116:24)\n    at /home/z/my-project/agent/node_modules/steem/lib/broadcast/index.js:52:64\n    at tryCatcher (/home/z/my-project/agent/node_modules/bluebird/js/release/util.js:16:23)\n    at Promise._settlePromiseFromHandler (/home/z/my-project/agent/node_modules/bluebird/js/release/promise.js:547:31)\n    at Promise._settlePromise (/home/z/my-project/agent/node_modules/bluebird/js/release/promise.js:604:18)\n    at Promise._settlePromise0 (/home/z/my-project/agent/node_modules/bluebird/js/release/promise.js:649:10)\n    at Promise._settlePromises (/home/z/my-project/agent/node_modules/bluebird/js/release/promise.js:729:18)\n    at Promise._fulfill (/home/z/my-project/agent/node_modules/bluebird/js/release/promise.js:673:18)\n    at Promise._resolveCallback (/home/z/my-project/agent/node_modules/bluebird/js/release/promise.js:466:57)\n    at Promise._settlePromiseFromHandler (/home/z/my-project/agent/node_modules/bluebird/js/release/promise.js:559:17) "
+ "error": "missing required owner authority:Missing Owner Authority powerspan",
+ "findings": {
+  "claimAccountRC": {
+   "status": "BLOCKED",
+   "need": "5.83T RC (5,822,571,589,956)",
+   "have": "3.46T RC max (8.8 SP)",
+   "unlock": "~+6.0 SP more on headcorner"
+  },
+  "powerspanAdoption": {
+   "status": "BLOCKED",
+   "why": "chain rejects account-anchor signatures for owner-level account_update (tx_missing_owner_auth) — proven with valid owner-key signature; original owner key lost in 01:31 reset, absent from all backups (KEYS-BACKUP.tar.enc gen-Sep9 + fleet_keys.enc gen-0909+current + vault)"
+  },
+  "rewardsClaimed": {
+   "status": "OK",
+   "what": "0.156 STEEM + 1401 VESTS claimed + powered up"
+  },
+  "spGrowthPath": "daily claim+powerup compounds SP → crosses claim threshold → fleet minting unlocks"
+ }
 }
