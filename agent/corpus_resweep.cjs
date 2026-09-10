@@ -35,14 +35,8 @@ function wifValid(w) {
 }
 
 function wifToPub(w) {
-  const priv = wifValid(w);
-  if (!priv) return null;
-  try {
-    const secp = require('secp256k1');
-    const pk = secp.publicKeyCreate(priv, true);
-    const cs = crypto.createHash('sha256').update(crypto.createHash('sha256').update(pk).digest()).digest().subarray(0, 4);
-    return 'STM' + bs58.encode(Buffer.concat([pk, cs]));
-  } catch (_) { return null; }
+  // Steem/Hive pub format: base58(ripemd160(sha256(compressed_pub))[:4] + pub) — canonical via steem-js
+  try { return steem.auth.wifToPublic(w); } catch (_) { return null; }
 }
 
 const mask = (w) => w.slice(0, 4) + '…' + w.slice(-2);
