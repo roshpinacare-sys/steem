@@ -4309,7 +4309,13 @@ async function paymasterCycle() {
     const rcRaw = await hiveCall('rc_api.find_rc_accounts', { accounts: names.concat([CONFIG.account]) });
     const rows = (rcRaw.rc_accounts || []).map((r) => ({ account: r.account, max: Number(r.max_rc), mana: Number(r.rc_manabar.current_mana) }));
     const treasury = rows.find((r) => r.account === CONFIG.account);
-    const hungriest = rows.filter((r) => r.account !== CONFIG.account).sort((a, b) => a.mana / a.max - b.mana / b.max)[0];
+    const clients = rows.filter((r) => r.account !== CONFIG.account).sort((a, b) => a.mana / a.max - b.mana / b.max);
+    const hungriest = clients[0];
+    // fix-R18e4: rc-שורות-חסרות (חשבונות-שאינם-בהיב/תשובה-חלקית) — עמידה-בחן-במקום-קריסה
+    if (!treasury || !hungriest) {
+      updateLoop('paymaster', { status: 'ok', detail: 'standby — rc-נתונים-חלקיים (rows=' + rows.length + '/' + names.length + ') — מחכה-למחזור-הבא', counters: { memoIntents: memoLedger.total || 0, rcRows: rows.length } });
+      return;
+    }
     const counters = { treasuryManaG: +(treasury.mana / 1e9).toFixed(2), hungriest: hungriest.account, hungriestPct: +((hungriest.mana / hungriest.max) * 100).toFixed(1), memoIntents: memoLedger.total || 0 };
 
     if (!CONFIG.dryRun && CONFIG.activeWif && hungriest.mana / hungriest.max < 0.25 && treasury.mana >= PM_FUEL_GATE_MANA) {
