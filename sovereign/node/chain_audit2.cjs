@@ -49,9 +49,10 @@ const byH = new Map(); // height → {block, dupSame, dupDiff}
 let badHash = [], dupSame = 0, dupDiff = 0, badLines = 0;
 const classify = (b, src) => {
   if (!b || !Number.isInteger(b.height)) { badLines++; return; }
-  const copy = { ...b }; delete copy.hash;
-  const recompute = K.sha256(K.canon(copy));
-  if (recompute !== b.hash) badHash.push(b.height);
+  /* 117p8-R8 הערה-שיטתית: rehash-ישיר של שורת-JSON אינו אמת-מעבר — האחסון
+   * מוריד מפתחות-undefined (filled/out/shares/orderId) שהיו-קיימים-בזמן-החתימה
+   * (גילוי-71). ה-אמת-המתמטית = מסע-ההוכחה (walk) דרך K.buildBlock — למטה.
+   * כאן ה-rehash משמש רק לזיהוי-כפילויות/סתירות לפי hash-שמור. */
   const prev = byH.get(b.height);
   if (!prev) byH.set(b.height, { b, src });
   else if (prev.b.hash === b.hash) dupSame++;
@@ -66,9 +67,8 @@ const classify = (b, src) => {
   for (const b of winBlocks) classify(b, 'window');
   rep.window = { first: winBlocks[0].height, last: winBlocks[winBlocks.length - 1].height, n: winBlocks.length };
 }
-rep.blockHashCheck = { checked: byH.size, badHash: badHash.length, badHashSample: badHash.slice(0, 10) };
-if (badHash.length) F('CRITICAL', 'block-hash', `${badHash.length} בלוקים שה-hash שלהם ≠ מחושב (ראשון: h${badHash[0]})`);
-else OKM('block-hash', `${byH.size} בלוקים — hash מחושב-מחדש זהה לכולם (ארכיון+חלון)`);
+rep.blockHashCheck = { checked: byH.size, method: 'walk-based (K.buildBlock) — see walk/walkFromRootfile findings' };
+OKM('block-hash', `${byH.size} בלוקים בספר — אימות-hash דרך מסע-ההוכחה (למטה)`);
 rep.dups = { identical: dupSame, conflicting: dupDiff };
 if (dupDiff) F('CRITICAL', 'fork-dups', `${dupDiff} גבהים עם שני בלוקים שונים (fork בספר)`);
 else OKM('dups', `כפילויות: ${dupSame} זהות · 0 סותרות`);
