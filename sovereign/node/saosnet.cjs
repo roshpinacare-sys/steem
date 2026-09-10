@@ -1375,11 +1375,11 @@ async function maybeCheckpoint(nodeSt, st, chainState, time) {
           const tmp2 = rootPath2 + '.tmp';
           fs.writeFileSync(tmp2, JSON.stringify({ height: cp.height, lastBlockHash: blk.hash, stateRoot: cp.stateRoot, promotedAt: new Date().toISOString(), st }));
           fs.renameSync(tmp2, rootPath2);
-          log('state-root AUTO-PROMOTED h' + cp.height + ' (117k — כל-' + CPS_PER_PROMOTION + '-צ׳קפוינטים · נגד-אמנזיה)');
-        }
-      }
+          log('state-root AUTO-PROMOTED h' + cp.height + ' (117k — מעבר-גבול-' + CPS_PER_PROMOTION + '-צ׳קפוינטים · נגד-אמנזיה)');
+        } else if (curRoot) log('PROMOTION-SKIP h' + cp.height + ' (epoch ' + cpIdxEpoch + ' ≤ cur ' + curEpoch + ')');
+      } else log('PROMOTION-SKIP h' + cp.height + ' (no blk)');
     }
-  } catch (_) {}
+  } catch (e) { log('promotion err (117p8-R8 visible): ' + String((e && e.message) || e).slice(0, 100)); }
 }
 
 async function beat() {

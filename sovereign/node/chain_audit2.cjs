@@ -59,12 +59,20 @@ const classify = (b, src) => {
   else { dupDiff++; if (!prev.diffWith) prev.diffWith = []; prev.diffWith.push(src + ':' + (b.hash || '').slice(0, 8)); }
 };
 {
-  console.log('parsing archive…');
+  /* 117p8-R8 — סדר-הטעינה = בדיוק-חוק-הצומת (beat replay): ארכיון last-wins
+   * לפי-גובה + בלוקי-חלון לגבהים-חסרים. סדר-שונה = 3 מזלגות-עתיקים נפתרים
+   * אחרת מהצומת → סטיית-מצב-מלאכותית ב-replay. */
+  console.log('parsing archive (node-order: archive last-wins + window fill-missing)…');
   const raw = fs.readFileSync(path.join(NODE, 'chain-archive.jsonl'), 'utf8').split('\n');
-  for (const line of raw) { if (!line.trim()) continue; try { classify(JSON.parse(line), 'archive'); } catch (_) { badLines++; } }
+  const arch = [];
+  for (const line of raw) { if (!line.trim()) continue; try { arch.push(JSON.parse(line)); } catch (_) { badLines++; } }
   const win = JSON.parse(fs.readFileSync(path.join(NODE, 'chain.json'), 'utf8'));
   const winBlocks = Array.isArray(win) ? win : win.blocks;
-  for (const b of winBlocks) classify(b, 'window');
+  const haveA = new Set(arch.map((b) => b.height));
+  for (const wb of winBlocks) if (!haveA.has(wb.height)) arch.push(wb);
+  const byHNode = new Map();
+  for (const b of arch) if (b && Number.isInteger(b.height)) byHNode.set(b.height, b); /* last-wins */
+  for (const b of byHNode.values()) classify(b, 'book');
   rep.window = { first: winBlocks[0].height, last: winBlocks[winBlocks.length - 1].height, n: winBlocks.length };
 }
 rep.blockHashCheck = { checked: byH.size, method: 'walk-based (K.buildBlock) — see walk/walkFromRootfile findings' };
@@ -117,7 +125,13 @@ for (let h = walkStart; h <= maxH; h++) {
   const { block } = K.buildBlock(st0, b.txs, b.time);
   const inTZ = TZ && h >= TZ.from && h <= TZ.to;
   if (block.hash !== b.hash) {
-    if (inTZ) { tzDivergences++; expectPrev = b.hash; walked++; continue; } /* צפוי-באזור-המעבר */
+    if (inTZ) {
+      tzDivergences++;
+      /* רסינק-מלא לקו-הייצור: גם המצב (hash) וגם המונה-המקומי מתיישרים
+       * לשמור — הסטייה-הכלכלית-בלבד נשארת (ה-txs כבר-יושמו). */
+      st0.meta.lastBlockHash = b.hash;
+      expectPrev = b.hash; walked++; continue;
+    }
     hashBreak = h; break;
   }
   expectPrev = b.hash; walked++;
