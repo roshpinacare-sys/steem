@@ -76,8 +76,9 @@ function parseSheet(paste: string): { steem: Record<string, string>; hive: Recor
     const t = line.trim();
     if (/^HIVE$/i.test(t)) { cur = "hive"; continue; }
     if (/^STEEM$/i.test(t)) { cur = "steem"; continue; }
-    const m = t.match(/^([A-Za-z_]+)\s*[=:]\s*([5JKL][1-9A-HJ-NP-Za-km-z]{50,51})\s*$/);
-    if (m) out[cur][m[1].toLowerCase()] = m[2];
+    const m = t.match(/^([A-Za-z_]+)\s*[=:]\s*([5PJKL][1-9A-HJ-NP-Za-km-z]{49,51})\s*$/);
+    /* P5… = פורמט-גרפן (P + WIF) — מנורמל ל-WIF רגיל (51, מתחיל-ב-5) לפני-שמירה/גזירה */
+    if (m) out[cur][m[1].toLowerCase()] = m[2].replace(/^P(?=[5JKL])/, "");
   }
   return out;
 }
