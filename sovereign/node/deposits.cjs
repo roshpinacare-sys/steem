@@ -47,7 +47,7 @@ const CHAINS = [
   { key: 'avalanche', family: 'evm', sym: 'WAVAX', rpc: ['https://avalanche-c-chain-rpc.publicnode.com'], dust: 0.001, decimals: 18 },
   { key: 'tron', family: 'tron', sym: 'WTRX', rpc: ['https://api.trongrid.io'], dust: 0.5, decimals: 6 },
   { key: 'solana', family: 'sol', sym: 'WSOL', rpc: ['https://api.mainnet-beta.solana.com', 'https://solana-rpc.publicnode.com', 'https://api.devnet.solana.com'], dust: 0.001, decimals: 9 },
-  { key: 'bitcoin', family: 'btc', sym: 'WBTC', rpc: ['https://mempool.space'], dust: 0.00001, decimals: 8 },
+  { key: 'bitcoin', family: 'btc', sym: 'WBTC', rpc: ['https://blockstream.info/api', 'https://mempool.space', 'https://blockchain.info'], dust: 0.00001, decimals: 8 },
 ];
 
 function agentsList() {
@@ -131,13 +131,34 @@ async function balSol(addrs, chain, tick) {
   return { raw: BigInt(j.result.value), unit: 'lamport', via: j.result.value > 0 ? urls[0] : urls[0] };
 }
 async function balBtc(addrs, chain, tick) {
-  const r = await fetch('https://mempool.space/api/address/' + addrs.btc);
-  if (!r.ok) throw new Error('mempool ' + r.status);
-  const j = await r.json();
-  const cs = j.chain_stats || {};
-  const ms = j.mempool_stats || {};
-  const sat = (cs.funded_txo_sum || 0) - (cs.spent_txo_sum || 0) + (ms.funded_txo_sum || 0) - (ms.spent_txo_sum || 0);
-  return { raw: BigInt(Math.max(0, sat)), unit: 'sat', via: 'mempool.space' };
+  // R9 — נפילה-מדורגת: mempool.space היה-נקודת-כשל-יחידה (15s-timeout-מהסנדבוקס →
+  // bitcoin-אדום-כוזב-ב-9/10). עתה: blockstream → mempool → blockchain.info, הראשון-שעונה-זוכה.
+  const errors = [];
+  const hosts = chain.rpc || ['https://mempool.space'];
+  for (const base of hosts) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 10000);
+      const pathSeg = base.includes('blockchain.info') ? '/rawaddr/' : '/address/';
+      const r = await fetch(base + pathSeg + addrs.btc, { signal: ctrl.signal });
+      clearTimeout(t);
+      if (!r.ok) throw new Error(base + ' ' + r.status);
+      const j = await r.json();
+      // מבנה-esplora (blockstream/mempool)
+      if (j.chain_stats) {
+        const cs = j.chain_stats || {};
+        const ms = j.mempool_stats || {};
+        const sat = (cs.funded_txo_sum || 0) - (cs.spent_txo_sum || 0) + (ms.funded_txo_sum || 0) - (ms.spent_txo_sum || 0);
+        return { raw: BigInt(Math.max(0, sat)), unit: 'sat', via: base.replace('https://', '').split('/')[0] };
+      }
+      // מבנה-blockchain.info: { final_balance, ... } — satoshis
+      if (typeof j.final_balance === 'number') {
+        return { raw: BigInt(Math.max(0, j.final_balance)), unit: 'sat', via: base.replace('https://', '').split('/')[0] };
+      }
+      throw new Error(base + ' unreadable-shape');
+    } catch (e) { errors.push(e.message); }
+  }
+  throw new Error('btc-all-hosts-failed: ' + errors.join(' | ').slice(0, 160));
 }
 const READERS = { evm: balEvm, tron: balTron, sol: balSol, btc: balBtc };
 
