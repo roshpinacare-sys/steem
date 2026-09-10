@@ -191,11 +191,15 @@ function syncRepo(res) {
  * ---------------------------------------------------------------- */
 function healDeps(res) {
   try {
-    fs.accessSync(path.join(AGENT_DIR, 'node_modules', 'steem', 'package.json'));
-    res.actions.push('deps-ok');
+    /* 117p8-R15 — פתרון-תלות-כמו-בזמן-ריצה: require.resolve מ-agent עולה-היררכיה-עד-ה-root.
+     * לא-דורשים-עוד-עותק-מקונן של node_modules ב-agent — הוא-נופח-את-סביבת-העבודה
+     * (6,388-קבצים שהפלטפורמה-מסנכרנת-לצ'אט) וה-self-heal-הקודם-התקין-אותו-מחדש-בכל-מחיקה.
+     * כשחסר-באמת — מתקינים-ב-root-בלבד (מקור-תלות-אחד). */
+    require.resolve('steem/package.json', { paths: [AGENT_DIR] });
+    res.actions.push('deps-ok(root-resolved)');
   } catch (_) {
-    try { sh('bun', ['install'], { cwd: AGENT_DIR, timeout: 180_000 }); res.actions.push('deps-reinstalled(bun)'); }
-    catch (e) { try { sh('npm', ['install', '--no-audit', '--no-fund'], { cwd: AGENT_DIR, timeout: 300_000 }); res.actions.push('deps-reinstalled(npm)'); } catch (e2) { res.actions.push('deps-FAILED'); log('deps install failed: ' + (e2.message || e2)); } }
+    try { sh('bun', ['install'], { cwd: ROOT, timeout: 180_000 }); res.actions.push('deps-reinstalled(bun@root)'); }
+    catch (e) { try { sh('npm', ['install', '--no-audit', '--no-fund'], { cwd: ROOT, timeout: 300_000 }); res.actions.push('deps-reinstalled(npm@root)'); } catch (e2) { res.actions.push('deps-FAILED'); log('deps install failed: ' + (e2.message || e2)); } }
   }
 }
 
