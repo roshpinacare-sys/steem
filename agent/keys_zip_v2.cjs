@@ -115,3 +115,15 @@ console.log('roundtrip: decrypt ✓ · unzip ✓ · diff-vs-source ✓ (byte-ide
 console.log('outer sha256: ' + meta.keysZipSha256);
 console.log('inner sha256: ' + meta.keysZipInnerSha256);
 console.log('recovery-meta.json written (0600) — zipPass + keysBackupPass in system custody');
+
+// ── 5) 117p8-R14 — עדכון-sha-מצופים ב-README (ה-README-הוא-מדריך-השחזור —
+//    אסור-שיציג-sha של דור-קודם; נשמר-מדויק-אוטומטית אחרי-כל-איטום) ──
+const README = path.join(ROOT, 'download', 'KEYS-ZIP-README-HE.md');
+try {
+  let txt = fs.readFileSync(README, 'utf8');
+  const before = txt;
+  txt = txt.replace(/^# מצופה: [0-9a-f]{64}$/m, '# מצופה: ' + meta.keysZipSha256);
+  txt = txt.replace(/^# מצופה sha256 של הזיפ-הפנימי: [0-9a-f]{64}$/m, '# מצופה sha256 של הזיפ-הפנימי: ' + meta.keysZipInnerSha256);
+  if (txt !== before) { fs.writeFileSync(README, txt); console.log('README-HE shas updated ✓'); }
+  else console.log('README-HE shas: no-צפוי-lines-found (בדוק-ידנית)');
+} catch (e) { console.log('README update skipped: ' + String(e.message).slice(0, 60)); }
