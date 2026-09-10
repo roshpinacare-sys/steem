@@ -12,7 +12,8 @@ import path from "path";
  *   + בדיקות-חיות: key-broker (localhost:3040) · TRON-now-block (ריבוי-מארחים)
  *   + fleet מ-guardian.log (השורה-האחרונה של GUARD DONE — כנות-בלבד)
  *
- * אפס-מפתחות-ללקוח: רק זהויות-ציבוריות ונתוני-מדינה. cache-4s.
+ * אפס-מפתחות-ללקוח: רק זהויות-ציבוריות ונתוני-מדינה.
+ * 117p8-R12: stale-while-revalidate — הגשה-מיידית עד-10-דק' + רענון-רקע (הייה-קרה-הייתה ~800ms על tron+broker).
  */
 
 export const dynamic = "force-dynamic";
@@ -35,7 +36,9 @@ const obj = (v: unknown): J => (v && typeof v === "object" ? (v as J) : {});
 const num = (v: unknown, d = 0): number => (typeof v === "number" && Number.isFinite(v) ? v : d);
 
 let cache: { at: number; body: J } | null = null;
-const TTL = 4000;
+const TTL = 4000; // רענון-רקע אם-חם-ובקשה-חדשה
+const STALE_MS = 600000; // הגשה-מיידית-מהמטמון עד-10-דק'
+let refreshing: Promise<void> | null = null;
 
 async function tronNowBlock(): Promise<{ height: number; alive: boolean }> {
   for (const h of TRON_HOSTS) {
@@ -111,10 +114,7 @@ function registryCount(): number {
   return Array.isArray(acc) ? acc.length : 0;
 }
 
-export async function GET() {
-  if (cache && Date.now() - cache.at < TTL) {
-    return NextResponse.json(cache.body);
-  }
+async function buildBody(): Promise<J> {
   const snapJ = readJ(path.join(NODE, "state-snapshot.json"));
   const st = obj(snapJ?.st);
   const meta = obj(st.meta);
@@ -249,6 +249,32 @@ export async function GET() {
     },
   };
 
+  return body;
+}
+
+function refreshAsync(): void {
+  if (refreshing) return;
+  refreshing = buildBody()
+    .then((body) => {
+      cache = { at: Date.now(), body };
+    })
+    .catch(() => {
+      /* כנות — מטמון-קיים נשאר */
+    })
+    .finally(() => {
+      refreshing = null;
+    });
+}
+
+export async function GET() {
+  const age = cache ? Date.now() - cache.at : Infinity;
+  if (age < TTL) return NextResponse.json(cache!.body);
+  if (age < STALE_MS) {
+    // SWR: הגש-מיידי-ישן · רענן-ברקע (הייה קרה ~800ms — נמדד ב-dev.log)
+    refreshAsync();
+    return NextResponse.json(cache!.body);
+  }
+  const body = await buildBody();
   cache = { at: Date.now(), body };
   return NextResponse.json(body);
 }
