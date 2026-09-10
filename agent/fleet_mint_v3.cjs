@@ -159,9 +159,10 @@ async function adoptAccount(name) {
     if (!ok) throw new Error('adopt blocked: ' + HEAD + ' not in owner authority of ' + name);
     const wifSet = [OWNER_WIF].filter(Boolean);
     if (!wifSet.length) throw new Error('OWNER_WIF missing in agent/.env');
-    // בדיקת-עצמי: ה-OWNER_WIF שלנו אכן-מפתח-הבעלים-על-השרשרת
+    // בדיקת-עצמי: ה-OWNER_WIF שלנו הוא-מפתח-הבעלים של-HEADCORNER — שחותם-דרך-עוגן-החשבון
     const ownerPub = steem.auth.wifToPublic(OWNER_WIF);
-    if (ownerPub !== acc.owner.key_auths[0][0]) throw new Error('self-test FAIL: OWNER_WIF pub ≠ chain owner pub');
+    const [headAcc] = await new Promise((res, rej) => steem.api.getAccounts([HEAD], (e, r) => e ? rej(e) : res(r)));
+    if (ownerPub !== headAcc.owner.key_auths[0][0]) throw new Error('self-test FAIL: OWNER_WIF pub ≠ ' + HEAD + ' owner pub');
     log('  anchor ✓ ' + HEAD + ' th=' + acc.owner.weight_threshold + ' · signing account_update');
     const auth = (key, keepHead) => ({ weight_threshold: 1, account_auths: keepHead ? [[HEAD, 1]] : [], key_auths: [[key, 1]] });
     await signSend([['account_update', {
