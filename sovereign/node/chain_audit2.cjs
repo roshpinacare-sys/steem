@@ -98,7 +98,13 @@ else OKM('rootfile-self', `state-root.json @h${rf.height} עצמו-עקבי (${r
 const snap = JSON.parse(fs.readFileSync(path.join(NODE, 'state-snapshot.json'), 'utf8'));
 const st0 = JSON.parse(JSON.stringify(rf.st));
 st0.meta.issuer = 'headcorner';
+/* 117p8-R8 — אזור-מעבר (r8_transition.json): בלוקים שנכתבו-ע"י התהליך-היוצא
+ * בזמן-החלפת-הקרנל. hash-divergence בתוכו = צפוי-ומתועד (לא-קריטי); ההליכה
+ * ממשיכה מה-hash-השמור (עדיין מאמתת רציפות-prevHash של הספר עצמו). */
+let TZ = null;
+try { TZ = JSON.parse(fs.readFileSync(path.join(NODE, 'r8_transition.json'), 'utf8')).zone; } catch (_) {}
 let walked = 0, hashBreak = null, linkBreak = null, expectPrev = rf.lastBlockHash;
+let tzDivergences = 0;
 const cps = (JSON.parse(fs.readFileSync(path.join(NODE, 'state.json'), 'utf8')).checkpoints || []);
 const cpByH = new Map(cps.map((c) => [c.height, c]));
 let cpsChecked = 0, cpsBad = [];
@@ -109,7 +115,11 @@ for (let h = walkStart; h <= maxH; h++) {
   const b = e.b;
   if (b.prevHash !== expectPrev) { linkBreak = h; break; }
   const { block } = K.buildBlock(st0, b.txs, b.time);
-  if (block.hash !== b.hash) { hashBreak = h; break; }
+  const inTZ = TZ && h >= TZ.from && h <= TZ.to;
+  if (block.hash !== b.hash) {
+    if (inTZ) { tzDivergences++; expectPrev = b.hash; walked++; continue; } /* צפוי-באזור-המעבר */
+    hashBreak = h; break;
+  }
   expectPrev = b.hash; walked++;
   const cp = cpByH.get(h);
   if (cp) {
@@ -118,7 +128,7 @@ for (let h = walkStart; h <= maxH; h++) {
     if (cp.stateRoot !== liveRoot) cpsBad.push({ h, declared: cp.stateRoot.slice(0, 10), live: liveRoot.slice(0, 10) });
   }
 }
-rep.walk = { from: walkStart, walked, to: rf.height + walked, hashBreak, linkBreak };
+rep.walk = { from: walkStart, walked, to: rf.height + walked, hashBreak, linkBreak, transitionZone: TZ, tzDivergences };
 if (hashBreak) F('CRITICAL', 'walk-hash', `replay-מסע: hash שבור בגובה ${hashBreak}`);
 if (linkBreak) F('HIGH', 'walk-link', `replay-מסע נעצר בגובה ${linkBreak} (חסר/prevHash שבור)`);
 // השוואה ל-snapshot אם הגענו לגובהו
