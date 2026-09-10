@@ -12,6 +12,7 @@ import { Bot, Copy, Inbox, KeyRound, Link2, Loader2, PlugZap, Send, ShieldCheck,
 import { useLive } from "@/hooks/use-live";
 import { cn } from "@/lib/utils";
 import { Chip, EmptyState, Micro, Panel, SecHead, Stat } from "../primitives";
+import { FleetV3Panel } from "./fleetv3";
 
 type GateResp = {
   ok?: boolean;
@@ -240,6 +241,8 @@ function Connect() {
           </div>
         )}
       </Panel>
+
+      <FleetV3Panel />
     </div>
   );
 }
