@@ -36,6 +36,7 @@ const FILES = [
   'agent/keys/.vaultkey',
   'agent/keys/key-broker.token',
   'agent/keys/headcorner-recovered.txt',
+  'agent/keys/hed-soldiers-source.txt', // R18 — ארכיון-הד.txt: 13 מפתחות-2018 של-12 חשבונות-הסגל (מתים-אומת · ארכיון-בלבד)
   'agent/.env',
   'agent/fleet_keys.enc',
   'agent/fleet_keys.meta.json',
@@ -44,6 +45,7 @@ const FILES = [
   'upload/IMG-20260905-WA0025.jpg',
   'upload/Roshcaregt.txt',
   'upload/Ynet.txt',
+  'upload/הד.txt', // R18 — המקור-הגולמי-שהעלה-המפעיל (שמירת-הוכחה)
   'upload/הדקור.txt',
   'upload/חח.txt',
 ].filter((f) => fs.existsSync(path.join(ROOT, f)));
