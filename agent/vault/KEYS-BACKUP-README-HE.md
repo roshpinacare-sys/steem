@@ -22,7 +22,7 @@
 
 ## איך מורידים ופותחים
 
-1. **הורדה**: GitHub → repo `roshpinacare-sys/steem` (פרטי) → תיקיית `download/` → `KEYS-BACKUP-2026-09-09.tar.enc` → Raw/Download.
+1. **הורדה**: GitHub → repo `roshpinacare-sys/steem` (פרטי) → תיקיית `agent/vault/` → `KEYS-BACKUP-2026-09-09.tar.enc` → Raw/Download.
 2. **אימות-שלמות**:
    ```bash
    sha256sum KEYS-BACKUP-2026-09-09.tar.enc

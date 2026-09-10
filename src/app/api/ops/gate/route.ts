@@ -164,7 +164,7 @@ export async function GET() {
       seal: { enc: fs.existsSync(path.join(AGENT, "fleet_keys.enc")), meta: fs.existsSync(path.join(AGENT, "fleet_keys.meta.json")) },
       broker,
       guardianAgeS,
-      backup: { file: "download/KEYS-BACKUP-2026-09-09.tar.enc", sha256: "5753a90cdad893b2008e6a6abb4407d2a354ec89ac6be39adf6ea1d526fa8ac4" },
+      backup: { file: "agent/vault/KEYS-BACKUP-2026-09-09.tar.enc", sha256: "5753a90cdad893b2008e6a6abb4407d2a354ec89ac6be39adf6ea1d526fa8ac4" },
       at: new Date().toISOString(),
     });
   } catch (e) {

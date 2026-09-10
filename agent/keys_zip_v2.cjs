@@ -22,7 +22,7 @@ const { execFileSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const WORK = '/tmp/keyszip-v2';
-const OUT_ENC = path.join(ROOT, 'download', 'KEYS-ZIP-2026-09-10.zip.enc');
+const OUT_ENC = path.join(ROOT, 'agent', 'vault', 'KEYS-ZIP-2026-09-10.zip.enc');
 const META = path.join(ROOT, 'agent', 'recovery-meta.json');
 
 // ── החבילה: כל-חומר-המפתחות שבידינו (21+ קבצים) ──
@@ -101,12 +101,12 @@ const meta = {
   format: 'SAOS-RECOVERY-META-1',
   doctrine: 'operator directive 2026-09-10: "זה אצלך בקבצים לא אצלי" — system custody, private repo. Supersedes chat-only passwords (the chat-only era stranded KEYS-ZIP-2026-09-09 forever).',
   keysZipPass: zipPass,
-  keysZipFile: 'download/KEYS-ZIP-2026-09-10.zip.enc',
+  keysZipFile: 'agent/vault/KEYS-ZIP-2026-09-10.zip.enc',
   keysZipSha256: sha(OUT_ENC),
   keysZipInnerSha256: sha(zipFile),
   keysBackupPass: tarPass,
-  keysBackupFile: 'download/KEYS-BACKUP-2026-09-09.tar.enc',
-  keysBackupSha256: sha(path.join(ROOT, 'download/KEYS-BACKUP-2026-09-09.tar.enc')),
+  keysBackupFile: 'agent/vault/KEYS-BACKUP-2026-09-09.tar.enc',
+  keysBackupSha256: sha(path.join(ROOT, 'agent/vault/KEYS-BACKUP-2026-09-09.tar.enc')),
   replacedArchive: prev.keysZipFile || 'download/KEYS-ZIP-2026-09-09.zip.enc (password-lost — remains in git history, un-openable)',
   sealedAt: new Date().toISOString(),
 };
@@ -125,7 +125,7 @@ catch (e) { console.log('workdir wipe FAILED — נקה-ידנית: ' + WORK); }
 
 // ── 5) 117p8-R14 — עדכון-sha-מצופים ב-README (ה-README-הוא-מדריך-השחזור —
 //    אסור-שיציג-sha של דור-קודם; נשמר-מדויק-אוטומטית אחרי-כל-איטום) ──
-const README = path.join(ROOT, 'download', 'KEYS-ZIP-README-HE.md');
+const README = path.join(ROOT, 'agent', 'vault', 'KEYS-ZIP-README-HE.md');
 try {
   let txt = fs.readFileSync(README, 'utf8');
   const before = txt;
