@@ -54,18 +54,45 @@ async function main() {
   const node = NODES[0]; api(node);
   for (const name of TARGETS) {
     const v = VAULT.accounts.find((a) => a.username === name);
-    if (!v || !v.keys || !v.keys.posting) { console.log('@' + name + ': no vault keys — skip'); continue; }
+    // 117p8-R13 — תיקון-מבני: הכספת מקוננת (keys.steem.posting) — הבדיקה-הישנה (keys.posting-שטוח)
+    // הייתה-מדלגה-על-כולם ("no vault keys — skip" תמידי — אותו-דפוס-באג-מ-R7)
+    const vkRaw = (v && v.keys) || {};
+    const vk = vkRaw[CHAIN] && Object.keys(vkRaw[CHAIN]).length ? vkRaw[CHAIN] : vkRaw;
+    if (!v || !vk.posting) { console.log('@' + name + ': no vault ' + CHAIN + ' keys — skip'); continue; }
     const acct = await getAccount(name);
     if (!acct) { console.log('@' + name + ': not found on ' + CHAIN + ' — skip'); continue; }
-    const secret = await askHidden('@' + name + ' הדבק owner/active-WIF או סיסמת-מאסטר (קלט-נסתר, Enter לדלג): ');
-    if (!secret) { console.log('  skipped (no secret)'); continue; }
-    // נגזרת-מפתח: WIF ישיר או סיסמת-מאסטר (פורמט steem-js)
-    let role = CHAIN === 'hive' ? 'Steem' : 'Owner'; // hive key derivation roles
-    let wif;
-    try { steem.auth.isWif(secret); wif = secret; }
-    catch (_) {
-      try { wif = steem.auth.toWif(secret, name, role); }
-      catch (e) { console.log('  bad secret format — skip'); continue; }
+    // 117p8-R13 — מפתחות-שליטה מהכספת קודם (קליטת-השער): owner/active/posting של-השרשרת-הרצויה,
+    // ואם-אין — גם מהשרשרת-השנייה (מפתח-owner-זהה-בפועל בין-השרשראות). רק-אם-אף-אחד לא שולט — נשאל-נסתר.
+    let wif = null;
+    const cands = [];
+    const flat = ('owner' in vk) || ('posting' in vk); // דור-KEYS-BACKUP: מפתחות-אוניברסליים-לשתי-השרשראות
+    for (const r of ['owner', 'active', 'posting']) {
+      if (flat && vk[r] && vk[r].wif) cands.push({ src: 'vault:flat:' + r, wif: vk[r].wif });
+      const w = !flat && vk[CHAIN] && vk[CHAIN][r] && vk[CHAIN][r].wif;
+      if (w) cands.push({ src: 'vault:' + CHAIN + ':' + r, wif: w });
+      const other = CHAIN === 'hive' ? 'steem' : 'hive';
+      const w2 = !flat && vk[other] && vk[other][r] && vk[other][r].wif;
+      if (w2) cands.push({ src: 'vault:' + other + ':' + r, wif: w2 });
+    }
+    for (const c of cands) {
+      let ok = false, pub = '';
+      try {
+        pub = steem.auth.wifToPublic(c.wif);
+        ok = !!(acct.owner && acct.owner.key_auths.some(([k]) => k === pub))
+          || !!(acct.active && acct.active.key_auths.some(([k]) => k === pub));
+      } catch (_) { ok = false; }
+      if (ok) { wif = c.wif; console.log('  מפתח-שליטה-מהכספת (' + c.src + ' · pub=' + pub.slice(0, 9) + '…) — בלי-הדבקה'); break; }
+    }
+    if (!wif) {
+      const secret = await askHidden('@' + name + ' הדבק owner/active-WIF או סיסמת-מאסטר (קלט-נסתר, Enter לדלג): ');
+      if (!secret) { console.log('  skipped (no secret)'); continue; }
+      // נגזרת-מפתח: WIF ישיר או סיסמת-מאסטר (פורמט steem-js)
+      const role = CHAIN === 'hive' ? 'Steem' : 'Owner'; // hive key derivation roles
+      try { steem.auth.isWif(secret); wif = secret; }
+      catch (_) {
+        try { wif = steem.auth.toWif(secret, name, role); }
+        catch (e) { console.log('  bad secret format — skip'); continue; }
+      }
     }
     const pub = steem.auth.wifToPublic(wif);
     const isOwner = !!(acct.owner && acct.owner.key_auths.some(([k]) => k === pub));
@@ -75,7 +102,7 @@ async function main() {
       continue;
     }
     // בניית-ההרשאות: מפתחות-הכספת + headcorner ב-posting
-    const stPub = { posting: v.keys.posting.pub, active: v.keys.active.pub, memo: v.keys.memo.pub };
+    const stPub = { posting: vk.posting.pub, active: vk.active.pub, memo: vk.memo.pub };
     const postingAuth = {
       weight_threshold: 1,
       account_auths: [['headcorner', 1]],
