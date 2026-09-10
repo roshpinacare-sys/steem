@@ -34,6 +34,15 @@ const HEAD = 'headcorner';
 const log = (m) => console.log('[' + new Date().toISOString() + '] ' + m);
 const mask = (p) => (p ? String(p).slice(0, 10) + '…' : '∅');
 
+// ── מצב-ההדבקה (117p8f): WIF-הבעלים-הנוכחי-על-השרשרת (מהשיחה-שבה-הוחלף-הטוקן) ──
+// אם-המפעיל-מניח-אותו-ב-/tmp/.tovowner (0600) — מדלגים-על-recover_account לגמרי:
+// account_update2-אחד-חתום-במפתח-הבעלים-הקיים מיישר-את-כל-4-התפקידים-למפתחות-המאסטר.
+let PASTE_WIF = null;
+try {
+  const s = fs.readFileSync('/tmp/.tovowner', 'utf8').trim();
+  if (s) { PASTE_WIF = s; log('מצב-הדבקה: WIF-בעלים-נטען-מ-/tmp/.tovowner · pub=' + mask(steem.auth.wifToPublic(PASTE_WIF))); }
+} catch (_) {}
+
 const VAULT_PATH = path.join(__dirname, 'keys', 'vault.json');
 const VAULT = JSON.parse(fs.readFileSync(VAULT_PATH, 'utf8'));
 const entry = (VAULT.accounts || []).find((a) => String(a.username).toLowerCase() === ACCOUNT);
@@ -117,8 +126,15 @@ async function main() {
     const acc = accounts[chain];
     if (acc.owner.key_auths[0][0] === OWNER_PUB) { evidence.chains[chain] = { already: true }; continue; }
 
-    // ── A. recover_account — new≠recent (חוק-שרשרת): new=מפתח-מאסטר+headcorner ב-account_auths
-    //    (עדיין-נשלט-ע"י-מפתח-המאסטר: threshold-1 · עמוד-תורן-בטיחותי) · recent=מפתח-מאסטר-טהור ──
+    // ── A. recover_account — רק-אם-אין-מפתח-הדבקה ──
+    const pastePub = PASTE_WIF ? steem.auth.wifToPublic(PASTE_WIF) : null;
+    if (PASTE_WIF && pastePub !== acc.owner.key_auths[0][0]) {
+      log(chain.toUpperCase() + ' FATAL: WIF-ההדבקה לא שולט על הבעלות-הנוכחית (' + mask(pastePub) + '≠' + mask(acc.owner.key_auths[0][0]) + ') — דרוש-WIF-הבעלים-המדויק-מהשיחה');
+      evidence.chains[chain] = { paste: false, error: 'paste-wif-not-owner' };
+      continue;
+    }
+    if (!PASTE_WIF) {
+    // (מסלול-recover_account — חסום-כרגע: דורש-בקשת-שותף. נשאר-בקוד-למקרה-שיחלף-שותף-ההתאוששות)
     const recOp = ['recover_account', {
       account_to_recover: ACCOUNT,
       new_owner_authority: auth1(OWNER_PUB, [[HEAD, 1]]),
@@ -140,6 +156,9 @@ async function main() {
       evidence.chains[chain] = { recover: false, error: msg };
       continue;
     }
+    } else {
+      log(chain.toUpperCase() + ' A/paste-mode: דילוג-על-recover — עדכון-ישיר-במפתח-הבעלים-שנמסר');
+    }
 
     // ── B. account_update2 — נרמול-הבעלים (מאסטר-טהור) + active/posting/memo + head-in-posting ──
     const updOp = ['account_update2', {
@@ -152,10 +171,10 @@ async function main() {
     }];
     const d2 = await dgp(node);
     const updTx = makeTx(d2, [updOp]);
-    const updSigned = signFor(chain, updTx, [OWNER_WIF]);
+    const updSigned = signFor(chain, updTx, PASTE_WIF ? [PASTE_WIF] : [OWNER_WIF]);
     try {
       await bcast(node, updSigned);
-      log(chain.toUpperCase() + ' B/update ✓ משודר (active/posting/memo + head-in-posting)');
+      log(chain.toUpperCase() + ' B/update ✓ משודר (owner/active/posting/memo → מפתחות-מאסטר + head-in-posting)');
       await new Promise((r) => setTimeout(r, 4500));
     } catch (e) {
       const msg = String((e && e.message) || e).slice(0, 200);

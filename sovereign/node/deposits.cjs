@@ -46,7 +46,7 @@ const CHAINS = [
   { key: 'base', family: 'evm', sym: 'WETH', rpc: ['https://base-rpc.publicnode.com'], dust: 0.0001, decimals: 18 },
   { key: 'avalanche', family: 'evm', sym: 'WAVAX', rpc: ['https://avalanche-c-chain-rpc.publicnode.com'], dust: 0.001, decimals: 18 },
   { key: 'tron', family: 'tron', sym: 'WTRX', rpc: ['https://api.trongrid.io'], dust: 0.5, decimals: 6 },
-  { key: 'solana', family: 'sol', sym: 'WSOL', rpc: ['https://api.mainnet-beta.solana.com', 'https://api.devnet.solana.com'], dust: 0.001, decimals: 9 },
+  { key: 'solana', family: 'sol', sym: 'WSOL', rpc: ['https://api.mainnet-beta.solana.com', 'https://solana-rpc.publicnode.com', 'https://api.devnet.solana.com'], dust: 0.001, decimals: 9 },
   { key: 'bitcoin', family: 'btc', sym: 'WBTC', rpc: ['https://mempool.space'], dust: 0.00001, decimals: 8 },
 ];
 
@@ -236,7 +236,14 @@ async function tick({ forceSol } = {}) {
   const solTurn = forceSol || tickN % SOL_EVERY === 1; // טיק-ראשון ואז כל-שלישי
 
   for (const chain of CHAINS) {
-    if (chain.family === 'sol' && !solTurn) { state.rpcHealth[chain.key] = { at: new Date().toISOString(), note: 'skip (תדמור-מול-תקרות — סיבוב-כל-' + SOL_EVERY + '-טיקים)' }; continue; }
+    if (chain.family === 'sol' && !solTurn) {
+      // 117p8 — תיקון-דיווח: טיק-דילוג לא מוחק עוד את המדידה-הקודמת (היה: ok:true→note:skip → הפאנל הראה 9/10 כוזב).
+      // האמת-האחרונה-שנמדדה נשארת-על-הבמה; סימון-הדילוג נשמר-בשדה נפרד.
+      const prevH = state.rpcHealth[chain.key];
+      if (!prevH || typeof prevH.ok !== 'boolean') state.rpcHealth[chain.key] = { at: new Date().toISOString(), ok: false, note: 'awaiting-first-sol-probe (סיבוב-כל-' + SOL_EVERY + '-טיקים)' };
+      else prevH.note = 'skip-tick (מדידה-אחרונה-בתוקף)';
+      continue;
+    }
     for (const name of agents) {
       const a = byName[name];
       if (!a) continue;
