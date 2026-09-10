@@ -1,16 +1,16 @@
 {
-  "at": "2026-09-09T23:55:41.518Z",
+  "at": "2026-09-10T00:20:41.694Z",
   "mode": "live",
   "booted": true,
   "bootedAt": "2026-09-04T19:27:05.321Z",
-  "day": "2026-09-09",
+  "day": "2026-09-10",
   "opsToday": 0,
   "assets": {
     "WSBD": {
       "minted": 0.26,
       "lockedSbd": 0.26,
       "lockRef": "2d6ed4c0593a687d5e7b8c990ea7ed52e6fb6df4",
-      "fair": 10.415661,
+      "fair": 10.412412,
       "pool": {
         "base": 0.04,
         "quote": 0.41429,
@@ -34,7 +34,7 @@
       "minted": 0.051,
       "lockedHive": 0.051,
       "lockRef": "44be4de1e510cf50dd1d5e7a828000b043815d11",
-      "fair": 2.078124,
+      "fair": 2.078772,
       "asks": [
         2.362417
       ],
@@ -147,49 +147,62 @@
   },
   "fees": {
     "poolCapture": {
-      "WSBD": 0.00042,
-      "ENERGY": 0.00063
+      "WSBD": 0.00048,
+      "ENERGY": 0.00072
     },
     "swapDay": {
-      "WSBD": "2026-09-09",
-      "ENERGY": "2026-09-09"
+      "WSBD": "2026-09-10",
+      "ENERGY": "2026-09-10"
     }
   },
   "ops": [],
   "lastBeat": {
-    "at": "2026-09-09T23:55:41.518Z",
-    "steps": [],
+    "at": "2026-09-10T00:20:41.694Z",
+    "steps": [
+      {
+        "step": "wsbd-fee-capture",
+        "ok": false,
+        "dry": true,
+        "ops": 1
+      },
+      {
+        "step": "energy-fee-capture",
+        "ok": false,
+        "dry": true,
+        "ops": 1
+      }
+    ],
     "measured": {
       "steem": 0.67,
       "sbd": 0.26,
       "hive": 0,
       "swapHive": 0.05,
       "bee": 6.1400887,
-      "book": 0.09600927202104999,
-      "cross": 2.0781241803281083
+      "book": 0.09603922322630264,
+      "cross": 2.078772475253747
     },
     "opsToday": 0
   },
   "errors": [],
   "oracle": {
-    "at": "2026-09-09T23:55:46.762Z",
+    "at": "2026-09-10T00:20:46.930Z",
     "sources": {
       "binance": {
         "ok": true,
-        "at": "2026-09-09T23:55:46.762Z"
+        "at": "2026-09-10T00:20:46.930Z"
       },
       "coinbase": {
         "ok": true,
-        "at": "2026-09-09T23:55:46.762Z"
+        "at": "2026-09-10T00:20:46.930Z"
       }
     },
     "prices": {
-      "BTC": 78267.60999989745,
-      "ETH": 2467.4399999999714,
-      "XRP": 1.3947500000000002,
-      "DOGE": 0.08619
+      "BTC": 78238.16500004916,
+      "ETH": 2466.3550000000414,
+      "XRP": 1.393,
+      "DOGE": 0.08590500000000001
     },
-    "divergencePct": 0.05188908707402271,
+    "divergencePct": 0.08151857458949646,
     "ok": true
   },
   "t64": true,
