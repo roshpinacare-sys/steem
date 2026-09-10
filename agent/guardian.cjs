@@ -486,7 +486,7 @@ function healArchives(res) {
          * מפתחות-משתנים → fleet auto-RESEAL → הזיפ-מרוענן-כאן → gitkeeper דוחף. */
         if (head === 'PK') {
           const crypto = require('crypto');
-          let stale = [];
+          let missing = [], drifted = [];
           try {
             const mf = require('child_process').execFileSync('unzip', ['-p', out, 'MANIFEST.txt'], { stdio: 'pipe', timeout: 20_000 }).toString();
             for (const line of mf.split('\n')) {
@@ -494,12 +494,28 @@ function healArchives(res) {
               if (!m) continue;
               const rel = m[1].trim();
               const p = path.join(ROOT, rel);
-              if (!fs.existsSync(p)) { stale.push(path.basename(rel) + ':missing'); continue; }
+              if (!fs.existsSync(p)) { missing.push(rel); continue; }
               const cur = crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
-              if (cur !== m[2]) stale.push(path.basename(rel));
+              if (cur !== m[2]) drifted.push(path.basename(rel));
             }
           } catch (e2) { log('KEYSZIP-FRESHNESS-READ-FAILED :: ' + String(e2.message || e2).slice(0, 80)); }
-          if (stale.length) {
+          /* 117p8-R15 — הלקח-החי-מהתקרית-17:30: reset-סביבה-מחק-את-agent/keys והרענון-האוטומטי
+           * אטם-את-הקבצים-שנשארו-בלבד → ארכיון-מצומצם-דרס-את-המלא. מעכשיו:
+           * · חברי-מניפסט-חסרים = אסון/שחזור → אסור-לאטום! משחזרים-מהזיפ-עצמו (unzip -n —
+           *   משחזר-רק-חסרים, לעולם-לא-דורס-קיים) → הזיפ-המלא-הוא-מקור-האמת.
+           * · רק-סטיות-תוכן (מפתחות-השתנו-באמת) → רענון-רגיל-מדוכדק. */
+          if (missing.length) {
+            try {
+              require('child_process').execFileSync('unzip', ['-n', out, '-d', ROOT], { stdio: 'pipe', timeout: 60_000 });
+              const stillMissing = missing.filter((rel) => !fs.existsSync(path.join(ROOT, rel)));
+              if (stillMissing.length === 0) {
+                fs.chmodSync(path.join(ROOT, 'agent', 'keys'), 0o700);
+                try { for (const f of fs.readdirSync(path.join(ROOT, 'agent', 'keys'))) fs.chmodSync(path.join(ROOT, 'agent', 'keys', f), 0o600); } catch (_) {}
+                res.actions.push('KEYSZIP-AUTO-RESTORED(' + missing.length + '-files)');
+                log('KEYSZIP-AUTO-RESTORE :: שוחזרו-מהזיפ ' + missing.length + ' קבצים-חסרים (מפתחות-חזרו-מהארכיון)');
+              } else { res.actions.push('KEYSZIP-RESTORE-INCOMPLETE(' + stillMissing.length + ')'); log('KEYSZIP-RESTORE-INCOMPLETE :: ' + stillMissing.slice(0, 3).join(',')); }
+            } catch (e4) { res.actions.push('KEYSZIP-RESTORE-FAILED'); log('KEYSZIP-RESTORE-FAILED :: ' + String(e4.message || e4).slice(0, 100)); }
+          } else if (drifted.length) {
             const STATE = path.join(ROOT, 'agent', '.keyszip-refresh.json');
             const MIN_MS = 15 * 60_000;
             const st = (() => { try { return JSON.parse(fs.readFileSync(STATE, 'utf8')); } catch (_) { return {}; } })();
@@ -509,16 +525,16 @@ function healArchives(res) {
               let ok = false;
               try { sh('node', [path.join(ROOT, 'agent', 'keys_zip_v2.cjs')], { timeout: 300_000 }); ok = true; }
               catch (e3) { log('KEYSZIP-AUTO-REFRESH-FAILED :: ' + String(e3.message || e3).slice(0, 100)); }
-              st.lastRefreshAt = now; st.lastRefreshDrift = stale; st.lastRefreshOk = ok;
+              st.lastRefreshAt = now; st.lastRefreshDrift = drifted; st.lastRefreshOk = ok;
               fs.writeFileSync(STATE, JSON.stringify(st, null, 2));
-              if (ok) { res.actions.push('KEYSZIP-AUTO-REFRESHED(' + stale.length + '-drift)'); log('KEYSZIP-AUTO-REFRESH :: drift=' + stale.join(',') + ' — אוטם-מחדש-ומרענן-מטא (gitkeeper-ידחוף)'); }
-              else res.actions.push('KEYSZIP-REFRESH-FAILED(' + stale.length + '-drift)');
+              if (ok) { res.actions.push('KEYSZIP-AUTO-REFRESHED(' + drifted.length + '-drift)'); log('KEYSZIP-AUTO-REFRESH :: drift=' + drifted.join(',') + ' — אוטם-מחדש-ומרענן-מטא (gitkeeper-ידחוף)'); }
+              else res.actions.push('KEYSZIP-REFRESH-FAILED(' + drifted.length + '-drift)');
             } else {
               if (!st.lastDeferLog || now - st.lastDeferLog > MIN_MS) {
                 st.lastDeferLog = now; fs.writeFileSync(STATE, JSON.stringify(st, null, 2));
-                log('KEYSZIP-STALE-DEFERRED :: drift=' + stale.join(',') + ' — רענון-בטיק-הבא (מינימום-15-דק\'-בין-איטומים)');
+                log('KEYSZIP-STALE-DEFERRED :: drift=' + drifted.join(',') + ' — רענון-בטיק-הבא (מינימום-15-דק\'-בין-איטומים)');
               }
-              res.actions.push('KEYSZIP-STALE-DEFERRED(' + stale.length + '-drift)');
+              res.actions.push('KEYSZIP-STALE-DEFERRED(' + drifted.length + '-drift)');
             }
           } else res.actions.push('keyszip-fresh');
         }
