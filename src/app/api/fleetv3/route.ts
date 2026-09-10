@@ -3,15 +3,16 @@ import fs from "fs";
 import path from "path";
 
 /**
- * 117p8-R5 — FLEET-V3 API · מפעל-הצי-השלישי: מפת-חומרים + טייס-צמיחת-SP.
+ * 117p8-R6 — FLEET-V3 API · מפעל-הצי: טייס-צמיחה + אמת-יחידות + קו-ייצור.
  *
- * קורא רק קבצי-מדינה מסוננים (אפס-סודות — הדוחות ממילא מסוכמים/ממוסכמים):
- *   agent/fleet_census_report.json  (מפת-החומרים של-כל-התיקיות-והשרשראות)
- *   agent/fleetv3_state.json        (טייס-הצמיחה: SP · RC · פער-אל-פתיחה)
- *   agent/fleet_mint_v3_report.json (ממצאי-המפעל: RC-block · powerspan · rewards)
- *   agent/soldier_auth_audit.json   (ביקורת-הצי החיה)
+ * R6 חידושים (הכל נמדד חי 2026-09-10):
+ *   · יחידות-אמת: R5 דיווח "SP" שהיה MVests — הראש מחזיק 5351 SP אמיתיים
+ *   · sp_reclaim: 3433 SP הוחזרו חי מ-11 חשבונות (ביטול-האצלות) → maxRC מזנק
+ *   · power-down 1747 SP בוטל חי
+ *   · קיר-הטביעה נמדד חי משגיאת-שרשרת: claim_account = 5.7828T RC
+ *   · net_probe: מלאי-חי ל-12 חשבונות בשתי-השרשראות (אפס-סודות)
  *
- * cache-5s · dynamic.
+ * קורא רק קבצי-מדינה מסוננים (אפס-סודות). cache-5s · dynamic.
  */
 
 export const dynamic = "force-dynamic";
@@ -37,24 +38,31 @@ export async function GET() {
   const now = Date.now();
   if (cache && now - cache.at < TTL) return NextResponse.json(cache.body);
 
-  /* ── טייס-הצמיחה ── */
+  /* ── טייס-הצמיחה (מתוקן-יחידות R6) ── */
   const ap = obj(readJ(AG("fleetv3_state.json")));
   const prog = obj(ap.progress);
   const lastRun = obj(ap.lastRun);
   const autopilot = {
     unlocked: ap.fleetMintUnlocked === true,
-    spNow: num(prog.spNow),
-    spAtUnlock: num(prog.spAtUnlock, 14.8),
-    gapSP: num(prog.gapSP),
-    rcNowT: num(prog.rcNowT),
-    rcNeededT: num(prog.rcNeededT, 5.83),
-    rcRatio: num(prog.rcRatio),
+    realSPTotal: num(prog.realSPTotal),
+    realSPEffective: num(prog.realSPEffective),
+    vestsPendingReturn: num(prog.vestsPendingReturn),
+    etaReturnDays: num(prog.etaReturnDays),
+    rcMaxT: num(prog.rcMaxT),
+    rcCurT: num(prog.rcCurT),
+    rcNeededT: num(prog.rcNeededT, 5.783),
+    rcRatioMax: num(prog.rcRatioMax),
+    rcRatioCur: num(prog.rcRatioCur),
+    daysToRegen: num(prog.daysToRegen),
+    unitsFixed: String(prog.unitsFixed || ""),
     lastRunAt: (lastRun.at as string) || null,
     lastDay: (lastRun.day as string) || null,
     claimedNow: lastRun.claimedNow === true,
     poweredNow: lastRun.poweredNow === true,
+    mintedNow: num(lastRun.mintedNow),
     totalRuns: arr(ap.runs).length,
-    lifetimePoweredUp: num(ap.poweredUp),
+    lifetimePoweredUp: num(ap.lifetimePoweredUp, num(ap.poweredUp)),
+    mintedTotal: num(ap.minted),
   };
 
   /* ── ממצאי-המפעל ── */
@@ -65,7 +73,50 @@ export async function GET() {
     powerspan: obj(findings.powerspanAdoption),
     rewardsClaimed: obj(findings.rewardsClaimed),
     mintedThisRun: arr(mint.minted).length,
+    r6WallMeasured: { need: "5.7828T RC", measured: "live chain error 2026-09-10", oldFigure: "5.83T (R5)" },
   };
+
+  /* ── R6 פעולות-חיות ── */
+  const reclaim = obj(readJ(AG("sp_reclaim_report.json")));
+  const r6 = {
+    spReclaim: {
+      at: (reclaim.at as string) || null,
+      mode: String(reclaim.mode || ""),
+      targets: arr(reclaim.targets).length,
+      delegatedBeforeMvest: num(reclaim.delegated_before, 5580820) / 1e6,
+      projectedEffectiveSP: num(reclaim.projected_effective_sp),
+      projectedRcMaxT: num(reclaim.projected_rc_max_t_low),
+    },
+    powerdownCancelled: true,
+    wallMeasured: "5,782,813,530,594 RC (live)",
+    discovery: "R5 'SP' was MVests — headcorner holds 5351 real SP; 3454 SP were delegated out to our own accounts; reclaim returns RC ceiling to ~7-10T ≥ wall ⇒ production line opens ~Sep 17",
+  };
+
+  /* ── סקר-רשת חי (net_probe) ── */
+  const probe = obj(readJ(AG("net_probe_report.json")));
+  const chains = obj(probe.chains);
+  const chainFacts = Object.keys(chains).map((c) => {
+    const o = obj(chains[c]);
+    const sol = obj(obj(probe.solutions)[c]);
+    return {
+      chain: c,
+      headBlock: num(o.head_block),
+      accountCreationFee: String(o.account_creation_fee || "?"),
+      steemPerMvest: String(o.steem_per_mvest || "?"),
+      aggMaxRcT: String(sol.agg_max_rc_t || "?"),
+      headMaxRcT: String(sol.head_max_rc_t || "?"),
+      claimNeedT: String(sol.claim_rc_need_t || "?"),
+    };
+  });
+  const accountsProbe = Object.entries(obj(probe.accounts)).map(([name, v]) => {
+    const st = obj(obj(v).steem);
+    const hv = obj(obj(v).hive);
+    return {
+      name,
+      steem: { ownSP: num(st.own_sp), receivedSP: num(st.received_sp), liquid: String(st.liquid || "0"), rcMaxT: String(st.rc_max_t || "0") },
+      hive: { ownSP: num(hv.own_sp), receivedSP: num(hv.received_sp), liquid: String(hv.liquid || "0"), rcMaxT: String(hv.rc_max_t || "0") },
+    };
+  });
 
   /* ── ביקורת-צי חיה ── */
   const audit = readJ(AG("soldier_auth_audit.json"));
@@ -89,11 +140,6 @@ export async function GET() {
     const o = obj(m);
     return { kind: String(o.kind || ""), chain: String(o.chain || ""), what: typeof o.what === "object" ? JSON.stringify(o.what) : String(o.what || ""), action: String(o.action || "") };
   });
-  const folders = obj(cen.folders);
-  const folderRows = Object.keys(folders)
-    .map((k) => ({ dir: k, files: num(obj(folders[k]).files), kb: num(obj(folders[k]).kb) }))
-    .sort((a, b) => b.kb - a.kb)
-    .slice(0, 8);
   const engines = obj(cen.engines);
 
   const body: J = {
@@ -101,9 +147,11 @@ export async function GET() {
     at: new Date().toISOString(),
     autopilot,
     factory,
+    r6,
+    chainFacts,
+    accountsProbe,
     fleet: { total: soldiers.length, hiveFull, dead, names },
     material,
-    folders: folderRows,
     engines,
   };
   cache = { at: now, body };
