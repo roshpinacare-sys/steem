@@ -1,0 +1,38 @@
+{
+ "at": "2026-09-10T13:55:00Z",
+ "purpose": "R10 — סריקה-קנונית של תיקיית-upload (מעולם-לא-נסרקה-מול-השרשרת)",
+ "method": "WIF-regex + base58check + ripemd160-derive (steem.auth.wifToPublic) + get_accounts-חי-שתי-שרשראות",
+ "files": {
+  "Ynet.txt": {
+   "wifShaped": 1,
+   "valid": 1,
+   "wif": "5KLh…oo",
+   "derivedPub": "STM6Ev1x16dR…",
+   "verdict": "מת — לא-תואם-לאף-פומביות-חיה (כפי-שרשם-מניפסט-הזיפ)"
+  },
+  "הדקור.txt": {
+   "wifShaped": 8,
+   "valid": 8,
+   "verdict": "8/8-MATCH-חי — מפתחות-הראש-המלאים (steem-owner/active/posting/memo + hive-owner/active/posting/memo)",
+   "evidence": "תואם-בדיוק-ל-44-ההתאמות-של-ה-deepscan"
+  },
+  "IMG-20260905-WA0025.jpg": {
+   "wifShaped": 0,
+   "verdict": "אין-טקסט-WIF — תמונה (נבדק-בייטים)"
+  },
+  "Roshcaregt.txt": {
+   "wifShaped": 0,
+   "verdict": "טוקן-github (אינו-מפתח-שרשרת)"
+  },
+  "חח.txt": {
+   "wifShaped": 0,
+   "verdict": "אין-WIF"
+  },
+  "P-key-מההקשר": {
+   "decode": "38-בייטים · prefix=0x9538",
+   "verdict": "לא-WIF-תקף (נדרש 0x80) — סופי"
+  }
+ },
+ "tovVerdict": "מפתח-owner-הנוכחי-של-tov לא-נמצא-באף-חומר-נגיש: upload ✓ · zip-פנימי ✓ · bundle ✓ · stamp ✓ · היסטוריית-git-עץ-החילוץ ✓",
+ "remaining": "KEYS-ZIP-2026-09-09.zip.enc (דור-117p8g) — דורש-סיסמה-חדשה-מהצ'אט (bad-decrypt-עם-הישנה)"
+}
