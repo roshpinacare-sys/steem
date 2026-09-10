@@ -31,6 +31,7 @@ const NODE_DIR = __dirname;
 const STATE_FILE = path.join(NODE_DIR, 'state.json');
 const CHAIN_FILE = path.join(NODE_DIR, 'chain.json');
 const ARCHIVE_FILE = path.join(NODE_DIR, 'chain-archive.jsonl'); // 93 — הספר-המלא (append-only) — הראיה-המלאה ל-replay
+const FORK_QUARANTINE = path.join(NODE_DIR, 'chain-archive-fork-quarantine.jsonl'); // 117p8-R8 — זרימות-סותרות שנחסמו (ראייה, לא-מחיקה)
 const LOG = path.join(NODE_DIR, 'saosnet.log');
 const GENESIS_FILE = path.join(__dirname, '..', 'genesis', 'genesis.json');
 const AGENT_DIR = path.join(__dirname, '..', '..', 'agent');
@@ -121,7 +122,7 @@ function catchUpTail(st, chainState) {
       if (b.height <= st.meta.height) continue;
       if (b.prevHash && st.meta.lastBlockHash && b.prevHash !== st.meta.lastBlockHash) { log('catchUp FORK at h' + b.height + ' (prevHash mismatch) — honest abort'); return false; }
       if (!known.has(b.height)) { chainState.blocks.push(b); known.add(b.height); }
-      for (const tx of (b.txs || [])) K.applyTx(st, tx);
+      for (const tx of (b.txs || [])) K.applyTx(st, tx, b.height); /* 117p8-R8: גובה-אמיתי לכללי-מזלג */
       st.meta.height = b.height;
       st.meta.lastBlockHash = b.hash;
       applied++;
@@ -133,11 +134,11 @@ function catchUpTail(st, chainState) {
 /* 99b — מגן-זנב-קובץ לאפנד-ארכיון: ה-TOCTOU שנמדד (1,249 שורות-כפולות) נבע
  * מ-archiveHeight נזכר-בזיכרון-פר-תהליך — מנוע שהופעל עם X מאפנד מחדש בלוקים
  * שהדמון כבר רשם עד Y. האמת היחידה: גובה-השורה-האחרונה בקובץ עצמו (מטמון-גודל). */
-let _tailMemo = { size: -1, height: 0 };
-function archiveTailHeight() {
+let _tailMemo = { size: -1, height: 0, hash: null };
+function archiveTailInfo() {
   try {
     const stt = fs.statSync(ARCHIVE_FILE);
-    if (_tailMemo.size === stt.size) return _tailMemo.height;
+    if (_tailMemo.size === stt.size) return _tailMemo;
     const fd = fs.openSync(ARCHIVE_FILE, 'r');
     const len = Math.min(65536, stt.size);
     const buf = Buffer.alloc(len);
@@ -145,16 +146,25 @@ function archiveTailHeight() {
     fs.closeSync(fd);
     const ls = buf.toString('utf8').trim().split('\n');
     for (let i = ls.length - 1; i >= 0; i--) {
-      try { const b = JSON.parse(ls[i]); if (b && b.height) { _tailMemo = { size: stt.size, height: b.height }; return b.height; } } catch (_) {}
+      try { const b = JSON.parse(ls[i]); if (b && b.height) { _tailMemo = { size: stt.size, height: b.height, hash: b.hash || null }; return _tailMemo; } } catch (_) {}
     }
-    return 0;
-  } catch (_) { return 0; }
+    return { size: stt.size, height: 0, hash: null };
+  } catch (_) { return { size: -1, height: 0, hash: null }; }
 }
+function archiveTailHeight() { return archiveTailInfo().height; }
 function appendTail(chainState, nodeSt) {
   try {
-    const tailH = archiveTailHeight(); /* אמת-קובץ — לא-זיכרון-תהליך */
-    const toAppend = (chainState.blocks || []).filter((b) => b && b.height > tailH).sort((a, b) => a.height - b.height);
+    const tail = archiveTailInfo(); /* אמת-קובץ — לא-זיכרון-תהליך */
+    const toAppend = (chainState.blocks || []).filter((b) => b && b.height > tail.height).sort((a, b) => a.height - b.height);
     if (!toAppend.length) return 0;
+    /* 117p8-R8 — מגן-מזלג-אפנד: הבלוק-הראשון-בתור חייב להמשיך את זנב-הקובץ בפועל.
+     * שלושת-המזלגות-בספר (h51150/h65309/h79138) נכנסו משני-כותבים-מקביליים —
+     * זרימה-סותרת נחסמת ומוקרנת לקובץ-הסגר לראייה (אף-שורה-לא-נמחקת). */
+    if (tail.hash && toAppend[0].prevHash && toAppend[0].prevHash !== tail.hash) {
+      try { fs.appendFileSync(FORK_QUARANTINE, toAppend.map((b) => JSON.stringify(b)).join('\n') + '\n'); } catch (_) {}
+      log('APPEND FORK-GUARD: block h' + toAppend[0].height + ' prevHash ≠ archive tail h' + tail.height + ' — quarantined (honest)');
+      return 0;
+    }
     fs.appendFileSync(ARCHIVE_FILE, toAppend.map((b) => JSON.stringify(b)).join('\n') + '\n');
     nodeSt.archiveHeight = Math.max(nodeSt.archiveHeight || 0, toAppend[toAppend.length - 1].height);
     return toAppend.length;
@@ -606,12 +616,17 @@ function saveAll(st, chainState, kernelState) {
   /* 93 — ארכיון-הספר המלא: chain.json הוא חלון-חם (MAX_BLOCKS_KEPT) ל-API בלבד;
    * הראיה-המלאה-מג'נזיס חיה בארכיון append-only — אף-בלוק-לא-נאבד עוד. */
   try {
-    const archH = st.archiveHeight || 0;
-    const toAppend = (chainState.blocks || []).filter((b) => b && b.height > archH).sort((a, b) => a.height - b.height);
+    const tail = archiveTailInfo(); /* 117p8-R8: זנב-אמת + מגן-מזלג */
+    const toAppend = (chainState.blocks || []).filter((b) => b && b.height > tail.height).sort((a, b) => a.height - b.height);
     if (toAppend.length) {
-      if (toAppend[0].height !== archH + 1) log('ARCHIVE GAP: expected h' + (archH + 1) + ' got h' + toAppend[0].height + ' (honest — window slid past unarchived blocks)');
-      fs.appendFileSync(ARCHIVE_FILE, toAppend.map((b) => JSON.stringify(b)).join('\n') + '\n');
-      st.archiveHeight = toAppend[toAppend.length - 1].height;
+      if (toAppend[0].height !== tail.height + 1) log('ARCHIVE GAP: expected h' + (tail.height + 1) + ' got h' + toAppend[0].height + ' (honest — window slid past unarchived blocks)');
+      if (tail.hash && toAppend[0].prevHash && toAppend[0].prevHash !== tail.hash) {
+        try { fs.appendFileSync(FORK_QUARANTINE, toAppend.map((b) => JSON.stringify(b)).join('\n') + '\n'); } catch (_) {}
+        log('SAVEALL FORK-GUARD: block h' + toAppend[0].height + ' prevHash ≠ archive tail — quarantined (honest)');
+      } else {
+        fs.appendFileSync(ARCHIVE_FILE, toAppend.map((b) => JSON.stringify(b)).join('\n') + '\n');
+        st.archiveHeight = toAppend[toAppend.length - 1].height;
+      }
     }
   } catch (e) { log('archive append failed (honest): ' + String((e && e.message) || e).slice(0, 80)); }
   fs.writeFileSync(STATE_FILE, JSON.stringify(st, null, 2));
@@ -1425,10 +1440,28 @@ async function beat() {
     let expectHash = s.lastBlockHash;
     const above = replayBlocks.filter((b) => b.height > s.height).sort((a, b) => a.height - b.height);
     for (const b of above) {
-      if (b.prevHash !== expectHash) return b.height; // שבר-הדם — הגובה-הכוזב
+      if (b.prevHash !== expectHash) return b.height; // שבר-דם — הגובה-הכוזב
       expectHash = b.hash;
     }
     return 0; // דם-טהור
+  };
+  /* 117p8-R8 — חלון-הוכחה (anti-poison): anchor+bloodline מאמתים שהלוג-כן ושהגובה-
+   * נעול — אבל לא שה-**state** שייך לליניאגה (שורש-רפאים @126000 עבר את שניהם
+   * והפך לקו-ההתחלה הרשמי!). ההוכחה היחידה: להריץ את הבלוקים-הבאים דרך הקרנל
+   * ולחייב hash-זהה — כל סטיית-מצב משנה results → hash שונה → נדחה בכנות. */
+  const proves = (s) => {
+    const above = replayBlocks.filter((b) => b.height > s.height).sort((a, b) => a.height - b.height).slice(0, 12);
+    if (!above.length) return true; /* אין-מה-להוכיח — הלוג עוד-לא-נכתב מעל הבסיס */
+    if (above[0].height !== s.height + 1) return false;
+    try {
+      const probe = JSON.parse(JSON.stringify(s.st));
+      probe.meta.issuer = ACCOUNT;
+      for (const b of above) {
+        const { block } = K.buildBlock(probe, b.txs, b.time);
+        if (block.hash !== b.hash) return false;
+      }
+    } catch (_) { return false; }
+    return true;
   };
   for (const p of [rootPath, snapPath, snapPrev]) {
     try {
@@ -1436,6 +1469,7 @@ async function beat() {
       if (anchorOk(s)) {
         const breakAt = bloodlineOk(s);
         if (breakAt) { log('beat restore candidate ' + path.basename(p) + ' REJECTED — bloodline break at h' + breakAt + ' (117c, honest) → full-replay'); continue; }
+        if (!proves(s)) { log('beat restore candidate ' + path.basename(p) + ' REJECTED — proving-window failure (117p8-R8 anti-poison, state does not belong to this log) → next candidate'); continue; }
         snap = s; if (p !== rootPath) log('beat restore from ' + path.basename(p) + ' at h' + s.height); break;
       }
       log('beat restore candidate ' + path.basename(p) + ' REJECTED (anchor hash mismatch at h' + (s && s.height) + ') — honest');
@@ -1463,7 +1497,7 @@ async function beat() {
     let applied = 0;
     for (const b of replayBlocks) {
       if (b.height <= snap.height) continue;
-      for (const tx of (b.txs || [])) K.applyTx(st, tx);
+      for (const tx of (b.txs || [])) K.applyTx(st, tx, b.height); /* 117p8-R8: גובה-אמיתי לכללי-מזלג */
       applied++;
     }
     const lastB = replayBlocks[replayBlocks.length - 1];
@@ -1473,7 +1507,7 @@ async function beat() {
   } else {
     st = K.initFromGenesis(genesis);
     st.meta.issuer = ACCOUNT;
-    for (const b of replayBlocks) for (const tx of b.txs) K.applyTx(st, tx);
+    for (const b of replayBlocks) for (const tx of b.txs) K.applyTx(st, tx, b.height); /* 117p8-R8: גובה-אמיתי */
   }
   /* 94-תיקון-שורש: הגובה = הגובה-האמיתי-של-הבלוק-האחרון (לא-ספירת-שורות!).
    * הארכיון-עם-פערים (תקופת-ה-heal) גרם ל-length≠height → פעימות-מקבילות בנו
@@ -2243,7 +2277,7 @@ async function injectRun(file) {
   } catch (_) { /* אין-ארכיון — חלון (כנות) */ }
   const st = K.initFromGenesis(genesis);
   st.meta.issuer = ACCOUNT;
-  for (const b of replayBlocks) for (const tx of b.txs) K.applyTx(st, tx);
+  for (const b of replayBlocks) for (const tx of b.txs) K.applyTx(st, tx, b.height); /* 117p8-R8: גובה-אמיתי (inject path) */
   /* 109 — תיקון-שורשי: הגובה = הגובה-האמת של-בלוק-הזנב (לא-מספר-השורות!).
    * הלקח-הקריטי: עם-פערים-היסטוריים-בארכיון, length ≠ גובה — ההנחה-הזאת בנתה
    * בלוק-מתחת-לראש (fork ב-h37851) שהצית-חזרה-דלתות-סגורות (door5-חזרה). */
