@@ -796,17 +796,19 @@ async function boot() {
    * מאמת (height + lastBlockHash-מהחלון-החי). כשל-כתיבה-לא-מפריע-לייצור (כנות-בלוג). */
   try {
     const CPS_PER_PROMOTION = 50;
-    const cpIndex = Math.floor(cp.height / CHECKPOINT_EVERY);
-    if (cp.height > 0 && cpIndex % CPS_PER_PROMOTION === 0) {
+    /* 117p8-R8 — אותו-חוק-מעבר-גבול כמו-המסלול-החי (השוויון-המדויק תקע-שוררים). */
+    const cpIdxEpoch = Math.floor(cp.height / (CHECKPOINT_EVERY * CPS_PER_PROMOTION));
+    if (cp.height > 0) {
       const blk = (chainState.blocks || []).filter((b) => b.height <= cp.height).pop();
       if (blk && blk.hash) {
         const rootPath = path.join(NODE_DIR, 'state-root.json');
         const curRoot = (() => { try { return JSON.parse(fs.readFileSync(rootPath, 'utf8')); } catch (_) { return null; } })();
-        if (!curRoot || !Number.isInteger(curRoot.height) || curRoot.height < cp.height) {
+        const curEpoch = curRoot && Number.isInteger(curRoot.height) ? Math.floor(curRoot.height / (CHECKPOINT_EVERY * CPS_PER_PROMOTION)) : -1;
+        if (cpIdxEpoch > curEpoch && (!curRoot || cp.height > curRoot.height)) {
           const tmp2 = rootPath + '.tmp';
           fs.writeFileSync(tmp2, JSON.stringify({ height: cp.height, lastBlockHash: blk.hash, stateRoot: cp.stateRoot, promotedAt: new Date().toISOString(), st }));
           fs.renameSync(tmp2, rootPath);
-          log('state-root AUTO-PROMOTED h' + cp.height + ' (117k — כל-' + CPS_PER_PROMOTION + '-צ׳קפוינטים · נגד-אמנזיה)');
+          log('state-root AUTO-PROMOTED h' + cp.height + ' (117k — מעבר-גבול-' + CPS_PER_PROMOTION + '-צ׳קפוינטים · נגד-אמנזיה)');
         }
       }
     }
@@ -1359,13 +1361,17 @@ async function maybeCheckpoint(nodeSt, st, chainState, time) {
    * (height+lastBlockHash-מהחלון-החי). כשל-כתיבה לא מפריע לייצור. */
   try {
     const CPS_PER_PROMOTION = 50;
-    const cpIndex = Math.floor(cp.height / CHECKPOINT_EVERY);
-    if (cp.height > 0 && cpIndex % CPS_PER_PROMOTION === 0) {
+    /* 117p8-R8 — קידום-מעבר-גבול (לא-שוויון-מדויק): הקצב-מדלג גבולות-600-חי
+     * (נמדד: 130200 ו-130800 ללא-צ'קפוינט — תגלית-72) והשוויון-המדויק תקע-את-
+     * השורר-לנצח @129000. מעכשיו: קידום בצ'קפוינט-הראשון-מעבר-לכל-גבול-50. */
+    const cpIdxEpoch = Math.floor(cp.height / (CHECKPOINT_EVERY * CPS_PER_PROMOTION));
+    if (cp.height > 0) {
       const blk = (chainState.blocks || []).filter((b) => b.height <= cp.height).pop();
       if (blk && blk.hash) {
         const rootPath2 = path.join(NODE_DIR, 'state-root.json');
         const curRoot = (() => { try { return JSON.parse(fs.readFileSync(rootPath2, 'utf8')); } catch (_) { return null; } })();
-        if (!curRoot || !Number.isInteger(curRoot.height) || curRoot.height < cp.height) {
+        const curEpoch = curRoot && Number.isInteger(curRoot.height) ? Math.floor(curRoot.height / (CHECKPOINT_EVERY * CPS_PER_PROMOTION)) : -1;
+        if (cpIdxEpoch > curEpoch && (!curRoot || cp.height > curRoot.height)) {
           const tmp2 = rootPath2 + '.tmp';
           fs.writeFileSync(tmp2, JSON.stringify({ height: cp.height, lastBlockHash: blk.hash, stateRoot: cp.stateRoot, promotedAt: new Date().toISOString(), st }));
           fs.renameSync(tmp2, rootPath2);
