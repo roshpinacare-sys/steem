@@ -23,24 +23,40 @@ export const dynamic = "force-dynamic";
 
 type CacheEntry = { at: number; username: string; data: Record<string, unknown> };
 const TTL_MS = 90_000;
+// 117p8-R11: stale-while-revalidate — כל-בקשה מוחזרת-מהר; אם-הנתון-ישן-מ-10-דקות
+// מרעננים-ברקע. הפאנל כבר-מציג cacheAgeSec בכנות, אז-האמת-נשמרת וההמתנה-נעלמת.
+const STALE_MAX_MS = 600_000;
 
-const g = globalThis as unknown as { __wrappedCache?: CacheEntry; __wrappedInflight?: Promise<Record<string, unknown>> };
+const g = globalThis as unknown as {
+  __wrappedCache?: CacheEntry;
+  __wrappedInflight?: Promise<Record<string, unknown>>;
+};
+
+function startRefresh(username: string): Promise<Record<string, unknown>> {
+  if (g.__wrappedInflight) return g.__wrappedInflight;
+  g.__wrappedInflight = fetchWrappedSnapshot(username)
+    .then((snap) => {
+      const entry: CacheEntry = { at: Date.now(), username, data: { ...(snap as unknown as Record<string, unknown>) } };
+      g.__wrappedCache = entry;
+      return entry.data;
+    })
+    .finally(() => {
+      g.__wrappedInflight = undefined;
+    });
+  return g.__wrappedInflight;
+}
 
 async function snapshotCached(username: string): Promise<Record<string, unknown>> {
   const c = g.__wrappedCache;
-  if (c && c.username === username && Date.now() - c.at < TTL_MS) return c.data;
-  if (!g.__wrappedInflight) {
-    g.__wrappedInflight = fetchWrappedSnapshot(username)
-      .then((snap) => {
-        const entry: CacheEntry = { at: Date.now(), username, data: { ...(snap as unknown as Record<string, unknown>) } };
-        g.__wrappedCache = entry;
-        return entry.data;
-      })
-      .finally(() => {
-        g.__wrappedInflight = undefined;
-      });
+  const fresh = c && c.username === username && Date.now() - c.at < TTL_MS;
+  if (fresh) return c.data;
+  const stale = c && c.username === username && Date.now() - c.at < STALE_MAX_MS;
+  if (stale) {
+    // מוחזרים-מיד-מהמטמון-הישן; הרענון-רץ-ברקע (שגיאות-רקע-לא-מפילות-בקשה)
+    void startRefresh(username).catch(() => {});
+    return c.data;
   }
-  return g.__wrappedInflight;
+  return startRefresh(username);
 }
 
 export async function GET(req: NextRequest) {
