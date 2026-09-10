@@ -5,10 +5,11 @@
  * connect (התחברות-מפתחות-המפעיל: הדבקה → אימות-מול-השרשרת → כספת-first → נשאר-מחובר)
  * agents (צירוף-סוכנים-דרך-API: טוקן · הודעות · משימות-לבנות · אישור-מפעיל)
  * 117p5c — גיבור-חשבון עם-טבעת-זהות · שב-מגן-מלא 8/8 · כפתור-ספינר · מצבי-ריק-אחידים
+ * 117p8-R13 — קליטת-מפתחות-חיילים לפי-שם → הכספת (מנדט-מפעיל: "מקום-לטעות-מפתחות-חיילים")
  */
 
 import { useState } from "react";
-import { Bot, Copy, Inbox, KeyRound, Link2, Loader2, PlugZap, Send, ShieldCheck, CheckCircle2, XCircle, ListChecks } from "lucide-react";
+import { Bot, Copy, Inbox, KeyRound, Link2, Loader2, PlugZap, Send, ShieldCheck, CheckCircle2, XCircle, ListChecks, UserPlus } from "lucide-react";
 import { useLive } from "@/hooks/use-live";
 import { cn } from "@/lib/utils";
 import { Chip, EmptyState, Micro, Panel, SecHead, Stat } from "../primitives";
@@ -47,6 +48,7 @@ type AgentsResp = {
 };
 
 const ROLE_HE: Record<string, string> = { owner: "בעלים", active: "פעיל", posting: "פוסטינג", memo: "מזכר", _all: "הכל" };
+const GATE_ROLES = ["owner", "active", "posting", "memo"] as const; // לתצוגת-כיסוי-ברוטת-החיילים
 
 /* טבעת-זהות — גרדיאנט-דטרמיניסטי משם-החשבון (בלי-תמונות, אפס-רשת) */
 function identityHue(name: string): number {
@@ -242,8 +244,183 @@ function Connect() {
         )}
       </Panel>
 
+      <SoldierIntake />
+
       <FleetV3Panel />
     </div>
+  );
+}
+
+/* ── soldier-intake (117p8-R13) ── */
+type SoldierResp = {
+  ok?: boolean;
+  roster?: Array<{
+    name: string;
+    tier?: string;
+    chains?: Record<string, Record<string, boolean>>;
+    intakeAt?: string | null;
+    rolesTotal?: number;
+  }>;
+  fleetNames?: string[];
+  seal?: { enc: boolean; meta: boolean };
+  error?: string;
+};
+
+type SoldierPostResp = {
+  ok?: boolean;
+  name?: string;
+  verified?: { steem: Record<string, boolean>; hive: Record<string, boolean> };
+  merged?: { steem: string[]; hive: string[] };
+  rolesInVault?: Array<{ chain: string; roles: string[] }>;
+  persisted?: string[];
+  nextStep?: string | null;
+  error?: string;
+  verify?: { steem: Record<string, boolean>; hive: Record<string, boolean> };
+};
+
+function SoldierIntake() {
+  const live = useLive<SoldierResp>("/api/ops/gate/soldier", 10000);
+  const [name, setName] = useState("");
+  const [paste, setPaste] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [res, setRes] = useState<SoldierPostResp | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const submit = async () => {
+    setBusy(true);
+    setRes(null);
+    setErr(null);
+    try {
+      const r = await fetch("/api/ops/gate/soldier", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, paste }),
+      });
+      const j = (await r.json()) as SoldierPostResp;
+      if (j.ok) {
+        setRes(j);
+        setPaste("");
+      } else {
+        setErr(j.error || "נכשל");
+        setRes(j);
+      }
+    } catch (e) {
+      setErr("שגיאת-רשת: " + String((e as Error).message || e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const roster = live.data?.roster || [];
+  const fleetNames = live.data?.fleetNames || [];
+  return (
+    <Panel className="p-4 md:p-5">
+      <SecHead
+        icon={<UserPlus className="h-4 w-4" />}
+        title="קליטת-מפתחות-חיילים — לפי-שם"
+        sub="בחר/הקלד-שם-חייל · הדבק-גיליון · אימות-מול-השרשרת-החיה-שלו · ישר-לכספת+איטום"
+        extra={<Chip tone="violet">{roster.length} בכספת</Chip>}
+      />
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          dir="ltr"
+          list="soldier-names"
+          value={name}
+          onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9\-.]/g, ""))}
+          placeholder="שם-החייל (למשל cashmachine)"
+          aria-label="שם-חייל-לקליטה"
+          className="min-h-[44px] w-full rounded-md border border-zinc-800 bg-zinc-950/80 px-3 py-2 font-mono text-xs text-zinc-200 outline-none placeholder:text-zinc-700 focus:border-violet-500/50 sm:w-64"
+        />
+        <datalist id="soldier-names">
+          {fleetNames.map((n) => (
+            <option key={n} value={n} />
+          ))}
+          {roster.map((r) => (
+            <option key={r.name} value={r.name} />
+          ))}
+        </datalist>
+      </div>
+      <textarea
+        dir="ltr"
+        value={paste}
+        onChange={(e) => setPaste(e.target.value)}
+        rows={5}
+        spellCheck={false}
+        aria-label="גיליון-מפתחות-החייל"
+        placeholder={"OWNER   = 5H…\nACTIVE  = 5K…\nPOSTING = 5J…\nMEMO    = 5H…\nHIVE\nOWNER   = 5K…\nACTIVE  = 5J…\nPOSTING = 5K…\nMEMO    = 5H…"}
+        className="mt-2 w-full rounded-md border border-zinc-800 bg-zinc-950/80 p-3 font-mono text-xs text-zinc-200 outline-none placeholder:text-zinc-700 focus:border-violet-500/50"
+      />
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <button
+          onClick={submit}
+          disabled={busy || !name.trim() || !paste.trim()}
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-violet-500/50 bg-violet-500/15 px-4 py-2 text-sm font-bold text-violet-200 transition-all hover:bg-violet-500/25 active:scale-[0.98] disabled:opacity-40"
+        >
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <KeyRound className="h-4 w-4" aria-hidden />}
+          {busy ? "מאמת-מול-השרשרת…" : "קלוט-לכספת"}
+        </button>
+        <Micro>אותם-חוקי-זהב: לא-שומרים-מת · מיזוג-בלי-מחיקה · אפס-שידור · אפס-גיט · איטום-מיידי-אחרי-כתיבה</Micro>
+      </div>
+      {err && (
+        <div role="alert" className="mt-3 space-y-2 rounded-md border border-rose-500/40 bg-rose-500/10 p-3 text-sm text-rose-200">
+          <div>{err}</div>
+          {res && !res.ok && res.verify && (res.verify.steem || res.verify.hive) && (
+            <>
+              <VerifyRow label="Steem" row={res.verify.steem ?? null} />
+              <VerifyRow label="Hive" row={res.verify.hive ?? null} />
+            </>
+          )}
+        </div>
+      )}
+      {res?.ok && res.verified && (
+        <div role="status" className="mt-3 space-y-2 rounded-md border border-emerald-500/40 bg-emerald-500/10 p-3">
+          <div className="text-sm font-bold text-emerald-200">@{res.name} נקלט-לכספת ✓</div>
+          <VerifyRow label="Steem" row={res.verified.steem ?? null} />
+          <VerifyRow label="Hive" row={res.verified.hive ?? null} />
+          <div dir="ltr" className="font-mono text-[10px] text-emerald-400/80">
+            {(res.persisted || []).join(" · ")}
+          </div>
+          {res.nextStep && (
+            <div dir="ltr" className="overflow-x-auto rounded border border-emerald-500/30 bg-zinc-950/60 p-2 font-mono text-[10px] text-emerald-300">
+              {res.nextStep}
+            </div>
+          )}
+        </div>
+      )}
+      {roster.length > 0 && (
+        <div className="mt-4">
+          <div className="mb-1.5 text-xs font-bold text-zinc-300">רוטת-הכספת (לפי-חייל · אפס-סודות — כיסוי-תפקידים-בלבד)</div>
+          <div className="max-h-72 space-y-1.5 overflow-y-auto nexus-scroll pr-1">
+            {roster.map((s) => (
+              <div key={s.name} className="flex flex-wrap items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900/40 px-3 py-2">
+                <button
+                  onClick={() => setName(s.name)}
+                  dir="ltr"
+                  className="font-mono text-xs font-bold text-zinc-200 hover:text-violet-300"
+                  title="לחץ-למילוי-שם"
+                >
+                  @{s.name}
+                </button>
+                {s.tier === "operator" && <Chip tone="amber">operator</Chip>}
+                {("steem" in (s.chains || {}) ? ["steem"] : []).map((c) => (
+                  <span key={c} className="inline-flex items-center gap-1 rounded border border-zinc-700 bg-zinc-800/50 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
+                    {c}: {GATE_ROLES.filter((r) => s.chains?.[c]?.[r]).length}/4
+                  </span>
+                ))}
+                {("hive" in (s.chains || {}) ? ["hive"] : []).map((c) => (
+                  <span key={c} className="inline-flex items-center gap-1 rounded border border-zinc-700 bg-zinc-800/50 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
+                    {c}: {GATE_ROLES.filter((r) => s.chains?.[c]?.[r]).length}/4
+                  </span>
+                ))}
+                <span dir="ltr" className="ms-auto font-mono text-[10px] text-zinc-600">
+                  {s.rolesTotal ?? 0} מפתחות
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </Panel>
   );
 }
 
