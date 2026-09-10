@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-10T22:29:31.642Z",
+  "at": "2026-09-10T23:39:29.301Z",
   "cycle": 15,
   "mode": "live+local",
-  "durationMs": 6942,
+  "durationMs": 7062,
   "claims": [
     {
       "rank": 1,
@@ -12,7 +12,7 @@
         {
           "name": "LIVE · walk-the-book: 100 BEE cost",
           "pass": true,
-          "evidence": "gate=59.4808 SWAP.HIVE · askTop=0.58802697 · depth=35 rungs · sufficient=true (claim: 58-60)"
+          "evidence": "gate=59.4868 SWAP.HIVE · askTop=0.58802697 · depth=36 rungs · sufficient=true (claim: 58-60)"
         },
         {
           "name": "LIVE · best-ask in 0.578-0.600 band",
@@ -37,7 +37,7 @@
         {
           "name": "LIVE · RC regen → time-to-250M",
           "pass": true,
-          "evidence": "RC 61M / 41G · regen ~344M/h · to-250M ≈ 33 min (claim: ~עד-שעה ל-250M)"
+          "evidence": "RC 124M / 41G · regen ~344M/h · to-250M ≈ 22 min (claim: ~עד-שעה ל-250M)"
         }
       ]
     },
@@ -49,7 +49,7 @@
         {
           "name": "LIVE · LEO:SWAP.HIVE book has depth",
           "pass": true,
-          "evidence": "29 asks · top-10 depth ≈ 263.69 SWAP.HIVE · bestAsk=0.0812995"
+          "evidence": "29 asks · top-10 depth ≈ 263.65 SWAP.HIVE · bestAsk=0.08129806"
         },
         {
           "name": "LIVE · SPORTS:SWAP.HIVE book has depth",
@@ -81,12 +81,12 @@
         {
           "name": "LOCAL · liq_state: LP-granted to soldiers + fee capture",
           "pass": true,
-          "evidence": "10 soldiers LP (Σ=2.9028 SAOS) · feeCaptureSeen=0.021317 · last: soldiers measured — routing clean"
+          "evidence": "10 soldiers LP (Σ=2.9028 SAOS) · feeCaptureSeen=0.021317 · last: DRY escrow 0.02 @tov"
         },
         {
           "name": "LOCAL · daemon liq loop healthy",
-          "pass": false,
-          "evidence": "status=idle · lpSupply=undefined · lastRun=2026-09-10T22:09:24.676Z"
+          "pass": true,
+          "evidence": "status=ok · lpSupply=0 · lastRun=2026-09-10T23:39:22.711Z"
         },
         {
           "name": "LOCAL · live path ops verified (pool_add/order/fill by soldiers)",
@@ -113,7 +113,7 @@
         {
           "name": "LIVE · fuel on hand vs card claim (2.98 SWAP.HIVE + 1.4 HIVE)",
           "pass": true,
-          "evidence": "live: 0.05 SWAP.HIVE + 0 HIVE → CARD STALE — bee_wall measured 1.5925+0.033; HIVE routed to HP via withdraw-route (hive_power_state) — correction supplied"
+          "evidence": "live: 0 SWAP.HIVE + 0.049 HIVE → CARD STALE — bee_wall measured 1.5925+0.033; HIVE routed to HP via withdraw-route (hive_power_state) — correction supplied"
         },
         {
           "name": "LIVE · BEE ask (rank-4 claim 0.584)",
@@ -177,7 +177,7 @@
         {
           "name": "LOCAL · console reporting fresh",
           "pass": true,
-          "evidence": "updatedAt=2026-09-10T22:29:26.060Z · loops=36"
+          "evidence": "updatedAt=2026-09-10T23:39:26.401Z · loops=33"
         }
       ]
     }
@@ -187,7 +187,7 @@
       "rank": 4,
       "field": "detail",
       "was": "יש לנו 2.98 SWAP.HIVE+1.4 HIVE",
-      "now": "נמדד חי: 0.05 SWAP.HIVE + 0 HIVE (ה-HIVE הוסב-HP דרך מסילת-ה-powerup — המשך-הנתיב בסולמות-HE + trickle-שחרורים)"
+      "now": "נמדד חי: 0 SWAP.HIVE + 0.049 HIVE (ה-HIVE הוסב-HP דרך מסילת-ה-powerup — המשך-הנתיב בסולמות-HE + trickle-שחרורים)"
     },
     {
       "rank": 5,
@@ -202,6 +202,6 @@
     "failed": 1,
     "total": 6,
     "checks": 27,
-    "checksPassed": 25
+    "checksPassed": 26
   }
 }
