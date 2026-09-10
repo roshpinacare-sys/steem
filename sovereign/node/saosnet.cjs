@@ -1450,7 +1450,10 @@ async function beat() {
    * והפך לקו-ההתחלה הרשמי!). ההוכחה היחידה: להריץ את הבלוקים-הבאים דרך הקרנל
    * ולחייב hash-זהה — כל סטיית-מצב משנה results → hash שונה → נדחה בכנות. */
   const proves = (s) => {
-    const above = replayBlocks.filter((b) => b.height > s.height).sort((a, b) => a.height - b.height).slice(0, 12);
+    /* 48 (לא 12!) — נמדד-חי: שורש-הרפאים @126000 אימת 12 בלוקים ונשבר ב-13
+     * (הבלוקים-הראשונים-אחריו נבנו-על-ידי-אותה-ליניאגה-רפאים עצמה). חלון-קצר
+     * מאשרר-רעל. 48 = מרחק-ביטחון מעל הפריצה-שנמדדה. */
+    const above = replayBlocks.filter((b) => b.height > s.height).sort((a, b) => a.height - b.height).slice(0, 48);
     if (!above.length) return true; /* אין-מה-להוכיח — הלוג עוד-לא-נכתב מעל הבסיס */
     if (above[0].height !== s.height + 1) return false;
     try {
