@@ -478,9 +478,51 @@ function healArchives(res) {
       try {
         sh('openssl', ['enc', '-d', '-aes-256-cbc', '-pbkdf2', '-iter', '300000', '-in', path.join(ROOT, meta.keysZipFile), '-out', out, '-pass', 'env:ZP'], { timeout: 90_000, env: { ...process.env, ZP: meta.keysZipPass } });
         const head = fs.readFileSync(out).subarray(0, 2).toString('latin1');
-        fs.unlinkSync(out);
         res.actions.push(head === 'PK' ? 'archives-openable' : 'ARCHIVE-BAD-HEADER');
         if (head !== 'PK') log('ARCHIVES: הזיפ-נפתח-לכאורה-אבל-התוכן-לא-זיפ — נדרשת-בדיקה');
+        /* 117p8-R14 — KEYSZIP-FRESHNESS: פתיחה-לבד לא-מספיקה — צריך-גם-שהזיפ-יחזיק
+         * את-חומר-המפתחות-החי. משווים-כל-קובץ-במניפסט-מול-הדיסק. סטייה → רענון-אוטומטי
+         * (keys_zip_v2, מדוכדק-ל-15-דק' מינימום — סיסמה-חדשה-בכל-איטום). הלופ-נסגרת:
+         * מפתחות-משתנים → fleet auto-RESEAL → הזיפ-מרוענן-כאן → gitkeeper דוחף. */
+        if (head === 'PK') {
+          const crypto = require('crypto');
+          let stale = [];
+          try {
+            const mf = require('child_process').execFileSync('unzip', ['-p', out, 'MANIFEST.txt'], { stdio: 'pipe', timeout: 20_000 }).toString();
+            for (const line of mf.split('\n')) {
+              const m = line.match(/^(.+?)  ([0-9a-f]{64})\s*$/);
+              if (!m) continue;
+              const rel = m[1].trim();
+              const p = path.join(ROOT, rel);
+              if (!fs.existsSync(p)) { stale.push(path.basename(rel) + ':missing'); continue; }
+              const cur = crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+              if (cur !== m[2]) stale.push(path.basename(rel));
+            }
+          } catch (e2) { log('KEYSZIP-FRESHNESS-READ-FAILED :: ' + String(e2.message || e2).slice(0, 80)); }
+          if (stale.length) {
+            const STATE = path.join(ROOT, 'agent', '.keyszip-refresh.json');
+            const MIN_MS = 15 * 60_000;
+            const st = (() => { try { return JSON.parse(fs.readFileSync(STATE, 'utf8')); } catch (_) { return {}; } })();
+            const now = Date.now();
+            const last = st.lastRefreshAt || 0;
+            if (now - last >= MIN_MS) {
+              let ok = false;
+              try { sh('node', [path.join(ROOT, 'agent', 'keys_zip_v2.cjs')], { timeout: 300_000 }); ok = true; }
+              catch (e3) { log('KEYSZIP-AUTO-REFRESH-FAILED :: ' + String(e3.message || e3).slice(0, 100)); }
+              st.lastRefreshAt = now; st.lastRefreshDrift = stale; st.lastRefreshOk = ok;
+              fs.writeFileSync(STATE, JSON.stringify(st, null, 2));
+              if (ok) { res.actions.push('KEYSZIP-AUTO-REFRESHED(' + stale.length + '-drift)'); log('KEYSZIP-AUTO-REFRESH :: drift=' + stale.join(',') + ' — אוטם-מחדש-ומרענן-מטא (gitkeeper-ידחוף)'); }
+              else res.actions.push('KEYSZIP-REFRESH-FAILED(' + stale.length + '-drift)');
+            } else {
+              if (!st.lastDeferLog || now - st.lastDeferLog > MIN_MS) {
+                st.lastDeferLog = now; fs.writeFileSync(STATE, JSON.stringify(st, null, 2));
+                log('KEYSZIP-STALE-DEFERRED :: drift=' + stale.join(',') + ' — רענון-בטיק-הבא (מינימום-15-דק\'-בין-איטומים)');
+              }
+              res.actions.push('KEYSZIP-STALE-DEFERRED(' + stale.length + '-drift)');
+            }
+          } else res.actions.push('keyszip-fresh');
+        }
+        fs.unlinkSync(out);
       } catch (e) { try { fs.unlinkSync(out); } catch (_) {} res.actions.push('ARCHIVE-OPEN-FAILED'); log('ARCHIVES-OPEN-FAILED :: ' + String(e.message || e).slice(0, 100)); }
     }
   } catch (e) { res.actions.push('archives-check-skipped(' + String(e.message || e).slice(0, 40) + ')'); }
