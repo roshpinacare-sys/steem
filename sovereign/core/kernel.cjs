@@ -129,8 +129,16 @@ function initFromGenesis(genesis) {
   return st;
 }
 
-/* ── הפעלת טרנזאקציה בודדת (טהורה — ללא גישה לזמן/סביבה) ── */
-function applyTx(st, tx) {
+/* 117p8-R8 — גובה-מזלג ענף-buy: מהבלוק-הראשון-מעל גובה-זה, מילוי-על-הזמנת-buy רץ
+ * בסמנטיקה-התקינה (taker-מוכר-SAOS). קבוע-חוזה-בקוד (לא-סביבה!) — אותו-ערך בכל מכונה.
+ * מתועד: spec §10 · worklog 117p8-R8. בלוקים ≤ גובה-זה משוחזרים byte-זהים להיסטוריה. */
+const FILL_BUY_FIX_HEIGHT = 130000;
+
+/* ── הפעלת טרנזאקציה בודדת (טהורה — ללא גישה לזמן/סביבה) ──
+ * atHeight (אופציונלי, 117p8-R8): גובה-הבלוק-שבו-ה-tx מיושם — נדרש לכללי-מזלג
+ * (fill-buy). buildBlock מעביר st.meta.height+1; replay-היסטוריה חייב להעביר
+ * את גובה-הבלוק-האמיתי. קריאה-2-ארגומנטים = ברירת-מחדל לשורה-הבאה. */
+function applyTx(st, tx, atHeight) {
   if (!tx || typeof tx !== 'object') return { ok: false, gas: 0, err: 'bad-tx' };
   const type = tx.type;
   if (!GAS.hasOwnProperty(type)) return { ok: false, gas: 0, err: 'unknown-op' };
@@ -192,18 +200,32 @@ function applyTx(st, tx) {
       const buyer = ord.side === 'sell' ? taker : ord.owner;
       const seller = ord.side === 'sell' ? ord.owner : taker;
       const b = acct(st, buyer), s = acct(st, seller);
+      /* 117p8-R8 — תיקון-מזלג ענף-buy (חוק-מספר, לא-סביבה):
+       * FILL_BUY_FIX_HEIGHT — מעליו ענף-buy תקין: ה-taker (מוכר-ה-SAOS) חייב-להחזיק
+       * SAOS ומוותר עליו; הבעלים מקבל SAOS ומשחרר-נעול עד-תקרת-המנעול (אף-יתרה-
+       * נעולה-שלילית). מתחתיו — הסמנטיקה-ההיסטורית byte-זהה (9,358 מילויים-חיים
+       * רצו-הפוך: הבעלים שילם SAOS+STEEM וה-taker קיבל את-שניהם — מתועד-ב-spec §10). */
+      const atH = Number.isInteger(atHeight) ? atHeight : (st.meta.height || 0) + 1;
       if (ord.side === 'sell') {
         // buyer משלם STEEM ישירות (יתרה-פנויה), seller ה-locked משוחרר ל-buyer-SAOS
         const pay = Math.ceil(a * price);
         if (b.steem < pay) return { ok: false, gas, err: 'insufficient-steem' };
         b.steem -= pay; s.steem += pay;
         ord.amount -= a; s.lockedSaos -= a; b.saos += a;
-      } else {
+      } else if (atH < FILL_BUY_FIX_HEIGHT) {
         // buyer (ה-owner) כבר-נעל STEEM; taker מקבל את ה-STEEM ונותן SAOS מהפנוי
         const pay = Math.ceil(a * price);
         if (b.saos < a) return { ok: false, gas, err: 'insufficient' };
         b.saos -= a; s.saos += a;
         ord.amount -= a; b.lockedSteem -= pay; s.steem += pay;
+      } else {
+        // 117p8-R8 (fork @FILL_BUY_FIX_HEIGHT): taker-מוכר-SAOS · בעלים-מקבל ·
+        // שחרור-נעול מוגבל-במנעול-הקיים — אין-מנטרה, אין-שלילי, שימור-מלא.
+        const pay = Math.ceil(a * price);
+        if (s.saos < a) return { ok: false, gas, err: 'insufficient' };
+        const rel = Math.min(pay, Math.max(0, b.lockedSteem));
+        s.saos -= a; b.saos += a;
+        ord.amount -= a; b.lockedSteem -= rel; s.steem += rel;
       }
       if (ord.amount === 0) ord.live = false;
       st.meta.trades = (st.meta.trades || 0) + 1;
@@ -1002,7 +1024,7 @@ function applyTx(st, tx) {
 function buildBlock(st, txs, time) {
   const results = [];
   for (const tx of txs) {
-    const r = applyTx(st, tx);
+    const r = applyTx(st, tx, (st.meta.height || 0) + 1);
     results.push({ ok: r.ok, err: r.err || null, gas: r.gas, filled: r.filled || undefined, out: r.out || undefined, shares: r.shares || undefined, orderId: r.orderId || undefined, type: tx.type });
   }
   st.meta.height = (st.meta.height || 0) + 1;
@@ -1199,7 +1221,61 @@ module.exports = {
   WEAVE_LIVE_CAP, WEAVE_SEALS_RING, WEAVE_WITNESS_RING,
   // HARVEST (111)
   selfTestHarvest,
+  // 117p8-R8 — fill-buy fork law
+  FILL_BUY_FIX_HEIGHT, selfTestFillBuy,
 };
+
+/* ── וקטורי-FILL-BUY (117p8-R8) — הוכחת-שני-הענפים ──
+ * אותו-רצף: order-buy + fill-על-ה-buy. מתחת-לגובה-המזלג: ההיסטוריה (taker מרוויח
+ * SAOS — הסמנטיקה-הישנה). מעל: התיקון (taker מוותר SAOS · הבעלים מקבל ·
+ * אין-נעול-שלילי). שני-הנתיבים דטרמיניסטיים-ונבדקים-כאן לעד. */
+const FILLBUY_TEST_GENESIS = {
+  time: '2026-09-10T00:00:00.000Z',
+  state: {
+    meta: { supply: 5000 },
+    accounts: {
+      treasury: { saos: 2000, steem: 2000, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
+      buyer: { saos: 500, steem: 500, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
+      seller: { saos: 1000, steem: 100, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
+    },
+  },
+};
+function selfTestFillBuy() {
+  const mk = () => initFromGenesis(FILLBUY_TEST_GENESIS);
+  const orderTx = { type: 'order', owner: 'buyer', side: 'buy', amount: 10, price: 0.05 }; // lock=500µ STEEM
+  const fillTx = (who) => ({ type: 'fill', taker: who, orderId: 1, amount: 4 });           // pay=200µ STEEM
+  // ענף-תיקון (מעל המזלג)
+  const stNew = mk();
+  applyTx(stNew, orderTx, FILL_BUY_FIX_HEIGHT);
+  const rNew = applyTx(stNew, fillTx('seller'), FILL_BUY_FIX_HEIGHT);
+  const bN = stNew.accounts.buyer, sN = stNew.accounts.seller;
+  const fixedOk = rNew.ok === true
+    && sN.saos === 600 && bN.saos === 900          // SAOS: 400µ עברו seller→buyer
+    && sN.steem === 300 && bN.steem === 500        // STEEM: 200µ שוחררו-מהנעול אל-המוכר
+    && bN.lockedSteem === 300 && bN.lockedSteem >= 0 // שארית-מנעול תקינה
+    && stNew.orders[0].amount === 6000;
+  // מוכר-בלי-SAOS מספיק — נדחה (בענף-הישן-היה-מקבל-חינם!)
+  const stNoFunds = mk();
+  applyTx(stNoFunds, orderTx, FILL_BUY_FIX_HEIGHT);
+  applyTx(stNoFunds, { type: 'transfer', from: 'seller', to: 'treasury', amount: 999 }, FILL_BUY_FIX_HEIGHT);
+  const rNo = applyTx(stNoFunds, fillTx('seller'), FILL_BUY_FIX_HEIGHT);
+  const noMint = rNo.ok === false && rNo.err === 'insufficient';
+  // ענף-מורשת (מתחת-למזלג) — byte-זהה להיסטוריה
+  const stOld = mk();
+  applyTx(stOld, orderTx, FILL_BUY_FIX_HEIGHT - 1);
+  const rOld = applyTx(stOld, fillTx('seller'), FILL_BUY_FIX_HEIGHT - 1);
+  const bO = stOld.accounts.buyer, sO = stOld.accounts.seller;
+  const legacyOk = rOld.ok === true
+    && sO.saos === 1400 && bO.saos === 100        // הישן: SAOS זרם buyer→seller (הפוך)
+    && sO.steem === 300 && bO.lockedSteem === 300;
+  // replay-דטרמיניזם על-הרצף-המתוקן
+  const stR = mk();
+  const root1 = (() => { applyTx(stR, orderTx, FILL_BUY_FIX_HEIGHT); applyTx(stR, fillTx('seller'), FILL_BUY_FIX_HEIGHT); return stateRoot(stR); })();
+  const stR2 = mk();
+  applyTx(stR2, orderTx, FILL_BUY_FIX_HEIGHT); applyTx(stR2, fillTx('seller'), FILL_BUY_FIX_HEIGHT);
+  const replay = stateRoot(stR2) === root1;
+  return { fixedOk, noMint, legacyOk, replay, atHeight: FILL_BUY_FIX_HEIGHT };
+}
 
 /* ── וקטורי-WEAVE (W1) — determinism + אכיפות + הוכחות-מרקל ──
  * נפרדים-מהוקטורים-הקדושים (366ad477/b8ee2ee8 לא-נוגעים): המצב ממומש-עצלנית
@@ -1296,7 +1372,10 @@ if (require.main === module) {
     console.log('weave vectors: ' + (weaveOk ? 'OK' : 'BROKEN') + ' · lazy=' + wv.lazyOk + ' · dup-stamp=' + wv.dupStamp + ' · dup-witness=' + wv.dupWitness + ' · quorum=' + wv.witnessQuorum + ' · bad-root=' + wv.badRootCaught + ' · issuer=' + wv.issuerCaught + ' · count=' + wv.countCaught + ' · empty=' + wv.emptyCaught + ' · seal=' + wv.sealOk + ' · replay=' + wv.replay + ' · proof=' + wv.proofOk);
     console.log('weave sealed root (7 stamps, odd-fold):', wv.goodRoot);
     console.log('weave final root:', wv.finalRoot);
-    if (!t.replay || !rot.replay || !rot.dupGuard || !weaveOk) process.exit(1);
+    const fb = selfTestFillBuy();
+    const fbOk = fb.fixedOk && fb.noMint && fb.legacyOk && fb.replay;
+    console.log('fill-buy fork vectors (' + fb.atHeight + '): ' + (fbOk ? 'OK' : 'BROKEN') + ' · fixed=' + fb.fixedOk + ' · no-mint=' + fb.noMint + ' · legacy-byte-identical=' + fb.legacyOk + ' · replay=' + fb.replay);
+    if (!t.replay || !rot.replay || !rot.dupGuard || !weaveOk || !fbOk) process.exit(1);
   } else {
     console.log('kernel.cjs — SAOS-NET v0 deterministic kernel. usage: --selftest');
   }
