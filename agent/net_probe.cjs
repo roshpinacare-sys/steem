@@ -128,7 +128,7 @@ async function main() {
       const aggMax = rcArr.reduce((s, a) => s + BigInt(a.max_rc), 0n);
       const aggCur = rcArr.reduce((s, a) => s + BigInt(a.rc_manabar ? a.rc_manabar.current_mana : '0'), 0n);
       const headR = rcArr.find(a => a.account === HEAD);
-      const CLAIM_RC_NEED = 5822571589956n; // מדידה-חיה 2026-09-10 (steem; hive-טרם-נמדד-מקרוב)
+      const CLAIM_RC_NEED = 5782813530594n; // נמדד חי משגיאת-שרשרת 2026-09-10
       const othersMax = rcArr.filter(a => a.account !== HEAD).reduce((s, a) => s + BigInt(a.max_rc), 0n);
       const sol = {
         agg_max_rc_t: (Number(aggMax) / 1e12).toFixed(4),
@@ -139,8 +139,8 @@ async function main() {
         delegate_keep20_head_max_t: (Number(BigInt(headR ? headR.max_rc : '0') + (othersMax * 8n) / 10n) / 1e12).toFixed(4),
         mint_unlockable_via_bridge: headR ? (BigInt(headR.max_rc) + (othersMax * 8n) / 10n) >= CLAIM_RC_NEED : false,
         rc_regen_days: 5, // RC_REGEN_SECONDS=432000
-        // קצב-ייצור: אחרי-טביעה current= max-need; regen-מצטבר 20%/יום של max
-        post_claim_regen_to_need_days: headR ? ((((CLAIM_RC_NEED - (BigInt(headR.max_rc) - CLAIM_RC_NEED)) * 10000n) / BigInt(headR.max_rc)) / 10000 * 5).toFixed(2) : null,
+        // קצב-ייצור: אחרי-טביעה current=max-need; regen מצטבר 20%/יום של max
+        post_claim_regen_to_need_days: headR ? +(((Number(CLAIM_RC_NEED) - Math.max(0, Number(BigInt(headR.max_rc)) - Number(CLAIM_RC_NEED))) / (Number(BigInt(headR.max_rc)) / 5))).toFixed(2) : null,
       };
       rep.solutions[chain] = sol;
     } catch (e) {
