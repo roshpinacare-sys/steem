@@ -56,7 +56,9 @@ function verifyOnly() {
   fs.mkdirSync(WORK, { recursive: true });
   execFileSync('openssl', ['enc', '-d', '-aes-256-cbc', '-pbkdf2', '-iter', '300000', '-in', OUT_ENC, '-out', out, '-pass', 'env:ZP'], { stdio: 'pipe', env: { ...process.env, ZP: meta.keysZipPass } });
   const ok = fs.readFileSync(out).subarray(0, 2).toString('latin1') === 'PK';
-  console.log('verify: ' + (ok ? 'OPEN ✓ (PK header, sha-inner=' + sha(out).slice(0, 12) + '…)' : 'BROKEN'));
+  const innerSha = sha(out); // לפני-המחיקה
+  fs.rmSync(WORK, { recursive: true, force: true }); // 117p8-R14 — אפס-חומר-גלוי-שנשאר-ב-tmp
+  console.log('verify: ' + (ok ? 'OPEN ✓ (PK header, sha-inner=' + innerSha.slice(0, 12) + '…)' : 'BROKEN'));
   process.exit(ok ? 0 : 2);
 }
 
@@ -115,6 +117,11 @@ console.log('roundtrip: decrypt ✓ · unzip ✓ · diff-vs-source ✓ (byte-ide
 console.log('outer sha256: ' + meta.keysZipSha256);
 console.log('inner sha256: ' + meta.keysZipInnerSha256);
 console.log('recovery-meta.json written (0600) — zipPass + keysBackupPass in system custody');
+
+/* 117p8-R14 — היגיינת-מעטפת: stage/x/dec מכילים-חומר-מפתחות-גלוי — חובה-ניקוי
+ * בסוף-כל-ריצה (נמצא-חי: /tmp/keyszip-v2/stage נשאר-אחרי-איטום-קודם). */
+try { fs.rmSync(WORK, { recursive: true, force: true }); console.log('workdir wiped ✓ (אפס-חומר-גלוי-ב-tmp)'); }
+catch (e) { console.log('workdir wipe FAILED — נקה-ידנית: ' + WORK); }
 
 // ── 5) 117p8-R14 — עדכון-sha-מצופים ב-README (ה-README-הוא-מדריך-השחזור —
 //    אסור-שיציג-sha של דור-קודם; נשמר-מדויק-אוטומטית אחרי-כל-איטום) ──

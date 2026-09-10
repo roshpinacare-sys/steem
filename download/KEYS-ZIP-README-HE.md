@@ -32,12 +32,12 @@
 
 ```bash
 sha256sum KEYS-ZIP-2026-09-10.zip.enc
-# מצופה: 67ec1743d6ade3aeaba6dc344a46d32d6a087b147bc2f76b55825a66316d99e7
+# מצופה: bf3d9a6f3dff995a571280c105e2048de55891e1ce90a95818e4c7de05b220db
 
 openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 \
   -in KEYS-ZIP-2026-09-10.zip.enc \
   -out KEYS-ZIP-2026-09-10.zip -pass pass:"$(python3 -c 'import json;print(json.load(open("agent/recovery-meta.json"))["keysZipPass"])')"
-# מצופה sha256 של הזיפ-הפנימי: 550d8c78ba98901e9771e4ed0430aee08a2c36f7b45d5e37357ced4158c95973
+# מצופה sha256 של הזיפ-הפנימי: a841495318d6198ee94b1d1bd5a8599b364a31bc6679cab50e42ddddbbea30f2
 
 unzip KEYS-ZIP-2026-09-10.zip -d keys-restored
 ```
