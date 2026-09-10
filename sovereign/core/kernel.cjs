@@ -143,6 +143,9 @@ function applyTx(st, tx, atHeight) {
   const type = tx.type;
   if (!GAS.hasOwnProperty(type)) return { ok: false, gas: 0, err: 'unknown-op' };
   const gas = GAS[type];
+  /* 117p8-R8 — גובה-היישום (לכללי-המזלג): buildBlock מעביר גובה-הבלוק-החדש;
+   * replay-אמיתי מעביר גובה-הבלוק-ההיסטורי; קריאה-2-ארגומנטים = הבא-בתור. */
+  const atH = Number.isInteger(atHeight) ? atHeight : (st.meta.height || 0) + 1;
   switch (type) {
     case 'transfer':
     case 'pay': {
@@ -205,7 +208,6 @@ function applyTx(st, tx, atHeight) {
        * SAOS ומוותר עליו; הבעלים מקבל SAOS ומשחרר-נעול עד-תקרת-המנעול (אף-יתרה-
        * נעולה-שלילית). מתחתיו — הסמנטיקה-ההיסטורית byte-זהה (9,358 מילויים-חיים
        * רצו-הפוך: הבעלים שילם SAOS+STEEM וה-taker קיבל את-שניהם — מתועד-ב-spec §10). */
-      const atH = Number.isInteger(atHeight) ? atHeight : (st.meta.height || 0) + 1;
       if (ord.side === 'sell') {
         // buyer משלם STEEM ישירות (יתרה-פנויה), seller ה-locked משוחרר ל-buyer-SAOS
         const pay = Math.ceil(a * price);
@@ -603,6 +605,10 @@ function applyTx(st, tx, atHeight) {
         o.wrapped.WTRX -= inAmt;
         p.wtrx += net; p.saos -= out;
         p.wtrx += feeToLp;
+        /* 117p8-R8 — תיקון-שריפה (מזלג @FILL_BUY_FIX_HEIGHT): ה-taker חייב-לקבל
+         * את ה-SAOS-שיצא מהבריכה. לפני-המזלג השורה-חסרה — ~111 SAOS נשרפו-חי
+         * (נמדד: ΔT ב-replay-מלא). מתחת-למזלג: byte-זהה להיסטוריה. */
+        if (atH >= FILL_BUY_FIX_HEIGHT) o.saos += out;
         tr.wrapped.WTRX = (tr.wrapped.WTRX || 0) + feeToTr;
         st.fees.total += fee;
         st.meta.swapsW = (st.meta.swapsW || 0) + 1;
@@ -619,6 +625,9 @@ function applyTx(st, tx, atHeight) {
         o.saos -= inAmt;
         p.saos += net; p.wtrx -= out;
         p.saos += feeToLp;
+        /* 117p8-R8 — תיקון-שריפה (אותו-מזלג): ה-taker חייב-לקבל את ה-WTRX-שיצא
+         * מהבריכה — השורה-חסרה-השנייה של-אותו-באג. */
+        if (atH >= FILL_BUY_FIX_HEIGHT) o.wrapped.WTRX = (o.wrapped.WTRX || 0) + out;
         tr.saos += feeToTr;
         st.fees.total += fee;
         st.meta.swapsW = (st.meta.swapsW || 0) + 1;
