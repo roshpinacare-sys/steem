@@ -211,14 +211,26 @@ function loadArmyPosting() {
       .filter((a) => a && a.username && String(a.username).toLowerCase() !== ACCOUNT)
       /* 117p6 — viaHead: חייל-בלי-מפתח-משלו-בכספת (ynet) שהראש יושב-ב-posting-auth-שלו
        * על-השרשרת (הוכח-חי: STEEM txid bdeb5d34… + HIVE block 109772569 — rail-proof).
-       * נחתם-במפתח-הראש, required_posting_auths נשאר-החייל, ה-RC נצרך-אצל-החייל. */
-      .map((a) => ({ username: String(a.username).toLowerCase(), postingWif: (a.keys && a.keys.posting && a.keys.posting.wif) || '', viaHead: !((a.keys && a.keys.posting && a.keys.posting.wif)) }))
-      .filter((a) => a.postingWif || a.viaHead);
+       * נחתם-במפתח-הראש, required_posting_auths נשאר-החייל, ה-RC נצרך-אצל-החייל.
+       * 117p8-R7-ROAST-FIX — מבנה-הכספת-מקונן (keys.steem.role / keys.hive.role):
+       * הקוד-קרא-keys.posting-שטוח-שלא-קיים ⇒ postingWif='' לכולם ⇒ כולם-נחתמו-במפתח-הראש
+       * ⇒ "Missing Posting Authority"-בלופ-אינסופי-על-כל-חייל-שהראש-לא-יושב-אצלו-בסטים.
+       * עכשיו: מפתח-לכל-שרשרת-בנפרד (steemWif/hiveWif) + תמיכה-בשטוח-ההיסטורי. */
+      .map((a) => {
+        const k = (a.keys || {});
+        const pick = (x) => (x && x.wif) || '';
+        const steemWif = pick(k.steem && k.steem.posting) || pick(k.posting);
+        const hiveWif = pick(k.hive && k.hive.posting) || pick(k.posting);
+        return { username: String(a.username).toLowerCase(), steemWif, hiveWif, postingWif: steemWif || hiveWif, viaHead: !(steemWif || hiveWif) };
+      })
+      .filter((a) => a.steemWif || a.hiveWif || a.viaHead);
   } catch (_) { return []; }
 }
 
-/* 117p6 — בחירת-מפתח-חתימה לחייל: משלו אם-יש, אחרת מפתח-הראש (viaHead). */
+/* 117p6 — בחירת-מפתח-חתימה לחייל: משלו-לשרשרת-הנכונה אם-יש, אחרת מפתח-הראש (viaHead). */
 function signWifFor(s, chain) {
+  const w = chain === 'hive' ? (s && s.hiveWif) : (s && s.steemWif);
+  if (w) return w;
   if (s && s.postingWif) return s.postingWif;
   return chain === 'hive' ? envLive('HIVE_POSTING_WIF') : envLive('POSTING_WIF');
 }
@@ -378,8 +390,14 @@ async function soldierAttest(checkpointHash, height, stateRoot, nodeSt) {
     ordered.push(s);
   }
   const fired = [];
+  /* 117p8-R7-ROAST-FIX — מתג-חטט-מבני: "Missing Posting Authority" = פאג-מבני-לא-חולף
+   * (מפתח-שלא-על-השרשרת). ניסיון-חוזר-בכל-מחזור = רעש+שידורים-מתים-ללא-תועלת.
+   * כשל-מבני ⇒ השתקה-עד-סוף-היום (ריצה-חדשה-מנסה-שוב — מפתח-מתוקן-יתגלה-מחר). */
+  const muted = (nodeSt.attestMuted = nodeSt.attestMuted || {});
+  if (muted.day !== day) { muted.day = day; muted.users = {}; }
   for (const s of ordered) {
     if (fired.length >= ATTESTS_PER_CHECKPOINT) break;
+    if (muted.users && muted.users[s.username]) continue;
     const rc = await rcPct(s.username);
     if (rc < RC_GATE_ATTEST) { log('attest @' + s.username + ' skip RC ' + rc.toFixed(0) + '%'); continue; }
     const payload = { action: 'attest', net: NET, height, round, checkpointHash, stateRoot, validator: s.username };
@@ -390,7 +408,13 @@ async function soldierAttest(checkpointHash, height, stateRoot, nodeSt) {
       budget[day] = budget[day] || {}; budget[day][s.username] = (budget[day][s.username] || 0) + 1;
       log('attest ✓ @' + s.username + (s.viaHead ? ' via-head' : '') + ' txid=' + txid);
       await new Promise((res) => setTimeout(res, 3400));
-    } catch (e) { log('attest @' + s.username + ' FAIL: ' + String((e && e.message) || e).slice(0, 90)); }
+    } catch (e) {
+      const msg = String((e && e.message) || e);
+      if (/posting authority|active authority|owner authority/i.test(msg)) {
+        muted.users[s.username] = true;
+        log('attest @' + s.username + ' MUTED-for-today (structural: ' + msg.slice(0, 60) + ')');
+      } else { log('attest @' + s.username + ' FAIL: ' + msg.slice(0, 90)); }
+    }
   }
   return fired;
 }

@@ -1,0 +1,324 @@
+{
+ "at": "2026-09-10T04:50:48.891Z",
+ "head": "headcorner",
+ "findings": [
+  {
+   "sev": "INFO",
+   "id": "S4-rc-below-wall",
+   "claim": "R6: \"קו-ייצור נפתח ~17.9\"",
+   "reality": "rc_max=3.461T (59.8% מהקיר) — עדיין-מתחת",
+   "fix": "autopilot יומי ממשיך להצטבר"
+  },
+  {
+   "sev": "MED",
+   "id": "S6-steem-orphans",
+   "claim": "חיילים מחוברים-גם-בסטים (posting/active=כספת)",
+   "reality": "10 חיילים בסטים עם מפתחות-שאינם-בכספת-ואינם-הראש: cashmachine,haran,israelnews,lsa,macrame,siq,tov,wic,wog,woq",
+   "fix": "זה-המצב-המוכר-rc_bridge-חסום; לא-שבירה — תיעוד"
+  },
+  {
+   "sev": "HIGH",
+   "id": "C4-fleetv3-fail",
+   "claim": "/api/fleetv3 זמין",
+   "reality": "שגיאה: connect ECONNREFUSED 127.0.0.1:3000",
+   "fix": "בדוק שרת"
+  },
+  {
+   "sev": "MED",
+   "id": "C5-dex-fail",
+   "claim": "DEX זמין",
+   "reality": "connect ECONNREFUSED 127.0.0.1:3000",
+   "fix": ""
+  },
+  {
+   "sev": "HIGH",
+   "id": "C9-web-fail",
+   "claim": "שרת חי",
+   "reality": "connect ECONNREFUSED 127.0.0.1:3000",
+   "fix": ""
+  }
+ ],
+ "sections": {
+  "steem": {
+   "claims": {
+    "powerDownCanceled": {
+     "to_withdraw": 0,
+     "withdrawn": 0,
+     "next": "1969-12-31T23:59:59"
+    },
+    "spReclaim": {
+     "stillReceiving": [
+      "israelnews:0.030M",
+      "lsa:0.002M",
+      "siq:0.002M",
+      "tov:0.002M",
+      "wic:0.004M",
+      "wog:0.002M",
+      "woq:0.006M"
+     ]
+    }
+   },
+   "head": {
+    "sp_total": "5350.73",
+    "sp_delegated_out": "3453.87",
+    "sp_own": "1896.85",
+    "liquid": "0.670 STEEM",
+    "sbd": "0.000 SBD",
+    "vests_in_transit": 5580820,
+    "rc": {
+     "max_t": "3.461",
+     "cur_t": "2.696",
+     "projected_now_t": "2.696",
+     "wall_t": 5.7828,
+     "ratio_max": "0.598"
+    },
+    "auth": {
+     "owner_count": 1,
+     "owner_prefixes": [
+      "STM6p6ZN…"
+     ],
+     "active": "STM5bept…",
+     "posting": "STM6UBp9…",
+     "memo": "STM8Wqnd…",
+     "vault_owner_match": true
+    }
+   },
+   "soldiers": [
+    {
+     "name": "cashmachine",
+     "created": "2018-03-26",
+     "sp": 0.19732631004096846,
+     "posting": "STM7w45W…",
+     "active": "STM5GBtG…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "haran",
+     "created": "2018-03-26",
+     "sp": 3.3217363472108525,
+     "posting": "STM6pjCh…",
+     "active": "STM56N9p…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "israelnews",
+     "created": "2018-03-12",
+     "sp": 0.12761199020135822,
+     "posting": "STM5cMmG…",
+     "active": "STM7URn5…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "lsa",
+     "created": "2018-04-12",
+     "sp": 3.7308588271234018,
+     "posting": "STM5RhgD…",
+     "active": "STM6UmuJ…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "macrame",
+     "created": "2018-03-12",
+     "sp": 0.10449669214693924,
+     "posting": "STM6fGUd…",
+     "active": "STM5sVat…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "siq",
+     "created": "2018-04-12",
+     "sp": 0.1042197057343881,
+     "posting": "STM7u4oN…",
+     "active": "STM6aX7f…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "tov",
+     "created": "2018-04-12",
+     "sp": 0.10467765213893353,
+     "posting": "STM8QuHf…",
+     "active": "STM7q6Ud…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "wic",
+     "created": "2018-04-12",
+     "sp": 0.10443930874685536,
+     "posting": "STM8cJGF…",
+     "active": "STM6u8am…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "wog",
+     "created": "2018-04-12",
+     "sp": 0.10446662064846485,
+     "posting": "STM7RkXR…",
+     "active": "STM5Zm2r…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "woq",
+     "created": "2018-04-12",
+     "sp": 0.10473083765932745,
+     "posting": "STM7ozXC…",
+     "active": "STM5JqsJ…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting_match_posting": false,
+     "vault_active_match_active": false
+    },
+    {
+     "name": "ynet",
+     "created": "2018-03-12",
+     "sp": 0.10498714287688919,
+     "posting": "STM6YhgK…",
+     "active": "STM4tXiB…",
+     "headInPosting": false,
+     "headInActive": false,
+     "vault_posting": "(none)",
+     "vault_active": "(none)"
+    }
+   ]
+  },
+  "hive": {
+   "soldiers": [
+    {
+     "name": "cashmachine",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "haran",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "israelnews",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "lsa",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "macrame",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "siq",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "tov",
+     "owner": "diff(STM72T4d…)",
+     "active": "diff(STM4wCC3…)",
+     "posting": "diff(STM6Mg3t…)",
+     "memo": "diff(STM62qAy…)",
+     "full": "0/4",
+     "fullReal": "0/4"
+    },
+    {
+     "name": "wic",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "wog",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "woq",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    },
+    {
+     "name": "ynet",
+     "owner": "no-vault-wif",
+     "active": "no-vault-wif",
+     "posting": "no-vault-wif",
+     "memo": "no-vault-wif",
+     "full": "0/4",
+     "fullReal": "0/4"
+    },
+    {
+     "name": "headcorner",
+     "owner": "match",
+     "active": "match",
+     "posting": "match",
+     "memo": "match",
+     "full": "4/4",
+     "fullReal": "4/4"
+    }
+   ],
+   "hiveFullCount": 9
+  }
+ }
+}
