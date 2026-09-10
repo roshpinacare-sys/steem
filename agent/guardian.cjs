@@ -631,6 +631,20 @@ function healFleetKeys(res) {
 /* ---------------------------------------------------------------- *
  * main
  * ---------------------------------------------------------------- */
+/* 117p8-R5 — FLEETV3-AUTOPILOT: טייס-צמיחת-SP יומי (claim+power-up) — מקרב-את-פתיחת-מפעל-הצי.
+ * מסונן-יום (פעם-ב-24h) — כל-טיק-אחר-מנוהל-על-ידי-fleetv3_state.json (lastRun.day) */
+function healFleetv3(res) {
+  try {
+    const stPath = path.join(AGENT_DIR, 'fleetv3_state.json');
+    let st = {}; try { st = JSON.parse(fs.readFileSync(stPath, 'utf8')); } catch (_) { }
+    const day = new Date().toISOString().slice(0, 10);
+    if (st.lastRun && st.lastRun.day === day) { res.actions.push('fleetv3-daily-done'); return; }
+    const pid = spawnDetached('fleetv3_autopilot.cjs', [], AGENT_DIR);
+    res.actions.push(pid ? 'fleetv3-autopilot-fired(pid ' + pid + ')' : 'fleetv3-spawn-FAILED');
+    log('fleetv3 autopilot fired for ' + day + ' (pid ' + pid + ')');
+  } catch (e) { res.actions.push('fleetv3-skipped(' + String(e.message || e).slice(0, 40) + ')'); }
+}
+
 function main() {
   const t0 = Date.now();
   if (!acquireLock()) { try { fs.writeFileSync(RESULT, JSON.stringify({ at: new Date().toISOString(), mode: MODE, skipped: 'lock-held' })); } catch (_) {} return; }
@@ -653,6 +667,7 @@ function main() {
     healWallets(res); // 113 — ארנקי-הצבא תמיד-חי (THE-WALLETS: עיגון+תקצוב+תדלוק idempotent)
     healVault(res);   // 114 — הכספת-המוצפנת: verify-בכל-טיק · restore-אוטומטי · reseal
     healDeposits(res); // 114 — תיבת-ההפקדות תמיד-חיה (10 רשתות · wrap 1:1 אוטומטי)
+    healFleetv3(res); // 117p8-R5 — טייס-צמיחת-SP יומי (claim+power-up → פתיחת-מפעל-הצי)
     healWeb(res);   // 106 — הדף-תמיד-חי (השרת-שמת-עם-הסשן-חוזר-אוטומטית)
   } catch (e) {
     res.actions.push('guard-ERROR:' + String((e && e.message) || e).slice(0, 100));
