@@ -60,6 +60,13 @@ const ENV = loadDotEnv();
 function sha256hex(s) { return crypto.createHash('sha256').update(s).digest('hex'); }
 function sha256buf(s) { return crypto.createHash('sha256').update(s).digest(); }
 function ripemd160(b) { return crypto.createHash('ripemd160').update(b).digest(); }
+/* 117p8-R14 — כתיבה-רק-בשינוי-תוכן: כתיבה-זהה-מזיזה-mtime ומפעילה-שרשרת-איטומים-מיותרת
+ * (fleet-RESEAL→רוטציית-סיסמה→זיפ-מתיישן). תוכן-זהה → אף-קריאת-כתיבה. */
+function writeIfChanged(f, data, mode) {
+  try { if (fs.readFileSync(f, 'utf8') === data) return false; } catch (_) {}
+  fs.writeFileSync(f, data, mode ? { mode } : undefined);
+  return true;
+}
 function canon(v) {
   if (v === null || typeof v !== 'object') return JSON.stringify(v);
   if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
@@ -184,6 +191,18 @@ function derive({ quiet, force } = {}) {
     });
     pub.agents.push({ agent: name, idx: i, evm: evmW.address, tron: tronAddr, sol: bs58.encode(solPub), btc: btcAddr });
   });
+  /* 117p8-R14 — derivedAt הוא-זמן-הגזירה (זרע+סוכנים), לא-זמן-הרצה.
+   * הלקח-החי: כל-טיק-watch (5 דק') כתב timestamp-חדש → mtime-זז → fleet_vault
+   * auto-RESEAL מרוטט-סיסמה-כל-5-דק' → ה-KEYS-ZIP מתיישן-ללא-שינוי-תוכן אמיתי.
+   * גזירה-זהה-גורמת (accounts זהים) → נשמר-ה-derivedAt-המקורי והקבצים-לא-נכתבים-מחדש. */
+  let prevPriv = null;
+  try { prevPriv = JSON.parse(fs.readFileSync(PRIV, 'utf8')); } catch (_) {}
+  /* round-trip: מפיל-מפתחות-עם-ערך-undefined (pkWIF) — בלי-זה canon רואה "מפתח-קיים-עם-undefined"
+   * מול "מפתח-נעדר" כשונים-וה-guard-מת. ה-JSON-בדיסק-מעולם-לא-הכיל-את-המפתח. */
+  const norm = (x) => JSON.parse(JSON.stringify(x));
+  const sameDerivation = prevPriv && prevPriv.seedRef === priv.seedRef
+    && canon(norm(prevPriv.accounts)) === canon(norm(priv.accounts));
+  if (sameDerivation) priv.derivedAt = prevPriv.derivedAt;
   /* הכלל-הריבוני: הזרע-קבוע → אותן-כתובות. אם-כבר-עוגן-מניפסט-על-המארח — חייב-להישמר
    * (הלקח-החי-113: derive שמוחק-את-ה-anchor גורם-לעיגון-כפול). הכתובות-אסור-שישתנו. */
   let prevPub = null;
@@ -192,15 +211,15 @@ function derive({ quiet, force } = {}) {
   if (prevPub && prevPub.manifestDigest && prevPub.manifestDigest !== digest && !force) {
     dlog('derive GUARD: existing digest ' + prevPub.manifestDigest.slice(0, 12) + '… != re-derived ' + digest.slice(0, 12) + '… — keeping existing public file (זרע-שונה? לא-מחליפים-זהות-על-בר-מה)');
     prevPub.derivedAt = prevPub.derivedAt || priv.derivedAt;
-    fs.writeFileSync(PUB, JSON.stringify(prevPub, null, 2));
+    writeIfChanged(PUB, JSON.stringify(prevPub, null, 2));
     return { priv, pub: prevPub, agents: agents.map((n, i) => ({ agent: n, idx: i })) };
   }
   pub.manifestDigest = (prevPub && prevPub.manifestDigest && !force) ? prevPub.manifestDigest : digest;
   if (prevPub && prevPub.anchor && !force) pub.anchor = prevPub.anchor; // העיגון-ההיסטורי-נשמר-תמיד
   pub.derivedAt = prevPub?.derivedAt || priv.derivedAt;
   fs.mkdirSync(path.dirname(PRIV), { recursive: true });
-  fs.writeFileSync(PRIV, JSON.stringify(priv, null, 2), { mode: 0o600 });
-  fs.writeFileSync(PUB, JSON.stringify(pub, null, 2));
+  writeIfChanged(PRIV, JSON.stringify(priv, null, 2), 0o600);
+  writeIfChanged(PUB, JSON.stringify(pub, null, 2));
   if (!quiet) dlog('derive: ' + agents.length + ' agents × 10 networks · digest ' + pub.manifestDigest.slice(0, 16) + '… · private→' + PRIV + ' · public→' + PUB);
   return { priv, pub, agents };
 }
