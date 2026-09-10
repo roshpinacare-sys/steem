@@ -50,6 +50,7 @@ const START = parseInt(argOf('--start', '2'), 10);
 const SP = parseFloat(argOf('--sp', '0.1'));
 const CLAIM_REWARDS = has('--claim-rewards');
 const VERIFY = has('--verify');
+const ADOPT = argOf('--adopt', '');
 const mask = w => (w ? w.slice(0, 8) + '…' : '(none)');
 const log = m => console.log('[' + new Date().toISOString() + '] mintv3: ' + m);
 
@@ -69,9 +70,7 @@ async function selfTest() {
 }
 
 function signSend(ops, wifs) {
-  return new Promise((res, rej) => {
-    steem.broadcast.send({ operations: ops, extensions: [] }, wifs, (e, r) => e ? rej(e) : res(r));
-  });
+  return steem.broadcast.sendAsync({ operations: ops, extensions: [] }, wifs);
 }
 
 function keyPair() {
@@ -86,7 +85,7 @@ async function doClaimRewards(acc) {
   if (!nonzero) { log('claim-rewards: nothing to claim'); return; }
   log('claim-rewards: ' + JSON.stringify(rs));
   if (DRY) { report.steps.push({ step: 'claim-rewards', dry: true, rewards: rs }); return; }
-  await signSend([['claim_rewards', { account: HEAD, reward_steem_balance: rs.steem, reward_sbd_balance: rs.sbd, reward_vesting_balance: rs.vest }]], [ACTIVE_WIF]);
+  await signSend([['claim_reward_balance', { account: HEAD, reward_steem: rs.steem, reward_sbd: rs.sbd, reward_vests: rs.vest }]], [ACTIVE_WIF]);
   report.steps.push({ step: 'claim-rewards', ok: true, rewards: rs });
   // power-up the liquid STEEM
   const liq = parseFloat(rs.steem);
@@ -143,6 +142,53 @@ async function mintFleet() {
   }
 }
 
+/* ── שלב 2b: אימוץ-חשבון-קיים דרך-עוגן-הבעלים (headcorner ב-owner) ── */
+async function adoptAccount(name) {
+  const kp = { owner: keyPair(), active: keyPair(), posting: keyPair(), memo: keyPair() };
+  const entry = {
+    username: name, tier: 'fleet-v3', mode: 'adopted-anchor',
+    keys: { owner: kp.owner.wif, active: kp.active.wif, posting: kp.posting.wif, memo: kp.memo.wif },
+    chains: { steem: ['owner', 'active', 'posting', 'memo'] },
+    addedAt: new Date().toISOString(), syncedAt: null
+  };
+  log('adopt ' + name + ' · pubs: o=' + kp.owner.pub.slice(0, 10) + '… a=' + kp.active.pub.slice(0, 10) + '… p=' + kp.posting.pub.slice(0, 10) + '…');
+  if (!DRY) {
+    // אימות-מקדים: headcorner אכן-נמצא-בסמכות-הבעלים של-החשבון
+    const [acc] = await new Promise((res, rej) => steem.api.getAccounts([name], (e, r) => e ? rej(e) : res(r)));
+    const ok = acc.owner.account_auths.some(x => x[0] === HEAD && x[1] >= acc.owner.weight_threshold);
+    if (!ok) throw new Error('adopt blocked: ' + HEAD + ' not in owner authority of ' + name);
+    const wifSet = [OWNER_WIF].filter(Boolean);
+    if (!wifSet.length) throw new Error('OWNER_WIF missing in agent/.env');
+    // בדיקת-עצמי: ה-OWNER_WIF שלנו אכן-מפתח-הבעלים-על-השרשרת
+    const ownerPub = steem.auth.wifToPublic(OWNER_WIF);
+    if (ownerPub !== acc.owner.key_auths[0][0]) throw new Error('self-test FAIL: OWNER_WIF pub ≠ chain owner pub');
+    log('  anchor ✓ ' + HEAD + ' th=' + acc.owner.weight_threshold + ' · signing account_update');
+    const auth = (key, keepHead) => ({ weight_threshold: 1, account_auths: keepHead ? [[HEAD, 1]] : [], key_auths: [[key, 1]] });
+    await signSend([['account_update', {
+      account: name, owner: auth(kp.owner.pub, true), active: auth(kp.active.pub, false),
+      posting: auth(kp.posting.pub, false), memo_key: kp.memo.pub, json_metadata: '{}'
+    }]], wifSet);
+    log('  account_update ✓ ' + name + ' (4 roles rotated, head-anchor kept)');
+    // הקצבה-כמו-האחים
+    if (SP > 0) {
+      const vest = (SP * 1e6).toFixed(6) + ' VESTS';
+      await signSend([['delegate_vesting_shares', { delegator: HEAD, delegatee: name, vesting_shares: vest }]], [ACTIVE_WIF]);
+      log('  delegate ✓ ' + SP + 'SP → ' + name);
+    }
+    entry.syncedAt = new Date().toISOString();
+  }
+  report.minted.push({ name, mode: 'adopt', ownerPub: kp.owner.pub, activePub: kp.active.pub, postingPub: kp.posting.pub, memoPub: kp.memo.pub, endowmentSP: SP });
+  if (!DRY) {
+    const v = JSON.parse(fs.readFileSync(VAULT_PATH, 'utf8'));
+    if (!fs.existsSync(VAULT_PATH + '.bak-fleetv3')) fs.writeFileSync(VAULT_PATH + '.bak-fleetv3', JSON.stringify(v, null, 1));
+    if (!v.accounts.some(a => a.username === name)) v.accounts.push(entry);
+    else v.accounts = v.accounts.map(a => a.username === name ? entry : a);
+    fs.writeFileSync(VAULT_PATH, JSON.stringify(v, null, 1));
+    log('vault ✓ ' + name + ' registered (mode adopted-anchor)');
+    report.steps.push({ step: 'vault-register', ok: true, account: name });
+  }
+}
+
 /* ── שלב 3: אימות-חי ── */
 async function verify() {
   const names = report.minted.map(m => m.name);
@@ -161,6 +207,7 @@ async function verify() {
 (async () => {
   const acc = await selfTest();
   if (CLAIM_REWARDS) await doClaimRewards(acc);
+  if (ADOPT) await adoptAccount(ADOPT);
   if (N) await mintFleet();
   if (VERIFY) await verify();
   fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 1));
