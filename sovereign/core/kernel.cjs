@@ -1232,11 +1232,11 @@ module.exports = {
 const FILLBUY_TEST_GENESIS = {
   time: '2026-09-10T00:00:00.000Z',
   state: {
-    meta: { supply: 5000 },
+    meta: { supply: 5000000 },   /* הכל ב-micro! 5 SAOS */
     accounts: {
-      treasury: { saos: 2000, steem: 2000, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
-      buyer: { saos: 500, steem: 1000, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
-      seller: { saos: 1000, steem: 100, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
+      treasury: { saos: 2000000, steem: 2000000, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
+      buyer: { saos: 500000, steem: 1000000, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
+      seller: { saos: 1000000, steem: 100000, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
     },
   },
 };
@@ -1250,9 +1250,9 @@ function selfTestFillBuy() {
   const rNew = applyTx(stNew, fillTx('seller'), FILL_BUY_FIX_HEIGHT);
   const bN = stNew.accounts.buyer, sN = stNew.accounts.seller;
   const fixedOk = rNew.ok === true
-    && sN.saos === 600 && bN.saos === 900          // SAOS: 400µ עברו seller→buyer
-    && sN.steem === 301 && bN.steem === 499        // STEEM: 201µ (ceil float) שוחררו-מהנעול אל-המוכר
-    && bN.lockedSteem === 300 && bN.lockedSteem >= 0 // שארית-מנעול תקינה
+    && sN.saos === 996000 && bN.saos === 504000    // SAOS: 4000µ עברו seller→buyer
+    && sN.steem === 100200 && bN.steem === 999500  // STEEM: 200µ שוחררו-מהנעול אל-המוכר
+    && bN.lockedSteem === 300 && bN.lockedSteem >= 0 // שארית-מנעול תקינה (500-200)
     && stNew.orders[0].amount === 6000;
   // מוכר-בלי-SAOS מספיק — נדחה (בענף-הישן-היה-מקבל-חינם!)
   const stNoFunds = mk();
@@ -1266,8 +1266,8 @@ function selfTestFillBuy() {
   const rOld = applyTx(stOld, fillTx('seller'), FILL_BUY_FIX_HEIGHT - 1);
   const bO = stOld.accounts.buyer, sO = stOld.accounts.seller;
   const legacyOk = rOld.ok === true
-    && sO.saos === 1400 && bO.saos === 100        // הישן: SAOS זרם buyer→seller (הפוך)
-    && sO.steem === 301 && bO.lockedSteem === 300;
+    && sO.saos === 1004000 && bO.saos === 496000   // הישן: SAOS זרם buyer→seller (הפוך)
+    && sO.steem === 100200 && bO.lockedSteem === 300;
   // replay-דטרמיניזם על-הרצף-המתוקן
   const stR = mk();
   const root1 = (() => { applyTx(stR, orderTx, FILL_BUY_FIX_HEIGHT); applyTx(stR, fillTx('seller'), FILL_BUY_FIX_HEIGHT); return stateRoot(stR); })();
