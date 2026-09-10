@@ -1,0 +1,267 @@
+{
+  "ts": "2026-09-10T06:22:06.363Z",
+  "findings": [
+    {
+      "sev": "CRITICAL",
+      "id": "block-hash",
+      "msg": "100127 בלוקים שה-hash שלהם ≠ מחושב (ראשון: h1)"
+    },
+    {
+      "sev": "CRITICAL",
+      "id": "fork-dups",
+      "msg": "3 גבהים עם שני בלוקים שונים (fork בספר)"
+    },
+    {
+      "sev": "HIGH",
+      "id": "archive-gaps",
+      "msg": "29165 גבהים חסרים בספר (22.8%) ב-26 פערים — doctrine-replay מג'נזיס בלתי-אפשרי על הדיסק"
+    },
+    {
+      "sev": "CRITICAL",
+      "id": "walk-hash",
+      "msg": "replay-מסע: hash שבור בגובה 126013"
+    },
+    {
+      "sev": "CRITICAL",
+      "id": "buy-fill-inverted",
+      "msg": "9230 מילויים-מוצלחים על הזמנות-buy רצו בענף-הפוך (Σ=532369µ SAOS הועבר מבעלים→taker במקום taker→בעלים)"
+    },
+    {
+      "sev": "HIGH",
+      "id": "supply",
+      "msg": "Σ(saos)=25716 ≠ supply=126682 בגובה 127865"
+    },
+    {
+      "sev": "HIGH",
+      "id": "negatives",
+      "msg": "יתרות-שליליות: headcorner:lockedSteem:-31 · cashmachine:lockedSteem:-59 · ynet:lockedSteem:-78 · wic:lockedSteem:-97 · wog:lockedSteem:-87 · woq:lockedSteem:-65 · lsa:lockedSteem:-71 · macrame:lockedSteem:-47"
+    }
+  ],
+  "seal": {
+    "sealedAt": "2026-09-09T19:06:31.016Z",
+    "archiveBytes": 77631617,
+    "currentBytes": 80345322,
+    "restoredAt": "2026-09-10T06:00:18.280Z",
+    "prefixMatch": true,
+    "gzMatch": true
+  },
+  "window": {
+    "first": 127286,
+    "last": 127865,
+    "n": 512
+  },
+  "blockHashCheck": {
+    "checked": 98753,
+    "badHash": 100127,
+    "badHashSample": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  },
+  "dups": {
+    "identical": 1371,
+    "conflicting": 3
+  },
+  "coverage": {
+    "uniqueHeights": 98753,
+    "maxH": 127918,
+    "missing": 29165,
+    "missingPct": 22.8,
+    "ranges": [
+      [
+        703,
+        709
+      ],
+      [
+        36200,
+        36654
+      ],
+      [
+        36906,
+        36914
+      ],
+      [
+        37850,
+        37887
+      ],
+      [
+        51718,
+        51729
+      ],
+      [
+        51737,
+        51737
+      ],
+      [
+        51743,
+        51755
+      ],
+      [
+        51767,
+        51777
+      ],
+      [
+        51786,
+        51794
+      ],
+      [
+        53073,
+        53083
+      ],
+      [
+        55320,
+        55556
+      ],
+      [
+        55560,
+        55573
+      ],
+      [
+        55594,
+        55605
+      ],
+      [
+        55615,
+        55621
+      ],
+      [
+        55640,
+        55649
+      ],
+      [
+        55690,
+        55701
+      ],
+      [
+        55724,
+        55733
+      ],
+      [
+        55749,
+        55758
+      ],
+      [
+        77758,
+        77758
+      ],
+      [
+        77791,
+        77802
+      ],
+      [
+        77948,
+        77953
+      ],
+      [
+        97209,
+        125452
+      ],
+      [
+        125478,
+        125483
+      ],
+      [
+        125656,
+        125661
+      ],
+      [
+        125748,
+        125753
+      ],
+      [
+        125763,
+        125768
+      ]
+    ],
+    "rangeCount": 26
+  },
+  "rootfile": {
+    "height": 126000,
+    "declared": "e867a1e16283491c9e1906017e9b35ff964e688b5dbfd924b58eb7212dcd8002",
+    "computed": "e867a1e16283491c9e1906017e9b35ff964e688b5dbfd924b58eb7212dcd8002",
+    "ok": true
+  },
+  "walk": {
+    "from": 126001,
+    "walked": 12,
+    "to": 126012,
+    "hashBreak": 126013,
+    "linkBreak": null,
+    "snapshotCheck": "skipped (walk head 126012 vs snap 127865)"
+  },
+  "checkpoints": {
+    "checked": 0,
+    "bad": 0,
+    "sample": []
+  },
+  "fillForensics": {
+    "sellSide": 4452,
+    "buySide": 9230,
+    "unknownSide": 27,
+    "buyFillTotalµ": 532369,
+    "topBuyOrderIds": [
+      [
+        5880,
+        32
+      ],
+      [
+        8326,
+        27
+      ],
+      [
+        5561,
+        25
+      ],
+      [
+        5634,
+        25
+      ],
+      [
+        10481,
+        25
+      ],
+      [
+        4324,
+        24
+      ]
+    ]
+  },
+  "invariants": {
+    "atHeight": 127865,
+    "sumSaos": 25716,
+    "supply": 126682,
+    "supplyOk": false,
+    "negatives": [
+      "headcorner:lockedSteem:-31",
+      "cashmachine:lockedSteem:-59",
+      "ynet:lockedSteem:-78",
+      "wic:lockedSteem:-97",
+      "wog:lockedSteem:-87",
+      "woq:lockedSteem:-65",
+      "lsa:lockedSteem:-71",
+      "macrame:lockedSteem:-47",
+      "siq:lockedSteem:-138",
+      "tov:lockedSteem:-96",
+      "haran:lockedSteem:-83"
+    ]
+  },
+  "weave": {
+    "totalStampsMeta": 1,
+    "weaveTotal": 1,
+    "totalSealsMeta": 1,
+    "sealsRing": 1,
+    "liveStamps": 0,
+    "lastSeal": {
+      "seq": 1,
+      "count": 1
+    }
+  }
+}
