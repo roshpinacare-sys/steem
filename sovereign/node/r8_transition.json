@@ -1,0 +1,8 @@
+{
+  "zone": { "from": 130016, "to": 130414 },
+  "reason": "R8 kernel-swap transition: the outgoing pre-R8 process (legacy fill-buy + swapw-burn) kept producing blocks in parallel until the 06:57 single-writer restart. Blocks in this zone encode legacy semantics; the final kernel (gate 130000) diverges on buy-fills there (first divergence measured at h130016: fill order15773 — legacy checked the owner's balance, fixed checks the taker's).",
+  "law": "final-kernel replay of the zone may report hash divergence — documented, bounded, honest. From 130415 the chain is single-writer (fork-guard + proving-window active) and fully verifiable.",
+  "measuredAt": "2026-09-10T07:05:00Z",
+  "firstDivergence": 130016,
+  "singleWriterFrom": 130415
+}
