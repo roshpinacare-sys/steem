@@ -454,6 +454,38 @@ function healVault(res) {
   } catch (e) { res.actions.push('vault-check-skipped(' + String(e.message || e).slice(0, 40) + ')'); }
 }
 
+/* ---------------------------------------------------------------- *
+ * 117p8-R11 — ARCHIVES-OPENABLE: הארכיונים-המוצפנים נבדקים-בכל-טיק.
+ * הלקח-מהתקרית: סיסמה-שחיה-רק-בצ'אט מתה-עם-הסשן (הזיפ-דור-117p8g נשאר-נעול-לנצח).
+ * מעכשיו: agent/recovery-meta.json (משמורת-מערכת · בריפו-הפרטי) מחזיק את
+ * הסיסמאות, והגרדיאן מאמת roundtrip (פענוח→PK-header) בכל-טיק.
+ * ---------------------------------------------------------------- */
+function healArchives(res) {
+  try {
+    const metaP = path.join(ROOT, 'agent', 'recovery-meta.json');
+    if (!fs.existsSync(metaP)) { res.actions.push('ARCHIVES-META-MISSING'); log('ARCHIVES: recovery-meta.json חסר — נדרש keys_zip_v2'); return; }
+    const meta = JSON.parse(fs.readFileSync(metaP, 'utf8'));
+    for (const [file, shaKey] of [[meta.keysZipFile, 'keysZipSha256'], [meta.keysBackupFile, 'keysBackupSha256']]) {
+      if (!file) continue;
+      const p = path.join(ROOT, file);
+      if (!fs.existsSync(p)) { res.actions.push('ARCHIVE-MISSING(' + path.basename(file) + ')'); continue; }
+      const crypto = require('crypto');
+      const cur = crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+      if (meta[shaKey] && cur !== meta[shaKey]) { res.actions.push('ARCHIVE-SHA-DRIFT(' + path.basename(file) + ')'); log('ARCHIVES-DRIFT: ' + file + ' sha שונה-מהמטא — נדרש keys_zip_v2'); }
+    }
+    if (meta.keysZipFile && fs.existsSync(path.join(ROOT, meta.keysZipFile))) {
+      const out = '/tmp/.arch-check.zip';
+      try {
+        sh('openssl', ['enc', '-d', '-aes-256-cbc', '-pbkdf2', '-iter', '300000', '-in', path.join(ROOT, meta.keysZipFile), '-out', out, '-pass', 'env:ZP'], { timeout: 90_000, env: { ...process.env, ZP: meta.keysZipPass } });
+        const head = fs.readFileSync(out).subarray(0, 2).toString('latin1');
+        fs.unlinkSync(out);
+        res.actions.push(head === 'PK' ? 'archives-openable' : 'ARCHIVE-BAD-HEADER');
+        if (head !== 'PK') log('ARCHIVES: הזיפ-נפתח-לכאורה-אבל-התוכן-לא-זיפ — נדרשת-בדיקה');
+      } catch (e) { try { fs.unlinkSync(out); } catch (_) {} res.actions.push('ARCHIVE-OPEN-FAILED'); log('ARCHIVES-OPEN-FAILED :: ' + String(e.message || e).slice(0, 100)); }
+    }
+  } catch (e) { res.actions.push('archives-check-skipped(' + String(e.message || e).slice(0, 40) + ')'); }
+}
+
 /* 114 — DEPOSITS-ALWAYS-UP: תיבת-ההפקדות תמיד-חיה (סוקרת-10-רשתות כל-5 דק') */
 function healDeposits(res) {
   try {
@@ -669,6 +701,7 @@ function main() {
     healWallets(res); // 113 — ארנקי-הצבא תמיד-חי (THE-WALLETS: עיגון+תקצוב+תדלוק idempotent)
     healVault(res);   // 114 — הכספת-המוצפנת: verify-בכל-טיק · restore-אוטומטי · reseal
     healDeposits(res); // 114 — תיבת-ההפקדות תמיד-חיה (10 רשתות · wrap 1:1 אוטומטי)
+    healArchives(res); // 117p8-R11 — הארכיונים-המוצפנים תמיד-פתוחים (משמורת-מערכת)
     healFleetv3(res); // 117p8-R5 — טייס-צמיחת-SP יומי (claim+power-up → פתיחת-מפעל-הצי)
     healWeb(res);   // 106 — הדף-תמיד-חי (השרת-שמת-עם-הסשן-חוזר-אוטומטית)
   } catch (e) {
