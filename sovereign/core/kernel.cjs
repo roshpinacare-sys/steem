@@ -1283,7 +1283,36 @@ function selfTestFillBuy() {
   const stR2 = mk();
   applyTx(stR2, orderTx, FILL_BUY_FIX_HEIGHT); applyTx(stR2, fillTx('seller'), FILL_BUY_FIX_HEIGHT);
   const replay = stateRoot(stR2) === root1;
-  return { fixedOk, noMint, legacyOk, replay, atHeight: FILL_BUY_FIX_HEIGHT };
+  // 117p8-R8 — וקטור-pool_swapw: שימור-מלא מעל-המזלג (ה-taker מקבל את ה-out)
+  // · והיסטוריה byte-זהה מתחתיו (השריפה-שנמדדה ~111 SAOS נשארת-כפי-שהייתה)
+  const GENW = {
+    time: '2026-09-10T00:00:00.000Z',
+    state: {
+      meta: { supply: 5000000 },
+      accounts: {
+        treasury: { saos: 2000000, steem: 2000000, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: {}, credits: 0 },
+        taker: { saos: 0, steem: 0, lockedSaos: 0, lockedSteem: 0, lp: 0, wrapped: { WTRX: 100000 }, credits: 0 },
+      },
+    },
+  };
+  const T = (st2) => { let t = 0; for (const a of Object.values(st2.accounts)) t += (a.saos || 0) + (a.lockedSaos || 0); t += st2.poolW ? st2.poolW.saos : 0; return t; };
+  const mkW = () => initFromGenesis(GENW);
+  const seed = (st2, at) => applyTx(st2, { type: 'wrap_mint', symbol: 'WTRX', issuer: 'treasury', to: 'treasury', amount: 200, lockedDelta: 200, ref: 'seed-' + at }, at)
+    && applyTx(st2, { type: 'pool_addw', owner: 'treasury', amountSaos: 300, amountWtrx: 100 }, at);
+  const swTx = { type: 'pool_swapw', taker: 'taker', side: 'sell_wtrx', inAmt: 10 };
+  const stW = mkW(); seed(stW, FILL_BUY_FIX_HEIGHT);
+  stW.accounts.taker.wrapped.WTRX = 100000;
+  const t0 = T(stW);
+  const rW = applyTx(stW, swTx, FILL_BUY_FIX_HEIGHT);
+  const t1 = T(stW);
+  const swapwOk = rW.ok === true && rW.out > 0 && stW.accounts.taker.saos === rW.out && t1 === t0; // ה-out הגיע-ל-taker · אפס-שריפה
+  const stW2 = mkW(); seed(stW2, FILL_BUY_FIX_HEIGHT - 1);
+  stW2.accounts.taker.wrapped.WTRX = 100000;
+  const tL0 = T(stW2);
+  const rWL = applyTx(stW2, swTx, FILL_BUY_FIX_HEIGHT - 1);
+  const tL1 = T(stW2);
+  const legacyBurn = rWL.ok === true && stW2.accounts.taker.saos === 0 && tL1 === tL0 - rWL.out; // ההיסטוריה: ה-out נשרף
+  return { fixedOk, noMint, legacyOk, replay, swapwOk, legacyBurn, atHeight: FILL_BUY_FIX_HEIGHT };
 }
 
 /* ── וקטורי-WEAVE (W1) — determinism + אכיפות + הוכחות-מרקל ──
@@ -1382,8 +1411,8 @@ if (require.main === module) {
     console.log('weave sealed root (7 stamps, odd-fold):', wv.goodRoot);
     console.log('weave final root:', wv.finalRoot);
     const fb = selfTestFillBuy();
-    const fbOk = fb.fixedOk && fb.noMint && fb.legacyOk && fb.replay;
-    console.log('fill-buy fork vectors (' + fb.atHeight + '): ' + (fbOk ? 'OK' : 'BROKEN') + ' · fixed=' + fb.fixedOk + ' · no-mint=' + fb.noMint + ' · legacy-byte-identical=' + fb.legacyOk + ' · replay=' + fb.replay);
+    const fbOk = fb.fixedOk && fb.noMint && fb.legacyOk && fb.replay && fb.swapwOk && fb.legacyBurn;
+    console.log('R8 fork vectors (' + fb.atHeight + '): ' + (fbOk ? 'OK' : 'BROKEN') + ' · fill-fixed=' + fb.fixedOk + ' · no-mint=' + fb.noMint + ' · fill-legacy=' + fb.legacyOk + ' · replay=' + fb.replay + ' · swapw-conserved=' + fb.swapwOk + ' · swapw-legacy-burn=' + fb.legacyBurn);
     if (!t.replay || !rot.replay || !rot.dupGuard || !weaveOk || !fbOk) process.exit(1);
   } else {
     console.log('kernel.cjs — SAOS-NET v0 deterministic kernel. usage: --selftest');
