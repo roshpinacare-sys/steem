@@ -128,7 +128,10 @@ function replayWeave() {
   st.meta.lastBlockHash = replayBlocks.length ? replayBlocks[replayBlocks.length - 1].hash : null;
   st.meta.lastTime = replayBlocks.length ? replayBlocks[replayBlocks.length - 1].time : st.meta.lastTime;
   const w = K.weaveInit(st);
-  return { st, w, stampLog, blocksKept: replayBlocks.length, truncated: !!chainState.truncated, rejected };
+  // R18h — גובה-ראשית-החלון הנראה ל-replay: חותמות שמתחתיו אינן-ניתנות-לשחזור
+  // (היסטוריה-נשטפה/ארכיון-החל) — חיוני-לעיגון-כן.
+  const firstHeight = replayBlocks.length ? Number(replayBlocks[0].height) : null;
+  return { st, w, stampLog, blocksKept: replayBlocks.length, firstHeight, truncated: !!chainState.truncated, rejected };
 }
 
 /* ── ב. בקשת-איטום ── */
@@ -286,6 +289,23 @@ async function runWeaveBatch(opts = {}) {
   const pending = seals.filter((s) => s && !wRec.anchored[s.seq]).sort((a, b) => b.seq - a.seq);
   if (pending.length) {
     const seal = pending[0];
+    // R18h — עוגן-רק-חותמות-ניתנות-להוכחה: אם-טווח-החותם-נופל-מתחת-לחלון-הארכיון
+    // (היסטוריה-נשטפה) ההוכחה-העצמאית-לעולם-לא-תצליח — עיגון-כזה = אנקור-שבור-לנצח
+    // ומטה-אמון-בשטח-העיגון. סימון-כן-ודילוג (החותם-נשאר-ב-state-הצומת — לא-נמחק).
+    const preProof = independentProof(scan, seal);
+    const rangeBelowWindow = scan.firstHeight != null && Number(seal.from) < Number(scan.firstHeight) && scan.stampLog.length === 0;
+    if (!preProof.ok && rangeBelowWindow) {
+      wRec.anchored[String(seal.root)] = {
+        seq: seal.seq, at: new Date().toISOString(), dry,
+        skipped: 'unprovable-washed',
+        note: 'range ' + seal.from + '..' + seal.to + ' below archive window ' + scan.firstHeight + ' (washed history) — anchor skipped honest',
+      };
+      const keys2 = Object.keys(wRec.anchored);
+      if (keys2.length > 64) { for (const k of keys2.slice(0, keys2.length - 64)) delete wRec.anchored[k]; }
+      writeJsonAtomic(STATE_W_FILE, wRec);
+      notes.push('anchor seq=' + seal.seq + ': SKIPPED — unprovable (stamps below archive window ' + scan.firstHeight + ' — washed history, marked honest)');
+      anchored = { seq: seal.seq, root: seal.root, count: seal.count, chains: 0, txids: { steem: null, hive: null, blurt: null }, skipped: 'unprovable-washed', proof: preProof };
+    } else {
     const res = await anchorSeal(seal, WIF, dry, notes);
     // ממצא-W3: המפתח הוא השורש (32B ייחודי) — לא-ה-seq (מספור-נמדד-מחדש בין-קווים;
     // seal#1-של-המעבדה (fork-סנדבוקס) התנגש-עם-seal#1-מיוצר — השורש-בלתי-ניתן-להתנגשות)
@@ -296,6 +316,7 @@ async function runWeaveBatch(opts = {}) {
     const proof = independentProof(scan, seal);
     notes.push('independent-proof: ' + (proof.ok ? 'OK (leaf verified against sealed root)' : 'BROKEN — ' + (proof.why || 'verify failed')));
     anchored = { seq: seal.seq, root: seal.root, count: seal.count, chains: res.chains, txids: res.txids, tron: res.tron, proof };
+    }
   } else {
     notes.push('no unanchored seals');
   }
