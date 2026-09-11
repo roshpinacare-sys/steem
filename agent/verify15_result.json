@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-11T17:01:40.981Z",
+  "at": "2026-09-11T17:57:58.331Z",
   "cycle": 15,
   "mode": "live+local",
-  "durationMs": 10924,
+  "durationMs": 9185,
   "claims": [
     {
       "rank": 1,
@@ -37,7 +37,7 @@
         {
           "name": "LIVE · RC regen → time-to-250M",
           "pass": true,
-          "evidence": "RC 149M / 41G · regen ~344M/h · to-250M ≈ 18 min (claim: ~עד-שעה ל-250M)"
+          "evidence": "RC 255M / 41G · regen ~344M/h · to-250M ≈ reached (claim: ~עד-שעה ל-250M)"
         }
       ]
     },
@@ -49,7 +49,7 @@
         {
           "name": "LIVE · LEO:SWAP.HIVE book has depth",
           "pass": true,
-          "evidence": "30 asks · top-10 depth ≈ 180.15 SWAP.HIVE · bestAsk=0.08128641"
+          "evidence": "30 asks · top-10 depth ≈ 180.15 SWAP.HIVE · bestAsk=0.08128608"
         },
         {
           "name": "LIVE · SPORTS:SWAP.HIVE book has depth",
@@ -85,8 +85,8 @@
         },
         {
           "name": "LOCAL · daemon liq loop healthy",
-          "pass": true,
-          "evidence": "status=ok · lpSupply=0 · lastRun=2026-09-11T17:01:30.560Z"
+          "pass": false,
+          "evidence": "status=idle · lpSupply=undefined · lastRun=2026-09-11T17:57:48.559Z"
         },
         {
           "name": "LOCAL · live path ops verified (pool_add/order/fill by soldiers)",
@@ -177,7 +177,7 @@
         {
           "name": "LOCAL · console reporting fresh",
           "pass": true,
-          "evidence": "updatedAt=2026-09-11T17:01:34.270Z · loops=33"
+          "evidence": "updatedAt=2026-09-11T17:57:50.141Z · loops=33"
         }
       ]
     }
@@ -202,6 +202,6 @@
     "failed": 1,
     "total": 6,
     "checks": 27,
-    "checksPassed": 26
+    "checksPassed": 25
   }
 }
