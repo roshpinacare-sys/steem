@@ -110,9 +110,21 @@ const userFor = (a) => [
   `עמית-סוכן-עליון מבקש-התייעצות לקראת יישור-קו-סופי על-הכל (r18k).`,
   'מצב-החי-הנמדד (מקור: קבצי-מצב-של-המערכת, זה-עתה):',
   JSON.stringify(liveState, null, 1),
+  prevLines(a.id),
   `תפקידך-בדיון: ${a.focus}.`,
   'ענה-בעברית, במבנה-שנדרש, עד-180-מילים.',
 ].join('\n');
+
+// רצף-בין-סבבים: אם-הייתה-התייעצות-קודמת — הקו-הסופי-שהציע-הסוכן-אז, להשוואה
+function prevLines(agentId) {
+  try {
+    const prev = JSON.parse(fs.readFileSync(path.join(ROOT, 'agent/consult_r18k.json'), 'utf8'));
+    const mine = (prev.consultations || []).find((c) => c.id === agentId && c.ok);
+    if (!mine) return '';
+    const line = (mine.response || '').split('\n').find((l) => l.includes('קו-סופי'));
+    return line ? `בסבב-הקודם (${prev.round || '?'} · ${prev.at || '?'}), הקו-הסופי-שהצעת-היה: ${line.replace(/^קו-סופי-מוצע:\s*/, '')}\nאם-המצב-השתנה — עדכן; אם-לא — אשר-עקביות.\n` : '';
+  } catch { return ''; }
+}
 
 // ── 3. הרצת-ההתייעצות ───────────────────────────────────────────────────────
 async function main() {
