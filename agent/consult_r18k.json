@@ -1,0 +1,80 @@
+{
+  "at": "2026-09-11T04:28:58.798Z",
+  "round": "r18k",
+  "liveState": {
+    "measuredAt": "2026-09-11T04:28:58.796Z",
+    "daemon": {
+      "account": "headcorner",
+      "dryRun": true,
+      "rcPct": 87.9,
+      "pendingClaims": 0.449,
+      "identity": {
+        "heTokens": 7,
+        "heValueSwapHive": 5.780781
+      }
+    },
+    "linkage": {
+      "soldiersTotal": 11,
+      "linkedChains": "21/22",
+      "unlinked": [
+        "tov/hive"
+      ]
+    },
+    "weave": {
+      "mode": "DRY",
+      "notes": [
+        "scan: height=11110 · kept=11110 (TRUNCATED) · live=0 · total=0 · seals=0 · replay-rejected=30823",
+        "no unanchored seals"
+      ],
+      "anchored": null
+    },
+    "fleetv3": {
+      "autopilotUnlocked": null,
+      "realSPTotal": null,
+      "rcRatioCur": null,
+      "lastRunAt": null
+    },
+    "doctrine": {
+      "guardianOwnsAgentLifecycle": true,
+      "dryRunSafety": true,
+      "postingWifUnset": true,
+      "pushImmediatelyAfterEveryCommit": true,
+      "vault": "KEYS-ZIP-2026-09-10.zip.enc + recovery-meta + README (triple-consistent)"
+    },
+    "openItems": [
+      "tov/hive — active-key-drift: מפתחות-הכספת-אינם-שולטים-בחשבון; דרוש-חומר-מפתחות-מהבעלים",
+      "אטימת-הסוכן-השני — upload/ עדיין-בלי-אטימה-חדשה (ממתין-למפעיל)",
+      "ynet-פוסטינג-דרך-הראש (headcorner) — פתוח-טכנית, ממתין-הוראה-מפורשת"
+    ]
+  },
+  "consultations": [
+    {
+      "id": "saos-vault",
+      "name": "Saosmartwallet · סוכן-הכספת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. חובת-הסגירה: הפעילות בynet-פוסטינג פתוחה טכנית ללא הוראה מפורשת, וחשופה לסיכון ריבונות.\n2. פער-אטימה: הסוכן השני חסר אטימה חדשה, מה שמפר את עקרון הכספת-המאוטמת.\n3. סטגנציה-קריטית: מפתחות-הכספת אינם שולטים בחשבון, ומונעים את יישור-הקו הסופי.\nקו-סופי-מוצע: לפני יישור-הקו, יש לסגור אתynet-פוסטינג, לאטום מחדש את הסוכן השני, ולהשיג את חומר-המפתחות."
+    },
+    {
+      "id": "saos-netguard",
+      "name": "NetGuard · משמר-הרשת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. חשבון-headcorner פועל ב-DRY_RUN אך ישנו סעיף-פתוח (ynet-פוסטינג) שמחכה להוראה לפעולה-חיה.\n2. הקשר-עם tov/hive נותק, מה שעלול להשפיע על התיאום-הכולל.\n3. מפתחות-הכספת אינם שולטים בחשבון, פער-אבטחה משמעותי.\n\nקו-סופי-מוצע: לפני-יישור-הקו-הסופי, יש-לסגור את כל-הסעיפים-הפתוחים ולאפס-את הסטטוס-של-הקשרים-החיצוניים."
+    },
+    {
+      "id": "saos-chainkeeper",
+      "name": "ChainKeeper · משמר-השרשרת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. חובת-אטימה-מתמדת: הסוכן-השני חסר-אטימה-מעודכנת, פוטנציאל-חשיפה.\n2. נתק-מפתחות: החשבון-tov/hive מושבת עקב-נטרול-מפתחות, סיכון-תפעולי.\n3. נטרול-replay: 30,823 בקשות-replay נדחו, עלול-להשפיע-על-סינכרון-השרשרת.\n\nקו-סופי-מוצע: לקבוע-אטימה-חדשה לסוכן-השני ולבקש-החלפת-מפתחות-ל-tov/hive."
+    },
+    {
+      "id": "saos-econ",
+      "name": "EconWatch · משמר-הכלכלה",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. RC מתחת ל-90% (87.9%) מגביל פעילות עתידית.\n2. סוכן-שני חסר אטימה, חשיפת מפתחות במקרה פריצה.\n3. חשבון tov/hive מנותק, אובדן יכולת תשלומים דרכו.\nקו-סופי-מוצע: חידוש מפתחות כספת tov/hive ואטימת הסוכן-השני כדי להשיב את RC למעל 90% ולהסיר את כל חשיפות הסיכון."
+    }
+  ]
+}
