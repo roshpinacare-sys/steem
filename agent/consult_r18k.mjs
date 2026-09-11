@@ -107,7 +107,7 @@ const systemFor = (a) => [
 ].join('\n');
 
 const userFor = (a) => [
-  `עמית-סוכן-עליון מבקש-התייעצות לקראת יישור-קו-סופי על-הכל (r18k).`,
+  `עמית-סוכן-עליון מבקש-התייעצות לקראת יישור-קו-סופי על-הכל (${ROUND}).`,
   'מצב-החי-הנמדד (מקור: קבצי-מצב-של-המערכת, זה-עתה):',
   JSON.stringify(liveState, null, 1),
   prevLines(a.id),
@@ -115,21 +115,43 @@ const userFor = (a) => [
   'ענה-בעברית, במבנה-שנדרש, עד-180-מילים.',
 ].join('\n');
 
-// רצף-בין-סבבים: אם-הייתה-התייעצות-קודמת — הקו-הסופי-שהציע-הסוכן-אז, להשוואה
+// רצף-בין-סבבים: הקו-הסופי-שהציע-הסוכן-בהתייעצות-הקודמת (קובץ-פר-סבב · נפילה-לאחור ל-r18k)
 function prevLines(agentId) {
-  try {
-    const prev = JSON.parse(fs.readFileSync(path.join(ROOT, 'agent/consult_r18k.json'), 'utf8'));
-    const mine = (prev.consultations || []).find((c) => c.id === agentId && c.ok);
-    if (!mine) return '';
-    const line = (mine.response || '').split('\n').find((l) => l.includes('קו-סופי'));
-    return line ? `בסבב-הקודם (${prev.round || '?'} · ${prev.at || '?'}), הקו-הסופי-שהצעת-היה: ${line.replace(/^קו-סופי-מוצע:\s*/, '')}\nאם-המצב-השתנה — עדכן; אם-לא — אשר-עקביות.\n` : '';
-  } catch { return ''; }
+  for (const f of [`consult_${ROUND}.json`, 'consult_r18k.json']) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(path.join(ROOT, 'agent', f), 'utf8'));
+      const mine = (prev.consultations || []).find((c) => c.id === agentId && c.ok);
+      if (!mine) continue;
+      const line = (mine.response || '').split('\n').find((l) => l.includes('קו-סופי'));
+      if (!line) continue;
+      return `בסבב-הקודם (${prev.round || '?'} · ${prev.at || '?'}), הקו-הסופי-שהצעת-היה: ${line.replace(/^קו-סופי-מוצע:\s*/, '')}\nאם-המצב-השתנה — עדכן; אם-לא — אשר-עקביות.\n`;
+    } catch { /* נסה-קובץ-הבא */ }
+  }
+  return '';
 }
 
 // ── 3. הרצת-ההתייעצות ───────────────────────────────────────────────────────
+// שם-הסבב-מהפרמטר (ברירת-מחדל r18k) · דופק-רשת-חי: כותרות-השידורים-האחרונים-של-השותפים
+const ROUND = String(process.argv[2] || 'r18k').replace(/[^a-z0-9-]/gi, '') || 'r18k';
+
+function networkPulse() {
+  try {
+    const dir = path.join(ROOT, 'broadcasts');
+    return fs.readdirSync(dir)
+      .filter((f) => f.endsWith('.md'))
+      .sort()
+      .slice(-6)
+      .map((f) => {
+        const head = fs.readFileSync(path.join(dir, f), 'utf8').split('\n').find((l) => l.trim().startsWith('#'));
+        return { file: f, title: (head || '').replace(/^#+\s*/, '').slice(0, 110) };
+      });
+  } catch { return []; }
+}
+
 async function main() {
   const zai = await ZAI.create();
-  const out = { at: new Date().toISOString(), round: 'r18k', liveState, consultations: [] };
+  liveState.networkPulse = networkPulse();
+  const out = { at: new Date().toISOString(), round: ROUND, liveState, consultations: [] };
 
   for (const a of AGENTS) {
     let content = null, err = null;
@@ -154,8 +176,8 @@ async function main() {
     console.log(`[${a.id}] ${content ? 'OK (' + content.length + ' chars)' : 'FAILED: ' + err}`);
   }
 
-  fs.writeFileSync(path.join(ROOT, 'agent/consult_r18k.json'), JSON.stringify(out, null, 2) + '\n');
-  console.log('written: agent/consult_r18k.json');
+  fs.writeFileSync(path.join(ROOT, 'agent', `consult_${ROUND}.json`), JSON.stringify(out, null, 2) + '\n');
+  console.log(`written: agent/consult_${ROUND}.json`);
 }
 
 main().catch((e) => { console.error('FATAL:', e && e.message); process.exit(1); });
