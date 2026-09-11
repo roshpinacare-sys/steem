@@ -2168,9 +2168,15 @@ function linkageCycle() {
   }
   try {
     const r = JSON.parse(fs.readFileSync(path.join(__dirname, 'linkage_report.json'), 'utf8'));
-    const pending = (r.soldiers || []).filter((s) => s.chains && s.chains.hive && !s.chains.hive.linked).map((s) => '@' + s.username);
+    /* R18j-ייעול: הסיבה-האמיתית-מהדוח-במקום-תווית-קבועה — מה-שה-fix רשם-זה-מה-שמוצג
+     * (rc-gated · active-key-drift · error) — כנות-ברמת-החייל. */
+    const pending = (r.soldiers || []).filter((s) => s.chains && s.chains.hive && !s.chains.hive.linked).map((s) => {
+      const f = (s.fixes || []).find((x) => x.chain === 'hive');
+      const why = f ? (f.skipped || (f.error ? 'error' : 'pending')) : 'audit-only';
+      return '@' + s.username + '(' + why + ')';
+    });
     const detail = (r.allLinked ? 'ALL-LINKED' : (r.linkedChains + '/' + r.chainsTotal + ' chains linked')) +
-      (pending.length ? ' · hive-pending(rc-protected): ' + pending.join(',') : '') +
+      (pending.length ? ' · hive-pending: ' + pending.join(',') : '') +
       ' · נבדק ' + String(r.at || '').slice(11, 19) + 'Z';
     updateLoop('linkage', {
       status: r.allLinked ? 'ok' : 'partial',
@@ -4584,7 +4590,11 @@ async function chainAttestCycle() {
 async function weaveBatchCycle() {
   updateLoop('weaveBatch', { status: 'running', detail: 'weave scan (replay + root + anchor)…' });
   try {
-    const { runWeaveBatch } = require('./weave_batch.cjs');
+    /* R18j-ייעול: טעינה-טרייה-בכל-מחזור — require-cache מחזיק-קוד-ישן-כל-עוד-הדמון-חי
+     * ותיקוני-הכלי-על-הדיסק-לא-חיים-עד-רענון-הדמון (הלקח-המאומת-מ-R18i). */
+    const wbPath = require.resolve('./weave_batch.cjs');
+    if (require.cache[wbPath]) delete require.cache[wbPath];
+    const { runWeaveBatch } = require(wbPath);
     const r = await runWeaveBatch({ dry: CONFIG.dryRun });
     /* 117j-כנות: proof=BROKEN אינו 'ok' — הסטטוס-מתדרדר-ל-'degraded' כדי-שלוחן-הבריאות
      * לא-יציג-לולאה-שבורה-כתקינה (השיעור-מ-guardian-'harvest-alive'-ששיקר).
