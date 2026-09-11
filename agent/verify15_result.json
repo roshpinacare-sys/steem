@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-11T00:46:12.258Z",
+  "at": "2026-09-11T00:58:00.095Z",
   "cycle": 15,
   "mode": "live+local",
-  "durationMs": 5425,
+  "durationMs": 5202,
   "claims": [
     {
       "rank": 1,
@@ -12,17 +12,17 @@
         {
           "name": "LIVE · walk-the-book: 100 BEE cost",
           "pass": true,
-          "evidence": "gate=59.4702 SWAP.HIVE · askTop=0.58723547 · depth=36 rungs · sufficient=true (claim: 58-60)"
+          "evidence": "gate=59.4563 SWAP.HIVE · askTop=0.58599168 · depth=35 rungs · sufficient=true (claim: 58-60)"
         },
         {
           "name": "LIVE · best-ask in 0.578-0.600 band",
           "pass": true,
-          "evidence": "ask=0.58723547 (claim: 0.580-0.596 · rank-4: 0.584)"
+          "evidence": "ask=0.58599168 (claim: 0.580-0.596 · rank-4: 0.584)"
         },
         {
           "name": "ARITH · first-buy 2.5 SWAP.HIVE → BEE",
           "pass": true,
-          "evidence": "2.5/0.587235 = 4.26 BEE (claim: ~4.3)"
+          "evidence": "2.5/0.585992 = 4.27 BEE (claim: ~4.3)"
         },
         {
           "name": "LOCAL · genesis trigger code (gate 100.5 · precision 3 · maxSupply 1e9 · issue 1e6 · staking+delegation+market)",
@@ -37,7 +37,7 @@
         {
           "name": "LIVE · RC regen → time-to-250M",
           "pass": true,
-          "evidence": "RC 87M / 41G · regen ~344M/h · to-250M ≈ 28 min (claim: ~עד-שעה ל-250M)"
+          "evidence": "RC 155M / 41G · regen ~344M/h · to-250M ≈ 17 min (claim: ~עד-שעה ל-250M)"
         }
       ]
     },
@@ -49,7 +49,7 @@
         {
           "name": "LIVE · LEO:SWAP.HIVE book has depth",
           "pass": true,
-          "evidence": "29 asks · top-10 depth ≈ 263.69 SWAP.HIVE · bestAsk=0.08129752"
+          "evidence": "30 asks · top-10 depth ≈ 175.23 SWAP.HIVE · bestAsk=0.08122003"
         },
         {
           "name": "LIVE · SPORTS:SWAP.HIVE book has depth",
@@ -85,8 +85,8 @@
         },
         {
           "name": "LOCAL · daemon liq loop healthy",
-          "pass": false,
-          "evidence": "status=idle · lpSupply=undefined · lastRun=2026-09-11T00:46:05.946Z"
+          "pass": true,
+          "evidence": "status=ok · lpSupply=0 · lastRun=2026-09-11T00:57:55.332Z"
         },
         {
           "name": "LOCAL · live path ops verified (pool_add/order/fill by soldiers)",
@@ -118,7 +118,7 @@
         {
           "name": "LIVE · BEE ask (rank-4 claim 0.584)",
           "pass": true,
-          "evidence": "ask=0.587235 HIVE (claim 0.584, סובלנות ±0.01)"
+          "evidence": "ask=0.585992 HIVE (claim 0.584, סובלנות ±0.01)"
         },
         {
           "name": "LOCAL · token-economy params await genesis",
@@ -177,7 +177,7 @@
         {
           "name": "LOCAL · console reporting fresh",
           "pass": true,
-          "evidence": "updatedAt=2026-09-11T00:46:08.065Z · loops=34"
+          "evidence": "updatedAt=2026-09-11T00:57:56.261Z · loops=33"
         }
       ]
     }
@@ -202,6 +202,6 @@
     "failed": 1,
     "total": 6,
     "checks": 27,
-    "checksPassed": 25
+    "checksPassed": 26
   }
 }
