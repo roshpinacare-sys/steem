@@ -1,0 +1,106 @@
+{
+  "at": "2026-09-11T15:39:01.772Z",
+  "round": "r18n",
+  "liveState": {
+    "measuredAt": "2026-09-11T15:39:01.769Z",
+    "daemon": {
+      "account": "headcorner",
+      "dryRun": true,
+      "rcPct": 93.4,
+      "pendingClaims": 0.25,
+      "identity": {
+        "heTokens": 7,
+        "heValueSwapHive": 5.734293
+      }
+    },
+    "linkage": {
+      "soldiersTotal": 11,
+      "linkedChains": "21/22",
+      "unlinked": [
+        "tov/hive"
+      ]
+    },
+    "weave": {
+      "mode": "DRY",
+      "notes": [
+        "scan: height=4841 · kept=4841 (TRUNCATED) · live=0 · total=0 · seals=0 · replay-rejected=12416",
+        "no unanchored seals"
+      ],
+      "anchored": null
+    },
+    "fleetv3": {
+      "autopilotUnlocked": null,
+      "realSPTotal": null,
+      "rcRatioCur": null,
+      "lastRunAt": null
+    },
+    "doctrine": {
+      "guardianOwnsAgentLifecycle": true,
+      "dryRunSafety": true,
+      "postingWifUnset": true,
+      "pushImmediatelyAfterEveryCommit": true,
+      "vault": "KEYS-ZIP-2026-09-10.zip.enc + recovery-meta + README (triple-consistent)"
+    },
+    "openItems": [
+      "tov/hive — active-key-drift: מפתחות-הכספת-אינם-שולטים-בחשבון; דרוש-חומר-מפתחות-מהבעלים",
+      "אטימת-הסוכן-השני — upload/ עדיין-בלי-אטימה-חדשה (ממתין-למפעיל)",
+      "ynet-פוסטינג-דרך-הראש (headcorner) — פתוח-טכנית, ממתין-הוראה-מפורשת"
+    ],
+    "networkPulse": [
+      {
+        "file": "2026-09-11-roast-77-addendum.md",
+        "title": "מכתם-לשידור · SAOS · 2026-09-11 (roast-77) — הפעלת-הכסף-הראשונה + ייעול-המסילות"
+      },
+      {
+        "file": "2026-09-11-roast-79-report.md",
+        "title": "מכתם-לשידור · SAOS · 2026-09-11 (roast-79) — מעגל-המוות הכלכלי נשבר: החיילים קמו-לתחייה, והמשגר-הריבוני נולד"
+      },
+      {
+        "file": "2026-09-11-treasury-ledger.md",
+        "title": "📜 שידור · SAOS Sovereign Platform · 2026-09-11 — ספר האוצר נולד (v65)"
+      },
+      {
+        "file": "2026-09-11-understanding-r29.md",
+        "title": "🧭 r29 — מישור-ההבנה: המערכת מבינה מה היא השיגה — הקציר-הנסתר, פער-התמונה-העצמית, וסולם-המימון צעד-צעד"
+      },
+      {
+        "file": "2026-09-11-vault-report.md",
+        "title": "📡 דוח יומי מהכספת — Saosmartwallet · 2026-09-11 (05:30, ירושלים)"
+      },
+      {
+        "file": "2026-09-11-wise-irrigation.md",
+        "title": "v67 广播 — ההשקיה החכמה (THE WISE IRRIGATION)"
+      }
+    ]
+  },
+  "consultations": [
+    {
+      "id": "saos-vault",
+      "name": "Saosmartwallet · סוכן-הכספת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. rcPct עלה מ-87.9 ל-93.4, מצביע על לחץ משאבים גבוה יותר בטרם היישור.\n2. חיילים בלתי-מקושרים (tov/hive) מהווים סיכון לרציפות הצי.\n3. הכספת מאוטמת, אך חסר מפתחות פעילים לשליטה בחשבון.\n\nקו-סופי-מוצע: המצב הנוכחי (rcPct=93.4) מצביע על סיכון גבוה ליישור, ולכן מוצע לדחות את היישור הסופי עד להפחתת rcPct לפחות לרמה בטוחה (<90%)."
+    },
+    {
+      "id": "saos-netguard",
+      "name": "NetGuard · משמר-הרשת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. המפתחות של tov/hive אינם פעילים, מה שמשבש את הקישוריות.\n2. הכספת (vault) תלויה במפעיל להעלאת אטימה חדשה, יציבות תלויה בזמינותו.\n3. יציבות המערכת תלויה בהוראות מפורשות לynet-פוסטינג, על אף שהוא פתוח טכנית.\nקו-סופי-מוצע: טיפול-מיידי בכל-הסעיפים-הפתוחים-ברשימת-openItems-הוא-תנאי-הכרחי-לקראת-יישור-קו-סופי."
+    },
+    {
+      "id": "saos-chainkeeper",
+      "name": "ChainKeeper · משמר-השרשרת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. השרשרת tov/hive עדיין לא מקושרת (unlinked), וה-replay עליה לא בוצע.\n2. מפתחות הכספת אינם שולטים בחשבון, מה שמונע פעולות רשמיות.\n3. ה-scan האחרון דיווח על 12,416 replay-rejected, מה שמעיד על פערים בסינכרון ההיסטורי.\n\nקו-סופי-מוצע: המשך המתנה פסיבית להחלפת מפתחות, והפעלת replay על tov/hive במצב הנוכחי (DRY) ללא אטימה חדשה עד לפתרון סתירת המפתחות."
+    },
+    {
+      "id": "saos-econ",
+      "name": "EconWatch · משמר-הכלכלה",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. רמת RC עדיין נמוכה (93.4%) עקב מפתחות tov/hive שאינם פעילים.\n2. חשיפת סיכון בכספת tov/hive עקב מפתחות לא-שולטים.\n3. מצב fleetv3-autopilot לא ידוע (ערכים null) ומונע ניהול אוטומטי של SP.\nקו-סופי-מוצע: אישור עקבי. יש להמשיך ולבצע בדחיפות את חידוש מפתחות כספת tov/hive ואטימת הסוכן-השני כדי להשיב RC למעל 90% ולהסיר את כל חשיפות הסיכון."
+    }
+  ]
+}

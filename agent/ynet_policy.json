@@ -1,0 +1,36 @@
+{
+  "policy": "SAOS-ynet-channel-policy-1",
+  "decidedAt": "2026-09-11",
+  "authority": "המפעיל: «אני נותן לך להחליט בחוכמה עבורי ולעדכן את הצוות» — סבב R18n",
+  "channel": {
+    "name": "ynet",
+    "account": "ynet",
+    "signer": "headcorner (posting account-authority, weight 1 / threshold 1)",
+    "mechanism": "custom_json id=saos · zero-cost · verified from @ynet account history",
+    "tool": "agent/ynet_rescue_ping.cjs",
+    "liveGate": "DRY by default · --live + HE_LIVE_CONFIRM=headcorner (shared contract, Task 28-b)"
+  },
+  "chains": {
+    "hive": {
+      "status": "OPEN-LIVE",
+      "provenAt": "2026-09-11T15:35:39 / 15:36:27",
+      "txids": ["639c953b15d46277", "51028683c9f25597"],
+      "blocks": [109824529, 109824545]
+    },
+    "steem": {
+      "status": "PENDING-OPERATOR-DELEGATION",
+      "blocker": "Missing Posting Authority ynet — רוטציית-2026-09-04 של-@ynet (rotation_evidence.json) החליפה-את-הרשויות-ומחקה-את-ההאצלה-ל-headcorner",
+      "unblockProcedure": "הבעלים-בלבד: הוספת-headcorner-כרשות-פוסטינג-על-@ynet-ב-steem (account_update2 · posting_auths += headcorner weight-1 threshold-1) — לאחר-מכן-הערוץ-נפתח-ב-steem-אוטומטית-באמצעות-הכלי-הקיים"
+    }
+  },
+  "contentPolicy": {
+    "class": "structured-saos-ops-only (custom_json id=saos) · עברית-ציבורית-בלבד",
+    "secrets": "אסורים בהחלט · txids-ציבוריים-בלבד",
+    "rateLimit": "מקסימום 1 פעולה-יזומה-ליום (pings-דמוקרטיים-לא-נספרים-כתוכן)",
+    "audit": "כל-פעולה-מאומתת-מול-היסטוריית-@ynet-בשרשרת · txid-נרשם-כאן"
+  },
+  "keys": {
+    "custody": "WIF-החתימה-נשלף-מהכספת (agent/keys/vault.json · headcorner.{steem|hive}.posting.wif) · agent/.env-מינימלי-בכוונה",
+    "printed": "אף-פעם"
+  }
+}
