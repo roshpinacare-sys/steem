@@ -1,36 +1,44 @@
 {
-  "policy": "SAOS-ynet-channel-policy-1",
+  "policy": "SAOS-ynet-channel-policy-2",
   "decidedAt": "2026-09-11",
-  "authority": "המפעיל: «אני נותן לך להחליט בחוכמה עבורי ולעדכן את הצוות» — סבב R18n",
+  "supersedes": "SAOS-ynet-channel-policy-1 (R18n) — אבחנת-ה-steem-בו-הייתה-שגויה-ומתוקנת-כאן-בכנות",
+  "authority": "המפעיל: «תעשה הכל — אני לא עושה כלום — יש לי סוכנים — מאשר את ההחלטה בעלת הערך הגבוהה ביותר» — סבב R18o",
   "channel": {
     "name": "ynet",
     "account": "ynet",
     "signer": "headcorner (posting account-authority, weight 1 / threshold 1)",
     "mechanism": "custom_json id=saos · zero-cost · verified from @ynet account history",
-    "tool": "agent/ynet_rescue_ping.cjs",
+    "tools": ["agent/ynet_rescue_ping.cjs", "agent/ynet_directive.cjs (R18o)"],
     "liveGate": "DRY by default · --live + HE_LIVE_CONFIRM=headcorner (shared contract, Task 28-b)"
   },
   "chains": {
     "hive": {
       "status": "OPEN-LIVE",
-      "provenAt": "2026-09-11T15:35:39 / 15:36:27",
-      "txids": ["639c953b15d46277", "51028683c9f25597"],
-      "blocks": [109824529, 109824545]
+      "provenAt": "2026-09-11T15:35:39 / 15:36:27 · directive 16:29:27",
+      "txids": ["639c953b15d46277", "51028683c9f25597", "9b1184ced8bb8b91118c3ba5da1a786d77e7c49c"],
+      "blocks": [109824529, 109824545, 109825601]
     },
     "steem": {
-      "status": "PENDING-OPERATOR-DELEGATION",
-      "blocker": "Missing Posting Authority ynet — רוטציית-2026-09-04 של-@ynet (rotation_evidence.json) החליפה-את-הרשויות-ומחקה-את-ההאצלה-ל-headcorner",
-      "unblockProcedure": "הבעלים-בלבד: הוספת-headcorner-כרשות-פוסטינג-על-@ynet-ב-steem (account_update2 · posting_auths += headcorner weight-1 threshold-1) — לאחר-מכן-הערוץ-נפתח-ב-steem-אוטומטית-באמצעות-הכלי-הקיים"
+      "status": "PENDING-PARTNER-EXECUTION",
+      "correctedDiagnosis": "הרשויות-על-השרשרת [headcorner:1, steemauto:1] קיימות-בשתי-השרשרות (מדידה-חיה 2026-09-11 · measure_r18o.json) — אבחנת-R18n «Missing Posting Authority» הייתה-כשל-חתימה-במפתח-מיושן, לא-היעדר-הרשאה",
+      "blocker": "מפתחות-ה-steem-החיים-של-headcorner (owner+active+posting סובבו 2026-09-10T23:25:21 · blk 109470572) אינם-באף-מאגר-מקומי (כספת-חיה · ארכיון-043f911d · חותמת-הצי · היסטוריית-גיט · דורות-.env · FACTORY_MASTER-מת-ומאומת) — המחזיק-בהם-הוא-ההתקנה-שביצעה-את-הסיבוב (המסילה-השותפה)",
+      "unblockProcedure": "ההנחיה-הרשמית-שודרה-על-השרשרת (r18o-directive · txid 9b1184ce… · blk 109825601): (א) מחזיק-מפתחות-headcorner-steem-החיים משדר-rescue-ping-על-@ynet-steem → הערוץ-נפתח · (ב) לחלופין: החזרת-המפתחות-למשמורת-משותפת-במעטפת-חתומה. ההליך-הישן-«האצלת-הבעלים» בוטל — ההרשאה-כבר-קיימת",
+      "directive": {
+        "at": "2026-09-11T16:29:27",
+        "txid": "9b1184ced8bb8b91118c3ba5da1a786d77e7c49c",
+        "block": 109825601,
+        "requests": ["ynet-steem-channel", "tov-hive-linkage"]
+      }
     }
   },
   "contentPolicy": {
     "class": "structured-saos-ops-only (custom_json id=saos) · עברית-ציבורית-בלבד",
     "secrets": "אסורים בהחלט · txids-ציבוריים-בלבד",
-    "rateLimit": "מקסימום 1 פעולה-יזומה-ליום (pings-דמוקרטיים-לא-נספרים-כתוכן)",
+    "rateLimit": "מקסימום 1 פעולה-יזומה-ליום (pings-דמוקרטיים-לא-נספרים-כתוכן) — ההנחיה-היומית-נוצלה 16:29:27",
     "audit": "כל-פעולה-מאומתת-מול-היסטוריית-@ynet-בשרשרת · txid-נרשם-כאן"
   },
   "keys": {
-    "custody": "WIF-החתימה-נשלף-מהכספת (agent/keys/vault.json · headcorner.{steem|hive}.posting.wif) · agent/.env-מינימלי-בכוונה",
+    "custody": "WIF-החתימה-נשלף-מהכספת (agent/keys/vault.json · headcorner.hive.posting.wif) · agent/.env-מינימלי-בכוונה",
     "printed": "אף-פעם"
   }
 }
