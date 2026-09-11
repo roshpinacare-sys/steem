@@ -1855,7 +1855,9 @@ function listMintedAgents() {
       .readdirSync(keysDir)
       .filter((f) => f.endsWith('.json') && f !== 'vault.json') // 43 — vault.json הוא כספת-צבא, לא סוכן
       .map((f) => f.replace(/\.json$/, ''));
-  } catch {
+  } catch (e) {
+    // לקח-R18l (מ-r29): ריקון-שקט-של-רשימת-הצבא היה-תסריט-השטיפה (R18g: army=0-בלי-לדעת-למה) — עתה-הסיבה-בלוג
+    log('listMintedAgents: keys-dir לא-נקרא — רשימת-הצבא-ריקה (fail-open): ' + String((e && e.message) || e).slice(0, 100));
     return [];
   }
 }

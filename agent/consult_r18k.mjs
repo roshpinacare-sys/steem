@@ -15,7 +15,7 @@ import ZAI from 'z-ai-web-dev-sdk';
 
 const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
 const read = (p) => {
-  try { return JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8')); } catch { return null; }
+  try { return JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8')); } catch { /* קובץ-מצב-חסר = null-כנה (שדות-אופציונליים בלבד) */ return null; }
 };
 
 // ── 1. מצב-חי נמדד (קבצי-מצב בלבד · אפס-סודות-בפלט) ────────────────────────
@@ -145,7 +145,7 @@ function networkPulse() {
         const head = fs.readFileSync(path.join(dir, f), 'utf8').split('\n').find((l) => l.trim().startsWith('#'));
         return { file: f, title: (head || '').replace(/^#+\s*/, '').slice(0, 110) };
       });
-  } catch { return []; }
+  } catch { /* אין-תיקיית-שידורים = אין-דופק-רשת (סביבה-מצומצמת) — כנות-לא-שקר */ return []; }
 }
 
 async function main() {
