@@ -301,6 +301,14 @@ async function mainInner() {
           rec.fixes.push({ chain, skipped: 'no-active-wif-in-vault' });
           continue;
         }
+        // שער-DRIFT (R18i, משוחזר-R18j): אם מפתח-ה-active-של-הכספת לא נמצא בסמכות-ה-active בשרשרת —
+        // החתימה תידחה בוודאות (המפתחות בכספת אינם שולטים בחשבון-היעד).
+        // דילוג-כן במקום ניסיון-שידור-מובטח-להיכשל (למשל @tov ב-hive — מפתחות-דור-אחר).
+        const activePub = entry.keys && entry.keys.active && entry.keys.active.pub;
+        if (activePub && acc && authorityKeys(acc, 'active', activePub) === false) {
+          rec.fixes.push({ chain, skipped: 'active-key-drift', note: 'vault active pub not in chain active auths — vault keys do not control this account; needs owner-side key recovery' });
+          continue;
+        }
         // שער-RC חי: ה-op נדחה-מראש אם המנה נמוכה — מתעדים have/need בכנות
         const live = await rcLive(urlsOf(chain), u);
         if (live && live.max > 0) {

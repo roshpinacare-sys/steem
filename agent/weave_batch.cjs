@@ -286,7 +286,9 @@ async function runWeaveBatch(opts = {}) {
   const nodeStRead = readJson(STATE_FILE) || {};
   const seals = (nodeStRead.weave && nodeStRead.weave.seals) || [];
   let anchored = null;
-  const pending = seals.filter((s) => s && !wRec.anchored[s.seq]).sort((a, b) => b.seq - a.seq);
+  /* R18i-תיקון (משוחזר-R18j): ה-state-נכתב-במפתח-השורש (ממצא-W3) אך-המסנן-בדק-במפתח-ה-seq
+   * → כל-חותם-נשאר-ממתין-בכל-מחזור → עיבוד/שידור-חוזר. מסנן-מתוקן: שורש + נפילה-ל-seq. */
+  const pending = seals.filter((s) => s && !wRec.anchored[String(s.root)] && !wRec.anchored[s.seq]).sort((a, b) => b.seq - a.seq);
   if (pending.length) {
     const seal = pending[0];
     // R18h — עוגן-רק-חותמות-ניתנות-להוכחה: אם-טווח-החותם-נופל-מתחת-לחלון-הארכיון
@@ -338,7 +340,9 @@ async function runWeaveBatch(opts = {}) {
     liveStamps: Object.keys(scan.w.stamps).length,
     totalStamps: scan.w.total,
     request: request || null,
-    anchored: anchored ? { seq: anchored.seq, chains: anchored.chains } : null,
+    /* R18i-תיקון (משוחזר-R18j): השדה-skipped-חייב-להגיע-לדמון — בלעדיו-הסטטוס-מדרדר-degraded
+     * גם-כשהדילוג-כן והתווית-מוצגת-BROKEN-במקום-SKIPPED(honest). */
+    anchored: anchored ? { seq: anchored.seq, chains: anchored.chains, skipped: anchored.skipped || null } : null,
     proof: anchored ? anchored.proof : null,
     notes,
   };
