@@ -1,0 +1,1767 @@
+{
+  "at": "2026-09-11T05:58:28.874Z",
+  "files": [
+    {
+      "file": "agent/agent.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 445,
+          "body": " // אין-דוח — לא חוסמים שום-דבר (fail-open) LINKAGE_CACHE = { at: Date.now(), pending: new"
+        },
+        {
+          "kind": "mask-risk",
+          "line": 599,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1296,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1627,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1643,
+          "body": " continue; // לא שלנו / לא ניתן לפענוח — התעלמות שקטה "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1807,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 2084,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 2188,
+          "body": " updateLoop('linkage', { status: 'idle', detail: 'no linkage_report.json yet — first audit"
+        },
+        {
+          "kind": "mask-risk",
+          "line": 2205,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 2257,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 2287,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 3251,
+          "body": " rcSnap = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 3322,
+          "body": " return { stage: 'idle', variant: 'empty' }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 3710,
+          "body": " return { seq: 0, lockedLp: 0, lockedSaosCum: 0, lastAt: null, lastTxid: null, lastHiveTxi"
+        },
+        {
+          "kind": "mask-risk",
+          "line": 3792,
+          "body": " return { idx: 0, day: utcToday(), pingsToday: 0, seqBy: {} }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 3881,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 3945,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4002,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4064,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4111,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4157,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4206,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4255,
+          "body": " free = true; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4296,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4650,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4666,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 4671,
+          "body": " return; "
+        }
+      ]
+    },
+    {
+      "file": "agent/anchor.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 117,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 322,
+          "body": " rcSnap = null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/audit65.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 58,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 76,
+          "body": " return { n: 0, types: {} }; "
+        }
+      ]
+    },
+    {
+      "file": "agent/bee_wall.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 69,
+          "body": " return []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/blurt99.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 65,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 221,
+          "body": " res(null); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 252,
+          "body": " return found; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 254,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/cascade.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 75,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/chain_attest.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 75,
+          "body": " return null; // chain state lost — exactly the case the attest rescues "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 83,
+          "body": " return 'unknown'; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 102,
+          "body": " break; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 132,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 205,
+          "body": " rcSnap = null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/chaintalk.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 63,
+          "body": " return dflt; "
+        }
+      ]
+    },
+    {
+      "file": "agent/chaintalk95.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 56,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 134,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/cloud_heartbeat.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 81,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 103,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 106,
+          "body": " break; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 112,
+          "body": " return true; "
+        }
+      ]
+    },
+    {
+      "file": "agent/consult_r18k.mjs",
+      "findings": [
+        {
+          "kind": "mask-high",
+          "line": 18,
+          "body": " /* קובץ-מצב-חסר = null-כנה (שדות-אופציונליים בלבד) */ return null; "
+        },
+        {
+          "kind": "mask-high",
+          "line": 148,
+          "body": " /* אין-תיקיית-שידורים = אין-דופק-רשת (סביבה-מצומצמת) — כנות-לא-שקר */ return []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/corpus_resweep.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 34,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 39,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 49,
+          "body": " return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 70,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 72,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 83,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/crack_tov.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 36,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 52,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 77,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/crack_tov2.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 16,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 19,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 95,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/cross_shard.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 98,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 104,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 111,
+          "body": " resolve(null); "
+        }
+      ]
+    },
+    {
+      "file": "agent/econ96.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 48,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 83,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/empire_60.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 75,
+          "body": " return []; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 233,
+          "body": " resolve({ reachable: true, unparsable: true }); "
+        }
+      ]
+    },
+    {
+      "file": "agent/energy_ops.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 339,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/escrow_rail.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 90,
+          "body": " return []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/factory_v2.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 304,
+          "body": " fleet = [name]; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 320,
+          "body": " // נגזרת מה-master — החוזק של דור-שני: גם בלי קובץ, המפתחות נשחזרים keys = deriveKeys(nam"
+        }
+      ]
+    },
+    {
+      "file": "agent/fixpw102.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 21,
+          "body": " return d; "
+        }
+      ]
+    },
+    {
+      "file": "agent/fleet_census.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 34,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/fleet_voice.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 63,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/fleetv3_autopilot.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 45,
+          "body": " return { runs: [], claimed: 0, poweredUp: 0, lifetimePoweredUp: 0 }; "
+        }
+      ]
+    },
+    {
+      "file": "agent/fuel_line.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 43,
+          "body": " return []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/gitkeeper.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 96,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 127,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 190,
+          "body": " state.error = 'status failed'; writeState(state); return state; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 249,
+          "body": " // nothing staged after the noise/secret gates → treat as clean state.result = 'clean'; s"
+        }
+      ]
+    },
+    {
+      "file": "agent/guardian-loop.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 33,
+          "body": " return false; "
+        }
+      ]
+    },
+    {
+      "file": "agent/guardian.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 98,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 105,
+          "body": " res.actions.push('push-creds:no-remote'); return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 120,
+          "body": " res.actions.push('no-git'); return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 127,
+          "body": " res.actions.push('no-origin-ref'); return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 133,
+          "body": " // distinguish diverged from ahead try { sh('git', ['merge-base', '--is-ancestor', 'origi"
+        },
+        {
+          "kind": "mask-risk",
+          "line": 135,
+          "body": " diverged = true; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 158,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 200,
+          "body": " try { sh('bun', ['install'], { cwd: ROOT, timeout: 180_000 }); res.actions.push('deps-rei"
+        },
+        {
+          "kind": "mask-risk",
+          "line": 202,
+          "body": " try { sh('npm', ['install', '--no-audit', '--no-fund'], { cwd: ROOT, timeout: 300_000 });"
+        },
+        {
+          "kind": "mask-risk",
+          "line": 218,
+          "body": " res.actions.push('env-FAILED'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 222,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 233,
+          "body": " return 0; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 245,
+          "body": " filePid = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 264,
+          "body": " c = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 291,
+          "body": " res.actions.push('chain-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 301,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 317,
+          "body": " res.actions.push('engine-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 333,
+          "body": " res.actions.push('door-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 343,
+          "body": " res.actions.push('dex-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 354,
+          "body": " alive = false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 361,
+          "body": " res.actions.push('key-broker-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 369,
+          "body": " res.actions.push('sibling-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 382,
+          "body": " cur.steem = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 383,
+          "body": " cur.hive = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 400,
+          "body": " res.actions.push('owner-watch-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 411,
+          "body": " res.actions.push('harvest-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 420,
+          "body": " res.actions.push('wallets-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 437,
+          "body": " presentMembers = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 525,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 558,
+          "body": " res.actions.push('deposits-check-skipped'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 575,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 590,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 599,
+          "body": " return -1; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 610,
+          "body": " return 0; "
+        }
+      ]
+    },
+    {
+      "file": "agent/harden58.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 43,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/harden_topology.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 96,
+          "body": " return []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/he_conforms.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 135,
+          "body": " s.bals[sym] = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 145,
+          "body": " s.books[sym] = null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/he_fleet_sell.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 88,
+          "body": " return []; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 123,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 181,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 185,
+          "body": " return { days: {}, chains: [], routes: 0, beeRouted: 0, swapRouted: 0, misses: 0, probes:"
+        },
+        {
+          "kind": "mask-risk",
+          "line": 397,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/he_genesis.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 118,
+          "body": " return { runs: 0, totalBeeBought: 0, hbdConvertedAt: null }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 129,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 255,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/he_ladder.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 84,
+          "body": " log('skip ' + c.symbol + ' (book err)'); result.skip.push({ symbol: c.symbol, why: 'book-"
+        }
+      ]
+    },
+    {
+      "file": "agent/he_report.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 26,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 42,
+          "body": " return ''; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 47,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/hive_rc.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 123,
+          "body": " return 0; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 170,
+          "body": " accounts = ['headcorner']; "
+        }
+      ]
+    },
+    {
+      "file": "agent/hive_rc_heal.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 58,
+          "body": " return { runs: [], leverWeak: false }; "
+        }
+      ]
+    },
+    {
+      "file": "agent/identify_tov_key.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 41,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 131,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 176,
+          "body": " console.log('xwallets: אין-קובץ (אולי-אבד-ב-reset)'); findings.systemSolana = []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/keys_zip_v2.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 101,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 126,
+          "body": " console.log('workdir wipe FAILED — נקה-ידנית: ' + WORK); "
+        }
+      ]
+    },
+    {
+      "file": "agent/keyscan.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 90,
+          "body": " return { tokens: 0, swapHive: 0 }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 129,
+          "body": " return 0; "
+        }
+      ]
+    },
+    {
+      "file": "agent/linkage.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 116,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 134,
+          "body": " return {}; // ירידה-כנה: אין-נתון, לא-חסימה "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 270,
+          "body": " steemAccs = []; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 271,
+          "body": " hiveAccs = []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/master_blast.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 63,
+          "body": " console.log('self-test skip (no master file)'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 75,
+          "body": " return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 80,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 82,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/merchant.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 171,
+          "body": " return { fulfilled: {}, sales: [], revenue: 0 }; "
+        }
+      ]
+    },
+    {
+      "file": "agent/microdex.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 64,
+          "body": " return []; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 94,
+          "body": " return 0; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 153,
+          "body": " return 0; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 263,
+          "body": " return { day: '', beats: 0, opsToday: 0, bySoldier: {}, txids: [], rcCost: [] }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 270,
+          "body": " localBySoldier[s.username] = 0; "
+        }
+      ]
+    },
+    {
+      "file": "agent/mint_borrow.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 156,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/muster.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 40,
+          "body": " return []; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 65,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/net_registry.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 115,
+          "body": " return []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/oracle106.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 40,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 47,
+          "body": " retry(left); "
+        }
+      ]
+    },
+    {
+      "file": "agent/paymaster.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 141,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/perf_bench.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 93,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 101,
+          "body": " resolve(null); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 121,
+          "body": " times.push(null); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 196,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 235,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/phoenix.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 31,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 78,
+          "body": " add('sovereign', 'genesis + hash', false, 'run derive-genesis.cjs --live'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 82,
+          "body": " add('sovereign', 'node state (height>0)', false, 'run saosnet.cjs --boot --live'); "
+        }
+      ]
+    },
+    {
+      "file": "agent/probe106.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 25,
+          "body": " resolve({ err: 'bad-json' }); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 36,
+          "body": " resolve({ err: 'bad-json' }); "
+        }
+      ]
+    },
+    {
+      "file": "agent/rc_sovereign.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 92,
+          "body": " return { accounts: [] }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 308,
+          "body": " return {}; "
+        }
+      ]
+    },
+    {
+      "file": "agent/rean106.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 41,
+          "body": " return d; "
+        }
+      ]
+    },
+    {
+      "file": "agent/reanchor103.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 35,
+          "body": " return d; "
+        }
+      ]
+    },
+    {
+      "file": "agent/rebalance102.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 30,
+          "body": " return d; "
+        }
+      ]
+    },
+    {
+      "file": "agent/rebuild.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 91,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 296,
+          "body": " resolve(null); "
+        }
+      ]
+    },
+    {
+      "file": "agent/recon102.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 46,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 104,
+          "body": " retry(left); "
+        }
+      ]
+    },
+    {
+      "file": "agent/recon102b.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 21,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 62,
+          "body": " resolve(null); "
+        }
+      ]
+    },
+    {
+      "file": "agent/recon104.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 30,
+          "body": " return d; "
+        }
+      ]
+    },
+    {
+      "file": "agent/recovery_deepscan.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 40,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 43,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 51,
+          "body": " return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 72,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 74,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/reflex.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 177,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 392,
+          "body": " return {}; "
+        }
+      ]
+    },
+    {
+      "file": "agent/repair96.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 47,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/roast_audit.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 198,
+          "body": " r4[role] = 'bad-wif'; continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/roundtrip.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 161,
+          "body": " return { steps: {} }; "
+        }
+      ]
+    },
+    {
+      "file": "agent/salvo_reverify.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 20,
+          "body": "await new Promise(r=>setTimeout(r,10000))"
+        }
+      ]
+    },
+    {
+      "file": "agent/secret_sweep_r18e.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 122,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 127,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/soldier_auth_audit.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 16,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/soldier_repair.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 83,
+          "body": " ok = false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 92,
+          "body": " try { wif = steem.auth.toWif(secret, name, role); } catch (e) { console.log(' bad secret "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 94,
+          "body": " console.log(' bad secret format — skip'); continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/sovereign_fix59.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 57,
+          "body": " return []; "
+        }
+      ]
+    },
+    {
+      "file": "agent/sovereign_ops.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 81,
+          "body": " return []; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 99,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/sovereign_runner.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 81,
+          "body": " return { accounts: [] }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 91,
+          "body": " return { head: null, entries: [] }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 95,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 105,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 201,
+          "body": " return d; "
+        }
+      ]
+    },
+    {
+      "file": "agent/value_lock.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 74,
+          "body": " return { seq: 0, lockedLp: 0, lockedSaosCum: 0, lastAt: null, lastTxid: null, lastHiveTxi"
+        }
+      ]
+    },
+    {
+      "file": "agent/verify15.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 90,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 95,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/verify_pendings.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 50,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/verify_selfhost.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 64,
+          "body": " return ''; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 71,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 79,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 159,
+          "body": " evidence.actions = { error: 'unreadable' }; "
+        }
+      ]
+    },
+    {
+      "file": "agent/verify_system.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 139,
+          "body": " win = null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 372,
+          "body": " askNote = askNote || 'no sell order yet'; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 444,
+          "body": " histAnchor = await steemRpc('condenser_api.get_account_history', [ACCOUNT, -1, 100]); // "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 485,
+          "body": " await new Promise((res) => setTimeout(res, 1500)); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 567,
+          "body": " return { accounts: [] }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 863,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1071,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1072,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1073,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1133,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1153,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1154,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1265,
+          "body": " check('ENERGY-58 · evidence file', false, 'agent/energy_evidence.json missing'); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1319,
+          "body": " csEv = 'cross_shard_result.json unreadable'; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1335,
+          "body": " rbEv = 'rebuild_result.json unreadable'; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1352,
+          "body": " pfEv = 'perf_bench_result.json unreadable'; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1372,
+          "body": " hfEv = 'cross_shard_result.json unreadable'; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1500,
+          "body": " return { type }; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 1928,
+          "body": " await new Promise((s2) => setTimeout(s2, 2500)); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 2534,
+          "body": " return '?'; "
+        }
+      ]
+    },
+    {
+      "file": "agent/verify_worldlog.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 82,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/weave95_finish.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 37,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 110,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/weave_batch.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 45,
+          "body": " steem = require(path.join(__dirname, 'node_modules', 'steem')); "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 91,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 212,
+          "body": " rcSnap = null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/wrap96.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 58,
+          "body": " return d; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 190,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/wrapped.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 159,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 209,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 218,
+          "body": " return null; "
+        }
+      ]
+    },
+    {
+      "file": "agent/xnet.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 89,
+          "body": " return { tip: 'ok (unparsed)' }; "
+        }
+      ]
+    },
+    {
+      "file": "agent/xwallet.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 66,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 123,
+          "body": " return { policy: 'intent-fee-routing', currency: 'SAOS', credits: 100, debits: [], update"
+        }
+      ]
+    },
+    {
+      "file": "agent/yield.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 99,
+          "body": " return {}; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 118,
+          "body": " return {}; "
+        }
+      ]
+    },
+    {
+      "file": "agent/zip_hunt.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 58,
+          "body": " return false; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 78,
+          "body": " return null; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 123,
+          "body": " return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 128,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 155,
+          "body": " continue; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 187,
+          "body": " console.log(' [skip-cat] ' + gitPath); return; "
+        },
+        {
+          "kind": "mask-risk",
+          "line": 214,
+          "body": " continue; "
+        }
+      ]
+    },
+    {
+      "file": "agent/zip_unlock.cjs",
+      "findings": [
+        {
+          "kind": "mask-risk",
+          "line": 20,
+          "body": " return null; "
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "honest": 410,
+    "rethrowContext": 74,
+    "skipIntentional": 379,
+    "maskRisk": 262,
+    "maskHigh": 2
+  }
+}
