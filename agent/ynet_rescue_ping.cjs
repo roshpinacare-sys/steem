@@ -42,11 +42,24 @@ function opFor(account) {
   }];
 }
 
+// R18n — מדיניות-משמורת-מערכת: ה-WIF-נשלף-מהכספת (agent/keys/vault.json · 0600 · מנוטרל-גיט)
+// ולא-מ-agent/.env שמינימלי-בכוונה. אפס-ערכים-בפלט.
+function vaultPostingWif(chain) {
+  try {
+    const v = JSON.parse(fs.readFileSync(path.join(__dirname, 'keys', 'vault.json'), 'utf8'));
+    const hc = (v.accounts || []).find((a) => a.username === 'headcorner');
+    const hp = hc && hc.keys && hc.keys[chain] && hc.keys[chain].posting;
+    const w = hp && typeof hp === 'object' ? hp.wif : hp;
+    return typeof w === 'string' ? w : '';
+  } catch (_) { return ''; }
+}
+
 async function broadcastChain(rpc, chainId) {
   if (chainId) steem.config.set('chain_id', chainId);
   steem.api.setOptions({ url: rpc, useAppbaseApi: true });
-  const wif = envVal('POSTING_WIF');
-  if (!wif) throw new Error('no POSTING_WIF in .env');
+  const chain = chainId ? 'hive' : 'steem';
+  const wif = vaultPostingWif(chain) || envVal('POSTING_WIF');
+  if (!wif) throw new Error('no posting WIF — vault(headcorner.' + chain + '.posting) and .env are both empty');
   const conf = await steem.broadcast.sendAsync({ operations: [opFor('ynet')], extensions: [] }, [wif]);
   return conf;
 }
