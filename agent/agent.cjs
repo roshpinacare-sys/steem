@@ -4587,14 +4587,17 @@ async function weaveBatchCycle() {
     const { runWeaveBatch } = require('./weave_batch.cjs');
     const r = await runWeaveBatch({ dry: CONFIG.dryRun });
     /* 117j-כנות: proof=BROKEN אינו 'ok' — הסטטוס-מתדרדר-ל-'degraded' כדי-שלוחן-הבריאות
-     * לא-יציג-לולאה-שבורה-כתקינה (השיעור-מ-guardian-'harvest-alive'-ששיקר). */
-    const proofBroken = !!(r.proof && r.proof.ok === false);
+     * לא-יציג-לולאה-שבורה-כתקינה (השיעור-מ-guardian-'harvest-alive'-ששיקר).
+     * R18h: חריג-כן — חותם-שסומן 'unprovable-washed' (טווח-מתחת-לחלון-הארכיון,
+     * היסטוריה-נשטפה) טופל-ביושר-והוחמץ-מרצון — אינו-ליקוי-בריאות. */
+    const proofBroken = !!(r.proof && r.proof.ok === false && !(r.anchored && r.anchored.skipped === 'unprovable-washed'));
+    const skipped = !!(r.anchored && r.anchored.skipped === 'unprovable-washed');
     updateLoop('weaveBatch', {
       status: proofBroken ? 'degraded' : 'ok',
       detail: 'live=' + r.liveStamps + ' · total=' + r.totalStamps +
         (r.request ? ' · seal-request(' + r.request.count + ')' + (r.request.written ? ' WRITTEN' : ' pending') : '') +
-        (r.anchored ? ' · anchored seq=' + r.anchored.seq + ' (' + r.anchored.chains + '/3 chains)' : '') +
-        (r.proof ? ' · proof=' + (r.proof.ok ? 'OK' : 'BROKEN') : ''),
+        (r.anchored ? ' · anchored seq=' + r.anchored.seq + ' (' + r.anchored.chains + '/3 chains)' + (skipped ? ' SKIPPED-unprovable' : '') : '') +
+        (r.proof ? ' · proof=' + (r.proof.ok ? 'OK' : (skipped ? 'SKIPPED(honest)' : 'BROKEN')) : ''),
       counters: { liveStamps: r.liveStamps, totalStamps: r.totalStamps, sealSeq: r.anchored ? r.anchored.seq : undefined, chains: r.anchored ? r.anchored.chains : undefined },
     });
     log('weaveBatch: ' + (r.notes || []).join(' · '));
