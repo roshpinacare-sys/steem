@@ -66,14 +66,29 @@ const liveState = {
     dryRunSafety: true,
     postingWifUnset: true,
     pushImmediatelyAfterEveryCommit: true,
-    vault: 'KEYS-ZIP-2026-09-10.zip.enc + recovery-meta + README (triple-consistent)',
+    vault: 'אטימה-043f911d (2026-09-11 15:29:11) · VERIFIED 12/12 · keys_zip OPEN · מאומת-כפול',
   },
-  openItems: [
-    'tov/hive — active-key-drift: מפתחות-הכספת-אינם-שולטים-בחשבון; דרוש-חומר-מפתחות-מהבעלים',
-    'אטימת-הסוכן-השני — upload/ עדיין-בלי-אטימה-חדשה (ממתין-למפעיל)',
-    'ynet-פוסטינג-דרך-הראש (headcorner) — פתוח-טכנית, ממתין-הוראה-מפורשת',
-  ],
+  // openItems נגזרים-דינמית-מהמצב-החי (לקח-R18o: אף-רשימה-קשיחה-שמזדקנת) — מקור: linkage_report.json + ynet_policy.json
 };
+
+// מקור-ה-openItems: נגזר-בכל-ריצה-מקבצי-המצב-החיים-בלבד (מטלת-מעקב-R18o — רענון-מקור)
+const ynetPolicy = read('agent/ynet_policy.json') || {};
+const derivedOpenItems = [];
+for (const u of (liveState.linkage.unlinked || [])) {
+  derivedOpenItems.push(
+    `${u} — הפער-היחיד-בלינקג' (${linkage.linkedChains}) · tov-steem-חי-ומאומת (postingMatch=true) · ההנחיה-על-השרשרת (r18o-directive · txid 9b1184ce… · blk 109825601) ממתינה-לביצוע-מחזיק-המפתחות (PENDING-PARTNER-EXECUTION)`,
+  );
+}
+const ynetSteem = ynetPolicy.chains && ynetPolicy.chains.steem;
+if (ynetSteem && ynetSteem.status && ynetSteem.status !== 'OPEN-LIVE') {
+  derivedOpenItems.push(
+    `ynet-steem: הסמכות-נמדדה-חי-בשתי-השרשרות (headcorner:1 · measure_r18o.json) · הערוץ-החי-הוא-hive · סטטוס-steem=${ynetSteem.status} · ממתין-rescue-ping-מהשותפים`,
+  );
+}
+if (derivedOpenItems.length === 0) {
+  derivedOpenItems.push('אין-פתוחים-אזרחיים — כל-הסעיפים-נסגרו; ממתינים-לביצוע-השותפים-על-השרשרת בלבד');
+}
+liveState.openItems = derivedOpenItems;
 
 // ── 2. ארבעת-האישים (הרשת-המשותפת-של-הסוכנים) ───────────────────────────────
 const AGENTS = [
