@@ -3440,9 +3440,13 @@ async function hivePowerCycle() {
 async function refreshIdentity() {
   const id = { evmAddress: null, steemPub: null, heTokens: 0, heValueSwapHive: null, heSwapHive: null, heTop: [] };
   try {
-    const derived = deriveIdentities(CONFIG.postingWif);
-    id.evmAddress = derived.evmAddress;
-    id.steemPub = derived.steemPub;
+    if (!CONFIG.postingWif) {
+      log('identity: no POSTING_WIF — גזירת-זהות מדולגת (גישושי-נכסים-ציבוריים-בלבד)');
+    } else {
+      const derived = deriveIdentities(CONFIG.postingWif);
+      id.evmAddress = derived.evmAddress;
+      id.steemPub = derived.steemPub;
+    }
   } catch (e) {
     log('identity: derivation failed: ' + String((e && e.message) || e).slice(0, 100));
   }
