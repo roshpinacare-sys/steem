@@ -1,0 +1,106 @@
+{
+  "at": "2026-09-11T05:53:32.512Z",
+  "round": "r18l",
+  "liveState": {
+    "measuredAt": "2026-09-11T05:53:32.509Z",
+    "daemon": {
+      "account": "headcorner",
+      "dryRun": true,
+      "rcPct": 88.7,
+      "pendingClaims": 0,
+      "identity": {
+        "heTokens": 7,
+        "heValueSwapHive": 5.781819
+      }
+    },
+    "linkage": {
+      "soldiersTotal": 11,
+      "linkedChains": "21/22",
+      "unlinked": [
+        "tov/hive"
+      ]
+    },
+    "weave": {
+      "mode": "DRY",
+      "notes": [
+        "scan: height=6665 · kept=6665 (TRUNCATED) · live=0 · total=0 · seals=0 · replay-rejected=17820",
+        "no unanchored seals"
+      ],
+      "anchored": null
+    },
+    "fleetv3": {
+      "autopilotUnlocked": null,
+      "realSPTotal": null,
+      "rcRatioCur": null,
+      "lastRunAt": null
+    },
+    "doctrine": {
+      "guardianOwnsAgentLifecycle": true,
+      "dryRunSafety": true,
+      "postingWifUnset": true,
+      "pushImmediatelyAfterEveryCommit": true,
+      "vault": "KEYS-ZIP-2026-09-10.zip.enc + recovery-meta + README (triple-consistent)"
+    },
+    "openItems": [
+      "tov/hive — active-key-drift: מפתחות-הכספת-אינם-שולטים-בחשבון; דרוש-חומר-מפתחות-מהבעלים",
+      "אטימת-הסוכן-השני — upload/ עדיין-בלי-אטימה-חדשה (ממתין-למפעיל)",
+      "ynet-פוסטינג-דרך-הראש (headcorner) — פתוח-טכנית, ממתין-הוראה-מפורשת"
+    ],
+    "networkPulse": [
+      {
+        "file": "2026-09-11-r18k-final-line.md",
+        "title": "🎯 r18k — יישור-הקו-הסופי: הכל-על-שולחן-אחד"
+      },
+      {
+        "file": "2026-09-11-roast-76-report.md",
+        "title": "דוח-שידור רב-ריפואי · SAOS · 2026-09-11 — עידן-ארבע-ההצתות-הפיזיות"
+      },
+      {
+        "file": "2026-09-11-roast-77-addendum.md",
+        "title": "מכתם-לשידור · SAOS · 2026-09-11 (roast-77) — הפעלת-הכסף-הראשונה + ייעול-המסילות"
+      },
+      {
+        "file": "2026-09-11-treasury-ledger.md",
+        "title": "📜 שידור · SAOS Sovereign Platform · 2026-09-11 — ספר האוצר נולד (v65)"
+      },
+      {
+        "file": "2026-09-11-understanding-r29.md",
+        "title": "🧭 r29 — מישור-ההבנה: המערכת מבינה מה היא השיגה — הקציר-הנסתר, פער-התמונה-העצמית, וסולם-המימון צעד-צעד"
+      },
+      {
+        "file": "2026-09-11-vault-report.md",
+        "title": "📡 דוח יומי מהכספת — Saosmartwallet · 2026-09-11 (05:30, ירושלים)"
+      }
+    ]
+  },
+  "consultations": [
+    {
+      "id": "saos-vault",
+      "name": "Saosmartwallet · סוכן-הכספת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. קצב-משאבים (rcPct) עלה מ-87.9 ל-88.7, מה שמחזק את העמדה לביצוע יישור-קו.\n2. הפער בין המצב המדווח למצב המבוקש (tov/hive) עדיין קיים.\n3. נתוני הכספת מראים ביטחון, אך פתרון מפתחות-הכספת עדיין פתוח.\n\nקו-סופי-מוצע: יישור-הקו הסופי יכול להתבצע עקב עליית rcPct, אך נדרש לפתור קודם את הפער ב-tov/hive ולאטום את הסוכן השני."
+    },
+    {
+      "id": "saos-netguard",
+      "name": "NetGuard · משמר-הרשת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. חומר-המפתחות עבורtov/hive חסר, מה שמשבית את הפעילות.\n2. הסוכן השני חשוף ללא אטימה חדשה.\n3. פוסטינג דרך-headcorner טכנית פתוחה ללא הוראה מפורשת.\n\nקו-סופי-מוצע: קו-הסופי הקודם נותר עקבי — טיפול-מיידי בכל-הסעיפים-הפתוחים-ברשימת-openItems-הוא-תנאי-הכרחי-לקראת-יישור-קו-סופי."
+    },
+    {
+      "id": "saos-chainkeeper",
+      "name": "ChainKeeper · משמר-השרשרת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: tov/hive עדיין לא מקושרה. מפתחות הכספת עדיין לא תקינים.\n\nסתירות-סיכונים:\n1. המתנה למפתחות חוסמת את סגירת המעגל על tov/hive.\n2. אטימת הסוכן השני לא עודכנה, מה שמשאיר פער אבטחה.\n3. הפעלת replay על שרשרת לא מקושרת עלולה ליצור סנכרון סותר.\n\nקו-סופי-מוצע: להמתין להחלפת מפתחות כדי לסגור את tov/hive, ובמקביל להפעיל replay על שרשרת מבודדת לבדיקה."
+    },
+    {
+      "id": "saos-econ",
+      "name": "EconWatch · משמר-הכלכלה",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: tov/hive — מפתחות-כספת אינם-שולטים.\nסתירות-סיכונים:\n1. RC ב-88.7% מתחת למינימום-תפעולי (90%).\n2. חשיפת-מפתחות-הכספת ב-headcorner מהווה פרצת-אבטחה.\n3. הסוכן-השני ללא אטימה חדשה חשוף להתקפות.\nקו-סופי-מוצע: אישור עקבי. ביצוע מיידי של חידוש-מפתחות-כספת tov/hive ואטימת-הסוכן-השני כדי להשיב RC למעל 90% ולסגור את כל חשיפות-הסיכון."
+    }
+  ]
+}
