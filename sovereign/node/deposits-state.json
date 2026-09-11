@@ -1,18 +1,18 @@
 {
-  "tick": 685,
+  "tick": 688,
   "last": {
-    "ethereum/cashmachine": "101268576749360",
-    "ethereum/haran": "196379667318800",
+    "ethereum/cashmachine": "1823552325917360",
+    "ethereum/haran": "0",
     "ethereum/headcorner": "0",
-    "ethereum/israelnews": "175481147909300",
-    "ethereum/lsa": "175262874814400",
-    "ethereum/macrame": "187668576737450",
-    "ethereum/siq": "187668576737450",
-    "ethereum/tov": "187668576737450",
-    "ethereum/wic": "187668576737450",
-    "ethereum/wog": "187668576737450",
-    "ethereum/woq": "187668576737450",
-    "ethereum/ynet": "196260279870800",
+    "ethereum/israelnews": "0",
+    "ethereum/lsa": "0",
+    "ethereum/macrame": "0",
+    "ethereum/siq": "0",
+    "ethereum/tov": "0",
+    "ethereum/wic": "0",
+    "ethereum/wog": "0",
+    "ethereum/woq": "0",
+    "ethereum/ynet": "0",
     "bsc/cashmachine": "0",
     "bsc/haran": "0",
     "bsc/headcorner": "0",
@@ -97,7 +97,7 @@
     "tron/wog": "0",
     "tron/woq": "0",
     "tron/ynet": "0",
-    "solana/cashmachine": "60295000",
+    "solana/cashmachine": "60205000",
     "solana/haran": "0",
     "solana/headcorner": "0",
     "solana/israelnews": "0",
@@ -122,8 +122,29 @@
     "bitcoin/woq": "0",
     "bitcoin/ynet": "0"
   },
-  "pending": [],
+  "pending": [
+    {
+      "key": "ethereum/cashmachine:1722283749168000",
+      "chain": "ethereum",
+      "agent": "cashmachine",
+      "sym": "WETH",
+      "human": 0.001722283749168,
+      "raw": "1722283749168000",
+      "firstTick": 688,
+      "ticks": 1
+    }
+  ],
   "events": [
+    {
+      "at": "2026-09-11T03:38:50.970Z",
+      "chain": "ethereum",
+      "agent": "cashmachine",
+      "sym": "WETH",
+      "raw": "1722283749168000",
+      "human": 0.001722283749168,
+      "unit": "wei",
+      "addr": "0x0FB6C1807d8D7945B5E3a14ea3679e19795cb545"
+    },
     {
       "at": "2026-09-11T02:38:15.159Z",
       "chain": "solana",
@@ -460,57 +481,58 @@
   ],
   "rpcHealth": {
     "ethereum": {
-      "at": "2026-09-11T03:22:18.550Z",
+      "at": "2026-09-11T03:38:51.755Z",
       "ok": true,
       "via": "https://ethereum-rpc.publicnode.com"
     },
     "bsc": {
-      "at": "2026-09-11T03:22:19.645Z",
+      "at": "2026-09-11T03:38:53.806Z",
       "ok": true,
       "via": "https://bsc-rpc.publicnode.com"
     },
     "polygon": {
-      "at": "2026-09-11T03:22:20.644Z",
+      "at": "2026-09-11T03:38:54.670Z",
       "ok": true,
       "via": "https://polygon-bor-rpc.publicnode.com"
     },
     "arbitrum": {
-      "at": "2026-09-11T03:22:23.647Z",
+      "at": "2026-09-11T03:38:56.828Z",
       "ok": true,
       "via": "https://arbitrum-one-rpc.publicnode.com"
     },
     "optimism": {
-      "at": "2026-09-11T03:22:24.514Z",
+      "at": "2026-09-11T03:38:57.638Z",
       "ok": true,
       "via": "https://optimism-rpc.publicnode.com"
     },
     "base": {
-      "at": "2026-09-11T03:22:25.400Z",
+      "at": "2026-09-11T03:38:58.703Z",
       "ok": true,
       "via": "https://base-rpc.publicnode.com"
     },
     "avalanche": {
-      "at": "2026-09-11T03:22:27.906Z",
+      "at": "2026-09-11T03:39:01.066Z",
       "ok": true,
       "via": "https://avalanche-c-chain-rpc.publicnode.com"
     },
     "tron": {
-      "at": "2026-09-11T03:22:31.635Z",
+      "at": "2026-09-11T03:39:04.672Z",
       "ok": true,
       "via": "getaccount-unactivated:api.tronstack.io"
     },
     "solana": {
-      "at": "2026-09-11T03:22:34.456Z",
+      "at": "2026-09-11T03:33:48.546Z",
       "ok": true,
-      "via": "https://api.mainnet-beta.solana.com"
+      "via": "https://api.mainnet-beta.solana.com",
+      "note": "skip-tick (מדידה-אחרונה-בתוקף)"
     },
     "bitcoin": {
-      "at": "2026-09-11T03:22:58.260Z",
+      "at": "2026-09-11T03:39:28.456Z",
       "ok": false,
       "err": "btc-all-hosts-failed: https://blockstream.info/api 429 | fetch failed | https://"
     }
   },
-  "lastTickAt": "2026-09-11T03:22:58.260Z",
+  "lastTickAt": "2026-09-11T03:39:28.456Z",
   "minted": 18,
   "poolsOpened": [
     "WETH/WSTEEM(4009816+10000µ)",
