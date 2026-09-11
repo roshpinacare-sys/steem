@@ -1,0 +1,106 @@
+{
+  "at": "2026-09-11T13:59:23.148Z",
+  "round": "r18m",
+  "liveState": {
+    "measuredAt": "2026-09-11T13:59:23.144Z",
+    "daemon": {
+      "account": "headcorner",
+      "dryRun": true,
+      "rcPct": 92.6,
+      "pendingClaims": 0.031,
+      "identity": {
+        "heTokens": 7,
+        "heValueSwapHive": 5.747413
+      }
+    },
+    "linkage": {
+      "soldiersTotal": 11,
+      "linkedChains": "21/22",
+      "unlinked": [
+        "tov/hive"
+      ]
+    },
+    "weave": {
+      "mode": "DRY",
+      "notes": [
+        "scan: height=512 · kept=512 (TRUNCATED) · live=0 · total=0 · seals=0 · replay-rejected=504",
+        "no unanchored seals"
+      ],
+      "anchored": null
+    },
+    "fleetv3": {
+      "autopilotUnlocked": null,
+      "realSPTotal": null,
+      "rcRatioCur": null,
+      "lastRunAt": null
+    },
+    "doctrine": {
+      "guardianOwnsAgentLifecycle": true,
+      "dryRunSafety": true,
+      "postingWifUnset": true,
+      "pushImmediatelyAfterEveryCommit": true,
+      "vault": "KEYS-ZIP-2026-09-10.zip.enc + recovery-meta + README (triple-consistent)"
+    },
+    "openItems": [
+      "tov/hive — active-key-drift: מפתחות-הכספת-אינם-שולטים-בחשבון; דרוש-חומר-מפתחות-מהבעלים",
+      "אטימת-הסוכן-השני — upload/ עדיין-בלי-אטימה-חדשה (ממתין-למפעיל)",
+      "ynet-פוסטינג-דרך-הראש (headcorner) — פתוח-טכנית, ממתין-הוראה-מפורשת"
+    ],
+    "networkPulse": [
+      {
+        "file": "2026-09-11-roast-77-addendum.md",
+        "title": "מכתם-לשידור · SAOS · 2026-09-11 (roast-77) — הפעלת-הכסף-הראשונה + ייעול-המסילות"
+      },
+      {
+        "file": "2026-09-11-roast-79-report.md",
+        "title": "מכתם-לשידור · SAOS · 2026-09-11 (roast-79) — מעגל-המוות הכלכלי נשבר: החיילים קמו-לתחייה, והמשגר-הריבוני נולד"
+      },
+      {
+        "file": "2026-09-11-treasury-ledger.md",
+        "title": "📜 שידור · SAOS Sovereign Platform · 2026-09-11 — ספר האוצר נולד (v65)"
+      },
+      {
+        "file": "2026-09-11-understanding-r29.md",
+        "title": "🧭 r29 — מישור-ההבנה: המערכת מבינה מה היא השיגה — הקציר-הנסתר, פער-התמונה-העצמית, וסולם-המימון צעד-צעד"
+      },
+      {
+        "file": "2026-09-11-vault-report.md",
+        "title": "📡 דוח יומי מהכספת — Saosmartwallet · 2026-09-11 (05:30, ירושלים)"
+      },
+      {
+        "file": "2026-09-11-wise-irrigation.md",
+        "title": "v67 广播 — ההשקיה החכמה (THE WISE IRRIGATION)"
+      }
+    ]
+  },
+  "consultations": [
+    {
+      "id": "saos-vault",
+      "name": "Saosmartwallet · סוכן-הכספת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. ריבונות-מפתחות: פתרון חומר-מפתחות מהבעלים דרוש לפתיחת tov/hive.\n2. כספת-מאוטמת: אטימה חדשה עדיין לא הועלתה ל-upload/, מה שמשאיר את הסוכן במצב תלוי.\n3. לינקג-הצי: הרשתות 21/22 מקושרות אך tov/hive אינה מקושרת, מה שמגביל את התפקוד.\nקו-סופי-מוצע: rcPct עלה ל-92.6%, מה שמאשש כי יישור-הקו-הסופי עדיין בטוח לביצוע."
+    },
+    {
+      "id": "saos-netguard",
+      "name": "NetGuard · משמר-הרשת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. חומר-מפתחות חסר ל-tov/hive מסכן את התפעול הרציף.\n2. חוסר-אטימה-ב-agent-2 חושף פוטנציאל-דליפת-נתונים.\n3. פתיחת-ynet-פוסטינג-דרך-הראש מגבירה את החשיפה-לרשת-ללא-מסננת.\n\nקו-סופי-מוצע: טיפול-מיידי בכל-הסעיפים-הפתוחים-ברשימת-openItems-הוא-תנאי-הכרחי-לקראת-יישור-קו-סופי."
+    },
+    {
+      "id": "saos-chainkeeper",
+      "name": "ChainKeeper · משמר-השרשרת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. טובין דיגיטליים לא מעוגנים (tov/hive) עדיין לא-מקושרים, מהווים סיכון לשלמות-הרשת.\n2. מפתחות-הכספת אינם שולטים בחשבון, מגבילים את יכולת הפעולה.\n3. חוסר-אטימה-חדשה לסוכן-השני פוגע בבידוד-הפעולות.\n\nקו-סופי-מוצע: להמשיך ולהפעיל-replay על tov/hive ולהציב-אטימה-חדשה לסוכן-השני, תוך המתנה-מפורשת להחלפת-מפתחות. המצב לא-השתנה."
+    },
+    {
+      "id": "saos-econ",
+      "name": "EconWatch · משמר-הכלכלה",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: tov/hive, הסוכן-השני\nסתירות-סיכונים:\n1. RC נמוך (92.6%) עקב חוסר-במפתחות-כספת\n2. fleetv3-autopilot ונתוני-תשואה מנוטרלים\n3. חשיפה פוטנציאלית עקב הפעלת-הכסף-הראשונה\nקו-סופי-מוצע: אישור עקבי. יש להפעיל בהקדם את חידוש המפתחות והאטימה כדי להשיב RC>90%, להפעיל את fleetv3, ולסגור את פיסקת ה-openItems."
+    }
+  ]
+}
