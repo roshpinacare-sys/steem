@@ -4315,3 +4315,16 @@ Work Log:
 
 Stage Summary:
 - ביקורת-מלאה-חשפה-טענה-מיושנת-אחת-מהותית-ותוקנת-בכנות · הדוח: broadcasts/2026-09-12-r19c-audit.md · פרוטוקול-הפתיחה-מורחב-לבדיקת-קיום-המעטפת
+---
+Task ID: R19d
+Agent: Z.ai Code (main)
+Task: המפעיל: «תמשיך עוד יותר עמוק — תבחן את כל התיקיות ותעדכן בהכל ותסדר הכל ודחוף» — ארגון-מלא-של-המאגר.
+
+Work Log:
+- סקר-מלא: root · docs (+reports/screens) · agent (+lib/vault) · sovereign (node/core/genesis/spec/recovery) · broadcasts (49) · src (app/components/hooks/lib) · mini-services/key-broker · scripts · tests · public · examples
+- שורש: 9 שכפולים-זהים-אומתו (cmp) מול docs/reports/ והוסרו · 7 דוחות-עונה הועברו ל-docs/reports/ · הדוח-היומי-השונה הועבר בשם SAOS-DAILY-REPORT-2026-09-11-AGENTS-NET.md · DIV_NOISE.tmp (רעש-פיצול-יתום) נמחק
+- אימות-בטיחות: אף הפניית-קוד (agent/src/scripts/tests/mini-services) לא מצביעה על נתיבי-הדוחות-בשורש · מסמכי-חיים ייחודיים נשארו בשורש
+- docs/INDEX.md: נוסף מקטע ארכיון-הראיות (reports/broadcasts/worklog/MANIFEST/DAEMONS) + כלל-סדר-השורש
+
+Stage Summary:
+- שורש-נקי: 8 מסמכי-חיים בלבד · אפס-שכפולים · נקודת-מקור יחידה לדוחות (docs/reports) ולמכתמים (broadcasts) · הקומיט-התלוי fc1f2186 (שמירת-אוטו) נדחף-עם-הסבב
