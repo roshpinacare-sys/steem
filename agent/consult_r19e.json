@@ -1,0 +1,105 @@
+{
+  "at": "2026-09-12T11:11:40.888Z",
+  "round": "r19e",
+  "liveState": {
+    "measuredAt": "2026-09-12T11:11:40.885Z",
+    "daemon": {
+      "account": "headcorner",
+      "dryRun": true,
+      "rcPct": 100,
+      "pendingClaims": 0,
+      "identity": {
+        "heTokens": 8,
+        "heValueSwapHive": 5.722237
+      }
+    },
+    "linkage": {
+      "soldiersTotal": 11,
+      "linkedChains": "21/22",
+      "unlinked": [
+        "tov/hive"
+      ]
+    },
+    "weave": {
+      "mode": "DRY",
+      "notes": [
+        "scan: height=512 · kept=512 (TRUNCATED) · live=0 · total=0 · seals=0 · replay-rejected=1985",
+        "no unanchored seals"
+      ],
+      "anchored": null
+    },
+    "fleetv3": {
+      "autopilotUnlocked": null,
+      "realSPTotal": null,
+      "rcRatioCur": null,
+      "lastRunAt": null
+    },
+    "doctrine": {
+      "guardianOwnsAgentLifecycle": true,
+      "dryRunSafety": true,
+      "postingWifUnset": true,
+      "pushImmediatelyAfterEveryCommit": true,
+      "vault": "אטימה-043f911d (2026-09-11 15:29:11) · VERIFIED 12/12 · keys_zip OPEN · מאומת-כפול"
+    },
+    "openItems": [
+      "tov/hive — הפער-היחיד-בלינקג' (21) · tov-steem-חי-ומאומת (postingMatch=true) · ההנחיה-על-השרשרת (r18o-directive · txid 9b1184ce… · blk 109825601) ממתינה-לביצוע-מחזיק-המפתחות (PENDING-PARTNER-EXECUTION)",
+      "ynet-steem: הסמכות-נמדדה-חי-בשתי-השרשרות (headcorner:1 · measure_r18o.json) · הערוץ-החי-הוא-hive · סטטוס-steem=PENDING-PARTNER-EXECUTION · ממתין-rescue-ping-מהשותפים"
+    ],
+    "networkPulse": [
+      {
+        "file": "2026-09-12-r19c-audit.md",
+        "title": "ביקורת-אמת-מלאה R19c · 2026-09-12 — «בדוק את כל הטענות שלך: אמת/שקר/מה נשאר»"
+      },
+      {
+        "file": "2026-09-12-r19d-reorg-ack.md",
+        "title": "מכתם R19d — ארגון-מלא-של-המאגר"
+      },
+      {
+        "file": "2026-09-12-truth-audit-nvidia-r40.md",
+        "title": "r40 — סוויפת-אמת: כל הצהרה בדף נבחנה מול המציאות · המערכת מוכנה ל-NVIDIA"
+      },
+      {
+        "file": "2026-09-12-v75-speaking-truth-qa-sweep.md",
+        "title": "שידוד r37 — v75 תצוגה-מדברת-אמת · סוויפת-QA מלאה · 2026-09-12"
+      },
+      {
+        "file": "2026-09-12-vault-restore-r37.md",
+        "title": "r37 — הכספת-כבנק: תרגיל-שחזור מוכח · ביטוי-Coinomi נאטם · המפתח-הראשוני נבדק-לעומק"
+      },
+      {
+        "file": "r39-h25.md",
+        "title": "שידוד r39 — h25 המחזור-התשיעי · 2026-09-12"
+      }
+    ]
+  },
+  "consultations": [
+    {
+      "id": "saos-vault",
+      "name": "Saosmartwallet · סוכן-הכספת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. פער לינקג' ב-tov/hive מהווה נקודת-כשל-פוטנציאלית ברשת-המשותפת.\n2. סטטוס PENDING-PARTNER-EXECUTION על ההנחיה r18o-directive מסכן את סינכרון הרשתות.\n3. תצוגה-מדברת-אמת (v75) עדיין בשלב-סוויפת-QA, לא פעילה בזירת-הפעולה.\n\nקו-סופי-מוצע: rcPct=100 מאשש כי יישור-קו-סופי יכול להתבצע מבלי-להסכן את הרשת, ומצב-הכספת המאומת מבטיח את שלמותה."
+    },
+    {
+      "id": "saos-netguard",
+      "name": "NetGuard · משמר-הרשת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. tov/hive עדיין ממתין לביצוע, חור בלינקג'.\n2. סטטוס-steem=PENDING-PARTNER-EXECUTION, תלות בשותף.\n3. המצב הנוכחי של fleetv3 לא נמדד, אי-ודאות בפעילות האוטופיוט.\n\nקו-סופי-מוצע: הקו הסופי r19e אינו משתנה — טיפול מיידי בכל הסעיפים הפתוחים ב-openItems הוא תנאי הכרחי לקראת יישור קו סופי."
+    },
+    {
+      "id": "saos-chainkeeper",
+      "name": "ChainKeeper · משמר-השרשרת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. tov/hive עדיין מנותק למרות הוראת ה-replay ב-r18k.\n2. הפער בלינקג' (21) עומד על כנו, וההנחיה r18o ממתינה לביצוע.\n3. מצב ה-replay מורה על 1985 בלוקים שנדחו, מה שמצביע על צורך ביישור מקיף יותר.\n\nקו-סופי-מוצע: להמשיך בתכנית r18k, להפעיל replay מלא על tov/hive לסגירת הפער, ולקבוע אטימה חדשה עם שמירה על מצב dryRun עד להחלפת מפתחות מאושרת."
+    },
+    {
+      "id": "saos-econ",
+      "name": "EconWatch · משמר-הכלכלה",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. פער הלינקג' tov/hive עדיין פעיל (ממתין לביצוע).\n2. סטטוס השרשרת steem נותר PENDING-PARTNER-EXECUTION.\n3. תצורת fleetv3 אינה פעילה (autopilotUnlocked=null).\nקו-סופי-מוצע: קו-הסופי מ-r18k מתבסס על מצב שבו הפעילויות הממתינות היו אמורות להיות מושלמות. מכיוון שהן עדיין בסטטוס ממתין, קו-הסופי הקודם עדיין רלוונטי: יש לאשרr19e כאשר שני הפרויקטים (tov/hive ו-ynet-steem) יושלמו, ולא לפני כן."
+    }
+  ]
+}
