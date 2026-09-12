@@ -5,7 +5,7 @@
 >
 > **📄 דוח-עברי-תמיד-טרי: [`docs/REPORT_HE.md`](docs/REPORT_HE.md)** — נכתב אוטומטית על-ידי הדמון כל 30 דק׳ (Task 85) ונדחף ל-repo על-ידי gitkeeper. לא צריך לקרוא קוד — תפתח את הדוח.
 
-![status](https://img.shields.io/badge/proofs-143%2F161%20on--chain-brightgreen) ![chains](https://img.shields.io/badge/chains-Steem%20·%20Hive%20·%20HE%20·%20SAOS--NET-blueviolet) ![console](https://img.shields.io/badge/console-v9%20·%209%20מסכים-emerald) ![fleet](https://img.shields.io/badge/fleet-13%20accounts%20·%2028%20loops-orange)
+![status](https://img.shields.io/badge/proofs-146%2F161%20on--chain-brightgreen) ![chains](https://img.shields.io/badge/chains-Steem%20·%20Hive%20·%20HE%20·%20SAOS--NET-blueviolet) ![console](https://img.shields.io/badge/console-v9%20·%209%20מסכים-emerald) ![fleet](https://img.shields.io/badge/fleet-13%20census%20·%2029%20loops-orange)
 
 ---
 
@@ -55,8 +55,8 @@
 
 | רכיב | מיקום | מה הוא עושה |
 |---|---|---|
-| **דימון** | `agent/agent.cjs` | **28 לולאות** עצמאיות: דרישת-פרסים, צופה-שוק, קוראציה, צי-הצהרות, ניקוי-צי (armySweep), קצב-צי (fleetPace), משימות-רשת, gitkeeper, wrapped, microdex, yield, merchant, **SAOS-NET**, עיגון, paymaster, reflex, hivePower, **genesis**, אוטובוס-פקודות, יומן-עולם, **fleetSell (רוטר-צי ל-HE)**, liq, valueLock ועוד |
-| **צי-חיילים** | `agent/keys/vault.json` (לא-ב-git) | 13 חשבונות בסקר-המפקדה (census חי ב-`bee_wall.json`), כל אחד חתם-עצמאי על Steem ו-Hive |
+| **דימון** | `agent/agent.cjs` | **29 לולאות** עצמאיות (נמדד-חי · `agent/agent-status.json`): דרישת-פרסים, צופה-שוק, קוראציה, צי-הצהרות, ניקוי-צי (armySweep), קצב-צי (fleetPace), משימות-רשת, gitkeeper, wrapped, microdex, yield, merchant, **SAOS-NET**, עיגון, paymaster, reflex, hivePower, **genesis**, אוטובוס-פקודות, יומן-עולם, **fleetSell (רוטר-צי ל-HE)**, liq, valueLock ועוד |
+| **צי-חיילים** | `agent/keys/` (מעטפת-תפעולית-חסרה-מאז-הקריסה · גיבויים-אטומים: `agent/vault/*.enc` · שחזור-מחייב-מפתח-אב — ביקורת-R19c) | 13 חשבונות בסקר-המפקדה (census חי ב-`bee_wall.json`), כל אחד חתם-עצמאי על Steem ו-Hive |
 | **רוטר-צי (fleetSell)** | `agent/he_fleet_sell.cjs` | מנתב פעולות-HE דרך חיילים (מפתחות-פעילים משלהם + מאגרי-RC משלהם) ב**שלבים-נשמרים** idle→transferred→bought→done — רגל-תקועה מסתיימת בריצה-הבאה, לעולם לא חוזרת |
 | **חומת-BEE** | `agent/bee_wall.cjs` | ה-100-BEE-gate **נמדד** walk-the-book על הספר-החי (58.91 SWAP.HIVE · deficit מדוד · binding=income-rate) — כל-פעימה חותמת בלוק-התקדמות על SAOS-NET |
 | **שרשרת-ריבונית** | `agent/saosnet.cjs` + מסך-רשת | **SAOS-NET v1.3** — שרשרת-משלנו עם validators/rotation/checkpoints/stateRoot · כל-טענה→בדיקה→ראיה→בלוק (height 93+) |
