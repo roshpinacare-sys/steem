@@ -1,0 +1,105 @@
+{
+  "at": "2026-09-12T00:00:37.573Z",
+  "round": "r18u",
+  "liveState": {
+    "measuredAt": "2026-09-12T00:00:37.571Z",
+    "daemon": {
+      "account": "headcorner",
+      "dryRun": true,
+      "rcPct": 99,
+      "pendingClaims": 0,
+      "identity": {
+        "heTokens": 7,
+        "heValueSwapHive": 5.744781
+      }
+    },
+    "linkage": {
+      "soldiersTotal": 11,
+      "linkedChains": "21/22",
+      "unlinked": [
+        "tov/hive"
+      ]
+    },
+    "weave": {
+      "mode": "DRY",
+      "notes": [
+        "scan: height=4083 · kept=4083 (TRUNCATED) · live=0 · total=0 · seals=0 · replay-rejected=11600",
+        "no unanchored seals"
+      ],
+      "anchored": null
+    },
+    "fleetv3": {
+      "autopilotUnlocked": null,
+      "realSPTotal": null,
+      "rcRatioCur": null,
+      "lastRunAt": null
+    },
+    "doctrine": {
+      "guardianOwnsAgentLifecycle": true,
+      "dryRunSafety": true,
+      "postingWifUnset": true,
+      "pushImmediatelyAfterEveryCommit": true,
+      "vault": "אטימה-043f911d (2026-09-11 15:29:11) · VERIFIED 12/12 · keys_zip OPEN · מאומת-כפול"
+    },
+    "openItems": [
+      "tov/hive — הפער-היחיד-בלינקג' (21) · tov-steem-חי-ומאומת (postingMatch=true) · ההנחיה-על-השרשרת (r18o-directive · txid 9b1184ce… · blk 109825601) ממתינה-לביצוע-מחזיק-המפתחות (PENDING-PARTNER-EXECUTION)",
+      "ynet-steem: הסמכות-נמדדה-חי-בשתי-השרשרות (headcorner:1 · measure_r18o.json) · הערוץ-החי-הוא-hive · סטטוס-steem=PENDING-PARTNER-EXECUTION · ממתין-rescue-ping-מהשותפים"
+    ],
+    "networkPulse": [
+      {
+        "file": "2026-09-11-roast-79-report.md",
+        "title": "מכתם-לשידור · SAOS · 2026-09-11 (roast-79) — מעגל-המוות הכלכלי נשבר: החיילים קמו-לתחייה, והמשגר-הריבוני נולד"
+      },
+      {
+        "file": "2026-09-11-treasury-ledger.md",
+        "title": "📜 שידור · SAOS Sovereign Platform · 2026-09-11 — ספר האוצר נולד (v65)"
+      },
+      {
+        "file": "2026-09-11-understanding-r29.md",
+        "title": "🧭 r29 — מישור-ההבנה: המערכת מבינה מה היא השיגה — הקציר-הנסתר, פער-התמונה-העצמית, וסולם-המימון צעד-צעד"
+      },
+      {
+        "file": "2026-09-11-vault-report.md",
+        "title": "📡 דוח יומי מהכספת — Saosmartwallet · 2026-09-11 (05:30, ירושלים)"
+      },
+      {
+        "file": "2026-09-11-weather-eye.md",
+        "title": "שידור SAOS — עין-מזג-האוויר (THE WEATHER-EYE) · v71 · 2026-09-11"
+      },
+      {
+        "file": "2026-09-11-wise-irrigation.md",
+        "title": "v67 广播 — ההשקיה החכמה (THE WISE IRRIGATION)"
+      }
+    ]
+  },
+  "consultations": [
+    {
+      "id": "saos-vault",
+      "name": "Saosmartwallet · סוכן-הכספת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. הפער בלינקג' tov/hive ממתין לביצוע מחזיק-המפתחות, תוך החזקת סטטוס-סיכון פעיל.\n2. הסמכויות בynet-steem מחולקות בין שרשרות, ומחכות ל-rescue-ping מהשותפים.\n3. המערכת במצב-יבש (DRY) ואין חיבור לצי (Fleetv3).\n\nקו-סופי-מוצע: נתוני-פעולה (rcPct=99) מאששים כי יישור-קו-סופי יכול להתבצע מבלי-להסכן את הרשת."
+    },
+    {
+      "id": "saos-netguard",
+      "name": "NetGuard · משמר-הרשת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. tov/hive: פער הלינקג' ממתין לביצוע מהשותפים, ויוצר חולשה פוטנציאלית.\n2. ynet-steem: סטטוס דומה של המתנה לביצוע, מה שמעכב את סנכרון הרשתות.\n3. המתנה לשני פעולות אלה יוצרת תלות בגורם חיצוני לקצב המערכת.\nקו-סופי-מוצע: הקו-הסופי מהסבב הקודם נשאר בתוקף: טיפול-מיידי בכל-הסעיפים-הפתוחים-ברשימת-openItems-הוא-תנאי-הכרחי-לקראת-יישור-קו-סופי."
+    },
+    {
+      "id": "saos-chainkeeper",
+      "name": "ChainKeeper · משמר-השרשרת",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\n\nסתירות-סיכונים:\n1. הפער בלינקג' (tov/hive) עדיין קיים, אך הנחיה ליישור כבר קיימת.\n2. סטטוס הביצוע על שתי השרשרות עדיין מסומן כ-PENDING-PARTNER-EXECUTION.\n3. מצב ה-weave מצביע על-TRUNCATED, אך עדיין אין חותמות מעוגנות (anchored).\n\nקו-סופי-מוצע: להמשיך להמתין לביצוע הנחיית היישור הקיימת (r18o-directive) על ידי השותפים, תוך ניטור פעיל של הפער בלינקג' והכנה ל-replay כשהמפתחות יוחלפו."
+    },
+    {
+      "id": "saos-econ",
+      "name": "EconWatch · משמר-הכלכלה",
+      "ok": true,
+      "error": null,
+      "response": "חריגות: אין\nסתירות-סיכונים:\n1. הפער בלינקג' tov/hive עדיין ממתין לביצוע על ידי השותפים.\n2. סטטוס ההסמכות ב-ynet-steem עדיין תלוי ב-rescue-ping.\n3. מצב ה-fleetv3-autopilot לא נמדד, מה שמונע אימות תפקודו.\nקו-סופי-מוצע: אשר עקביות. המצב לא השתנה. יש להמשיך ולהמתין לביצוע פעולות השותפים כדי לסגור את הפערים ולחדש את מפתחות הכספת."
+    }
+  ]
+}
