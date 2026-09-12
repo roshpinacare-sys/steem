@@ -7,7 +7,7 @@
 
 | מסמך | מה יש בו | מתי קוראים |
 |---|---|---|
-| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | הארכיטקטורה המלאה של המערכת החיה: שכבות, זהויות, אוטובוס, דמון (28 לולאות), DEX/AMM, גשר, מפעל, משכורות, ריבונות-RC, פיצול-שרדים | להבין איך הכל בנוי |
+| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | הארכיטקטורה המלאה של המערכת החיה: שכבות, זהויות, אוטובוס, דמון (לולאות-חי: 29), DEX/AMM, גשר, מפעל, משכורות, ריבונות-RC, פיצול-שרדים | להבין איך הכל בנוי |
 | **[EMPIRE_LEDGER.md](./EMPIRE_LEDGER.md)** | פנקס-האימפריה: כל החשבונות, הנכסים, וכל ה-txids המרכזיים לפי משימה — כולל איך לאמת כל טענה באופן-עצמאי | לדעת מה שלנו ולאמת |
 | **[OPERATIONS.md](./OPERATIONS.md)** | ספר-ההפעלה: הרצת הדמון, טבלת exec-whitelist + cooldowns, שערי-הוכחה G1–G6, נהלי-שחזור (מפעל-דור-שני, צ'אנקים) | להפעיל ולתחזק |
 | **[KNOWN_LIMITS.md](./KNOWN_LIMITS.md)** | כל חומות-הפרוטוקול שנמדדו חי + הפתרון-הריבוני לכל אחת | לפני שמנסים לפרוץ גבול |
@@ -34,9 +34,9 @@
 | מקום | מה יש בו |
 |---|---|
 | **[docs/reports/](./reports/)** | כל דוחות-העונה: SAOS-PULSE/DAILY/BRIEFING/DOSSIER + ביקורות-טענות (CLAIMS-AUDIT) + תוספות-ראסט — נקודת-מקור יחידה, אין שכפולים בשורש |
-| **[../broadcasts/](../broadcasts/)** | 49+ מכתמי-שידור ומכתמי-סבב (r18p→r19d) — כל סבב נחתם בקובץ מתוארך |
+| **[../broadcasts/](../broadcasts/)** | 51+ מכתמי-שידור ומכתמי-סבב (r18p→r19d) — כל סבב נחתם בקובץ מתוארך |
 | **[../worklog.md](../worklog.md)** | פנקס-העבודה השוטף של הסבבים (Task ID / Work Log / Stage Summary) |
 | **[../MANIFEST.txt](../MANIFEST.txt)** | מניפסט-sha256 של ארטיפקט-המפתחות האטום (2026-09-10) |
-| **[../agent/DAEMONS.md](../agent/DAEMONS.md)** | חוזה-שער-ה-LIVE/DRY החי — מקור-האמת לספירת-הלולאות והדיימונים |
+| **[../agent/DAEMONS.md](../agent/DAEMONS.md)** | חוזה-שער-ה-LIVE/DRY החי · המקור-החי-לספירת-לולאות: `agent/agent-status.json` |
 
 > **סדר-השורש (R19d)**: בשורש נשארים רק מסמכי-חיים — README · worklog · MANIFEST · AGENT-BRIEFING · ENGINEER_BRIEF · CONTROLS-THAT-EXIST · PATCH-SPEC-P11 · THE_WEAVE. כל דוח מתוארך → `docs/reports/` · כל מכתם → `broadcasts/` · קבצי-רעש זמניים נמחקים במקום.
