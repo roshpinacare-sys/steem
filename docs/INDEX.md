@@ -28,3 +28,15 @@
 ## הכלל המחייב
 
 **כל טענה במסמכים האלה חייבת להיות מדורגת**: `on-chain` (txid שכל-אחד יכול לאמת) · `proven-local` (ריצה-מדודה מקומית) · `empirical` (תצפית) · `idea`. אין טענות ללא ראיה. מי שמוסיף יכולת → מעדכן ARCHITECTURE + EMPIRE_LEDGER + KNOWN_LIMITS באותו commit.
+
+## ארכיון-הראיות (נאסף-מחדש-ב-R19d)
+
+| מקום | מה יש בו |
+|---|---|
+| **[docs/reports/](./reports/)** | כל דוחות-העונה: SAOS-PULSE/DAILY/BRIEFING/DOSSIER + ביקורות-טענות (CLAIMS-AUDIT) + תוספות-ראסט — נקודת-מקור יחידה, אין שכפולים בשורש |
+| **[../broadcasts/](../broadcasts/)** | 49+ מכתמי-שידור ומכתמי-סבב (r18p→r19d) — כל סבב נחתם בקובץ מתוארך |
+| **[../worklog.md](../worklog.md)** | פנקס-העבודה השוטף של הסבבים (Task ID / Work Log / Stage Summary) |
+| **[../MANIFEST.txt](../MANIFEST.txt)** | מניפסט-sha256 של ארטיפקט-המפתחות האטום (2026-09-10) |
+| **[../agent/DAEMONS.md](../agent/DAEMONS.md)** | חוזה-שער-ה-LIVE/DRY החי — מקור-האמת לספירת-הלולאות והדיימונים |
+
+> **סדר-השורש (R19d)**: בשורש נשארים רק מסמכי-חיים — README · worklog · MANIFEST · AGENT-BRIEFING · ENGINEER_BRIEF · CONTROLS-THAT-EXIST · PATCH-SPEC-P11 · THE_WEAVE. כל דוח מתוארך → `docs/reports/` · כל מכתם → `broadcasts/` · קבצי-רעש זמניים נמחקים במקום.
