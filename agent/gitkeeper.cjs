@@ -132,20 +132,41 @@ const PUSH_REJECT_RE = /fetch first|non-fast-forward|rejected|\[rejected\]/i;
 // 84 — push with self-heal. Two failure classes, both now fatal-proof:
 //   · REJECTED (fetch first) — the other runner (cloud ⇄ sandbox) moved origin
 //     mid-run (found live: cloud takeover 33978041724 lost its evidence commit
-//     to exactly this race). Heal = fetch + reset --soft origin + re-commit:
-//     a state-snapshot repo wants last-writer-wins, never a JSON merge.
+//     to exactly this race). Heal (R73, hardened — the 2026-09-21 dac4d1e
+//     incident: an auto-save re-committed its whole stale tree and silently
+//     re-instated the cron schedule that ef06cc914/R71 had removed 3 seconds
+//     earlier, un-doing quota sovereignty): reset --hard onto the new origin,
+//     then cherry-pick -X theirs of the held snapshot — re-applies ONLY this
+//     run's own writes onto the new truth (state files stay last-writer-wins,
+//     never a JSON merge), while foreign mid-run edits to non-state files
+//     (workflows, docs) are ADOPTED, never silently reverted.
 //   · AUTH — repair credentials from the sealed .env, then push again.
+function healOntoOrigin() {
+  sh('git fetch origin ' + BRANCH, { timeout: 45_000 });
+  sh('git reset --hard origin/' + BRANCH, { timeout: 30_000 }); // ORIG_HEAD ← our snapshot
+  try {
+    sh('git cherry-pick -X theirs ORIG_HEAD', { timeout: 60_000, maxBuffer: 64 * 1024 * 1024 });
+    log('origin moved mid-run — snapshot re-applied onto origin/' + BRANCH + ' (cherry-pick -X theirs; foreign edits adopted)');
+    return { emptyPick: false };
+  } catch (eC) {
+    const s = String(eC.message || eC);
+    try { sh('git cherry-pick --abort', { timeout: 30_000 }); } catch (_) {}
+    if (/nothing to commit|empty/i.test(s)) {
+      log('origin moved mid-run — snapshot already carried by origin (empty pick), nothing to re-apply');
+      return { emptyPick: true };
+    }
+    log('heal conflict — snapshot dropped, origin keeps the truth: ' + s.slice(0, 140));
+    throw new Error('heal-conflict');
+  }
+}
 function pushWithHeal(msg) {
   const attempt = () => sh('git push origin ' + BRANCH, { timeout: MAX_PUSH_SEC * 1000 });
   try { attempt(); return { ok: true }; } catch (e) { var err1 = String(e.message || e); }
   if (PUSH_REJECT_RE.test(err1)) {
     try {
-      sh('git fetch origin ' + BRANCH, { timeout: 45_000 });
-      sh('git reset --soft origin/' + BRANCH, { timeout: 30_000 });
-      sh('git commit -m ' + JSON.stringify(msg), { timeout: 30_000 });
-      log('origin moved mid-run — snapshot re-based (soft) onto origin/' + BRANCH + ', re-committed');
-      try { attempt(); return { ok: true, healed: 'snapshot-rebased' }; } catch (e2) { var err2 = String(e2.message || e2); }
-      if (AUTH_FAIL_RE.test(err2) && repairPushCreds()) { try { attempt(); return { ok: true, healed: 'snapshot-rebased+creds' }; } catch (e3) { return { ok: false, error: String(e3.message || e3) }; } }
+      const h = healOntoOrigin();
+      try { attempt(); return { ok: true, healed: h.emptyPick ? 'snapshot-already-on-origin' : 'snapshot-reapplied' }; } catch (e2) { var err2 = String(e2.message || e2); }
+      if (AUTH_FAIL_RE.test(err2) && repairPushCreds()) { try { attempt(); return { ok: true, healed: 'snapshot-reapplied+creds' }; } catch (e3) { return { ok: false, error: String(e3.message || e3) }; } }
       return { ok: false, error: err2 || 'unknown' };
     } catch (eR) { return { ok: false, error: String(eR.message || eR) }; }
   }
@@ -153,10 +174,8 @@ function pushWithHeal(msg) {
     try { attempt(); return { ok: true, healed: 'creds' }; } catch (e2) { var err3 = String(e2.message || e2); }
     if (PUSH_REJECT_RE.test(err3)) {
       try {
-        sh('git fetch origin ' + BRANCH, { timeout: 45_000 });
-        sh('git reset --soft origin/' + BRANCH, { timeout: 30_000 });
-        sh('git commit -m ' + JSON.stringify(msg), { timeout: 30_000 });
-        try { attempt(); return { ok: true, healed: 'creds+snapshot-rebased' }; } catch (e3) { return { ok: false, error: String(e3.message || e3) }; }
+        const h = healOntoOrigin();
+        try { attempt(); return { ok: true, healed: (h.emptyPick ? 'snapshot-already-on-origin' : 'snapshot-reapplied') + '+creds' }; } catch (e3) { return { ok: false, error: String(e3.message || e3) }; }
       } catch (eR) { return { ok: false, error: String(eR.message || eR) }; }
     }
     return { ok: false, error: err3 || 'unknown' };
@@ -176,6 +195,11 @@ function runOnce() {
     const sealOut = sh('node ' + JSON.stringify(path.join(REPO, 'sovereign', 'node', 'seal_archive.cjs')), { timeout: 150_000 });
     log(String(sealOut).trim().split('\n')[0] || 'seal ok');
   } catch (e) { log('seal failed (non-fatal): ' + String(e.message || e).slice(0, 80)); }
+
+  // 0a. R73 — recover from a heal interrupted mid-flight (agent killed while
+  //     cherry-picking): abort any leftover sequencer state BEFORE status, or
+  //     staged conflict content would poison the next snapshot.
+  try { sh('git cherry-pick --abort 2>/dev/null || true'); } catch (_) {}
 
   // 0. git available? repo exists?
   try {
