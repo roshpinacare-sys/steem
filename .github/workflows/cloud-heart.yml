@@ -14,8 +14,10 @@
 name: cloud-heart
 
 on:
-  schedule:
-    - cron: '*/30 * * * *'
+  # R71 (2026-09-21, ריבונות המכסה): הקדנס המתוזמן הוסר — התאום הציבורי
+  # ב-Domain (cloud-heart :17/:47, דקות Actions בלתי-מוגבלות) הוא המכונה.
+  # המקור הזה — גיבוי להזנקה ידנית בלבד (workflow_dispatch); החזרת הקדנס
+  # = קומיט אחד. הבחירה-מהשרשרת של המכונה עצמה (attest/git freshness) לא השתנתה.
   workflow_dispatch:
     inputs:
       mode:
