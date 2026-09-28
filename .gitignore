@@ -99,13 +99,22 @@ sovereign/node/chain-archive.jsonl.bak
 # 113 — sovereign wallet keys (seed+registry private) — never in git
 agent/keys/
 # 117p — keys FULLY OUT of the repo (operator directive): fleet seal is local-only now.
-# Disaster recovery = agent/vault/KEYS-BACKUP-*.tar.enc (operator password, chat-only) + THE-GATE paste.
+# 2026-09-28 audit correction: the "chat-only" assumption was broken by recovery-meta.json
+# (committed until now). From here on: NO key material, NO passphrases, in any file, in git.
 agent/fleet_keys.enc
 agent/fleet_keys.meta.json
 
 # 117p5 — repo slimming: research dumps + repo-snapshots stay LOCAL-ONLY (git never carries
 # extracted archives / npm caches / recursive repo copies again; ~250MB of tracked bloat removed).
-# KEPT TRACKED: agent/vault/KEYS-BACKUP-*.tar.enc + README — the disaster-recovery lifeline.
+# 2026-09-28 security audit (C1): key material is FULLY out of git going forward.
+# Disaster recovery lives on operator storage (air-gapped/secret manager), NOT in the repo.
+# The two archives were untracked from HEAD; they remain in git HISTORY until a post-rotation
+# filter-repo purge — treat every key that ever touched this repo as public until rotated.
+agent/vault/
+agent/recovery-meta.json
+agent/rescue/
+
+# 117p5 originals (unrelated to keys — kept)
 download/research/
 download/recovery/
 download/task26-pre-restore-backup.tar.gz
