@@ -1,23 +1,46 @@
 :81 {
-	@transform_port_query {
-		query XTransformPort=*
-	}
+        # 2026-09-28 security audit (C4): the query-param proxy was an open pivot to
+        # ANY localhost port (incl. external-signer :3033 and key-broker :3040).
+        # Fail-closed allowlist via explicit route ordering (Caddy preserves order
+        # inside route): allowed ports proxied, every other XTransformPort aborted,
+        # default traffic -> main app.
+        @transform_port_query {
+                query XTransformPort=*
+        }
 
-	handle @transform_port_query {
-		reverse_proxy localhost:{query.XTransformPort} {
-			header_up Host {host}
-			header_up X-Forwarded-For {remote_host}
-			header_up X-Forwarded-Proto {scheme}
-			header_up X-Real-IP {remote_host}
-		}
-	}
+        @transform_port_allowed {
+                query XTransformPort=3000
+                query XTransformPort=3003
+                query XTransformPort=3004
+                query XTransformPort=3005
+                query XTransformPort=3007
+                query XTransformPort=3010
+        }
 
-	handle {
-		reverse_proxy localhost:3000 {
-			header_up Host {host}
-			header_up X-Forwarded-For {remote_host}
-			header_up X-Forwarded-Proto {scheme}
-			header_up X-Real-IP {remote_host}
-		}
-	}
+        route {
+                # 1) allowed ports -> proxy through
+                handle @transform_port_allowed {
+                        reverse_proxy localhost:{query.XTransformPort} {
+                                header_up Host {host}
+                                header_up X-Forwarded-For {remote_host}
+                                header_up X-Forwarded-Proto {scheme}
+                                header_up X-Real-IP {remote_host}
+                        }
+                }
+
+                # 2) any other XTransformPort -> blocked (signers 3033/3040 and unknowns)
+                handle @transform_port_query {
+                        abort
+                }
+
+                # 3) everything else -> main app
+                handle {
+                        reverse_proxy localhost:3000 {
+                                header_up Host {host}
+                                header_up X-Forwarded-For {remote_host}
+                                header_up X-Forwarded-Proto {scheme}
+                                header_up X-Real-IP {remote_host}
+                        }
+                }
+        }
 }
