@@ -1,3 +1,4 @@
+// DEPRECATED 2026-09: canonical key-broker = saos-sovereign-foundry :3040 (Bearer auth, EVM/TRON/SOL/BTC). This copy is retired; do not start. See foundry docs/PORTS.md.
 /**
  * THE-KEY-BROKER (117k) — שער-החתימה-הריבוני
  *
