@@ -1,9 +1,11 @@
-# SAOS SELF-AUDIENCE — "אנחנו הקהל הריבוני של עצמנו" (ריבון, 2026-09-29)
+# SAOS SELF-AUDIENCE v2 — "אנחנו הקהל הריבוני של עצמנו" (ריבון, 2026-09-29 · Z-20)
 #
-# הסוכנים-החיילים עובדים בתוך הרשת ומפתחים אותה:
-#   1. soldiers-blog  — רוטציית חיילים מפרסמת תוכן ייחודי (פרסום צורך RC, לא VP)
-#   2. self-audience  — כל-חייל מצביע לפוסטים-החיים של חבריו (לא-עצמי), שערי VP/RC,
-#                       אימות-לפני-חתימה (נגזרת-מפתח מול key_auths) + קריאה-חוזרת
+# הסוכנים-החיילים עובדים בתוך הרשת ומפתחים אותה — צינור מלא:
+#   1. soldiers-blog — רוטציית 10 חיילים, תוכן נתוני-אמת (מדידה-חיה לפני-פרסום)
+#   2. fleet-claim   — הצי תובע את פרסי-עצמו (posting-only, אידמפוטנטי, גילגול)
+#   3. head-delegate — תחזוקת-הון-עצמית: 30 SP לכל-חייל (אידמפוטנטי, סורג-בייטים)
+#   4. self-audience — הצבעה-צולבת מלאה (לא-עצמית), שערי VP/RC, verify-then-sign
+#   5. fleet-doctor  — אבחון-עצמי נטול-מפתחות: STATE-REPORT יומי מקצועי
 #
 # מפתחות: כספת-מוצפנת בריפו-הפרטי עצמו (דוקטרינת-משמורת-מערכת) — פענוח-עצמי
 # בזיכרון-ריצה בלבד, אפס-סודות-בפלט/בקבלות/בקומיטים. fetch-depth: 0 נדרש
@@ -34,7 +36,7 @@ concurrency:
 jobs:
   sovereign-audience:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - name: checkout (full history — meta-generation pairing)
         uses: actions/checkout@v4
@@ -52,22 +54,40 @@ jobs:
           bun install --frozen-lockfile || bun install
           node -e "require('steem'); console.log('steem-js OK')"
 
-      - name: soldiers publish (rotation, unique content)
+      - name: soldiers publish (rotation, measured-truth content)
         if: ${{ github.event.inputs.skip_posts != 'true' }}
         run: node agent/soldiers-blog.cjs
 
+      - name: fleet claims its own rewards (self-economy)
+        run: node agent/fleet-claim.cjs
+
+      - name: head delegation maintenance (self-capital, idempotent)
+        run: node agent/head-delegate.cjs
+
       - name: cross-vote sweep (verify-then-sign, read-back)
         run: node agent/self-audience.cjs
+
+      - name: fleet doctor (keyless self-diagnosis, STATE-REPORT)
+        run: node agent/fleet-doctor.cjs
 
       - name: commit receipts (secretless)
         run: |
           git config user.name "saos-self-audience"
           git config user.email "self-audience@saos.local"
-          git add agent/self-audience-receipt.json agent/soldiers-blog-receipt.json 2>/dev/null || true
+          git add agent/self-audience-receipt.json agent/soldiers-blog-receipt.json agent/fleet-claim-receipt.json agent/head-delegate-receipt.json agent/state-report.json STATE-REPORT-*.md 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "no receipt changes"
           else
-            T=$(python3 -c "import json;print(' · '.join(f\"{r['tool']}:{r['tally']}\" for r in [json.load(open(p))] for p in ['agent/self-audience-receipt.json','agent/soldiers-blog-receipt.json'] if __import__('os').path.exists(p)))" 2>/dev/null || echo "")
+            T=$(python3 - << 'EOF' 2>/dev/null || echo ""
+import json, os
+parts = []
+for p in ['agent/soldiers-blog-receipt.json','agent/fleet-claim-receipt.json','agent/head-delegate-receipt.json','agent/self-audience-receipt.json']:
+    if os.path.exists(p):
+        try: parts.append(os.path.basename(p).replace('-receipt.json','') + ':' + str(json.load(open(p)).get('tally')))
+        except Exception: pass
+print(' · '.join(parts))
+EOF
+)
             git commit -m "self-audience: ${T:-receipts updated} · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git pull --rebase origin main || true
             git push origin HEAD:main

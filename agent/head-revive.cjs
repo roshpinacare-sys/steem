@@ -74,7 +74,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   const g = await P(cb => steem.api.getDynamicGlobalProperties(cb));
   const ratio = parseFloat(g.total_vesting_fund_steem) / parseFloat(g.total_vesting_shares);
   const vests30 = (30 / ratio).toFixed(6) + ' VESTS';
-  const soldiers = ['cashmachine', 'haran', 'israelnews', 'lsa', 'macrame', 'siq', 'tov', 'wic', 'wog', 'woq'];
+  const soldiers = ['cashmachine', 'haran', 'israelnews', 'lsa', 'macrame', 'siq', 'tov', 'wic', 'wog', 'woq', 'ynet']; // 11 — ynet נוסף Z-20 (פער-האצלה נסגר 2026-09-29)
   const a3 = await P(cb => steem.api.getAccounts([HEAD], cb)).then(r => r[0]);
   const curDel = {};
   for (const s of soldiers) curDel[s] = s === HEAD ? 0 : 0;
