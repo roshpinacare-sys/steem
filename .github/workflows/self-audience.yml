@@ -78,17 +78,11 @@ jobs:
           if git diff --cached --quiet; then
             echo "no receipt changes"
           else
-            T=$(python3 - << 'EOF' 2>/dev/null || echo ""
-import json, os
-parts = []
-for p in ['agent/soldiers-blog-receipt.json','agent/fleet-claim-receipt.json','agent/head-delegate-receipt.json','agent/self-audience-receipt.json']:
-    if os.path.exists(p):
-        try: parts.append(os.path.basename(p).replace('-receipt.json','') + ':' + str(json.load(open(p)).get('tally')))
-        except Exception: pass
-print(' · '.join(parts))
-EOF
-)
-            git commit -m "self-audience: ${T:-receipts updated} · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            T=""
+            for f in agent/soldiers-blog-receipt.json agent/fleet-claim-receipt.json agent/head-delegate-receipt.json agent/self-audience-receipt.json agent/state-report.json; do
+              if [ -f "$f" ]; then V=$(python3 -c "import json;print(json.load(open('$f')).get('tally','ok'))" 2>/dev/null || echo ok); T="$T $(basename $f .json)=$V"; fi
+            done
+            git commit -m "self-audience:${T:-receipts updated} · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git pull --rebase origin main || true
             git push origin HEAD:main
           fi
