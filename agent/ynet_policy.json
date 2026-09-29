@@ -8,15 +8,26 @@
     "account": "ynet",
     "signer": "headcorner (posting account-authority, weight 1 / threshold 1)",
     "mechanism": "custom_json id=saos · zero-cost · verified from @ynet account history",
-    "tools": ["agent/ynet_rescue_ping.cjs", "agent/ynet_directive.cjs (R18o)"],
+    "tools": [
+      "agent/ynet_rescue_ping.cjs",
+      "agent/ynet_directive.cjs (R18o)"
+    ],
     "liveGate": "DRY by default · --live + HE_LIVE_CONFIRM=headcorner (shared contract, Task 28-b)"
   },
   "chains": {
     "hive": {
       "status": "OPEN-LIVE",
       "provenAt": "2026-09-11T15:35:39 / 15:36:27 · directive 16:29:27",
-      "txids": ["639c953b15d46277", "51028683c9f25597", "9b1184ced8bb8b91118c3ba5da1a786d77e7c49c"],
-      "blocks": [109824529, 109824545, 109825601]
+      "txids": [
+        "639c953b15d46277",
+        "51028683c9f25597",
+        "9b1184ced8bb8b91118c3ba5da1a786d77e7c49c"
+      ],
+      "blocks": [
+        109824529,
+        109824545,
+        109825601
+      ]
     },
     "steem": {
       "status": "PENDING-PARTNER-EXECUTION",
@@ -27,7 +38,10 @@
         "at": "2026-09-11T16:29:27",
         "txid": "9b1184ced8bb8b91118c3ba5da1a786d77e7c49c",
         "block": 109825601,
-        "requests": ["ynet-steem-channel", "tov-hive-linkage"]
+        "requests": [
+          "ynet-steem-channel",
+          "tov-hive-linkage"
+        ]
       }
     }
   },
@@ -40,5 +54,10 @@
   "keys": {
     "custody": "WIF-החתימה-נשלף-מהכספת (agent/keys/vault.json · headcorner.hive.posting.wif) · agent/.env-מינימלי-בכוונה",
     "printed": "אף-פעם"
+  },
+  "_resolution_2026_09_29": {
+    "status": "RESOLVED",
+    "how": "sovereign master-paste (the 2018 sheet line, upload/הד.txt) → sha256(account+role+master) → 4/4 chain-verified → vault generation KEYS-ZIP-2026-09-29 (fb44b4f4)",
+    "note": "the fleet searched the sheet line only as a WIF key — never as a master-derivation string"
   }
 }
