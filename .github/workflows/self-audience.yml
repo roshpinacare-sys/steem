@@ -1,0 +1,74 @@
+# SAOS SELF-AUDIENCE — "אנחנו הקהל הריבוני של עצמנו" (ריבון, 2026-09-29)
+#
+# הסוכנים-החיילים עובדים בתוך הרשת ומפתחים אותה:
+#   1. soldiers-blog  — רוטציית חיילים מפרסמת תוכן ייחודי (פרסום צורך RC, לא VP)
+#   2. self-audience  — כל-חייל מצביע לפוסטים-החיים של חבריו (לא-עצמי), שערי VP/RC,
+#                       אימות-לפני-חתימה (נגזרת-מפתח מול key_auths) + קריאה-חוזרת
+#
+# מפתחות: כספת-מוצפנת בריפו-הפרטי עצמו (דוקטרינת-משמורת-מערכת) — פענוח-עצמי
+# בזיכרון-ריצה בלבד, אפס-סודות-בפלט/בקבלות/בקומיטים. fetch-depth: 0 נדרש
+# לסריקת דורות-המטא (התאמת זוג-פותח לפי outer-sha).
+# fail-soft: הסוכנים לעולם לא exit-1; תמיד קבלה נטולת-סודות.
+
+name: self-audience
+
+on:
+  schedule:
+    - cron: '30 14 * * *'   # 14:30 UTC — אחרי פרסומי-הבוקר של הראש, חלון-הצבעה חי
+  workflow_dispatch:
+    inputs:
+      skip_posts:
+        description: 'skip soldiers-blog (votes only)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: self-audience
+  cancel-in-progress: false
+
+jobs:
+  sovereign-audience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: checkout (full history — meta-generation pairing)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq unzip >/dev/null 2>&1 || true
+          curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.34"
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: install deps (steem from lockfile)
+        run: |
+          bun install --frozen-lockfile || bun install
+          node -e "require('steem'); console.log('steem-js OK')"
+
+      - name: soldiers publish (rotation, unique content)
+        if: ${{ github.event.inputs.skip_posts != 'true' }}
+        run: node agent/soldiers-blog.cjs
+
+      - name: cross-vote sweep (verify-then-sign, read-back)
+        run: node agent/self-audience.cjs
+
+      - name: commit receipts (secretless)
+        run: |
+          git config user.name "saos-self-audience"
+          git config user.email "self-audience@saos.local"
+          git add agent/self-audience-receipt.json agent/soldiers-blog-receipt.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no receipt changes"
+          else
+            T=$(python3 -c "import json;print(' · '.join(f\"{r['tool']}:{r['tally']}\" for r in [json.load(open(p))] for p in ['agent/self-audience-receipt.json','agent/soldiers-blog-receipt.json'] if __import__('os').path.exists(p)))" 2>/dev/null || echo "")
+            git commit -m "self-audience: ${T:-receipts updated} · $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git pull --rebase origin main || true
+            git push origin HEAD:main
+          fi
