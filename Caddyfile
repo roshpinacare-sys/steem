@@ -1,15 +1,22 @@
 :81 {
-	@transform_port_query {
-		query XTransformPort=*
-	}
+	# FIX(2026-09-29 · CRITICAL): וויטליסט-פורטים — היה-פרוקסי-פתוח-לכל-פורט-מקומי
+	# (כל-מי-שמגיע-ל:81 יכול-היה-לתחקר-כל-שירות-על-המארח, כולל key-broker :3040).
+	# הפצה-של-תיקון-Roast-63 (הקנון: saos-control-center/Caddyfile). עכשיו:
+	# 3040 = key-broker (loopback, Bearer timing-safe). כל-XTransformPort-אחר → 403.
+	@port_key_broker query XTransformPort=3040
+	@port_other query XTransformPort=*
 
-	handle @transform_port_query {
-		reverse_proxy localhost:{query.XTransformPort} {
+	handle @port_key_broker {
+		reverse_proxy localhost:3040 {
 			header_up Host {host}
 			header_up X-Forwarded-For {remote_host}
 			header_up X-Forwarded-Proto {scheme}
 			header_up X-Real-IP {remote_host}
 		}
+	}
+
+	handle @port_other {
+		respond 403
 	}
 
 	handle {
