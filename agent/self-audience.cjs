@@ -23,6 +23,7 @@ const FLEET = ['cashmachine','haran','israelnews','lsa','macrame','siq','tov','w
 const MIN_VP = 20;   // סף-כוח-הצבעה (%)
 const MIN_RC = 30;   // סף-RC (%)
 const SOLDIER_WEIGHT = 10000; // חיילים: 100% (SP-אבק — מקסום-אות)
+const HEAD_WEIGHT = 2000;     // ראש: 20% (4608 SP — פרס-משמעותי לחיילים, חיסכון-VP)
 const HEAD_SELF_WEIGHT = 100; // ראש: 1% עצמי על-דגלול-בלבד (אות-חיות)
 const HEAD_FLAGSHIP = (author, permlink) => author === 'headcorner' && /^saos-grid-\d{8}$/.test(permlink);
 
@@ -130,7 +131,7 @@ async function main() {
       continue;
     }
     if (p.votes.includes(voter)) continue; // idempotency
-    jobs.push({ voter, ...p, weight: SOLDIER_WEIGHT, self: false });
+    jobs.push({ voter, ...p, weight: voter === 'headcorner' ? HEAD_WEIGHT : SOLDIER_WEIGHT, self: false });
   }
   console.log(`[self-aud] vote jobs: ${jobs.length}`);
 
