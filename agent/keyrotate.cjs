@@ -15,14 +15,46 @@
  *   5. write rotation_evidence.json (txids + masked pubs; master never stored)
  *
  * Usage: node keyrotate.cjs --account ynet [--chains steem,hive] [--dry]
+ *
+ * Hardening (2026-09 — post-incident 117o restoration, docs/117o-KEY-INCIDENT.md):
+ *   · --account is REQUIRED — the script hard-fails (exit 1) when it is missing.
+ *     There is NO default account, ever (the old `AGENT_ACCOUNT || 'headcorner'`
+ *     fallback is what let automation act on the primary account unintentionally).
+ *   · A primary/master account (AGENT_ACCOUNT, or 'headcorner' — the org's
+ *     primary per docs) is a PROTECTED target: rotating it requires an explicit
+ *     --confirm-primary flag; without it the script refuses (exit 1).
+ *   · The live-gate confirms against the TARGET account being rotated
+ *     (HE_LIVE_CONFIRM=<target>), never against a defaulted primary name.
  */
 'use strict';
+
+// ── CLI validation FIRST (before any module/env/network dependency) ──
+// HARD REQUIREMENT: --account (2026-09-08 incident root-cause fix).
+const args = process.argv.slice(2);
+const argOf = (n) => {
+  const i = args.indexOf(n);
+  return i >= 0 ? args[i + 1] : null;
+};
+const target = (argOf('--account') || '').toLowerCase().replace(/^@/, '');
+const chainsWanted = (argOf('--chains') || 'steem,hive').split(',').map((s) => s.trim());
+if (!target) {
+  console.error('ERROR: --account is required — keyrotate never guesses the target account.');
+  console.error('       (no default account exists anymore; see docs/117o-KEY-INCIDENT.md)');
+  console.error('usage: node keyrotate.cjs --account <name> [--chains steem,hive] [--dry] [--live] [--confirm-primary]');
+  process.exit(1);
+}
+
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+// Primary designation (PROTECTED targets — NOT defaults):
+//   · AGENT_ACCOUNT  — this deployment's primary account (agent/README.md)
+//   · 'headcorner'   — the org's primary/master account (docs/117o-KEY-INCIDENT.md)
+// Rotating any of these requires an explicit --confirm-primary flag.
+const AGENT_ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+const PRIMARY_ACCOUNTS = new Set([AGENT_ACCOUNT, 'headcorner'].filter(Boolean));
 const STEEM_RPC = process.env.RPC_URL || 'https://api.steemit.com';
 const HIVE_RPC = process.env.HIVE_RPC || 'https://api.hive.blog';
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
@@ -30,18 +62,12 @@ const OUT = path.join(__dirname, 'rotation_evidence.json');
 
 steem.api.setOptions({ url: STEEM_RPC });
 
-const args = process.argv.slice(2);
-const argOf = (n) => {
-  const i = args.indexOf(n);
-  return i >= 0 ? args[i + 1] : null;
-};
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(args, { account: ACCOUNT });
+// Live-gate acting account = the account THIS run actually rotates (the target),
+// never a defaulted primary name.
+const GATE = resolveLiveGate(args, { account: target });
 const DRY = GATE.dry;
 announceGate(GATE, log);
-
-const target = (argOf('--account') || '').toLowerCase().replace(/^@/, '');
-const chainsWanted = (argOf('--chains') || 'steem,hive').split(',').map((s) => s.trim());
 
 function log(msg) {
   console.log('[' + new Date().toISOString() + '] ' + msg);
@@ -100,8 +126,14 @@ function vaultRead() {
 }
 
 async function main() {
-  if (!target) return log('usage: node keyrotate.cjs --account <name> [--chains steem,hive] [--dry]');
-  if (target === ACCOUNT) return log('refusing to rotate the primary account (' + ACCOUNT + ') — primary keys live in .env');
+  // Primary/master protection (restores + supersedes the drifted 117o guard):
+  // refuse unless the operator passes --confirm-primary explicitly.
+  if (PRIMARY_ACCOUNTS.has(target) && !args.includes('--confirm-primary')) {
+    console.error('REFUSED: @' + target + ' is a primary/master account (protected: AGENT_ACCOUNT / docs designation).');
+    console.error('         Rotating a primary requires explicit intent — re-run with --confirm-primary.');
+    console.error('         (primary keys live in agent/.env, not in the vault)');
+    process.exit(1);
+  }
   const FACTORY_MASTER = process.env.FACTORY_MASTER || '';
   if (!FACTORY_MASTER) return log('no FACTORY_MASTER in agent/.env — deterministic rotation unavailable');
 
