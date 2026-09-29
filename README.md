@@ -110,3 +110,9 @@ node agent/verify_system.cjs # מטריצת-161
 ## הערת-אבטחה
 
 `agent/keys/` ו-`agent/.env` מחוץ-ל-git לעולם. ה-repo מתאר-ארכיטקטורה, מדידות ו-txids — לא-חומרה-סודית של-מפתחות.
+
+## Key-broker (2026-09)
+
+העתקת ה-key-broker בריפו הזה (`mini-services/key-broker/`) היא שכפול-מורשת שהוצא-משירות — **אין-להפעילה** (דגל-הוצאה-משירות בראש `mini-services/key-broker/index.ts`). ה-key-broker הקנוני הוא **saos-sovereign-foundry :3040** (Bearer auth, חתימת EVM/TRON/SOL/BTC) — ראה foundry `docs/PORTS.md`.
+
+`mini-services/key-broker/audit.jsonl` (13 אירועי-חתימה-חיים, 2026-09-08/09) **הוצא-ממעקב-git** (ההיסטוריה נשמרת; הקובץ נשאר על-המכונה). יומני-אירועי-חתימה הם מצב-ריצה — מעתה מחוץ לבקרת-גרסאות (`.gitignore`: `agent/**/audit.jsonl`, `mini-services/**/audit.jsonl`).
