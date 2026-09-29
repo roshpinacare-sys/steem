@@ -16,7 +16,8 @@ Trading daemons are **DRY by default**. Real broadcast happens only when the gat
    - CLI flag `--live` in argv, OR
    - env `HE_LIVE=1`
 2. **Confirmation** — env `HE_LIVE_CONFIRM=<agent-account-name>` must exactly match the
-   account the daemon will act as (`AGENT_ACCOUNT`, default `headcorner`, case-insensitive).
+   account the daemon will act as (`AGENT_ACCOUNT`, **required — no default since the 8-b sweep**, case-insensitive;
+   missing → the script exits 1 before loading anything, mirroring keyrotate.cjs/7-c).
 
 A bare `HE_LIVE=1` without the matching `HE_LIVE_CONFIRM` is NOT enough — the confirmation
 exists so an ambient env var can never accidentally enable live broadcasting.
@@ -77,14 +78,14 @@ the acting account is passed from each daemon's own `AGENT_ACCOUNT`/fixed consta
 | `agent/he_genesis.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Hive (converts) + Hive-Engine |
 | `agent/he_ladder.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Hive-Engine |
 | `agent/he_powerup.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY stops before `transfer_to_vesting`) | Hive mainnet |
-| `agent/hive_publish_watch.cjs` | DRY | live_gate (`{account: 'headcorner'}`; DRY skips publication) | Hive (comment op) |
+| `agent/hive_publish_watch.cjs` | DRY | live_gate (`{account: ACCOUNT}` from `AGENT_ACCOUNT`; DRY skips publication) | Hive (comment op) |
 | `agent/hive_rc_heal.cjs` | DRY | live_gate (`{account: HEAD}`, resolved in `main()`) | Hive (delegate_vesting_shares) |
 | `agent/keyrotate.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem + Hive (authority update) |
 | `agent/limits_probe.cjs` | DRY | live_gate + `DRY_RUN=true` still honored as extra DRY force | Steem (custom_json probes) |
 | `agent/limits_probe2.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY skips probes) | Steem (custom_json probes) |
 | `agent/linkage.cjs` | DRY | live_gate (CLI; only `--fix` announces, and fixes are skipped in DRY) | Steem + Hive (account_update) |
 | `agent/liq_seed.cjs` | DRY | live_gate (CLI) | Steem (transfers) |
-| `agent/merchant.cjs` | DRY | live_gate (`{account: 'headcorner'}`) | Steem (transfers) |
+| `agent/merchant.cjs` | DRY | live_gate (`{account: ACCOUNT}` from `AGENT_ACCOUNT`) | Steem (transfers) |
 | `agent/microdex.cjs` | DRY | live_gate (CLI) | Steem (custom_json) |
 | `agent/mint_borrow.cjs` | DRY | live_gate (`{account: OPERATOR}`) | Steem (account create + transfer) |
 | `agent/muster.cjs` | DRY | live_gate (CLI) | Steem (escrow transfers) |
@@ -98,8 +99,8 @@ the acting account is passed from each daemon's own `AGENT_ACCOUNT`/fixed consta
 | `agent/publish_spec58.cjs` | DRY | live_gate (`{account: ACCOUNT}`; DRY skips publication) | Steem + Hive (posts) |
 | `agent/rc_sovereign.cjs` | DRY | live_gate (`{account: ACCOUNT}`) | Steem (delegate_rc) + Hive |
 | `agent/reflex.cjs` | DRY | live_gate (`{account: ACCOUNT}`; `LIVE=GATE.live`) | Steem (custom_json) |
-| `agent/retc_test.cjs` | DRY | live_gate (`{account: 'headcorner'}`; DRY before delegate test) | Hive (delegate_rc) |
-| `agent/roundtrip.cjs` | DRY | live_gate (`{account: 'headcorner'}`) | Steem (transfers) |
+| `agent/retc_test.cjs` | DRY | live_gate (`{account: ACCOUNT}` from `AGENT_ACCOUNT`; DRY before delegate test) | Hive (delegate_rc) |
+| `agent/roundtrip.cjs` | DRY | live_gate (`{account: ACCOUNT}` from `AGENT_ACCOUNT`) | Steem (transfers) |
 | `agent/sovereign_60_live.cjs` | DRY | live_gate (`{account: OPERATOR}`; DRY refuses execution) | Steem + Hive + Hive-Engine |
 | `agent/sovereign_fix59.cjs` | DRY | live_gate (`{account: OPERATOR}`; DRY refuses execution) | Steem + Hive + Hive-Engine |
 | `agent/sovereign_ops.cjs` | DRY | live_gate (`{account: OPERATOR}`) | Steem + Hive |
@@ -111,7 +112,7 @@ the acting account is passed from each daemon's own `AGENT_ACCOUNT`/fixed consta
 | `agent/weave_batch.cjs` | DRY | live_gate (CLI, passed into `runWeaveBatch({dry})`) | Steem + Hive + Blurt |
 | `agent/wrap96.cjs` | DRY | live_gate (`--run` = enable; children demoted to DRY) | Steem (custom_json) + SAOS-NET |
 | `agent/wrapped.cjs` | DRY | live_gate (missing WIFs still force DRY, as before) | Steem + Hive |
-| `agent/yield.cjs` | DRY | live_gate (`{account: 'headcorner'}`) | Steem (transfers) |
+| `agent/yield.cjs` | DRY | live_gate (`{account: ACCOUNT}` from `AGENT_ACCOUNT`) | Steem (transfers) |
 | `agent/ynet_rescue_ping.cjs` | DRY | live_gate (CLI; DRY before broadcast) | Steem + Hive (rescue ping) |
 
 Safe examples:
@@ -121,8 +122,8 @@ Safe examples:
 node agent/he_sell.cjs
 
 # LIVE — both conditions required
-node agent/he_sell.cjs --live --qty 9000 --price 0.0001   # + env HE_LIVE_CONFIRM=headcorner
-HE_LIVE=1 HE_LIVE_CONFIRM=headcorner node agent/he_unstake.cjs
+node agent/he_sell.cjs --live --qty 9000 --price 0.0001   # + env AGENT_ACCOUNT=… HE_LIVE_CONFIRM=<same account>
+HE_LIVE=1 HE_LIVE_CONFIRM=$AGENT_ACCOUNT node agent/he_unstake.cjs
 ```
 
 ### Already-safe by construction (no gate wired — verified read-only / DRY-default)

@@ -21,6 +21,8 @@
  *                            [--reserve 0.05] [--no-convert-hbd]
  * Result → agent/he_genesis_result.json  ·  state → agent/he_genesis_state.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/he_genesis.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -49,7 +51,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });

@@ -79,7 +79,8 @@ function loadDotEnv(dir) {
   return out;
 }
 const ENV = loadDotEnv(__dirname);
-const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (ENV.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/net_kv.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
 steem.api.setOptions({ url: ENV.RPC_URL || 'https://api.steemit.com' });
 const POSTING_WIF = ENV.POSTING_WIF || '';
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');

@@ -22,6 +22,8 @@
  *
  * תוצאה → mint_borrow_result.json. ברירת-מחדל --dry.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/mint_borrow.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -44,7 +46,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const OPERATOR = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const OPERATOR = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const RPCS = ['https://api.steemit.com', 'https://api.steem.fans', 'https://api.justyy.com', 'https://steem.61bts.com'];
 

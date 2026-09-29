@@ -13,6 +13,8 @@
  * הרצה:  npm run test:pipeline   (או:  node test-pipeline.cjs)
  * דרישה: Node (לא bun!) — bun שובר את ה-ecc של steem-js.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/test-pipeline.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 
 const steem = require('steem');
@@ -25,7 +27,7 @@ announceGate(GATE);
 if (DRY) { console.log('[DRY] LIVE-GATE — negative-key broadcast test skipped (nothing sent)'); process.exit(0); }
 
 
-const ACCOUNT = process.env.AGENT_ACCOUNT || 'headcorner';
+const ACCOUNT = process.env.AGENT_ACCOUNT || '';
 
 console.log('[1/4] deriving a FAKE posting key for @' + ACCOUNT + ' from seed "fake" ...');
 const keys = steem.auth.getPrivateKeys(ACCOUNT, 'fake', ['posting']);

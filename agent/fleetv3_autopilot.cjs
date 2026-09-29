@@ -17,6 +17,8 @@
  *
  * הרצה: node agent/fleetv3_autopilot.cjs [--dry]
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/fleetv3_autopilot.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -33,7 +35,7 @@ for (const line of fs.readFileSync(path.join(DIR, '.env'), 'utf8').split(/\r?\n/
   if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
   if (!(k in process.env)) process.env[k] = v;
 }
-const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const DRY = process.argv.includes('--dry');
 const STATE_PATH = path.join(DIR, 'fleetv3_state.json');

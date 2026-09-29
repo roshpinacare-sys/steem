@@ -25,6 +25,8 @@
  *   ברירת-מחדל: --dry (בטוח). --live = ירי-אמיתי.
  * Output: reflex_evidence.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/reflex.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 
 const fs = require('fs');
@@ -55,7 +57,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });

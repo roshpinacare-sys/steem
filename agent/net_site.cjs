@@ -12,6 +12,8 @@
  *
  * Result → agent/net_site_result.json · cache → agent/net_site_cache.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/net_site.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -34,7 +36,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 steem.api.setOptions({ url: process.env.RPC_URL || 'https://api.steemit.com' });
 const POSTING_WIF = process.env.POSTING_WIF || '';
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');

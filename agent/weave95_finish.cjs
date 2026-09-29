@@ -31,7 +31,8 @@ function loadDotEnv(dir) {
   return out;
 }
 const ENV = loadDotEnv(AGENT_DIR);
-const ACCOUNT = (process.env.AGENT_ACCOUNT || ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || ENV.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/weave95_finish.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
 const POSTING_WIF = process.env.POSTING_WIF || ENV.POSTING_WIF || '';
 const STEEM_NODES = ['https://api.justyy.com', 'https://steemapi.boylikegirl.club'];
 const readJSON = (p, d) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (_) { return d; } };

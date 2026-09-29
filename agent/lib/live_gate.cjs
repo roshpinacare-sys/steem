@@ -5,12 +5,17 @@
 function resolveLiveGate(argv, opts) {
   const args = Array.isArray(argv) ? argv : process.argv;
   const o = opts || {};
-  const account = String(o.account || process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+  // 8-b: אין ברירת-מחדל לחשבון-הפעולה (המשך 7-c, docs/117o-KEY-INCIDENT.md) —
+  // בלי חשבון מפורש ({account} או AGENT_ACCOUNT) השער אף-פעם לא יכול להיות חי.
+  const account = String(o.account || process.env.AGENT_ACCOUNT || '').toLowerCase();
   const flagLive = args.includes('--live');
   const envLive = String(process.env.HE_LIVE || '') === '1';
   const confirm = String(process.env.HE_LIVE_CONFIRM || '').toLowerCase();
   const dryForced = args.includes('--dry');
-  const live = !dryForced && (flagLive || envLive) && confirm === account;
+  if ((flagLive || envLive) && !account) {
+    throw new Error('live-gate: no acting account — set AGENT_ACCOUNT (no default account exists · docs/117o-KEY-INCIDENT.md)');
+  }
+  const live = !dryForced && (flagLive || envLive) && !!account && confirm === account;
   return { account, live, dry: !live, dryForced };
 }
 function announceGate(gate, logFn) {

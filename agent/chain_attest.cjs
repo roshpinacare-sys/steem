@@ -154,7 +154,8 @@ async function runChainAttest(opts = {}) {
   const dry = !!opts.dry;
   const quiet = !!opts.quiet;
   const ENV = loadDotEnv(AGENT_DIR);
-  const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+  const ACCOUNT = (ENV.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/chain_attest.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
   const WIF = ENV.ACTIVE_WIF || '';
   if (!WIF) throw new Error('ACTIVE_WIF missing — chain attestation requires active authority');
 
@@ -245,7 +246,8 @@ async function runChainAttest(opts = {}) {
 /** Recovery read: latest on-chain attest vs local node state. */
 async function readMode() {
   const ENV = loadDotEnv(AGENT_DIR);
-  const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+  const ACCOUNT = (ENV.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/chain_attest.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
   const attest = await readLatestAttest(ACCOUNT);
   const local = localNodeState();
   let verdict;

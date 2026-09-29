@@ -20,13 +20,15 @@
  * Usage: node fleet_voice.cjs [--dry] [--count N=3] [--soldier name]
  * Output: agent/fleet_voice_result.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/fleet_voice.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const steem = require('steem');
 
 const STEEM_RPC = process.env.STEEM_RPC || 'https://api.steemit.com';
-const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: HEAD });
 const DRY = GATE.dry;

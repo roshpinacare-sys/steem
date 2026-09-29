@@ -25,7 +25,9 @@ const PENDING = path.join(AGENT_DIR, 'chaintalk_pending.json');
 const SNAP = path.join(NODE_DIR, 'state-snapshot.json');
 const STATE = path.join(NODE_DIR, 'state.json');
 const OUT = path.join(AGENT_DIR, 'rean106_result.json');
-const ACCOUNT = 'headcorner';
+// 8-b: חשבון-הפעולה חובה מה-env — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/rean106.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 // LIVE-GATE (Task 28-b): DRY by default — the saosnet beat mutates the live ledger,
 // so the shared gate decides whether the child gets --live (--dry always wins). See DAEMONS.md.
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');

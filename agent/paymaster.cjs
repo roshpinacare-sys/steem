@@ -47,7 +47,8 @@ function loadDotEnv(dir) {
   return out;
 }
 const ENV = loadDotEnv(__dirname);
-const TREASURY = (process.env.AGENT_ACCOUNT || ENV.AGENT_ACCOUNT || 'headcorner').trim();
+const TREASURY = (process.env.AGENT_ACCOUNT || ENV.AGENT_ACCOUNT || '').trim();
+if (!TREASURY) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/paymaster.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
 const POSTING_WIF = process.env.POSTING_WIF || ENV.POSTING_WIF || '';
 const ACTIVE_WIF = process.env.ACTIVE_WIF || ENV.ACTIVE_WIF || '';
 

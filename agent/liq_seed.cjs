@@ -11,6 +11,8 @@
  * כללי-ברזל: חומת-5-custom_json-לבלוק (נמדדה) · dry-run כברירת-מחדל (--live
  * לשידור אמיתי) · כל המחירים מהמדידה.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/liq_seed.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
@@ -18,7 +20,7 @@ const steem = require('steem');
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv);
 const LIVE = GATE.live;
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 announceGate(GATE);
 const API = (process.env.DEX_API_URL || 'http://127.0.0.1:3000').replace(/\/$/, '');
 const RPC = process.env.STEEM_RPC || 'https://api.steemit.com';

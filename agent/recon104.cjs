@@ -9,6 +9,9 @@
  * והאימות-הסופי = מדידת-הספר-עצמו (לא-סטטוס-משימה).
  */
 'use strict';
+// 8-b: חשבון-הפעולה (מנפיק-ה-mission-ops) חובה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/recon104.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -18,7 +21,6 @@ const NODE_DIR = path.join(AGENT_DIR, '..', 'sovereign', 'node');
 const PENDING = path.join(AGENT_DIR, 'chaintalk_pending.json');
 const SNAP = path.join(NODE_DIR, 'state-snapshot.json');
 const OUT = path.join(AGENT_DIR, 'recon104_result.json');
-const ACCOUNT = 'headcorner';
 const RETIRED = ['WBTC', 'WETH', 'WXRP', 'WDOGE'];
 const EVIDENCE = {
   WBTC: { coin: 'BTC', collateral: '0.06 STEEM', lockRef: 'b71ca393cb4e2f0a218a2dc3b14a3228f36affc7', mintedTruth: 7e-8 },

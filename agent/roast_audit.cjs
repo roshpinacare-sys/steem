@@ -8,6 +8,8 @@
  * עקרון: כל-טענה-שנאמרה (R4/R5/R6) נבדקת-חי-מול-השרשרת/המערכת. אם-הטענה-והמציאות
  * לא-מדברות-באותה-שפה ⇒ PRIORITY finding. אפס-סודות-בפלט (קידומות-בלבד).
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/roast_audit.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -54,7 +56,7 @@ function loadDotEnv(dir) {
   }
 }
 loadDotEnv(AGENT);
-const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 
 /* ── vault (מבנה-מקונן: keys.steem.role / keys.hive.role) ── */
 function vaultAccounts() {

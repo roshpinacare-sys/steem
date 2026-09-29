@@ -18,6 +18,8 @@
  * Usage: node grid79.cjs [--dry] [--skip-scan]
  * Output: agent/grid79_result.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/grid79.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -27,7 +29,7 @@ const STEEM_RPC = 'https://api.steemit.com';
 const STEEM_NODES = ['https://api.steemit.com', 'https://api.justyy.com', 'https://steem.61bts.com'];
 const HIVE_RPC = 'https://api.hive.blog';
 const HE_RPC = 'https://api.hive-engine.com/rpc/contracts';
-const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const NET = 'saos-net/0';
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: HEAD });

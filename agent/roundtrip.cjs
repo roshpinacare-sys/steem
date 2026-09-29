@@ -16,15 +16,17 @@
  * חומות: 3.4 שניות בין-ops · DRY כברירת-מחדל (--live) · idempotent לפי state+שרשרת.
  */
 'use strict';
+// 8-b: חשבון-הפעולה = המפעיל (מפתחותיו ב-.env) — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/roundtrip.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 const { Client, PrivateKey } = require('@hiveio/dhive');
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT }); // 8-b: השער נעוץ בחשבון-הפעולה מה-env — לא בשם-קבוע
 const LIVE = GATE.live;
-const ACCOUNT = 'headcorner';
 announceGate(GATE, log);
 
 const OUT = path.join(__dirname, 'roundtrip_state.json');
@@ -59,11 +61,11 @@ function loadDotEnv(dir) {
 }
 
 function loadVault() {
-  // headcorner = המפעיל — מפתחותיו ב-.env (מחוץ-ל-git); החיילים בכספת
+  // ACCOUNT (AGENT_ACCOUNT) = המפעיל — מפתחותיו ב-.env (מחוץ-ל-git); החיילים בכספת
   const env = loadDotEnv(__dirname);
   const activeWif = env.ACTIVE_WIF || '';
   const postingWif = env.POSTING_WIF || '';
-  if (!activeWif || !postingWif) throw new Error('headcorner active/posting missing in .env');
+  if (!activeWif || !postingWif) throw new Error(ACCOUNT + ' active/posting missing in .env');
   const v = JSON.parse(fs.readFileSync(path.join(__dirname, 'keys', 'vault.json'), 'utf8'));
   const haran = (v.accounts || []).find((a) => String(a.username).toLowerCase() === 'haran');
   if (!haran || !haran.keys || !haran.keys.posting || !haran.keys.posting.wif) throw new Error('vault: haran posting missing');

@@ -15,14 +15,16 @@
  * SAOS · idempotent לפי txid-קנייה (state + סריקת-היסטוריה — השרשרת היא הפנקס).
  */
 'use strict';
+// 8-b: חשבון-הפעולה = האוצר (מפתחותיו ב-.env) — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/merchant.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT }); // 8-b: השער נעוץ בחשבון-הפעולה מה-env — לא בשם-קבוע
 const LIVE = GATE.live;
-const ACCOUNT = 'headcorner';
 announceGate(GATE, log);
 
 const OUT = path.join(__dirname, 'merchant_state.json');

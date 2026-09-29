@@ -63,7 +63,8 @@ function saveResult(r) {
 
 async function main() {
   const ENV = loadDotEnv(AGENT_DIR);
-  const HEAD = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+  const HEAD = (ENV.AGENT_ACCOUNT || '').toLowerCase();
+if (!HEAD) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/hive_rc_heal.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
   const ACTIVE_WIF = ENV.ACTIVE_WIF || '';
   const GATE = resolveLiveGate(process.argv, { account: HEAD });
   const DRY = GATE.dry;

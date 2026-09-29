@@ -19,6 +19,8 @@
  *
  * שימוש: node blurt99.cjs --run   (ברירת-מחדל: --dry בלי-שידורים)
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/blurt99.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -51,7 +53,7 @@ function loadDotEnv(dir) {
   }
 }
 loadDotEnv(AGENT_DIR);
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
 // LIVE-GATE (Task 28-b): --run remains this daemon's explicit-enable; the shared gate
 // adds the HE_LIVE_CONFIRM layer (--dry always wins). See DAEMONS.md.
