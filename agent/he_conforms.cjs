@@ -26,6 +26,8 @@
  *
  * Result → agent/he_conforms_result.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/he_conforms.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -51,7 +53,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const PROBE_SYMBOL = 'AFIT';   // dust token we hold — nothing of value at risk
 const COUNTERPARTY = 'cashmachine'; // our own hive account — min-unit settlement lands there

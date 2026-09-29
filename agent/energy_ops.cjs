@@ -16,6 +16,8 @@
  *
  * Evidence: agent/energy_evidence.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/energy_ops.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -36,7 +38,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const OPERATOR = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const OPERATOR = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const POSTING_WIF = process.env.POSTING_WIF || '';
 const OWNER_WIF = process.env.OWNER_WIF || '';

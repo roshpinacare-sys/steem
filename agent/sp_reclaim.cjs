@@ -20,6 +20,8 @@
  * חוקי-ברזל: חתימה-מקומית-בלבד (ACTIVE_WIF של הראש) · self-test-מול-שרשרת ·
  * אפס-סודות-בפלט · --dry קודם-תמיד.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/sp_reclaim.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -40,7 +42,7 @@ function loadDotEnv(dir) {
   }
 }
 loadDotEnv(__dirname);
-const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const DRY = process.argv.includes('--dry');
 const LIVE = process.argv.includes('--live');

@@ -12,6 +12,8 @@
  * אחרי-הפעולה: מדידה חוזרת על השרשרת (received_vesting_shares) + fuel_result.json.
  * כלל-ברזל: dry-run כברירת-מחדל (--live לשידור) · אין מפתחות בלוג · הכל נמדד.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/fuel_line.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
@@ -19,7 +21,7 @@ const steem = require('steem');
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv);
 const LIVE = GATE.live;
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 announceGate(GATE, log);
 const SP_PER_SOLDIER = 50;
 const FUEL_STEEM = 0.03;

@@ -12,6 +12,8 @@
  * שימוש:  node blurt_revive.cjs [--dry]
  * פלט:    agent/blurt_revive_result.json
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/blurt_revive.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -44,7 +46,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const R = { at: new Date().toISOString(), mode: DRY ? 'DRY' : 'LIVE', steps: [] };
 const step = (name, data) => { R.steps.push(Object.assign({ name }, data)); console.log(name + ': ' + JSON.stringify(data).slice(0, 320)); };
 

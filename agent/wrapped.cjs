@@ -38,7 +38,8 @@ try {
     if (m) env[m[1]] = m[2].trim();
   }
 } catch (_) { /* אין .env — DRY */ }
-const ACCOUNT = (env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/wrapped.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
 const ACTIVE_WIF = env.ACTIVE_WIF || '';
 const POSTING_WIF = env.POSTING_WIF || '';
 const HIVE_RPC = env.HIVE_RPC || 'https://api.hive.blog';

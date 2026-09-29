@@ -12,13 +12,15 @@
  *  7) staking: אילו-שדות-התצורה-חשופים-לציבור (SAOS/WAIV/SPORTS/CENT/BEE)
  * פלט: agent/fuel_map.json
  */
+// 8-b: חשבון-הצנזוס חובה מה-env — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/fuel_map.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
 const HE_RPC = process.env.HE_RPC || 'https://api.hive-engine.com/rpc/contracts';
 const HIVE_RPCS = ['https://api.hive.blog', 'https://api.syncad.com', 'https://anyx.io'];
-const ACCOUNT = 'headcorner';
 const OUT = path.join(__dirname, 'fuel_map.json');
 const GATE_BEE = 100.5; // עקבי-עם he_genesis CREATE_THRESHOLD
 const OUR_SYMBOLS = ['SPORTS', 'WAIV', 'CENT', 'VKBT', 'PIZZA', 'POSH', 'LEO', 'AFIT'];

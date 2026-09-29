@@ -20,7 +20,9 @@ const SNAP = path.join(NODE_DIR, 'state-snapshot.json');
 const STATE = path.join(NODE_DIR, 'state.json');
 const OUT = path.join(AGENT_DIR, 'reanchor103_result.json');
 const STATE_FILE = path.join(AGENT_DIR, 'reanchor103_state.json');
-const ACCOUNT = 'headcorner';
+// 8-b: חשבון-הפעולה חובה מה-env — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/reanchor103.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 
 const DEV_ACT = 5;   // מעשה-מעל-סטייה-זו (%)
 const DEV_OK = 12;   // יעד-סובלנות (%)

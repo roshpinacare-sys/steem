@@ -252,7 +252,8 @@ async function runAnchor(opts = {}) {
   const dry = !!opts.dry;
   const quiet = !!opts.quiet;
   const ENV = loadDotEnv(__dirname);
-  const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+  const ACCOUNT = (ENV.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/anchor.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
   const WIF = ENV.ACTIVE_WIF || '';
   if (!WIF) throw new Error('ACTIVE_WIF missing — active-signed anchor requires it');
 

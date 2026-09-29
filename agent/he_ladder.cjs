@@ -9,6 +9,8 @@
  * כללי-ברזל: dry-run כברירת-מחדל (--live) · חתימת active על Hive ·
  * דילוג-כנה כשאין-counterparty · אין מפתחות בלוג.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/he_ladder.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
@@ -26,7 +28,7 @@ try {
   if (!activeWif) activeWif = (env.match(/^ACTIVE_WIF=(.+)$/m) || [])[1]?.trim() || '';
 } catch (_) { /* אין .env */ }
 
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 function log(msg) { console.log('[' + new Date().toISOString() + '] ladder: ' + msg); }
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });

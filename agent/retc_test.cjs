@@ -23,10 +23,13 @@ for (const ln of fs.readFileSync(path.join(__dirname, '.env'), 'utf8').split(/\r
 const HIVE_RPC = env.HIVE_RPC || 'https://api.hive.blog';
 const ACTIVE_WIF = env.ACTIVE_WIF || '';
 if (!ACTIVE_WIF) { console.error('no active key'); process.exit(1); }
+// 8-b: חשבון-הפעולה = המפעיל (ACTIVE_WIF שלו) — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (env.AGENT_ACCOUNT || process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/retc_test.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const hiveCli = new Client([HIVE_RPC]);
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
-const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT }); // 8-b: השער נעוץ בחשבון-הפעולה מה-env — לא בשם-קבוע
 const DRY = GATE.dry;
 announceGate(GATE);
 
@@ -59,7 +62,7 @@ const rcMana = async (acct) => {
 (async () => {
   const out = {};
   const before = await rcMana('ynet');
-  const myRc = await rcMana('headcorner');
+  const myRc = await rcMana(ACCOUNT);
   out.before = { ynetMax: before && before.max, myMana: myRc && myRc.mana, myMax: myRc && myRc.max };
   console.log('before:', JSON.stringify(out.before));
   if (DRY) { console.log('[DRY] LIVE-GATE — delegate_rc test would broadcast — nothing sent'); return; }
@@ -68,7 +71,7 @@ const rcMana = async (acct) => {
   const MAX_RC = 1000000000; // 1G
   const tx = {
     ref_block_num: 0, ref_block_prefix: 0, expiration: '', operations: [
-      ['delegate_rc', { from: 'headcorner', to: 'ynet', vesting_shares: '0.000000 VESTS', max_rc: MAX_RC, extensions: [] }],
+      ['delegate_rc', { from: ACCOUNT, to: 'ynet', vesting_shares: '0.000000 VESTS', max_rc: MAX_RC, extensions: [] }],
     ], extensions: [],
   };
   const dgp = await hiveCli.call('condenser_api', 'get_dynamic_global_properties', []);

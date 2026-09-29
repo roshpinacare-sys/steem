@@ -25,6 +25,8 @@
  *
  * Evidence: agent/sovereign_59_evidence.json (public data only — never secrets).
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/sovereign_ops.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -44,7 +46,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const OPERATOR = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const OPERATOR = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: OPERATOR });
 const DRY = GATE.dry;

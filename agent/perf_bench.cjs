@@ -41,6 +41,9 @@ function loadDotEnv(dir) {
   }
 }
 loadDotEnv(__dirname);
+// 8-b: חשבון-הפעולה (העוגן-חי של המדידה) חובה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/perf_bench.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 
 const STEEM_RPC = 'https://api.steemit.com';
 const HIVE_RPC = 'https://api.hive.blog';
@@ -270,7 +273,7 @@ async function main() {
   incl.steem = steemRes; incl.hive = hiveRes;
   log('inclusion: steem=' + (steemRes.latencyMs != null ? steemRes.latencyMs + 'ms blk ' + steemRes.block : (steemRes.error || '?')) + ' · hive=' + (hiveRes.latencyMs != null ? hiveRes.latencyMs + 'ms blk ' + hiveRes.block : (hiveRes.error || '?')));
 
-  // 4. Anchor the benchmark digest on-chain (headcorner posting)
+  // 4. Anchor the benchmark digest on-chain (AGENT_ACCOUNT posting)
   const report = {
     at: new Date().toISOString(),
     rpc: rpcRaceRes,
@@ -293,7 +296,7 @@ async function main() {
         rpcBestMs: rpcRaceRes.bestSingleMs, rpcRaceMs: rpcRaceRes.raceAllMs,
         at: report.at,
       };
-      const conf = await steem.broadcast.sendAsync({ operations: [busOp('headcorner', payload)], extensions: [] }, [POSTING_WIF]);
+      const conf = await steem.broadcast.sendAsync({ operations: [busOp(ACCOUNT, payload)], extensions: [] }, [POSTING_WIF]);
       anchor = { txid: (conf && conf.id) || null, digest };
       log('benchmark anchored on-chain txid=' + anchor.txid);
     } catch (e) { log('anchor failed: ' + e.message); anchor = { digest, error: e.message }; }

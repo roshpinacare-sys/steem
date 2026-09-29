@@ -45,7 +45,9 @@ const HE_RPC = 'https://api.hive-engine.com/rpc/contracts';
 const OUT_RESULT = path.join(__dirname, 'he_fleet_result.json');
 const OUT_STATE = path.join(__dirname, 'he_fleet_state.json');
 
-const HEAD = 'headcorner';
+// 8-b: חשבון-הפעולה חובה מה-env — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!HEAD) { console.error('usage: AGENT_ACCOUNT=<account> node agent/he_fleet_sell.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 const GATE = resolveLiveGate(process.argv, { account: HEAD });
 const LIVE = GATE.live;
 announceGate(GATE, log);

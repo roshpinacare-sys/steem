@@ -16,6 +16,8 @@
  * חוקי-ברזל: חתימות-מקומיות-בלבד · ה-WIFs לעולם-לא-בלוג/גיט (רק-קידומת 8-תווים)
  * · --dry קודם-תמיד · self-test מול-השרשרת לפני-כל-חתימה-חיה.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/fleet_mint_v3.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -37,7 +39,7 @@ function loadDotEnv(dir) {
   }
 }
 loadDotEnv(__dirname);
-const HEAD = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const OWNER_WIF = process.env.OWNER_WIF || '';
 

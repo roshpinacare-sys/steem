@@ -14,6 +14,8 @@
  *
  * Everything writes sovereign_60_evidence.json. No secrets in output.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/sovereign_60_live.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -33,7 +35,7 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 
-const OPERATOR = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const OPERATOR = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const POSTING_WIF = process.env.POSTING_WIF || '';
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const EV_PATH = path.join(__dirname, 'sovereign_60_evidence.json');

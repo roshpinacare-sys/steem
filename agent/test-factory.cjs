@@ -18,6 +18,8 @@
  * חשוב: הדימון עצמו נשאר DRY_RUN=true ברירת-מחדל; הסקריפט הזה עצמאי ומפיק
  * מפתח שלא שייך לאף חשבון — אין שום סיכון.
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/test-factory.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 
 const steem = require('steem');
@@ -30,7 +32,7 @@ announceGate(GATE);
 if (DRY) { console.log('[DRY] LIVE-GATE — negative-key broadcast test skipped (nothing sent)'); process.exit(0); }
 
 
-const ACCOUNT = process.env.AGENT_ACCOUNT || 'headcorner';
+const ACCOUNT = process.env.AGENT_ACCOUNT || '';
 
 console.log('[1/4] deriving a FAKE active key for @' + ACCOUNT + ' from seed "saos-agent-test" ...');
 const keys = steem.auth.getPrivateKeys(ACCOUNT, 'saos-agent-test', ['active']);

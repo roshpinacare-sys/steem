@@ -16,6 +16,8 @@
  * RC-שער ≥40% · רצפת-SAOS 0.05 · אין self-trade · אין מפתחות בלוג.
  * אימות: כל txid נבדק get_transaction על צומת-עצמאי. DRY כברירת-מחדל (--live).
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/microdex.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -24,7 +26,7 @@ const steem = require('steem');
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv);
 const LIVE = GATE.live;
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 announceGate(GATE, log);
 
 const OUT = path.join(__dirname, 'microdex_state.json');

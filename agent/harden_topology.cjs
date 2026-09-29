@@ -42,7 +42,8 @@ function loadDotEnv(dir) {
   return out;
 }
 const ENV = loadDotEnv(__dirname);
-const ACCOUNT = (ENV.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (ENV.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> (in agent/.env) — node agent/harden_topology.cjs — no default acting account (8-b · docs/117o-KEY-INCIDENT.md)'); process.exit(1); }
 const STEEM_RPC = process.env.RPC_URL || 'https://api.steemit.com';
 steem.api.setOptions({ url: STEEM_RPC });
 

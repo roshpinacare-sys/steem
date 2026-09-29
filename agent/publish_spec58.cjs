@@ -4,6 +4,8 @@
  * chains (Steem + Hive) with the operator posting key. Today's edition carries
  * the Task 58 energy-program results (measured, on-chain).
  */
+// 8-b: חשבון-פעולה חובה לפני-כל-טעינה — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/publish_spec58.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); }
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -21,7 +23,7 @@ function loadDotEnv(dir) {
   }
 }
 loadDotEnv(__dirname);
-const ACCOUNT = (process.env.AGENT_ACCOUNT || 'headcorner').toLowerCase();
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const WIF = process.env.POSTING_WIF || '';
 const PERMLINK = 'saos-1-protocol-spec-' + new Date().toISOString().slice(0, 10).replace(/-/g, '');
 const steemCli = new Client(['https://api.steemit.com']);

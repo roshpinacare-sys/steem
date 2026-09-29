@@ -56,7 +56,9 @@ const REQ_FILE = path.join(NODE_DIR, 'weave-request.json');
 const STATE_W_FILE = path.join(__dirname, 'weave_state.json');
 const LAST_FILE = path.join(__dirname, 'weave_last.json');
 
-const ACCOUNT = 'headcorner'; // זהה לצומת (saosnet.cjs) — המנפיק-הריבוני
+// 8-b: חשבון-הפעולה חובה מה-env — אין ברירת-מחדל, לעולם (המשך 7-c · docs/117o-KEY-INCIDENT.md)
+const ACCOUNT = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/weave_batch.cjs — no default acting account (2026-09-08 incident)'); process.exit(1); } // זהה לצומת (saosnet.cjs) — המנפיק-הריבוני
 const WEAVE_ANCHOR_ID = 'saos.weave.v1';
 const HIVE_RPC = process.env.HIVE_RPC || 'https://api.hive.blog';
 
