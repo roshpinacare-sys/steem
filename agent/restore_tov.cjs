@@ -26,6 +26,10 @@
  *     בבעלות-החיה-על-השרשרת. אין-קביעה-מקודדת-שקרית: אם-הבעלים ישיב-מפתח
  *     והאודיט-ייבדק-מחדש — השער-ייפתח מעצמו. צד-Steem לא-השתנה (הכספת שולטת
  *     שם — נמדד 2026-09-30: steem 4/4 בכספת).
+ * Task 13-a — מאסטר-שוחזר (2018 sheet line) → השער-מקבל-שני-מקורות-שליטה-ממוסמכים:
+ *   vault.owner=true (חומר-כספת) או master.owner=true (חומר-נגזר-מ-SAOS_FACTORY_MASTER).
+ *   המאסטר נגזר-בזמן-ריצה, לעולם-לא-נשמר. נמדד: שני-המקורות שקריים-עבור tov-hive
+ *   (הוכחה-שלילית 0/4 מול-כל-מועמד-מקומי) — השער-נשאר-סגור, fail-closed ללא-שינוי.
  *
  * שימוש: node agent/restore_tov.cjs [--dry] [--live]   (ברירת-מחדל: dry)
  * אף-סוד לא נדפס — WIF/מאסטר נשארים בכספת-בלבד.
@@ -56,13 +60,15 @@ if (GATE.dry) log('[restore_tov] gate dry — recover/account_update will NOT br
 // Task 11-c (2026-10-01) — owner directive "אין לי עוד מפתחות": tov-hive status + fail-closed material gate.
 // Resolved-material check (NOT a hard-coded claim): the live generated truth in fleet_control_audit.json
 // must show chains.hive.tov.vault.owner=true before any Hive-side --live aspect may arm.
-const HIVE_BLOCK_REASON = 'BLOCKED-NO-KEY: keys lost — owner-held; owner confirmed 2026-10-01 no more keys exist; NO economic use';
-const HIVE_UNBLOCK_PATH = 'only if the owner restores controlling material into the vault AND agent/fleet-control-audit.cjs is re-run showing chains.hive.tov.vault.owner=true (resolved material presence, fail-closed)';
+const HIVE_BLOCK_REASON = 'BLOCKED-NO-KEY: keys lost — owner-held; owner confirmed 2026-10-01 no more keys exist; NO economic use. Task 13-a re-proven: restored master + every git-folder candidate derive tov steem+blurt 4/4 yet hive 0/4 (fleet_control_audit.json)';
+const HIVE_UNBLOCK_PATH = 'only if a resolved controlling source appears in agent/fleet-control-audit.cjs output — chains.hive.tov.vault.owner=true (vault material) OR chains.hive.tov.master.owner=true (factory-derived; WIF derived at run-time, never stored) — fail-closed either way';
 function hiveMaterialResolved() {
   try {
     const j = JSON.parse(fs.readFileSync(path.join(__dirname, 'fleet_control_audit.json'), 'utf8'));
     const row = j.chains && j.chains.hive && j.chains.hive[ACCOUNT];
-    return !!(row && row.exists && row.vault && row.vault.owner === true);
+    // Task 13-a: two resolved sources — vault-held material OR factory-derivable material.
+    // Both are live-audited truths (never hard-coded); asOf Task 13-a both are false for tov-hive.
+    return !!(row && row.exists && ((row.vault && row.vault.owner === true) || (row.master && row.master.owner === true)));
   } catch (_) { return false; } // audit absent/unreadable → fail-closed
 }
 const HIVE_MATERIAL_OK = hiveMaterialResolved();

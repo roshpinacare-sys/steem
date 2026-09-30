@@ -107,6 +107,17 @@ async function main() {
     accounts: fleet.accounts.length,
     chains: {},
     verdict: {},
+    // Task 13-a — master restoration truth. SAOS_FACTORY_MASTER was recovered from
+    // git-folder material: the 2018 sheet line for @headcorner (agent/keys/hed-soldiers-source.txt
+    // line 19, 52-char steemit-format factory password; same line that revived the head 2026-09-29).
+    // PROVEN vs live chain (Task 13-a measurement matrix): master column below = THE one
+    // SAOS_FACTORY_MASTER (single-password semantics); ADDITIONALLY each soldier's own 2018 sheet
+    // line derives its steem+blurt keys 4/4 and 9 soldiers' hive keys 4/4 (10×steem, 9×hive,
+    // 12×blurt incl. ynet-blurt from ynet's own line — measured, per-account).
+    // PROVEN NEGATIVES (0/4 against master + all per-account sheet lines + recovered page + zip
+    // uploads + seal passes): tov-hive, headcorner-hive, ynet steem+hive (rotated 2026-09-04 to a
+    // since-lost master; ynet retired by sovereign decision 2026-09-30). A proven negative is truth.
+    note: 'master restored Task 13-a (source: 2018 sheet, agent/keys/hed-soldiers-source.txt:19 — structure only, never printed); per-account sheet lines derive steem 11/12, hive 9/12, blurt 12/12 (each account from its OWN line); tov-hive & headcorner-hive & ynet steem/hive = measured 0/4 against every git-folder candidate — blocked rows remain blocked; evidence: this file (asOf above)',
   };
 
   /* מקור-שליטה שני: הכספת המשוחזרת (vault.json) — WIF-ים נטענים לזיכרון-בלבד */
@@ -116,9 +127,13 @@ async function main() {
     vaultKeys = {};
     for (const a of (v.accounts || [])) {
       const k = a.keys || {};
+      // Task 13-a: two vault shapes — {role:{wif}} (soldiers) and chain-keyed {steem:{role:{wif}},hive:{…}}
+      // (the head, revived 2026-09-29). Graphene chains share one key body per account, so the
+      // steem group is the shared-body fallback for hive/blurt when no role-keyed entry exists.
+      const pick = (r) => (k[r] && k[r].wif) || (k.steem && k.steem[r] && k.steem[r].wif) || undefined;
       vaultKeys[(a.username || '').toLowerCase()] = {
-        posting: k.posting && k.posting.wif, active: k.active && k.active.wif,
-        owner: k.owner && k.owner.wif, memo: k.memo && k.memo.wif,
+        posting: pick('posting'), active: pick('active'),
+        owner: pick('owner'), memo: pick('memo'),
       };
     }
     out.vaultSource = 'agent/keys/vault.json';
