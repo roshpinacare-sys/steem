@@ -6,6 +6,8 @@
  *         ed25519→Solana-pub · master-password-נגזרות (steem.auth.getPrivateKeys)
  * מול: 8-הפומביות-החיות של tov (Steem+Hive) + כל-הפומביות בכספת (11-חשבונות).
  * הרצה: node agent/identify_tov_key.cjs
+ * Task 11-c (2026-10-01): הבעלים אישר — אין-עוד-מפתחות · tov-hive = BLOCKED-NO-KEY
+ * (אפס-שימוש-כלכלי). כלי-זיהוי-ארכיוני בלבד — לא-לפעולה.
  */
 'use strict';
 const fs = require('fs');

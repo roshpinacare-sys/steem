@@ -114,7 +114,7 @@ the acting account is passed from each daemon's own `AGENT_ACCOUNT`/fixed consta
 | `agent/wrapped.cjs` | DRY | live_gate (missing WIFs still force DRY, as before) | Steem + Hive |
 | `agent/yield.cjs` | DRY | live_gate (`{account: ACCOUNT}` from `AGENT_ACCOUNT`) | Steem (transfers) |
 | `agent/ynet_rescue_ping.cjs` | DRY | live_gate (CLI; DRY before broadcast) | Steem + Hive (rescue ping) |
-| `agent/restore_tov.cjs` | DRY | live_gate (`{account: 'tov'}`, fixed subject) — gate BEFORE vault/paste-WIF load; owner-authority mutation | Steem + Hive (recover_account / account_update2) |
+| `agent/restore_tov.cjs` | DRY | live_gate (`{account: 'tov'}`, fixed subject) — gate BEFORE vault/paste-WIF load; owner-authority mutation; Task 11-c: hive aspects additionally REFUSE `--live` fail-closed unless `fleet_control_audit.json` shows `chains.hive.tov.vault.owner=true` (resolved material presence) | Steem + Hive (recover_account / account_update2) — Hive side **BLOCKED-NO-KEY** (owner 2026-10-01: no more keys exist — NO economic use) until the owner restores material |
 | `agent/head-delegate.cjs` | DRY | live_gate (`{account: HEAD}`) — gate BEFORE vault recovery | Steem (delegate_vesting_shares) |
 | `agent/head-revive.cjs` | DRY | live_gate (`{account: HEAD}`) — no dry mode: dry gate exits before key load | Steem (claim/vote/delegate) |
 | `agent/soldiers-blog.cjs` | DRY | live_gate (`{account: 'headcorner'}` fleet head confirms) — dry gate exits before key load | Steem (comment/comment_options) |

@@ -56,8 +56,11 @@ const SHARD_TARGET = 650; // bytes per shard payload (op stays << 8192B)
 
 /* Steem signing soldiers (even shards) / Hive signing soldiers (odd shards) —
  * distinct signers so the object spans 6 independent keys across 2 chains. */
+// Task 11-c (2026-10-01): tov removed from HIVE_SIGNERS — tov-hive = BLOCKED-NO-KEY
+// (owner confirmed no more keys exist — NO economic use; vault material does not control
+// tov-hive per fleet_control_audit.json, signing would be doomed). siq is hive-full.
 const STEEM_SIGNERS = ['cashmachine', 'lsa', 'siq'];
-const HIVE_SIGNERS = ['haran', 'macrame', 'tov'];
+const HIVE_SIGNERS = ['haran', 'macrame', 'siq'];
 
 function log(msg) { console.log('[' + new Date().toISOString() + '] crossshard: ' + msg); }
 function sha256(s) { return crypto.createHash('sha256').update(s).digest('hex'); }
