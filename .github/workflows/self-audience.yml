@@ -15,8 +15,10 @@
 name: self-audience
 
 on:
-  schedule:
-    - cron: '30 14 * * *'   # 14:30 UTC — אחרי פרסומי-הבוקר של הראש, חלון-הצבעה חי
+  # R75 (2026-09-30, ריבונות המכסה): הקדנס היומי הוסר — התאום הציבורי ב-Domain
+  # (self-audience 14:30 UTC, דקות Actions בלתי-מוגבלות, סודות SA_FLEET_KEYS/
+  # SA_HEAD_ACTIVE) נושא את מחזור-הקהל. ריצת-Domain מס' 4 (2026-09-30 14:49)
+  # SUCCESS — הרכבת-הפרטית הייתה נכשלת יומית על מכסה אזולה. גיבוי ידני בלבד.
   workflow_dispatch:
     inputs:
       skip_posts:
