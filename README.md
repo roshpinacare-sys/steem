@@ -1,11 +1,23 @@
 # SAOS — Steem AI Agent OS
 
-> **מיקרו-קרנל ריבוני על שרשראות Graphene (Steem + Hive) + שרשרת-ריבונית משלנו (SAOS-NET v1.3) — צי-חיילים עצמאי, מנועי-שוק, אקספלורר עם-הוכחות, וחומת-BEE שנמדדה-מדעית.**
-> הכל רץ חי מול RPC ציבורי, חתום מקומית, מאומת-על-השרשרת. אין סימולציות. אין סיפורים — רק txids ו-stateRoots.
->
-> **📄 דוח-עברי-תמיד-טרי: [`docs/REPORT_HE.md`](docs/REPORT_HE.md)** — נכתב אוטומטית על-ידי הדמון כל 30 דק׳ (Task 85) ונדחף ל-repo על-ידי gitkeeper. לא צריך לקרוא קוד — תפתח את הדוח.
+> **מיקרו-קרנל ריבוני על שרשראות Graphene (Steem + Hive + Blurt) + SAOS-NET — צי-חיילים, מנועי-שוק, אקספלורר-עם-הוכחות.**
+> הכל נמדד-חי מול RPC ציבורי. אין סימולציות — רק txids ומדידות-מתוארכות.
 
-![status](https://img.shields.io/badge/proofs-146%2F161%20on--chain-brightgreen) ![chains](https://img.shields.io/badge/chains-Steem%20·%20Hive%20·%20HE%20·%20SAOS--NET-blueviolet) ![console](https://img.shields.io/badge/console-v9%20·%209%20מסכים-emerald) ![fleet](https://img.shields.io/badge/fleet-13%20census%20·%2029%20loops-orange)
+## 🟢 אמת-חיה (צנזוס-קריאה-בלבד · asOf 2026-09-30T15:41Z)
+
+| מדד | ערך-חי | כלי-המדידה |
+|---|---|---|
+| **פליטה** | **12 סוכנים × 3 שרשראות = 36 שורות** — כל-36 קיימים-וחיים (לא "60+" — הצבא-האמיתי) | `agent/lib/fleet-roster.cjs` |
+| **שליטה-ריבונית** | STEEM **11/12 · BLURT 11/12 · HIVE 9/12** (owner+active+posting מאומת-מול-key_auths-חי) | `agent/fleet-control-audit.cjs` |
+| **מקורות-שליטה** | כספת-משוחזרת מהחותמת 09-29 (`agent/keys/vault.json` · 10-חיילים) + מפתח-ראשי (headcorner · steem+blurt) | `agent/fleet_control_audit.json` |
+| **אנרגיה (RC)** | **0 חשבונות-רעבים** · מינימום-חי: steem 97.4% · hive 100% — ה"מוות" בדוחות-הישנים היה רג'ן-RC שהתאושש | `agent/energy_census.json` |
+| **שלמות-רוסטר** | מקור-רישום-אחד (vault→fallback-קבוע-עוגן-שרשרת) — השכבות-המתחרות (army/empire/muster/agents-registry) מוגדרות עתה כצנזוסים-ארכיון | `agent/lib/fleet-roster.cjs` |
+| **פערים-כנים** | ynet: מואצל-בלבד (posting-דרך-הראש) · tov-hive: מפתח-אבוד (אצל-הבעלים — `soldier_repair.cjs`) · headcorner-hive: חומר-מפתח-שונה | `fleet_control_audit.json` |
+
+> ⚠️ **היסטוריה-מתחת-לקו-זה**: הטבלה והצ'יפים-מטה נכתבו בזמן-אמת-של-משימות-85-98 וקפאו כשהדמון-נפל (~09-12).
+> הם מוצגים כארכיון-הנדסי — **לא** כמצב-נוכחי. המדידה-החיה-היא הטבלה-מעלה.
+
+![status](https://img.shields.io/badge/fleet-12%20agents%20%C2%B7%2036%20rows%20live-emerald) ![control](https://img.shields.io/badge/control-steem%2011%2F12%20%C2%B7%20hive%209%2F12%20%C2%B7%20blurt%2011%2F12-brightgreen) ![energy](https://img.shields.io/badge/RC-36%2F36%20healthy%20(as%20of%202026-09-30)-emerald) ![chains](https://img.shields.io/badge/chains-Steem%20%C2%B7%20Hive%20%C2%B7%20Blurt%20%C2%B7%20HE%20%C2%B7%20SAOS--NET-blueviolet)
 
 ---
 
