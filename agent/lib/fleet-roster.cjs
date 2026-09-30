@@ -24,7 +24,8 @@
  *   asOf 2026-09-30 + הנחיית-הבעלים 2026-10-01). כספת-ראשונה נשארת הסמכות:
  *   vaultKeyMaterial מסמן אם-לכספת החיה יש חומר-מפתח לחשבון (גוף-מפתח אחד-משותף
  *   לשלוש-השרשראות — נוכחות בכספת אינה-שולטת-בכל-שרשרת; השליטה נמדדת-מול-השרשרת).
- *   דוגמה-כנה: ל-tov יש חומר-בכספת ששולט-steem+blurt, אך tov-hive נשאר blocked-no-key.
+ *   דוגמה-כנה: ל-tov יש חומר-בכספת ששולט-steem+blurt, אך tov-hive נשאר blocked-no-key
+ *   (Task 13-a: הוכחה-שלילית מדודה — אף-גורם-מקומי אינו גוזר את מפתחות-tov-hive).
  *
  * שימוש:  const { roster, rows, controlFor } = require('./lib/fleet-roster.cjs');
  *          const r = roster();            // { source, accounts, activeFleet, retired, warning, rows }
@@ -67,8 +68,10 @@ const CHAINS = Object.freeze(['steem', 'hive', 'blurt']);
  *  STEEM 11/12 · BLURT 11/12 · HIVE 9/12 — החריגים בלבד מפורטים ב-CONTROL_STATUS). */
 const CONTROL_DEFAULT = Object.freeze({ control: 'full', economicUse: true, blockedReason: null });
 
-/** חריגי-השליטה (Task 11-c, 2026-10-01) — הנחיית-הבעלים "אין לי עוד מפתחות":
- *  מה-שנמדד (fleet_control_audit.json 2026-09-30) + מה-שהבעלים קבע (2026-10-01).
+/** חריגי-השליטה (Task 11-c, 2026-10-01; Task 13-a master-restoration re-measurement) —
+ *  הנחיית-הבעלים "אין לי עוד מפתחות" + האמת-הנמדדת-מחדש: SAOS_FACTORY_MASTER שוחזר
+ *  (2018 sheet line) והמטריצה נמדדה-מחדש מול-השרשרת — כולל-הוכחות-שליליות (tov-hive,
+ *  headcorner-hive, ynet steem/hive) והוכחה-חיובית-חדשה (ynet-blurt נגזר-מהשורה-שלו).
  *  כל-שאר-השורות = CONTROL_DEFAULT. */
 const OP_DELEGATED = Object.freeze({
   control: 'operator-delegated',
@@ -80,19 +83,26 @@ const CONTROL_STATUS = Object.freeze({
     hive: Object.freeze({
       control: 'blocked-no-key',
       economicUse: false,
-      blockedReason: 'keys lost — owner-held; owner confirmed 2026-10-01 no more keys exist; NO economic use',
+      blockedReason: 'keys lost — owner-held; owner confirmed 2026-10-01 no more keys exist; NO economic use. Task 13-a proven negative: master restored (2018 sheet) and tov\'s OWN factory password derives tov steem+blurt 4/4 yet hive 0/4 — no git-folder source controls tov-hive (evidence: fleet_control_audit.json note, asOf in file)',
     }),
   }),
   ynet: Object.freeze({
     steem: OP_DELEGATED,
     hive: OP_DELEGATED,
-    blurt: OP_DELEGATED,
+    // Task 13-a honest upgrade: ynet-blurt keys ARE factory-derivable (its own 2018 sheet line,
+    // 4/4 measured vs live chain). Retirement is a sovereign decision and STANDS (economicUse
+    // false regardless of control) — but the control flags must not lie about key availability.
+    blurt: Object.freeze({
+      control: 'full',
+      economicUse: false,
+      blockedReason: 'retired by sovereign decision 2026-09-30 — economic use stays FALSE. Task 13-a: keys are factory-derivable from ynet\'s own 2018 sheet line (4/4 measured; fleet_control_audit.json note) and headcorner posting account-auth remains — retirement, not keylessness',
+    }),
   }),
   headcorner: Object.freeze({
     hive: Object.freeze({
       control: 'partial',
       economicUse: false,
-      blockedReason: 'different key material — operator hive keys not held by vault/master (measured fleet_control_audit.json 2026-09-30: hive 0/4)',
+      blockedReason: 'different key material — operator hive keys not held by vault/master (measured fleet_control_audit.json 2026-09-30: hive 0/4; re-proven Task 13-a: 0/4 against the restored master + every per-account 2018 sheet line + recovered page + zip uploads)',
     }),
   }),
 });
@@ -111,7 +121,8 @@ function vaultKeyMaterialByAccount() {
     const map = {};
     for (const a of (v.accounts || [])) {
       const k = a.keys || {};
-      map[String(a.username || '').toLowerCase()] = !!(k.posting || k.active || k.owner || k.memo);
+      // Task 13-a: also recognise the chain-keyed shape (the head: keys.steem.{role,…})
+      map[String(a.username || '').toLowerCase()] = !!(k.posting || k.active || k.owner || k.memo || k.steem);
     }
     return map;
   } catch (_) { return null; }
