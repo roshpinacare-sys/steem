@@ -16,6 +16,13 @@
 | **דגלי-שליטה-למכונה** | כל-שורה-מ-36 נושאת `control` (full · partial · operator-delegated · blocked-no-key) + `economicUse` + `blockedReason` — tov-hive=blocked-no-key (הוכחה-שלילית) · ynet steem/hive=operator-delegated · ynet-blurt=full-אך-פרוש (economicUse=false) · headcorner-hive=partial | `agent/lib/fleet-roster.cjs` → `rows()` |
 | **פערים-כנים** | tov-hive: **BLOCKED-NO-KEY — הוכחה-שלילית-מדודה (Task 13-a)**: המאסטר-שוחזר + הסיסמה-העצמית-של-tov מהגיליון גוזרות steem+blurt 4/4 אך hive 0/4 — אף-מקור-מקומי אינו שולט ב-tov-hive · אפס-שימוש-כלכלי · ynet steem/hive: **OPERATOR-DELEGATED** (רוטט 09-04 למאסטר-שאבד) · ynet-blurt: **נגזר-4/4 מהשורה-שלו (נמדד Task 13-a) אך הפרישה-עומדת** — economicUse=false · headcorner-hive: **PARTIAL** — חומר-שונה, לא-באף-מקור-מקומי (0/4 מול-כל-מועמד) · אפס-שימוש-כלכלי | `agent/lib/fleet-roster.cjs` (rows) · `fleet_control_audit.json` (note) |
 
+### 🔐 gitleaks-triage (asOf 2026-09-30T19:34Z · Task 13-d1 · gitleaks v8.24.3)
+
+- **המקור**: org run `36763896413` (Domain hub) = **914 ממצאים** — שוחזר מקומית 1:1 (default-config, היסטוריה-מלאה 963-commit).
+- **HEAD (b3f9244) = נקי-מסודות-חיים: כן** — סריקת tracked-tree ב-HEAD = 15 ממצאים, כולם מסווגים: 10 = **txids ציבוריים** (40-hex, `postingAuth` ב-`agent/harden_result.json` — מחולל `agent/harden_topology.cjs` כותב txid; נתוני-שרשרת-ציבוריים) + 5 = **metadata-אטימה-מכוון** (`agent/recovery-meta.json` — דוקטרינת-בעלים, Task 10-c/13-a). **0 מוסרו, 0 סודות-חיים בעץ**.
+- **סיווג-מלא (914)**: **848 false-positive** = 838 ארכיוני-מחקר צד-שלישי (`download/research|recovery` — fixtures/PEM-headers-במחקר-חיצוני, אפס-צורות-WIF בסריקת-צורות 13-d1; כבר-הוצאו-מהעץ ב-commit 263c34ee) + 10 txids · **66 accepted-with-risk (custody)** = `agent/recovery-meta.json` (65, חי-מכוון-ב-HEAD) + snapshot-ישן `agent/vault/recovery-meta-2026-09-12.json` (1, היסטורי) — **רוטציה חסומת-בעלים** (owner-blocked, תועד Task 1/10-c/13-a) · **0 real-at-HEAD (removed)**.
+- **ראיה**: `.gitleaksignore` (908 fingerprints, grouped+dated, אפס-חומר-סודות) → סריקת-היסטוריה-מלאה חוזרת מקומית = **0 ממצאים** (RC=0). ממצא-חדש-עתידי = re-triage כנה, לא-דיכוי.
+
 > ⚠️ **היסטוריה-מתחת-לקו-זה**: הטבלה והצ'יפים-מטה נכתבו בזמן-אמת-של-משימות-85-98 וקפאו כשהדמון-נפל (~09-12).
 > הם מוצגים כארכיון-הנדסי — **לא** כמצב-נוכחי. המדידה-החיה-היא הטבלה-מעלה.
 
