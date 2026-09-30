@@ -114,6 +114,17 @@ the acting account is passed from each daemon's own `AGENT_ACCOUNT`/fixed consta
 | `agent/wrapped.cjs` | DRY | live_gate (missing WIFs still force DRY, as before) | Steem + Hive |
 | `agent/yield.cjs` | DRY | live_gate (`{account: ACCOUNT}` from `AGENT_ACCOUNT`) | Steem (transfers) |
 | `agent/ynet_rescue_ping.cjs` | DRY | live_gate (CLI; DRY before broadcast) | Steem + Hive (rescue ping) |
+| `agent/restore_tov.cjs` | DRY | live_gate (`{account: 'tov'}`, fixed subject) — gate BEFORE vault/paste-WIF load; owner-authority mutation | Steem + Hive (recover_account / account_update2) |
+| `agent/head-delegate.cjs` | DRY | live_gate (`{account: HEAD}`) — gate BEFORE vault recovery | Steem (delegate_vesting_shares) |
+| `agent/head-revive.cjs` | DRY | live_gate (`{account: HEAD}`) — no dry mode: dry gate exits before key load | Steem (claim/vote/delegate) |
+| `agent/soldiers-blog.cjs` | DRY | live_gate (`{account: 'headcorner'}` fleet head confirms) — dry gate exits before key load | Steem (comment/comment_options) |
+| `agent/self-audience.cjs` | DRY | live_gate (`{account: 'headcorner'}` fleet head confirms) — dry gate exits before key load | Steem (vote) |
+| `agent/sp_reclaim.cjs` | DRY | live_gate (`{account: HEAD}` from `AGENT_ACCOUNT`; `--live` without confirm runs DRY) | Steem (delegate_vesting_shares reclaim) |
+| `agent/fleet-claim.cjs` | DRY | live_gate (`{account: 'headcorner'}` fleet head confirms; `DRY=1` still forces dry) | Steem (claim_reward_balance) |
+| `agent/fleet_mint_v3.cjs` | DRY | live_gate (`{account: HEAD}` from `AGENT_ACCOUNT`); `--verify` stays gateless/read-only | Steem (claim_account/create_claimed_account/delegate) |
+| `agent/fleetv3_autopilot.cjs` | DRY | live_gate (`{account: HEAD}` from `AGENT_ACCOUNT`); live auto-mint passes `--live` to the gated `fleet_mint_v3` child | Steem (claim/power-up/mint) |
+| `agent/net_probe.cjs` | read-only + gated claim | live_gate resolves ONLY on `--claim` (`{account: HEAD}`); census/probe stays runnable gateless | Steem + Hive (claim_reward_balance on --claim) |
+| `sovereign/node/wallets.cjs` | DRY | live_gate on the `manifest()` broadcast path (`{account: ACCOUNT}`); status/derive/verify/inject/budget stay gateless | Steem (custom_json saos:wallets/v1 anchor) |
 
 Safe examples:
 
@@ -125,6 +136,21 @@ node agent/he_sell.cjs
 node agent/he_sell.cjs --live --qty 9000 --price 0.0001   # + env AGENT_ACCOUNT=… HE_LIVE_CONFIRM=<same account>
 HE_LIVE=1 HE_LIVE_CONFIRM=$AGENT_ACCOUNT node agent/he_unstake.cjs
 ```
+
+### Task 10 sweep (2026-09-30): the 11 remaining ungated broadcast paths are now gated — FULL surface claim is now true
+
+The roast audit found ~10 broadcast-capable scripts outside this table while this doc claimed a
+"FULL broadcast surface". Closed by Task 10-d-3: `restore_tov.cjs` (owner-authority mutation —
+the highest-priority gap), `head-delegate.cjs`, `head-revive.cjs`, `soldiers-blog.cjs`,
+`self-audience.cjs`, `sp_reclaim.cjs`, `fleet-claim.cjs`, `fleet_mint_v3.cjs`,
+`fleetv3_autopilot.cjs`, `net_probe.cjs` (`--claim` path only — census stays gateless/read-only),
+and `sovereign/node/wallets.cjs` (`manifest()` anchor path only). All 11 now route every broadcast
+through `agent/lib/live_gate.cjs` (`resolveLiveGate` + `announceGate`) with the acting account from
+each script's own `AGENT_ACCOUNT`/env/fixed constant, resolved BEFORE any key material is loaded.
+Read-only paths (--probe/census/verify) remain runnable without the gate. The only remaining
+out-of-scope live process is the documented saosnet runtime node below (owner-level decision,
+unchanged). Fleet-wide tools (soldiers-blog / self-audience / fleet-claim) confirm as the fleet
+head `headcorner` — the operator identity that owns the vault those keys come from.
 
 ### Already-safe by construction (no gate wired — verified read-only / DRY-default)
 

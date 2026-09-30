@@ -37,6 +37,9 @@ function loadDotEnv(dir) {
 loadDotEnv(__dirname);
 const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
 const CLAIM = process.argv.includes('--claim');
+// 10-d-3 (2026-09-30) — LIVE-GATE for the --claim broadcast path ONLY: the census/probe is
+// read-only and stays runnable gateless. Claims need --live (or HE_LIVE=1) AND
+// HE_LIVE_CONFIRM=<account>; resolved inside main() before any vault key is read.
 
 const VAULT_PATH = path.join(__dirname, 'keys/vault.json');
 const REPORT_PATH = path.join(__dirname, 'net_probe_report.json');
@@ -152,7 +155,12 @@ async function main() {
 
   /* ── --claim: תביעת-כל-תגמול-ממתין (דלק) ── */
   if (CLAIM) {
-    const vault = vaultAccounts();
+    // 10-d-3 — gate BEFORE vault key loading; dry → empty claim list (probe math continues read-only)
+    const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+    const GATE = resolveLiveGate(process.argv, { account: HEAD });
+    announceGate(GATE, log);
+    if (!GATE.live) log('LIVE-GATE dry — no claims (arm: --live + HE_LIVE_CONFIRM=' + HEAD + ') · census/probe remains read-only');
+    const vault = GATE.live ? vaultAccounts() : [];
     for (const chain of ['steem', 'hive']) {
       const url = chain === 'steem' ? STEEM_RPC : HIVE_RPC;
       const node = chain === 'steem' ? STEEM_RPC : HIVE_RPC;

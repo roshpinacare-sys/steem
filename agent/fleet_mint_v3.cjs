@@ -40,12 +40,18 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+// 10-d-3 (2026-09-30) — LIVE-GATE right after the acting account (8-b: .env is the documented
+// account source), BEFORE any key material is referenced: mint/adopt/claim broadcasts need
+// --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=<account>. --dry still forces dry. Fail-closed default.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: HEAD });
+announceGate(GATE);
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const OWNER_WIF = process.env.OWNER_WIF || '';
 
 const argOf = (n, d) => { const i = process.argv.indexOf(n); return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : d; };
 const has = n => process.argv.includes(n);
-const DRY = has('--dry');
+const DRY = has('--dry') || GATE.dry;
 const N = parseInt(argOf('--mint', '0'), 10);
 const PREFIX = argOf('--prefix', 'hcnova');
 const START = parseInt(argOf('--start', '2'), 10);

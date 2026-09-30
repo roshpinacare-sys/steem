@@ -10,8 +10,17 @@ const fs = require('fs');
 const steem = require('steem');
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 
+const HEAD = 'headcorner'; // נושא-הסקריפט עצמו (Z-19b) — לא ברירת-מחדל
+
+// 10-d-3 (2026-09-30) — LIVE-GATE before ANY key loading: this tool has no dry mode
+// (claim/vote/delegate are broadcast-only), so a dry gate exits before key derivation.
+// Arm: --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=headcorner.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: HEAD });
+announceGate(GATE);
+if (GATE.dry) { console.log('[head-revive] gate dry — no broadcast, exit before key load (arm: --live + HE_LIVE_CONFIRM=' + HEAD + ')'); process.exit(0); }
+
 const DERIVED = JSON.parse(fs.readFileSync('/home/z/my-project/.fleet/headcorner-derived.json', 'utf8'));
-const HEAD = 'headcorner';
 const P = (fn) => new Promise((res, rej) => fn((e, r) => e ? rej(e) : res(r)));
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 

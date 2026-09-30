@@ -24,7 +24,7 @@ const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 
-const DRY = !process.argv.includes('--live');
+const DRY_PRE = !process.argv.includes('--live');
 const ACCOUNT = 'tov';
 const STEEM_RPC = 'https://api.steemit.com';
 const HIVE_RPC = 'https://api.hive.blog';
@@ -33,6 +33,14 @@ const HEAD = 'headcorner';
 
 const log = (m) => console.log('[' + new Date().toISOString() + '] ' + m);
 const mask = (p) => (p ? String(p).slice(0, 10) + '…' : '∅');
+
+// 10-d-3 (2026-09-30) — LIVE-GATE before ANY key loading (owner-authority mutation — highest priority):
+// broadcast needs --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=tov. Dry stays runnable, fail-closed default.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
+const DRY = GATE.dry || DRY_PRE;
+announceGate(GATE, log);
+if (GATE.dry) log('[restore_tov] gate dry — recover/account_update will NOT broadcast (arm: --live + HE_LIVE_CONFIRM=' + ACCOUNT + ')');
 
 // ── מצב-ההדבקה (117p8f): WIF-הבעלים-הנוכחי-על-השרשרת (מהשיחה-שבה-הוחלף-הטוקן) ──
 // אם-המפעיל-מניח-אותו-ב-/tmp/.tovowner (0600) — מדלגים-על-recover_account לגמרי:

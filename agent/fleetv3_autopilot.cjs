@@ -36,8 +36,14 @@ for (const line of fs.readFileSync(path.join(DIR, '.env'), 'utf8').split(/\r?\n/
   if (!(k in process.env)) process.env[k] = v;
 }
 const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+// 10-d-3 (2026-09-30) — LIVE-GATE right after the acting account (8-b: .env is the documented
+// account source), BEFORE any key material is referenced: claim/power-up/auto-mint broadcasts
+// need --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=<account>. --dry still forces dry. Fail-closed default.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: HEAD });
+announceGate(GATE);
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
-const DRY = process.argv.includes('--dry');
+const DRY = process.argv.includes('--dry') || GATE.dry;
 const STATE_PATH = path.join(DIR, 'fleetv3_state.json');
 const CLAIM_RC_NEEDED = 5782813530594; // נמדד חי משגיאת-שרשרת 2026-09-10
 const RC_REGEN_DAYS = 5;               // RC regen: מלא תוך ~5 ימים
@@ -106,7 +112,7 @@ function rcApi() {
   /* C. טביעה-אוטומטית */
   if (unlocked && AUTO_MINT && !DRY) {
     log('WALL CROSSED (max=' + (rc.max / 1e12).toFixed(3) + 'T ≥ ' + (CLAIM_RC_NEEDED / 1e12).toFixed(3) + 'T) — minting 1 soldier…');
-    const r = spawnSync('node', [path.join(DIR, 'fleet_mint_v3.cjs'), '--mint', '1', '--prefix', 'hcnova', '--start', String((state.mintedStart || 2)), '--sp', '0.1'], { encoding: 'utf8', cwd: path.join(DIR, '..') });
+    const r = spawnSync('node', [path.join(DIR, 'fleet_mint_v3.cjs'), '--live', '--mint', '1', '--prefix', 'hcnova', '--start', String((state.mintedStart || 2)), '--sp', '0.1'], { encoding: 'utf8', cwd: path.join(DIR, '..') });
     const out = ((r.stdout || '') + '\n' + (r.stderr || '')).trim();
     run.mintedNow = /create_claimed_account ✓/.test(out) ? 1 : 0;
     if (run.mintedNow) { state.minted = (state.minted || 0) + 1; state.mintedStart = (state.mintedStart || 2) + 1; }

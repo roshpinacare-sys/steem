@@ -19,6 +19,16 @@ steem.api.setOptions({ url: 'https://api.steemit.com', useAppbaseApi: false });
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = process.env.RECEIPT_OUT || path.join(ROOT, 'agent', 'self-audience-receipt.json');
+
+// 10-d-3 (2026-09-30) — LIVE-GATE before vault/key recovery: fleet-wide broadcast surface
+// (12 accounts vote). The confirming identity is the fleet head (owns the vault) —
+// arm: --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=headcorner. No dry mode → dry gate exits
+// before any key touches memory. Fail-closed default.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
+announceGate(GATE);
+if (GATE.dry) { console.log('[self-aud] gate dry — no votes, exit before key load (arm: --live + HE_LIVE_CONFIRM=headcorner)'); process.exit(0); }
+
 const FLEET = ['cashmachine','haran','israelnews','lsa','macrame','siq','tov','wic','wog','woq','ynet','headcorner'];
 const MIN_VP = 20;   // סף-כוח-הצבעה (%)
 const MIN_RC = 30;   // סף-RC (%)
