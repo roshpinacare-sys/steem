@@ -26,8 +26,14 @@ const path = require('path');
 const AGENT_DIR = __dirname ? path.join(__dirname, '..') : 'agent';
 const VAULT_PATH = path.join(AGENT_DIR, 'keys', 'vault.json');
 
-/** הרישום הקבוע-המאומת (12): headcorner + 11 חיילים.
- *  מאומת: empire_60.json (09-05) ו-energy_census.json (חי, 09-30) — אותם 12 שמות. */
+/** הרישום הקבוע-המאומת: 12 חשבונות-שרשרת (היסטוריים) — מאומתים ב-empire_60.json (09-05)
+ *  ו-energy_census.json (חי, 09-30).
+ *  אמת-חיה: הצי-החי = 11 (ראש + 10 חיילים). ynet פרש בהחלטת-ריבון 2026-09-30
+ *  ("אין לנו מפתח ynet — אנחנו מוותרים עליו"): אפס-מפתחות ב-8+ דורות-כספת,
+ *  אפס-פעולות-אפשריות. הוא נשאר ברשימה רק כחשבון-שרשרת-היסטורי, מסומן-פרוש.
+ *  כל-צרכן-פלטה חייב להציג activeFleet (11) — לא accounts (12) — בתור "הצי". */
+const RETIRED_ACCOUNTS = Object.freeze(['ynet']);
+
 const ROSTER_FALLBACK = Object.freeze([
   'headcorner',
   'cashmachine',
@@ -51,12 +57,20 @@ function roster() {
       .filter(Boolean);
     if (accounts.length) {
       const names = [...new Set([...accounts, 'headcorner'])].sort();
-      return { source: 'vault', accounts: names, warning: null };
+      return {
+        source: 'vault',
+        accounts: names,
+        activeFleet: names.filter(n => !RETIRED_ACCOUNTS.includes(n)),
+        retired: [...RETIRED_ACCOUNTS],
+        warning: null,
+      };
     }
   } catch (_) { /* vault absent — fall through, loudly */ }
   return {
     source: 'fallback-constant',
     accounts: [...ROSTER_FALLBACK],
+    activeFleet: ROSTER_FALLBACK.filter(n => !RETIRED_ACCOUNTS.includes(n)),
+    retired: [...RETIRED_ACCOUNTS],
     warning:
       'agent/keys/vault.json absent — roster served from the chain-anchored fallback constant. ' +
       'Restore the vault (REVIVAL runbook) to switch this to source:vault.',
@@ -66,9 +80,10 @@ function roster() {
 /** שם-אחד לא יכול להשתנות בטעות: האופרטור קבוע. */
 const OPERATOR = 'headcorner';
 
-module.exports = { roster, OPERATOR, ROSTER_FALLBACK, VAULT_PATH };
+module.exports = { roster, OPERATOR, ROSTER_FALLBACK, RETIRED_ACCOUNTS, VAULT_PATH };
 
 if (require.main === module) {
   const r = roster();
   console.log(JSON.stringify({ at: new Date().toISOString(), ...r }, null, 2));
+  console.error(`chain-accounts=${r.accounts.length} activeFleet=${r.activeFleet.length} retired=${r.retired.join(',') || 'none'}`);
 }
