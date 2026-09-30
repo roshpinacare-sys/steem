@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * energy_census.cjs — Task 58: fresh read-only census of the fleet's ENERGY
- * (Resource Credits / mana) on Steem + Hive, chain economics, name candidates,
+ * (Resource Credits / mana) on Steem + Hive + Blurt (Task 12-b added the Blurt leg), chain economics, name candidates,
  * pending rewards (harvestable value) and claimed-ticket inventory.
  * READ-ONLY: no broadcasts, no secrets printed.
  */
@@ -121,6 +121,51 @@ function rcRow(row) {
       }),
     };
   } catch (e) { out.hive = { error: String(e.message || e).slice(0, 120) }; }
+
+  // ── Blurt census (Task 12-b) ──
+  // Read-only node rotation (same live endpoints as anchor.cjs + saboin). Honest gap:
+  // public blurt nodes do NOT expose rc_api.find_rc_accounts (measured 2026-09-30,
+  // "No route has matched") — blurt99.cjs already treats it optional. RC% on blurt is
+  // therefore null when the route is absent — never fabricated. Vesting fund field on
+  // blurt is total_vesting_fund_blurt; there is no SBD analog field (savings_balance only).
+  const BLURT_RPCS = ['https://rpc.beblurt.com', 'https://rpc.blurt.blog', 'https://rpc.drakernoise.com', 'https://blurt-rpc.saboin.com'];
+  async function blurtRpc(method, params) {
+    let lastErr;
+    for (const ep of BLURT_RPCS) {
+      try { return { ep, r: await rpc(ep, { jsonrpc: '2.0', method, params, id: 1 }) }; } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error('all blurt nodes failed');
+  }
+  try {
+    const bAccs = await blurtRpc('condenser_api.get_accounts', [NAMES]);
+    const bProps = (await blurtRpc('condenser_api.get_dynamic_global_properties', [])).r;
+    const bVestsPerBlurt = parseFloat(bProps.total_vesting_shares) / parseFloat(bProps.total_vesting_fund_blurt);
+    let bRcMap = null;
+    try {
+      const brc = await blurtRpc('rc_api.find_rc_accounts', { accounts: NAMES });
+      bRcMap = Object.fromEntries((brc.r.rc_accounts || []).map((r) => [r.account, rcRow(r)]));
+    } catch (_) { bRcMap = null; }
+    const bRcRows = bRcMap ? NAMES.filter((n) => bRcMap[n]) : [];
+    out.blurt = {
+      node: bAccs.ep,
+      headBlock: bProps.head_block_number,
+      exists: bAccs.r.filter(Boolean).map((a) => a.name),
+      missing: NAMES.filter((n) => !bAccs.r.some((a) => a && a.name === n)),
+      rcApi: bRcRows.length ? 'ok (' + bRcRows.length + '/' + NAMES.length + ' rows)' :
+        (bRcMap ? 'empty — rc_api answered on some node but returned 0/' + NAMES.length + ' account rows; rcPct=null (not measurable today)' :
+          'unavailable — no reachable public blurt node exposes the rc_api route; rcPct=null (not measured, not assumed)'),
+      accounts: bAccs.r.filter(Boolean).map((a) => {
+        const rc = bRcMap ? bRcMap[a.name] : null;
+        return {
+          account: a.name, rcPct: rc ? rc.pct : null,
+          hpSp: +(parseFloat(a.vesting_shares) / bVestsPerBlurt).toFixed(3),
+          liquid: a.balance, savings: a.savings_balance,
+          rewardBlurt: parseFloat(a.reward_blurt_balance), rewardVests: parseFloat(a.reward_vesting_balance),
+          harvestable: parseFloat(a.reward_blurt_balance) > 0 || parseFloat(a.reward_vesting_balance) > 0,
+        };
+      }),
+    };
+  } catch (e) { out.blurt = { error: String(e.message || e).slice(0, 120) }; }
 
   // ── name candidates (Steem) ──
   const probe = await steem('condenser_api.get_accounts', [CANDIDATES]);

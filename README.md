@@ -3,14 +3,15 @@
 > **מיקרו-קרנל ריבוני על שרשראות Graphene (Steem + Hive + Blurt) + SAOS-NET — צי-חיילים, מנועי-שוק, אקספלורר-עם-הוכחות.**
 > הכל נמדד-חי מול RPC ציבורי. אין סימולציות — רק txids ומדידות-מתוארכות.
 
-## 🟢 אמת-חיה (צנזוס-קריאה-בלבד · asOf 2026-09-30T15:41Z)
+## 🟢 אמת-חיה (צנזוס-קריאה-בלבד · asOf 2026-09-30T18:14Z)
 
 | מדד | ערך-חי | כלי-המדידה |
 |---|---|---|
-| **פליטה** | **12 סוכנים × 3 שרשראות = 36 שורות** — כל-36 קיימים-וחיים (לא "60+" — הצבא-האמיתי) | `agent/lib/fleet-roster.cjs` |
+| **פליטה** | **12 סוכנים × 3 שרשראות = 36 שורות** — כל-36 קיימים-וחיים (לא "60+" — הצבא-האמיתי) · צנזוס-תלת-שרשרתי-חי 09-30: 12/12 ב-steem + 12/12 ב-hive + 12/12 ב-blurt | `agent/lib/fleet-roster.cjs` · `agent/energy_census.json` |
 | **שליטה-ריבונית** | STEEM **11/12 · BLURT 11/12 · HIVE 9/12** (owner+active+posting מאומת-מול-key_auths-חי) | `agent/fleet-control-audit.cjs` |
 | **מקורות-שליטה** | כספת-משוחזרת מהחותמת 09-29 (`agent/keys/vault.json` · 10-חיילים) + מפתח-ראשי (headcorner · steem+blurt) | `agent/fleet_control_audit.json` |
-| **אנרגיה (RC)** | **0 חשבונות-רעבים** · מינימום-חי: steem 97.4% · hive 100% — ה"מוות" בדוחות-הישנים היה רג'ן-RC שהתאושש | `agent/energy_census.json` |
+| **אנרגיה (RC)** | **0-רעבים-ב-steem (מינימום 88.5%) · 1-מתחת-50% ב-hive: siq 41.1%** (נשאב-מפעולות-חיות — רג'ן-מלא-תוך-~3-ימים, לא-רעב-מבני) · **blurt: RC-לא-נמדד** — rc_api-נעדר-מכל-צומת-ציבורי-של-blurt (מדוד 09-30) → מדווח-null-כנה, לא-מומצא | `agent/energy_census.json` (steem+hive+blurt) |
+| **יתרות-חיות (ראש)** | headcorner: steem **352.9-נזיל + 529.4-STEEM ב-15-פקודות-מכירה-פתוחות = הון-עובד-יציב ~882.3** (מנוע-המסחר-החי-מחלק-מחדש-בין-דקה-לדקה — הירידה-מ-910 אינה-אובדן) + 0.45-SBD · hive 1.344-HIVE · blurt 72.162-BLURT (+8727-SP) · top-ups: hcsoldier1-3 (דור-גריד-חדש-מחוץ-לרוסטר, נוצרו-09-29) 10-STEEM-כ"א | `agent/energy_census.json` + `condenser_api.get_open_orders` (מדידה-חיה 12-b) |
 | **שלמות-רוסטר** | מקור-רישום-אחד (vault→fallback-קבוע-עוגן-שרשרת) — השכבות-המתחרות (army/empire/muster/agents-registry) מוגדרות עתה כצנזוסים-ארכיון | `agent/lib/fleet-roster.cjs` |
 | **דגלי-שליטה-למכונה** | כל-שורה-מ-36 נושאת `control` (full · partial · operator-delegated · blocked-no-key) + `economicUse` + `blockedReason` — tov-hive=blocked-no-key · ynet=operator-delegated · headcorner-hive=partial | `agent/lib/fleet-roster.cjs` → `rows()` |
 | **פערים-כנים** | tov-hive: **BLOCKED-NO-KEY** — מפתחות-אבודו · הבעלים אישר 2026-10-01 ״אין לי עוד מפתחות״ · אפס-שימוש-כלכלי · ynet: **OPERATOR-DELEGATED** — posting-דרך-הראש בלבד · אפס-שימוש-כלכלי-אלא-אם-הראש-פועל-מפורשות · headcorner-hive: **PARTIAL** — חומר-מפתח-שונה · אפס-שימוש-כלכלי | `agent/lib/fleet-roster.cjs` (rows) · `fleet_control_audit.json` |
