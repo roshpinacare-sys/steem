@@ -70,6 +70,26 @@ const SECRET_PATTERNS = [
   { name: 'x-access-token url', re: new RegExp('x-access-token:[A-Za-z0-9_\\-]+@') },
 ];
 
+// 10-d-3 (2026-09-30) — keyname gate: the WIF-shape scan above misses secrets hidden under
+// innocent variable names (vault passphrases / WIF env keys pasted into tracked files).
+// Each alternative below is assembled from two literals so THIS source line never matches
+// the assembled pattern (same self-immunity trick as the x-access-token entry above).
+const KEYNAME_RE = new RegExp(
+  ['keysZip' + 'Pass', 'keysBackup' + 'Pass', 'POSTING_' + 'WIF', 'ACTIVE_' + 'WIF', 'OWNER_' + 'WIF', 'PRIVATE_' + 'KEY'].join('|'),
+  'i'
+);
+// Sanctioned exceptions (survival-first pair + prose) — the auto-commit of these MUST keep working:
+//   · agent/recovery-meta.json — the passphrase ledger that opens the sealed envelope
+//   · agent/vault/*.enc        — the AES ciphertext envelope itself
+//   · *.md                     — documentation/prose
+function keynameExempt(p) {
+  if (!p) return false;
+  if (p === 'agent/recovery-meta.json') return true;
+  if (/^agent\/vault\/[^/]+\.enc$/.test(p)) return true;
+  if (/\.md$/.test(p)) return true;
+  return false;
+}
+
 function sh(cmd, opts = {}) {
   return execSync(cmd, {
     cwd: REPO,
@@ -257,6 +277,36 @@ function runOnce() {
         state.hint = 'secret-shaped string found in staged diff — commit aborted, nothing pushed';
         writeState(state);
         log('BLOCKED · ' + name + ' · pattern=' + m[0].slice(0, 6) + '… · commit+push aborted');
+        return state;
+      }
+    }
+
+    // 4b. 10-d-3 — keyname scan, PER FILE: added lines of non-exempt files may not carry
+    //     vault-passphrase / WIF-env markers. Fail-closed: a chunk whose header cannot be
+    //     attributed to a file blocks the commit (never guess, never skip).
+    for (const chunk of staged.split(/^diff --git /m).slice(1)) {
+      const nl = chunk.indexOf('\n');
+      const header = (nl < 0 ? chunk : chunk.slice(0, nl)).trim();
+      const hm = header.match(/^a\/(.+) b\/(.+)$/);
+      if (!hm) {
+        try { sh('git reset -q'); } catch (_) {}
+        state.result = 'blocked';
+        state.blockedBy = 'keyname gate: unparsable staged diff header';
+        state.hint = 'a staged chunk could not be attributed to a file — fail-closed abort, nothing pushed';
+        writeState(state);
+        log('BLOCKED · unparsable diff header: ' + header.slice(0, 60) + ' · commit+push aborted');
+        return state;
+      }
+      if ([hm[1], hm[2]].every(keynameExempt)) continue; // sanctioned survival pair / docs
+      const added = chunk.split('\n').filter((l) => l.startsWith('+') && !l.startsWith('+++'));
+      const hit = added.find((l) => KEYNAME_RE.test(l));
+      if (hit) {
+        try { sh('git reset -q'); } catch (_) {}
+        state.result = 'blocked';
+        state.blockedBy = 'keyname secret marker (' + hm[2] + ')';
+        state.hint = 'added line carries a vault-passphrase/WIF-env marker — commit aborted, nothing pushed';
+        writeState(state);
+        log('BLOCKED · keyname marker=' + ((KEYNAME_RE.exec(hit) || ['?'])[0].slice(0, 6)) + '… · file=' + hm[2] + ' · commit+push aborted');
         return state;
       }
     }

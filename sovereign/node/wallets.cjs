@@ -39,6 +39,7 @@ const SNAPSHOT = path.join(HERE, 'state-snapshot.json'); // מצב-הקרנל ה
 
 const ACCOUNT = 'headcorner';
 const VAULT = require('./vault-lib.cjs'); // 114 — קריאת-מפתחות-דרך-הכספת (envelope→plaintext)
+const LIVE_GATE = require(path.join(ROOT, 'agent', 'lib', 'live_gate.cjs')); // 10-d-3 — shared broadcast gate
 const NET = 'saos-net/0';
 const AIRDROP_COOLDOWN_MS = 6 * 3600 * 1000; // devnet תקרות — 6 שעות בין-סבבים
 
@@ -260,6 +261,12 @@ async function manifest() {
   if (pub.anchor && pub.anchor.txid) { dlog('manifest: already anchored txid=' + pub.anchor.txid.slice(0, 16) + '… (idempotent)'); return pub.anchor; }
   const steem = require(path.join(ROOT, 'node_modules', 'steem'));
   steem.api.setOptions({ url: 'https://api.steemit.com' });
+  // 10-d-3 (2026-09-30) — LIVE-GATE on the manifest broadcast path (BEFORE any WIF is read):
+  // anchoring needs --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=headcorner. Read-only commands
+  // (status/derive/verify/inject/budget) stay gateless; the idempotent already-anchored read-back stays gateless.
+  const GATE = LIVE_GATE.resolveLiveGate(process.argv, { account: ACCOUNT });
+  LIVE_GATE.announceGate(GATE, dlog);
+  if (GATE.dry) { dlog('manifest SKIP: live-gate dry — anchoring requires --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=' + ACCOUNT); return { skip: 'live-gate-dry' }; }
   const wif = ENV.POSTING_WIF;
   if (!wif) { dlog('manifest SKIP: no POSTING_WIF'); return { skip: 'no-wif' }; }
   const payload = {

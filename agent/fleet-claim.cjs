@@ -17,8 +17,17 @@ const steem = require('steem');
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 const ROOT = path.resolve(__dirname, '..');
 const OUT = process.env.RECEIPT_OUT || path.join(ROOT, 'agent', 'fleet-claim-receipt.json');
-const DRY = process.env.DRY === '1';
 const FLEET = ['cashmachine', 'haran', 'israelnews', 'lsa', 'macrame', 'siq', 'tov', 'wic', 'wog', 'woq', 'ynet', 'headcorner'];
+
+// 10-d-3 (2026-09-30) — LIVE-GATE before vault/key recovery: fleet-wide broadcast surface
+// (12 accounts claim). The confirming identity is the fleet head (owns the vault) —
+// arm: --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=headcorner. DRY=1 still forces dry.
+// Fail-closed default.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: 'headcorner' });
+const DRY = process.env.DRY === '1' || GATE.dry;
+announceGate(GATE);
+if (GATE.dry) console.log('[fleet-claim] gate dry — no claim broadcast (arm: --live + HE_LIVE_CONFIRM=headcorner)');
 
 function recoverVault() {
   const out = '/tmp/fc-keys';

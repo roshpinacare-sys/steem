@@ -18,10 +18,17 @@ const steem = require('steem');
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 const ROOT = path.resolve(__dirname, '..');
 const OUT = process.env.RECEIPT_OUT || path.join(ROOT, 'agent', 'head-delegate-receipt.json');
-const DRY = process.env.DRY === '1';
 const SOLDIERS = ['cashmachine', 'haran', 'israelnews', 'lsa', 'macrame', 'siq', 'tov', 'wic', 'wog', 'woq', 'ynet']; // 11 — כולל ynet
 const SP_PER_SOLDIER = 30;   // תקרה-קשיחה
 const HEAD = 'headcorner';
+
+// 10-d-3 (2026-09-30) — LIVE-GATE before vault/key recovery: delegation broadcasts need
+// --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=headcorner. DRY=1 still forces dry. Fail-closed default.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: HEAD });
+const DRY = process.env.DRY === '1' || GATE.dry;
+announceGate(GATE);
+if (GATE.dry) console.log('[head-del] gate dry — no delegation broadcast (arm: --live + HE_LIVE_CONFIRM=' + HEAD + ')');
 
 function recoverVault() {
   const out = '/tmp/hd-keys';

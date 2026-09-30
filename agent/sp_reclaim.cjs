@@ -43,9 +43,15 @@ function loadDotEnv(dir) {
 }
 loadDotEnv(__dirname);
 const HEAD = (process.env.AGENT_ACCOUNT || '').toLowerCase();
+// 10-d-3 (2026-09-30) — LIVE-GATE right after the acting account (8-b: .env is the documented
+// account source): reclaim broadcasts need --live (or HE_LIVE=1) AND HE_LIVE_CONFIRM=<account>.
+// --dry still forces dry. Fail-closed default.
+const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
+const GATE = resolveLiveGate(process.argv, { account: HEAD });
+announceGate(GATE);
 const ACTIVE_WIF = process.env.ACTIVE_WIF || '';
 const DRY = process.argv.includes('--dry');
-const LIVE = process.argv.includes('--live');
+const LIVE = process.argv.includes('--live') && GATE.live;
 const argOf = (n, d) => { const i = process.argv.indexOf(n); return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : d; };
 const KEEP = new Set((argOf('--keep', '') || '').split(',').filter(Boolean));
 const ONLY = new Set((argOf('--only', '') || '').split(',').filter(Boolean));
@@ -62,7 +68,7 @@ function vaultNames() {
 }
 
 async function main() {
-  if (!DRY && !LIVE) { console.log('usage: --dry | --live · --keep a,b · --only a,b · --to X'); process.exit(2); }
+  if (!DRY && !process.argv.includes('--live')) { console.log('usage: --dry | --live · --keep a,b · --only a,b · --to X'); process.exit(2); }
   if (!ACTIVE_WIF) throw new Error('ACTIVE_WIF missing in agent/.env');
 
   /* self-test: מפתח-הפעיל-שלנו אכן-הפעיל-על-השרשרת */
