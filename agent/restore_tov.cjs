@@ -16,6 +16,17 @@
  *     (טופולוגיית-צי) · owner-לא-נוגעים · json_metadata-נשמר.
  *  C. אימות-חי 8/8 מול שתי-השרשראות → vault-sync → דוח-עדות (txids · מוסתר).
  *
+ * Task 11-c (2026-10-01) — הנחיית-הבעלים "אין לי עוד מפתחות":
+ *   · tov-hive = BLOCKED-NO-KEY — מפתחות-אבודו, מוחזקים-אצל-הבעלים, הבעלים אישר
+ *     2026-10-01 שאין-עוד-מפתחות — אפס-שימוש-כלכלי. הכלי-הזה יכול לפעול על-Hive
+ *     רק-אם-הבעלים ישיב-את-החומר-השולט-לכספת.
+ *   · סירוב-סגור-כשל (fail-closed) על-חומר-ממוסמך: ההיבטים-של-Hive מסורבים --live
+ *     אלא-אם agent/fleet_control_audit.json (האמת-הנגזרת-החיה) מראה
+ *     chains.hive.tov.vault.owner=true — כלומר הכספת אכן מחזיקה חומר ששולט
+ *     בבעלות-החיה-על-השרשרת. אין-קביעה-מקודדת-שקרית: אם-הבעלים ישיב-מפתח
+ *     והאודיט-ייבדק-מחדש — השער-ייפתח מעצמו. צד-Steem לא-השתנה (הכספת שולטת
+ *     שם — נמדד 2026-09-30: steem 4/4 בכספת).
+ *
  * שימוש: node agent/restore_tov.cjs [--dry] [--live]   (ברירת-מחדל: dry)
  * אף-סוד לא נדפס — WIF/מאסטר נשארים בכספת-בלבד.
  */
@@ -41,6 +52,22 @@ const GATE = resolveLiveGate(process.argv, { account: ACCOUNT });
 const DRY = GATE.dry || DRY_PRE;
 announceGate(GATE, log);
 if (GATE.dry) log('[restore_tov] gate dry — recover/account_update will NOT broadcast (arm: --live + HE_LIVE_CONFIRM=' + ACCOUNT + ')');
+
+// Task 11-c (2026-10-01) — owner directive "אין לי עוד מפתחות": tov-hive status + fail-closed material gate.
+// Resolved-material check (NOT a hard-coded claim): the live generated truth in fleet_control_audit.json
+// must show chains.hive.tov.vault.owner=true before any Hive-side --live aspect may arm.
+const HIVE_BLOCK_REASON = 'BLOCKED-NO-KEY: keys lost — owner-held; owner confirmed 2026-10-01 no more keys exist; NO economic use';
+const HIVE_UNBLOCK_PATH = 'only if the owner restores controlling material into the vault AND agent/fleet-control-audit.cjs is re-run showing chains.hive.tov.vault.owner=true (resolved material presence, fail-closed)';
+function hiveMaterialResolved() {
+  try {
+    const j = JSON.parse(fs.readFileSync(path.join(__dirname, 'fleet_control_audit.json'), 'utf8'));
+    const row = j.chains && j.chains.hive && j.chains.hive[ACCOUNT];
+    return !!(row && row.exists && row.vault && row.vault.owner === true);
+  } catch (_) { return false; } // audit absent/unreadable → fail-closed
+}
+const HIVE_MATERIAL_OK = hiveMaterialResolved();
+log('[restore_tov] tov-hive status: ' + HIVE_BLOCK_REASON);
+if (!HIVE_MATERIAL_OK) log('[restore_tov] hive aspects refuse --live ' + HIVE_UNBLOCK_PATH + (DRY ? ' (dry run unaffected)' : ' — LIVE hive refused'));
 
 // ── מצב-ההדבקה (117p8f): WIF-הבעלים-הנוכחי-על-השרשרת (מהשיחה-שבה-הוחלף-הטוקן) ──
 // אם-המפעיל-מניח-אותו-ב-/tmp/.tovowner (0600) — מדלגים-על-recover_account לגמרי:
@@ -112,6 +139,11 @@ async function main() {
   const history = {};
   for (const chain of ['steem', 'hive']) {
     const node = chain === 'hive' ? HIVE_RPC : STEEM_RPC;
+    // Task 11-c — fail-closed: without audit-resolved controlling material, hive aspects do not run at all
+    if (chain === 'hive' && !HIVE_MATERIAL_OK) {
+      log('HIVE ' + HIVE_BLOCK_REASON + ' — pre-check skipped (' + HIVE_UNBLOCK_PATH + ')');
+      continue;
+    }
     const acc = await getAcc(node, ACCOUNT);
     if (!acc) { log('FATAL: @' + ACCOUNT + ' לא-נמצא-על ' + chain); process.exit(1); }
     accounts[chain] = acc;
@@ -131,6 +163,12 @@ async function main() {
 
   for (const chain of ['steem', 'hive']) {
     const node = chain === 'hive' ? HIVE_RPC : STEEM_RPC;
+    // Task 11-c — fail-closed: no recover/account_update broadcast on hive without resolved material
+    if (chain === 'hive' && !HIVE_MATERIAL_OK) {
+      log('HIVE ' + HIVE_BLOCK_REASON + ' — recover/account_update refused');
+      evidence.chains[chain] = { blocked: 'no-key', blockedReason: HIVE_BLOCK_REASON };
+      continue;
+    }
     const acc = accounts[chain];
     if (acc.owner.key_auths[0][0] === OWNER_PUB) { evidence.chains[chain] = { already: true }; continue; }
 

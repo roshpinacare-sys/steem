@@ -12,7 +12,8 @@
 | **מקורות-שליטה** | כספת-משוחזרת מהחותמת 09-29 (`agent/keys/vault.json` · 10-חיילים) + מפתח-ראשי (headcorner · steem+blurt) | `agent/fleet_control_audit.json` |
 | **אנרגיה (RC)** | **0 חשבונות-רעבים** · מינימום-חי: steem 97.4% · hive 100% — ה"מוות" בדוחות-הישנים היה רג'ן-RC שהתאושש | `agent/energy_census.json` |
 | **שלמות-רוסטר** | מקור-רישום-אחד (vault→fallback-קבוע-עוגן-שרשרת) — השכבות-המתחרות (army/empire/muster/agents-registry) מוגדרות עתה כצנזוסים-ארכיון | `agent/lib/fleet-roster.cjs` |
-| **פערים-כנים** | ynet: מואצל-בלבד (posting-דרך-הראש) · tov-hive: מפתח-אבוד (אצל-הבעלים — `soldier_repair.cjs`) · headcorner-hive: חומר-מפתח-שונה | `fleet_control_audit.json` |
+| **דגלי-שליטה-למכונה** | כל-שורה-מ-36 נושאת `control` (full · partial · operator-delegated · blocked-no-key) + `economicUse` + `blockedReason` — tov-hive=blocked-no-key · ynet=operator-delegated · headcorner-hive=partial | `agent/lib/fleet-roster.cjs` → `rows()` |
+| **פערים-כנים** | tov-hive: **BLOCKED-NO-KEY** — מפתחות-אבודו · הבעלים אישר 2026-10-01 ״אין לי עוד מפתחות״ · אפס-שימוש-כלכלי · ynet: **OPERATOR-DELEGATED** — posting-דרך-הראש בלבד · אפס-שימוש-כלכלי-אלא-אם-הראש-פועל-מפורשות · headcorner-hive: **PARTIAL** — חומר-מפתח-שונה · אפס-שימוש-כלכלי | `agent/lib/fleet-roster.cjs` (rows) · `fleet_control_audit.json` |
 
 > ⚠️ **היסטוריה-מתחת-לקו-זה**: הטבלה והצ'יפים-מטה נכתבו בזמן-אמת-של-משימות-85-98 וקפאו כשהדמון-נפל (~09-12).
 > הם מוצגים כארכיון-הנדסי — **לא** כמצב-נוכחי. המדידה-החיה-היא הטבלה-מעלה.

@@ -2,6 +2,8 @@
 /* crack_tov.cjs — 117p8: mine git history (download/recovery tree) for key material
  * that matches @tov's LIVE on-chain authorities. Everything in-memory; output masked.
  * Usage: node agent/crack_tov.cjs
+ * Task 11-c (2026-10-01): owner confirmed no more keys exist — tov-hive = BLOCKED-NO-KEY
+ * (no economic use). This forensic miner is ARCHIVAL: kept for the record, not for action.
  */
 'use strict';
 const { execSync } = require('child_process');
