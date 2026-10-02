@@ -357,5 +357,8 @@ pm2 logs saos-agent
   dispatch ברירת-מחדל תוכנית-בלבד) + `Domain/scripts/ladder-refresh.mjs` — אותה-תבנית-מוכחת של
   economy-engine: חותם-נפתח בתוך-הראנר בלבד, מפתח-פעיל נשלף מהכספת ומאומת-חי, קריאה לאותו-מבצע
   (מקור-אמת-יחיד), דחיפת-קבלות pull --rebase תחילה, לעולם לא force. כל-כשל = ראן אדום.
+- **אומת-חי-ב-CI**: dispatch ראשון (arm=false) — run 37014293928 ירוק; הראן פתח-חותם, אימת-מפתח,
+  הריץ את-המבצע ודחף את-קבלת-ה-Actions-הראשונה של המבצע: `agent/receipts/2026-10-02-ladder-refresh-mur0dwsj.json`
+  (plan-only · ladder-healthy-no-ops · מכסות-נאכפות) — commit a8699ef, API-verified.
 - אפס-חומר-מפתח ב-Domain; אפס-סודות בקבלות (orderids/מחירים/txids = נתוני-שרשרת-ציבוריים);
   לעולם לא נוגעים ב-ynet-*/tov-hive; NEVER_TOUCH נשמר בקוד כהגנת-רפאים.
