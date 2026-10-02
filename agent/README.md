@@ -362,3 +362,11 @@ pm2 logs saos-agent
   (plan-only · ladder-healthy-no-ops · מכסות-נאכפות) — commit a8699ef, API-verified.
 - אפס-חומר-מפתח ב-Domain; אפס-סודות בקבלות (orderids/מחירים/txids = נתוני-שרשרת-ציבוריים);
   לעולם לא נוגעים ב-ynet-*/tov-hive; NEVER_TOUCH נשמר בקוד כהגנת-רפאים.
+
+## 2026-10-02 — Task 16-a (retry): ביקורת-עצמאית על רגלי HIVE+BLURT — הכל אומת-מחדש-חי
+- השיגור-הראשון-של-16-a מת-על-תקלת-תשתית אחרי-שהנחית-את-העבודה; סוכן-ה-retry אימת-הכל-מחדש (לא-מאמין-לקבלות):
+  · ראן-אמיתי 37014545077 (על 6933b56 אחרי-תיקון-ecurve) — 5 הצבעות-אצירה 100% על HIVE + 5 על BLURT (0 על steem = cooldown-כנה).
+  · HIVE נבדק-על-השרשרת: haran ב-active_votes של mariamor785 (api.hive.blog); BLURT: get_ops_in_block(64141499) = macrame→moito w=10000 trx_id זהה-לקבלה (rpc.beblurt.com).
+  · הוכחת-גזירה מורחבת: macrame/wic/siq — WIF-כספת → מפתח-פרסום זהה-גוף על שתי-השרשראות, LIVE-MATCH מול key_auths חי (STM58LJ5…y4yr / STM54F5s…Kjtn / STM6a6Ng…o2yL; BLT גוף-זהה).
+  · משמעת: מצביעים-מובחנים, ≤5/שרשרת, 1/חשבון, lsa דולג-cooldown על-שתיהן, NEVER_TOUCH נקי, דחיות content-farm פעילות.
+- קבלה: `agent/receipts/2026-10-02-16a-retry-audit.json` · סריקת-סודות: אפס wif/hex64/base64-ארוך בקבלות-וב-README (טביעות-אצבע-בלבד).
