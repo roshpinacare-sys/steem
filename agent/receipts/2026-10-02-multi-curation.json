@@ -1,0 +1,71 @@
+{
+  "receipt": "2026-10-02-multi-curation",
+  "task": "15-c step 1 — sandbox multi-account run: scale-up proof beyond @headcorner (14-c proved 1 vote; this proves N accounts)",
+  "at": "2026-10-02T12:10:04.388Z",
+  "mode": "real-votes (100% curation weight, posting auth only, zero principal at risk)",
+  "executedBy": "engine core Domain/scripts/economy-engine.mjs (same pipeline the daily workflow runs)",
+  "seal": {
+    "doctrine": "keys_zip_v2 (AES-256-CBC pbkdf2-300k) via recovery-meta.json custody — outer+inner sha gates green",
+    "note": "material 0700 temp, never printed, never committed"
+  },
+  "fleetTruth": {
+    "source": "agent/lib/fleet-roster.cjs",
+    "accounts": 12,
+    "activeFleet": 11,
+    "selectedAccounts": [
+      "lsa",
+      "macrame",
+      "wic"
+    ],
+    "selection": "healthy beyond headcorner: live posting-auth verified vs chain, VP 70-100%, roster control=full economicUse=true"
+  },
+  "votes": [
+    {
+      "voter": "lsa",
+      "author": "python-dev",
+      "permlink": "combine-lists-easily-with-zip",
+      "weight": 10000,
+      "txid": "f7f804869b3fddf6017739f4aeabe3013f39d12b",
+      "block": 110087951,
+      "qualityGate": "niche allowlist + min body 500c + effectivelikes/comment ratio + author-cadence farm gate (>=4 posts/96h excluded) + not-already-voted + author-diversity"
+    },
+    {
+      "voter": "macrame",
+      "author": "hamzayousafzai",
+      "permlink": "the-diary-game-or-a-simple-day-full-of-teaching-family-and-little-moments",
+      "weight": 10000,
+      "txid": "068af54a651ca1c7c3e95258c2fdd10534274760",
+      "block": 110087968,
+      "qualityGate": "niche allowlist + min body 500c + effectivelikes/comment ratio + author-cadence farm gate (>=4 posts/96h excluded) + not-already-voted + author-diversity"
+    },
+    {
+      "voter": "wic",
+      "author": "ydavgonzalez",
+      "permlink": "problema-matematico-del-dia29-09-2026",
+      "weight": 10000,
+      "txid": "2e2ea534d2406c6df77179ae40d317996efefe68",
+      "block": 110087985,
+      "qualityGate": "niche allowlist + min body 500c + effectivelikes/comment ratio + author-cadence farm gate (>=4 posts/96h excluded) + not-already-voted + author-diversity"
+    }
+  ],
+  "verification": {
+    "method": "condenser_api.get_account_history txid read-back (steem-js exposes no txid — 14-c doctrine)",
+    "nodes": [
+      "api.steemit.com",
+      "api.justyy.com"
+    ],
+    "crossVerified": "each txid matched voter+author+permlink on BOTH nodes; active_votes on target posts shows 10000-weight vote from each account",
+    "blocks": "110087951 / 110087968 / 110087985 (within ~34 blocks — one sovereign wave)"
+  },
+  "costs": {
+    "principalAtRisk": 0,
+    "liquidSpent": 0,
+    "ordersPlaced": 0,
+    "note": "curation votes only — value flows only at payout from the rewards pool; no keys beyond posting authority used"
+  },
+  "discipline": {
+    "dryGuards": "DRY_RUN plan printed in sandbox dry-run receipt before real run",
+    "blockedAccounts": "ynet* / tov-hive / owner-only untouched; all broadcasts posting-auth only",
+    "secrets": "zero printed/committed — public-key fingerprints only"
+  }
+}
