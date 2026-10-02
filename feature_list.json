@@ -1,0 +1,60 @@
+{
+  "features": [
+    {
+      "id": "feat-001",
+      "name": "Key custody (sealed vault)",
+      "description": "All fleet keys sealed in agent/vault/KEYS-ZIP-*.enc; envelope doctrine (keys_zip_v2.cjs); zero plaintext secrets at HEAD",
+      "dependencies": [],
+      "status": "done",
+      "evidence": "org-gitleaks run 36768838321 SUCCESS — 16 repos head=0 history=0; triage eb4e8377 (.gitleaksignore 908 fingerprints, 0 real at HEAD)"
+    },
+    {
+      "id": "feat-002",
+      "name": "Fleet control matrix (live truth)",
+      "description": "control matrix asOf refreshed against live key_auths for all accounts; tov-hive PROVEN-NEGATIVE stays blocked-no-key",
+      "dependencies": ["feat-001"],
+      "status": "done",
+      "evidence": "Task 13-a: 134-candidate oracle → headcorner-steem 4/4; README live-truth header"
+    },
+    {
+      "id": "feat-003",
+      "name": "Tri-chain legs (steem/hive/blurt)",
+      "description": "One vault WIF body rules all three graphene chains; anchor.cjs recipe for hive chain_id; node-serialized canonical ECDSA for blurt",
+      "dependencies": ["feat-001"],
+      "status": "done",
+      "evidence": "agent/receipts/2026-10-02-hive-blurt-first.json — first live hive + blurt broadcasts"
+    },
+    {
+      "id": "feat-004",
+      "name": "Receipts continuity (bot cadence)",
+      "description": "Bot lands receipts every 10-15 min; rebase-first discipline keeps all runtimes converging",
+      "dependencies": [],
+      "status": "done",
+      "evidence": "agent/receipts/ latest: 2026-10-02-real-value-cycle.json"
+    },
+    {
+      "id": "feat-005",
+      "name": "Economy engine chain legs",
+      "description": "Domain's economy-engine.mjs checks out this repo in-runner, opens the seal, votes/claims with hard caps, writes receipts back rebase-first",
+      "dependencies": ["feat-003", "feat-004"],
+      "status": "done",
+      "evidence": "real run 37067532580 SUCCESS — txid cbb4bc69e67788307aac9d64c30cce27b88c1d48 block 110099406"
+    },
+    {
+      "id": "feat-006",
+      "name": "Owner-only key items",
+      "description": "tov-hive + headcorner-hive keys exist in NO git folder — only the owner can supply them; until then blocked-no-key with recorded evidence",
+      "dependencies": ["feat-002"],
+      "status": "open",
+      "evidence": "Task 13-a PROVEN-NEGATIVE (0/4 candidates from every git source for tov-hive); owner-only item, honest block"
+    },
+    {
+      "id": "feat-007",
+      "name": "Realized daily revenue > 1 cent",
+      "description": "Chain income (curation + author + claims) maturing above $0.01/day, receipts-provable over days",
+      "dependencies": ["feat-005"],
+      "status": "open",
+      "evidence": "v3 run-rate 0.02-0.06 SBD/day; realized proof needs days of maturing receipts"
+    }
+  ]
+}
