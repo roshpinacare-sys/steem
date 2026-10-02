@@ -1,0 +1,45 @@
+{
+  "task": "14-c",
+  "wave": "sovereign-autonomy",
+  "at": "2026-10-02T10:13:36Z",
+  "account": "headcorner",
+  "accountKeyFingerprint": "posting STM8m3rB…N9cw (first8…last4)",
+  "sealMaterialization": {
+    "seal": "agent/vault/KEYS-ZIP-2026-09-29.zip.enc",
+    "method": "recovery-meta.json keysZipPass direct — AES-256-CBC pbkdf2-300k per keys_zip_v2.cjs doctrine (not GCM)",
+    "outerSha256Match": true,
+    "innerSha256Match": true,
+    "filesRestored": 10,
+    "restoredTo": "agent/keys/ (dir 0700, files 0600, all gitignore-verified)",
+    "envRestored": "agent/.env (0600, gitignored, DRY_RUN=true)",
+    "chainVerify": "headcorner owner/active/posting/memo derived from custody sheet line 19 and matched 4/4 against live key_auths (owner threshold=1, key-only)",
+    "vaultFleetCheck": "10/10 soldier posting keys from restored vault.json match live posting key_auths (ynet = NO, matches operator-delegated doctrine)"
+  },
+  "operations": [
+    {
+      "type": "vote",
+      "txid": "b8daf19675e67e91083c8f34875e43a1e54f1de1",
+      "voter": "headcorner",
+      "target": "@opennet/vypusk-distributiva-openmandriva-rome-26-09",
+      "weight": "10000/10000 (100%)",
+      "readBack": "registered in target active_votes — verified on api.steemit.com, api.justyy.com, steemapi.boylikegirl.club, api.steem.fans",
+      "niche": "opensource/linux distro release coverage (quality, real content)"
+    },
+    {
+      "type": "comment + comment_options",
+      "txid": "ec96afe8c71f7cd43c6f8175af016a8c324aa675",
+      "url": "https://steemit.com/@headcorner/verification-first-automation-20261002",
+      "title": "Verification-first automation: making every claim checkable on-chain",
+      "readBack": "getContent author=headcorner, permlink match, body 2342 chars — verified on 4 nodes",
+      "content": "honest tech content on verification-first automation (deterministic anchors, receipts-in-git, sealed key custody, read-backs); no unmeasured numbers, no financial advice, no internal fleet terminology"
+    }
+  ],
+  "costs": {
+    "curationPrincipalAtRisk": 0,
+    "liquidSpent": 0,
+    "marketOrdersOpened": 0,
+    "note": "zero-cost curation + posting only; no market ops attempted per scope discipline"
+  },
+  "dryRunState": "agent/.env kept DRY_RUN=true throughout; live ops executed by one-shot script gated on BROADCAST=1 env, dry plan printed before broadcast",
+  "txidSource": "account history (condenser_api.get_account_history) cross-verified on 3 independent nodes; steem-js 0.7.11 confirm object does not expose transaction_id"
+}

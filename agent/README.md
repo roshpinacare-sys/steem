@@ -274,3 +274,24 @@ pm2 logs saos-agent
 באותו קובץ. פעימת המוח (כל 15 דק', ברירת מחדל) מריצה `node agent.cjs --once`
 כשהדמון המקומי לא נצפה — וכך המערכת ממשיכה לתבוע ולהצביע גם בלי טאב פתוח.
 כל ההחלטות מתועדות ביומן BrainDecision (SQLite).
+
+## יומן אמת — 2026-10-02 (Task 14-c: מחזור-ערך אמיתי + השבת-חותמות)
+
+- **חומר-מפתחות הושב לאחר reset-סנדבוקס**: `KEYS-ZIP-2026-09-29.zip.enc` נפתח ישירות
+  מ-`recovery-meta.json` (keysZipPass — משמורת-מערכת לפי דוקטרינת 2026-09-10), מול
+  שערי-ה-hash הכפולים (חיצוני+פנימי, התאמה מלאה). 10 קבצי `agent/keys/` שוחזרו
+  (0600, gitignore-מאומת) + `agent/.env` (0600, DRY_RUN=true). אימות-שרשרת: מפתחות
+  headcorner נגזרו מגיליון-המקור והושוו בייטים מול `key_auths` החי — 4/4
+  (owner/active/posting/memo), owner threshold=1 key-only. 10/10 חיילים מ-`vault.json`
+  מאומתים מול הרשות-החיה (ynet — לא, כידוע וכמתועד).
+- **פעולות אמיתיות בשרשרת (txids אמיתיים בלבד)**:
+  - הצבעת-קוראציה 100%: `b8daf19675e67e91083c8f34875e43a1e54f1de1` →
+    @opennet/vypusk-distributiva-openmandriva-rome-26-09 (תוכן אמיתי, נישת opensource).
+  - פוסט אמיתי: `ec96afe8c71f7cd43c6f8175af016a8c324aa675` →
+    https://steemit.com/@headcorner/verification-first-automation-20261002
+    ("Verification-first automation: making every claim checkable on-chain").
+  - קריאה-חוזרת מאומתת על 4 צמתים עצמאיים לכל-אחת. קבלה מלאה:
+    `agent/receipts/2026-10-02-real-value-cycle.json`.
+- **עלות**: קוראציה בעלות-אפס (אין-סיכון-קרן), 0 פעולות-שוק, 0 הוצאה נזילה.
+- **DRY_RUN=true לאורך כל-הריצה** — הפעולות החיות בוצעו מתוך סקריפט חד-פעמי עם
+  שער `BROADCAST=1` ותוכנית-DRY מודפסת לפני-השידור.
