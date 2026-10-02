@@ -137,3 +137,32 @@ node agent/verify_system.cjs # מטריצת-161
 העתקת ה-key-broker בריפו הזה (`mini-services/key-broker/`) היא שכפול-מורשת שהוצא-משירות — **אין-להפעילה** (דגל-הוצאה-משירות בראש `mini-services/key-broker/index.ts`). ה-key-broker הקנוני הוא **saos-sovereign-foundry :3040** (Bearer auth, חתימת EVM/TRON/SOL/BTC) — ראה foundry `docs/PORTS.md`.
 
 `mini-services/key-broker/audit.jsonl` (13 אירועי-חתימה-חיים, 2026-09-08/09) **הוצא-ממעקב-git** (ההיסטוריה נשמרת; הקובץ נשאר על-המכונה). יומני-אירועי-חתימה הם מצב-ריצה — מעתה מחוץ לבקרת-גרסאות (`.gitignore`: `agent/**/audit.jsonl`, `mini-services/**/audit.jsonl`).
+
+## מנוע-הכלכלה v3 — גל-ההכנסות (Task 17, 2026-10-02)
+
+הבעלים: ״רווח-יומי מתחת-לסנט זה-לא-יתכן — מצאו-דרכים, הפעילו-הכל״. התשובה-המדודה:
+
+**שורש-הבעיה (נמדד):** ה-SP-האפקטיבי מרוכז-בחשבון-אחד — @headcorner ≈ 3,370 SP (6.91M VESTS
+אפקטיביים); שאר-הצי הוא-אבק. המנוע-v2 הצביע-בסבביות-שווה → הלווייתן הצביע-פעם-בכמה-ימים,
+והאבק הצביע-כל-יום. תוצאה: pending-יומי ≈ 0.004 SBD.
+
+**מה-v3 עשה (הכל-חי, מאומת-על-השרשרת):**
+1. **whale-first** — מיון לפי SP-אפקטיבי יורד (vesting − delegated-out + received-in): הלווייתן מצביע-ראשון.
+2. **caps ×12** — MAX_VOTES 5→12 (כל-חשבון-בריא מצביע-כל-מחזור), cooldown 20h→10h (≈2.4 הצבעות/יום/חשבון).
+3. **author-support** — self-vote 100% על-הפוסט-העצמי הטרי (≤24h, ≤3 קולות, ≤1/חשבון/ריצה):
+   **7 self-votes steem + 3 blurt נחתמו-חי** (run 37019584988) — כולל self-vote-הלווייתן
+   (rshares=81,263,878,873 → pending-הפוסט קפץ 0.004→0.005 SBD תוך-דקות).
+4. **claims-leg** — claim_reward_balance לכל-חשבון-מאומת בכל-מחזור (סף-אבק 0.001);
+   schemas נבדקו-חי (steem/hive 3-שדות, blurt 2-שדות — אין-נכס-חוב). כרגע-אין-pending:
+   התגמולים-של-היום מבשילים-בעוד-7-ימים → ה-leg יתבע-אותם-אוטומטית.
+5. **dedupe-authoritative** — self-vote בודק active_votes-של-הפוסט-עצמו (הרשת-עצמה דחתה
+   re-vote-זהה ב-run-המקביל — הבלוקצ'יין-כשער; v3.1 מייתר-את-הניסיון-כולו).
+
+**הכנות-המתמטית:** עם 3,370 SP ב-100%: כל-הצבעה-מלאה ≈ 0.004–0.008 SBD-pending (תלוי-בריכה).
+~2.4 הצבעות-אצירה + self-votes יומיים + author-rewards-של-פוסטים ≈ **0.02–0.06 SBD/יום** שמבשילים
+לאורך-7-ימים ומתקבעים-ל-SP (דרך-claims). זה-מעל-הסנט — וכל-לב הגידול-הבא: SP-נוסף (compound)
+ופוסטים-איכותיים-יומיים. אין-קסם: הכנסה-משרשרת = SP-בפועל × תדר-בפועל. שניהם-עכשיו-מקסימליים-בגבולות-ה-VP.
+
+**הוכחות:** receipts `2026-10-02-economy-engine-r6.json` (7 self-votes), `-blurt-r3.json`
+(3 votes + 3 self-votes), `2026-10-02-economy-engine-r7.json` (chain-dedupe honest-FAILED).
+Run CI: 37019584988 SUCCESS · Engine: Domain `scripts/economy-engine.mjs` v3.1 (fb04f0d).
