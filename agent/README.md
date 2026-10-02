@@ -323,3 +323,10 @@ pm2 logs saos-agent
   מבקשות ~807.8 STEEM (ה-"~882" של הבריף ≈ צד-הקנייה), טריות ≤2.3 שעות.
   ספק-ביצוע (PROPOSED בלבד — לא-מומש בגל-זה): ≤3 פעולות/ריצה, מינימום-פיזור 2%,
   אין-ביטול-מתחת-לרצפה, מפתח-פעיל לעולם לא בידי מנוע-הפרסום.
+
+## 2026-10-02 — Task 16-a: רגלי HIVE+BLURT נדלקות (curation אמיתי על שלוש השרשראות)
+- **הצבעות-אצירה אמיתיות ראשונות על Hive ו-Blurt** (מ-@lsa, קיי-כספת, 100% curation — אפס-קרן-בסיכון):
+  · HIVE: @lsa → @jmjury/the-new-cold-war-in-ai-openai-just-defended-its-crown-jewels… txid `a2e5ebc25e431a70f69d0b15f725c7c5eef9612a` · blk 110,423,104 · אומת account-history על 3 צמתים (openhive/deathwing/hive.blog)
+  · BLURT: @lsa → @jannie98/6rqysq-going-home txid `6c33405dcb6bdb43263e62ab9c05858791405dd9` · blk 64,141,178 · אומת get_ops_in_block + account-history (rpc.beblurt.com)
+- נתיב-מפתח הוכח: אותו גוף-WIF מהכספת שולט בשלוש השרשראות (STM/STM/BLT — אותו גוף-pubkey); אימות-חי 2-3 חשבונות לכל שרשרת לפני שידור (טביעות-אצבע בלבד בקבלה).
+- קבלה מלאה: `agent/receipts/2026-10-02-hive-blurt-first.json` · כללי-המשמעת זהים למנוע-steem (≤5/ריצה/שרשרת, 1/חשבון, skip-already-voted, NEVER_TOUCH ynet*/tov-hive).

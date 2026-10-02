@@ -1,0 +1,57 @@
+{
+  "engine": "economy-engine first-light — HIVE + BLURT curation legs (Task 16-a)",
+  "at": "2026-10-02T13:29:00Z",
+  "mode": "real-votes",
+  "chains": ["hive", "blurt"],
+  "keyPath": {
+    "derivation": "ONE vault.json role-WIF body controls all three graphene chains — posting WIF → wifToPublic body is identical on steem (STM prefix) / hive (STM prefix) / blurt (BLT prefix); per-row chains:[steem,hive] in the vault + rearm-hive-soldiers truth basis (9 soldier hive rows reproduce live on-chain authorities) + blurt99 live proof (BLT5HhJD…uHXF = STM5HhJD…uHXF) + Task 13-a factory-master derivations",
+    "vaultShape": "accounts[].keys.{posting,active,owner,memo}.{wif,pub} — plaintext role WIFs in the private checkout (agent/keys/vault.json, gitignored; seal agent/vault/KEYS-ZIP-2026-09-29.zip.enc is the durable custody)",
+    "liveVerifiedThisRun": {
+      "lsa": { "pubFp": "STM5vLjv…CUCm", "hive": "LIVE-MATCH posting auth (api.openhive.network + api.deathwing.me + api.hive.blog)", "blurt": "LIVE-MATCH posting auth BLT-body (rpc.beblurt.com)" }
+    },
+    "note": "zero key material in this receipt — public-key fingerprints (first8…last4) only"
+  },
+  "votes": [
+    {
+      "chain": "hive",
+      "voter": "lsa",
+      "voterPubFp": "STM5vLjv…CUCm",
+      "keySource": "vault",
+      "weight": 10000,
+      "author": "jmjury",
+      "permlink": "the-new-cold-war-in-ai-openai-just-defended-its-crown-jewels-chain-of-thought-1790921804",
+      "candidateShape": { "niche": "ai", "ageDays": 0.3, "netVotes": 3, "children": 0, "bodyChars": 5234, "titleShape": "The New Cold War in AI: OpenAI Just Defended Its Crown Jewel" },
+      "broadcast": "condenser_api.broadcast_transaction_synchronous (steem-js signTransaction with hive chain_id beeab0de… — anchor.cjs grapheneBroadcast recipe)",
+      "txid": "a2e5ebc25e431a70f69d0b15f725c7c5eef9612a",
+      "block": 110423104,
+      "readBack": "account-history CONFIRMED on 3 nodes: api.openhive.network + api.deathwing.me + api.hive.blog (hist index 6281, trx_id == sync id)"
+    },
+    {
+      "chain": "blurt",
+      "voter": "lsa",
+      "voterPubFp": "STM5vLjv…CUCm",
+      "keySource": "vault",
+      "weight": 10000,
+      "author": "jannie98",
+      "permlink": "6rqysq-going-home",
+      "candidateShape": { "niche": "blurt", "ageDays": 0.4, "netVotes": 1, "children": 0, "bodyChars": 675, "titleShape": "Going home" },
+      "broadcast": "node-serialized canonical-ECDSA (anchor.cjs blurtBroadcast recipe, proven live 2026-09-06): get_transaction_hex → strip sig-count byte → sha256(chain_id ‖ bytes) → low-s canonical sign (header=31+recid) → broadcast_transaction_synchronous",
+      "txid": "6c33405dcb6bdb43263e62ab9c05858791405dd9",
+      "block": 64141178,
+      "readBack": "get_ops_in_block(64141178) shows vote lsa→jannie98 w=10000 trx_id==sync id (rpc.beblurt.com) + account-history indexed the same txid shortly after (hist index 14)"
+    }
+  ],
+  "discipline": {
+    "votesPerChainThisRun": 1,
+    "perAccountCap": "1 vote/account/chain/run (engine hard cap ≤5)",
+    "alreadyVotedGate": "get_account_history vote-ops per chain (lsa: 4 distinct upvotes on hive, 2 on blurt — none on the picked authors)",
+    "neverTouch": "ynet* (retired, incl. ynet-blurt), tov-hive (blocked-no-key, owner-confirmed), owner-only rows; fleet authors excluded from candidates",
+    "costs": { "principalAtRisk": 0, "liquidSpent": 0, "orders": 0, "note": "curation votes only — zero principal at risk; no comments, no transfers, no market ops" }
+  },
+  "chainNotes": {
+    "hive": "VP of voter measured pre-broadcast (manabar, 100% after full regen); chain_id beeab0de0000… from anchor.cjs (proven live 2026-09); STM pubkeys as on steem",
+    "blurt": "rc_api ABSENT on blurt nodes (measured) — RC budgeting not possible; condenser_api works. rpc.blurt.world DNS-unreachable from this sandbox (fetch fail); live nodes measured: rpc.beblurt.com, rpc.blurt.blog (blurt.blog returns HTML on some paths). Blurt discussion objects omit net_votes + author_reputation → netVotes derived from active_votes, rep gate skipped, ≥1 positive upvote still required (calibration documented, honesty preserved)"
+  },
+  "fleetTruth": { "hive": "9/12 keyed (cashmachine,haran,israelnews,lsa,macrame,siq,wic,wog,woq — headcorner-hive partial-no-key, tov-hive blocked-no-key, ynet operator-delegated)", "blurt": "12/12 control-full per roster CONTROL_STATUS (13-a) — ynet-blurt retired with economicUse=false so never touched" },
+  "next": "engine wiring: Domain/scripts/economy-engine.mjs gains hive+blurt legs with per-chain caps + per-chain NEVER_TOUCH (hive includes tov-hive) — same seal→verify→candidates→≤5 votes→txid→receipt shape"
+}
