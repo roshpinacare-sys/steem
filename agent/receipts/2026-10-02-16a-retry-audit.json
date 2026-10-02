@@ -1,0 +1,51 @@
+{
+  "receipt": "16-a retry audit — independent verification of the hive+blurt curation legs (first 16-a launch died on infra timeout AFTER landing the work)",
+  "at": "2026-10-02T14:05:00Z",
+  "auditor": "16-a retry agent (GLM)",
+  "method": "everything below re-measured live, nothing trusted from receipts",
+  "predecessorCommitsAdopted": {
+    "domain": ["0b9557e economy-engine v2: HIVE + BLURT legs", "6933b56 ecurve pin 1.0.9→1.0.6 fix (after honest red run 37014311617, ETARGET)"],
+    "steem": ["5fad60a first-light receipt (real votes @lsa on hive+blurt)", "bot: b6a81f5 steem leg 0 votes (cooldown)", "bot: e698a13 hive leg 5 votes", "bot: 7aa7cb8 blurt leg 5 votes"]
+  },
+  "engineRunProof": {
+    "runId": 37014545077,
+    "head": "6933b56",
+    "conclusion": "success",
+    "mode": "REAL (dry_run=false dispatch by predecessor; cron '17 */2 * * *' is real by design)",
+    "votes": { "steem": 0, "hive": 5, "blurt": 5, "note": "steem 0 = honest cooldown no-op (lsa/macrame/wic inside 20h from 15-c session)" }
+  },
+  "onChainVerificationByAuditor": {
+    "hive": {
+      "check": "condenser_api.get_content mariamor785/beautiful-crocheted-doily-precioso-tapete-tejido-a-crochet-eng-esp @ api.hive.blog",
+      "found": "haran present in active_votes (net_votes=5)",
+      "receiptTxid": "beb8e14f58f8a6e98ffbab56eae6eeba7446e9b5 (blk 110423422)"
+    },
+    "blurt": {
+      "check": "condenser_api.get_ops_in_block(64141499) @ rpc.beblurt.com",
+      "found": "vote op macrame→moito/esp-eng-era-un-cadaver… w=10000, trx_id == receipt txid",
+      "receiptTxid": "9589bbed3c26d3e6676daafbc2074f597afbb9a6"
+    }
+  },
+  "derivationProofAddendum": {
+    "tool": "vault.json role-WIF → @hiveio/dhive PrivateKey.createPublic — same body governs steem/hive (STM prefix) + blurt (BLT prefix)",
+    "accountsVerifiedLive": {
+      "macrame": { "stmFp": "STM58LJ5…y4yr", "bltFp": "BLT58LJ5…y4yr", "hive": "LIVE-MATCH posting auth", "blurt": "LIVE-MATCH posting auth" },
+      "wic": { "stmFp": "STM54F5s…Kjtn", "bltFp": "BLT54F5s…Kjtn", "hive": "LIVE-MATCH posting auth", "blurt": "LIVE-MATCH posting auth" },
+      "siq": { "stmFp": "STM6a6Ng…o2yL", "bltFp": "BLT6a6Ng…o2yL", "hive": "LIVE-MATCH posting auth", "blurt": "LIVE-MATCH posting auth" }
+    },
+    "crossCheck": "fingerprints identical to engine receipt verifiedAccounts rows (13:40 UTC run)",
+    "hygiene": "derived pubkeys + WIFs only in 0600 tmp, shredded after; fingerprints only here"
+  },
+  "disciplineChecks": {
+    "votersDistinctPerChain": { "hive": ["haran", "israelnews", "macrame", "siq", "wic"], "blurt": ["macrame", "siq", "tov", "wic", "wog"], "distinct": true },
+    "capsHeld": "≤5 votes/run/chain (exactly 5), 1/account, WEIGHT=10000 only, lsa cooldown-skipped on both chains (0.3h since first-light)",
+    "neverTouchScan": "no ynet* / tov-hive / owner-only accounts in any voter or author position; mentions exist only as NEVER_TOUCH declarations",
+    "candidateGates": "content-farm-cadence rejects observed (epicenterdefacto, shawmeow 4-posts/96h), fleet-author exclusion active"
+  },
+  "failHonestNotes": [
+    "rpc.blurt.world DNS unresolved from sandbox (receipt noted same) — rpc.beblurt.com used as the working blurt door",
+    "blurt read-back is sync-broadcast-id + ops-in-block; blurt account-history indexing lag documented by engine (rc_api absent on blurt — honest)",
+    "sandbox has no gitleaks binary — pattern scan done manually (see README line)"
+  ],
+  "costs": { "principalAtRisk": 0, "liquidSpent": 0, "orders": 0, "note": "curation votes only" }
+}
