@@ -1,0 +1,116 @@
+{
+  "receipt": "ladder-refresh",
+  "task": "16-b — ladder-refresh executor run (≤3 cancel+replace pairs, ±2% band, floor-anchored, no fresh capital)",
+  "at": "2026-10-03T00:49:14.953Z",
+  "node": "https://api.steemit.com",
+  "account": "headcorner",
+  "market": {
+    "bestBid": 0.100061,
+    "bestAsk": 0.10222697,
+    "mid": 0.10114399,
+    "spreadPct": 2.14,
+    "depthBids": 17,
+    "depthAsks": 20,
+    "headBlock": 110103285
+  },
+  "ladderShape": {
+    "openOrders": 5,
+    "sells": 0,
+    "buys": 5,
+    "steemOfferedSellSide": 0,
+    "steemSoughtBuySide": 151.474,
+    "oldestOrderHours": 0.81,
+    "orders": [
+      {
+        "orderid": 12667067,
+        "side": "buy-steem",
+        "price": 0.09734779,
+        "baseAmount": 2.918,
+        "steemVolume": 29.975,
+        "vsMidPct": -3.75,
+        "ageHours": 0.81,
+        "expiration": "2026-10-30T00:00:28"
+      },
+      {
+        "orderid": 12667068,
+        "side": "buy-steem",
+        "price": 0.09715009,
+        "baseAmount": 2.918,
+        "steemVolume": 30.036,
+        "vsMidPct": -3.95,
+        "ageHours": 0.81,
+        "expiration": "2026-10-30T00:00:28"
+      },
+      {
+        "orderid": 12667070,
+        "side": "buy-steem",
+        "price": 0.09676029,
+        "baseAmount": 2.918,
+        "steemVolume": 30.157,
+        "vsMidPct": -4.33,
+        "ageHours": 0.81,
+        "expiration": "2026-10-30T00:00:28"
+      },
+      {
+        "orderid": 12667071,
+        "side": "buy-steem",
+        "price": 0.09598053,
+        "baseAmount": 2.918,
+        "steemVolume": 30.402,
+        "vsMidPct": -5.11,
+        "ageHours": 0.81,
+        "expiration": "2026-10-30T00:00:28"
+      },
+      {
+        "orderid": 12667072,
+        "side": "buy-steem",
+        "price": 0.09442143,
+        "baseAmount": 2.918,
+        "steemVolume": 30.904,
+        "vsMidPct": -6.65,
+        "ageHours": 0.8,
+        "expiration": "2026-10-30T00:00:28"
+      }
+    ]
+  },
+  "churn": {
+    "marketOpsInLast100AcctOps": 81,
+    "spanFirstLastSeconds": 11769,
+    "verdict": "HIGH-FREQUENCY CONCURRENT MANAGER OBSERVED — another process is actively churning this ladder; this executor stays cap-limited and staleness-gated inside that reality"
+  },
+  "caps": {
+    "maxPairsPerRun": 3,
+    "staleMinAgeHours": 168,
+    "staleDistPct": 2,
+    "replaceBandPct": 2,
+    "targetOffsetPct": 1.5,
+    "floorLowestAsks": 2,
+    "floorHighestBids": 2,
+    "standingMinAfter": 4,
+    "bookMinDepthLevels": 3,
+    "bookAnomalySpreadPct": 15,
+    "orderLifetimeHours": 24,
+    "accountLock": "headcorner",
+    "neverTouch": [
+      "^ynet",
+      "^tov-hive"
+    ]
+  },
+  "gates": {
+    "liveGate28b": true,
+    "ladderArm": true,
+    "executorDisabled": false,
+    "dryForced": false
+  },
+  "dryRunPlanPrint": [],
+  "drops": [
+    {
+      "orderid": null,
+      "reason": "side-guard: plan would empty the sell-steem side"
+    }
+  ],
+  "anomaly": "side-guard",
+  "status": "abort-anomaly",
+  "ops": [],
+  "executed": []
+}
