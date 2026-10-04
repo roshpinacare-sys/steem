@@ -1,16 +1,16 @@
 {
-  "at": "2026-09-12T19:34:05.779Z",
+  "at": "2026-10-04T16:05:21.015Z",
   "mode": "live",
   "booted": true,
   "bootedAt": "2026-09-04T19:27:05.321Z",
-  "day": "2026-09-12",
+  "day": "2026-10-04",
   "opsToday": 0,
   "assets": {
     "WSBD": {
       "minted": 0.26,
       "lockedSbd": 0.26,
       "lockRef": "2d6ed4c0593a687d5e7b8c990ea7ed52e6fb6df4",
-      "fair": 10.235235,
+      "fair": 9.604077,
       "pool": {
         "base": 0.04,
         "quote": 0.41429,
@@ -28,13 +28,13 @@
         "d18686dde673abb16e4848340df44dbfaa3f73a1",
         "8ae70970e9ceb470a9c43084a319ed7cfd9a2c6a"
       ],
-      "liveSbd": 0
+      "liveSbd": 0.084
     },
     "PHIVE": {
       "minted": 0.051,
       "lockedHive": 0.051,
       "lockRef": "44be4de1e510cf50dd1d5e7a828000b043815d11",
-      "fair": 2.020034,
+      "fair": 1.830242,
       "asks": [
         2.362417
       ],
@@ -42,7 +42,7 @@
       "txids": [
         "38ee6a3a0f531fcca905751a48c1dab39189c642"
       ],
-      "liveHive": 0.072
+      "liveHive": 0.034
     },
     "ENERGY": {
       "minted": 25,
@@ -147,48 +147,62 @@
   },
   "fees": {
     "poolCapture": {
-      "WSBD": 0.0006,
-      "ENERGY": 0.0009
+      "WSBD": 0.00066,
+      "ENERGY": 0.00099
     },
     "swapDay": {
-      "WSBD": "2026-09-12",
-      "ENERGY": "2026-09-12"
+      "WSBD": "2026-10-04",
+      "ENERGY": "2026-10-04"
     }
   },
   "ops": [],
   "lastBeat": {
-    "at": "2026-09-12T19:34:05.779Z",
-    "steps": [],
+    "at": "2026-10-04T16:05:21.015Z",
+    "steps": [
+      {
+        "step": "wsbd-fee-capture",
+        "ok": false,
+        "dry": true,
+        "ops": 1
+      },
+      {
+        "step": "energy-fee-capture",
+        "ok": false,
+        "dry": true,
+        "ops": 1
+      }
+    ],
     "measured": {
-      "steem": 1.032,
-      "sbd": 0,
-      "hive": 0.072,
-      "swapHive": 2e-8,
-      "bee": 6.4930887,
-      "book": 0.09770171149144254,
-      "cross": 2.0200336899755498
+      "steem": 2.136,
+      "sbd": 0.084,
+      "hive": 0.034,
+      "swapHive": 0.0302069,
+      "bee": 0,
+      "book": 0.10412244441961792,
+      "cross": 1.8302415964074163
     },
     "opsToday": 0
   },
   "errors": [],
   "oracle": {
-    "at": "2026-09-12T19:34:11.993Z",
+    "at": "2026-10-04T16:05:26.545Z",
     "sources": {
       "binance": {
-        "ok": false
+        "ok": true,
+        "at": "2026-10-04T16:05:26.545Z"
       },
       "coinbase": {
         "ok": true,
-        "at": "2026-09-12T19:34:11.993Z"
+        "at": "2026-10-04T16:05:26.545Z"
       }
     },
     "prices": {
-      "BTC": 77116.5699997136,
-      "ETH": 2519.739999999909,
-      "XRP": 1.3638,
-      "DOGE": 0.08483
+      "BTC": 85211.15500013149,
+      "ETH": 2697.064999999946,
+      "XRP": 1.50295,
+      "DOGE": 0.09423
     },
-    "divergencePct": null,
+    "divergencePct": 0.14868309260832757,
     "ok": true
   },
   "t64": true,
