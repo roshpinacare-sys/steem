@@ -212,3 +212,22 @@ live HIVE authorities): he_market_sell → he_withdraw → transfer_to_vesting. 
 2026-09-08: lsa sold 2.51025127 WEED → 0.00248765 SWAP.HIVE; macrame sold 0.570715 STEM → +0.000145
 SWAP.HIVE; macrame withdraw broadcast accepted. headcorner's own HIVE active key is NOT in the
 envelope (runtime-only) — the runbook above stays the headcorner path.
+
+## CAPITAL-GATE era (owner directive 2026-10-04, IM trace 1a108e28015b0451)
+
+**New law above every gate**: every capital-lane signer in this home answers THREE gates
+before signing — `agent/lib/capital_gate.cjs`:
+
+1. **STASIS** — `agent/STASIS.json` active=true (engaged 2026-10-04T22:18Z on the owner's
+   "עצור ולבחון" directive after measured delegation chaos) → healthy no-op, exit 0.
+2. **ROSTER** — every target must be in `agent/lib/fleet-roster.cjs` activeFleet with
+   `economicUse=true` for the target chain; `hcsoldier1/2/3` + `ynet` are BANNED by name
+   with custody evidence (LOST-NO-CUSTODY receipts).
+3. **JOURNAL** — every capital decision lands in `agent/receipts/capital-decisions.jsonl`.
+
+Wired: `head-delegate.cjs` (STASIS + roster + journal). New tool:
+`agent/reclaim-lost-soldiers.cjs` — returns the fresh SP delegated to the keyless lost
+generation back to the treasury (DRY default; live requires `--live` + `HE_LIVE_CONFIRM`
++ `OWNER_DIRECTIVE=RECLAIM-LOST-SOLDIERS-2026-10-04` — the recorded owner word that also
+serves as this specific op's STASIS-resume note). Mirror brakes: `Domain/agents/STASIS.json`
+(all Domain signers via capital-gate.cjs) + `saos-dex grids/state/STASIS.json` (mover/convert).
