@@ -1,0 +1,62 @@
+# SAOS SOCIAL-CADENCE — Z-82: פעילות-חברתית לאורך-כל-היום, משבצת-משבצת.
+# הריבון מדד: 89% מהפעולות היו בדקות-משותפות, שיא 11 חיילים באותה-דקה.
+# החוק החדש: כל-30 דקות מבוצעות רק-המשבצות-הדיות מהלוח-הריבוני —
+# רווח-צי ≥ 25 דק׳, רווח-חייל ≥ 120 דק׳, פוסטים ≥ 3 שעות ביניהם.
+# ריבוני: אפס-actions-צד-ג (חוק-Z74) · fail-soft · קבלות-נטולות-סודות.
+
+# SAOS SOCIAL-CADENCE (גיבוי, dispatch-only) — Z-82.
+# חוק-המו"ל-היחיד: Domain/human-cadence.cjs (CR-0065) הוא המו"ל-הראשי של הצי.
+# זהו מו"ל-גיבוי ל-חירום-בלבד (כשהמו"ל-הראשי נפל), לעולם-לא-במקביל אליו.
+# ערכת-הדור-הבא: content-v3 (תוכן-גנרטיבי ממדידות-חיות) + לוח-קדנס + שער 38 חוקים.
+
+name: social-cadence
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: social-cadence
+  cancel-in-progress: false
+
+jobs:
+  cadence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NODE_PATH: /tmp/steemjs/node_modules
+    steps:
+      - name: sovereign-clone (zero third-party actions — Z74 law)
+        run: git clone --depth 1 "https://x-access-token:${GITHUB_TOKEN}@github.com/roshpinacare-sys/Domain.git" .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Node 20
+        run: |
+          (curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - >/dev/null 2>&1 && sudo apt-get install -y nodejs) || true
+          node --version
+
+      - name: steem client (steem@0.7.11)
+        run: npm install --prefix /tmp/steemjs steem@0.7.11 --omit=dev --no-audit --no-fund --loglevel=error
+
+      - name: cadence — execute due slots only (all-day spread, never a flock)
+        env:
+          SA_FLEET_KEYS: ${{ secrets.SA_FLEET_KEYS }}
+        run: node agents/social/cadence-run.cjs --lookback 40
+
+      - name: commit receipts (secretless)
+        run: |
+          git config user.name "saos-cadence"
+          git config user.email "cadence@saos.local"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "cadence: due-slots receipts · $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            ok=0
+            for i in 1 2 3; do
+              if git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main; then ok=1; break; fi
+              sleep 5
+            done
+            [ "$ok" = "1" ] || { echo "could not publish receipts — fail-loud"; exit 1; }
+          fi
