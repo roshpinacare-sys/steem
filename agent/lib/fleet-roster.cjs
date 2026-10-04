@@ -44,7 +44,7 @@ const VAULT_PATH = path.join(AGENT_DIR, 'keys', 'vault.json');
  *  אמת-חיה: הצי-החי = 11 (ראש + 10 חיילים). ynet פרש בהחלטת-ריבון 2026-09-30
  *  ("אין לנו מפתח ynet — אנחנו מוותרים עליו"): אפס-מפתחות ב-8+ דורות-כספת,
  *  אפס-פעולות-אפשריות. הוא נשאר ברשימה רק כחשבון-שרשרת-היסטורי, מסומן-פרוש.
- *  כל-צרכן-פלטה חייב להציג activeFleet (11) — לא accounts (12) — בתור "הצי". */
+ *  כל-צרכן-פליטה חייב להציג activeFleet (14: ראש + 10 מפעילים + hcsoldier4/5/6) — לא accounts (15) — בתור "הצי" (truth refresh 2026-10-04: הדור-הקנוני-החלופי נרשם; hcsoldier1/2/3 האבודים לא-רשומים ואסורים בשער-ההון). */
 const RETIRED_ACCOUNTS = Object.freeze(['ynet']);
 
 const ROSTER_FALLBACK = Object.freeze([
@@ -59,6 +59,9 @@ const ROSTER_FALLBACK = Object.freeze([
   'wic',
   'wog',
   'woq',
+  'hcsoldier4',
+  'hcsoldier5',
+  'hcsoldier6',
   'ynet',
 ]);
 
@@ -77,6 +80,11 @@ const OP_DELEGATED = Object.freeze({
   control: 'operator-delegated',
   economicUse: false,
   blockedReason: 'operator-delegated — no operator key material (retired by sovereign decision 2026-09-30); posting only via @headcorner account-auths; economic use false unless head explicitly acts',
+});
+const STEEM_ONLY_GEN = Object.freeze({
+  control: 'blocked-no-key',
+  economicUse: false,
+  blockedReason: 'no account on this chain — the hcsoldier4/5/6 generation exists on STEEM only (minted 2026-10-04)',
 });
 const CONTROL_STATUS = Object.freeze({
   tov: Object.freeze({
@@ -104,6 +112,21 @@ const CONTROL_STATUS = Object.freeze({
       economicUse: false,
       blockedReason: 'different key material — operator hive keys not held by vault/master (measured fleet_control_audit.json 2026-09-30: hive 0/4; re-proven Task 13-a: 0/4 against the restored master + every per-account 2018 sheet line + recovered page + zip uploads)',
     }),
+  }),
+  // hcsoldier4/5/6 — הדור-הקנוני-החלופי (owner-anchored, minted 2026-10-04 15:25-15:26 by
+  // headcorner, 3 STEEM fee each; txids fb3a9be3…/9e37b385…/1c3aa596…). Keys derive FOREVER
+  // from SAOS_FACTORY_MASTER (2018 sheet line 19) — 4/4 live-verified (soldier_auth_audit.json,
+  // 2026-10-04); headcorner recovery anchor in owner auth. hcsoldier1/2/3 (the lost generation,
+  // LOST-NO-CUSTODY 3× verified) are deliberately NOT on this roster — and capital_gate bans
+  // them by name with the custody evidence.
+  'hcsoldier4': Object.freeze({
+    hive: STEEM_ONLY_GEN, blurt: STEEM_ONLY_GEN,
+  }),
+  'hcsoldier5': Object.freeze({
+    hive: STEEM_ONLY_GEN, blurt: STEEM_ONLY_GEN,
+  }),
+  'hcsoldier6': Object.freeze({
+    hive: STEEM_ONLY_GEN, blurt: STEEM_ONLY_GEN,
   }),
 });
 
@@ -151,7 +174,7 @@ function resolveNames() {
   };
 }
 
-/** 36 שורות (12 חשבונות × 3 שרשראות) עם דגלי-שליטה קריאים-למכונה. */
+/** 45 שורות (15 חשבונות × 3 שרשראות) עם דגלי-שליטה קריאים-למכונה. */
 function rows() {
   const r = resolveNames();
   const material = vaultKeyMaterialByAccount();

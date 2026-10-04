@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const steem = require('steem');
+const capGate = require('./lib/capital_gate.cjs'); // owner directive 2026-10-04: think-before-sign (STASIS + roster + journal)
 
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 const ROOT = path.resolve(__dirname, '..');
@@ -69,6 +70,9 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function main() {
   const t0 = new Date().toISOString();
+  // שער-המחשבה (owner 2026-10-04): בלם-חירום קודם-לכל — ואז שוער-רוסטר על-כל-יעד
+  if (capGate.stasisHalt('head-delegate')) return;
+  const roster = capGate.guardTargets('head-delegate', SOLDIERS, 'steem');
   const vaultPath = process.env.VAULT || recoverVault();
   if (!vaultPath) { console.log('[head-del] NO-VAULT — fail-soft'); return; }
   const vault = JSON.parse(fs.readFileSync(vaultPath, 'utf8'));
@@ -90,8 +94,9 @@ async function main() {
   const ratio = parseFloat(globals.total_vesting_fund_steem) / parseFloat(globals.total_vesting_shares);
   const vestsTarget = (SP_PER_SOLDIER / ratio).toFixed(6) + ' VESTS';
 
-  const results = []; let delegated = 0, skipped = 0, failed = 0;
-  for (const s of SOLDIERS) {
+  const results = []; let delegated = 0, skipped = 0, failed = 0, refused = 0;
+  for (const x of roster.refused) { results.push({ to: x.name, target: 'n/a', status: 'REFUSED-ROSTER', why: x.reason }); refused++; console.log('[REFUSED-ROSTER] headcorner → @' + x.name + ' · ' + x.reason); }
+  for (const s of roster.allowed) {
     const R = { to: s, target: `${SP_PER_SOLDIER} SP` };
     try {
       const sa = (await P(cb => steem.api.getAccounts([s], cb)))[0];
@@ -114,8 +119,9 @@ async function main() {
     await sleep(400);
   }
 
+  capGate.journal('head-delegate', { dry: DRY, rosterLoaded: roster.rosterLoaded, allowed: roster.allowed, refused: roster.refused, delegated, skipped, failed, refusedCount: refused });
   const receipt = {
-    ok: true, tool: 'head-delegate.cjs', doctrine: 'self-capital — the fleet allocates its own SP, idempotent, bounded 30 SP × 11 soldiers',
+    ok: true, tool: 'head-delegate.cjs', doctrine: 'self-capital — the fleet allocates its own SP, idempotent, bounded 30 SP per soldier, canonical-roster-gated (capital-gate 2026-10-04)',
     at: t0, finishedAt: new Date().toISOString(), dry: DRY, target: vestsTarget,
     tally: { delegatedVerified: delegated, skippedAlready: skipped, failed },
     results,
