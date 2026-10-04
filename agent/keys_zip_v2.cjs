@@ -48,6 +48,11 @@ const FILES = [
   'upload/הד.txt', // R18 — המקור-הגולמי-שהעלה-המפעיל (שמירת-הוכחה)
   'upload/הדקור.txt',
   'upload/חח.txt',
+  // lesson-115 (R44): כל קובץ-מפתח נוסע בתוך המעטפת — גלוב דינמי, בלי רשימה
+  // ידנית שמפספסת דור-חדש (הדור שנולד אחרי-האיטום הקודם אבד פעם-אחת ככה)
+  ...fs.readdirSync(path.join(ROOT, 'agent', 'keys'))
+    .filter((f) => f !== '.vaultkey')
+    .map((f) => 'agent/keys/' + f),
 ].filter((f) => fs.existsSync(path.join(ROOT, f)));
 
 const sha = (f) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');

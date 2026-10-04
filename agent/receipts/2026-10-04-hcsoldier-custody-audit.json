@@ -1,0 +1,46 @@
+{
+  "format": "saos/custody-audit/1",
+  "agent": "custody-audit (R44)",
+  "generatedAt": "2026-10-04T15:30:00Z",
+  "question": "owner directive 2026-10-04 (trace 1a1076497144c3ed): hcsoldier1-3 grid funding visible on-chain — does the estate hold their keys?",
+  "verdict": {
+    "hcsoldier1": "LOST-NO-CUSTODY",
+    "hcsoldier2": "LOST-NO-CUSTODY",
+    "hcsoldier3": "LOST-NO-CUSTODY",
+    "replacement": "hcsoldier4/5/6 MINTED-DETERMINISTIC-RESCUE-ANCHORED",
+    "stranded": "hcsoldier1-3 hold 18.667 STEEM + 0.139 SBD each (~56.0 STEEM + 0.417 SBD total) — funds on-chain, keys nowhere; recovery impossible without key material; accounts remain on-chain but inert"
+  },
+  "evidence": {
+    "onChainFacts": [
+      "hcsoldier1/2/3 created 2026-09-29T19:21:39 by creator=headcorner (condenser_api.get_account_history op 0, all three)",
+      "funded 10.000 STEEM at birth + 10.000 STEEM top-up 2026-09-30 17:30-17:38 (memo 'grid soldier top-up', tx 8ccc85bb… for hcsoldier1)",
+      "limit orders placed 3-9 seconds after birth (live grid generation)",
+      "current: 18.667 STEEM + 0.139 SBD each · 0 open orders · no account_auths anywhere (key-only authority)"
+    ],
+    "custodySearch": [
+      "factory-master derivation (sheet line 1, identified by headcorner 4/4 live match): hcsoldier1/2/3 = 0/4 each — NOT master-derived",
+      "sheet lines + headcorner-recovered lines as candidate masters × 4 roles × 3 accounts + vault roster WIFs: 768 derivations, 0 matches",
+      "09-29 seal (KEYS-ZIP-2026-09-29.zip.enc, sealedAt 17:58:05Z): inner vault.json holds the original 12-roster only — sealed 83 minutes BEFORE the soldiers were born",
+      "recovery-meta.json keysZipSha256 == 09-29 seal sha (fb44b4f4…), decrypt roundtrip OK — custody chain intact for everything up to 17:58",
+      "GitHub Actions secrets timeline: SA_FLEET_KEYS updated 2026-09-29T19:01:33Z — still before birth; no soldier-specific secrets",
+      "git objects across estate repos (log -S 'hcsoldier', all refs): only honest audit notes, zero key material",
+      "full-disk scan for the three accounts' live public keys (owner/active/posting/memo from chain): only this audit's own notes match",
+      "Domain vault-transfer blob (WEAVE-VAULT-TRANSFER-1, 10-03): 13 named items incl. SA_FLEET_KEYS — recipient key machine-local, sandbox wiped; blob sealed to PUB_HEX in vault-transfer.yml"
+    ],
+    "rootCause": "creation run was ephemeral; per-account keyfiles written to machine-local agent/keys/ AFTER the 17:58 seal and BEFORE any guardian reseal — the sandbox wipe class documented as 'soldiers lost in sandbox' (fixed boundary). The 09-29 generation was born OUTSIDE every custody layer."
+  },
+  "remediation": {
+    "law": "what keys SHOULD be (factory_v2 doctrine): deterministic sha256(account+role+FACTORY_MASTER) + headcorner rescue anchor in owner account_auths (threshold 1) + double backup (vault.json tier factory-v2 + per-account keyfile 0600) + sealed archive in system custody",
+    "minted": [
+      {"name": "hcsoldier4", "txid": "fb3a9be3da11cde9d7da04fc49ebf3dd88d6158c", "created": "2026-10-04T15:25:51", "fee": "3.000 STEEM", "rescueAnchor": "headcorner:1 in owner", "verify": "active+posting+owner MATCH on-chain 4/4"},
+      {"name": "hcsoldier5", "txid": "9e37b385c0f2f1f10638554a243bf5144bbbd295", "created": "2026-10-04T15:26:06", "fee": "3.000 STEEM", "rescueAnchor": "headcorner:1 in owner", "verify": "active+posting+owner MATCH on-chain 4/4"},
+      {"name": "hcsoldier6", "txid": "1c3aa596fcfd96c906d4b77699ffacd5dd7a0c98", "created": "2026-10-04T15:26:12", "fee": "3.000 STEEM", "rescueAnchor": "headcorner:1 in owner", "verify": "active+posting+owner MATCH on-chain 4/4"}
+    ],
+    "tool": "agent/soldier_mint_paid.cjs (new: paid-path account_create for when claim tickets/RC are insufficient — same iron laws as factory_v2: deterministic keys, rescue anchor, double backup, live gate, chain verify)",
+    "seal": "agent/vault/KEYS-ZIP-2026-09-10.zip.enc rebuilt (24 files, roundtrip byte-identical) incl. agent/.env + vault.json (15 accounts) + hcsoldier4/5/6.json; keys_zip_v2.cjs patched (lesson-115 law: dynamic glob over agent/keys/ — a generation born after a seal can never again fall outside the envelope); recovery-meta.json rotated in system custody",
+    "custodyMatrix": "agent/soldier_auth_audit.json — 15 accounts: 10/10 old roster 4/4 MATCH (ynet/headcorner live via .env/master-derive as documented), hcsoldier4/5/6 4/4 MATCH",
+    "funding": "new generation starts 0-balance (identities first); fuel 3×10 STEEM lands with the next liquid window (powerdown payout 2026-10-10T02:01:27Z, ~475.9 SP weekly) — grid activation follows fuel, no dust orders on empty accounts",
+    "headcornerLiquidAfterFees": "5.643 STEEM measured (engine rebalances; working capital in open orders intact)"
+  },
+  "honesty": "the lost generation is reported lost, not silently dropped; the replacement is the doctrine answer to 'what should the keys be' — recoverable forever from master+name, with a rescue anchor that makes key loss structurally impossible for every future birth"
+}
