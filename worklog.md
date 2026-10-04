@@ -4370,3 +4370,18 @@ Work Log:
 
 Stage Summary:
 - hcsoldier1/2/3: אבודים-ומאומתים-כאבודים (לא-ניתן-אחרת) · הדור-החי 4/5/6 עם-עוגן-חילוץ נמסר-מוצפן-לגיט · הסיסמה-ביד-הבעלים-בלבד · מכתם: broadcasts/2026-10-04-r20a-keys-custody.md
+---
+Task ID: R20b
+Agent: Z.ai Code (main)
+Task: המפעיל העלה «הדקור (2).txt» («אולי זה על זה») וביקש: «תבדוק אם זה פותח את החיילים האבודים».
+
+Work Log:
+- זהות-הדף: == upload/הדקור.txt == agent/keys/headcorner-recovered.txt (sha af522134… modulo רווח) — דף-הראש, לא-דף-חיילים
+- דף-מול-שרשרת: חלק-HIVE חי-ותקף-וזהה-לכספת (MATCH-CHAIN ×3) · חלק-STEEM מת (NOT-ON-CHAIN ×4 — הוחלף-בסבבה; כספת=MATCH-CHAIN)
+- מטריצת-פתיחה-חיה: 12-pubkeys ייחודיים (דף+כספת) × 3-חשבונות-אבודים × שתי-שרשראות × owner/active/posting/memo + account_auths → **0/36, אף-פתיחה**
+- hcsoldier1/2/3 נמדדו: STEEM-בלבד · created 2026-09-29T19:21:39 · recovery=headcorner · owner-מפתח-בלבד · account_auths=[] בכל-הרמות
+- נתיב-recover_account נחסם-מבנית: דורש-מפתח-owner-אחרון-של-החשבון-האבוד (החומר-האבוד-עצמו) גם-בתוך-חלון-ה-30-יום
+- upload/ נשאר-gitignored (62) — הדף-החשוף-לא-נכנס-להיסטוריה · סריקת-סודות: 0-WIF/0-סיסמאות על כל-הדיפים-הממתינים (9-קבצי-מצב-דיימונים)
+
+Stage Summary:
+- פסיקה-מאומתת: הדף-לא-פותח-את-האבודים · פסק-R20a-עומד (LOST-NO-CUSTODY · הדור-4/5/6 הוא-התשובה) · מכתם: broadcasts/2026-10-04-r20b-sheet-opens-soldiers.md
