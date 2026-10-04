@@ -32,9 +32,30 @@
   "remediation": {
     "law": "what keys SHOULD be (factory_v2 doctrine): deterministic sha256(account+role+FACTORY_MASTER) + headcorner rescue anchor in owner account_auths (threshold 1) + double backup (vault.json tier factory-v2 + per-account keyfile 0600) + sealed archive in system custody",
     "minted": [
-      {"name": "hcsoldier4", "txid": "fb3a9be3da11cde9d7da04fc49ebf3dd88d6158c", "created": "2026-10-04T15:25:51", "fee": "3.000 STEEM", "rescueAnchor": "headcorner:1 in owner", "verify": "active+posting+owner MATCH on-chain 4/4"},
-      {"name": "hcsoldier5", "txid": "9e37b385c0f2f1f10638554a243bf5144bbbd295", "created": "2026-10-04T15:26:06", "fee": "3.000 STEEM", "rescueAnchor": "headcorner:1 in owner", "verify": "active+posting+owner MATCH on-chain 4/4"},
-      {"name": "hcsoldier6", "txid": "1c3aa596fcfd96c906d4b77699ffacd5dd7a0c98", "created": "2026-10-04T15:26:12", "fee": "3.000 STEEM", "rescueAnchor": "headcorner:1 in owner", "verify": "active+posting+owner MATCH on-chain 4/4"}
+      {
+        "name": "hcsoldier4",
+        "txid": "fb3a9be3da11cde9d7da04fc49ebf3dd88d6158c",
+        "created": "2026-10-04T15:25:51",
+        "fee": "3.000 STEEM",
+        "rescueAnchor": "headcorner:1 in owner",
+        "verify": "active+posting+owner MATCH on-chain 4/4"
+      },
+      {
+        "name": "hcsoldier5",
+        "txid": "9e37b385c0f2f1f10638554a243bf5144bbbd295",
+        "created": "2026-10-04T15:26:06",
+        "fee": "3.000 STEEM",
+        "rescueAnchor": "headcorner:1 in owner",
+        "verify": "active+posting+owner MATCH on-chain 4/4"
+      },
+      {
+        "name": "hcsoldier6",
+        "txid": "1c3aa596fcfd96c906d4b77699ffacd5dd7a0c98",
+        "created": "2026-10-04T15:26:12",
+        "fee": "3.000 STEEM",
+        "rescueAnchor": "headcorner:1 in owner",
+        "verify": "active+posting+owner MATCH on-chain 4/4"
+      }
     ],
     "tool": "agent/soldier_mint_paid.cjs (new: paid-path account_create for when claim tickets/RC are insufficient — same iron laws as factory_v2: deterministic keys, rescue anchor, double backup, live gate, chain verify)",
     "seal": "agent/vault/KEYS-ZIP-2026-09-10.zip.enc rebuilt (24 files, roundtrip byte-identical) incl. agent/.env + vault.json (15 accounts) + hcsoldier4/5/6.json; keys_zip_v2.cjs patched (lesson-115 law: dynamic glob over agent/keys/ — a generation born after a seal can never again fall outside the envelope); recovery-meta.json rotated in system custody",
@@ -42,5 +63,22 @@
     "funding": "new generation starts 0-balance (identities first); fuel 3×10 STEEM lands with the next liquid window (powerdown payout 2026-10-10T02:01:27Z, ~475.9 SP weekly) — grid activation follows fuel, no dust orders on empty accounts",
     "headcornerLiquidAfterFees": "5.643 STEEM measured (engine rebalances; working capital in open orders intact)"
   },
-  "honesty": "the lost generation is reported lost, not silently dropped; the replacement is the doctrine answer to 'what should the keys be' — recoverable forever from master+name, with a rescue anchor that makes key loss structurally impossible for every future birth"
+  "honesty": "the lost generation is reported lost, not silently dropped; the replacement is the doctrine answer to 'what should the keys be' — recoverable forever from master+name, with a rescue anchor that makes key loss structurally impossible for every future birth",
+  "r20cDeep": {
+    "at": "2026-10-04T21:0xZ (platform machine, evening round)",
+    "trigger": "owner uploaded two more chat archives (הד (1).txt + steem-agent log) — «המשיך עוד יותר לעומק תבחן היטב איפה זה»",
+    "newMeasurements": [
+      "headcorner current chain keys == FACTORY_MASTER derive (sheet:19) 4/4 — whole live estate on ONE factory tree",
+      "vault truth matrix 15 accounts × 4 roles vs STEEM chain: 52/52 MATCH · 0 STALE (vault_truth_matrix.json)",
+      "ynet+headcorner keyless-in-vault BY DESIGN (operator-delegated / master-derive) — matches archive doctrine",
+      "ynet live structure: posting account_auth headcorner:1 → rescue-ping path re-opened; owner/active = operator-held keys; recovery_account=steem",
+      "archive headcorner backup WIFs (SAOS-ROT1/HMAC era): DEAD on chain 0/3",
+      "sovereign seed (rescued from archive) vs lost soldiers: 0/168 (7 formulas)",
+      "full HMAC tree vs lost soldiers: 0/6,048 (42 path structures) — prior R44 control void (head had already left the tree)",
+      "91 local seed candidates (.env/vault/sheet/head-sheet/mnemonics/seal-passes) × 7 formulas: 0/7,644",
+      "KEYS-SEED seal found BROKEN (bad-decrypt with documented keysZipPass) → re-sealed with keysZipPass, roundtrip MATCH, recovery-meta hashes refreshed"
+    ],
+    "verdict": "hcsoldier1/2/3 LOST-NO-CUSTODY — third independent confirmation; deepest sweep ever (~14k+ derivations across FACTORY/HMAC/sovereign/candidate matrices); verdict now a full systematic measurement, not an absence-of-evidence claim",
+    "secretsExposed": 0
+  }
 }
