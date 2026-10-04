@@ -4354,3 +4354,19 @@ Work Log:
 
 Stage Summary:
 - ביקורת-עצמית-מצאה-4-שגויים-ותיקנה-הכל-במדידה · המאגר-עקבי-פנימית-כעת: badge=טבלה, מספרי-לולאות=חי, שורת-כספת=אמת, MANIFEST=מוסבר · מכתם: broadcasts/2026-09-12-r19f-selfreview-ack.md
+---
+Task ID: R20a
+Agent: Z.ai Code (main)
+Task: המפעיל: «אני עובד עם סוכנים חדשים על הגיט ואין להם את המפתח של hcsoldier 1-3 — נמחק לגמרי; שחזר ודחוף לגיט שיקבלו הסוכנים» + טוקן-GitHub חדש שהועלה.
+
+Work Log:
+- גיט: אימות-נשבר (טוקן-ישן) → הטוקן-החדש מ-upload/pat (2).env הותקן-בלי-חשיפה בפלט → fetch/push תקינים ✓
+- יישור: rebase על origin/main (הסוכנים-החדשים התקדמו: security/audit branch · R44-custody · economy-engines · Z-Chain) → HEAD==origin==5135e067 ✓
+- בדיקת-האמת על hcsoldier1/2/3 מהשרשרת: ownerAccts=[] — ל-headcorner אין-סמכות; מפתחות-אבודים (פסק-R44: 768-גזירות) → בלתי-ניתנים-לשחזור-קריפטוגרפית. הפסק-מאומת-בעצמאי.
+- hcsoldier4/5/6 נטבעו-חי 15:25–15:26 (3 STEEM כ"א · txids fb3a9be3/9e37b385/1c3aa596 · עוגן-headcorner-ב-owner מאומת) · כספת-15-חשבונות-חיה ב-agent/keys · audit 4/4-MATCH
+- hed-soldiers-source.txt נבדק: ארכיון-2018, 13/13-מתים — לא-המקור
+- מסירה-מאובטחת לסוכנים: agent/vault/KEYS-PACK-2026-10-04-r20a.zip.enc (vault.json+keyfiles+registry+MANIFEST · openssl aes-256-cbc pbkdf2-200k · roundtrip-זהה) + README-הוראות-פענוח-ב-HE · סיסמה-לא-נמצאת-בגיט — תועבר-ע"י-הבעלים בערוץ-חוץ
+- סריקת-סודות: 0-WIF · 0-סיסמאות לפני-הקומיט
+
+Stage Summary:
+- hcsoldier1/2/3: אבודים-ומאומתים-כאבודים (לא-ניתן-אחרת) · הדור-החי 4/5/6 עם-עוגן-חילוץ נמסר-מוצפן-לגיט · הסיסמה-ביד-הבעלים-בלבד · מכתם: broadcasts/2026-10-04-r20a-keys-custody.md
