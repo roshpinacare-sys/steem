@@ -38,8 +38,47 @@ const crypto = require('crypto');
 const AGENT_DIR = path.join(__dirname, '..');
 const STASIS_FILE = path.join(AGENT_DIR, 'STASIS.json');
 const JOURNAL = path.join(AGENT_DIR, 'receipts', 'capital-decisions.jsonl');
+const SELFMODEL_FILE = path.join(AGENT_DIR, 'cognition', 'organism.json');
 const CHAIN = require('./directivesChain.cjs');
 const GUARDS = require('./loopguard.cjs');
+const SELFMODEL = require('./selfmodel.cjs');
+
+/* R29 (trace 1a10d243868ffdc1): staged-allow now CONSUMES the self-model. The model is
+ * not documentation — it is the brake's second edge. Rules (each fail-closed):
+ *   E3  unreadable/invalid organism.json           → staged lane REFUSES (self-model-unauthenticated)
+ *   E4  generatedAt older than SELFMODEL_MAX_AGE_H → staged lane REFUSES (self-model-stale)
+ *   E1  open contradiction touching the lane       → staged lane REFUSES (self-model-contradiction)
+ *   E10 haltCoverage=ORGANISM_ONLY                 → staged lane REFUSES (sovereignty-uncovered):
+ *       while a proven capital path exists that the organism cannot stop (money-family-live,
+ *       2026-10-05T17:07:36Z), no staged lane may open — opening lanes would be a lie about
+ *       coverage. Only the owner closing/remediating that surface can change the model.
+ * Shrink/halt paths are NEVER blocked by the self-model (shrink stays mechanism). */
+const SELFMODEL_MAX_AGE_H = 26; /* beat is hourly — >26h means the cognition loop is dead */
+
+function selfModelGate(lane) {
+  const loaded = SELFMODEL.load(SELFMODEL_FILE);
+  if (!loaded.ok) return { allow: false, reason: 'self-model-unauthenticated', detail: (loaded.errors || []).join('; ').slice(0, 140) };
+  const model = loaded.model;
+  const gen = model.generatedAt ? Date.parse(model.generatedAt) : NaN;
+  if (Number.isNaN(gen) || (Date.now() - gen) > SELFMODEL_MAX_AGE_H * 3600e3) {
+    return { allow: false, reason: 'self-model-stale', detail: 'generatedAt=' + String(model.generatedAt) + ' max-age=' + SELFMODEL_MAX_AGE_H + 'h — the cognition loop must run before capital lanes open' };
+  }
+  const openOnLane = (model.contradictions || []).filter((c) => c && c.status === 'open' && (!Array.isArray(c.lanes) || c.lanes.length === 0 || c.lanes.map(String).map((x) => x.toLowerCase()).includes(String(lane).toLowerCase())));
+  if (openOnLane.length) {
+    return { allow: false, reason: 'self-model-contradiction-open', detail: openOnLane.map((c) => c.id).join(',').slice(0, 120) };
+  }
+  const sov = model.sovereignty;
+  if (sov && sov.haltCoverage === 'ORGANISM_ONLY') {
+    /* capital lanes only: claims (posting-only harvesting) may open when contradiction-free;
+     * grid/general (capital movement) stay closed until the owner remediates the uncovered surface. */
+    const capitalLanes = (Array.isArray(sov.capitalLanes) && sov.capitalLanes.length ? sov.capitalLanes : ['grid', 'general']).map((x) => String(x).toLowerCase());
+    if (capitalLanes.includes(String(lane).toLowerCase())) {
+      return { allow: false, reason: 'sovereignty-uncovered', detail: 'haltCoverage=ORGANISM_ONLY — proven capital paths exist outside organism stop-power (R29); owner-only remediation' };
+    }
+  }
+  return { allow: true, reason: 'self-model-fresh-clean-covered', detail: 'generatedAt=' + String(model.generatedAt) };
+}
+
 
 /** רשימת-האיסור-הקנונית (מעל-הרוסטר — אפילו אם-יום-אחד יופיעו ברוסטר, אסור-הון): */
 const BANNED_CAPITAL = Object.freeze([
@@ -220,10 +259,18 @@ function stasisHalt(tool) {
       ], 'lane-not-in-owner-directive-resume');
       return true;
     }
-    console.log(`[CAPITAL-GATE] RESUME-ALLOWED-BY-DIRECTIVES ${tool} (lane=${lane}) · owner-directives cover [${needed.join(',')}] · tamper-EVIDENT (policy-gated, not crypto-proof)`);
+    /* R29: resume is EXPANSION too — it must consume the self-model exactly like staged-allow. */
+    const smResume = selfModelGate(lane);
+    if (!smResume.allow) {
+      console.log(`[CAPITAL-GATE] RESUME-DENIED ${tool} (lane=${lane}) · reason: ${smResume.reason} · ${smResume.detail.slice(0, 140)}`);
+      writeReceipt(tool, lane, 'halt', 'mechanism-shrink', selfModelReceiptEv(smResume), smResume.reason);
+      return true;
+    }
+    console.log(`[CAPITAL-GATE] RESUME-ALLOWED-BY-DIRECTIVES ${tool} (lane=${lane}) · owner-directives cover [${needed.join(',')}] · self-model fresh+clean · tamper-EVIDENT (policy-gated, not crypto-proof)`);
     writeReceipt(tool, lane, 'allow', 'policy-gated', [
       { source: 'agent/receipts/owner-directives.jsonl', ref: 'owner-directives coverage for [' + needed.join(',') + ']', at: new Date().toISOString() },
-    ], 'resume covered by owner-directives chain (tamper-evident, policy-gated)');
+      ...selfModelReceiptEv(smResume),
+    ], 'resume covered by owner-directives chain + fresh clean self-model (tamper-evident, policy-gated)');
     return false;
   }
 
@@ -238,11 +285,20 @@ function stasisHalt(tool) {
       ], 'staged-lane-lacks-directive-entry');
       return true;
     }
-    console.log(`[CAPITAL-GATE] STASIS-STAGED-ALLOW ${tool} (lane=${lane}) · reason: ${reason.slice(0, 160)} · since ${s.since || '?'} · directives-covered`);
+    /* R29 — the self-model is consumed AT THE EDGE (E1/E3/E4/E10): a staged lane may only
+     * open while the model is fresh, contradiction-free on this lane, and sovereignty-covered. */
+    const sm = selfModelGate(lane);
+    if (!sm.allow) {
+      console.log(`[CAPITAL-GATE] STAGED-DENIED ${tool} (lane=${lane}) · reason: ${sm.reason} · ${sm.detail.slice(0, 160)}`);
+      writeReceipt(tool, lane, 'halt', 'mechanism-shrink', selfModelReceiptEv(sm), sm.reason);
+      return true;
+    }
+    console.log(`[CAPITAL-GATE] STASIS-STAGED-ALLOW ${tool} (lane=${lane}) · reason: ${reason.slice(0, 160)} · since ${s.since || '?'} · directives-covered · self-model fresh+clean`);
     writeReceipt(tool, lane, 'allow', 'policy-gated', [
       { source: 'agent/STASIS.json', ref: 'mode=staged, stagedLanes.allow=[' + allow.join(',') + ']', at: s.since },
       { source: 'agent/receipts/owner-directives.jsonl', ref: 'owner-directives coverage for [' + allow.join(',') + ']', at: new Date().toISOString() },
-    ], 'staged allow covered by owner-directives chain (tamper-evident, policy-gated)');
+      ...selfModelReceiptEv(sm),
+    ], 'staged allow covered by owner-directives chain + fresh clean self-model (tamper-evident, policy-gated)');
     return false;
   }
 
@@ -298,4 +354,8 @@ function journal(tool, row) {
   }
 }
 
-module.exports = { stasisState, stasisHalt, laneOf, guardTargets, journal, journalHealth, authorityOf, BANNED_CAPITAL, STASIS_FILE, JOURNAL };
+function selfModelReceiptEv(sm) {
+  return [{ source: 'agent/cognition/organism.json', ref: sm.reason + ' · ' + sm.detail, at: new Date().toISOString() }];
+}
+
+module.exports = { stasisState, stasisHalt, laneOf, guardTargets, journal, journalHealth, authorityOf, selfModelGate, BANNED_CAPITAL, STASIS_FILE, JOURNAL, SELFMODEL_FILE, SELFMODEL_MAX_AGE_H };

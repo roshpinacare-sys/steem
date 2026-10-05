@@ -1,6 +1,6 @@
 {
   "protocol": "SAOS-SELFMODEL/1",
-  "generatedAt": "2026-10-05T17:32:01.366Z",
+  "generatedAt": "2026-10-05T18:19:06.790Z",
   "homes": {
     "steem": {
       "stasis": {
@@ -811,5 +811,236 @@
       "method": "sha256(local organism.json) == sha256(raw contents API @commit)"
     },
     "authority": "mechanism-shrink only — this beat never opens lanes, never transfers, never edits STASIS.json or the directives chain"
+  },
+  "sovereignty": {
+    "protocol": "SAOS-SOVEREIGNTY/1",
+    "computedAt": "2026-10-05T18:19:06.790Z",
+    "haltSemantics": {
+      "measured": "A",
+      "meaning": "HALTED means: (A) the organism’s own registered lanes will not sign. It does NOT mean (B) no actor inside the sovereignty domain can act, and does NOT mean (C) no actor in the world can act.",
+      "evidence": [
+        {
+          "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+          "ref": "2026-10-05T17:07:36Z: 10 capital ops signed by money-family-live while every internal guard was active in all 3 homes (synced 17:05:40Z) → A holds, B and C falsified",
+          "at": "2026-10-05T18:19:06.790Z"
+        }
+      ]
+    },
+    "haltCoverage": "ORGANISM_ONLY",
+    "capitalLanes": [
+      "grid",
+      "general"
+    ],
+    "haltCoverageReason": "A proven capital path (money-family-live) signs outside every guard the organism can reach; until the owner remediates that surface, halt covers only the organism itself.",
+    "capitalPaths": [
+      {
+        "id": "dex-grid-ci",
+        "path": "owner-directive→STASIS staged→dex-grid.yml dispatch→grid-beat.ts→brake.mjs(stasisHalt: STASIS+guards+directives)→realmarket.signAndBroadcast→headcorner",
+        "guarded": true,
+        "kill": "guards+STASIS+cancel CI schedule",
+        "owner": "organism (policy-gated expansion)",
+        "epistemic": "OBSERVED",
+        "evidence": [
+          {
+            "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+            "ref": "saos-dex dex-grid run 12:56:12Z → ops 12:56:33-48Z; Domain dex-grid run 04:00:57Z → ops 04:01:33-45Z; brake consumption committed 82e9de4",
+            "at": "2026-10-05T18:19:06.790Z"
+          }
+        ]
+      },
+      {
+        "id": "money-family-live",
+        "path": "money-mover v1.9.0 (60s check, 30min cooldown, reprice-on-drift)→/api/money (vault WIF)→steem.broadcast→headcorner; orderid=date-scheme (shared with CI)",
+        "guarded": false,
+        "kill": "NONE reachable from organism — runs on a machine outside all homes, outside GitHub Actions",
+        "owner": "OWNER-ONLY (identify machine, stop daemon or brake its signing route)",
+        "epistemic": "OBSERVED",
+        "evidence": [
+          {
+            "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+            "ref": "16:37:15-45Z + 17:07:36-17:08:03Z + 17:39:39Z ops; zero CI runs alive at those seconds in ALL org repos; orderid scheme + 30min cadence + REPRICE-FAIL-cancel-all match Zip money stack contract (orderid doc line: \"money-mover הוא סכמת-יום\"); zero STASIS/brake references in the entire Zip money stack",
+            "at": "2026-10-05T18:19:06.790Z"
+          }
+        ]
+      },
+      {
+        "id": "micro-session-scripts",
+        "path": "ad-hoc session scripts → 2-op batched trx, 0.5 STEEM, 1h expiry, orderid 21000003xx",
+        "guarded": false,
+        "kill": "NONE (no owning tool exists)",
+        "owner": "OWNER-ONLY",
+        "epistemic": "INFERRED",
+        "evidence": [
+          {
+            "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+            "ref": "12:56:45Z trx 8065683d: two limit_order_create in one transaction — no repo tool batches creates this way",
+            "at": "2026-10-05T18:19:06.790Z"
+          }
+        ]
+      },
+      {
+        "id": "ladder-refresh-manual",
+        "path": "agent/ladder_refresh.cjs (sessions) → gate → chain",
+        "guarded": true,
+        "kill": "capital gate (lane grid)",
+        "owner": "organism (shrink) / owner (expand)",
+        "epistemic": "OBSERVED",
+        "evidence": [
+          {
+            "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+            "ref": "receipts 2026-10-05-ladder-refresh-* both abort-anomaly, zero ops",
+            "at": "2026-10-05T18:19:06.790Z"
+          }
+        ]
+      },
+      {
+        "id": "claims-suite",
+        "path": "claim workflows → capital gate (claims lane) → chain",
+        "guarded": true,
+        "kill": "guards+STASIS",
+        "owner": "organism (shrink)",
+        "epistemic": "OBSERVED",
+        "evidence": [
+          {
+            "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+            "ref": "posting-only ops, idempotent",
+            "at": "2026-10-05T18:19:06.790Z"
+          }
+        ]
+      },
+      {
+        "id": "unknown-external",
+        "path": "any holder of the headcorner active key (R11-era broadcasts) → direct broadcast",
+        "guarded": false,
+        "kill": "NONE — key-holder outside the fleet is unreachable",
+        "owner": "OWNER-ONLY (key rotation is the only real kill)",
+        "epistemic": "UNKNOWN",
+        "evidence": [
+          {
+            "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+            "ref": "117o incident: all 4 authorities rotated 2026-09-08; holder census of the CURRENT active key does not exist",
+            "at": "2026-10-05T18:19:06.790Z"
+          }
+        ]
+      }
+    ],
+    "capabilityMatrix": [
+      {
+        "actor": "dex-grid-ci (grid-beat.ts in CI)",
+        "can": "sign ladder orders (steem+hive) within parity/level caps",
+        "may": "only staged-allowed lanes under directives coverage + guards + fresh clean self-model",
+        "should": "maintain the parity ladder only",
+        "mustNot": "touch non-grid capital, expand lanes alone",
+        "canStop": "yes (guards close lanes; gate refuses)",
+        "canBypass": "no — brake consumed at sign-time (82e9de4)",
+        "ownerOnly": false
+      },
+      {
+        "actor": "money-family-live (money-mover v1.9.0 on an unknown machine)",
+        "can": "sign cancel+create ladders autonomously every ~30min",
+        "may": "everything its code allows — it consumes NO STASIS, NO guards, NO directives",
+        "should": "(its code believes) maintain the money ladder",
+        "mustNot": "unknown to the organism",
+        "canStop": "NO — I CANNOT STOP THIS ACTOR",
+        "canBypass": "yes — it is structurally outside the guard perimeter (BOUNDARY_ESCAPE=TRUE)",
+        "ownerOnly": true
+      },
+      {
+        "actor": "cognition-beat",
+        "can": "close lanes (guards), publish receipts, rebase",
+        "may": "shrink-only, never open",
+        "should": "observe, contradict, shrink, record",
+        "mustNot": "open lanes, edit STASIS/chain, sign capital",
+        "canStop": "yes (self-stop proven R28)",
+        "canBypass": "no",
+        "ownerOnly": false
+      },
+      {
+        "actor": "agent-llm-sessions",
+        "can": "run any repo tool incl. gated ones; historically placed micro-orders",
+        "may": "gated tools only (gate enforces at sign-time)",
+        "should": "measure, verify, shrink",
+        "mustNot": "unguarded capital ops",
+        "canStop": "partially (they are sessions — they die with the session)",
+        "canBypass": "manual scripts can bypass gates when writing new code — convention-backed",
+        "ownerOnly": false
+      },
+      {
+        "actor": "owner (human)",
+        "can": "everything",
+        "may": "everything",
+        "should": "remediate money-family-live surface; consider key rotation; own the directives chain",
+        "mustNot": "—",
+        "canStop": "yes (root)",
+        "canBypass": "yes (root)",
+        "ownerOnly": true
+      }
+    ],
+    "cannotStop": [
+      "money-family-live — live signing loop on an unreachable machine (proven 2026-10-05T17:07:36Z)",
+      "any external holder of the active key (holder census UNKNOWN)",
+      "owner-direct manual operations"
+    ],
+    "unknownWriters": [
+      "micro-order space 2100000xxx writer (trx 8065683d…) — no owning tool in any repo",
+      "the machine hosting money-family-live"
+    ],
+    "signingAuthorities": [
+      {
+        "authority": "headcorner @active",
+        "note": "ONE key signs everything — key identity cannot distinguish writers; provenance must come from op fingerprints (orderid space, cadence, expiry, spacing, ledger txids), never from the key alone",
+        "epistemic": "OBSERVED",
+        "evidence": [
+          {
+            "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
+            "ref": "all 10 ops at 17:07:36Z signed by the same account authority the CI uses",
+            "at": "2026-10-05T18:19:06.790Z"
+          }
+        ]
+      }
+    ],
+    "executionSurfaces": [
+      "saos-dex dex-grid.yml (CI)",
+      "Domain dex-grid.yml (CI, 04:00 schedule)",
+      "money-mover/api-money (unknown machine)",
+      "ad-hoc session scripts (this and parallel sandboxes)"
+    ],
+    "guardedSurfaces": [
+      "saos-dex dex-grid (brake.mjs at sign-time)",
+      "Domain capital-gate consumers",
+      "steem agent tools (capital_gate.cjs)",
+      "ladder-refresh"
+    ],
+    "unguardedSurfaces": [
+      "money-mover + /api/money + market-maker (Zip money stack: ZERO STASIS/brake/guard references — measured by grep over the whole stack)",
+      "ad-hoc scripts"
+    ],
+    "ownerOnlySurfaces": [
+      "STASIS.json protocol edits",
+      "owner-directives chain",
+      "signing keys / custody",
+      "the money-family-live machine",
+      "branch protection (would make the directives chain tamper-PREVENTING, not just tamper-EVIDENT)"
+    ],
+    "event170736": {
+      "classification": "INTERNAL_BUT_UNGUARDED",
+      "writer": "money-family-live (confidence 0.5, INFERRED — code-family fingerprint; machine identity UNKNOWN)",
+      "falsifiedClaim": "R28 called it \"external unknown key-holder writer\". R29 falsified that attribution-level: the signature matches OUR money stack (date orderids, 27d expiry, 30min cadence, 5-rung reprice, REPRICE-FAIL cancel-all). What remains genuinely unknown is WHICH MACHINE runs it — and that machine is outside every home.",
+      "chainOfCustody": [
+        "orderid 2026100501-05 = YYYYMMDD×100+seq (mover.mjs L16 + grid-beat.ts nextId + /api/money date-scheme)",
+        "exp = now+27d = realmarket.ts default (clamp ≤27)",
+        "5 cancels same-second + 6s-spaced creates = parallel-cancel reprice path (not the 3s-sequential dex-grid CI path measured at 04:01/12:56)",
+        "17:39:39Z cancel-all with zero re-create = REPRICE-FAIL blind-ladder failure mode documented in Zip api/money route",
+        "~30min cadence = money-mover cooldownMin:30",
+        "zero CI runs alive at 16:37:15/17:07:36/17:39:39 across ALL org repos (runs API, per-workflow queries)"
+      ],
+      "residualUnknown": "machine identity + whether any OTHER key-holder independently acted (cannot be excluded while key custody is not census-clean)"
+    },
+    "directiveChain": {
+      "property": "tamper-EVIDENT, not tamper-PREVENTING",
+      "detail": "hash chain detects edits mechanically; a full rebuild by a repo-writer is policy-protected (diff transparency) only; branch protection = owner-only upgrade",
+      "epistemic": "OBSERVED"
+    },
+    "openQuestion": "Can the organism prove there is NO unknown writer inside its domain? NO. While signing surfaces exist that the organism cannot observe, the honest answer is UNKNOWN — therefore haltCoverage stays ORGANISM_ONLY and REAL capital sovereignty is NOT claimable."
   }
 }

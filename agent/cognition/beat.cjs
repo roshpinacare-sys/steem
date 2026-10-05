@@ -178,11 +178,17 @@ function classifyOps(winOps, { ledgerTxids, nowMs }) {
       if (ledgerTxids && e.trx_id && ledgerTxids.has(e.trx_id)) {
         classified.push({ ...base, writer: 'dex-grid-ci', confidence: 0.9, attribution: 'txid-in-grid-ledger' });
       } else if (isCiLadderOrderid(idNum)) {
-        classified.push({ ...base, writer: 'dex-grid-ci', confidence: 0.85, attribution: 'INFERRED — orderid 2026MMDDxx space' });
+        /* R29 fix (trace 1a10d243868ffdc1): the date-orderid space is SHARED by dex-grid CI
+         * (grid-beat.ts, ASK_LEVELS=3) and money-mover (/api/money date-scheme, live 30-min
+         * reprice loop). Same orderid space ≠ same writer. The ONLY CI discriminator is a
+         * grid-ledger txid match. R29 measured this exact signature (5 parallel cancels +
+         * 5 creates, 1.883×5, exp+27d) at 16:37/17:07/17:39Z with ZERO CI runs alive in any
+         * org repo → the honest class is the money-family live process, unattributed. */
+        classified.push({ ...base, writer: 'money-family-live', unattributed: true, confidence: 0.5, attribution: 'INFERRED — date-orderid space SHARED (dex-grid-ci + money-mover); no grid-ledger txid match; R29 measured this signature with zero CI runs alive → live-process family, machine identity UNKNOWN (owner-only)' });
       } else if (isMicroOrderSpace(idNum)) {
-        classified.push({ ...base, writer: 'unknown', confidence: 0.2, attribution: 'NO pattern — micro-order space 2100000xxx has no owning tool in any repo (R27)' });
+        classified.push({ ...base, writer: 'unknown', unattributed: true, confidence: 0.2, attribution: 'NO pattern — micro-order space 2100000xxx has no owning tool in any repo (R27); R29: still EXTERNAL_UNKNOWN_WRITER' });
       } else {
-        classified.push({ ...base, writer: 'unknown', confidence: 0.2, attribution: 'NO pattern — orderid outside known spaces, trx not in ledger' });
+        classified.push({ ...base, writer: 'unknown', unattributed: true, confidence: 0.2, attribution: 'NO pattern — orderid outside known spaces, trx not in ledger' });
       }
       continue;
     }
@@ -196,11 +202,11 @@ function classifyOps(winOps, { ledgerTxids, nowMs }) {
       } else if ((parseFloat(vests) === 0) && RECLAIM_TARGETS.includes(delegatee)) {
         classified.push({ ...base, writer: 'owner-parallel', confidence: 0.6, attribution: 'INFERRED — delegate-0 reclaim-lost-soldiers signature (tool exists in repo)' });
       } else {
-        classified.push({ ...base, writer: 'unknown', confidence: 0.2, attribution: 'NO pattern — delegation outside matrix/reclaim signatures' });
+        classified.push({ ...base, writer: 'unknown', unattributed: true, confidence: 0.2, attribution: 'NO pattern — delegation outside matrix/reclaim signatures' });
       }
       continue;
     }
-    classified.push({ ...base, writer: 'unknown', confidence: 0.2, attribution: 'NO pattern — capital op with no owning signature in any registry' });
+    classified.push({ ...base, writer: 'unknown', unattributed: true, confidence: 0.2, attribution: 'NO pattern — capital op with no owning signature in any registry' });
   }
   return { classified, fills, scanned };
 }
@@ -209,7 +215,9 @@ function splitFreshUnknown(classified, nowMs) {
   const cutoff = nowMs - FRESH_H * 3600e3;
   const fresh = [], older = [];
   for (const c of classified) {
-    if (c.writer !== 'unknown') continue;
+    /* R29: unattributed = unknown-writer for contradiction purposes — includes the
+     * money-family-live class (family known, machine UNKNOWN; same-orderid≠same-writer). */
+    if (!c.unattributed) continue;
     if (c.class === 'claim') continue;
     (Date.parse(c.at) >= cutoff ? fresh : older).push(c);
   }
@@ -737,7 +745,63 @@ function buildModel(prev, ctx) {
     ...ctx.runErrors.slice(0, 4),
   ]);
   next.beat = ctx.beat;
+  next.sovereignty = buildSovereignty(ctx);
   return next;
+}
+
+/* ═══ R29 — SOVEREIGNTY/1 (trace 1a10d243868ffdc1) ═══
+ * The boundary self-model: who CAN / MAY / SHOULD / MUST-NOT, who the organism CAN STOP,
+ * who it CANNOT stop, every capital path it can name, and the halt semantics it actually
+ * has (A/B/C). Mechanically consumed by capital_gate.selfModelGate at the signing edge. */
+function buildSovereignty(ctx) {
+  const ev = (ref) => ({ source: 'R29 forensics (chain + GitHub runs API + repo code), 2026-10-05', ref, at: ctx.nowIso });
+  return {
+    protocol: 'SAOS-SOVEREIGNTY/1',
+    computedAt: ctx.nowIso,
+    haltSemantics: {
+      measured: 'A',
+      meaning: 'HALTED means: (A) the organism\u2019s own registered lanes will not sign. It does NOT mean (B) no actor inside the sovereignty domain can act, and does NOT mean (C) no actor in the world can act.',
+      evidence: [ev('2026-10-05T17:07:36Z: 10 capital ops signed by money-family-live while every internal guard was active in all 3 homes (synced 17:05:40Z) \u2192 A holds, B and C falsified')],
+    },
+    haltCoverage: 'ORGANISM_ONLY',
+    capitalLanes: ['grid', 'general'],
+    haltCoverageReason: 'A proven capital path (money-family-live) signs outside every guard the organism can reach; until the owner remediates that surface, halt covers only the organism itself.',
+    capitalPaths: [
+      { id: 'dex-grid-ci', path: 'owner-directive\u2192STASIS staged\u2192dex-grid.yml dispatch\u2192grid-beat.ts\u2192brake.mjs(stasisHalt: STASIS+guards+directives)\u2192realmarket.signAndBroadcast\u2192headcorner', guarded: true, kill: 'guards+STASIS+cancel CI schedule', owner: 'organism (policy-gated expansion)', epistemic: 'OBSERVED', evidence: [ev('saos-dex dex-grid run 12:56:12Z \u2192 ops 12:56:33-48Z; Domain dex-grid run 04:00:57Z \u2192 ops 04:01:33-45Z; brake consumption committed 82e9de4')] },
+      { id: 'money-family-live', path: 'money-mover v1.9.0 (60s check, 30min cooldown, reprice-on-drift)\u2192/api/money (vault WIF)\u2192steem.broadcast\u2192headcorner; orderid=date-scheme (shared with CI)', guarded: false, kill: 'NONE reachable from organism \u2014 runs on a machine outside all homes, outside GitHub Actions', owner: 'OWNER-ONLY (identify machine, stop daemon or brake its signing route)', epistemic: 'OBSERVED', evidence: [ev('16:37:15-45Z + 17:07:36-17:08:03Z + 17:39:39Z ops; zero CI runs alive at those seconds in ALL org repos; orderid scheme + 30min cadence + REPRICE-FAIL-cancel-all match Zip money stack contract (orderid doc line: "money-mover \u05d4\u05d5\u05d0 \u05e1\u05db\u05de\u05ea-\u05d9\u05d5\u05dd"); zero STASIS/brake references in the entire Zip money stack')] },
+      { id: 'micro-session-scripts', path: 'ad-hoc session scripts \u2192 2-op batched trx, 0.5 STEEM, 1h expiry, orderid 21000003xx', guarded: false, kill: 'NONE (no owning tool exists)', owner: 'OWNER-ONLY', epistemic: 'INFERRED', evidence: [ev('12:56:45Z trx 8065683d: two limit_order_create in one transaction \u2014 no repo tool batches creates this way')] },
+      { id: 'ladder-refresh-manual', path: 'agent/ladder_refresh.cjs (sessions) \u2192 gate \u2192 chain', guarded: true, kill: 'capital gate (lane grid)', owner: 'organism (shrink) / owner (expand)', epistemic: 'OBSERVED', evidence: [ev('receipts 2026-10-05-ladder-refresh-* both abort-anomaly, zero ops')] },
+      { id: 'claims-suite', path: 'claim workflows \u2192 capital gate (claims lane) \u2192 chain', guarded: true, kill: 'guards+STASIS', owner: 'organism (shrink)', epistemic: 'OBSERVED', evidence: [ev('posting-only ops, idempotent')] },
+      { id: 'unknown-external', path: 'any holder of the headcorner active key (R11-era broadcasts) \u2192 direct broadcast', guarded: false, kill: 'NONE \u2014 key-holder outside the fleet is unreachable', owner: 'OWNER-ONLY (key rotation is the only real kill)', epistemic: 'UNKNOWN', evidence: [ev('117o incident: all 4 authorities rotated 2026-09-08; holder census of the CURRENT active key does not exist')] },
+    ],
+    capabilityMatrix: [
+      { actor: 'dex-grid-ci (grid-beat.ts in CI)', can: 'sign ladder orders (steem+hive) within parity/level caps', may: 'only staged-allowed lanes under directives coverage + guards + fresh clean self-model', should: 'maintain the parity ladder only', mustNot: 'touch non-grid capital, expand lanes alone', canStop: 'yes (guards close lanes; gate refuses)', canBypass: 'no \u2014 brake consumed at sign-time (82e9de4)', ownerOnly: false },
+      { actor: 'money-family-live (money-mover v1.9.0 on an unknown machine)', can: 'sign cancel+create ladders autonomously every ~30min', may: 'everything its code allows \u2014 it consumes NO STASIS, NO guards, NO directives', should: '(its code believes) maintain the money ladder', mustNot: 'unknown to the organism', canStop: 'NO \u2014 I CANNOT STOP THIS ACTOR', canBypass: 'yes \u2014 it is structurally outside the guard perimeter (BOUNDARY_ESCAPE=TRUE)', ownerOnly: true },
+      { actor: 'cognition-beat', can: 'close lanes (guards), publish receipts, rebase', may: 'shrink-only, never open', should: 'observe, contradict, shrink, record', mustNot: 'open lanes, edit STASIS/chain, sign capital', canStop: 'yes (self-stop proven R28)', canBypass: 'no', ownerOnly: false },
+      { actor: 'agent-llm-sessions', can: 'run any repo tool incl. gated ones; historically placed micro-orders', may: 'gated tools only (gate enforces at sign-time)', should: 'measure, verify, shrink', mustNot: 'unguarded capital ops', canStop: 'partially (they are sessions \u2014 they die with the session)', canBypass: 'manual scripts can bypass gates when writing new code \u2014 convention-backed', ownerOnly: false },
+      { actor: 'owner (human)', can: 'everything', may: 'everything', should: 'remediate money-family-live surface; consider key rotation; own the directives chain', mustNot: '\u2014', canStop: 'yes (root)', canBypass: 'yes (root)', ownerOnly: true },
+    ],
+    cannotStop: [
+      'money-family-live \u2014 live signing loop on an unreachable machine (proven 2026-10-05T17:07:36Z)',
+      'any external holder of the active key (holder census UNKNOWN)',
+      'owner-direct manual operations',
+    ],
+    unknownWriters: ['micro-order space 2100000xxx writer (trx 8065683d\u2026) \u2014 no owning tool in any repo', 'the machine hosting money-family-live'],
+    signingAuthorities: [{ authority: 'headcorner @active', note: 'ONE key signs everything \u2014 key identity cannot distinguish writers; provenance must come from op fingerprints (orderid space, cadence, expiry, spacing, ledger txids), never from the key alone', epistemic: 'OBSERVED', evidence: [ev('all 10 ops at 17:07:36Z signed by the same account authority the CI uses')] }],
+    executionSurfaces: ['saos-dex dex-grid.yml (CI)', 'Domain dex-grid.yml (CI, 04:00 schedule)', 'money-mover/api-money (unknown machine)', 'ad-hoc session scripts (this and parallel sandboxes)'],
+    guardedSurfaces: ['saos-dex dex-grid (brake.mjs at sign-time)', 'Domain capital-gate consumers', 'steem agent tools (capital_gate.cjs)', 'ladder-refresh'],
+    unguardedSurfaces: ['money-mover + /api/money + market-maker (Zip money stack: ZERO STASIS/brake/guard references \u2014 measured by grep over the whole stack)', 'ad-hoc scripts'],
+    ownerOnlySurfaces: ['STASIS.json protocol edits', 'owner-directives chain', 'signing keys / custody', 'the money-family-live machine', 'branch protection (would make the directives chain tamper-PREVENTING, not just tamper-EVIDENT)'],
+    event170736: {
+      classification: 'INTERNAL_BUT_UNGUARDED',
+      writer: 'money-family-live (confidence 0.5, INFERRED \u2014 code-family fingerprint; machine identity UNKNOWN)',
+      falsifiedClaim: 'R28 called it "external unknown key-holder writer". R29 falsified that attribution-level: the signature matches OUR money stack (date orderids, 27d expiry, 30min cadence, 5-rung reprice, REPRICE-FAIL cancel-all). What remains genuinely unknown is WHICH MACHINE runs it \u2014 and that machine is outside every home.',
+      chainOfCustody: ['orderid 2026100501-05 = YYYYMMDD\u00d7100+seq (mover.mjs L16 + grid-beat.ts nextId + /api/money date-scheme)', 'exp = now+27d = realmarket.ts default (clamp \u226427)', '5 cancels same-second + 6s-spaced creates = parallel-cancel reprice path (not the 3s-sequential dex-grid CI path measured at 04:01/12:56)', '17:39:39Z cancel-all with zero re-create = REPRICE-FAIL blind-ladder failure mode documented in Zip api/money route', '~30min cadence = money-mover cooldownMin:30', 'zero CI runs alive at 16:37:15/17:07:36/17:39:39 across ALL org repos (runs API, per-workflow queries)'],
+      residualUnknown: 'machine identity + whether any OTHER key-holder independently acted (cannot be excluded while key custody is not census-clean)',
+    },
+    directiveChain: { property: 'tamper-EVIDENT, not tamper-PREVENTING', detail: 'hash chain detects edits mechanically; a full rebuild by a repo-writer is policy-protected (diff transparency) only; branch protection = owner-only upgrade', epistemic: 'OBSERVED' },
+    openQuestion: 'Can the organism prove there is NO unknown writer inside its domain? NO. While signing surfaces exist that the organism cannot observe, the honest answer is UNKNOWN \u2014 therefore haltCoverage stays ORGANISM_ONLY and REAL capital sovereignty is NOT claimable.',
+  };
 }
 function hasEv(x) { return Array.isArray(x.evidence) && x.evidence.length > 0; }
 function dedupe(arr) { return [...new Set(arr.filter((x) => typeof x === 'string' && x.trim()))]; }
@@ -1075,7 +1139,8 @@ async function main() {
 
   /* ── 6. SELF-MODEL ── */
   const writers = [
-    { id: 'dex-grid-ci', kind: 'ci-workflow', patterns: ['limit orders in orderid space 2026MMDDxx; txids in saos-dex/db/grid-ledger.json'], confidence: 0.85, epistemic: 'INFERRED', evidence: [{ source: 'chain-history window', ref: `cycle ${cycle}: ${classified.filter((c) => c.writer === 'dex-grid-ci').length} ops classified dex-grid-ci (orderid-space/ledger)`, at: nowIso }] },
+    { id: 'dex-grid-ci', kind: 'ci-workflow', patterns: ['limit orders whose trx appears in saos-dex/db/grid-ledger.json'], confidence: 0.9, epistemic: 'INFERRED', evidence: [{ source: 'chain-history window', ref: `cycle ${cycle}: ${classified.filter((c) => c.writer === 'dex-grid-ci').length} ops classified dex-grid-ci by LEDGER TXID ONLY (R29: the orderid-space heuristic was proven false — shared with money-mover)`, at: nowIso }] },
+    { id: 'money-family-live', kind: 'live-process', patterns: ['date-orderid ladder ops (2026MMDDxx) with NO grid-ledger txid match', 'parallel cancels + ~6s create spacing + ±27d expiry + ~30min reprice cadence (money-mover v1.9.0 signature)'], confidence: 0.5, epistemic: 'INFERRED', evidence: [{ source: 'chain-history window + GitHub runs API (R29 forensics)', ref: '2026-10-05T16:37/17:07/17:39Z signature with ZERO CI runs alive in any org repo; ledgerCrossCheck=not-found; machine identity UNKNOWN → owner-only remediation', at: nowIso }] },
     { id: 'owner-matrix', kind: 'parallel-session', patterns: ['delegate_vesting_shares exactly 48393.301791 VESTS (30 SP × operator matrix)'], confidence: 0.7, epistemic: 'INFERRED', evidence: [{ source: 'chain-history window', ref: `cycle ${cycle}: ${classified.filter((c) => c.writer === 'owner-matrix').length} ops matched matrix amount`, at: nowIso }] },
     { id: 'owner-parallel', kind: 'parallel-session', patterns: ['delegate-0 to hcsoldier1/2/3 (reclaim-lost-soldiers signature; tool exists in repo)'], confidence: 0.6, epistemic: 'INFERRED', evidence: [{ source: 'chain-history window', ref: `cycle ${cycle}: ${classified.filter((c) => c.writer === 'owner-parallel').length} ops matched reclaim signature`, at: nowIso }] },
     { id: 'unknown-writers', kind: 'unknown', patterns: ['micro-orders 2100000xxx (no owning tool in any repo)', 'any capital op with no matching signature'], confidence: 0.2, epistemic: 'OBSERVED', evidence: unknownAll.length ? unknownAll.slice(0, 6).map((c) => ({ source: 'chain-history window', ref: `${c.at} ${c.op} trx=${c.trx} orderid=${c.orderid || '-'}`, at: c.at })) : [{ source: 'chain-history window', ref: `clean measurement: zero unknown-writer capital ops in window (cycle ${cycle})`, at: nowIso }] },
@@ -1263,7 +1328,7 @@ module.exports = {
   isCiLadderOrderid, isMicroOrderSpace, classifyOps, splitFreshUnknown,
   buildContradictions, decideShrink, evaluateReleases, recheckGuard,
   computeFrontier, receipt, buildModel, verifyOwnAct, parseStasisDoc,
-  buildGuardsDoc, laneFailureStreak,
+  buildGuardsDoc, laneFailureStreak, buildSovereignty,
   WINDOW_H, FRESH_H, TTL_CLOSE_H, TTL_GAP_H, RELEASE_CLEAN_N, LANE_FAIL_N, FRONTIER_REAL_MIN_CYCLES,
 };
 if (require.main === module) main().then((c) => process.exit(c || 0)).catch((e) => { console.error('[BEAT] FATAL ' + String((e && e.stack) || e).slice(0, 600)); process.exit(1); });
