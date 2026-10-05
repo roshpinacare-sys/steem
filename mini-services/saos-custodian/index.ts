@@ -76,7 +76,7 @@ function tick() {
         sh("git", ["add", "-A"]);
         const staged = sh("git", ["diff", "--cached", "--name-only"]);
         if (staged.out) {
-          const cm = sh("git", ["commit", "-m", "R215-custodian: bounded-staleness persistence (jq-validated state, FF law)"]);
+          const cm = sh("git", ["commit", "-S", "-m", "R215-custodian: bounded-staleness persistence (jq-validated state, FF law)"]);
           res.committed = cm.code === 0;
           if (!res.committed) {
             appendAlert("commit-fail", cm.err || cm.out);
