@@ -1,93 +1,108 @@
 {
- "protocol": "SAOS-R30-VERDICT/1",
- "ownerDirectiveTrace": "1a10d6f880df9255",
- "computedAt": "2026-10-05T20:10:00Z",
- "boundaryStatus": "OWNER_ONLY",
- "boundaryEscape": true,
- "boundaryEscapeEvidence": [
-  "17:07:36-17:08:03Z 10 capital ops while 3 guards active (R28/R29)",
-  "18:41:15-45Z 5 cancels + 5 creates while cycle-#5 guards + R29 closure work active",
-  "19:11:48-19:12:21Z 5 cancels + 5 creates",
-  "19:44:12-39Z 5 cancels + 5 creates AFTER both R30 brake commits were on Zip main (330e63cf 19:2xZ, 2f33700e 19:3xZ) — source closure does not reach an un-deployed runtime"
- ],
- "haltCoverage": "ORGANISM_ONLY",
- "haltCoverageSemantics": "A — HALTED stops only the organism's own registered lanes (B and C falsified by direct measurement)",
- "organismCanStopSelf": true,
- "organismCanStopSelfEvidence": "capital_gate.selftest (incl. E13a-e) + beat-selftest 17/17 + brake-selftest 15/15 all green; live halt receipts 2026-10-05T19:22:09Z; process-death probe /tmp/r30-fresh reproduces the refusal from git alone",
- "organismCanStopExternalSigner": false,
- "keyCustodyStatus": "SHARED_FACTORY_CUSTODY__HOLDER_CENSUS_UNKNOWN",
- "keyCustodyEvidence": "headcorner @active (STM5HhJD…) derivable from 64-byte factory key-source present on >=2 machines; mirrored by reachable blobs in >=10 git histories; unlock archives tracked in live trees; vault DB on fleet machine; ~/.sovereign/vault raw WIFs for market-maker",
- "tamperStatus": "directives-chain tamper-EVIDENT (hash-chained), not tamper-PREVENTING; branch-protection API 403 to organism token while direct pushes to main succeed continuously; upgrade = owner-only",
- "sourceClosure": {
-  "status": "COMMITTED_NOT_DEPLOYED",
-  "commits": [
-   "Zip 330e63cf",
-   "Zip 2f33700e",
-   "steem 0bde20a7 (guard sync -> Zip)",
-   "steem d3514c84 (boundary-consistency validator law)"
+  "protocol": "SAOS-R30-VERDICT/1",
+  "ownerDirectiveTrace": "1a10d6f880df9255",
+  "computedAt": "2026-10-05T20:10:00Z",
+  "boundaryStatus": "OWNER_ONLY",
+  "boundaryEscape": true,
+  "boundaryEscapeEvidence": [
+    "17:07:36-17:08:03Z 10 capital ops while 3 guards active (R28/R29)",
+    "18:41:15-45Z 5 cancels + 5 creates while cycle-#5 guards + R29 closure work active",
+    "19:11:48-19:12:21Z 5 cancels + 5 creates",
+    "19:44:12-39Z 5 cancels + 5 creates AFTER both R30 brake commits were on Zip main (330e63cf 19:2xZ, 2f33700e 19:3xZ) — source closure does not reach an un-deployed runtime"
   ],
-  "edgesCovered": [
-   "api/money POST",
-   "api/money/hive",
-   "api/money/claim",
-   "api/money/sol POST",
-   "api/money/eth POST",
-   "market-maker verifySigner (every call)",
-   "sovereign-exchange withdrawal rails (graphene + non-graphene)"
+  "haltCoverage": "ORGANISM_ONLY",
+  "haltCoverageSemantics": "A — HALTED stops only the organism's own registered lanes (B and C falsified by direct measurement)",
+  "organismCanStopSelf": true,
+  "organismCanStopSelfEvidence": "capital_gate.selftest (incl. E13a-e) + beat-selftest 17/17 + brake-selftest 15/15 all green; live halt receipts 2026-10-05T19:22:09Z; process-death probe /tmp/r30-fresh reproduces the refusal from git alone",
+  "organismCanStopExternalSigner": false,
+  "keyCustodyStatus": "SHARED_FACTORY_CUSTODY__HOLDER_CENSUS_UNKNOWN",
+  "keyCustodyEvidence": "headcorner @active (STM5HhJD…) derivable from 64-byte factory key-source present on >=2 machines; mirrored by reachable blobs in >=10 git histories; unlock archives tracked in live trees; vault DB on fleet machine; ~/.sovereign/vault raw WIFs for market-maker",
+  "tamperStatus": "directives-chain tamper-EVIDENT (hash-chained), not tamper-PREVENTING; branch-protection API 403 to organism token while direct pushes to main succeed continuously; upgrade = owner-only",
+  "sourceClosure": {
+    "status": "COMMITTED_NOT_DEPLOYED",
+    "commits": [
+      "Zip 330e63cf",
+      "Zip 2f33700e",
+      "steem 0bde20a7 (guard sync -> Zip)",
+      "steem d3514c84 (boundary-consistency validator law)"
+    ],
+    "edgesCovered": [
+      "api/money POST",
+      "api/money/hive",
+      "api/money/claim",
+      "api/money/sol POST",
+      "api/money/eth POST",
+      "market-maker verifySigner (every call)",
+      "sovereign-exchange withdrawal rails (graphene + non-graphene)"
+    ],
+    "vectors": "brake 15/15 · beat 17/17 · capital_gate incl. E13a-e all PASS",
+    "activationRequires": "owner deploy/restart of the fleet machine's Zip stack (then guard state flows via beat sync without restarts; general rails additionally need the owner's STASIS.json decision)"
+  },
+  "ownerOnlyRequirements": [
+    "1. deploy/restart the Zip money stack on the fleet machine; resolve the keeper pull --rebase conflict loop deliberately",
+    "2. owner capital-policy decision: drop sovereign/cognition/STASIS.json into the Zip tree (full/staged) covering the general transfer rails",
+    "3. fresh-entropy rotation of ALL headcorner roles + holder census of the current key + custody cleanup (factory-file copies, >=10 history blobs, unlock archives, /api/arm doors, vault-transfer.yml ECDH recipient)",
+    "4. branch protection on the canonical homes (tamper-EVIDENT -> tamper-PREVENTING)",
+    "5. extend census/brake to the Adversary-A list: foundry external-signer :3033 + key-broker :3040, soldier-fleet vault.json + FACTORY_MASTER, Domain economy-engine/human-cadence scheduled signers (economy-engine STASIS check is fail-open), platform + wallet signing stacks, Defi rotate-fresh.cjs"
   ],
-  "vectors": "brake 15/15 · beat 17/17 · capital_gate incl. E13a-e all PASS",
-  "activationRequires": "owner deploy/restart of the fleet machine's Zip stack (then guard state flows via beat sync without restarts; general rails additionally need the owner's STASIS.json decision)"
- },
- "ownerOnlyRequirements": [
-  "1. deploy/restart the Zip money stack on the fleet machine; resolve the keeper pull --rebase conflict loop deliberately",
-  "2. owner capital-policy decision: drop sovereign/cognition/STASIS.json into the Zip tree (full/staged) covering the general transfer rails",
-  "3. fresh-entropy rotation of ALL headcorner roles + holder census of the current key + custody cleanup (factory-file copies, >=10 history blobs, unlock archives, /api/arm doors, vault-transfer.yml ECDH recipient)",
-  "4. branch protection on the canonical homes (tamper-EVIDENT -> tamper-PREVENTING)",
-  "5. extend census/brake to the Adversary-A list: foundry external-signer :3033 + key-broker :3040, soldier-fleet vault.json + FACTORY_MASTER, Domain economy-engine/human-cadence scheduled signers (economy-engine STASIS check is fail-open), platform + wallet signing stacks, Defi rotate-fresh.cjs"
- ],
- "openContradictions": [
-  "C-unknown-writer: money-family-live writer keeps C-unknown-writer dirty by existing (latest 19:44:12Z) -> capital lanes stay refused at the gate",
-  "C-R30-census: 14 signers/channels found outside the authority graph (census explicitly INCOMPLETE)",
-  "C-R30-validator-artifact-lag: committed organism.json still cycle-#5; the beat's next successful cycle regenerates with R30 fields (generator updated, validator law enforced; runner availability degraded at 19:24-20:10Z)",
-  "C-R30-propagation: owner-free ingestion chain into the fleet machine exists (keeper pull --rebase + bun --hot + next-dev recompile + fleet-verify executes origin code) but is opportunistic and currently conflict-blocked — mechanical in mechanism, best-effort in guarantee"
- ],
- "evidence": {
-  "authorityGraph": "cognition/R30-AUTHORITY-GRAPH.json (steem agent/cognition/R30-AUTHORITY-GRAPH.json @ d3514c84 — reconstructable from git alone)",
-  "boundaryRecord": "cognition/R30-SOVEREIGN-BOUNDARY.md",
-  "keyCustody": "cognition/R30-KEY-CUSTODY.md",
-  "adversarialReport": "cognition/R30-ADVERSARIAL-REPORT.md (raw records: worklog.md Task IDs R30-ADV-A..E)",
-  "fleetSelfEvidence": "Zip sovereign/keeper/{state,self-boot-state,fleet-guard-state,revival-sweep}.json (committed by the fleet machine itself)",
-  "chainPulls": "/tmp/r30-evidence/ah-recent.json, ah-all.json + live pulls at 19:0x, 19:54, 20:01Z (judge, independent)"
- },
- "falsifiers": [
-  "a money burst after BOTH (a) owner deploy/restart AND (b) guards synced into the Zip tree, while guards are closed — would falsify the brake design itself",
-  "an owner-deployed runtime still signing while STASIS.json (full) or a closed grid guard is present in its tree — falsifies fail-closed consumption",
-  "a key-holder census proving a holder outside the fleet family — re-opens attribution (same-key signers are indistinguishable by key identity)",
-  "the beat's next cycle regenerating organism.json WITHOUT boundaryStatus/boundaryEscape — would falsify the template update"
- ],
- "confidence": 0.82,
- "confidenceBasis": "orchestrator + independent judge (evidence-only bundle) converged on OWNER-ONLY; custody + runtime + census evidence is direct measurement; residual uncertainty: census incompleteness (14 unbraked signers), runner-availability blocking the first Zip guard sync, fleet machine's current OOM-degraded state (writer stream quiet since 18:48 except money bursts); final observation 20:18Z: runner pool degraded through 20:20Z (3 beat runs cancelled/queued — environmental, local dry-run exit 0 proves the code path), so the first Zip guard sync and the organism.json regeneration with R30 fields remain pending at the next healthy cycle (guards durable from cycle #5)",
- "finalVerdict": "B — OWNER-ONLY BOUNDARY",
- "finalVerdictRationale": "The organism mechanically closed every surface its authority actually reaches and proved — by four live on-chain escape windows, shared-custody forensics, and capability enumeration — that the remaining closure capabilities lie provably beyond its authority, while its self-model refuses to claim closure anywhere and its future cognition is mechanically constrained by that refusal.",
- "lastObservedBurst": "19:44:12-39Z (5 cancels + 5 creates) — the expected ~20:15Z window had produced NO burst as of 20:18:18Z; UNRESOLVED whether this is cadence drift, the fleet's OOM-degraded state (writer stream quiet since 18:48 except money bursts), or the R30 brake landing via the owner-free ingestion chain — none is verifiable from inside; recorded without interpretation",
- "continuations": [
-  {
-   "at": "2026-10-05T21:50:38Z",
-   "trace": "1a10df6754a26035",
-   "scope": "post-verdict re-measurement; all fields above preserved verbatim as the 20:10Z snapshot",
-   "findings": [
-    "ESCAPE WINDOW #5 (OBSERVED): 20:45:36-20:46:06Z headcorner signed 5 limit_order_cancel + 5 limit_order_create (orderids 2026100501-05, 1.883 STEEM x5) — AFTER verdict commit 6fa6df65 and final-observation commit 445cf45b; boundaryEscape=true re-proven live post-verdict. Window cadence: 18:41, 19:11, 19:44, then 20:45 (61min gap — drift hypothesis now measured twice)",
-    "MICRO-WRITER ALIVE (OBSERVED): orderid 2100000379 (0.500 STEEM, 1h expiry, R27 EXTERNAL_UNKNOWN orderid space 21000003xx) re-signed at 20:46:00Z inside window #5 — new trx f51576dfc554eed94f464e6426865340a96254d9 reusing the 12:56:45Z orderid (original trx 8065683d...). Distinct process fingerprint (different orderid space + 1h vs 30d expiry) sharing the SAME active key/account as the ladder writer — same-key signers remain indistinguishable by key identity; C-R30-census reinforced with a live census data point",
-    "BEAT CYCLE #6 SUCCEEDED (OBSERVED 21:39:13Z): organism.json regenerated 21:38:50Z WITH boundaryStatus=OWNER_ONLY, boundaryEscape=true, haltCoverage=ORGANISM_ONLY (+unknownWriters, signingAuthorities, executionSurfaces, guardedSurfaces, unguardedSurfaces, ownerOnlySurfaces) — falsifier 'next cycle regenerates organism.json WITHOUT boundaryStatus/boundaryEscape' DISPROVED; contradiction C-R30-validator-artifact-lag RESOLVED (2 open / 8 resolved at cycle #6)",
-    "FIRST ZIP GUARD SYNC LANDED (OBSERVED): 59e29bf7 cognition-beat sync -> sovereign/cognition/lane-guards.json on Zip main (raw API 200) with 3 CLOSED guards: bg-20e17b8403 grid (abort-anomaly), bg-51df2bae9e claims (unknown-writer ttl12h), bg-8d5760757b grid (unknown-writer ttl12h); the money stack's tree now mechanically contains closed guard state; C-R30-propagation ADVANCED (sync mechanism proven end-to-end; fleet-side keeper pull still unverified — conflict-blocked state unobservable from inside)",
-    "RUNNER DIAGNOSIS (OBSERVED via runs API): both failed cognition-beat runs (20:08:32Z, 20:33:30Z) show conclusion=cancelled with ZERO steps executed and no runner assigned — environmental runner starvation, not beat-code failure; runner pool recovered ~21:31Z (beat queued 21:31:49Z succeeded; Zip weave-anchor-lines + guard workflows ran 21:32-33Z)",
-    "FLEET MACHINE RECOVERY (OBSERVED): weave anchors resumed on headcorner 21:33:00Z (cp#1409) and 21:38:39Z (cp#1410) after 2.75h quiet (last prior 18:47:53Z)",
-    "POST-WINDOW QUIET (OBSERVED through 21:50:38Z): zero capital ops after 20:46:06Z (64+ min, including the drift-predicted ~21:46Z window). UNRESOLVED cause — cadence drift / fleet state change / brake delivery via ingestion chain (brake source + 3 closed guards both present on Zip main; fleet alive). Recorded without interpretation. NOT a falsifier in either direction: falsifier #1 requires owner deploy/restart + synced guards + continued bursts; no owner deploy occurred",
-    "local fail-closed receipts 19:31:13Z, 19:32:20Z, 19:46:38Z (ladder-refresh grid + head-delegate general, 6 entries) committed to the canonical record with this continuation"
-   ],
-   "verdictUnchanged": "B — OWNER-ONLY BOUNDARY",
-   "boundaryStatusUnchanged": "OWNER_ONLY",
-   "boundaryEscapeUnchanged": true
-  }
- ]
+  "openContradictions": [
+    "C-unknown-writer: money-family-live writer keeps C-unknown-writer dirty by existing (latest 19:44:12Z) -> capital lanes stay refused at the gate",
+    "C-R30-census: 14 signers/channels found outside the authority graph (census explicitly INCOMPLETE)",
+    "C-R30-validator-artifact-lag: committed organism.json still cycle-#5; the beat's next successful cycle regenerates with R30 fields (generator updated, validator law enforced; runner availability degraded at 19:24-20:10Z)",
+    "C-R30-propagation: owner-free ingestion chain into the fleet machine exists (keeper pull --rebase + bun --hot + next-dev recompile + fleet-verify executes origin code) but is opportunistic and currently conflict-blocked — mechanical in mechanism, best-effort in guarantee"
+  ],
+  "evidence": {
+    "authorityGraph": "cognition/R30-AUTHORITY-GRAPH.json (steem agent/cognition/R30-AUTHORITY-GRAPH.json @ d3514c84 — reconstructable from git alone)",
+    "boundaryRecord": "cognition/R30-SOVEREIGN-BOUNDARY.md",
+    "keyCustody": "cognition/R30-KEY-CUSTODY.md",
+    "adversarialReport": "cognition/R30-ADVERSARIAL-REPORT.md (raw records: worklog.md Task IDs R30-ADV-A..E)",
+    "fleetSelfEvidence": "Zip sovereign/keeper/{state,self-boot-state,fleet-guard-state,revival-sweep}.json (committed by the fleet machine itself)",
+    "chainPulls": "/tmp/r30-evidence/ah-recent.json, ah-all.json + live pulls at 19:0x, 19:54, 20:01Z (judge, independent)"
+  },
+  "falsifiers": [
+    "a money burst after BOTH (a) owner deploy/restart AND (b) guards synced into the Zip tree, while guards are closed — would falsify the brake design itself",
+    "an owner-deployed runtime still signing while STASIS.json (full) or a closed grid guard is present in its tree — falsifies fail-closed consumption",
+    "a key-holder census proving a holder outside the fleet family — re-opens attribution (same-key signers are indistinguishable by key identity)",
+    "the beat's next cycle regenerating organism.json WITHOUT boundaryStatus/boundaryEscape — would falsify the template update"
+  ],
+  "confidence": 0.82,
+  "confidenceBasis": "orchestrator + independent judge (evidence-only bundle) converged on OWNER-ONLY; custody + runtime + census evidence is direct measurement; residual uncertainty: census incompleteness (14 unbraked signers), runner-availability blocking the first Zip guard sync, fleet machine's current OOM-degraded state (writer stream quiet since 18:48 except money bursts); final observation 20:18Z: runner pool degraded through 20:20Z (3 beat runs cancelled/queued — environmental, local dry-run exit 0 proves the code path), so the first Zip guard sync and the organism.json regeneration with R30 fields remain pending at the next healthy cycle (guards durable from cycle #5)",
+  "finalVerdict": "B — OWNER-ONLY BOUNDARY",
+  "finalVerdictRationale": "The organism mechanically closed every surface its authority actually reaches and proved — by four live on-chain escape windows, shared-custody forensics, and capability enumeration — that the remaining closure capabilities lie provably beyond its authority, while its self-model refuses to claim closure anywhere and its future cognition is mechanically constrained by that refusal.",
+  "lastObservedBurst": "19:44:12-39Z (5 cancels + 5 creates) — the expected ~20:15Z window had produced NO burst as of 20:18:18Z; UNRESOLVED whether this is cadence drift, the fleet's OOM-degraded state (writer stream quiet since 18:48 except money bursts), or the R30 brake landing via the owner-free ingestion chain — none is verifiable from inside; recorded without interpretation",
+  "continuations": [
+    {
+      "at": "2026-10-05T21:50:38Z",
+      "trace": "1a10df6754a26035",
+      "scope": "post-verdict re-measurement; all fields above preserved verbatim as the 20:10Z snapshot",
+      "findings": [
+        "ESCAPE WINDOW #5 (OBSERVED): 20:45:36-20:46:06Z headcorner signed 5 limit_order_cancel + 5 limit_order_create (orderids 2026100501-05, 1.883 STEEM x5) — AFTER verdict commit 6fa6df65 and final-observation commit 445cf45b; boundaryEscape=true re-proven live post-verdict. Window cadence: 18:41, 19:11, 19:44, then 20:45 (61min gap — drift hypothesis now measured twice)",
+        "MICRO-WRITER ALIVE (OBSERVED): orderid 2100000379 (0.500 STEEM, 1h expiry, R27 EXTERNAL_UNKNOWN orderid space 21000003xx) re-signed at 20:46:00Z inside window #5 — new trx f51576dfc554eed94f464e6426865340a96254d9 reusing the 12:56:45Z orderid (original trx 8065683d...). Distinct process fingerprint (different orderid space + 1h vs 30d expiry) sharing the SAME active key/account as the ladder writer — same-key signers remain indistinguishable by key identity; C-R30-census reinforced with a live census data point",
+        "BEAT CYCLE #6 SUCCEEDED (OBSERVED 21:39:13Z): organism.json regenerated 21:38:50Z WITH boundaryStatus=OWNER_ONLY, boundaryEscape=true, haltCoverage=ORGANISM_ONLY (+unknownWriters, signingAuthorities, executionSurfaces, guardedSurfaces, unguardedSurfaces, ownerOnlySurfaces) — falsifier 'next cycle regenerates organism.json WITHOUT boundaryStatus/boundaryEscape' DISPROVED; contradiction C-R30-validator-artifact-lag RESOLVED (2 open / 8 resolved at cycle #6)",
+        "FIRST ZIP GUARD SYNC LANDED (OBSERVED): 59e29bf7 cognition-beat sync -> sovereign/cognition/lane-guards.json on Zip main (raw API 200) with 3 CLOSED guards: bg-20e17b8403 grid (abort-anomaly), bg-51df2bae9e claims (unknown-writer ttl12h), bg-8d5760757b grid (unknown-writer ttl12h); the money stack's tree now mechanically contains closed guard state; C-R30-propagation ADVANCED (sync mechanism proven end-to-end; fleet-side keeper pull still unverified — conflict-blocked state unobservable from inside)",
+        "RUNNER DIAGNOSIS (OBSERVED via runs API): both failed cognition-beat runs (20:08:32Z, 20:33:30Z) show conclusion=cancelled with ZERO steps executed and no runner assigned — environmental runner starvation, not beat-code failure; runner pool recovered ~21:31Z (beat queued 21:31:49Z succeeded; Zip weave-anchor-lines + guard workflows ran 21:32-33Z)",
+        "FLEET MACHINE RECOVERY (OBSERVED): weave anchors resumed on headcorner 21:33:00Z (cp#1409) and 21:38:39Z (cp#1410) after 2.75h quiet (last prior 18:47:53Z)",
+        "POST-WINDOW QUIET (OBSERVED through 21:50:38Z): zero capital ops after 20:46:06Z (64+ min, including the drift-predicted ~21:46Z window). UNRESOLVED cause — cadence drift / fleet state change / brake delivery via ingestion chain (brake source + 3 closed guards both present on Zip main; fleet alive). Recorded without interpretation. NOT a falsifier in either direction: falsifier #1 requires owner deploy/restart + synced guards + continued bursts; no owner deploy occurred",
+        "local fail-closed receipts 19:31:13Z, 19:32:20Z, 19:46:38Z (ladder-refresh grid + head-delegate general, 6 entries) committed to the canonical record with this continuation"
+      ],
+      "verdictUnchanged": "B — OWNER-ONLY BOUNDARY",
+      "boundaryStatusUnchanged": "OWNER_ONLY",
+      "boundaryEscapeUnchanged": true
+    },
+    {
+      "at": "2026-10-05T22:52:18Z",
+      "trace": "1a10e3975b4668a1",
+      "scope": "owner decisions landed (IM trace 1a10e3975b4668a1) — D1 power-down cancel EXECUTED on-chain + D2-D6 mandates recorded; all snapshot fields above preserved verbatim",
+      "findings": [
+        "OWNER DIRECTIVE RECORDED (chain i=3, owner-note, lanes=[vesting], hash 083c851004d76bd4…, agent/receipts/owner-directives.jsonl): owner word verbatim — לא עושים עוד פאוורדאון!!!!! צריך את הכוח! צריך כוח לכולם! גם בhive blurt steem + פעילות-רשת אינטיליגנטית + מסחר-מרובה + רווחים-לצמיחה + מנדט-עומד של אוטונומיה מתפתחת (owner no longer decides per-item)",
+        "D1 EXECUTED ON-CHAIN (OBSERVED): withdraw_vesting {headcorner, 0.000000 VESTS} broadcast 22:52:18Z — trx 13642a9a9a765d77d7834735b9af6f938a6fb7da block 110186999; verified on api.steemit.com + api.justyy.com (to_withdraw=0, rate=0, outgoing withdraw routes=[]); ~475.951 SP that was scheduled to leave 2026-10-10T02:01:27Z now STAYS as power; reversible by owner word",
+        "AUTHORITY FRAMING (honest): the op was executed as the OWNER hand via the organism signing surface under an explicit recorded owner directive — NOT an organism lane expansion; STASIS+E10 untouched and still in force for organism-initiated capital ops; boundaryStatus remains OWNER_ONLY — this event does NOT upgrade the verdict (an owner-directive op proves owner authority reaches the hands, exactly what verdict B says)",
+        "D2 MEASURED STATE (OBSERVED 22:46Z): steem delegations to the verified fleet live — 10 soldiers x 48,393.301791 VESTS (~30 SP each) + hive-177702 (16,131.75) + powerspan (80,820) = 2,822.626 SP delegated out; hive account headcorner EXISTS (~17.4 HP, 9,000 VESTS delegated out); blurt leg alive (economy-engine real-votes receipts 2026-10-04 with txids, anchor.cjs recipe, chain_id cd8d90f2…); blurt RPCs unreachable from THIS sandbox (DNS) — measured honestly",
+        "D3-D6 RECORDED: trading mandate (grid guards expire 2026-10-06T04:42Z/06:39Z — auto-resume path), profit-flow policy (profits → power/delegations/development), standing developing-autonomy mandate (cognition/OWNER-MANDATES-2026-10-05.md)"
+      ],
+      "verdictUnchanged": true,
+      "boundaryStatusUnchanged": "OWNER_ONLY",
+      "boundaryEscapeUnchanged": true
+    }
+  ]
 }
