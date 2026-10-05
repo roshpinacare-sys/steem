@@ -914,3 +914,21 @@ Stage Summary:
 - Machine-authority gap list from R213 is now CLOSED: upstream (R213-close) + push gate + divergence visibility + custody record + self-writer law + repeatable recovery drill — all committed and pushed (b7ab7f5), all verified via API, zero force, zero deletions, zero secrets.
 - Still operator-gated: branch protection on saos-cockpit (Level-3→1 gate), org single-writer law, PAT rotation (T-79), GPG signing registration (shared account), vault archive passwords relocation (Agent D proximity finding).
 - Natural trigger watch: pending rewards 0; payout window opens ~03:00Z Oct 6 — first posting-signed claim (R209/R210 armed actuator) can fire naturally within hours after it drips.
+
+---
+Task ID: R215
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: Operator order (repeat) — "what else is missing: assess + execute, sovereign-autonomous-blockchain systems engineering." Target = the last machine-authority gap: bounded-staleness was manual; the VERDICT currentCaveat ("last minutes of cognitive state live only on disk") had no deterministic closer.
+
+Work Log:
+- ASSESSMENT: R214 closed the law/gate/visibility/recovery gaps. Remaining machine-side gap = persistence cadence: platform auto-commits are local-only, engine state mutates every cycle, pushes happened only on orchestrator action → loss window unbounded in practice. Engine code intentionally untouched (live, bun --hot).
+- BUILT mini-services/saos-custodian (bun, port 3041, own package.json, bun --hot): every 10 min + first-tick-immediate: (1) scripts/divergence-check.sh (read-only); (2) dirty census; (3) jq -e validation of EVERY state/*.json — torn JSON is NEVER persisted to the chain of record (alert custodian-alerts.jsonl instead); (4) git add/commit "R215-custodian: bounded-staleness persistence (jq-validated state, FF law)"; (5) push ONLY via scripts/sovereign-push.sh (FF-only gate). Divergence != 0 ⇒ alert + NO commit/push (law: no force, no merge autonomy). Endpoints: /health /drift /log; writes state/custodian.json into the engine state tree (self-documenting).
+- LIVE PROOF (first tick 22:13:39Z): dirty=16, div=0, committed=true, pushed=true → b3b075c; /drift: drift=false (head==lastPushedSha) — staleness window now ≤10 min BY CONSTRUCTION.
+- CHAIN VERIFICATION (GitHub API): remote saos-cockpit tip = b3b075c8... ; custodian commit message visible on remote.
+- Engine untouched; no force; no deletions; no secrets (swept; custody file law-compliant).
+
+Stage Summary:
+- The organism now persists its own cognitive state to the sovereign chain-of-record every ≤10 min, law-compliantly, with torn-state protection and divergence freeze — autonomously, no orchestrator in the loop.
+- Sovereignty stack now: recovery PROVEN (audit) + drillable (R214) + bounded-staleness automated (R215) + FF-law enforced mechanically (R214) + divergence visible (R214).
+- Still operator-gated: branch protection on saos-cockpit (Level-3→1), org single-writer law, PAT rotation (T-79), GPG on shared account, vault-password relocation on main.
+- Natural trigger watch: pending 0 at 22:02Z; payout window ~03:00Z Oct 6 → first posting-signed claim (R209/R210 armed) can fire after it drips.
