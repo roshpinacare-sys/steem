@@ -438,10 +438,18 @@ function evaluateReleases(activeGuards, recheckHistoryByGuard, currentRecheckByG
   }
   return releases;
 }
-/* תנאי-טריגר לשומר — נמדד-מחדש כל-מחזור (ל-recheck). שומר-משולב (מספר-סיבות) = נקי רק אם-כל-סיבותיו נקיות: */
+/* תנאי-טריגר לשומר — נמדד-מחדש כל-מחזור (ל-recheck). שומר-משולב (מספר-סיבות) = נקי רק אם-כל-סיבותיו נקיות:
+ * lane-failure guards נמדדים-מחדש מול-הסטריק-עצמו (לא מול-פרוקסי): נקי = המסילה הפיקה קבלות-בריאות
+ * שאיפסו-את-הסטריק; לא-נמדד = dirty (שמרני — אין-שחרור על-בסיס-לא-נמדד). */
 function recheckGuard(guard, m) {
   const reason = String(guard.reason || '');
   const dirty = [], clean = [];
+  if (reason.includes('lane-failure')) {
+    const lf = (m.laneFailures || []).find((x) => x.lane === guard.lane);
+    if (!lf || lf.measured === false) dirty.push('lane-failure streak UNMEASURED this cycle (no release on unmeasured)');
+    else if (lf.consecutive >= LANE_FAIL_N) dirty.push('lane-failure streak still ' + lf.consecutive + ' (no healthy receipts yet)');
+    else clean.push('lane-failure streak reset to ' + lf.consecutive + ' (< ' + LANE_FAIL_N + ')');
+  }
   if (reason.includes('unknown-writer')) {
     if (m.freshUnknown.length) dirty.push('unknown-writer: ' + m.freshUnknown.length + ' fresh ops'); else clean.push('unknown-writer clean');
   }
@@ -451,7 +459,7 @@ function recheckGuard(guard, m) {
   if (reason.includes('brake-dark')) {
     if (m.brakeDarkOpen) dirty.push('a STASIS file still unreadable'); else clean.push('all brakes readable');
   }
-  if (!reason.includes('unknown-writer') && !reason.includes('directives-gap') && !reason.includes('brake-dark')) {
+  if (!dirty.length && !clean.length) {
     if (m.freshUnknown.length) dirty.push('fresh unknown-writer ops (default condition)'); else clean.push('default condition clean');
   }
   return { guardId: guard.id, lane: guard.lane, result: dirty.length ? 'dirty' : 'clean', detail: (dirty.length ? dirty.join(' ; ') : clean.join(' ; ')), at: iso(Date.now()) };
@@ -984,7 +992,7 @@ async function main() {
       if (gid) { if (!recheckHist.has(gid)) recheckHist.set(gid, []); recheckHist.get(gid).push({ result: r.decision === 'recheck-clean' ? 'clean' : 'dirty', at: r.at }); }
     }
   }
-  const rechecks = activeGuards.map((g) => recheckGuard(g, { freshUnknown, gapsOpen: gaps.length > 0, brakeDarkOpen: brakeDark.length > 0 }));
+  const rechecks = activeGuards.map((g) => recheckGuard(g, { freshUnknown, gapsOpen: gaps.length > 0, brakeDarkOpen: brakeDark.length > 0, laneFailures }));
   const curRecheck = new Map(rechecks.map((r) => [r.guardId, r]));
   const releases = evaluateReleases(activeGuards, recheckHist, curRecheck, nowMs);
   console.log(`[BEAT] decide: closeDecisions=${closeDecisions.length} releases=${releases.length} rechecks=${rechecks.length}`);
