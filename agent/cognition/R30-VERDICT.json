@@ -1,59 +1,73 @@
 {
-  "protocol": "SAOS-R30-VERDICT/1",
-  "ownerDirectiveTrace": "1a10d6f880df9255",
-  "computedAt": "2026-10-05T20:10:00Z",
-  "boundaryStatus": "OWNER_ONLY",
-  "boundaryEscape": true,
-  "boundaryEscapeEvidence": [
-    "17:07:36-17:08:03Z 10 capital ops while 3 guards active (R28/R29)",
-    "18:41:15-45Z 5 cancels + 5 creates while cycle-#5 guards + R29 closure work active",
-    "19:11:48-19:12:21Z 5 cancels + 5 creates",
-    "19:44:12-39Z 5 cancels + 5 creates AFTER both R30 brake commits were on Zip main (330e63cf 19:2xZ, 2f33700e 19:3xZ) — source closure does not reach an un-deployed runtime"
+ "protocol": "SAOS-R30-VERDICT/1",
+ "ownerDirectiveTrace": "1a10d6f880df9255",
+ "computedAt": "2026-10-05T20:10:00Z",
+ "boundaryStatus": "OWNER_ONLY",
+ "boundaryEscape": true,
+ "boundaryEscapeEvidence": [
+  "17:07:36-17:08:03Z 10 capital ops while 3 guards active (R28/R29)",
+  "18:41:15-45Z 5 cancels + 5 creates while cycle-#5 guards + R29 closure work active",
+  "19:11:48-19:12:21Z 5 cancels + 5 creates",
+  "19:44:12-39Z 5 cancels + 5 creates AFTER both R30 brake commits were on Zip main (330e63cf 19:2xZ, 2f33700e 19:3xZ) — source closure does not reach an un-deployed runtime"
+ ],
+ "haltCoverage": "ORGANISM_ONLY",
+ "haltCoverageSemantics": "A — HALTED stops only the organism's own registered lanes (B and C falsified by direct measurement)",
+ "organismCanStopSelf": true,
+ "organismCanStopSelfEvidence": "capital_gate.selftest (incl. E13a-e) + beat-selftest 17/17 + brake-selftest 15/15 all green; live halt receipts 2026-10-05T19:22:09Z; process-death probe /tmp/r30-fresh reproduces the refusal from git alone",
+ "organismCanStopExternalSigner": false,
+ "keyCustodyStatus": "SHARED_FACTORY_CUSTODY__HOLDER_CENSUS_UNKNOWN",
+ "keyCustodyEvidence": "headcorner @active (STM5HhJD…) derivable from 64-byte factory key-source present on >=2 machines; mirrored by reachable blobs in >=10 git histories; unlock archives tracked in live trees; vault DB on fleet machine; ~/.sovereign/vault raw WIFs for market-maker",
+ "tamperStatus": "directives-chain tamper-EVIDENT (hash-chained), not tamper-PREVENTING; branch-protection API 403 to organism token while direct pushes to main succeed continuously; upgrade = owner-only",
+ "sourceClosure": {
+  "status": "COMMITTED_NOT_DEPLOYED",
+  "commits": [
+   "Zip 330e63cf",
+   "Zip 2f33700e",
+   "steem 0bde20a7 (guard sync -> Zip)",
+   "steem d3514c84 (boundary-consistency validator law)"
   ],
-  "haltCoverage": "ORGANISM_ONLY",
-  "haltCoverageSemantics": "A — HALTED stops only the organism's own registered lanes (B and C falsified by direct measurement)",
-  "organismCanStopSelf": true,
-  "organismCanStopSelfEvidence": "capital_gate.selftest (incl. E13a-e) + beat-selftest 17/17 + brake-selftest 15/15 all green; live halt receipts 2026-10-05T19:22:09Z; process-death probe /tmp/r30-fresh reproduces the refusal from git alone",
-  "organismCanStopExternalSigner": false,
-  "keyCustodyStatus": "SHARED_FACTORY_CUSTODY__HOLDER_CENSUS_UNKNOWN",
-  "keyCustodyEvidence": "headcorner @active (STM5HhJD…) derivable from 64-byte factory key-source present on >=2 machines; mirrored by reachable blobs in >=10 git histories; unlock archives tracked in live trees; vault DB on fleet machine; ~/.sovereign/vault raw WIFs for market-maker",
-  "tamperStatus": "directives-chain tamper-EVIDENT (hash-chained), not tamper-PREVENTING; branch-protection API 403 to organism token while direct pushes to main succeed continuously; upgrade = owner-only",
-  "sourceClosure": {
-    "status": "COMMITTED_NOT_DEPLOYED",
-    "commits": ["Zip 330e63cf", "Zip 2f33700e", "steem 0bde20a7 (guard sync -> Zip)", "steem d3514c84 (boundary-consistency validator law)"],
-    "edgesCovered": ["api/money POST", "api/money/hive", "api/money/claim", "api/money/sol POST", "api/money/eth POST", "market-maker verifySigner (every call)", "sovereign-exchange withdrawal rails (graphene + non-graphene)"],
-    "vectors": "brake 15/15 · beat 17/17 · capital_gate incl. E13a-e all PASS",
-    "activationRequires": "owner deploy/restart of the fleet machine's Zip stack (then guard state flows via beat sync without restarts; general rails additionally need the owner's STASIS.json decision)"
-  },
-  "ownerOnlyRequirements": [
-    "1. deploy/restart the Zip money stack on the fleet machine; resolve the keeper pull --rebase conflict loop deliberately",
-    "2. owner capital-policy decision: drop sovereign/cognition/STASIS.json into the Zip tree (full/staged) covering the general transfer rails",
-    "3. fresh-entropy rotation of ALL headcorner roles + holder census of the current key + custody cleanup (factory-file copies, >=10 history blobs, unlock archives, /api/arm doors, vault-transfer.yml ECDH recipient)",
-    "4. branch protection on the canonical homes (tamper-EVIDENT -> tamper-PREVENTING)",
-    "5. extend census/brake to the Adversary-A list: foundry external-signer :3033 + key-broker :3040, soldier-fleet vault.json + FACTORY_MASTER, Domain economy-engine/human-cadence scheduled signers (economy-engine STASIS check is fail-open), platform + wallet signing stacks, Defi rotate-fresh.cjs"
+  "edgesCovered": [
+   "api/money POST",
+   "api/money/hive",
+   "api/money/claim",
+   "api/money/sol POST",
+   "api/money/eth POST",
+   "market-maker verifySigner (every call)",
+   "sovereign-exchange withdrawal rails (graphene + non-graphene)"
   ],
-  "openContradictions": [
-    "C-unknown-writer: money-family-live writer keeps C-unknown-writer dirty by existing (latest 19:44:12Z) -> capital lanes stay refused at the gate",
-    "C-R30-census: 14 signers/channels found outside the authority graph (census explicitly INCOMPLETE)",
-    "C-R30-validator-artifact-lag: committed organism.json still cycle-#5; the beat's next successful cycle regenerates with R30 fields (generator updated, validator law enforced; runner availability degraded at 19:24-20:10Z)",
-    "C-R30-propagation: owner-free ingestion chain into the fleet machine exists (keeper pull --rebase + bun --hot + next-dev recompile + fleet-verify executes origin code) but is opportunistic and currently conflict-blocked — mechanical in mechanism, best-effort in guarantee"
-  ],
-  "evidence": {
-    "authorityGraph": "cognition/R30-AUTHORITY-GRAPH.json (steem agent/cognition/R30-AUTHORITY-GRAPH.json @ d3514c84 — reconstructable from git alone)",
-    "boundaryRecord": "cognition/R30-SOVEREIGN-BOUNDARY.md",
-    "keyCustody": "cognition/R30-KEY-CUSTODY.md",
-    "adversarialReport": "cognition/R30-ADVERSARIAL-REPORT.md (raw records: worklog.md Task IDs R30-ADV-A..E)",
-    "fleetSelfEvidence": "Zip sovereign/keeper/{state,self-boot-state,fleet-guard-state,revival-sweep}.json (committed by the fleet machine itself)",
-    "chainPulls": "/tmp/r30-evidence/ah-recent.json, ah-all.json + live pulls at 19:0x, 19:54, 20:01Z (judge, independent)"
-  },
-  "falsifiers": [
-    "a money burst after BOTH (a) owner deploy/restart AND (b) guards synced into the Zip tree, while guards are closed — would falsify the brake design itself",
-    "an owner-deployed runtime still signing while STASIS.json (full) or a closed grid guard is present in its tree — falsifies fail-closed consumption",
-    "a key-holder census proving a holder outside the fleet family — re-opens attribution (same-key signers are indistinguishable by key identity)",
-    "the beat's next cycle regenerating organism.json WITHOUT boundaryStatus/boundaryEscape — would falsify the template update"
-  ],
-  "confidence": 0.82,
-  "confidenceBasis": "orchestrator + independent judge (evidence-only bundle) converged on OWNER-ONLY; custody + runtime + census evidence is direct measurement; residual uncertainty: census incompleteness (14 unbraked signers), runner-availability blocking the first Zip guard sync, fleet machine's current OOM-degraded state (writer stream quiet since 18:48 except money bursts)",
-  "finalVerdict": "B — OWNER-ONLY BOUNDARY",
-  "finalVerdictRationale": "The organism mechanically closed every surface its authority actually reaches and proved — by four live on-chain escape windows, shared-custody forensics, and capability enumeration — that the remaining closure capabilities lie provably beyond its authority, while its self-model refuses to claim closure anywhere and its future cognition is mechanically constrained by that refusal."
+  "vectors": "brake 15/15 · beat 17/17 · capital_gate incl. E13a-e all PASS",
+  "activationRequires": "owner deploy/restart of the fleet machine's Zip stack (then guard state flows via beat sync without restarts; general rails additionally need the owner's STASIS.json decision)"
+ },
+ "ownerOnlyRequirements": [
+  "1. deploy/restart the Zip money stack on the fleet machine; resolve the keeper pull --rebase conflict loop deliberately",
+  "2. owner capital-policy decision: drop sovereign/cognition/STASIS.json into the Zip tree (full/staged) covering the general transfer rails",
+  "3. fresh-entropy rotation of ALL headcorner roles + holder census of the current key + custody cleanup (factory-file copies, >=10 history blobs, unlock archives, /api/arm doors, vault-transfer.yml ECDH recipient)",
+  "4. branch protection on the canonical homes (tamper-EVIDENT -> tamper-PREVENTING)",
+  "5. extend census/brake to the Adversary-A list: foundry external-signer :3033 + key-broker :3040, soldier-fleet vault.json + FACTORY_MASTER, Domain economy-engine/human-cadence scheduled signers (economy-engine STASIS check is fail-open), platform + wallet signing stacks, Defi rotate-fresh.cjs"
+ ],
+ "openContradictions": [
+  "C-unknown-writer: money-family-live writer keeps C-unknown-writer dirty by existing (latest 19:44:12Z) -> capital lanes stay refused at the gate",
+  "C-R30-census: 14 signers/channels found outside the authority graph (census explicitly INCOMPLETE)",
+  "C-R30-validator-artifact-lag: committed organism.json still cycle-#5; the beat's next successful cycle regenerates with R30 fields (generator updated, validator law enforced; runner availability degraded at 19:24-20:10Z)",
+  "C-R30-propagation: owner-free ingestion chain into the fleet machine exists (keeper pull --rebase + bun --hot + next-dev recompile + fleet-verify executes origin code) but is opportunistic and currently conflict-blocked — mechanical in mechanism, best-effort in guarantee"
+ ],
+ "evidence": {
+  "authorityGraph": "cognition/R30-AUTHORITY-GRAPH.json (steem agent/cognition/R30-AUTHORITY-GRAPH.json @ d3514c84 — reconstructable from git alone)",
+  "boundaryRecord": "cognition/R30-SOVEREIGN-BOUNDARY.md",
+  "keyCustody": "cognition/R30-KEY-CUSTODY.md",
+  "adversarialReport": "cognition/R30-ADVERSARIAL-REPORT.md (raw records: worklog.md Task IDs R30-ADV-A..E)",
+  "fleetSelfEvidence": "Zip sovereign/keeper/{state,self-boot-state,fleet-guard-state,revival-sweep}.json (committed by the fleet machine itself)",
+  "chainPulls": "/tmp/r30-evidence/ah-recent.json, ah-all.json + live pulls at 19:0x, 19:54, 20:01Z (judge, independent)"
+ },
+ "falsifiers": [
+  "a money burst after BOTH (a) owner deploy/restart AND (b) guards synced into the Zip tree, while guards are closed — would falsify the brake design itself",
+  "an owner-deployed runtime still signing while STASIS.json (full) or a closed grid guard is present in its tree — falsifies fail-closed consumption",
+  "a key-holder census proving a holder outside the fleet family — re-opens attribution (same-key signers are indistinguishable by key identity)",
+  "the beat's next cycle regenerating organism.json WITHOUT boundaryStatus/boundaryEscape — would falsify the template update"
+ ],
+ "confidence": 0.82,
+ "confidenceBasis": "orchestrator + independent judge (evidence-only bundle) converged on OWNER-ONLY; custody + runtime + census evidence is direct measurement; residual uncertainty: census incompleteness (14 unbraked signers), runner-availability blocking the first Zip guard sync, fleet machine's current OOM-degraded state (writer stream quiet since 18:48 except money bursts); final observation 20:18Z: runner pool degraded through 20:20Z (3 beat runs cancelled/queued — environmental, local dry-run exit 0 proves the code path), so the first Zip guard sync and the organism.json regeneration with R30 fields remain pending at the next healthy cycle (guards durable from cycle #5)",
+ "finalVerdict": "B — OWNER-ONLY BOUNDARY",
+ "finalVerdictRationale": "The organism mechanically closed every surface its authority actually reaches and proved — by four live on-chain escape windows, shared-custody forensics, and capability enumeration — that the remaining closure capabilities lie provably beyond its authority, while its self-model refuses to claim closure anywhere and its future cognition is mechanically constrained by that refusal.",
+ "lastObservedBurst": "19:44:12-39Z (5 cancels + 5 creates) — the expected ~20:15Z window had produced NO burst as of 20:18:18Z; UNRESOLVED whether this is cadence drift, the fleet's OOM-degraded state (writer stream quiet since 18:48 except money bursts), or the R30 brake landing via the owner-free ingestion chain — none is verifiable from inside; recorded without interpretation"
 }
