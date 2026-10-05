@@ -1,31 +1,31 @@
 {
-  "startedAt": "2026-10-05T21:27:33.686Z",
+  "startedAt": "2026-10-05T21:57:33.687Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2106,
+      "ms": 2283,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.06331,
-        "sbdUsd": 0.585434,
-        "parity": 0.10814199380288812,
+        "steemUsd": 0.06347,
+        "sbdUsd": 0.585546,
+        "parity": 0.10839455824136789,
         "source": "coingecko"
       },
       "feed": 0.10409959319995657,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 388
+        "bps": 413
       },
-      "steemUsd": 0.06331,
-      "sbdUsd": 0.585434,
+      "steemUsd": 0.06347,
+      "sbdUsd": 0.585546,
       "inventory": {
-        "steem": 0.877,
+        "steem": 1.377,
         "sbd": 0.015,
-        "spOwn": 1124.5962071420063,
-        "rcPct": 99.9
+        "spOwn": 1124.5978046269372,
+        "rcPct": 100
       },
       "ordersOk": true,
       "orders": [
@@ -68,14 +68,6 @@
           "quote": "0.213 SBD",
           "unit": 0.113117,
           "created": "2026-10-05T20:46:06"
-        },
-        {
-          "orderid": 2100000379,
-          "side": "ask",
-          "base": "0.500 STEEM",
-          "quote": "0.053 SBD",
-          "unit": 0.106,
-          "created": "2026-10-05T20:46:00"
         }
       ],
       "fills": 41,
@@ -101,7 +93,7 @@
         "authorVestsPerDay": 0,
         "curationOps": 0,
         "authorOps": 0,
-        "windowSpanDays": 1.89,
+        "windowSpanDays": 1.93,
         "windowOps": 1001,
         "measured": true,
         "fuelUsdPerDay": 0,
@@ -110,12 +102,12 @@
         "node": "https://steemapi.boylikegirl.club",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.10814199380288812 (coingecko) · fills 41 · fuel 0$"
+      "summary": "parity 0.10839455824136789 (coingecko) · fills 41 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1416,
+      "ms": 1401,
       "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
@@ -124,18 +116,18 @@
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 96,
+      "spreadBpsRec": 53,
       "book": {
-        "bestAsk": 0.10117987533392699,
+        "bestAsk": 0.10074626865671642,
         "bestBid": 0.100217,
-        "spreadBps": 96
+        "spreadBps": 53
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 0,
-      "runCount": 196,
+      "runCount": 199,
       "simFills": 21,
       "simFeesMu": 10500,
       "events": 4
@@ -143,27 +135,27 @@
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 731,
+      "ms": 732,
       "verdict": "OFFER-EMPTY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 0,
       "flowBids": 0,
-      "staleCount": 1,
-      "skew": 0.218063,
+      "staleCount": 0,
+      "skew": 0.245209,
       "book": {
-        "bestAsk": 0.10117987533392699,
+        "bestAsk": 0.10074626865671642,
         "bestBid": 0.100217,
-        "askDepthSteem": 415.938,
-        "bidDepthSbd": 2934.952,
-        "at": "2026-10-05T21:27:33.686Z"
+        "askDepthSteem": 444.911,
+        "bidDepthSbd": 2932.402,
+        "at": "2026-10-05T21:57:33.687Z"
       },
       "market": {
         "tradesPerDay": 50,
-        "spreadBps": 54.43
+        "spreadBps": 73.87
       },
       "liquidity": {
-        "deployedAsks": 9.915,
+        "deployedAsks": 9.415,
         "deployedBids": 0,
         "askBudget": 0,
         "bidBudget": 0,
@@ -176,15 +168,15 @@
       "ms": 1,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 7081,
-      "marketSbdUsd": 0.585434,
-      "impliedSbdUsd": 0.608168,
+      "edgeBps": 7078,
+      "marketSbdUsd": 0.585546,
+      "impliedSbdUsd": 0.609705,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 712,
+      "ms": 765,
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
@@ -195,7 +187,7 @@
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 734,
+      "ms": 724,
       "verdict": "NO-OPS",
       "ops": 0,
       "opsToday": 0,
@@ -210,15 +202,14 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 2,
+      "ms": 923,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
-        "unclassified-fail-legacy",
         "broadcast-fails"
       ],
       "tunings": [],
-      "discoveryVerdict": "FRESH-CACHED",
+      "discoveryVerdict": "OPTIONS-FOUND",
       "topOpportunities": [
         "book-cold(measured)",
         "spread-normal(measured)",
@@ -256,7 +247,7 @@
     "payouts": {
       "name": "payouts",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "MEASURED",
       "day": "2026-10-05",
       "pendingVests": 0,
@@ -285,9 +276,9 @@
     "economics": {
       "name": "economics",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.544042,
+      "totalEstUsdPerDay": 0.547035,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -309,7 +300,7 @@
       "positionSteem": 16.31,
       "positionAvgCost": 0.104353,
       "unbasedSteem": 10.656,
-      "deployedSteem": 9.915,
+      "deployedSteem": 9.415,
       "fuelUsdPerDay": 0,
       "authorUsdPerDay": 0,
       "measuredTotalUsdPerDay": 0,
@@ -321,7 +312,7 @@
     "positionSteem": 16.31,
     "positionAvgCost": 0.104353,
     "unbasedSteem": 10.656,
-    "deployedSteem": 9.915,
+    "deployedSteem": 9.415,
     "fuelUsdPerDay": 0,
     "authorUsdPerDay": 0,
     "measuredTotalUsdPerDay": 0,
@@ -333,5 +324,5 @@
     "failedSteps": [],
     "blockedSteps": []
   },
-  "finishedAt": "2026-10-05T21:27:38.678Z"
+  "finishedAt": "2026-10-05T21:57:39.755Z"
 }

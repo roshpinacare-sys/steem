@@ -893,3 +893,24 @@ Stage Summary:
 - Repository state: saos-cockpit tip = 2e5af8d — contains full audit (9 artifacts, blob-verified) + live state; divergence visibility mitigation LIVE; token never printed, never in config/logs.
 - Audit verdict stands: B — SOVEREIGNTY PARTIAL, memory CONTESTED, multi-writer Level 3; recovery/history/secrets PROVEN; the break is the ungoverned write boundary.
 - Operator decisions still open (outside machine authority): (1) branch protection on saos-cockpit (the Level-3→1 gate); (2) single-writer law; (3) PAT rotation/credential boundary (T-79).
+
+---
+Task ID: R214
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: Operator order — "assess what is still missing and execute, as a sovereign-autonomous-blockchain systems engineer": close all machine-authority gaps left open by the R213 audit.
+
+Work Log:
+- ASSESSMENT grounded in live reads (22:02Z): cycle 21:57Z health ok 17/17; credential VERIFIED (c056e922c class, fingerprint c056922c, armed, operatorPaused=false); RC 100%; inventory 1.377 STEEM / 1,124.6 SP; pending rewards 0/0/0 (natural trigger NOT yet fired); payout window ~5h (Oct 6); VP 2.7% (army floor rest by law).
+- EXECUTED (2-a) scripts/sovereign-push.sh — FF-ONLY push gate: fetch-before-push mandatory; abort on non-FF (exit 2); force flags and non-canonical branches rejected locally (exit 3) BEFORE any remote touch; writes bounded-staleness custody record mini-services/saos-engine/state/push-custody.json (lastPushedSha/pushedAt/law).
+- EXECUTED (2-b) scripts/divergence-check.sh — read-only divergence visibility (fetch + ahead/behind; exit 2 on behind/true-divergence) — closes audit break #3 operationally.
+- EXECUTED (2-c) recovery/rebuild.sh + recovery/REBUILD-RUNBOOK.md — one-command independent-recovery drill; NO-ACTIVATION law (no engine start, no signing keys, no funds); inputs documented incl. operator-only pat.rar password (NOT duplicated in tree, per writer-law clause 8 — sweep caught the first draft carrying it and it was removed before commit).
+- EXECUTED (2-d) SOVEREIGN-WRITER-LAW.md v1 — self-binding writer law for THIS body only (FF-only, gate-only pushes, no main, no deletions, no history rewrite, custody record, identity doctrine, secrets doctrine, append-only amendments). Explicitly NOT imposed on other writers (org governance = operator decision per VERDICT).
+- DOGFOODED: divergence-check → SYNCED-OR-AHEAD; sweep clean → commit; sovereign-push → FF 2e5af8d..b7ab7f5 @ 22:06:17Z, custody recorded; force-arg test → LAWS exit 3 with remote untouched; foreign-branch test → exit 3.
+- CHAIN VERIFICATION (GitHub API): remote tip = b7ab7f5eadbcf8e479b295847f1544c8d5575b07.
+- REBUILD DRILL RUN FOR REAL: fresh clone from remote → tip b7ab7f5 → 9/9 audit artifacts + VERDICT.json valid → 36 engine state files + worklog 192,419B + engine entry → bun frozen deps OK → all state JSON valid → PASS, no activation; /tmp workspace deleted after.
+- Engine code NOT modified this round (live under bun --hot; cycle-integrated staleness surfacing staged for next round to avoid mid-cycle risk).
+
+Stage Summary:
+- Machine-authority gap list from R213 is now CLOSED: upstream (R213-close) + push gate + divergence visibility + custody record + self-writer law + repeatable recovery drill — all committed and pushed (b7ab7f5), all verified via API, zero force, zero deletions, zero secrets.
+- Still operator-gated: branch protection on saos-cockpit (Level-3→1 gate), org single-writer law, PAT rotation (T-79), GPG signing registration (shared account), vault archive passwords relocation (Agent D proximity finding).
+- Natural trigger watch: pending rewards 0; payout window opens ~03:00Z Oct 6 — first posting-signed claim (R209/R210 armed actuator) can fire naturally within hours after it drips.

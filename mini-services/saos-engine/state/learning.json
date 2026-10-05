@@ -1,19 +1,17 @@
 {
-  "at": "2026-10-05T21:27:33.686Z",
+  "at": "2026-10-05T21:57:33.687Z",
   "enabled": true,
-  "runsTotal": 154,
+  "runsTotal": 157,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
       "window": 60,
-      "oks": 27,
-      "fails": 1,
+      "oks": 28,
+      "fails": 0,
       "blocked": 32,
-      "okRate": 45,
+      "okRate": 46.7,
       "blockedRate": 53.3,
-      "failReasons": {
-        "none": 1
-      },
+      "failReasons": {},
       "msP50": 6436,
       "msP90": 16688
     },
@@ -37,15 +35,15 @@
       "lastError": "missing required posting authority:Missing Posting Authority headcorner"
     },
     "watchdog": {
-      "checks": 1477,
+      "checks": 1507,
       "downs": 100,
       "heals": 32,
       "healVerified": 31,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-05T21:27:33.780Z",
+      "lastCheckAt": "2026-10-05T21:57:33.789Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-05T19:22:38.735Z",
-      "lastUpAt": "2026-10-05T21:27:33.782Z",
+      "lastUpAt": "2026-10-05T21:57:33.791Z",
       "blips": 1
     }
   },
@@ -56,13 +54,6 @@
       "evidence": "cycle-blocked ×32/60 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
       "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
       "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
-    },
-    {
-      "id": "unclassified-fail-legacy",
-      "severity": "medium",
-      "evidence": "1 fails journaled without a reason class (pre-T-17 era — the sovereign recorded \"fail\" without engine-measured health)",
-      "lesson": "unclassified fails poison the failure histogram — a lesson machine that cannot classify cannot fully learn",
-      "action": "STRUCTURAL T-17: the marker flow journals engine-measured health+reason for every new fail; legacy history stays as evidence, never back-filled with invented causes"
     },
     {
       "id": "broadcast-fails",
@@ -76,9 +67,9 @@
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
-    "unclassified-fail-legacy": 105,
-    "signing-cred-blocked": 73,
-    "broadcast-fails": 48
+    "unclassified-fail-legacy": 107,
+    "signing-cred-blocked": 76,
+    "broadcast-fails": 51
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
