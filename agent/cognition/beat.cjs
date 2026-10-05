@@ -743,7 +743,7 @@ function hasEv(x) { return Array.isArray(x.evidence) && x.evidence.length > 0; }
 function dedupe(arr) { return [...new Set(arr.filter((x) => typeof x === 'string' && x.trim()))]; }
 
 /* ══════════════════════════ ACT — commit rebase-first, then verify own act ══════════════════════════ */
-const OUR_FILES = Object.freeze(['agent/cognition/organism.json', 'agent/cognition/lane-guards.json', 'agent/receipts/cognition-beat.jsonl']);
+const OUR_FILES = Object.freeze(['agent/cognition/organism.json', 'agent/cognition/lane-guards.json', 'agent/receipts/cognition-beat.jsonl', 'agent/receipts/capital-decisions.jsonl']);
 /* (תיקון-באג-נמדד ב-e2e: החתימה הייתה git(args, opts) אך כל-הקריאות העבירו-varargs →
  * execFileSync קיבל 'add' כ-args-סקלרי וצעק. עכשיו: varargs טהורים.) */
 function git(...args) {
@@ -812,6 +812,44 @@ async function verifyOwnAct(sha, file, token, attempts = 3) {
 }
 
 /* ══════════════════════════ MAIN LOOP ══════════════════════════ */
+
+/* ══════════════ CROSS-HOME GUARD SYNC (loop closure at the signing edge) ══════════════
+ * הסורגים שנולדו ב-steem חייבים להגיע לכל-חותם-חי. Domain צורך דרך agents/capital-gate.cjs
+ * (loopguard) ו-saos-dex דרך grids/brake.mjs (guardHalt — ef59aeb). סנכרון = אותו-תוכן-סורגים
+ * עם note; דילוג-אם-זהה (idempotent); כישלון = לא-שקט — קבלת-כישלון + runErrors. */
+const HOME_SYNC = Object.freeze([
+  { name: 'Domain', repo: 'roshpinacare-sys/Domain', file: 'agents/cognition/lane-guards.json' },
+  { name: 'saos-dex', repo: 'roshpinacare-sys/saos-dex', file: 'grids/state/lane-guards.json' },
+]);
+function redact(s) { const t = process.env.ZIP_PAT || ''; return t ? String(s).split(t).join('***REDACTED***') : String(s); }
+function syncGuardsCrossHome(guardsNext, cycle) {
+  const token = process.env.ZIP_PAT;
+  const out = [];
+  if (!token) return [{ home: 'all', status: 'failed', error: 'no ZIP_PAT in env — cross-home guard sync impossible (recorded, not silent)' }];
+  const content = JSON.stringify({ ...guardsNext, note: 'synced from steem cognition-beat cycle #' + cycle + ' (trace 1a10c90522120149) — guards close-only; consumers: steem capital_gate.cjs · Domain capital-gate.cjs · saos-dex brake.mjs' }, null, 2) + '\n';
+  for (const h of HOME_SYNC) {
+    const dir = '/tmp/cogsync-' + h.name + '-' + process.pid;
+    try {
+      try { execFileSync('rm', ['-rf', dir]); } catch (_) {}
+      execFileSync('git', ['clone', '-q', '--depth', '1', 'https://x-access-token:' + token + '@github.com/' + h.repo, dir], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, GIT_TERMINAL_PROMPT: '0' } });
+      const fp = path.join(dir, h.file);
+      fs.mkdirSync(path.dirname(fp), { recursive: true });
+      let prev = null; try { prev = fs.readFileSync(fp, 'utf8'); } catch (_) {}
+      if (prev === content) { out.push({ home: h.name, status: 'unchanged', file: h.file }); continue; }
+      fs.writeFileSync(fp, content);
+      const g = (a) => execFileSync('git', a, { cwd: dir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, GIT_TERMINAL_PROMPT: '0' } }).trim();
+      try { g(['config', 'user.name', 'saos-cognition']); g(['config', 'user.email', 'cognition@saos.local']); } catch (_) {}
+      g(['add', '--', h.file]);
+      g(['commit', '-m', 'cognition-beat sync: lane-guards from steem cycle #' + cycle + ' (close-only, trace 1a10c90522120149) [skip ci]']);
+      g(['push', 'origin', 'HEAD:main']);
+      out.push({ home: h.name, status: 'synced', file: h.file });
+    } catch (e) {
+      out.push({ home: h.name, status: 'failed', file: h.file, error: redact((e && e.stderr) || (e && e.message) || e).slice(0, 200) });
+    } finally { try { execFileSync('rm', ['-rf', dir]); } catch (_) {} }
+  }
+  return out;
+}
+
 async function main() {
   const DRY = process.argv.includes('--dry-run');
   const nowMs = Date.now();
@@ -1123,6 +1161,13 @@ async function main() {
   if (guardsChanged && guardsWritable) fs.writeFileSync(guardsPath, JSON.stringify(guardsNext, null, 2) + '\n');
   else if (guardsChanged && !guardsWritable) console.log('[BEAT] guards file left untouched (unreadable — tamper evidence preserved; gate is fail-closed regardless)');
   REAPPLY = { 'agent/cognition/organism.json': modelJson, 'agent/cognition/lane-guards.json': JSON.stringify(guardsNext, null, 2) + '\n' };
+  /* loop closure at the signing edge: propagate the guards to every home with a consumer */
+  const syncResults = syncGuardsCrossHome(guardsNext, cycle);
+  syncResults.forEach((r) => {
+    receiptsToWrite.push({ at: nowIso(), kind: 'beat-guard-sync', decision: 'guard-sync-' + r.status, authority: 'mechanism-shrink', evidence: [{ source: 'cross-home git', ref: (r.home + ':' + (r.file || '')) + (r.error ? ' error=' + r.error : '') , at: nowIso() }], preconditions: ['guards computed this cycle'], confidence: r.status === 'synced' ? 0.95 : 0.4, expectedOutcome: 'guard reaches the live signer consumer in that home', alternatives: ['owner-only manual STASIS edit'], idempotencyKey: sha256(['guard-sync', r.home, cycle, r.status].join('|')), abortConditions: [], postconditions: ['guards file updated in ' + r.home], verification: { method: 'raw API read-back next cycle', status: 'pending', at: null, actual: null, deviation: null }, note: '' });
+    if (r.status === 'failed') runErrors.push('cycle ' + cycle + ': guard sync failed ' + r.home + ': ' + String(r.error || '').slice(0, 120));
+  });
+  console.log('[BEAT] guard-sync: ' + syncResults.map((r) => r.home + '=' + r.status).join(' '));
   appendReceipts(receiptsToWrite);
 
   const commitMsg = `cognition-beat: cycle #${cycle} · window 8h · unknown-writers=${unknownAll.length} · contradictions=${openCount} open/${resolvedCount} resolved · frontier ${Object.entries(frontier).map(([l, f]) => l + ':' + f.level).join(' ')} · guards: +${closedAdded}/-${releases.length} · [skip ci]`;
