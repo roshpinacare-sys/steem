@@ -231,3 +231,36 @@ generation back to the treasury (DRY default; live requires `--live` + `HE_LIVE_
 + `OWNER_DIRECTIVE=RECLAIM-LOST-SOLDIERS-2026-10-04` — the recorded owner word that also
 serves as this specific op's STASIS-resume note). Mirror brakes: `Domain/agents/STASIS.json`
 (all Domain signers via capital-gate.cjs) + `saos-dex grids/state/STASIS.json` (mover/convert).
+
+## 2026-10-05 (R24-b): STASIS capital-gate rolled out to ALL broadcast daemons — per-site gates, fail-closed
+
+Measured live on chain: after STASIS engaged (2026-10-04T22:06Z) a **stale process kept signing
+ladder limit orders at 22:33Z / 23:04Z / 2026-10-05T04:01Z**. Lesson codified: **the gate must be
+checked AT THE OP SITE (sign time), not at process entry** — long-lived daemons (agent.cjs and
+friends, re-spawned by guardian-loop.cjs on every `bun run dev`) can hold stale code in memory.
+
+What changed (37 files, zero behavior under DRY, all fail-closed):
+
+- **Per-site `stasisStop('<tool>')` brakes** (try/catch wrapper over `capGate.stasisHalt` — on gate
+  module error the lane HALTS with a loud `[CAPITAL-GATE]` line) inserted immediately before every
+  chain-capital broadcast: claims, transfers/sweeps/escrow, delegations, power-ups, converts,
+  limit orders, mints (claim_account/create_claimed_account/account_create), HE sells/unstake/
+  withdraw, soldier repair (authority), delegate_rc, meta-tx fuel.
+- `agent.cjs` — 10 per-site brakes (claim, army-claim, army-sweep, netTask command transfer,
+  factory claim_account, dexBroadcast escrow/transfer leg, liq escrow, payroll, hiveBroadcastActive
+  [HE withdraw + HIVE power-up], paymaster fuel delegation). Posting-key custom_json bus lanes
+  (saos/wlog/net/ping/anchor) are NOT capital ops and stay open — measurement continues.
+- Daemon-spawned tools each gate their own sign site (they are separate processes even when the
+  parent holds stale code): mint_borrow, he_genesis, he_fleet_sell, wrapped (7 sites + hive lane),
+  fleetv3_autopilot (guardian-spawned). One-shot CLIs gate at/before their broadcast choke point:
+  ladder_refresh (entry receipt `stasis-halt` + sign-time throw in broadcastOp), energy_ops
+  (broadcastSigned + hiveBroadcastRaw), sovereign_ops (broadcastSteem), he_ladder/he_sell/
+  he_unstake/he_powerup, fuel_line (tx1+tx2), paymaster (fuel + memo-biz), rc_sovereign
+  (hive-powerup ×2), sp_reclaim, hive_rc_heal, factory_create/factory_v2, fleet_mint_v3,
+  soldier_mint_paid, soldier_repair, head-delegate-era siblings head-revive/fleet-claim,
+  escrow_rail, merchant self-demand, yield payouts, muster escrow, sovereign_fix59, roundtrip
+  hive lane, rc_bridge, limits_probe2.
+- Read-only lanes stay ungated with an explicit marker: `verify_system.cjs`, `empire_60.cjs`,
+  `roast_audit.cjs` — "measurement-only lane — capital gate N/A (STASIS scope)".
+- Verified: `node --check` green on all 37 modified files; live smoke `stasisHalt('r24b-smoke') →
+  true`; zero secret-shape hits on the added diff lines; `STASIS.json` untouched (active=true).

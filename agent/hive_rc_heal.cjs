@@ -25,6 +25,11 @@ const path = require('path');
 const steem = require('steem');
 const HIVE_RC = require('./hive_rc.cjs');
 const { grapheneBroadcast } = require('./anchor.cjs');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const AGENT_DIR = __dirname;
 const RESULT_PATH = path.join(AGENT_DIR, 'hive_rc_heal.json');
@@ -158,6 +163,7 @@ async function existingDelegation(delegator, delegatee) {
 }
 
 async function delegate(delegator, delegatee, vestsStr, activeWif) {
+  if (stasisStop('hive-rc-heal')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const { rpcV4 } = require('./anchor.cjs');
   const dgp = await rpcV4(HIVE_RPC, { jsonrpc: '2.0', method: 'condenser_api.get_dynamic_global_properties', params: [], id: 1 });
   const tx = {

@@ -32,6 +32,11 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
 const HIVE_RPC = process.env.HIVE_RPC || 'https://api.hive.blog';
@@ -101,6 +106,7 @@ const hiveRpc = (method, params) =>
 
 /** broadcast an HE custom_json op with active auth; returns {txid} or throws */
 async function heBroadcast(payload) {
+  if (stasisStop('he-conforms')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const dgp = await hiveRpc('condenser_api.get_dynamic_global_properties', []);
   const tx = {
     ref_block_num: dgp.head_block_number & 0xffff,

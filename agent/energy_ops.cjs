@@ -24,6 +24,11 @@ const path = require('path');
 const crypto = require('crypto');
 const steem = require('steem');
 const { Client, PrivateKey, cryptoUtils } = require('@hiveio/dhive');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 function loadDotEnv(dir) {
   const envPath = path.join(dir, '.env');
@@ -95,6 +100,7 @@ async function signTx(cli, chainIdBuf, wif, operations) {
   return cryptoUtils.signTransaction(tx, [PrivateKey.fromString(wif)], chainIdBuf || undefined);
 }
 async function broadcastSigned(cli, signed) {
+  if (stasisStop('energy-ops')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   await cli.call('condenser_api', 'broadcast_transaction', [signed]);
   return cryptoUtils.generateTrxId ? cryptoUtils.generateTrxId(signed) : 'broadcast-ok';
 }
@@ -365,6 +371,7 @@ async function hiveDelegateRc(from, to, maxRc) {
  * chain_id ‖ bytes, local low-s sign, self-verify by recovery, broadcast.     */
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
 async function hiveBroadcastRaw(ops, wif) {
+  if (stasisStop('energy-ops')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const { wifToScalar, ecdsaSignLowS, ecdsaRecover } = require('./identity.cjs');
   const SECP = require('ecurve').getCurveByName('secp256k1');
   const dgp = await hiveCli.call('condenser_api', 'get_dynamic_global_properties', []);

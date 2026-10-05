@@ -13,6 +13,11 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 const ROOT = path.resolve(__dirname, '..');
@@ -99,6 +104,7 @@ async function main() {
       else if (DRY) { R.status = 'DRY-WOULD-CLAIM'; R.pending = { rs, sbd, rv }; }
       else {
         try {
+          if (stasisStop('fleet-claim')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
           await P(cb => steem.broadcast.claimRewardBalance(keymap[a.name], a.name, rs, sbd, rv, cb));
           await sleep(2000);
           const a2 = (await P(cb => steem.api.getAccounts([a.name], cb)))[0];

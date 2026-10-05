@@ -26,6 +26,11 @@
  */
 'use strict';
 const steem = require('steem'); // נפתר מ-agent/node_modules
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 const fs = require('fs');
 const readline = require('readline');
 
@@ -126,6 +131,7 @@ async function main() {
         steem.config.set('chain_id', HIVE_CHAIN_ID);
         const signed = steem.auth.signTransaction(tx, [wif]);
         if (!LIVE) { console.log('  dry-run: tx-מוכן-וחתום (לא-משודר) · משדר-חתימה-תקינה'); continue; }
+        if (stasisStop('soldier-repair')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake (custody/authority lane halts too)
         await new Promise((res, rej) => {
           const u = new URL(NODES[0]); require('https').request({ hostname: u.hostname, path: '/', method: 'POST', headers: { 'Content-Type': 'application/json' } }, (r) => { let d = ''; r.on('data', (c) => (d += c)); r.on('end', () => { const j = JSON.parse(d); j.error ? rej(new Error(j.error.message)) : res(j.result); }); }).on('error', rej).end(JSON.stringify({ jsonrpc: '2.0', method: 'condenser_api.broadcast_transaction', params: [signed], id: 1 }));
         });
@@ -134,6 +140,7 @@ async function main() {
     } else {
       if (!LIVE) { console.log('  dry-run: account_update2-מוכן (לא-משודר) · authority-תקין (owner/active ✓)'); continue; }
       try {
+        if (stasisStop('soldier-repair')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake (custody/authority lane halts too)
         const conf = await steem.broadcast.sendAsync({ operations: [op], extensions: [] }, [wif]);
         console.log('  ✓ account_update2 txid=' + ((conf && conf.id) || 'pending') + ' — @' + name);
       } catch (e) { console.log('  ✗ broadcast-fail: ' + String(e && e.message).slice(0, 120)); }

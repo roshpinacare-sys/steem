@@ -8,6 +8,11 @@
 'use strict';
 const fs = require('fs');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 
 const HEAD = 'headcorner'; // נושא-הסקריפט עצמו (Z-19b) — לא ברירת-מחדל
@@ -39,6 +44,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   const hasPending = parseFloat(rs) > 0 || parseFloat(sb) > 0 || parseFloat(rv) > 0;
   if (hasPending) {
     try {
+      if (stasisStop('head-revive:claim')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
       await P(cb => steem.broadcast.claimRewardBalance(postWif, HEAD, rs, sb, rv, cb));
       await sleep(2000);
       const a2 = await P(cb => steem.api.getAccounts([HEAD], cb)).then(r => r[0]);
@@ -93,6 +99,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
       const already = parseFloat(sa.received_vesting_shares);
       const want = 30 / ratio;
       if (already >= want * 0.98) { receipt.ops.push({ op: 'delegate', to: s, status: 'SKIP-ALREADY' }); continue; }
+      if (stasisStop('head-revive:delegate')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
       await P(cb => steem.broadcast.delegateVestingShares(actWif, HEAD, s, vests30, cb));
       await sleep(1500);
       const sa2 = await P(cb => steem.api.getAccounts([s], cb)).then(r => r[0]);

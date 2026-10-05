@@ -23,6 +23,11 @@ const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
 const { Client, PrivateKey } = require('@hiveio/dhive');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: ACCOUNT }); // 8-b: השער נעוץ בחשבון-הפעולה מה-env — לא בשם-קבוע
@@ -136,6 +141,7 @@ const busOp = (payload, signer, protocol) => ['custom_json', {
 }];
 
 const hiveBroadcast = async (ops, key) => {
+  if (stasisStop('roundtrip:hive')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake — HIVE self-lock transfers
   const hive = new Client([HIVE_NODES[0]]);
   const conf = await hive.broadcast.sendOperations(ops, PrivateKey.fromString(key));
   return (conf && conf.id) || null;

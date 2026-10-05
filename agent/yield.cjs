@@ -22,6 +22,11 @@ if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/yield.c
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: ACCOUNT }); // 8-b: השער נעוץ בחשבון-הפעולה מה-env — לא בשם-קבוע
@@ -153,6 +158,7 @@ async function main() {
     const memo = 'saos:yield:' + day + ':' + r.ops + 'ops:' + r.lp + 'lp:' + r.fills + 'fills:score' + r.score.toFixed(2);
     if (!LIVE) { log('[DRY] @' + r.name + ' ← ' + amt.toFixed(3) + ' STEEM · ' + memo); paid[r.name] = { amt, dry: true }; continue; }
     try {
+      if (stasisStop('yield')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
       const conf = await steem.broadcast.sendAsync({
         operations: [['transfer', { from: ACCOUNT, to: r.name, amount: amt.toFixed(3) + ' STEEM', memo }]],
         extensions: [],

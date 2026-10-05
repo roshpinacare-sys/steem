@@ -29,6 +29,11 @@ const path = require('path');
 const https = require('https');
 const steem = require('steem');
 const { Client, PrivateKey } = require('@hiveio/dhive');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 /* ── env ─────────────────────────────────────────────────────────── */
 let env = {};
@@ -134,6 +139,7 @@ const HE_RPC = 'https://api.hive-engine.com/rpc/contracts';
 const heFind = (contract, table, query, limit = 10) =>
   rpcV4(HE_RPC, { jsonrpc: '2.0', method: 'find', params: { contract, table, query, limit }, id: 1 });
 async function hiveBroadcast(ops, key) {
+  if (stasisStop('wrapped:hive')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake — covers PHIVE self-locks + HE ops
   const hive = new Client([HIVE_RPC]);
   const conf = await hive.broadcast.sendOperations(ops, PrivateKey.fromString(key));
   return (conf && conf.id) || null;
@@ -391,6 +397,7 @@ async function boot() {
     if (DRY) { evid.steps.push({ step: 'sbd-buy', ok: false, dry: true, spend, minSbd }); log('[DRY] sbd-buy ' + spend + ' STEEM → ≥' + minSbd + ' SBD'); }
     else {
       try {
+        if (stasisStop('wrapped:sbd-buy')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
         const conf = await steem.broadcast.sendAsync({ operations: [op], extensions: [] }, [ACTIVE_WIF]);
         evid.steps.push({ step: 'sbd-buy', ok: true, txid: (conf && conf.id) || null, spend, minSbd, orderid: op[1].orderid });
         log('sbd-buy ✓ ' + spend + ' STEEM → ≥' + minSbd + ' SBD txid=' + (conf && conf.id));
@@ -420,6 +427,7 @@ async function boot() {
       const sbd = parseFloat(String(acc.sbd_balance).split(' ')[0]);
       if (sbd < 0.005) continue;
       if (DRY) { evid.steps.push({ step: 'sweep:' + u, ok: false, dry: true, sbd }); continue; }
+      if (stasisStop('wrapped:sweep')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
       const conf = await steem.broadcast.sendAsync({
         operations: [steemTransferOp(u, ACCOUNT, sbd, 'SBD', 'saos:xlock:WSBD:' + sbd.toFixed(3))], extensions: [],
       }, [activeWif]);
@@ -444,6 +452,7 @@ async function boot() {
       evid.steps.push({ step: 'wsbd-lock', ok: true, skip: true, why: 'already locked on-chain', txid: lockTxid, amount: chainLockedSbd });
     } else if (!DRY) {
       try {
+        if (stasisStop('wrapped:wsbd-lock')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
         const conf = await steem.broadcast.sendAsync({ operations: [steemTransferOp(ACCOUNT, ACCOUNT, lockedSbd, 'SBD', 'saos:xlock:WSBD:' + lockedSbd.toFixed(3) + ':' + Date.now().toString(36))], extensions: [] }, [ACTIVE_WIF]);
         lockTxid = (conf && conf.id) || null;
         evid.steps.push({ step: 'wsbd-lock', ok: true, txid: lockTxid, amount: lockedSbd });
@@ -604,6 +613,7 @@ async function beat() {
     const addAmt = r3(m.sbd);
     if (!DRY) {
       try {
+        if (stasisStop('wrapped:wsbd-add-lock')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
         const conf = await steem.broadcast.sendAsync({ operations: [steemTransferOp(ACCOUNT, ACCOUNT, addAmt, 'SBD', 'saos:xlock:WSBD:' + addAmt.toFixed(3) + ':' + Date.now().toString(36))], extensions: [] }, [ACTIVE_WIF]);
         evid.steps.push({ step: 'wsbd-add-lock', ok: true, txid: (conf && conf.id) || null, amount: addAmt });
         await new Promise((r) => setTimeout(r, 3400));
@@ -680,6 +690,7 @@ async function beat() {
       if (amt < 0.005 || m.steem - TREASURY_FLOOR_STEEM < amt + 0.05) continue;
       if (DRY) { evid.steps.push({ step: 'collat-topup:' + sym, ok: false, dry: true, ratio: +ratio.toFixed(3), amt }); continue; }
       try {
+        if (stasisStop('wrapped:collat-topup')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
         const conf = await steem.broadcast.sendAsync({
           operations: [steemTransferOp(ACCOUNT, ACCOUNT, amt, 'STEEM', 'saos:collat:' + sym + ':' + amt.toFixed(3) + ':' + Date.now().toString(36))], extensions: [],
         }, [ACTIVE_WIF]);
@@ -745,6 +756,7 @@ async function boot64() {
     if (DRY) { evid.steps.push({ step: 'energy-delegate', ok: false, dry: true, targetVests: ENERGY_TARGET_VESTS, battery: BAT }); }
     else {
       try {
+        if (stasisStop('wrapped:energy-delegate')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
         const conf = await steem.broadcast.sendAsync({
           operations: [['delegate_vesting_shares', { delegator: ACCOUNT, delegatee: BAT, vesting_shares: ENERGY_TARGET_VESTS.toFixed(6) + ' VESTS' }]], extensions: [],
         }, [ACTIVE_WIF]);
@@ -812,6 +824,7 @@ async function boot64() {
       else if (!amt || m.steem - TREASURY_FLOOR_STEEM < amt + 0.05) { evid.steps.push({ step: 'collat:' + sym, ok: false, skip: true, why: 'no-treasury-budget (steem=' + m.steem + ')' }); }
       else {
         try {
+          if (stasisStop('wrapped:collat-lock')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
           const conf = await steem.broadcast.sendAsync({
             operations: [steemTransferOp(ACCOUNT, ACCOUNT, amt, 'STEEM', 'saos:collat:' + sym + ':' + amt.toFixed(3) + ':' + Date.now().toString(36))], extensions: [],
           }, [ACTIVE_WIF]);

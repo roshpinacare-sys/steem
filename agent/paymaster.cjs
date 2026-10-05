@@ -26,6 +26,11 @@ const path = require('path');
 const https = require('https');
 const crypto = require('crypto');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 const { Client, PrivateKey } = require('@hiveio/dhive');
 
 const OUT_RELAY = path.join(__dirname, 'paymaster_relay.json');
@@ -288,6 +293,7 @@ async function fuelCycle(dry = false, targetArg = null, vestsArg = null) {
   const [dNum, dCur] = String(delegated).split(' ');
   const newDel = (parseFloat(dNum) + VESTS).toFixed(6) + ' ' + dCur;
   const ops = [['delegate_vesting_shares', { delegator: payerAccount, delegatee: hungriest.account, vesting_shares: newDel }]];
+  if (stasisStop('paymaster:fuel')) { out.stasis = 'HALTED — capital lane closed (capital gate 2026-10-04)'; fs.writeFileSync(OUT_FUEL, JSON.stringify(out, null, 2) + '\n'); return out; } // sign-time brake
   const conf = await hive.broadcast.sendOperations(ops, PrivateKey.fromString(payerWif));
   out.txid = conf && conf.id ? conf.id : (conf && conf.transaction && conf.transaction.id) || null;
   await sleep(2000);
@@ -329,6 +335,7 @@ async function memoBiz() {
   // 1) הזמנה דרך ממו — transfer ציבורי עם memo-פקודה (הממו הוא ההזמנה)
   const qty = 1;
   const orderMemo = 'saos:buy:SAOS:' + qty;
+  if (stasisStop('paymaster:memo-biz')) return out; // sign-time brake (owner 2026-10-04)
   const c1 = await steem.broadcast.sendAsync({
     operations: [['transfer', { from: customer.username, to: TREASURY, amount: '0.001 STEEM', memo: orderMemo }]],
     extensions: [],
@@ -347,6 +354,7 @@ async function memoBiz() {
 
   // 3) מילוי + קבלה: עסקת-העברה עם ממו-קבלה גלוי
   const receiptMemo = 'saos:receipt:' + c1.id.slice(0, 16) + ' qty=' + qty;
+  if (stasisStop('paymaster:memo-biz')) return out; // sign-time brake (owner 2026-10-04)
   const c2 = await steem.broadcast.sendAsync({
     operations: [['transfer', { from: TREASURY, to: customer.username, amount: '0.001 STEEM', memo: receiptMemo }]],
     extensions: [],
@@ -358,6 +366,7 @@ async function memoBiz() {
   out.steps.encryptedReceipt = { attempted: true, sent: false };
   if (out.steps.encryptedReceipt.attempted && (ENV.MEMO_WIF || process.env.MEMO_WIF) && customer.keys.memo && customer.keys.memo.pub) {
     try {
+      if (stasisStop('paymaster:memo-biz')) return out; // sign-time brake (owner 2026-10-04)
       const c3 = await steem.broadcast.sendAsync({
         operations: [['transfer', { from: TREASURY, to: customer.username, amount: '0.001 STEEM', memo: enc }]],
         extensions: [],

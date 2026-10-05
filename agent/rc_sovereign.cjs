@@ -20,6 +20,11 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 function loadDotEnv(dir) {
   const envPath = path.join(dir, '.env');
@@ -263,6 +268,7 @@ async function modeHivePowerup() {
   const prevChainId = steem.config.get('chain_id');
   steem.config.set('chain_id', 'beeab0de00000000000000000000000000000000000000000000000000000000');
   let wSigned; try { wSigned = steem.auth.signTransaction(wTx, [ACTIVE_WIF]); } finally { steem.config.set('chain_id', prevChainId); }
+  if (stasisStop('rc-sovereign:powerup')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   await rpcV4(HIVE_RPC, { jsonrpc: '2.0', method: 'condenser_api.broadcast_transaction', params: [wSigned], id: 3 });
   const withdrawTxid = wSigned.transaction_id || null;
   log('withdraw broadcast ✓ txid=' + String(withdrawTxid).slice(0, 16) + '… — waiting for HIVE to land');
@@ -283,6 +289,7 @@ async function modeHivePowerup() {
   const pTx = { ref_block_num: dgp2.head_block_number & 0xffff, ref_block_prefix: Buffer.from(dgp2.head_block_id, 'hex').readUInt32LE(4), expiration: new Date(new Date(dgp2.time + 'Z').getTime() + 60000).toISOString().slice(0, 19), operations: [pOp], extensions: [] };
   steem.config.set('chain_id', 'beeab0de00000000000000000000000000000000000000000000000000000000');
   let pSigned; try { pSigned = steem.auth.signTransaction(pTx, [ACTIVE_WIF]); } finally { steem.config.set('chain_id', prevChainId); }
+  if (stasisStop('rc-sovereign:powerup')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   await rpcV4(HIVE_RPC, { jsonrpc: '2.0', method: 'condenser_api.broadcast_transaction', params: [pSigned], id: 5 });
   const powerupTxid = pSigned.transaction_id || null;
   log('powerup broadcast ✓ txid=' + String(powerupTxid).slice(0, 16) + '…');

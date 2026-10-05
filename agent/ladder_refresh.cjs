@@ -57,6 +57,11 @@ if (ACTING !== ACCOUNT) {
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: ACTING });
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 // steem lib: repo agent/node_modules first, CI fallback via STEEMJS_DIR (economy-engine pattern)
 let steem;
@@ -305,6 +310,7 @@ async function confirmOp(pred, what) {
 
 async function broadcastOp(operation, wif, label) {
   // PROVEN pattern (wrapped.cjs): steem.broadcast.sendAsync signs locally with the active key.
+  if (stasisStop('ladder-refresh')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const ops = [[operation.op, {
     owner: operation.owner,
     ...(operation.op === 'limit_order_cancel'
@@ -421,6 +427,8 @@ async function main() {
     process.exit(1);
   }
   log('armed: key fingerprint ' + keyFingerprint + ' matches live active authority');
+  // STASIS (owner 2026-10-04): the brake beats the armed plan — healthy no-op exit 0 with an honest receipt
+  if (stasisStop('ladder-refresh')) { writeReceipt({ status: 'stasis-halt', ops: plan.ops.length, executed: [], keyFingerprint, reason: 'STASIS active — zero broadcasts (owner directive 2026-10-04)' }); return; }
   if (plan.ops.length === 0) {
     writeReceipt({ status: 'ladder-healthy-no-ops', ops: [], executed: [], keyVerified: true, keyFingerprint, reason: 'armed + key verified against live authority, but no order qualifies stale (>7d AND >2% from mid) — honest no-op broadcast, zero ops by design' });
     log('ladder healthy (ARMED) — zero qualifying ops; no broadcast needed; honest receipt written');

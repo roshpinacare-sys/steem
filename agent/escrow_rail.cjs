@@ -22,6 +22,11 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 function loadDotEnv(dir) {
   const envPath = path.join(dir, '.env');
@@ -94,6 +99,7 @@ function loadArmy() {
 }
 
 async function broadcast(ops, wifs) {
+  if (stasisStop('escrow-rail')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const conf = await steem.broadcast.sendAsync({ operations: ops, extensions: [] }, wifs);
   return (conf && conf.id) || null;
 }

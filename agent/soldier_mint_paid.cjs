@@ -26,6 +26,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const dhive = require('@hiveio/dhive');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 /* ── .env ── */
 function loadDotEnv(dir) {
@@ -131,6 +136,7 @@ async function modeMint(name) {
     memo_key: keys.memo.pub, json_metadata: '',
   }];
   if (DRY) { log('[DRY] would mint @' + name + ' (creator @' + creator + ') · rescue-anchor=' + OPERATOR + ' · deterministic keys · fee ' + fee); return record({ type: 'mint', name, creator, dry: true, fee, rescueAnchor: OPERATOR }); }
+  if (stasisStop('soldier-mint-paid')) return log('STASIS-HALT — capital lane closed (capital gate 2026-10-04) — nothing broadcast'); // sign-time brake
   const pk = dhive.PrivateKey.fromString(ACTIVE_WIF);
   const txid = await client.broadcast.sendOperations([op], pk).then((r) => (r && r.transaction_id) || 'sent');
   log('mint BROADCAST txid=' + String(txid).slice(0, 16) + '…');
