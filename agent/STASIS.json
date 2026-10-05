@@ -1,17 +1,36 @@
 {
   "protocol": "SAOS-FATE-DEFENSE-STASIS/1",
   "active": true,
-  "reason": "OWNER DIRECTIVE 2026-10-04 (IM trace 1a108e28015b0451): 'חייב לעצור ולבחון מה הסוכנים עושים' — measured live: ~60 delegation ops on headcorner in one day, fresh SP delegated to keyless lost soldiers (hcsoldier1/2/3), conflicting targets from uncoordinated writers. All capital lanes in this home halt for examination.",
-  "requestedBy": "owner directive 2026-10-04 (IM trace 1a108e28015b0451), executed by the platform main agent",
+  "mode": "staged",
+  "reason": "OWNER DIRECTIVE 2026-10-04 (IM trace 1a108e28015b0451): 'חייב לעצור ולבחון מה הסוכנים עושים' — measured live: ~60 delegation ops on headcorner in one day, fresh SP delegated to keyless lost soldiers (hcsoldier1/2/3), conflicting targets from uncoordinated writers. All capital lanes in this home halt for examination. STAGED RE-ENTRY 2026-10-05 (IM trace 1a10bfe1342b2391): 'Re-enable its autonomous capabilities intelligently. Let it operate.' + calibration mandate (staged re-entry, limited exposure, observation, increasing confidence) — the brake stays armed; only the staged lanes below open.",
+  "requestedBy": "owner directive 2026-10-04 (IM trace 1a108e28015b0451), executed by the platform main agent; staged-lanes opened on owner directive 2026-10-05 (IM trace 1a10bfe1342b2391), executed by the T-B agent",
   "since": "2026-10-04T22:18:00Z",
   "scope": "all capital lanes of the steem home: delegations, transfers, claims, converts, mints (measurement-only lanes continue)",
-  "resumePolicy": "STASIS is a mechanical circuit breaker (FATE-DEFENSE law #1). Resume only after root-cause + judge-node green + explicit owner word. The file itself is the audit trail — never delete history, flip the flag.",
+  "stagedLanes": {
+    "allow": ["grid", "claims"],
+    "reason": "he-EN: פתיחה-מדורגת-ממוקדת בלבד — מסילת-הסולם (ladder-refresh — limit_order_create/cancel על שוק-הפנימי) ומסילת-התביעות (agent:claim, agent:army-claim, fleet-claim, head-revive:claim, fleetv3-autopilot:claim — claim_reward_balance בלבד). כל-יתר המסילות נשארות-עצורות: האצלות, העברות, converts, HE-sells, mint/escrow. Targeted staged lift only — the ladder machine (limit orders on the internal market) and reward claims (claim_reward_balance) open; everything else (delegations, transfers, converts, HE sells, mints, escrow) stays halted. Unknown tool = general = halted (fail-closed). ROSTER + JOURNAL gates still apply to every allowed lane.",
+    "since": "2026-10-05T13:05:00Z"
+  },
+  "resumeLog": [
+    {
+      "at": "2026-10-05T13:05:00Z",
+      "what": "staged lanes grid+claims opened",
+      "authority": "owner directive 2026-10-05 IM trace 1a10bfe1342b2391: 'Re-enable its autonomous capabilities intelligently. Let it operate.' + calibration mandate; root-cause closed R24/R25; Wave-3 targeted resume; judge-green selftests R25-d; first-run observation required"
+    }
+  ],
+  "resumePolicy": "STASIS is a mechanical circuit breaker (FATE-DEFENSE law #1). Resume only after root-cause + judge-node green + explicit owner word. The file itself is the audit trail — never delete history, flip the flag. Staged lanes (mode=staged + stagedLanes.allow) are enforced per-tool-lane by agent/lib/capital_gate.cjs laneOf(); an allowed lane prints a STASIS-STAGED-ALLOW receipt; everything else halts exactly as before.",
   "history": [
     {
       "at": "2026-10-04T22:18:00Z",
       "action": "engaged",
       "by": "platform main agent on owner directive (trace 1a108e28015b0451)",
       "note": "mirrors Domain/agents/STASIS.json — one brake law across both homes; capital_gate.cjs enforces STASIS + roster + journal here"
+    },
+    {
+      "at": "2026-10-05T13:05:00Z",
+      "action": "staged-lanes-opened",
+      "by": "T-B agent on owner directive 2026-10-05 (IM trace 1a10bfe1342b2391) — 'Re-enable its autonomous capabilities intelligently. Let it operate.' + calibration mandate",
+      "note": "resumePolicy conditions measured and satisfied: (1) root-cause CLOSED — R24 forensics + R25-a..d fixes pushed and API-verified (fires>64 root-fix, dual arb accumulators, BEST one-liner, grid-beat sign-time brake, stale-signer class closed by sign-time gates R24-b); (2) judge-node GREEN — selftests green (new capital_gate staged-lane selftest; fleet-roster economicUse live-checked); (3) owner word EXPLICIT — IM trace 1a10bfe1342b2391 2026-10-05. Wave-3 of MASTER-ORDER-DRAFT-2026-10-05 §7 = targeted lift. mode=staged, active stays true; lanes grid+claims only; every other lane halts"
     }
   ]
 }
