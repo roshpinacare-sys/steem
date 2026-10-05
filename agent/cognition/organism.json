@@ -1,6 +1,6 @@
 {
   "protocol": "SAOS-SELFMODEL/1",
-  "generatedAt": "2026-10-05T17:11:31.366Z",
+  "generatedAt": "2026-10-05T17:32:01.366Z",
   "homes": {
     "steem": {
       "stasis": {
@@ -16,7 +16,7 @@
           {
             "source": "agent/STASIS.json",
             "ref": "local fs read, authenticated yes",
-            "at": "2026-10-05T17:11:31.366Z"
+            "at": "2026-10-05T17:32:01.366Z"
           }
         ]
       },
@@ -29,7 +29,7 @@
       "guards": {
         "activeGuards": 3,
         "closedAdded": 0,
-        "released": 0
+        "released": 2
       },
       "truthSources": [
         "agent/STASIS.json",
@@ -54,7 +54,7 @@
           {
             "source": "raw.githubusercontent Domain",
             "ref": "agents/STASIS.json read authenticated",
-            "at": "2026-10-05T17:11:31.366Z"
+            "at": "2026-10-05T17:32:01.366Z"
           }
         ]
       },
@@ -83,7 +83,7 @@
           {
             "source": "raw.githubusercontent saos-dex",
             "ref": "grids/state/STASIS.json read authenticated",
-            "at": "2026-10-05T17:11:31.366Z"
+            "at": "2026-10-05T17:32:01.366Z"
           }
         ]
       },
@@ -91,7 +91,7 @@
         "epistemic": "OBSERVED",
         "verdict": "ALIVE-REAL-FILLS",
         "realFills24h": 7,
-        "at": "2026-10-05T17:11:31.366Z"
+        "at": "2026-10-05T17:32:01.366Z"
       },
       "gridLedger": {
         "epistemic": "OBSERVED",
@@ -99,7 +99,7 @@
         "txids": 97,
         "placedTotal": 97,
         "filledTotal": 6,
-        "at": "2026-10-05T17:11:31.366Z"
+        "at": "2026-10-05T17:32:01.366Z"
       },
       "directivesChain": {
         "ok": false,
@@ -149,7 +149,7 @@
       "id": "steem/claims-suite",
       "home": "steem",
       "lane": "claims",
-      "status": "STAGED",
+      "status": "REAL",
       "epistemic": "OBSERVED",
       "evidence": [
         {
@@ -299,6 +299,21 @@
         }
       ],
       "ageHours": 0
+    },
+    {
+      "id": "steem/cognition-beat",
+      "home": "steem",
+      "lane": "cognition",
+      "status": "STAGED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        {
+          "source": "agent/receipts/cognition-beat.jsonl",
+          "ref": "cycle 4 completed in-organism (no LLM session): observe→decide→learn→act→verify",
+          "at": "2026-10-05T17:32:01.366Z"
+        }
+      ],
+      "ageHours": 0
     }
   ],
   "writers": [
@@ -313,8 +328,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 3: 14 ops classified dex-grid-ci (orderid-space/ledger)",
-          "at": "2026-10-05T17:11:31.366Z"
+          "ref": "cycle 4: 24 ops classified dex-grid-ci (orderid-space/ledger)",
+          "at": "2026-10-05T17:32:01.366Z"
         }
       ]
     },
@@ -329,8 +344,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 3: 1 ops matched matrix amount",
-          "at": "2026-10-05T17:11:31.366Z"
+          "ref": "cycle 4: 1 ops matched matrix amount",
+          "at": "2026-10-05T17:32:01.366Z"
         }
       ]
     },
@@ -345,8 +360,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 3: 3 ops matched reclaim signature",
-          "at": "2026-10-05T17:11:31.366Z"
+          "ref": "cycle 4: 3 ops matched reclaim signature",
+          "at": "2026-10-05T17:32:01.366Z"
         }
       ]
     },
@@ -490,7 +505,7 @@
       "detail": "נמדד: שלושת-הבתים נקראו בהצלחה במחזור-זה.",
       "kind": "cross-home-visibility",
       "a": "steem+Domain+saos-dex",
-      "b": "all readable at 2026-10-05T17:11:31.366Z",
+      "b": "all readable at 2026-10-05T17:32:01.366Z",
       "confidence": 0.85,
       "firstSeen": "2026-10-05T16:42:07.277Z",
       "status": "resolved",
@@ -503,7 +518,7 @@
       "detail": "נמדד: קבצי-ה-STASIS בכל-הבתים קריאים ואותנטיים.",
       "kind": "brake-readability",
       "a": "all STASIS files authenticated",
-      "b": "ok at 2026-10-05T17:11:31.366Z",
+      "b": "ok at 2026-10-05T17:32:01.366Z",
       "confidence": 0.9,
       "firstSeen": "2026-10-05T16:42:07.277Z",
       "status": "resolved",
@@ -587,23 +602,23 @@
     "lanes": {
       "grid": {
         "level": "STAGED",
-        "justification": "staged-allowed by owner directives; not REAL yet — missing: successful-cycles 2/3, open contradiction on lane",
+        "justification": "staged-allowed by owner directives; not REAL yet — missing: open contradiction on lane",
         "evidence": [
           {
             "source": "cognition-beat",
-            "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: successful-cycles 2/3, open contradiction on lane",
-            "at": "2026-10-05T17:11:46.682Z"
+            "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: open contradiction on lane",
+            "at": "2026-10-05T17:32:14.926Z"
           }
         ]
       },
       "claims": {
-        "level": "STAGED",
-        "justification": "staged-allowed by owner directives; not REAL yet — missing: successful-cycles 2/3",
+        "level": "REAL",
+        "justification": "authenticity green + 3 successful cycles + zero open contradictions + writer claims-suite-ci attributed",
         "evidence": [
           {
             "source": "cognition-beat",
-            "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: successful-cycles 2/3",
-            "at": "2026-10-05T17:11:46.682Z"
+            "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: authenticity green + 3 successful cycles + zero open contradictions + writer claims-suite-ci attributed",
+            "at": "2026-10-05T17:32:14.926Z"
           }
         ]
       },
@@ -614,12 +629,12 @@
           {
             "source": "cognition-beat",
             "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: not staged-allowed in STASIS.json (fail-closed default)",
-            "at": "2026-10-05T17:11:46.682Z"
+            "at": "2026-10-05T17:32:14.926Z"
           }
         ]
       }
     },
-    "computedAt": "2026-10-05T17:11:31.366Z",
+    "computedAt": "2026-10-05T17:32:01.366Z",
     "rule": "REAL requires: gate-authenticity green + >=3 observed successful cycles + zero open contradictions on lane + writer attributed; else STAGED if staged-allowed; else HALTED"
   },
   "custody": {
@@ -681,8 +696,8 @@
   ],
   "beat": {
     "protocol": "SAOS-COGNITION-BEAT/1",
-    "cycle": 3,
-    "at": "2026-10-05T17:11:31.366Z",
+    "cycle": 4,
+    "at": "2026-10-05T17:32:01.366Z",
     "windowHours": 8,
     "freshWindowHours": 4,
     "loop": [
@@ -698,81 +713,87 @@
     "chain": {
       "epistemic": "OBSERVED",
       "primary": "api.steemit.com",
-      "windowOps": 62,
-      "capitalScanned": 21,
+      "windowOps": 69,
+      "capitalScanned": 31,
       "fills": 0,
       "unknownWriters": 2,
       "freshUnknownWriters": 0,
-      "lastIdx": 66039
+      "lastIdx": 66051
     },
     "sensors": {
       "api.steemit.com": {
         "role": "chain-primary",
         "score": 1,
-        "samples": 3,
+        "samples": 4,
         "lastAgreement": "primary-live",
-        "lastAt": "2026-10-05T17:11:31.366Z"
+        "lastAt": "2026-10-05T17:32:01.366Z"
       },
       "api.justyy.com": {
         "role": "chain-cross",
         "score": 1,
-        "samples": 2,
-        "lastAgreement": "unmeasured",
-        "lastAt": "2026-10-05T16:45:04.043Z",
-        "note": "unmeasured this cycle — score untouched, never zero"
+        "samples": 3,
+        "lastAgreement": true,
+        "lastAt": "2026-10-05T17:32:01.366Z"
       }
     },
     "decisions": [],
-    "releases": [],
+    "releases": [
+      {
+        "guard": "bg-51df2bae9e",
+        "streak": 2
+      },
+      {
+        "guard": "bg-8d5760757b",
+        "streak": 2
+      }
+    ],
     "rechecks": [
       {
         "guardId": "bg-20e17b8403",
         "lane": "grid",
         "result": "dirty",
         "detail": "lane-failure streak still 4 (no healthy receipts yet)",
-        "at": "2026-10-05T17:11:46.631Z"
+        "at": "2026-10-05T17:32:14.897Z"
       },
       {
         "guardId": "bg-51df2bae9e",
         "lane": "claims",
         "result": "clean",
         "detail": "unknown-writer clean",
-        "at": "2026-10-05T17:11:46.631Z"
+        "at": "2026-10-05T17:32:14.897Z"
       },
       {
         "guardId": "bg-8d5760757b",
         "lane": "grid",
         "result": "clean",
         "detail": "unknown-writer clean",
-        "at": "2026-10-05T17:11:46.631Z"
+        "at": "2026-10-05T17:32:14.897Z"
       }
     ],
     "guards": {
       "activeBefore": 3,
       "closedAdded": 0,
-      "released": 0,
-      "activeAfter": 3,
+      "released": 2,
+      "activeAfter": 1,
       "lanes": [
-        "grid:bg-20e17b8403",
-        "claims:bg-51df2bae9e",
-        "grid:bg-8d5760757b"
+        "grid:bg-20e17b8403"
       ]
     },
     "lanes": {
       "grid": {
-        "observedCycles": 3,
-        "successfulCycles": 3,
+        "observedCycles": 4,
+        "successfulCycles": 4,
         "lastOutcome": "guard-probe-green",
         "openContradictions": 1
       },
       "claims": {
-        "observedCycles": 3,
-        "successfulCycles": 3,
+        "observedCycles": 4,
+        "successfulCycles": 4,
         "lastOutcome": "authenticity-green",
         "openContradictions": 0
       },
       "general": {
-        "observedCycles": 3,
+        "observedCycles": 4,
         "successfulCycles": 0,
         "lastOutcome": "halted-lane",
         "openContradictions": 1
@@ -785,9 +806,7 @@
         "baselineAllow": true
       },
       "lastCommitSha": "1a56d10c52c68c4f08a942314863ca04174d62c6",
-      "rawSha256Match": true,
-      "verifiedAt": "2026-10-05T17:11:49.925Z",
-      "method": "sha256(local organism.json) == sha256(raw contents API @commit)"
+      "rawSha256Match": true
     },
     "authority": "mechanism-shrink only — this beat never opens lanes, never transfers, never edits STASIS.json or the directives chain"
   }
