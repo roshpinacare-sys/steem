@@ -129,6 +129,27 @@ function validate(model) {
       }
       if (!Array.isArray(sov.cannotStop)) warnings.push('sovereignty.cannotStop missing — an actor list without “I cannot stop this” is overclaiming stop-power');
       if (!Array.isArray(sov.capitalPaths)) warnings.push('sovereignty.capitalPaths missing — CAPITAL_CONTROL is UNKNOWN until every intent→chain-mutation path is named');
+      /* R30 (trace 1a10d6f880df9255) — boundary-consistency law (Adversary-D validator hole closed):
+       * the boundary fields are mechanically checked, not free text. A model may never claim a
+       * CLOSED boundary while its own halt coverage admits uncovered surfaces, and may never
+       * claim boundaryEscape=false while any unguarded surface is still named. */
+      const bStatus = sov.boundaryStatus == null ? null : String(sov.boundaryStatus).toUpperCase();
+      const bEscape = sov.boundaryEscape == null ? null : sov.boundaryEscape;
+      if (bStatus != null && !['CLOSED', 'OWNER_ONLY', 'OPEN', 'UNKNOWN'].includes(bStatus)) {
+        errors.push(`sovereignty.boundaryStatus must be in CLOSED|OWNER_ONLY|OPEN|UNKNOWN, got ${String(sov.boundaryStatus)}`);
+      }
+      if (bStatus === 'CLOSED' && sov.haltCoverage === 'ORGANISM_ONLY') {
+        errors.push('sovereignty: boundaryStatus=CLOSED while haltCoverage=ORGANISM_ONLY — a closed boundary implies coverage beyond the organism (R30)');
+      }
+      if (bStatus === 'CLOSED' && bEscape === true) {
+        errors.push('sovereignty: boundaryStatus=CLOSED while boundaryEscape=true — contradiction in the same model (R30)');
+      }
+      if (bEscape === false && Array.isArray(sov.unguardedSurfaces) && sov.unguardedSurfaces.length > 0) {
+        errors.push(`sovereignty: boundaryEscape=false while ${sov.unguardedSurfaces.length} unguarded surface(s) still named — either close them or keep boundaryEscape=true (R30)`);
+      }
+      if (bEscape === false && bStatus == null) {
+        warnings.push('sovereignty: boundaryEscape=false without boundaryStatus — declare the boundary classification (R30)');
+      }
     }
   }
 
