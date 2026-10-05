@@ -782,13 +782,25 @@ function reapplyDecisions(files) {
     if (REAPPLY[f]) fs.writeFileSync(abs, REAPPLY[f]);
   }
 }
-async function verifyOwnAct(sha, file, token) {
+/**
+ * verifyOwnAct(sha, file, token, attempts=3) — אימות-עצמי-חיצוני: raw-fetch של-הקובץ-המקומיט-מה-API.
+ * (תיקון-נמדד-בריצה-החיה: fetch אחד ~200ms אחרי-push החזיר תוכן-ישן (eventual-consistency) →
+ * MISMATCH-שקרי. עכשיו: עד-3 ניסיונות עם-3s השהיה; MISMATCH-אמיתי מדווח-רק-אחרי-שלושתם.) */
+async function verifyOwnAct(sha, file, token, attempts = 3) {
   const local = sha256(fs.readFileSync(path.join(REPO_ROOT, file), 'utf8'));
   const url = `https://api.github.com/repos/${ORG}/steem/contents/${file}?ref=${encodeURIComponent(sha)}`;
-  const r = await fetchUrl(url, { headers: { ...authHeaders(token), Accept: 'application/vnd.github.raw' }, timeoutMs: 20000 });
-  if (!r.ok) return { confirmed: false, local, remote: null, error: 'fetch-failed http-' + r.status + ' ' + (r.error || '') };
-  const remote = sha256(r.body);
-  return { confirmed: local === remote, local, remote, error: null };
+  let lastRemote = null;
+  for (let i = 1; i <= attempts; i++) {
+    const r = await fetchUrl(url, { headers: { ...authHeaders(token), Accept: 'application/vnd.github.raw' }, timeoutMs: 20000 });
+    if (!r.ok) {
+      if (i < attempts) { await new Promise((res) => setTimeout(res, 3000)); continue; }
+      return { confirmed: false, local, remote: null, attempts: i, error: 'fetch-failed http-' + r.status + ' ' + (r.error || '') };
+    }
+    lastRemote = sha256(r.body);
+    if (local === lastRemote) return { confirmed: true, local, remote: lastRemote, attempts: i, error: null };
+    if (i < attempts) await new Promise((res) => setTimeout(res, 3000));
+  }
+  return { confirmed: false, local, remote: lastRemote, attempts, error: 'mismatch after ' + attempts + ' fetches' };
 }
 
 /* ══════════════════════════ MAIN LOOP ══════════════════════════ */
@@ -1126,7 +1138,7 @@ async function main() {
       kind: 'beat-verification',
       decision: v.confirmed ? 'verify-own-act-confirmed' : 'verify-own-act-failed',
       authority: 'free-measure',
-      evidence: [{ source: 'GitHub contents API (raw)', ref: `organism.json @${sha} local=${v.local ? v.local.slice(0, 16) : '?'} remote=${v.remote ? v.remote.slice(0, 16) : '?'} error=${v.error || 'none'}`, at: iso(Date.now()) }],
+      evidence: [{ source: 'GitHub contents API (raw)', ref: `organism.json @${sha} local=${v.local ? v.local.slice(0, 16) : '?'} remote=${v.remote ? v.remote.slice(0, 16) : '?'} attempts=${v.attempts != null ? v.attempts : '?'} error=${v.error || 'none'}`, at: iso(Date.now()) }],
       preconditions: ['commit ' + sha + ' is HEAD of origin/main', 'file fetched externally, not from local disk'],
       confidence: v.confirmed ? 0.95 : 0.6,
       expectedOutcome: 'the beat\'s own act (commit) verified by an external read-back',
