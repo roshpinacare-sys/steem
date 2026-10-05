@@ -14,10 +14,12 @@
 const fs = require('fs');
 
 const SCHEMA = 'SAOS-SELFMODEL/1';
+const SOVEREIGNTY_SCHEMA = 'SAOS-SOVEREIGNTY/1';
 const CAP_STATUS = Object.freeze(['REAL', 'STAGED', 'HALTED', 'ORPHANED']);
 const EPISTEMIC = Object.freeze(['OBSERVED', 'INFERRED', 'UNKNOWN', 'CONTRADICTED']);
-const WRITER_KINDS = Object.freeze(['ci-workflow', 'parallel-session', 'unknown']);
+const WRITER_KINDS = Object.freeze(['ci-workflow', 'parallel-session', 'unknown', 'live-process']);
 const AUTHORITY_KEYS = Object.freeze(['decideAlone', 'stopShrink', 'policyGated', 'ownerOnly']);
+const HALT_COVERAGE = Object.freeze(['ORGANISM_ONLY', 'DOMAIN', 'WORLD']);
 
 /** תבנית-ריקה כנה — כל-שדה קיים, הכל ריק, אפס-טענות. */
 function EMPTY() {
@@ -102,6 +104,34 @@ function validate(model) {
   if (!Array.isArray(model.measurementNotes)) warnings.push('measurementNotes missing — a self-model without documented measurement errors is not honest');
   if (!Array.isArray(model.unknowns)) warnings.push('unknowns missing — a self-model without declared unknowns is overclaiming');
 
+  /* R29 — SOVEREIGNTY/1 (trace 1a10d243868ffdc1): the sovereignty boundary section is
+   * mechanically validated. The honesty law it enforces: **a REAL capital claim is
+   * incompatible with haltCoverage=ORGANISM_ONLY** — if capital can move through signing
+   * surfaces the organism cannot stop (proven 2026-10-05 17:07:36Z), no lane may claim REAL.
+   * The validator refuses to store a model that overclaims sovereignty. */
+  if (model.sovereignty != null) {
+    const sov = model.sovereignty;
+    if (typeof sov !== 'object' || Array.isArray(sov)) {
+      errors.push('sovereignty: must be an object');
+    } else {
+      if (sov.protocol !== SOVEREIGNTY_SCHEMA) errors.push(`sovereignty.protocol must be ${SOVEREIGNTY_SCHEMA}, got ${String(sov.protocol)}`);
+      if (!HALT_COVERAGE.includes(sov.haltCoverage)) errors.push(`sovereignty.haltCoverage must be in ${HALT_COVERAGE.join('|')}, got ${String(sov.haltCoverage)}`);
+      if (sov.haltCoverage === 'ORGANISM_ONLY') {
+        /* capital lanes only: grid/general move capital off the account; claims is posting-only
+         * reward harvesting (idempotent, no capital exit) and may be REAL while the capital
+         * boundary is uncovered — otherwise the honesty law would kill the whole loop
+         * (beat exit 3) over a lane that cannot move capital. Scope follows sovereignty.capitalLanes. */
+        const capitalLanes = (Array.isArray(sov.capitalLanes) && sov.capitalLanes.length ? sov.capitalLanes : ['grid', 'general']).map((x) => String(x).toLowerCase());
+        const realLanes = Object.entries((model.frontier && model.frontier.lanes) || {}).filter(([lane, l]) => l && l.level === 'REAL' && capitalLanes.includes(String(lane).toLowerCase())).map(([lane]) => lane);
+        const realCaps = caps.filter((c) => c.status === 'REAL' && (c.lane ? capitalLanes.includes(String(c.lane).toLowerCase()) : true)).map((c) => c.id);
+        if (realLanes.length) errors.push(`sovereignty: capital lanes [${realLanes.join(',')}] claim REAL while haltCoverage=ORGANISM_ONLY — a REAL capital claim requires coverage beyond the organism (R29)`);
+        if (realCaps.length) errors.push(`sovereignty: capital capabilities [${realCaps.join(',')}] claim REAL while haltCoverage=ORGANISM_ONLY (R29)`);
+      }
+      if (!Array.isArray(sov.cannotStop)) warnings.push('sovereignty.cannotStop missing — an actor list without “I cannot stop this” is overclaiming stop-power');
+      if (!Array.isArray(sov.capitalPaths)) warnings.push('sovereignty.capitalPaths missing — CAPITAL_CONTROL is UNKNOWN until every intent→chain-mutation path is named');
+    }
+  }
+
   return { ok: errors.length === 0, errors, warnings };
 }
 
@@ -135,4 +165,4 @@ function updateSection(model, section, patch) {
   return next;
 }
 
-module.exports = { SCHEMA, EMPTY, validate, load, save, updateSection, CAP_STATUS, EPISTEMIC, WRITER_KINDS, AUTHORITY_KEYS };
+module.exports = { SCHEMA, SOVEREIGNTY_SCHEMA, EMPTY, validate, load, save, updateSection, CAP_STATUS, EPISTEMIC, WRITER_KINDS, AUTHORITY_KEYS, HALT_COVERAGE };
