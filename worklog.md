@@ -851,3 +851,26 @@ Work Log:
 
 Verdict: CLEAN — no secret exposure attributable to the tracked tree, the 72-commit history, the T-84 snapshot content, or the pushed saos-cockpit branch.
 PASS: no-secrets-in-current-tree ✓ | no-secrets-in-history ✓ | no-secrets-in-pushed-t84-content ✓ | .env-not-a-secret ✓ | credential-confined-to-.secrets ✓ | remote-vault-not-our-introduction ✓
+
+---
+Task ID: R213 (orchestrator synthesis)
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: R211/R212 SOVEREIGN REPOSITORY LINEAGE, WRITER EXCLUSIVITY & STATE INTEGRITY AUDIT (operator mandate, 31 sections) — establish actual repository reality; classify; falsify; verdict.
+
+Work Log:
+- Epistemic reset executed: every R211/R212 claim re-derived. Local audit (HEAD 4ef4448 = 1 platform auto-commit AHEAD of pushed tip; no remote/upstream; 24 dirty state files; 10 reflog-only pre-amend commits; 3 harmless dangling objects). Remote truth via API + raw fetches + TWO independent full clones (orchestrator + Agent A).
+- Verified claims: push succeeded (tip 927c7a5 remote-confirmed, 5 key files byte-identical), T-84 preserved (tree 5683bd28 unchanged, 2 critical files 3-way byte-identical, reachable as 2nd parent), history not rewritten (no force-push on canonical; amends = superseded local drafts only), no secrets pushed (DUAL independent scans: 0 real secrets in tree/history/T-84/worklog — 13,657 pattern matches all checksum-invalidated FPs), current state restorable (clone+checkout+deps install OK).
+- REFUTED claim: R212's "unrelated histories" — merge-base(a9156a9, e4cdfd6) = 815eb2d; lineages share root 48d7b0e; --allow-unrelated-histories was a no-op (merge itself correct: tree identity 71b23681).
+- Split-brain + force capability tested EMPIRICALLY on isolated branch (created, tested, deleted): non-FF divergent push REJECTED (visible); force-push SUCCEEDED. All checked branches protected=false → any PAT holder can silently redefine canonical state.
+- Writers: ≥6 classes (~17 bot identities) ALL fronted by ONE GitHub account (actor roshpinacare-sys) → push attribution zero; W3 (R30, cognition@saos.local) wrote steem@main DURING the audit (20:18:35Z) + unresolved pushed_at bump 20:40:52Z.
+- FIVE falsifiers launched (§XXIV): A LINEAGE COMPLETE (8/8 PASS; found the unrelated-histories error); B level-3 (top path: W3 force-overwrites saos-cockpit silently); D CLEAN (6/6 PASS); E judge: CONTESTED MEMORY, verdict B, level 2 (dissent vs B's 3 — resolved 3 by literal §XXVI capability definition, dissent recorded); C deadline-failed → recovery task completed by orchestrator per its procedure (RECOVERY-PROOF.md).
+- Attack table §XXV: 8 PASS / 9 FAIL / 1 BLOCKED — ALL FAILs concentrate in the write/governance boundary; recovery/history/secret dimensions fully green.
+- LIVE EVENT mid-audit: .secrets/headcorner.key appeared 20:32:44Z → engine verified fingerprint c056922c, foreignCredential=false, VERIFIED — SIGNING CUSTODY RESTORED (R210/R211 operator-gated blocker #1 closed; provenance: most plausibly operator paste/drop).
+- Artifacts (§XXVIII) committed + fast-forward pushed to saos-cockpit (58e2aac, parent 4ef4448, remote-verified incl. audit/ dir): R211-R212-GIT-SOVEREIGNTY.md, writer-registry.json, commit-lineage.json, STATE-INTEGRITY.json, RECOVERY-PROOF.md, SECRET-AUDIT.json, WRITER-CONFLICTS.json (Agent B), FALSIFIER-REPORT.md, VERDICT.json.
+- Prohibited actions: NONE (no canonical force-push, no deletion, no rotation, no capital/signing authority change, no governance invented).
+
+Stage Summary:
+- VERDICT: B — SOVEREIGNTY PARTIAL. Memory class: CONTESTED MEMORY. Multi-writer level: 3 (capability-based; E dissent recorded).
+- Sovereignty breaks EXACTLY at the write boundary: shared account + unprotected branches + proven silent force + no local divergence detection + forgeable identities. Recovery, history preservation, and secret hygiene are PROVEN — the memory function works; the write governance does not exist.
+- Operator decisions named: branch protection on saos-cockpit (the Level-3→1 gate), single-writer law, credential boundary. Machine mitigations queued: upstream+monitor, pre-push divergence gate, bounded-staleness surfacing.
+- Signing custody restored mid-audit — the organism's missing arrow (first posting-signed claim on natural trigger) is now unblocked at the machine level.
