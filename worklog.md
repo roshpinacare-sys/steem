@@ -932,3 +932,19 @@ Stage Summary:
 - Sovereignty stack now: recovery PROVEN (audit) + drillable (R214) + bounded-staleness automated (R215) + FF-law enforced mechanically (R214) + divergence visible (R214).
 - Still operator-gated: branch protection on saos-cockpit (Level-3→1), org single-writer law, PAT rotation (T-79), GPG on shared account, vault-password relocation on main.
 - Natural trigger watch: pending 0 at 22:02Z; payout window ~03:00Z Oct 6 → first posting-signed claim (R209/R210 armed) can fire after it drips.
+
+---
+Task ID: R216
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: "Execute everything missing + add what you discover" — server-authority attempts, compensating sovereignty, signing.
+
+Work Log:
+- Operator opened repo-admin on the PAT mid-round (פתחתי לך אדמין). Re-attempts: PUT branch protection → 403 "Upgrade to GitHub Pro or make this repository public" (PLAN-GATED, not permission); POST rulesets → same 403; POST /user/gpg_keys → 403 (PAT lacks user-level key write). Ready-to-run protection command stored in audit/r216/HARDENING.md.
+- COMPENSATION 1 — SIGNED COMMITS: ed25519 GPG key generated (FP 8828E34B91582C3191EA8FE63C8D59BD01322DA1), public key committed at signing/w1-signing-key.asc (self-certifying anchor), custodian switched to -S; first signed commit 4b79828 verified locally "Good signature from SAOS W1 (web-f26e225d)".
+- COMPENSATION 2 — STEEM CUSTODY WITNESS: custom_json op-id=18 obtained by CHAIN TRUTH (get_transaction_hex probe, byte 0x12; R209 method), appended to the single serialization source (steemtx.mjs), byte-verified against the node (116/116 chars + expected signatures-len suffix); think-gate passed untouched (ALLOW, custody VERIFIED); FIRST ANCHOR BROADCAST txid 3512810e…, verified ON-CHAIN at block 110186627 (branch saos-cockpit, tip 59b967d, at 22:33:40Z, fp c056922c). Custodian now anchors each new tip hourly (≤1/h).
+- COMMIT/PUSH: signed 4b79828 → FF push b3b075c..4b79828 via gate → API-verified tip 4b79828.
+- PROPOSED-SINGLE-WRITER-LAW.md drafted (operator declaration pending).
+
+Stage Summary:
+- Server-side write-protection is plan-gated; the organism compensated with tamper-EVIDENCE: signed commit chain + on-chain external witness of every tip. Any GitHub rewrite is now detectable against both the signature anchor and the Steem ledger.
+- Operator gates remaining: GitHub Pro (→1-command protection), PAT rotation before 2026-12-12, single-writer law declaration, GPG key registration (verified badge).
