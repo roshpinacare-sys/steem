@@ -1,0 +1,30 @@
+{
+  "audit": "R211/R212 writer exclusivity audit",
+  "generatedAt": "2026-10-05T20:55:00Z",
+  "pushActor": {
+    "githubLogin": "roshpinacare-sys",
+    "type": "User (id 326012154)",
+    "note": "EVERY observable PushEvent across the org uses this single account — push identity provides ZERO sandbox attribution; commit author string is the only attribution signal and it is self-declared/forgable"
+  },
+  "credential": {
+    "method": "fine-grained PAT (93ch, github_pat_), shared by all machine writers",
+    "storedAt": "/home/z/my-project/.secrets/github.pat (mode 600, git-ignored, untracked)",
+    "chatExposure": "predecessor PAT exposed in chat history (T-79 rotation still open); current PAT travelled inside encrypted pat.rar with chat-supplied password",
+    "provenCapabilities": ["push (any repo)", "force-push (empirically proven on isolated branch)", "branch create/delete (test branch created and deleted)"],
+    "expiry": "2026-12-12 (observed by Agent B)"
+  },
+  "writers": [
+    {"id": "W1", "name": "This sandbox (SAOS cockpit)", "commitIdentity": "Z User <z@container>", "repos": {"steem@saos-cockpit": {"lastPush": "2026-10-05T20:04:23Z", "tip": "927c7a5"}}, "localState": "branch main, HEAD 4ef4448, no remote/upstream, 24 dirty engine-state files", "alive": true, "attributable": "partial (R-/T-/trace ids in messages only)", "authority": "PAT holder — full read/write incl. force"},
+    {"id": "W2", "name": "T-84 sandbox (fallen)", "commitIdentity": "saos-cockpit <saos@cockpit.local>", "repos": {"steem@saos-cockpit": {"lastPush": "2026-10-05T16:27:51Z", "tipAtTheTime": "e4cdfd6"}}, "alive": "presumed dead — its state survives as 2nd-parent ancestry of current tip", "attributable": "no (self-declared identity)", "authority": "was PAT holder"},
+    {"id": "W3", "name": "R30-lineage writer (cognition)", "commitIdentity": "saos-cognition <cognition@saos.local>", "repos": {"steem@main": {"lastWrite": "2026-10-05T20:18:35Z", "tip": "445cf45"}, "Zip@main": {"lastWrite": "2026-10-05T19:45:58Z"}, "saos-dex@main": {"lastWrite": "2026-10-05T18:39Z"}, "Domain@main": {"lastWrite": "2026-10-05T18:39Z"}}, "alive": "ALIVE — wrote DURING the audit", "attributable": "no (R30/trace ids; its own census says INCOMPLETE)", "authority": "PAT holder — can reach any branch incl. saos-cockpit", "notes": "steem pushed_at bump at 20:40:52Z with unchanged tips — UNRESOLVED ref activity"},
+    {"id": "W4", "name": "Automation (money-mover)", "commitIdentity": "roshpinacare-sys <roshpinacare@gmail.com>", "repos": {"Defi@main": {"lastWrite": "2026-10-05T19:44:43Z"}, "Console@main": {"lastWrite": "2026-10-05T19:03Z"}}, "alive": true, "attributable": "yes — only email resolving to the GitHub account", "authority": "PAT holder"},
+    {"id": "W5", "name": "Fleet tick writers", "commitIdentity": "saos-sovereign / saos-dex-core / saos-earn-audit / saos-dex-router", "repos": {"Domain@main": {"lastWrite": "2026-10-05T19:09:23Z"}}, "alive": true, "attributable": "partial", "authority": "PAT holder"},
+    {"id": "W6", "name": "CI/daemon bots (~17 identities)", "commitIdentity": "ladder-refresh, weave-anchor(+zero), grid-trigger-twin, arb-scan-bot, economy-engine, cloud-heart, control-center-build, jumpper-tests, wallet-verify, archive-keeper, agents-watch, money-watch, dex-watch, trigger-mesh, truth-gate, mirror-from-console, +1", "repos": "9 repos' main branches", "lastWrites": {"saos-control-center": "2026-10-05T20:16:00Z", "Saosmartwallet": "2026-10-05T20:15:19Z", "saos-jummper": "2026-10-05T20:12:45Z"}, "alive": true, "attributable": "partial (bot emails)", "authority": "PAT-holder-backed automation"}
+  ],
+  "branchProtection": {
+    "checked": ["steem@saos-cockpit", "steem@main", "Zip@main", "Defi@main", "saos-dex@main", "saos-control-center@main", "Saosmartwallet@main"],
+    "result": "protected=false on ALL checked (live-verified by two agents; protection-rules API 403/404 — no rules plane on a user account)"
+  },
+  "governance": "WRITER GOVERNANCE UNDEFINED — no CODEOWNERS/SECURITY/CONTRIBUTING/writer-policy in any checked tree; only unilateral proto-coordination observed (W1 'signer-lease:' commits; W3 'unknown-writers=N' counters)",
+  "verdict": "MULTI-WRITER, LEVEL 3 (contested-sovereignty-failure capability, no destructive event realized)"
+}

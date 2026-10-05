@@ -1,0 +1,115 @@
+{
+  "task": "R213-b",
+  "agent": "Agent B — writer sovereignty attacker (research-only)",
+  "generatedAt": "2026-10-05T20:49:35Z",
+  "sources": [
+    "GitHub REST API v3 via fine-grained PAT at /home/z/my-project/.secrets/github.pat (token never printed)",
+    "endpoints: /user, /user/repos, /repos/roshpinacare-sys/{steem,Zip,Defi,saos-dex,saos-control-center,saos-jummper,Saosmartwallet,Console,Domain,Project-files}/branches, /branches/{br}, /branches/{br}/protection, /commits?sha=, /commits/{sha}, /git/trees/{sha}?recursive=1, /compare, /users/roshpinacare-sys/events",
+    "local git: /home/z/my-project (main, HEAD 4ef4448, no remote, no upstream, 24 dirty engine-state files)",
+    "worklog.md tail (T-78..R212)"
+  ],
+  "pushActor": {
+    "account": "roshpinacare-sys",
+    "type": "USER account (orgs/404), id 326012154, 16 private repos (Console public, Domain public)",
+    "observation": "every observable PushEvent carries actor login roshpinacare-sys — a SINGLE shared GitHub account fronts ALL machine writers; push identity reveals NO sandbox attribution",
+    "eventsFeedCaveat": "user events feed is lossy/delayed: steem/Zip/Defi pushes of 19:44-20:40Z absent from recent pages (last listed event 18:30:46Z) while repo pushed_at shows 20:40:52Z"
+  },
+  "writers": [
+    {
+      "id": "W1",
+      "identity": "Z User <z@container>",
+      "who": "THIS sandbox (R-numbering lineage)",
+      "repos_branches": "steem@saos-cockpit (pushed tip 927c7a5 20:04:23Z), steem@main (23 of last 40 commits, last 18:19:45Z: signer-lease acquire/release, capital-gate, cognition-beat deploy), Zip@main (18:45:51Z incl. remote-merge commit), Project-files@main (2026-10-04)",
+      "lastWrite": {"pushed": "2026-10-05T20:04:23Z (steem@saos-cockpit)", "localUnpushed": "2026-10-05T20:05:32Z HEAD 4ef4448 + 24 dirty files; local main strictly ahead of remote tip (rev-count 927c7a5..HEAD = 1)"},
+      "alive": true,
+      "attributable": "gh=None (email unresolvable); only R-/T-/trace-numbers in commit messages (self-declared, spoofable)"
+    },
+    {
+      "id": "W2",
+      "identity": "saos-cockpit <saos@cockpit.local>",
+      "who": "T-84 sandbox (fell in the 2026-10-04 sandbox regression)",
+      "repos_branches": "steem@saos-cockpit only (e75195f..e4cdfd6)",
+      "lastWrite": "2026-10-05T16:27:51Z e4cdfd6 (now preserved as parent of R211 merge 927c7a5)",
+      "alive": "presumed DEAD (state survived only inside this repo's history)",
+      "attributable": "gh=None; T-numbers only"
+    },
+    {
+      "id": "W3",
+      "identity": "saos-cognition <cognition@saos.local>",
+      "who": "R30-lineage writer (active during this audit)",
+      "repos_branches": "steem@main (tip 445cf45, 15 of last 40 commits), Zip@main (2f33700 19:45:58Z), saos-dex@main (e539a36 18:39:07Z), Domain@main (6117403 18:39:04Z)",
+      "lastWrite": "2026-10-05T20:18:35Z steem@main 445cf45 'R30 verdict: final observation appended'; PLUS unexplained steem pushed_at bump 20:40:52Z with NO surviving branch tip change (consistent with ephemeral branch create/force/delete cycles)",
+      "alive": true,
+      "attributable": "gh=None; R30/trace 1a10d6f… self-declared; its own artifacts count 'unknown-writers=2..43' and census 'explicitly INCOMPLETE'"
+    },
+    {
+      "id": "W4",
+      "identity": "roshpinacare-sys <roshpinacare@gmail.com>",
+      "who": "money-mover automation (the only identity that resolves to the GitHub account)",
+      "repos_branches": "Defi@main (hourly 'money-mover: reprice receipt'), Console@main (18:30:48Z 'saos-live' receipts)",
+      "lastWrite": "2026-10-05T19:44:43Z Defi@main d0c2fd2",
+      "alive": true,
+      "attributable": "gh=roshpinacare-sys (resolves) — yet actor login is the SAME shared account, so still no sandbox attribution"
+    },
+    {
+      "id": "W5",
+      "identity": "saos-sovereign <sovereign@saos.local>; saos-dex-core <dex-core@fleet.local>; saos-earn-audit <audit@saos.local>; saos-dex-router <dex-router@fleet.local>",
+      "who": "Domain fleet tick writers",
+      "repos_branches": "Domain@main 18:36-19:09Z",
+      "lastWrite": "2026-10-05T19:09:23Z",
+      "alive": true,
+      "attributable": "gh=None"
+    },
+    {
+      "id": "W6",
+      "identity": "~17 bot identities: ladder-refresh[bot], weave-anchor[bot], weave-anchor-zero[bot], grid-trigger-twin[bot], arb-scan-bot, economy-engine[bot], cloud-heart[bot], control-center-build[bot], jumpper-tests[bot], wallet-verify[bot], archive-keeper[bot], agents-watch, money-watch, dex-watch[bot], trigger-mesh[bot], truth-gate[bot], mirror-from-console",
+      "who": "CI/daemon automation",
+      "repos_branches": "steem@main, Zip@main, saos-dex@main, Domain@main, Console@main, saos-control-center@main, saos-jummper@main, Saosmartwallet@main, Project-files@main",
+      "lastWrite": "saos-control-center@main 20:16:00Z, Saosmartwallet@main 20:15:19Z, saos-jummper@main 20:12:45Z (all during this audit)",
+      "alive": true,
+      "attributable": "partially (bot emails map to gh users noreply/actions); otherwise scheduled-job names"
+    }
+  ],
+  "branchProtection": [
+    {"repo": "steem", "branch": "saos-cockpit", "protected": false},
+    {"repo": "steem", "branch": "main", "protected": false},
+    {"repo": "steem", "branch": "security/audit-2026-09-28", "protected": false},
+    {"repo": "Zip", "branch": "main", "protected": false},
+    {"repo": "Defi", "branch": "main", "protected": false},
+    {"repo": "saos-dex", "branch": "main", "protected": false},
+    {"repo": "saos-control-center", "branch": "main", "protected": false},
+    {"repo": "Saosmartwallet", "branch": "main", "protected": false},
+    "protection API returns 403/404 for all checked branches (no rules); user-account repo (no org protection plane)",
+    "cross-refs: steem main vs saos-cockpit already DIVERGED (compare API 404 both directions; main lacks 927c7a5, cockpit lacks R30 commits)"
+  ],
+  "attackPaths": [
+    {"id": "a", "path": "another sandbox force-pushes its own state onto steem@saos-cockpit", "feasible": "PROVEN capability (orchestrator's empirical force-push on isolated deleted branch) + protected=false live-verified + PAT has contents:write (R212 push)", "silent": true, "detectAfter": "yes, via API tip diff / PushEvent forced=true (feed lossy)", "attributable": "only via commit author email (self-reported, spoofable)"},
+    {"id": "b", "path": "W2 (T-84) resurrects and force-pushes stale state", "feasible": true, "silent": true, "detectAfter": true, "attributable": "saos@cockpit.local email"},
+    {"id": "c", "path": "concurrent non-force race on one branch", "feasible": "REAL and ongoing on steem@main (W1/W3 interleaved within minutes 16:41-17:32Z)", "outcome": "git rejects the loser (non-FF): no silent overwrite from plain pushes; loser must fetch+merge (cooperative) or --force (destructive); today both lineages preserved, but nothing enforces cooperation", "silent": false, "detectAfter": true, "attributable": "emails"},
+    {"id": "d", "path": "writer pushes to main instead of saos-cockpit", "feasible": "ALREADY THE DEFAULT: W3 works on steem@main; 'saos-cockpit = canonical backup' exists only in this sandbox's worklog — no naming contract", "silent": true, "detectAfter": true, "attributable": "emails"},
+    {"id": "e", "path": "credential exposure", "feasible": "PAT (fine-grained, 93ch, exp 2026-12-12) delivered as pat.rar with password '934381' IN CHAT; token previously pasted in chat history; locally at .secrets/github.pat (0600, gitignored, untracked — clean)", "impact": "any chat-history reader (or future sandbox) gains force-push on ALL 16 repos incl. canonical branches", "silent": true, "detectAfter": true, "attributable": "no — pushes inherit shared actor roshpinacare-sys"}
+  ],
+  "governance": {
+    "verdict": "WRITER GOVERNANCE UNDEFINED",
+    "checked": "local /home/z/my-project (no .github/, no CODEOWNERS/SECURITY.md/CONTRIBUTING.md/GOVERNANCE.md), remote steem trees @main (1392 entries) and @saos-cockpit (1789 entries) — zero git-writer policy artifacts; worklog R212: 'single-writer policy is an operator decision' (pending, undefined)",
+    "protoCoordinationOnly": "W1's 'signer-lease acquire/release' commits on steem@main (self-invented, unilateral) and W3's 'unknown-writers=N' cognition-beat counters — conventions, unenforced, no mutual agreement"
+  },
+  "multiWriterLevel": {
+    "level": 3,
+    "name": "sovereignty failure",
+    "justification": "Silent redefine/erase of canonical truth is not hypothetical: force-push capability is empirically proven on this org, every checked branch is protected=false, and the single shared PAT is chat-exposed — so any writer (or chat reader) can replace saos-cockpit undetected by this sandbox, which has no remote/upstream/monitoring. Divergence is already realized (steem@main vs saos-cockpit lineages; 4+ human-equivalent identities interleaving on one branch), with no deterministic arbitration at any layer."
+  },
+  "checks": {
+    "no-silent-overwrite-path": "FAIL",
+    "force-capability-bounded-to-PAT-holders": "PASS (boundary exists but is weak: single shared account, chat-exposed credential, holder-set effectively unbounded across sandboxes)",
+    "governance-exists": "FAIL",
+    "divergence-locally-detectable": "FAIL"
+  },
+  "answers": {
+    "canOneWriterEraseAnotherWithoutApproval": "YES — force-push any unprotected branch with the shared PAT; nothing requires approval; victim detects only on a manual API query; GitHub actor attribution useless (shared account)",
+    "canTwoWritersSilentlyDiverge": "YES — already happened: steem@main (W3's R30 world) and steem@saos-cockpit (W1/W2 backup world) carry disjoint recent lineages; locally, this sandbox is ahead 1 commit + 24 dirty files with no upstream and cannot see it",
+    "whenCurrentWriterDies": "no succession mechanism; dead W2's state survives only as history inside saos-cockpit; next writer to push 'wins' by whichever convention it unilaterally chooses (merge like R212, or force)",
+    "whenStaleWriterReturns": "a stale writer's non-FF push is rejected, and nothing binds it to merge — the cheapest autonomous action is --force with its stale world; R211 only archived W2's snapshot, it did not bind future W2 behavior"
+  },
+  "topAttackPath": "W3 (alive, already interleaving on steem@main as of 20:18:35Z, repo activity anomaly 20:40:52Z) force-pushes its lineage over steem@saos-cockpit — protected=false + shared chat-exposed PAT make the push succeed silently; this sandbox (no remote/upstream/fetch) notices only on the next manual API query and must itself force-push to restore, yielding last-force-wins canonical truth with zero attribution (actor=roshpinacare-sys for everyone)."
+}

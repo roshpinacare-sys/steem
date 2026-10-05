@@ -1,0 +1,39 @@
+{
+  "audit": "R211/R212 — SOVEREIGN REPOSITORY LINEAGE, WRITER EXCLUSIVITY & STATE INTEGRITY AUDIT",
+  "executedAt": "2026-10-05T20:55:00Z",
+  "verdict": "B",
+  "verdictLabel": "SOVEREIGNTY PARTIAL",
+  "memoryClass": "CONTESTED MEMORY",
+  "multiWriterLevel": 3,
+  "multiWriterLevelNote": "Agent B assessed Level 3 (silent erase capability empirically proven); Agent E assessed Level 2 (no destructive event realized). Resolved to 3 by the literal §XXVI definition: Level 3 = 'any writer CAN silently redefine canonical state or erase another writer's history' — capability is the trigger, and force-push was empirically proven on an isolated (deleted) branch with protection=false on all checked branches. Dissent recorded, not hidden.",
+  "verdictNote": "Class B per the rubric's own example: 'current state is recoverable, but multiple writers exist without formal exclusivity.' Recovery (rules out E), history preservation, and secret hygiene (rules out F) are all PROVEN; the write boundary is not governed. If saos-cockpit is ever force-rewritten by another writer, this escalates to D (and F if destructive intent).",
+  "secretScan": "CLEAN — 0 real secrets in tracked tree (1348 files), 72-commit history, T-84 snapshot content, and pushed branch; 13,657 pattern matches all checksum-invalidated false positives",
+  "recovery": {
+    "t84": "PROVEN — independently verified twice (raw-content fetch + isolated clone/checkout): tree 5683bd2833c1 unchanged, worklog.md 206976B sha256 3614c680ea468c55, adaptations.json 2929B sha256 9c6ca628b1c53a99, reachable from remote tip as 2nd parent",
+    "current": "PROVEN to push-moment — isolated clone 927c7a5d (71 objects), 5 key files byte-identical remote==local, engine deps install OK (bun --frozen-lockfile), cognitive state (adaptation.json/predictions.jsonl/triggers.jsonl/cognition-round/recovery) present in tree",
+    "currentCaveat": "Git can never represent NOW: the engine mutates state every cycle and the platform auto-commits after pushes — remote is always ≥1 commit and N seconds stale by design"
+  },
+  "canonical": {
+    "repo": "roshpinacare-sys/steem — de facto (sole persistence plane), NOT declared in law",
+    "branch": "saos-cockpit — de facto (cockpit truth + T-84); steem@main simultaneously carries a live R30-lineage truth → canonicality contested",
+    "commit": "927c7a5 (2026-10-05T20:04:23Z) represents reality only at the push moment; local 4ef4448 + 24 dirty files are the live state"
+  },
+  "sovereigntyBreakPoint": "The WRITE BOUNDARY — not recovery, not history, not secrets: (1) one shared GitHub account (actor roshpinacare-sys) fronts ≥3 machine lineages, so push identity is unattributable; (2) every checked branch is protected=false with force-push empirically proven; (3) local body has no remote/upstream → divergence invisible; (4) commit identity (author string) is forgeable and ≠ push identity ≠ authority identity",
+  "liveEventDuringAudit": "CUSTODY EVENT: .secrets/headcorner.key appeared 2026-10-05T20:32:44Z during the audit; engine verified credentialAccount=headcorner, foreignCredential=false, fingerprint c056922c (same chain-verified posting credential as T-84 era), verdict VERIFIED — signing custody restored mid-audit (provenance of the drop: most plausibly the operator via cockpit paste; no writer registry entry can produce it)",
+  "operatorDecisionsRequired": [
+    "Enable branch protection on saos-cockpit (block force-push + block deletion; optionally restrict pushers) — org-admin action, outside machine authority; this is the single gate between Level 3 and Level 1",
+    "Single-writer law: declare which sandbox may push saos-cockpit and what a stale writer must do (merge vs forbid) — currently WRITER GOVERNANCE UNDEFINED",
+    "Credential hygiene: the PAT is shared by all machine writers and its predecessor was chat-exposed (rotation still open since T-79); per-writer fine-grained tokens would restore attribution"
+  ],
+  "machineMitigations": [
+    "Configure upstream (git remote + branch -u) and a periodic fetch monitor so divergence becomes locally visible",
+    "Pre-push divergence gate: fetch + ancestry check; abort on non-FF; force-push permanently forbidden by policy hook",
+    "Bounded-staleness law: persist last-pushed SHA at push time and surface drift every engine cycle"
+  ],
+  "falsifierDisagreements": [
+    {"topic": "multiWriterLevel", "b": 3, "e": 2, "resolved": 3},
+    {"topic": "verdictClass", "b": "implied D-capability", "e": "B", "resolved": "B (rubric example matches; D reserved for realized destructive rewrite)"}
+  ],
+  "worklogIntegrity": "APPEND-ONLY VERIFIED across the session (0 removed lines per hop, 3 hops checked); one claim CORRECTED: R212's 'unrelated histories' was REFUTED — merge-base(a9156a9, e4cdfd6) = 815eb2d (Agent A)",
+  "prohibitedActionsPerformed": "NONE — no force-push of canonical branches, no history rewrite, no credential rotation, no capital/signing authority change, no branch deletion except the audit's own isolated test branch"
+}

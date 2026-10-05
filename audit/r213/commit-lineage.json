@@ -1,0 +1,42 @@
+{
+  "audit": "R211/R212 commit lineage forensics",
+  "generatedAt": "2026-10-05T20:55:00Z",
+  "root": "48d7b0e9c3e956d3aaf0e913bdc9aa58896aa201 (Initial commit — SHARED by both lineages)",
+  "canonicalRemote": {
+    "repo": "roshpinacare-sys/steem",
+    "branch": "saos-cockpit",
+    "tip": "927c7a5 (full: 927c7a5d…, 2026-10-05T20:04:23Z)",
+    "parents": ["a9156a9 (this sandbox's lineage)", "e4cdfd6 (T-84 snapshot)"],
+    "merge": "strategy 'ours' — tip tree = this sandbox's state (71b23681…); T-84 preserved as 2nd-parent ancestry",
+    "correction": "R212 message said 'unrelated histories' — REFUTED: merge-base(a9156a9, e4cdfd6) = 815eb2d (2026-10-04T22:02Z); --allow-unrelated-histories was a no-op; the T-84 sandbox descended from the same local lineage before its sandbox fell",
+    "verifiedRemotely": ["API commits endpoint (tip sha, parents, dates)", "raw.githubusercontent blob fetches byte-identical for 5 key files", "two independent full clones (Agent A + orchestrator)"]
+  },
+  "t84Preservation": {
+    "commit": "e4cdfd6856305a30d8400d7d00cc06e74566fa04",
+    "tree": "5683bd2833c1… (identical local/remote — UNCHANGED)",
+    "reachableFromRemoteTip": true,
+    "lineage": "e75195f (T-84 first learning actuator) → … → e4cdfd6 (T-84 round close), 11 first-parent commits on shared root",
+    "criticalFiles": [
+      {"path": "worklog.md", "bytes": 206976, "sha256_16": "3614c680ea468c55", "match": "remote==local-backup==recovery-archive (3-way)"},
+      {"path": "mini-services/saos-engine/state/adaptations.json", "bytes": 2929, "sha256_16": "9c6ca628b1c53a99", "match": "remote==local-backup==recovery-archive (3-way)"}
+    ],
+    "forcePushHistory": "none — no force-push ever hit saos-cockpit (audit's force test was on an isolated branch, deleted after)"
+  },
+  "localOnlyState": {
+    "unpushedCommit": {"sha": "4ef4448", "date": "2026-10-05T20:05:32Z", "delta": "worklog.md +18 lines (R212 entry) + 3 state files"},
+    "dirtyFiles": "24 tracked engine-state files, perpetually mutating (grew 21→24 during audit)",
+    "reflogOnlyPreAmendCommits": ["3be34ac", "fe3b11f", "e568362", "eb408e6", "ef7ca17", "816a8d7", "c744a09", "ddfbf50", "bf1fc6d", "be58a08"],
+    "amendSurface": "10 amend events / 8 logical commits, incl. one TRIPLE amend (fe3b11f→e568362→eb408e6→0fc3a3b); all pre-amend versions recoverable only from LOCAL reflog; impact classified: engine-state snapshots + worklog/tool drafts + 3 code variants; NO canonical tip rewritten",
+    "dangling": [
+      {"object": "7b728bf (+c409aad)", "what": "auto-WIP pair created at merge instant 20:04:23; delta = hyper-grid ticks only", "class": "harmless orphan"},
+      {"object": "ceed4fa", "what": "orchestrator's split-brain test commit (non-FF probe)", "class": "audit artifact, harmless"},
+      {"object": "blob 6db386e", "what": "107,853B intermediate worklog draft", "class": "harmless orphan"}
+    ]
+  },
+  "divergence": {
+    "localVsRemote": "local strictly AHEAD (remote ⊆ local): 1 commit + dirty set; never diverged; remote is ancestor of local HEAD",
+    "steemMainVsSaosCockpit": "DISJOINT live lineages on one repo (W3's R30 line vs cockpit line) — two simultaneous 'truths', no arbitration",
+    "detection": "INVISIBLE locally — no remote/upstream configured; divergence detectable only by manual API query"
+  },
+  "conclusion": "LINEAGE COMPLETE: every canonical commit hash-identical local↔remote; T-84 byte-preserved and reachable; no canonical state exists only in reflog; the only local-only material is 1 unpushed commit + uncommitted live state + superseded draft variants"
+}
