@@ -37,9 +37,19 @@ function appendAlert(kind: string, detail: string) {
 }
 
 let lastAnchorAt = 0;
+/* R217 · DURABLE ANCHOR RATE-LIMIT: the in-memory lastAnchorAt resets on every
+ * custodian restart — measured live 22:49→22:51Z: two custody witnesses 9 min
+ * apart (implant + watchdog heal each fired a first-push anchor). The ≤1/h law
+ * must survive restarts BY CONSTRUCTION: the stamp lives in state (committed
+ * like every other state file), memory is only a cache. */
+const ANCHOR_STAMP = `${STATE_DIR}/custody-anchor.json`;
+function lastAnchorMs(): number {
+  try { return Number(JSON.parse(readFileSync(ANCHOR_STAMP, "utf8")).at) || 0; } catch { return 0; }
+}
 async function anchorWitness(): Promise<void> {
   try {
-    if (Date.now() - lastAnchorAt < 3600000) return;
+    const last = Math.max(lastAnchorMs(), lastAnchorAt);
+    if (Date.now() - last < 3600000) { appendAlert("anchor-skip", `rate-limited durably (last ${new Date(last).toISOString()})`); return; }
     const acct: string = masterAccount() as any;
     const tip = sh("git", ["rev-parse", "HEAD"]).out;
     const ops: any = [["custom_json", { required_auths: [], required_posting_auths: [acct], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "R216-custodian", fp: credentialFingerprint(acct) }) }]];
@@ -47,6 +57,7 @@ async function anchorWitness(): Promise<void> {
     if (gate.verdict !== "ALLOW") { appendAlert("anchor-refused", (gate.reasons ?? []).join(";")); return; }
     const r: any = await executeAs(acct, ops, { tag: "custody-witness", role: "posting" } as any);
     lastAnchorAt = Date.now();
+    try { writeFileSync(ANCHOR_STAMP, JSON.stringify({ at: lastAnchorAt, txid: r?.txid ?? null, tip })); } catch {}
     appendAlert("anchor-ok", JSON.stringify({ txid: r?.txid ?? null, tip }));
   } catch (e) { appendAlert("anchor-error", String(e).slice(0, 200)); }
 }

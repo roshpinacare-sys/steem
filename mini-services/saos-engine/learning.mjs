@@ -107,8 +107,18 @@ export function analyzeExec(execLines) {
   return { window: broadcast.length, fails: fails.length, lastError: fails.at(-1)?.error ?? null };
 }
 
-/** the lesson rules — deterministic, each cites evidence; no evidence ⇒ no lesson */
-export function deriveLessons({ cycles, curator, exec }) {
+/** the lesson rules — deterministic, each cites evidence; no evidence ⇒ no lesson.
+ * R217 · STATE-AWARE RESOLUTION: a lesson whose PREMISE no longer holds in the
+ * present (credential now live, broadcasts now succeeding) is emitted as a
+ * RESOLVED historical lesson (severity low + resolved:true) — never deleted
+ * (the window evidence stays honest) but never again shown as a CURRENT
+ * operator demand. Measured lie this kills: the cockpit demanded
+ * "OPERATOR REVIVAL" hours AFTER the operator already revived it. */
+export function deriveLessons({ cycles, curator, exec, credentialNow = null }) {
+  const credAlive = !!credentialNow?.keyPresent;
+  const lastOkAt = credentialNow?.lastOkAt ?? null;
+  const lastFailAt = credentialNow?.lastFailAt ?? null;
+  const broadcastResolved = !!(lastOkAt && lastFailAt && lastOkAt > lastFailAt);
   const lessons = [];
   if (cycles && cycles.window > 0) {
     if (cycles.okRate !== null && cycles.okRate < 100 && (cycles.failReasons.conn ?? 0) > 0) {
@@ -123,10 +133,17 @@ export function deriveLessons({ cycles, curator, exec }) {
     if (cycles.blocked > 0) {
       lessons.push({
         id: "signing-cred-blocked",
-        severity: "high",
-        evidence: `cycle-blocked ×${cycles.blocked}/${cycles.window} — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green`,
-        lesson: "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-        action: "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt",
+        severity: credAlive ? "low" : "high",
+        ...(credAlive ? { resolved: true } : {}),
+        evidence: credAlive
+          ? `cycle-blocked ×${cycles.blocked}/${cycles.window} in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present`
+          : `cycle-blocked ×${cycles.blocked}/${cycles.window} — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green`,
+        lesson: credAlive
+          ? "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles"
+          : "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+        action: credAlive
+          ? "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+          : "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt",
       });
     }
     /* T-18: name the histogram's blind spot instead of letting "none" pass as
@@ -185,10 +202,17 @@ export function deriveLessons({ cycles, curator, exec }) {
   if (exec && exec.fails > 0) {
     lessons.push({
       id: "broadcast-fails",
-      severity: exec.fails > 2 ? "high" : "medium",
-      evidence: `${exec.fails}/${exec.window} broadcasts failed · last: ${String(exec.lastError ?? "").slice(0, 90)}`,
-      lesson: "broadcast failures burn RC and delay rails",
-      action: "fail-closed stop already holds; vote-interval retry added T-14",
+      severity: broadcastResolved ? "low" : exec.fails > 2 ? "high" : "medium",
+      ...(broadcastResolved ? { resolved: true } : {}),
+      evidence: broadcastResolved
+        ? `${exec.fails}/${exec.window} broadcasts failed in the window (last: ${String(exec.lastError ?? "").slice(0, 60)}) · last fail ${lastFailAt} < last OK broadcast ${lastOkAt} (live posting-role ops succeed)`
+        : `${exec.fails}/${exec.window} broadcasts failed · last: ${String(exec.lastError ?? "").slice(0, 90)}`,
+      lesson: broadcastResolved
+        ? "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed"
+        : "broadcast failures burn RC and delay rails",
+      action: broadcastResolved
+        ? "none — resolved by R209; watch for any NEW failure class in the live window"
+        : "fail-closed stop already holds; vote-interval retry added T-14",
     });
   }
   return lessons;
@@ -252,7 +276,18 @@ export async function runLearning({ now = new Date().toISOString(), persist = tr
   const cycles = analyzeCycles(sovEvents);
   const cur = analyzeCurator(curator);
   const exec = analyzeExec(execLines);
-  const lessons = deriveLessons({ cycles, curator: cur, exec });
+  /* R217 · credential-now evidence: FILE EXISTENCE ONLY (zero key material
+   * read) + broadcast outcome timeline — the learner stays zero-key while
+   * still being able to tell HISTORICAL lessons from CURRENT demands. */
+  const keyPath = path.join(DIR, "..", "..", ".secrets", "headcorner.key");
+  const okAts = execLines.filter((e) => e && e.ok === true && e.at).map((e) => e.at).sort();
+  const failAts = execLines.filter((e) => e && (e.ok === false || e.error) && e.at).map((e) => e.at).sort();
+  const credentialNow = {
+    keyPresent: fs.existsSync(keyPath),
+    lastOkAt: okAts.at(-1) ?? null,
+    lastFailAt: failAts.at(-1) ?? null,
+  };
+  const lessons = deriveLessons({ cycles, curator: cur, exec, credentialNow });
 
   // discovered tags come from discovery.json ONLY (measured ranking, no invention)
   const disc = readJson(path.join(STATE, "discovery.json"), null);
