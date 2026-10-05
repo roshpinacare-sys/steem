@@ -1,0 +1,5 @@
+{
+  "protocol": "SAOS-LANE-GUARDS/1",
+  "guards": [],
+  "note": "V-a seed (trace 1a10c90522120149) — empty by design. The cognition-beat (V-b) is the intended writer and it can only CLOSE lanes (closed:true). Contract: only closed:true is honored; expiresAt < now makes a guard inert; fields like open/allow are IGNORED and flagged as foreignFields (guards can never open); an unreadable file halts EVERY lane (fail-closed loud, 'guards-unreadable'); a missing file means no guards (logged once, not an error). Consumer: agent/lib/loopguard.cjs guardHalt(lane), wired into capital_gate.stasisHalt step (b)."
+}

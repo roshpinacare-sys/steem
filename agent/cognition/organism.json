@@ -1,0 +1,273 @@
+{
+  "protocol": "SAOS-SELFMODEL/1",
+  "generatedAt": "2026-10-05T15:30:00Z",
+  "homes": {
+    "steem": {
+      "stasis": {
+        "active": true,
+        "mode": "staged",
+        "stagedLanes": ["grid", "claims"],
+        "epistemic": "OBSERVED",
+        "evidenceAgeMin": 5
+      },
+      "truthSources": [
+        "agent/STASIS.json",
+        "agent/lib/capital_gate.cjs",
+        "agent/lib/directivesChain.cjs",
+        "agent/lib/loopguard.cjs",
+        "agent/receipts/owner-directives.jsonl",
+        "agent/cognition/lane-guards.json"
+      ]
+    },
+    "domain": {
+      "stasis": {
+        "active": true,
+        "mode": "staged",
+        "stagedLanes": ["grid", "claims"],
+        "epistemic": "OBSERVED",
+        "evidenceAgeMin": 5
+      },
+      "truthSources": [
+        "agents/STASIS.json",
+        "agents/capital-gate.cjs",
+        "agents/directivesChain.cjs",
+        "agents/loopguard.cjs",
+        "agents/receipts/owner-directives.jsonl"
+      ]
+    }
+  },
+  "capabilities": [
+    {
+      "id": "steem/ladder-refresh",
+      "home": "steem",
+      "lane": "grid",
+      "status": "STAGED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "chain-history", "ref": "R27-c measured CANCEL 2026100501/02/03 + CREATE 2026100504/05/06 signed 12:56:33-39Z (blocks 110175126-131, txids 37238759/2bccad8b/3034e40e)", "at": "2026-10-05T12:56:39Z" },
+        { "source": "agent/STASIS.json", "ref": "stagedLanes.allow includes grid since 2026-10-05T13:05:00Z", "at": "2026-10-05T13:05:00Z" },
+        { "source": "agent/receipts/owner-directives.jsonl", "ref": "i=2 staged-open trace 1a10bfe1342b2391 covers grid", "at": "2026-10-05T13:05:00Z" }
+      ],
+      "ageHours": 2.5
+    },
+    {
+      "id": "steem/claims-suite",
+      "home": "steem",
+      "lane": "claims",
+      "status": "STAGED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "agent/lib/capital_gate.cjs", "ref": "LANES.claims enumerated by audited op class (claim_reward_balance, posting-only)", "at": "2026-10-05T15:20:00Z" },
+        { "source": "agent/STASIS.json", "ref": "stagedLanes.allow includes claims", "at": "2026-10-05T13:05:00Z" },
+        { "source": "agent/receipts/owner-directives.jsonl", "ref": "i=2 staged-open trace 1a10bfe1342b2391 covers claims", "at": "2026-10-05T13:05:00Z" }
+      ],
+      "ageHours": 2.5
+    },
+    {
+      "id": "domain/market-exec",
+      "home": "domain",
+      "lane": "grid",
+      "status": "STAGED",
+      "epistemic": "INFERRED",
+      "evidence": [
+        { "source": "agents/STASIS.json", "ref": "grid lane allow since 2026-10-05T13:05:00Z", "at": "2026-10-05T13:05:00Z" },
+        { "source": "R27-c", "ref": "Domain grid twins keep honest keyless refusal design — lane open is permission, not activation; no live signing measured in this home", "at": "2026-10-05" }
+      ],
+      "ageHours": 2.5
+    },
+    {
+      "id": "domain/claims-suite",
+      "home": "domain",
+      "lane": "claims",
+      "status": "STAGED",
+      "epistemic": "INFERRED",
+      "evidence": [
+        { "source": "agents/STASIS.json", "ref": "claims lane allow (daily-claim, fleet-claim)", "at": "2026-10-05T13:05:00Z" },
+        { "source": "R27-c", "ref": "daily-claim gate wiring verified at daily-claim:84; receipts were artifact-only (30-day artifact), no committed receipts", "at": "2026-10-05" }
+      ],
+      "ageHours": 2.5
+    },
+    {
+      "id": "saos-dex/grid-beat",
+      "home": "saos-dex",
+      "lane": "grid",
+      "status": "HALTED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "R27-c", "ref": "saos-dex gate resists forged protocol files; repo carries wedged UU state.json — V-a mandate: DO NOT TOUCH saos-dex", "at": "2026-10-05" }
+      ],
+      "ageHours": 3
+    },
+    {
+      "id": "steem/moment-watch",
+      "home": "steem",
+      "lane": "measurement",
+      "status": "ORPHANED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "R27-a", "ref": "moment-watch calibrated but unwired — no machine consumer found; all FLAT", "at": "2026-10-05" }
+      ],
+      "ageHours": 3
+    },
+    {
+      "id": "steem/fleet-cure",
+      "home": "steem",
+      "lane": "maintenance",
+      "status": "ORPHANED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "R27-a", "ref": "fleet-cure orphaned", "at": "2026-10-05" }
+      ],
+      "ageHours": 3
+    }
+  ],
+  "writers": [
+    {
+      "id": "github-actions-cron-fleet",
+      "kind": "ci-workflow",
+      "patterns": ["schedule:* across 126 workflows / 72 crons (R27-a)"],
+      "confidence": 0.9,
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "R27-a", "ref": "execution surface measured: GitHub Actions 126 workflows, 72 cron", "at": "2026-10-05" },
+        { "source": "git-history", "ref": "CI commit pattern 'dex-core: ... tick' / 'moment-watch: ...' on both homes", "at": "2026-10-05" }
+      ]
+    },
+    {
+      "id": "unidentified-parallel-session",
+      "kind": "parallel-session",
+      "patterns": ["roshpinacare-sys commits TZ+0300", "hourly weave-anchor-lines dispatch with no owning workflow", "micro-orders trx 8065683d (0.5 STEEM x2, no owning code in any repo)"],
+      "confidence": 0.5,
+      "epistemic": "INFERRED",
+      "evidence": [
+        { "source": "R27-a/R27-c", "ref": "commits + dispatches + on-chain micro-orders attributed to no identified writer", "at": "2026-10-05" }
+      ]
+    },
+    {
+      "id": "agent-llm-sessions",
+      "kind": "unknown",
+      "patterns": ["session-scoped edits to state files ('Z User' commits)"],
+      "confidence": 0.7,
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "R27-c", "ref": "STASIS.json history: all historical changes made by agents ('Z User'); no CI/hook protects the file", "at": "2026-10-05" }
+      ]
+    }
+  ],
+  "authorities": {
+    "decideAlone": [],
+    "stopShrink": [
+      "capital_gate.stasisHalt — SHRINK is always mechanically allowed to any agent/tool (halt a tool, refuse a target)",
+      "loopguard.guardHalt — lane-guards can only CLOSE lanes; V-b cognition-beat is the intended writer",
+      "capital_gate.guardTargets — canonical roster + BANNED_CAPITAL refusals",
+      "owner-directives halt-all entry — mechanically closes coverage after its index (SHRINK via the chain itself)"
+    ],
+    "policyGated": [
+      "staged-lane expansion — requires owner-directives chain entry covering the lanes (tamper-EVIDENT, NOT tamper-PROOF: a writer can rebuild a whole chain; protection = git diff transparency + policy, labeled honestly in every receipt)",
+      "full resume (active:false) — requires wildcard '*' owner-directives entry; forged/no-directive resumes HALT ('resume-lacks-owner-directive-entry')"
+    ],
+    "ownerOnly": [
+      "owner-directives chain writes (convention: append-only + diff-visible; no branch protection yet — R27-c)",
+      "STASIS.json protocol edits (still convention — no CI/hook protects the file; V-a adds authentication of READS, not of WRITES)",
+      "custody material (keys/derivations) — owner-held FACTORY_MASTER, outside all repos"
+    ]
+  },
+  "canonicalTruths": [
+    { "what": "STASIS.json is the capital brake; unreadable OR unauthenticated (no valid protocol) = halt", "source": "agent/lib/capital_gate.cjs stasisState/stasisHalt (a)", "rank": 1 },
+    { "what": "guards close lanes only; foreign open/allow fields are inert and flagged (foreignFields)", "source": "agent/lib/loopguard.cjs guardHalt", "rank": 2 },
+    { "what": "expansion requires owner-directives chain coverage; halt-all in the chain mechanically closes later coverage", "source": "agent/lib/directivesChain.cjs hasEntryForLanes + capital_gate.cjs (c)/(d)", "rank": 3 },
+    { "what": "every gate decision (halt or allow) writes one cognitive receipt, idempotent per tool|lane|decision|minute, append-only", "source": "agent/receipts/capital-decisions.jsonl (first real writes: V-a)", "rank": 4 },
+    { "what": "receipts are memory, not a veto: journal-unwritable never blocks enforcement; journalHealth().degraded marks it", "source": "agent/lib/capital_gate.cjs journalHealth", "rank": 5 }
+  ],
+  "contradictions": [
+    {
+      "id": "C-001",
+      "kind": "state-vs-history",
+      "a": "STASIS staged re-entry claims lane enforcement from 2026-10-05T13:05:00Z",
+      "b": "R27-c measured CI-signed ladder ops at 04:01:30-45Z during FULL STASIS (sign-time brake landed 11:25:37Z; stagedLanes.since not enforced)",
+      "confidence": 0.95,
+      "firstSeen": "2026-10-05",
+      "status": "resolved",
+      "epistemic": "OBSERVED"
+    },
+    {
+      "id": "C-002",
+      "kind": "writer-attribution",
+      "a": "grid run ledger attributes micro-orders to dex-grid #23",
+      "b": "2 micro-orders arrived in separate trx 8065683d with no owning code in any repo (unidentified writer)",
+      "confidence": 0.9,
+      "firstSeen": "2026-10-05",
+      "status": "open",
+      "epistemic": "OBSERVED"
+    },
+    {
+      "id": "C-003",
+      "kind": "custody-vs-tree",
+      "a": "worklog/R26 claimed 'live tree clean'",
+      "b": "R27-d measured nv.zip (144KB, WIF-shape hits) + 5 .enc + recovery-meta.json ALL AT HEAD of steem",
+      "confidence": 0.95,
+      "firstSeen": "2026-10-05",
+      "status": "resolved",
+      "epistemic": "OBSERVED"
+    }
+  ],
+  "frontier": {
+    "lanes": {
+      "grid": {
+        "level": "STAGED",
+        "justification": "owner directive trace 1a10bfe1342b2391; directives chain i=2 covers grid; sign-time gate in place post-R25; guard file can still close it mechanically at any time",
+        "evidence": [
+          { "source": "agent/receipts/owner-directives.jsonl", "ref": "i=2 staged-open [grid,claims]", "at": "2026-10-05T13:05:00Z" },
+          { "source": "agent/STASIS.json", "ref": "stagedLanes.allow", "at": "2026-10-05T13:05:00Z" }
+        ]
+      },
+      "claims": {
+        "level": "STAGED",
+        "justification": "posting-only idempotent claims; directives chain i=2 covers claims",
+        "evidence": [
+          { "source": "agent/receipts/owner-directives.jsonl", "ref": "i=2 staged-open [grid,claims]", "at": "2026-10-05T13:05:00Z" }
+        ]
+      },
+      "general": {
+        "level": "HALTED",
+        "justification": "delegations/transfers/converts/HE/mint/escrow + all unknown tools remain halted (fail-closed)",
+        "evidence": [
+          { "source": "agent/STASIS.json", "ref": "stagedLanes.reason — everything besides grid+claims stays halted", "at": "2026-10-05T13:05:00Z" }
+        ]
+      }
+    },
+    "computedAt": "2026-10-05T15:30:00Z",
+    "rule": "REAL requires: gate-authenticity green + >=N observed cycles + zero open contradictions on lane + writer attributed"
+  },
+  "custody": {
+    "nv.zip": {
+      "decision": "untracked from live tree (git rm --cached) in custody-hygiene commit 52db27f2 (V-a, trace 1a10c90522120149)",
+      "evidence": [
+        { "source": "rg --hidden sweep", "ref": "zero references to nv.zip in any live code, .github workflow, script or doc of the steem repo (measured 2026-10-05T15:10Z)", "at": "2026-10-05T15:10:00Z" },
+        { "source": "git", "ref": "git rm --cached nv.zip — history untouched; file remains recoverable from history; .gitignore guard added against accidental re-add", "at": "2026-10-05T15:25:00Z" },
+        { "source": "agent/vault/", "ref": "recovery chain preserved in-tree: KEYS-BACKUP-2026-09-09.tar.enc, KEYS-ZIP-2026-09-10.zip.enc, KEYS-ZIP-2026-09-29.zip.enc, KEYS-SEED-2026-10-04.zip.enc, KEYS-PACK-2026-10-04-r20a.zip.enc + agent/recovery-meta.json + FLEET-DERIVATION-MATRIX-2026-10-04.md", "at": "2026-10-05T15:10:00Z" }
+      ],
+      "epistemic": "OBSERVED",
+      "residualRisk": "ZIP_PAT-class secrets in other homes' workflows (R27-d: 32 workflows) are OUT OF SCOPE for V-a — recorded, not fixed"
+    },
+    "recoveryChain": {
+      "status": "PRESERVED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        { "source": "agent/vault/*.enc + agent/recovery-meta.json + FACTORY_MASTER derivation", "ref": "all recovery inputs remain tracked at HEAD after the hygiene commit", "at": "2026-10-05T15:25:00Z" }
+      ]
+    }
+  },
+  "unknowns": [
+    "identity of the parallel writer (roshpinacare-sys TZ+0300 commits, hourly weave-anchor-lines dispatch, unsourced micro-orders trx 8065683d)",
+    "whether the directives chain + guards contract holds once V-b's cognition-beat writes real guards (untested in production)",
+    "real decryption path for vault material (owner-held FACTORY_MASTER) — V-a verified presence, not usability",
+    "ZIP_PAT-class reach in Domain/saos-dex workflows (R27-d) — unmeasured by V-a"
+  ],
+  "measurementNotes": [
+    "R27 orchestrator's first forged-STASIS probe was a measurement error (wrong STASIS path in /tmp copy produced a false fail-closed); corrected by clean re-run — kept here as a documented own-error",
+    "capital-decisions.jsonl never existed before V-a (R27-c); receipts before V-a were console logs only — the first real receipt lines were written by the V-a gate itself",
+    "expansion gate is tamper-EVIDENT (hash chain), NOT tamper-PROOF — a writer with repo access can rebuild a whole chain; labeled honestly in every ALLOW receipt and here",
+    "V-a validated mode/since strictly: legacy STASIS docs lacking them now fail authentication (fail-closed) — deliberate semantic change, covered by selftests"
+  ]
+}
