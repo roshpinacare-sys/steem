@@ -1,0 +1,57 @@
+# COGNITION-BEAT (V-b, trace 1a10c90522120149) — הלופ-הקוגניטיבי-שבתוך-האורגניזם.
+#
+# הריבון מדד (R27): הקוגניציה חיה בסשני-LLM שמתים-עם-הסשן. V-a נתן חוזה-אפיסטמי
+# (אותנטיקה/כיווניות/צרכן-שומרים/יומן-הכרעות). ה-beat הזה הוא המחזור-השעתי שבו
+# האורגניזם חושב מכנית בלי-שום-סשן-LLM:
+#   Observe (chain ×2 nodes + 3 homes + directives + receipts) → State-estimate (writer attribution)
+#   → Contradictions → Decide (SHRINK-ONLY — lane-guards can only CLOSE) → Learn (frontier+counters)
+#   → Update self-model (organism.json, validated) → Act (commit receipts) → Verify own act (raw API sha256).
+#
+# סמכות: mechanism-shrink בלבד. ה-beat לעולם לא פותח-מסילות מעבר ל-STASIS.json stagedLanes,
+# לא מעביר-הון, ולא עורך STASIS.json / שרשרת-הנחיות-הבעלים. קבצים-שהוא-כותב (רשימה-סגורה):
+# agent/cognition/lane-guards.json · agent/cognition/organism.json · agent/receipts/cognition-beat.jsonl
+#
+# Quota note: hourly ≈ 730 runs/month × ~1-2 min ≈ ≤1500 Actions-minutes/month
+# (stdlib-only — אפס-npm-install, אפס-actions-צד-ג לפי חוק-Z74 כמו שאר-ה-workflows בבית-זה).
+# ביטחון: אפס-סודות-בלוג/קבלה/קומיט; ZIP_PAT חי בזיכרון-ריצה בלבד (cross-home raw reads),
+# GITHUB_TOKEN לדחיפה ולקריאת-האימות-העצמית של-הריפו-הזה.
+
+name: cognition-beat
+
+on:
+  schedule:
+    - cron: '17 * * * *'   # hourly, at :17 — offset from the other workflows' crons
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognition-beat
+  cancel-in-progress: false
+
+jobs:
+  beat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: sovereign-clone (git native, full history for rebase-first push — zero third-party actions, Z74)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/roshpinacare-sys/steem.git" .
+          git config user.name "saos-cognition"
+          git config user.email "cognition@saos.local"
+
+      - name: Node 20 (preinstalled on runner — pinned check, no setup action)
+        run: |
+          set -euo pipefail
+          node --version
+          node -e 'const major=+process.versions.node.split(".")[0]; if(major<20){console.error("node>=20 required, got",process.versions.node);process.exit(1);}'
+
+      - name: Cognition cycle (observe → shrink-only decisions → learn → self-model → act → verify own act)
+        run: node agent/cognition/beat.cjs
+        env:
+          ZIP_PAT: ${{ secrets.ZIP_PAT }}           # cross-home raw reads (Domain / saos-dex) — never echoed/committed
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # push + raw-API read-back verification of own commit
