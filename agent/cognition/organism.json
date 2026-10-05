@@ -1,6 +1,6 @@
 {
   "protocol": "SAOS-SELFMODEL/1",
-  "generatedAt": "2026-10-05T18:39:01.514Z",
+  "generatedAt": "2026-10-05T21:38:50.406Z",
   "homes": {
     "steem": {
       "stasis": {
@@ -16,7 +16,7 @@
           {
             "source": "agent/STASIS.json",
             "ref": "local fs read, authenticated yes",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
@@ -27,8 +27,8 @@
         "reason": null
       },
       "guards": {
-        "activeGuards": 1,
-        "closedAdded": 2,
+        "activeGuards": 3,
+        "closedAdded": 0,
         "released": 0
       },
       "truthSources": [
@@ -54,7 +54,7 @@
           {
             "source": "raw.githubusercontent Domain",
             "ref": "agents/STASIS.json read authenticated",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
@@ -83,7 +83,7 @@
           {
             "source": "raw.githubusercontent saos-dex",
             "ref": "grids/state/STASIS.json read authenticated",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
@@ -91,7 +91,7 @@
         "epistemic": "OBSERVED",
         "verdict": "ALIVE-REAL-FILLS",
         "realFills24h": 7,
-        "at": "2026-10-05T18:39:01.514Z"
+        "at": "2026-10-05T21:38:50.406Z"
       },
       "gridLedger": {
         "epistemic": "OBSERVED",
@@ -99,7 +99,7 @@
         "txids": 97,
         "placedTotal": 97,
         "filledTotal": 6,
-        "at": "2026-10-05T18:39:01.514Z"
+        "at": "2026-10-05T21:38:50.406Z"
       },
       "directivesChain": {
         "ok": false,
@@ -329,6 +329,21 @@
         }
       ],
       "ageHours": 0
+    },
+    {
+      "id": "steem/cognition-beat",
+      "home": "steem",
+      "lane": "cognition",
+      "status": "STAGED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        {
+          "source": "agent/receipts/cognition-beat.jsonl",
+          "ref": "cycle 6 completed in-organism (no LLM session): observe→decide→learn→act→verify",
+          "at": "2026-10-05T21:38:50.406Z"
+        }
+      ],
+      "ageHours": 0
     }
   ],
   "writers": [
@@ -343,8 +358,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 5: 3 ops classified dex-grid-ci by LEDGER TXID ONLY (R29: the orderid-space heuristic was proven false — shared with money-mover)",
-          "at": "2026-10-05T18:39:01.514Z"
+          "ref": "cycle 6: 0 ops classified dex-grid-ci by LEDGER TXID ONLY (R29: the orderid-space heuristic was proven false — shared with money-mover)",
+          "at": "2026-10-05T21:38:50.406Z"
         }
       ]
     },
@@ -361,7 +376,7 @@
         {
           "source": "chain-history window + GitHub runs API (R29 forensics)",
           "ref": "2026-10-05T16:37/17:07/17:39Z signature with ZERO CI runs alive in any org repo; ledgerCrossCheck=not-found; machine identity UNKNOWN → owner-only remediation",
-          "at": "2026-10-05T18:39:01.514Z"
+          "at": "2026-10-05T21:38:50.406Z"
         }
       ]
     },
@@ -376,8 +391,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 5: 1 ops matched matrix amount",
-          "at": "2026-10-05T18:39:01.514Z"
+          "ref": "cycle 6: 0 ops matched matrix amount",
+          "at": "2026-10-05T21:38:50.406Z"
         }
       ]
     },
@@ -392,8 +407,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 5: 0 ops matched reclaim signature",
-          "at": "2026-10-05T18:39:01.514Z"
+          "ref": "cycle 6: 0 ops matched reclaim signature",
+          "at": "2026-10-05T21:38:50.406Z"
         }
       ]
     },
@@ -409,33 +424,33 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T16:37:15Z limit_order_cancel trx=b5069953f76ee1c4 orderid=2026100506",
-          "at": "2026-10-05T16:37:15Z"
+          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=ff4457e05304d1e9 orderid=2026100505",
+          "at": "2026-10-05T17:39:39Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T16:37:15Z limit_order_cancel trx=5187f26238249b0f orderid=2026100505",
-          "at": "2026-10-05T16:37:15Z"
+          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=4f40ae56a18c20a9 orderid=2026100503",
+          "at": "2026-10-05T17:39:39Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T16:37:15Z limit_order_cancel trx=c04d5ef7134997bf orderid=2026100504",
-          "at": "2026-10-05T16:37:15Z"
+          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=d607d2a67baf426e orderid=2026100502",
+          "at": "2026-10-05T17:39:39Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T16:37:24Z limit_order_create trx=bdfbd9378d03a6b2 orderid=2026100501",
-          "at": "2026-10-05T16:37:24Z"
+          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=272640eff9681564 orderid=2026100504",
+          "at": "2026-10-05T17:39:39Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T16:37:30Z limit_order_create trx=75ea3561b33d00fc orderid=2026100502",
-          "at": "2026-10-05T16:37:30Z"
+          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=390638563271f648 orderid=2026100501",
+          "at": "2026-10-05T17:39:39Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T16:37:36Z limit_order_create trx=f292ecf0b6fb1745 orderid=2026100503",
-          "at": "2026-10-05T16:37:36Z"
+          "ref": "2026-10-05T17:39:45Z limit_order_create trx=405a8e0e79fe83cc orderid=2026100501",
+          "at": "2026-10-05T17:39:45Z"
         }
       ]
     },
@@ -526,7 +541,7 @@
     {
       "id": "C-unknown-writer",
       "title": "כותבים-לא-מזוהים על-השרשרת",
-      "detail": "נמדדו 43 פעולות-הון ללא-תבנית-כותב בחלון-8h (טריות ≤4h: 38 — actionable, ישנות: 5 — היסטוריה). פירוט: 2026-10-05T16:37Z limit_order_cancel trx=b5069953f76ee1c4 orderid=2026100506  [טרי] · 2026-10-05T16:37Z limit_order_cancel trx=5187f26238249b0f orderid=2026100505  [טרי] · 2026-10-05T16:37Z limit_order_cancel trx=c04d5ef7134997bf orderid=2026100504  [טרי] · 2026-10-05T16:37Z limit_order_create trx=bdfbd9378d03a6b2 orderid=2026100501 1.883 STEEM [טרי] · 2026-10-05T16:37Z limit_order_create trx=75ea3561b33d00fc orderid=2026100502 1.883 STEEM [טרי] · 2026-10-05T16:37Z limit_order_create trx=f292ecf0b6fb1745 orderid=2026100503 1.883 STEEM [טרי] · 2026-10-05T16:37Z limit_order_create trx=3ffb5dd727560aed orderid=2026100504 1.883 STEEM [טרי] · 2026-10-05T16:37Z limit_order_create trx=1efd59b224ab619a orderid=2026100505 1.883 STEEM [טרי]",
+      "detail": "נמדדו 79 פעולות-הון ללא-תבנית-כותב בחלון-8h (טריות ≤4h: 61 — actionable, ישנות: 18 — היסטוריה). פירוט: 2026-10-05T17:39Z limit_order_cancel trx=ff4457e05304d1e9 orderid=2026100505  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=4f40ae56a18c20a9 orderid=2026100503  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=d607d2a67baf426e orderid=2026100502  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=272640eff9681564 orderid=2026100504  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=390638563271f648 orderid=2026100501  [טרי] · 2026-10-05T17:39Z limit_order_create trx=405a8e0e79fe83cc orderid=2026100501 1.883 STEEM [טרי] · 2026-10-05T17:39Z limit_order_create trx=5e10d6f2d0cd8ab4 orderid=2026100502 1.883 STEEM [טרי] · 2026-10-05T17:39Z limit_order_create trx=b261e0ef5f3e7aea orderid=2026100503 1.883 STEEM [טרי]",
       "kind": "writer-attribution",
       "a": "organism has no owner for these signed ops",
       "b": "chain shows the ops signed by headcorner anyway",
@@ -557,7 +572,7 @@
       "detail": "נמדד: שלושת-הבתים נקראו בהצלחה במחזור-זה.",
       "kind": "cross-home-visibility",
       "a": "steem+Domain+saos-dex",
-      "b": "all readable at 2026-10-05T18:39:01.514Z",
+      "b": "all readable at 2026-10-05T21:38:50.406Z",
       "confidence": 0.85,
       "firstSeen": "2026-10-05T16:42:07.277Z",
       "status": "resolved",
@@ -570,7 +585,7 @@
       "detail": "נמדד: קבצי-ה-STASIS בכל-הבתים קריאים ואותנטיים.",
       "kind": "brake-readability",
       "a": "all STASIS files authenticated",
-      "b": "ok at 2026-10-05T18:39:01.514Z",
+      "b": "ok at 2026-10-05T21:38:50.406Z",
       "confidence": 0.9,
       "firstSeen": "2026-10-05T16:42:07.277Z",
       "status": "resolved",
@@ -580,17 +595,15 @@
     {
       "id": "C-model-vs-chain",
       "title": "דגם-מול-שרשרת",
-      "detail": "ה-frontier מצהיר HALTED אך בחלון-8h נמדדו פעולות-מאותה-מסילה: general: frontier=HALTED but 1 lane-class ops in window (e.g. delegate_vesting_shares@2026-10-05T10:44Z). זו היסטוריה-מדוגלת (ייחוס נפרד), לא-הכרעה-חדשה.",
+      "detail": "נמדד-עקבי: אין פעולות-חלון על-מסילות שה-frontier מצהיר HALTED.",
       "kind": "frontier-vs-reality",
-      "a": "frontier lane = HALTED",
-      "b": "signed lane-class ops observed in window",
+      "a": "frontier",
+      "b": "window ops",
       "confidence": 0.85,
       "firstSeen": "2026-10-05T16:42:07.277Z",
-      "status": "open",
+      "status": "resolved",
       "epistemic": "OBSERVED",
-      "lanes": [
-        "general"
-      ]
+      "lanes": []
     },
     {
       "id": "C-directives-gap",
@@ -659,18 +672,18 @@
           {
             "source": "cognition-beat",
             "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: authenticity, open contradiction on lane",
-            "at": "2026-10-05T18:39:03.925Z"
+            "at": "2026-10-05T21:38:52.376Z"
           }
         ]
       },
       "claims": {
         "level": "STAGED",
-        "justification": "staged-allowed by owner directives; not REAL yet — missing: authenticity",
+        "justification": "staged-allowed by owner directives; not REAL yet — missing: authenticity, writer attribution",
         "evidence": [
           {
             "source": "cognition-beat",
-            "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: authenticity",
-            "at": "2026-10-05T18:39:03.925Z"
+            "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: authenticity, writer attribution",
+            "at": "2026-10-05T21:38:52.376Z"
           }
         ]
       },
@@ -681,12 +694,12 @@
           {
             "source": "cognition-beat",
             "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: not staged-allowed in STASIS.json (fail-closed default)",
-            "at": "2026-10-05T18:39:03.925Z"
+            "at": "2026-10-05T21:38:52.376Z"
           }
         ]
       }
     },
-    "computedAt": "2026-10-05T18:39:01.514Z",
+    "computedAt": "2026-10-05T21:38:50.406Z",
     "rule": "REAL requires: gate-authenticity green + >=3 observed successful cycles + zero open contradictions on lane + writer attributed; else STAGED if staged-allowed; else HALTED"
   },
   "custody": {
@@ -745,12 +758,13 @@
     "expansion gate is tamper-EVIDENT (hash chain), NOT tamper-PROOF — a writer with repo access can rebuild a whole chain; labeled honestly in every ALLOW receipt and here",
     "V-a validated mode/since strictly: legacy STASIS docs lacking them now fail authentication (fail-closed) — deliberate semantic change, covered by selftests",
     "R27 orchestrator probe path-error (2026-10-05)",
-    "cycle 5: gate probe error: Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-BPE6dJ/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
+    "cycle 5: gate probe error: Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-BPE6dJ/agent\";\n      const G=require(path.join(root,'lib','capital_ga",
+    "cycle 6: gate probe error: Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-0RNPo5/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
   ],
   "beat": {
     "protocol": "SAOS-COGNITION-BEAT/1",
-    "cycle": 5,
-    "at": "2026-10-05T18:39:01.514Z",
+    "cycle": 6,
+    "at": "2026-10-05T21:38:50.406Z",
     "windowHours": 8,
     "freshWindowHours": 4,
     "loop": [
@@ -766,50 +780,57 @@
     "chain": {
       "epistemic": "OBSERVED",
       "primary": "api.steemit.com",
-      "windowOps": 80,
-      "capitalScanned": 48,
+      "windowOps": 94,
+      "capitalScanned": 79,
       "fills": 0,
-      "unknownWriters": 43,
-      "freshUnknownWriters": 38,
-      "lastIdx": 66073
+      "unknownWriters": 79,
+      "freshUnknownWriters": 61,
+      "lastIdx": 66116
     },
     "sensors": {
       "api.steemit.com": {
         "role": "chain-primary",
         "score": 1,
-        "samples": 5,
+        "samples": 6,
         "lastAgreement": "primary-live",
-        "lastAt": "2026-10-05T18:39:01.514Z"
+        "lastAt": "2026-10-05T21:38:50.406Z"
       },
       "api.justyy.com": {
         "role": "chain-cross",
         "score": 1,
-        "samples": 4,
+        "samples": 5,
         "lastAgreement": true,
-        "lastAt": "2026-10-05T18:39:01.514Z"
+        "lastAt": "2026-10-05T21:38:50.406Z"
       }
     },
-    "decisions": [
-      {
-        "id": "382fc6a9ee4a",
-        "decision": "close-staged-lanes",
-        "note": "reasons=unknown-writer ttl=12h (beat cycle 5)",
-        "verification": "pending"
-      }
-    ],
+    "decisions": [],
     "releases": [],
     "rechecks": [
       {
         "guardId": "bg-20e17b8403",
         "lane": "grid",
         "result": "dirty",
-        "detail": "lane-failure streak still 4 (no healthy receipts yet)",
-        "at": "2026-10-05T18:39:03.880Z"
+        "detail": "lane-failure streak still 5 (no healthy receipts yet)",
+        "at": "2026-10-05T21:38:52.340Z"
+      },
+      {
+        "guardId": "bg-51df2bae9e",
+        "lane": "claims",
+        "result": "dirty",
+        "detail": "unknown-writer: 61 fresh ops",
+        "at": "2026-10-05T21:38:52.340Z"
+      },
+      {
+        "guardId": "bg-8d5760757b",
+        "lane": "grid",
+        "result": "dirty",
+        "detail": "unknown-writer: 61 fresh ops",
+        "at": "2026-10-05T21:38:52.340Z"
       }
     ],
     "guards": {
-      "activeBefore": 1,
-      "closedAdded": 2,
+      "activeBefore": 3,
+      "closedAdded": 0,
       "released": 0,
       "activeAfter": 3,
       "lanes": [
@@ -820,22 +841,22 @@
     },
     "lanes": {
       "grid": {
-        "observedCycles": 5,
+        "observedCycles": 6,
         "successfulCycles": 4,
         "lastOutcome": "probe-error",
         "openContradictions": 1
       },
       "claims": {
-        "observedCycles": 5,
+        "observedCycles": 6,
         "successfulCycles": 4,
         "lastOutcome": "authenticity-unknown",
         "openContradictions": 0
       },
       "general": {
-        "observedCycles": 5,
+        "observedCycles": 6,
         "successfulCycles": 0,
         "lastOutcome": "halted-lane",
-        "openContradictions": 1
+        "openContradictions": 0
       }
     },
     "selfLoop": {
@@ -843,18 +864,16 @@
         "guardWorks": null,
         "authenticityGreen": null,
         "baselineAllow": null,
-        "error": "Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-BPE6dJ/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
+        "error": "Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-0RNPo5/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
       },
       "lastCommitSha": "87ad3a6b937a5ff51d41261a1faac244a2d3540b",
-      "rawSha256Match": true,
-      "verifiedAt": "2026-10-05T18:39:11.893Z",
-      "method": "sha256(local organism.json) == sha256(raw contents API @commit)"
+      "rawSha256Match": true
     },
     "authority": "mechanism-shrink only — this beat never opens lanes, never transfers, never edits STASIS.json or the directives chain"
   },
   "sovereignty": {
     "protocol": "SAOS-SOVEREIGNTY/1",
-    "computedAt": "2026-10-05T18:39:01.514Z",
+    "computedAt": "2026-10-05T21:38:50.406Z",
     "haltSemantics": {
       "measured": "A",
       "meaning": "HALTED means: (A) the organism’s own registered lanes will not sign. It does NOT mean (B) no actor inside the sovereignty domain can act, and does NOT mean (C) no actor in the world can act.",
@@ -862,7 +881,7 @@
         {
           "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
           "ref": "2026-10-05T17:07:36Z: 10 capital ops signed by money-family-live while every internal guard was active in all 3 homes (synced 17:05:40Z) → A holds, B and C falsified",
-          "at": "2026-10-05T18:39:01.514Z"
+          "at": "2026-10-05T21:38:50.406Z"
         }
       ]
     },
@@ -884,22 +903,22 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "saos-dex dex-grid run 12:56:12Z → ops 12:56:33-48Z; Domain dex-grid run 04:00:57Z → ops 04:01:33-45Z; brake consumption committed 82e9de4",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
       {
         "id": "money-family-live",
-        "path": "money-mover v1.9.0 (60s check, 30min cooldown, reprice-on-drift)→/api/money (vault WIF)→steem.broadcast→headcorner; orderid=date-scheme (shared with CI)",
+        "path": "money-mover v1.9.0 (60s check, 30min cooldown, reprice-on-drift)→/api/money (vault WIF)→steem.broadcast→headcorner; orderid=date-scheme (shared with CI); R30: source brake at all 4 signing edges (api/money, api/money/hive, api/money/claim, market-maker verifySigner) consuming STASIS+lane-guards fail-closed — runtime activation OWNER-ONLY pending deploy/restart of the fleet machine",
         "guarded": false,
-        "kill": "NONE reachable from organism — runs on a machine outside all homes, outside GitHub Actions",
-        "owner": "OWNER-ONLY (identify machine, stop daemon or brake its signing route)",
+        "kill": "NONE reachable from organism at runtime — R30 closed the SOURCE (brake.ts, all edges); activation requires owner deploy — propagation via keeper pull is best-effort, not organism-controlled",
+        "owner": "OWNER-ONLY (deploy/restart the fleet machine — the missing capability is execution control on that host)",
         "epistemic": "OBSERVED",
         "evidence": [
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
-            "ref": "16:37:15-45Z + 17:07:36-17:08:03Z + 17:39:39Z ops; zero CI runs alive at those seconds in ALL org repos; orderid scheme + 30min cadence + REPRICE-FAIL-cancel-all match Zip money stack contract (orderid doc line: \"money-mover הוא סכמת-יום\"); zero STASIS/brake references in the entire Zip money stack",
-            "at": "2026-10-05T18:39:01.514Z"
+            "ref": "16:37:15-45Z + 17:07:36-17:08:03Z + 17:39:39Z + RE-OBSERVED-LIVE 18:41:15-45Z ops (5 cancels+5 creates, orderid 2026100501-05, exp+27d, ~31min cadence) with zero CI runs alive and all internal guards active; R29 cancel-all-no-recreate detail at 17:39:39Z CONTRADICTED (creates followed 6s later); zero STASIS/brake references in the pre-R30 Zip money stack (grep); R30 brake committed + 15/15 isolated vectors green",
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
@@ -914,7 +933,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "12:56:45Z trx 8065683d: two limit_order_create in one transaction — no repo tool batches creates this way",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
@@ -929,7 +948,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "receipts 2026-10-05-ladder-refresh-* both abort-anomaly, zero ops",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
@@ -944,7 +963,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "posting-only ops, idempotent",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       },
@@ -959,7 +978,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "117o incident: all 4 authorities rotated 2026-09-08; holder census of the CURRENT active key does not exist",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       }
@@ -976,13 +995,13 @@
         "ownerOnly": false
       },
       {
-        "actor": "money-family-live (money-mover v1.9.0 on an unknown machine)",
+        "actor": "money-family-live (money-mover v1.9.0 on the fleet machine — machine identity UNKNOWN, ≥2 machines hold the factory key-source path)",
         "can": "sign cancel+create ladders autonomously every ~30min",
-        "may": "everything its code allows — it consumes NO STASIS, NO guards, NO directives",
+        "may": "everything its code allows — it consumed NO STASIS, NO guards, NO directives (R30: its SOURCE now consumes them; its RUNTIME does not until the owner deploys)",
         "should": "(its code believes) maintain the money ladder",
         "mustNot": "unknown to the organism",
-        "canStop": "NO — I CANNOT STOP THIS ACTOR",
-        "canBypass": "yes — it is structurally outside the guard perimeter (BOUNDARY_ESCAPE=TRUE)",
+        "canStop": "NO — I CANNOT STOP THIS ACTOR until the owner deploys the R30 brake to the live host",
+        "canBypass": "yes — runtime remains structurally outside the guard perimeter until deploy (BOUNDARY_ESCAPE=TRUE); after deploy: fail-closed brake at all 4 edges",
         "ownerOnly": true
       },
       {
@@ -1017,10 +1036,17 @@
       }
     ],
     "cannotStop": [
-      "money-family-live — live signing loop on an unreachable machine (proven 2026-10-05T17:07:36Z)",
+      "money-family-live — live signing loop on the fleet machine (proven 2026-10-05T17:07:36Z + 18:41:15Z); R30 brake is committed at source but NOT yet active at runtime — stopping it requires owner deploy/restart",
       "any external holder of the active key (holder census UNKNOWN)",
       "owner-direct manual operations"
     ],
+    "boundaryStatus": "OWNER_ONLY",
+    "boundaryEscape": true,
+    "sourceClosure": {
+      "what": "Zip money stack signing edges (api/money POST, api/money/hive, api/money/claim, market-maker verifySigner) now evaluate STASIS+lane-guards fail-closed before any broadcast (src/lib/cognition/brake.ts, R30 trace 1a10d6f880df9255)",
+      "tested": "scripts/brake-selftest.ts — 15/15 isolated vectors incl. fail-closed corrupt/foreign, close-only foreign fields, expiry, combined layers",
+      "notClaimed": "runtime closure — the live fleet machine runs old code until the owner deploys/restarts; keeper git-pull is best-effort (only when pushing its own state) and dev-revive restarts without pulling"
+    },
     "unknownWriters": [
       "micro-order space 2100000xxx writer (trx 8065683d…) — no owning tool in any repo",
       "the machine hosting money-family-live"
@@ -1034,7 +1060,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "all 10 ops at 17:07:36Z signed by the same account authority the CI uses",
-            "at": "2026-10-05T18:39:01.514Z"
+            "at": "2026-10-05T21:38:50.406Z"
           }
         ]
       }
@@ -1042,17 +1068,18 @@
     "executionSurfaces": [
       "saos-dex dex-grid.yml (CI)",
       "Domain dex-grid.yml (CI, 04:00 schedule)",
-      "money-mover/api-money (unknown machine)",
+      "Zip money stack on the fleet machine (next-server :3000 + pulse :3033 + money :3034 + keeper :3036 — measured from its own committed fleet state; machine identity still UNKNOWN)",
       "ad-hoc session scripts (this and parallel sandboxes)"
     ],
     "guardedSurfaces": [
       "saos-dex dex-grid (brake.mjs at sign-time)",
       "Domain capital-gate consumers",
       "steem agent tools (capital_gate.cjs)",
-      "ladder-refresh"
+      "ladder-refresh",
+      "Zip money stack signing edges (source-level brake R30 — runtime pending owner deploy)"
     ],
     "unguardedSurfaces": [
-      "money-mover + /api/money + market-maker (Zip money stack: ZERO STASIS/brake/guard references — measured by grep over the whole stack)",
+      "Zip money stack RUNTIME (brake committed at source R30 but the live daemon does not consume it until deploy/restart — propagation via keeper pull is best-effort, not organism-controlled)",
       "ad-hoc scripts"
     ],
     "ownerOnlySurfaces": [
