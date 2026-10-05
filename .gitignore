@@ -135,3 +135,8 @@ mini-services/**/audit.jsonl
 
 # Z-21 — plaintext key-drop folder removed from git (security doctrine)
 nvx/
+
+# custody-hygiene (V-a 2d9dd6e9): nv.zip untracked from the live tree — recovery preserved via
+# agent/vault/*.enc + agent/recovery-meta.json + FACTORY_MASTER derivation; history untouched.
+# Keep it out of accidental re-adds (git add .); recovery material lives in the vault chain, not here.
+nv.zip
