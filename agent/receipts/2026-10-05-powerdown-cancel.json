@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-05T22:52:17.077Z",
+  "finishedAt": "2026-10-05T22:52:23.682Z",
+  "tool": "pd-cancel.cjs",
+  "trace": "1a10e3975b4668a1",
+  "status": "CANCELED-VERIFIED",
+  "statusCorrectionNote": "the first run scored NO-READBACK due to a verification bug (Number('0.000000 VESTS')=NaN); independent re-verification on two nodes (api.steemit.com + api.justyy.com) at ~22:54Z confirmed to_withdraw=0, rate=0, outgoing withdraw routes=[], and located the on-chain op; script fixed in the same commit",
+  "ownerWord": "לא עושים עוד פאוורדאון!!!!! צריך את הכוח! צריך כוח לכולם!",
+  "authority": "owner-directive IM 1a10e3975b4668a1 — recorded in owner-directives.jsonl i=3 (owner-note, lanes=[\"vesting\"], hash 083c851004d76bd4…); executed as the owner's hand via the organism signing surface — NOT an organism lane expansion; STASIS+E10 remain in force for organism-initiated capital ops; boundaryStatus remains OWNER_ONLY (R30 verdict B)",
+  "before": {
+    "vestingSP": 3947.227,
+    "delegatedOutSP": 2822.626,
+    "toWithdraw": "3070814041830",
+    "withdrawn": "2303110531374",
+    "rate": "767703.510458 VESTS",
+    "nextVestingWithdrawal": "2026-10-10T02:01:27",
+    "remainingToWithdrawSP": 475.951
+  },
+  "op": {
+    "type": "withdraw_vesting",
+    "account": "headcorner",
+    "vesting_shares": "0.000000 VESTS"
+  },
+  "trxId": "13642a9a9a765d77d7834735b9af6f938a6fb7da",
+  "trxVerification": {
+    "block": 110186999,
+    "timestamp": "2026-10-05T22:52:18",
+    "amount": "0.000000 VESTS",
+    "verifiedOn": ["https://api.steemit.com", "https://api.justyy.com"],
+    "withdrawRoutesOutgoing": [],
+    "note": "condenser_api.get_withdraw_routes outgoing=[] on both nodes; account-history index lagged the live state at 22:52:23Z (receipt finishedAt) — history read-back caught up ~22:54Z"
+  },
+  "after": {
+    "toWithdraw": 0,
+    "withdrawn": 0,
+    "rate": "0.000000 VESTS",
+    "nextVestingWithdrawal": "1969-12-31T23:59:59"
+  },
+  "keptAsPowerSP": 475.951,
+  "reversibility": "a new power-down can be opened at any time by owner word"
+}
