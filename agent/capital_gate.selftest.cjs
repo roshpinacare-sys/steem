@@ -307,6 +307,28 @@ t('E10: haltCoverage=ORGANISM_ONLY → capital lane (grid) REFUSED, while postin
   t('E10d: claims REAL + ORGANISM_ONLY is VALID (non-capital lane — the honesty law must not kill the loop)', sm.validate(m2).ok === true);
 }
 
+/* E13 (R30, trace 1a10d6f880df9255) — the boundary-consistency law in the validator:
+ * a forged "closed" model must be a schema error, not a belief. Adversary-D's hole, closed. */
+{
+  const mkSov = (over) => Object.assign({ protocol: 'SAOS-SOVEREIGNTY/1', haltCoverage: 'ORGANISM_ONLY', cannotStop: [], capitalPaths: [], unguardedSurfaces: ['money runtime'] }, over);
+  const m = sm.EMPTY();
+  m.sovereignty = mkSov({ boundaryStatus: 'CLOSED' });
+  let v = sm.validate(m);
+  t('E13a: boundaryStatus=CLOSED + haltCoverage=ORGANISM_ONLY is a schema error (the validator refuses the lie)', v.ok === false && v.errors.some((e) => /CLOSED.*ORGANISM_ONLY/.test(e)));
+  m.sovereignty = mkSov({ boundaryStatus: 'CLOSED', boundaryEscape: true, haltCoverage: 'WORLD' });
+  v = sm.validate(m);
+  t('E13b: boundaryStatus=CLOSED + boundaryEscape=true is a contradiction inside one model', v.ok === false && v.errors.some((e) => /boundaryEscape=true/.test(e)));
+  m.sovereignty = mkSov({ boundaryStatus: 'OWNER_ONLY', boundaryEscape: true });
+  v = sm.validate(m);
+  t('E13c: boundaryStatus=OWNER_ONLY + boundaryEscape=true + unguarded named → validates (the honest state is expressible)', v.ok === true);
+  m.sovereignty = mkSov({ boundaryEscape: false });
+  v = sm.validate(m);
+  t('E13d: boundaryEscape=false while unguarded surfaces still named is a schema error (no invisible closure)', v.ok === false && v.errors.some((e) => /unguarded surface/.test(e)));
+  m.sovereignty = mkSov({ boundaryStatus: 'SOVEREIGN-AF' });
+  v = sm.validate(m);
+  t('E13e: foreign boundaryStatus vocabulary is refused', v.ok === false && v.errors.some((e) => /boundaryStatus must be in/.test(e)));
+}
+
 /* E2 — guard bypass attempt at the gate edge: a writer that skips guards cannot skip STASIS */
 c = sandbox({ stasis: { protocol: 'SAOS-FATE-DEFENSE-STASIS/1', active: true, mode: 'full', since: '2026-10-05T00:00:00Z' }, chain: 'seed', guards: 'empty', selfmodel: CLEAN_SELFMODEL() });
 t('E2: full-mode STASIS with NO guards present still halts every lane (the guard file is one edge of three, not the only one)', c.g.stasisHalt('ladder-refresh') === true && c.g.stasisHalt('agent:claim') === true && c.g.stasisHalt('head-delegate') === true);
