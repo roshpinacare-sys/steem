@@ -768,7 +768,7 @@ function buildSovereignty(ctx) {
     haltCoverageReason: 'A proven capital path (money-family-live) signs outside every guard the organism can reach; until the owner remediates that surface, halt covers only the organism itself.',
     capitalPaths: [
       { id: 'dex-grid-ci', path: 'owner-directive\u2192STASIS staged\u2192dex-grid.yml dispatch\u2192grid-beat.ts\u2192brake.mjs(stasisHalt: STASIS+guards+directives)\u2192realmarket.signAndBroadcast\u2192headcorner', guarded: true, kill: 'guards+STASIS+cancel CI schedule', owner: 'organism (policy-gated expansion)', epistemic: 'OBSERVED', evidence: [ev('saos-dex dex-grid run 12:56:12Z \u2192 ops 12:56:33-48Z; Domain dex-grid run 04:00:57Z \u2192 ops 04:01:33-45Z; brake consumption committed 82e9de4')] },
-      { id: 'money-family-live', path: 'money-mover v1.9.0 (60s check, 30min cooldown, reprice-on-drift)\u2192/api/money (vault WIF)\u2192steem.broadcast\u2192headcorner; orderid=date-scheme (shared with CI)', guarded: false, kill: 'NONE reachable from organism \u2014 runs on a machine outside all homes, outside GitHub Actions', owner: 'OWNER-ONLY (identify machine, stop daemon or brake its signing route)', epistemic: 'OBSERVED', evidence: [ev('16:37:15-45Z + 17:07:36-17:08:03Z + 17:39:39Z ops; zero CI runs alive at those seconds in ALL org repos; orderid scheme + 30min cadence + REPRICE-FAIL-cancel-all match Zip money stack contract (orderid doc line: "money-mover \u05d4\u05d5\u05d0 \u05e1\u05db\u05de\u05ea-\u05d9\u05d5\u05dd"); zero STASIS/brake references in the entire Zip money stack')] },
+      { id: 'money-family-live', path: 'money-mover v1.9.0 (60s check, 30min cooldown, reprice-on-drift)\u2192/api/money (vault WIF)\u2192steem.broadcast\u2192headcorner; orderid=date-scheme (shared with CI); R30: source brake at all 4 signing edges (api/money, api/money/hive, api/money/claim, market-maker verifySigner) consuming STASIS+lane-guards fail-closed \u2014 runtime activation OWNER-ONLY pending deploy/restart of the fleet machine', guarded: false, kill: 'NONE reachable from organism at runtime \u2014 R30 closed the SOURCE (brake.ts, all edges); activation requires owner deploy \u2014 propagation via keeper pull is best-effort, not organism-controlled', owner: 'OWNER-ONLY (deploy/restart the fleet machine \u2014 the missing capability is execution control on that host)', epistemic: 'OBSERVED', evidence: [ev('16:37:15-45Z + 17:07:36-17:08:03Z + 17:39:39Z + RE-OBSERVED-LIVE 18:41:15-45Z ops (5 cancels+5 creates, orderid 2026100501-05, exp+27d, ~31min cadence) with zero CI runs alive and all internal guards active; R29 cancel-all-no-recreate detail at 17:39:39Z CONTRADICTED (creates followed 6s later); zero STASIS/brake references in the pre-R30 Zip money stack (grep); R30 brake committed + 15/15 isolated vectors green')] },
       { id: 'micro-session-scripts', path: 'ad-hoc session scripts \u2192 2-op batched trx, 0.5 STEEM, 1h expiry, orderid 21000003xx', guarded: false, kill: 'NONE (no owning tool exists)', owner: 'OWNER-ONLY', epistemic: 'INFERRED', evidence: [ev('12:56:45Z trx 8065683d: two limit_order_create in one transaction \u2014 no repo tool batches creates this way')] },
       { id: 'ladder-refresh-manual', path: 'agent/ladder_refresh.cjs (sessions) \u2192 gate \u2192 chain', guarded: true, kill: 'capital gate (lane grid)', owner: 'organism (shrink) / owner (expand)', epistemic: 'OBSERVED', evidence: [ev('receipts 2026-10-05-ladder-refresh-* both abort-anomaly, zero ops')] },
       { id: 'claims-suite', path: 'claim workflows \u2192 capital gate (claims lane) \u2192 chain', guarded: true, kill: 'guards+STASIS', owner: 'organism (shrink)', epistemic: 'OBSERVED', evidence: [ev('posting-only ops, idempotent')] },
@@ -776,21 +776,28 @@ function buildSovereignty(ctx) {
     ],
     capabilityMatrix: [
       { actor: 'dex-grid-ci (grid-beat.ts in CI)', can: 'sign ladder orders (steem+hive) within parity/level caps', may: 'only staged-allowed lanes under directives coverage + guards + fresh clean self-model', should: 'maintain the parity ladder only', mustNot: 'touch non-grid capital, expand lanes alone', canStop: 'yes (guards close lanes; gate refuses)', canBypass: 'no \u2014 brake consumed at sign-time (82e9de4)', ownerOnly: false },
-      { actor: 'money-family-live (money-mover v1.9.0 on an unknown machine)', can: 'sign cancel+create ladders autonomously every ~30min', may: 'everything its code allows \u2014 it consumes NO STASIS, NO guards, NO directives', should: '(its code believes) maintain the money ladder', mustNot: 'unknown to the organism', canStop: 'NO \u2014 I CANNOT STOP THIS ACTOR', canBypass: 'yes \u2014 it is structurally outside the guard perimeter (BOUNDARY_ESCAPE=TRUE)', ownerOnly: true },
+      { actor: 'money-family-live (money-mover v1.9.0 on the fleet machine \u2014 machine identity UNKNOWN, \u22652 machines hold the factory key-source path)', can: 'sign cancel+create ladders autonomously every ~30min', may: 'everything its code allows \u2014 it consumed NO STASIS, NO guards, NO directives (R30: its SOURCE now consumes them; its RUNTIME does not until the owner deploys)', should: '(its code believes) maintain the money ladder', mustNot: 'unknown to the organism', canStop: 'NO \u2014 I CANNOT STOP THIS ACTOR until the owner deploys the R30 brake to the live host', canBypass: 'yes \u2014 runtime remains structurally outside the guard perimeter until deploy (BOUNDARY_ESCAPE=TRUE); after deploy: fail-closed brake at all 4 edges', ownerOnly: true },
       { actor: 'cognition-beat', can: 'close lanes (guards), publish receipts, rebase', may: 'shrink-only, never open', should: 'observe, contradict, shrink, record', mustNot: 'open lanes, edit STASIS/chain, sign capital', canStop: 'yes (self-stop proven R28)', canBypass: 'no', ownerOnly: false },
       { actor: 'agent-llm-sessions', can: 'run any repo tool incl. gated ones; historically placed micro-orders', may: 'gated tools only (gate enforces at sign-time)', should: 'measure, verify, shrink', mustNot: 'unguarded capital ops', canStop: 'partially (they are sessions \u2014 they die with the session)', canBypass: 'manual scripts can bypass gates when writing new code \u2014 convention-backed', ownerOnly: false },
       { actor: 'owner (human)', can: 'everything', may: 'everything', should: 'remediate money-family-live surface; consider key rotation; own the directives chain', mustNot: '\u2014', canStop: 'yes (root)', canBypass: 'yes (root)', ownerOnly: true },
     ],
     cannotStop: [
-      'money-family-live \u2014 live signing loop on an unreachable machine (proven 2026-10-05T17:07:36Z)',
+      'money-family-live \u2014 live signing loop on the fleet machine (proven 2026-10-05T17:07:36Z + 18:41:15Z); R30 brake is committed at source but NOT yet active at runtime \u2014 stopping it requires owner deploy/restart',
       'any external holder of the active key (holder census UNKNOWN)',
       'owner-direct manual operations',
     ],
+    boundaryStatus: 'OWNER_ONLY',
+    boundaryEscape: true,
+    sourceClosure: {
+      what: 'Zip money stack signing edges (api/money POST, api/money/hive, api/money/claim, market-maker verifySigner) now evaluate STASIS+lane-guards fail-closed before any broadcast (src/lib/cognition/brake.ts, R30 trace 1a10d6f880df9255)',
+      tested: 'scripts/brake-selftest.ts \u2014 15/15 isolated vectors incl. fail-closed corrupt/foreign, close-only foreign fields, expiry, combined layers',
+      notClaimed: 'runtime closure \u2014 the live fleet machine runs old code until the owner deploys/restarts; keeper git-pull is best-effort (only when pushing its own state) and dev-revive restarts without pulling',
+    },
     unknownWriters: ['micro-order space 2100000xxx writer (trx 8065683d\u2026) \u2014 no owning tool in any repo', 'the machine hosting money-family-live'],
     signingAuthorities: [{ authority: 'headcorner @active', note: 'ONE key signs everything \u2014 key identity cannot distinguish writers; provenance must come from op fingerprints (orderid space, cadence, expiry, spacing, ledger txids), never from the key alone', epistemic: 'OBSERVED', evidence: [ev('all 10 ops at 17:07:36Z signed by the same account authority the CI uses')] }],
-    executionSurfaces: ['saos-dex dex-grid.yml (CI)', 'Domain dex-grid.yml (CI, 04:00 schedule)', 'money-mover/api-money (unknown machine)', 'ad-hoc session scripts (this and parallel sandboxes)'],
-    guardedSurfaces: ['saos-dex dex-grid (brake.mjs at sign-time)', 'Domain capital-gate consumers', 'steem agent tools (capital_gate.cjs)', 'ladder-refresh'],
-    unguardedSurfaces: ['money-mover + /api/money + market-maker (Zip money stack: ZERO STASIS/brake/guard references \u2014 measured by grep over the whole stack)', 'ad-hoc scripts'],
+    executionSurfaces: ['saos-dex dex-grid.yml (CI)', 'Domain dex-grid.yml (CI, 04:00 schedule)', 'Zip money stack on the fleet machine (next-server :3000 + pulse :3033 + money :3034 + keeper :3036 \u2014 measured from its own committed fleet state; machine identity still UNKNOWN)', 'ad-hoc session scripts (this and parallel sandboxes)'],
+    guardedSurfaces: ['saos-dex dex-grid (brake.mjs at sign-time)', 'Domain capital-gate consumers', 'steem agent tools (capital_gate.cjs)', 'ladder-refresh', 'Zip money stack signing edges (source-level brake R30 \u2014 runtime pending owner deploy)'],
+    unguardedSurfaces: ['Zip money stack RUNTIME (brake committed at source R30 but the live daemon does not consume it until deploy/restart \u2014 propagation via keeper pull is best-effort, not organism-controlled)', 'ad-hoc scripts'],
     ownerOnlySurfaces: ['STASIS.json protocol edits', 'owner-directives chain', 'signing keys / custody', 'the money-family-live machine', 'branch protection (would make the directives chain tamper-PREVENTING, not just tamper-EVIDENT)'],
     event170736: {
       classification: 'INTERNAL_BUT_UNGUARDED',
@@ -888,13 +895,14 @@ async function verifyOwnAct(sha, file, token, attempts = 3) {
 const HOME_SYNC = Object.freeze([
   { name: 'Domain', repo: 'roshpinacare-sys/Domain', file: 'agents/cognition/lane-guards.json' },
   { name: 'saos-dex', repo: 'roshpinacare-sys/saos-dex', file: 'grids/state/lane-guards.json' },
+  { name: 'Zip', repo: 'roshpinacare-sys/Zip', file: 'sovereign/cognition/lane-guards.json' },
 ]);
 function redact(s) { const t = process.env.ZIP_PAT || ''; return t ? String(s).split(t).join('***REDACTED***') : String(s); }
 function syncGuardsCrossHome(guardsNext, cycle) {
   const token = process.env.ZIP_PAT;
   const out = [];
   if (!token) return [{ home: 'all', status: 'failed', error: 'no ZIP_PAT in env — cross-home guard sync impossible (recorded, not silent)' }];
-  const content = JSON.stringify({ ...guardsNext, note: 'synced from steem cognition-beat cycle #' + cycle + ' (trace 1a10c90522120149) — guards close-only; consumers: steem capital_gate.cjs · Domain capital-gate.cjs · saos-dex brake.mjs' }, null, 2) + '\n';
+  const content = JSON.stringify({ ...guardsNext, note: 'synced from steem cognition-beat cycle #' + cycle + ' (trace 1a10c90522120149) — guards close-only; consumers: steem capital_gate.cjs · Domain capital-gate.cjs · saos-dex brake.mjs · Zip src/lib/cognition/brake.ts (R30, trace 1a10d6f880df9255; runtime activation OWNER-ONLY pending deploy)' }, null, 2) + '\n';
   for (const h of HOME_SYNC) {
     const dir = '/tmp/cogsync-' + h.name + '-' + process.pid;
     try {
