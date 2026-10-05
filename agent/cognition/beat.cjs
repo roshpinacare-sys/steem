@@ -751,7 +751,7 @@ function git(...args) {
 }
 function publish(msg) {
   try { git('config', 'user.name', 'saos-cognition'); git('config', 'user.email', 'cognition@saos.local'); } catch (_) {}
-  git('add', '--', ...OUR_FILES);
+  git('add', '-f', '--', ...OUR_FILES); /* -f: the gate journal (capital-decisions.jsonl) is ignore-listed from the pre-beat era — decision memory MUST reach git (measured FATAL without it, cycle #3) */
   const staged = git('diff', '--cached', '--name-only');
   if (!staged) return { sha: git('rev-parse', 'HEAD'), committed: false };
   git('commit', '-m', msg);
