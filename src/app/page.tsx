@@ -19,6 +19,7 @@ import { StatusBadge } from '@/components/saos/StatusBadge'
 import { HonestyBadge } from '@/components/saos/HonestyBadge'
 import { SectionNav, SECTIONS, type SectionId } from '@/components/saos/SectionNav'
 import MetricsTrends from '@/components/metrics-trends'
+import ClaimsAudit from '@/components/claims-audit'
 import { useAdoptCredential } from '@/components/saos/useAdoptCredential'
 import { WalletConsoleCard } from '@/components/saos/WalletConsoleCard'
 import { FleetCard } from '@/components/saos/FleetCard'
@@ -328,6 +329,7 @@ export default function Home() {
                     <Stat label="מחזור-בא-בעקבות" value={sov?.state?.cycles?.nextAt ? `${Math.max(0, Math.round((new Date(sov.state.cycles.nextAt).getTime() - Date.now()) / 60000))} דק` : '—'} />
                   </div>
                   <MetricsTrends />
+                  <ClaimsAudit />
                   <div className="mt-2">
                     <RailRow
                       label="ביקורת-איכות (selftest) · כל 6 שעות"

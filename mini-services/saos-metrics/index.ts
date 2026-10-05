@@ -20,6 +20,7 @@
 import { Database } from "bun:sqlite";
 import fs from "fs";
 import path from "path";
+import { initAudits, maybeRunAudit, forceRunAudit } from "./audit"; // R218-b claims-auditor
 
 const PORT = 3042;
 const STATE_DIR = "/home/z/my-project/mini-services/saos-engine/state";
@@ -59,6 +60,7 @@ db.exec(
   `INSERT INTO meta (k,v) VALUES ('schema','${SCHEMA}'), ('bootedAt','${bootedAt}')
    ON CONFLICT(k) DO UPDATE SET v=excluded.v WHERE k='bootedAt';`
 );
+initAudits(db); // R218-b: audits table (same single writer)
 
 /* ---------- guarded state-file readers (engine may be mid-write) ---------- */
 function readJson(p: string): any | null {
@@ -161,6 +163,11 @@ function persist() {
 /* first sample immediately, then steady grid */
 persist();
 setInterval(persist, EVERY_MS);
+/* R218-b: autonomous audit every 6h (bounded staleness even with no readers);
+ * readers additionally trigger freshness via GET /audit -> maybeRunAudit */
+setInterval(() => {
+  maybeRunAudit(db).catch((e) => console.error("audit-tick-fail", (e as Error).message));
+}, 6 * 3600 * 1000);
 
 /* ---------- series (15-min buckets, 24h) ---------- */
 function series(): Record<string, [number, number][]> {
@@ -217,6 +224,15 @@ const server = Bun.serve({
         snapshotCount,
         lastAt: last?.ts ?? null,
       });
+    }
+    if (p === "/audit") {
+      /* R218-b: GET = fresh-if-stale (6h bound); POST = force re-run */
+      try {
+        const res = req.method === "POST" ? await forceRunAudit(db) : await maybeRunAudit(db);
+        return Response.json({ ok: true, ran: res.ran, ...(res.result ?? {}) });
+      } catch (e) {
+        return Response.json({ ok: false, error: (e as Error).message }, { status: 500 });
+      }
     }
     if (p === "/snapshot") {
       const latest = db.prepare("SELECT * FROM snapshots ORDER BY id DESC LIMIT 1").get() as any;

@@ -1029,3 +1029,30 @@ Work Log:
 Stage Summary:
 - The organism now has a MEMORY OF TIME: every metric gets a persistent, single-writer, 7-day time-series with honest freshness; the cockpit can show trends instead of snapshots. Built with zero contention surface for the 5-agent round (all-new files + 2 page anchors), demand-healed, kill-drill proven (~1s resurrection), signed-chain pending push.
 - Steps 2-4 of the plan (Auditor, Merkle event anchoring, Builder) remain unclaimed as of this append; reservation protocol template above is reusable by any agent.
+---
+Task ID: R218-b
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: RESERVATION — Step 2 of approved plan: CLAIMS-AUDITOR. Extends my R218-a lanes. OTHER AGENTS: same protocol as R218-a.
+
+Work Log:
+- I OWN (all-new or already-mine): mini-services/saos-metrics/* (extending the SAME organ process with /audit capability + audits table in metrics.db — single-writer preserved), src/lib/metrics-organ.ts (add fetchAudit), src/app/api/saos/audit/* (new), src/components/claims-audit.tsx (new).
+- Shared files: src/app/page.tsx ONE insertion (audit card inside T-10, near MetricsTrends) + worklog appends. Everything else untouched, same as R218-a.
+- Code-swap law honored: metrics organ runs plain bun (no hot reload) — /audit install = deliberate edit -> kill -> demand-heal -> verify, exactly the R217 documented procedure.
+- Audit design: organ fetches /api/saos/status (what the page renders) AND reads raw state files + metrics DB; per-claim verdicts MATCH | DRIFT | STALE | UNMEASURABLE; two-strike re-read on DRIFT (mid-cycle-write false-positive guard, watchdog doctrine); audits persisted in metrics.db; 6h bounded staleness + on-demand run.
+- Status: reservation made; build starts now.
+---
+Task ID: R218-b
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: COMPLETION — Step 2 of approved plan: CLAIMS-AUDITOR productized (R217 as a standing organ). Built inside the metrics organ (single process, single writer), fully verified.
+
+Work Log:
+- RESERVATION honored (see R218-b reservation): all-new files + ONE page insertion; sovereign.ts/engine/custodian/prisma/push-gate untouched.
+- BUILT mini-services/saos-metrics/audit.ts: claim table recomputes page data-layer claims from ground truth — curator/observe/economics/daily/payouts/soldiers-T80-law/custody-freshness + SELF-AUDIT of the metrics time-series vs state files. Verdicts MATCH|DRIFT|STALE|UNMEASURABLE; TWO-STRIKE re-read before confirming DRIFT (mid-cycle-write guard, watchdog doctrine); audits persisted in metrics.db (30d retention); 6h bounded staleness + on-demand; autonomous 6h timer inside the organ.
+- WIRED: index.ts (+/audit GET fresh-if-stale, POST force, 6h tick), metrics-organ.ts fetchAudit, NEW /api/saos/audit route (GET+POST, demand-heal, honest ORGAN-DOWN), NEW src/components/claims-audit.tsx (counts badges, problem list, collapsible 23-claim detail with scroll bound, force-run, freshness stamps, honest scope note: text-layer claims audited by human rounds), page.tsx ONE line insertion after MetricsTrends.
+- CODE-SWAP LAW exercised twice (edit->kill->demand-heal->verify): first run produced the bug I then fixed (DB column `claim` exposed unmapped while component expects `id`) — swapped again, verified claims now carry id.
+- VERIFIED LIVE: first audit 23:56:54Z = 22 MATCH / 0 DRIFT / 0 STALE / 1 UNMEASURABLE (econ.mmMeasured null-null = no measurement window — honest scope, not defect). Force-run 23:58:40Z age 0s via browser click. Two-strike path armed (0 confirmations needed — page is truthful).
+- BROWSER VERIFIED (agent-browser): card in T-10, counts render, audited-stamp updates on force-run (age 73s -> 0s), details list shows all claim ids, console clean, lint clean, mobile 390px renders.
+- MEANING: the cockpit now audits itself continuously — page-vs-truth drift is detectable by the organism, not only by orchestrator rounds. Third organ capability on the third process without touching the watchdog (demand-heal doctrine scales).
+
+Stage Summary:
+- Steps 1-2 of the approved plan are LIVE (time-series + claims-auditor), both in the collision-safe single-writer organ, both kill-drill/force-run verified, both signed-chain pending push. Steps 3-4 (Merkle event anchoring, Builder) remain unclaimed; the reservation protocol is proven reusable across two rounds by the same agent and available to the other 4 agents.

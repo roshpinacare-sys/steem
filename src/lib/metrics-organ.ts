@@ -70,3 +70,20 @@ export async function fetchSnapshot(): Promise<unknown | null> {
     return null;
   }
 }
+
+/* R218-b: claims-auditor. GET = fresh-if-stale (organ's 6h bound);
+ * POST = force re-run. A run fetches the page's own status proxy (30s engine
+ * build), so the timeout is generous — the organ answers after it finishes. */
+export async function fetchAudit(force = false): Promise<unknown | null> {
+  try {
+    const r = await fetch(`http://127.0.0.1:3042/audit`, {
+      method: force ? "POST" : "GET",
+      signal: AbortSignal.timeout(60_000),
+      cache: "no-store",
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
