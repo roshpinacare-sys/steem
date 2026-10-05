@@ -24,7 +24,11 @@ function spawnMetrics(): number | null {
   if (!fs.existsSync(`${METRICS_DIR}/index.ts`)) return null;
   fs.mkdirSync(`${METRICS_DIR}/state`, { recursive: true });
   const out = fs.openSync(`${METRICS_DIR}/metrics.log`, "a");
-  const child = spawn("bun", ["run", "dev"], {
+  /* R218-a LESSON (measured, T-15): `bun run dev` under the inherited next-server
+   * env resolves the ROOT package.json script (`next dev -p 3000` — EADDRINUSE),
+   * NOT the organ's local script. Direct `bun index.ts` is the only correct
+   * spawn form — same determinism law as R217 (no script-layer indirection). */
+  const child = spawn("bun", ["index.ts"], {
     cwd: METRICS_DIR,
     detached: true,
     stdio: ["ignore", out, out],

@@ -1009,3 +1009,23 @@ Work Log:
 
 Stage Summary:
 - Collision-avoidance protocol established for the 5-agent round: reservations first, minimal shared-file anchors, atomic appends to worklog, never blind-Edit shared files, no sovereign.ts/prisma/engine contention. Metrics organ designed as fully isolated new organ (:3042, own SQLite, demand-healed from its own read API — zero sovereign.ts edits).
+---
+Task ID: R218-a
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: COMPLETION — Step 1 of approved plan (metrics time-series) built, verified, drilled; multi-agent collision protocol established. Operator order verbatim: audit/r218/OPERATOR-ORDER.md.
+
+Work Log:
+- RESERVATION PROTOCOL (see reservation entry above): claimed lanes before any edit; shared-file touch limited to 2 anchors in page.tsx + worklog appends; sovereign.ts / engine / custodian / prisma / push-gate untouched all round.
+- BUILT mini-services/saos-metrics (organ :3042): bun:sqlite WAL, single-writer metrics.db, 60s snapshots from engine state files (READ-ONLY inputs), 15-min bucket series over 24h window, 7-day retention, /health + /snapshot, deterministic plain-bun (R217 law), .gitignore guards state/logs/db.
+- BUILT src/lib/metrics-organ.ts (ensureMetricsAlive = demand-heal, 3x2s bounded verify), src/app/api/saos/spawn-metrics (idempotent implant, single-instance), src/app/api/saos/metrics (read API: ensure-alive -> proxy -> honest ORGAN-DOWN/UNRESPONSIVE verdicts, ageSec always surfaced — R217 truth law).
+- BUILT src/components/metrics-trends.tsx (self-contained client component: 4 SVG sparklines — VP אפקטיבי / RC חי / מילויים-היום / קצה-המרה bps, freshness badge "measured HH:MM:SSZ · age Ns", refresh button, insufficient-data honesty, a11y roles; zero coupling to page data flow). page.tsx: import + ONE insertion inside T-10 card.
+- LIVE LESSON (measured, T-15): `bun run dev` spawned under inherited next-server env resolves the ROOT package.json script -> `next dev -p 3000` -> EADDRINUSE. FIX: direct `bun index.ts` spawn (script-layer indirection removed; documented in code). First spawn failed pid 24677; corrected spawn pid 24805 up 23:31:46Z.
+- VERIFIED LIVE: 2 snapshots exactly 60s apart (23:31:46 / 23:32:46); API payload full (vpEff, rcPct live 78.6 vs tank 100, fillsToday 41, realizedSbd -0.147, edgeBps 6503, custodyAge, watchdog counters) — measured truth, not claims.
+- KILL-DRILL PASSED: organ killed 23:33:24Z -> next read-API call auto-resurrected it (boot 23:33:25Z, total response 2.08s, verdict "spawned"). Demand-heal doctrine empirically proven for a THIRD organ without touching the watchdog.
+- BROWSER VERIFIED (agent-browser): card renders in T-10 section; measured stamp live and updates on refresh click (age 28s -> 9s); all 4 sparkline labels; mobile 390px renders; console clean (Fast Refresh only); zero page errors; footer law intact (min-h-screen flex-col + mt-auto, line 190/1001).
+- LINT clean. Engine+custodian ran undisturbed (their state-file commits continue per their own law; fd51c2b swept an early snapshot of my files mid-round — my fix + finals are in THIS commit).
+- OBSERVATION for organ-owners: custodian commit messages still carry stale "R215-custodian" prefix (not my lane — flagged for custodian/Auditor owner).
+
+Stage Summary:
+- The organism now has a MEMORY OF TIME: every metric gets a persistent, single-writer, 7-day time-series with honest freshness; the cockpit can show trends instead of snapshots. Built with zero contention surface for the 5-agent round (all-new files + 2 page anchors), demand-healed, kill-drill proven (~1s resurrection), signed-chain pending push.
+- Steps 2-4 of the plan (Auditor, Merkle event anchoring, Builder) remain unclaimed as of this append; reservation protocol template above is reusable by any agent.
