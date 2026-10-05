@@ -143,7 +143,11 @@ class Writer {
 }
 
 /* ── operation serializers (field order = chain registry order) ─────────── */
-export const OP_IDS = { vote: 0, comment: 1, transfer: 2, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39 };
+export const OP_IDS = { vote: 0, comment: 1, transfer: 2, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18 };
+/* R216 custody-witness: custom_json=18 obtained by CHAIN TRUTH (get_transaction_hex,
+ * node-serialized probe 2026-10-05: op-id byte = 0x12 = 18; body fields verified:
+ * required_auths vec + required_posting_auths vec + id str + json str). Same method
+ * as the R209 claim=39 fix. Single serialization source remains THIS table. */
 /* R209 body-fix (restored + chain-re-judged 2026-10-05): claim_reward_balance
  * was 33 here — 19 live broadcasts came back "Missing Posting Authority".
  * CHAIN TRUTH (condenser_api.get_transaction_hex, OBSERVED): claim=39,
@@ -188,6 +192,14 @@ function serOp(name, v, w) {
       break;
     case "claim_reward_balance":
       w.str(v.account).asset(v.reward_steem).asset(v.reward_sbd).asset(v.reward_vests);
+      break;
+    case "custom_json":
+      /* field order chain-verified via get_transaction_hex probe (R216): vec<string>, vec<string>, id, json */
+      w.varint((v.required_auths ?? []).length);
+      for (const a of v.required_auths ?? []) w.str(a);
+      w.varint((v.required_posting_auths ?? []).length);
+      for (const a of v.required_posting_auths ?? []) w.str(a);
+      w.str(v.id).str(v.json ?? "{}");
       break;
     default:
       throw new Error(`op-not-serializable: ${name}`);

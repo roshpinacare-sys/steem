@@ -5,6 +5,7 @@
 //   divergence-check (read-only) -> jq validation -> git commit -> scripts/sovereign-push.sh (FF-only gate)
 // NEVER: force, merge autonomy, non-canonical branches, commits of invalid (torn) JSON.
 import { spawnSync } from "node:child_process";
+import { thinkGate, executeAs, masterAccount, credentialFingerprint } from "../saos-engine/signer.mjs";
 import { appendFileSync, writeFileSync, readFileSync, readdirSync } from "node:fs";
 
 const REPO = "/home/z/my-project";
@@ -33,6 +34,21 @@ function appendAlert(kind: string, detail: string) {
   try {
     appendFileSync(`${STATE_DIR}/custodian-alerts.jsonl`, JSON.stringify({ at: new Date().toISOString(), kind, detail: detail.slice(0, 300) }) + "\n");
   } catch {}
+}
+
+let lastAnchorAt = 0;
+async function anchorWitness(): Promise<void> {
+  try {
+    if (Date.now() - lastAnchorAt < 3600000) return;
+    const acct: string = masterAccount() as any;
+    const tip = sh("git", ["rev-parse", "HEAD"]).out;
+    const ops: any = [["custom_json", { required_auths: [], required_posting_auths: [acct], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "R216-custodian", fp: credentialFingerprint(acct) }) }]];
+    const gate: any = thinkGate(acct, ops, { source: "custody-witness" });
+    if (gate.verdict !== "ALLOW") { appendAlert("anchor-refused", (gate.reasons ?? []).join(";")); return; }
+    const r: any = await executeAs(acct, ops, { tag: "custody-witness", role: "posting" } as any);
+    lastAnchorAt = Date.now();
+    appendAlert("anchor-ok", JSON.stringify({ txid: r?.txid ?? null, tip }));
+  } catch (e) { appendAlert("anchor-error", String(e).slice(0, 200)); }
 }
 
 let lastTick: TickResult | null = null;
@@ -84,7 +100,7 @@ function tick() {
             const p = sh("bash", ["scripts/sovereign-push.sh"]);
             res.pushed = p.code === 0;
             const m = (p.out + " " + p.err).match(/PUSHED ([0-9a-f]{40})/);
-            if (res.pushed && m) res.pushSha = m[1];
+            if (res.pushed && m) { res.pushSha = m[1]; void anchorWitness(); }
             if (!res.pushed) appendAlert("push-abort", `${p.out} ${p.err}`);
           }
         }
