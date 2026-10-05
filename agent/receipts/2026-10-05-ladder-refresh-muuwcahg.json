@@ -1,0 +1,96 @@
+{
+  "receipt": "ladder-refresh",
+  "task": "16-b — ladder-refresh executor run (≤3 cancel+replace pairs, ±2% band, floor-anchored, no fresh capital)",
+  "at": "2026-10-05T06:56:26.643Z",
+  "node": "https://api.steemit.com",
+  "account": "headcorner",
+  "market": {
+    "bestBid": 0.10239607,
+    "bestAsk": 0.10263397,
+    "mid": 0.10251502,
+    "spreadPct": 0.23,
+    "depthBids": 15,
+    "depthAsks": 20,
+    "headBlock": 110167946
+  },
+  "ladderShape": {
+    "openOrders": 3,
+    "sells": 3,
+    "buys": 0,
+    "steemOfferedSellSide": 9.261,
+    "steemSoughtBuySide": 0,
+    "oldestOrderHours": 2.91,
+    "orders": [
+      {
+        "orderid": 12671328,
+        "side": "sell-steem",
+        "price": 0.11143505,
+        "baseAmount": 3.087,
+        "steemVolume": 3.087,
+        "vsMidPct": 8.7,
+        "ageHours": 2.91,
+        "expiration": "2026-11-01T04:01:39"
+      },
+      {
+        "orderid": 12671329,
+        "side": "sell-steem",
+        "price": 0.11175899,
+        "baseAmount": 3.087,
+        "steemVolume": 3.087,
+        "vsMidPct": 9.02,
+        "ageHours": 2.91,
+        "expiration": "2026-11-01T04:01:41"
+      },
+      {
+        "orderid": 12671330,
+        "side": "sell-steem",
+        "price": 0.11240687,
+        "baseAmount": 3.087,
+        "steemVolume": 3.087,
+        "vsMidPct": 9.65,
+        "ageHours": 2.91,
+        "expiration": "2026-11-01T04:01:44"
+      }
+    ]
+  },
+  "churn": {
+    "marketOpsInLast100AcctOps": 49,
+    "spanFirstLastSeconds": 29607,
+    "verdict": "HIGH-FREQUENCY CONCURRENT MANAGER OBSERVED — another process is actively churning this ladder; this executor stays cap-limited and staleness-gated inside that reality"
+  },
+  "caps": {
+    "maxPairsPerRun": 3,
+    "staleMinAgeHours": 168,
+    "staleDistPct": 2,
+    "replaceBandPct": 2,
+    "targetOffsetPct": 1.5,
+    "floorLowestAsks": 2,
+    "floorHighestBids": 2,
+    "standingMinAfter": 4,
+    "bookMinDepthLevels": 3,
+    "bookAnomalySpreadPct": 15,
+    "orderLifetimeHours": 24,
+    "accountLock": "headcorner",
+    "neverTouch": [
+      "^ynet",
+      "^tov-hive"
+    ]
+  },
+  "gates": {
+    "liveGate28b": true,
+    "ladderArm": true,
+    "executorDisabled": false,
+    "dryForced": false
+  },
+  "dryRunPlanPrint": [],
+  "drops": [
+    {
+      "orderid": null,
+      "reason": "standing-guard: cancelling 0 would leave <4 orders standing"
+    }
+  ],
+  "anomaly": "standing-guard",
+  "status": "abort-anomaly",
+  "ops": [],
+  "executed": []
+}
