@@ -1,6 +1,6 @@
 {
   "protocol": "SAOS-SELFMODEL/1",
-  "generatedAt": "2026-10-05T21:38:50.406Z",
+  "generatedAt": "2026-10-05T22:30:44.398Z",
   "homes": {
     "steem": {
       "stasis": {
@@ -16,7 +16,7 @@
           {
             "source": "agent/STASIS.json",
             "ref": "local fs read, authenticated yes",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -54,7 +54,7 @@
           {
             "source": "raw.githubusercontent Domain",
             "ref": "agents/STASIS.json read authenticated",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -83,7 +83,7 @@
           {
             "source": "raw.githubusercontent saos-dex",
             "ref": "grids/state/STASIS.json read authenticated",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -91,7 +91,7 @@
         "epistemic": "OBSERVED",
         "verdict": "ALIVE-REAL-FILLS",
         "realFills24h": 7,
-        "at": "2026-10-05T21:38:50.406Z"
+        "at": "2026-10-05T22:30:44.398Z"
       },
       "gridLedger": {
         "epistemic": "OBSERVED",
@@ -99,7 +99,7 @@
         "txids": 97,
         "placedTotal": 97,
         "filledTotal": 6,
-        "at": "2026-10-05T21:38:50.406Z"
+        "at": "2026-10-05T22:30:44.398Z"
       },
       "directivesChain": {
         "ok": false,
@@ -344,6 +344,21 @@
         }
       ],
       "ageHours": 0
+    },
+    {
+      "id": "steem/cognition-beat",
+      "home": "steem",
+      "lane": "cognition",
+      "status": "STAGED",
+      "epistemic": "OBSERVED",
+      "evidence": [
+        {
+          "source": "agent/receipts/cognition-beat.jsonl",
+          "ref": "cycle 7 completed in-organism (no LLM session): observe→decide→learn→act→verify",
+          "at": "2026-10-05T22:30:44.398Z"
+        }
+      ],
+      "ageHours": 0
     }
   ],
   "writers": [
@@ -358,8 +373,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 6: 0 ops classified dex-grid-ci by LEDGER TXID ONLY (R29: the orderid-space heuristic was proven false — shared with money-mover)",
-          "at": "2026-10-05T21:38:50.406Z"
+          "ref": "cycle 7: 0 ops classified dex-grid-ci by LEDGER TXID ONLY (R29: the orderid-space heuristic was proven false — shared with money-mover)",
+          "at": "2026-10-05T22:30:44.398Z"
         }
       ]
     },
@@ -376,7 +391,7 @@
         {
           "source": "chain-history window + GitHub runs API (R29 forensics)",
           "ref": "2026-10-05T16:37/17:07/17:39Z signature with ZERO CI runs alive in any org repo; ledgerCrossCheck=not-found; machine identity UNKNOWN → owner-only remediation",
-          "at": "2026-10-05T21:38:50.406Z"
+          "at": "2026-10-05T22:30:44.398Z"
         }
       ]
     },
@@ -391,8 +406,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 6: 0 ops matched matrix amount",
-          "at": "2026-10-05T21:38:50.406Z"
+          "ref": "cycle 7: 0 ops matched matrix amount",
+          "at": "2026-10-05T22:30:44.398Z"
         }
       ]
     },
@@ -407,8 +422,8 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "cycle 6: 0 ops matched reclaim signature",
-          "at": "2026-10-05T21:38:50.406Z"
+          "ref": "cycle 7: 0 ops matched reclaim signature",
+          "at": "2026-10-05T22:30:44.398Z"
         }
       ]
     },
@@ -424,33 +439,33 @@
       "evidence": [
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=ff4457e05304d1e9 orderid=2026100505",
-          "at": "2026-10-05T17:39:39Z"
+          "ref": "2026-10-05T18:41:15Z limit_order_cancel trx=d8b8559ce8c638ed orderid=2026100503",
+          "at": "2026-10-05T18:41:15Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=4f40ae56a18c20a9 orderid=2026100503",
-          "at": "2026-10-05T17:39:39Z"
+          "ref": "2026-10-05T18:41:15Z limit_order_cancel trx=db892d3e963f1ce0 orderid=2026100504",
+          "at": "2026-10-05T18:41:15Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=d607d2a67baf426e orderid=2026100502",
-          "at": "2026-10-05T17:39:39Z"
+          "ref": "2026-10-05T18:41:15Z limit_order_cancel trx=b068ffcb6616e02c orderid=2026100502",
+          "at": "2026-10-05T18:41:15Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=272640eff9681564 orderid=2026100504",
-          "at": "2026-10-05T17:39:39Z"
+          "ref": "2026-10-05T18:41:15Z limit_order_cancel trx=b83634480db470d4 orderid=2026100505",
+          "at": "2026-10-05T18:41:15Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T17:39:39Z limit_order_cancel trx=390638563271f648 orderid=2026100501",
-          "at": "2026-10-05T17:39:39Z"
+          "ref": "2026-10-05T18:41:15Z limit_order_cancel trx=5341f5bfeadfd7bd orderid=2026100501",
+          "at": "2026-10-05T18:41:15Z"
         },
         {
           "source": "chain-history window",
-          "ref": "2026-10-05T17:39:45Z limit_order_create trx=405a8e0e79fe83cc orderid=2026100501",
-          "at": "2026-10-05T17:39:45Z"
+          "ref": "2026-10-05T18:41:21Z limit_order_create trx=ec93681bdb5a641b orderid=2026100501",
+          "at": "2026-10-05T18:41:21Z"
         }
       ]
     },
@@ -541,7 +556,7 @@
     {
       "id": "C-unknown-writer",
       "title": "כותבים-לא-מזוהים על-השרשרת",
-      "detail": "נמדדו 79 פעולות-הון ללא-תבנית-כותב בחלון-8h (טריות ≤4h: 61 — actionable, ישנות: 18 — היסטוריה). פירוט: 2026-10-05T17:39Z limit_order_cancel trx=ff4457e05304d1e9 orderid=2026100505  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=4f40ae56a18c20a9 orderid=2026100503  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=d607d2a67baf426e orderid=2026100502  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=272640eff9681564 orderid=2026100504  [טרי] · 2026-10-05T17:39Z limit_order_cancel trx=390638563271f648 orderid=2026100501  [טרי] · 2026-10-05T17:39Z limit_order_create trx=405a8e0e79fe83cc orderid=2026100501 1.883 STEEM [טרי] · 2026-10-05T17:39Z limit_order_create trx=5e10d6f2d0cd8ab4 orderid=2026100502 1.883 STEEM [טרי] · 2026-10-05T17:39Z limit_order_create trx=b261e0ef5f3e7aea orderid=2026100503 1.883 STEEM [טרי]",
+      "detail": "נמדדו 89 פעולות-הון ללא-תבנית-כותב בחלון-8h (טריות ≤4h: 51 — actionable, ישנות: 38 — היסטוריה). פירוט: 2026-10-05T18:41Z limit_order_cancel trx=d8b8559ce8c638ed orderid=2026100503  [טרי] · 2026-10-05T18:41Z limit_order_cancel trx=db892d3e963f1ce0 orderid=2026100504  [טרי] · 2026-10-05T18:41Z limit_order_cancel trx=b068ffcb6616e02c orderid=2026100502  [טרי] · 2026-10-05T18:41Z limit_order_cancel trx=b83634480db470d4 orderid=2026100505  [טרי] · 2026-10-05T18:41Z limit_order_cancel trx=5341f5bfeadfd7bd orderid=2026100501  [טרי] · 2026-10-05T18:41Z limit_order_create trx=ec93681bdb5a641b orderid=2026100501 1.883 STEEM [טרי] · 2026-10-05T18:41Z limit_order_create trx=93a3910d84ec3019 orderid=2026100502 1.883 STEEM [טרי] · 2026-10-05T18:41Z limit_order_create trx=24a3fb504af42b46 orderid=2026100503 1.883 STEEM [טרי]",
       "kind": "writer-attribution",
       "a": "organism has no owner for these signed ops",
       "b": "chain shows the ops signed by headcorner anyway",
@@ -572,7 +587,7 @@
       "detail": "נמדד: שלושת-הבתים נקראו בהצלחה במחזור-זה.",
       "kind": "cross-home-visibility",
       "a": "steem+Domain+saos-dex",
-      "b": "all readable at 2026-10-05T21:38:50.406Z",
+      "b": "all readable at 2026-10-05T22:30:44.398Z",
       "confidence": 0.85,
       "firstSeen": "2026-10-05T16:42:07.277Z",
       "status": "resolved",
@@ -585,7 +600,7 @@
       "detail": "נמדד: קבצי-ה-STASIS בכל-הבתים קריאים ואותנטיים.",
       "kind": "brake-readability",
       "a": "all STASIS files authenticated",
-      "b": "ok at 2026-10-05T21:38:50.406Z",
+      "b": "ok at 2026-10-05T22:30:44.398Z",
       "confidence": 0.9,
       "firstSeen": "2026-10-05T16:42:07.277Z",
       "status": "resolved",
@@ -672,7 +687,7 @@
           {
             "source": "cognition-beat",
             "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: authenticity, open contradiction on lane",
-            "at": "2026-10-05T21:38:52.376Z"
+            "at": "2026-10-05T22:30:48.236Z"
           }
         ]
       },
@@ -683,7 +698,7 @@
           {
             "source": "cognition-beat",
             "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: staged-allowed by owner directives; not REAL yet — missing: authenticity, writer attribution",
-            "at": "2026-10-05T21:38:52.376Z"
+            "at": "2026-10-05T22:30:48.236Z"
           }
         ]
       },
@@ -694,12 +709,12 @@
           {
             "source": "cognition-beat",
             "ref": "frontier computed at cycle from receipts+contradictions+authenticity probe: not staged-allowed in STASIS.json (fail-closed default)",
-            "at": "2026-10-05T21:38:52.376Z"
+            "at": "2026-10-05T22:30:48.236Z"
           }
         ]
       }
     },
-    "computedAt": "2026-10-05T21:38:50.406Z",
+    "computedAt": "2026-10-05T22:30:44.398Z",
     "rule": "REAL requires: gate-authenticity green + >=3 observed successful cycles + zero open contradictions on lane + writer attributed; else STAGED if staged-allowed; else HALTED"
   },
   "custody": {
@@ -759,12 +774,13 @@
     "V-a validated mode/since strictly: legacy STASIS docs lacking them now fail authentication (fail-closed) — deliberate semantic change, covered by selftests",
     "R27 orchestrator probe path-error (2026-10-05)",
     "cycle 5: gate probe error: Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-BPE6dJ/agent\";\n      const G=require(path.join(root,'lib','capital_ga",
-    "cycle 6: gate probe error: Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-0RNPo5/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
+    "cycle 6: gate probe error: Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-0RNPo5/agent\";\n      const G=require(path.join(root,'lib','capital_ga",
+    "cycle 7: gate probe error: Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-o3T0Ec/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
   ],
   "beat": {
     "protocol": "SAOS-COGNITION-BEAT/1",
-    "cycle": 6,
-    "at": "2026-10-05T21:38:50.406Z",
+    "cycle": 7,
+    "at": "2026-10-05T22:30:44.398Z",
     "windowHours": 8,
     "freshWindowHours": 4,
     "loop": [
@@ -780,27 +796,27 @@
     "chain": {
       "epistemic": "OBSERVED",
       "primary": "api.steemit.com",
-      "windowOps": 94,
-      "capitalScanned": 79,
+      "windowOps": 105,
+      "capitalScanned": 89,
       "fills": 0,
-      "unknownWriters": 79,
-      "freshUnknownWriters": 61,
-      "lastIdx": 66116
+      "unknownWriters": 89,
+      "freshUnknownWriters": 51,
+      "lastIdx": 66129
     },
     "sensors": {
       "api.steemit.com": {
         "role": "chain-primary",
         "score": 1,
-        "samples": 6,
+        "samples": 7,
         "lastAgreement": "primary-live",
-        "lastAt": "2026-10-05T21:38:50.406Z"
+        "lastAt": "2026-10-05T22:30:44.398Z"
       },
       "api.justyy.com": {
         "role": "chain-cross",
         "score": 1,
-        "samples": 5,
+        "samples": 6,
         "lastAgreement": true,
-        "lastAt": "2026-10-05T21:38:50.406Z"
+        "lastAt": "2026-10-05T22:30:44.398Z"
       }
     },
     "decisions": [],
@@ -811,21 +827,21 @@
         "lane": "grid",
         "result": "dirty",
         "detail": "lane-failure streak still 5 (no healthy receipts yet)",
-        "at": "2026-10-05T21:38:52.340Z"
+        "at": "2026-10-05T22:30:48.120Z"
       },
       {
         "guardId": "bg-51df2bae9e",
         "lane": "claims",
         "result": "dirty",
-        "detail": "unknown-writer: 61 fresh ops",
-        "at": "2026-10-05T21:38:52.340Z"
+        "detail": "unknown-writer: 51 fresh ops",
+        "at": "2026-10-05T22:30:48.121Z"
       },
       {
         "guardId": "bg-8d5760757b",
         "lane": "grid",
         "result": "dirty",
-        "detail": "unknown-writer: 61 fresh ops",
-        "at": "2026-10-05T21:38:52.340Z"
+        "detail": "unknown-writer: 51 fresh ops",
+        "at": "2026-10-05T22:30:48.121Z"
       }
     ],
     "guards": {
@@ -841,19 +857,19 @@
     },
     "lanes": {
       "grid": {
-        "observedCycles": 6,
+        "observedCycles": 7,
         "successfulCycles": 4,
         "lastOutcome": "probe-error",
         "openContradictions": 1
       },
       "claims": {
-        "observedCycles": 6,
+        "observedCycles": 7,
         "successfulCycles": 4,
         "lastOutcome": "authenticity-unknown",
         "openContradictions": 0
       },
       "general": {
-        "observedCycles": 6,
+        "observedCycles": 7,
         "successfulCycles": 0,
         "lastOutcome": "halted-lane",
         "openContradictions": 0
@@ -864,18 +880,16 @@
         "guardWorks": null,
         "authenticityGreen": null,
         "baselineAllow": null,
-        "error": "Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-0RNPo5/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
+        "error": "Command failed: /usr/local/bin/node -e \n      const fs=require('fs'), path=require('path');\n      const root=\"/tmp/saos-gate-probe-o3T0Ec/agent\";\n      const G=require(path.join(root,'lib','capital_ga"
       },
       "lastCommitSha": "567318edd9b494ee119f7279a26dbbcf3bc5eb13",
-      "rawSha256Match": true,
-      "verifiedAt": "2026-10-05T21:39:08.506Z",
-      "method": "sha256(local organism.json) == sha256(raw contents API @commit)"
+      "rawSha256Match": true
     },
     "authority": "mechanism-shrink only — this beat never opens lanes, never transfers, never edits STASIS.json or the directives chain"
   },
   "sovereignty": {
     "protocol": "SAOS-SOVEREIGNTY/1",
-    "computedAt": "2026-10-05T21:38:50.406Z",
+    "computedAt": "2026-10-05T22:30:44.398Z",
     "haltSemantics": {
       "measured": "A",
       "meaning": "HALTED means: (A) the organism’s own registered lanes will not sign. It does NOT mean (B) no actor inside the sovereignty domain can act, and does NOT mean (C) no actor in the world can act.",
@@ -883,7 +897,7 @@
         {
           "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
           "ref": "2026-10-05T17:07:36Z: 10 capital ops signed by money-family-live while every internal guard was active in all 3 homes (synced 17:05:40Z) → A holds, B and C falsified",
-          "at": "2026-10-05T21:38:50.406Z"
+          "at": "2026-10-05T22:30:44.398Z"
         }
       ]
     },
@@ -905,7 +919,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "saos-dex dex-grid run 12:56:12Z → ops 12:56:33-48Z; Domain dex-grid run 04:00:57Z → ops 04:01:33-45Z; brake consumption committed 82e9de4",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -920,7 +934,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "16:37:15-45Z + 17:07:36-17:08:03Z + 17:39:39Z + RE-OBSERVED-LIVE 18:41:15-45Z ops (5 cancels+5 creates, orderid 2026100501-05, exp+27d, ~31min cadence) with zero CI runs alive and all internal guards active; R29 cancel-all-no-recreate detail at 17:39:39Z CONTRADICTED (creates followed 6s later); zero STASIS/brake references in the pre-R30 Zip money stack (grep); R30 brake committed + 15/15 isolated vectors green",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -935,7 +949,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "12:56:45Z trx 8065683d: two limit_order_create in one transaction — no repo tool batches creates this way",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -950,7 +964,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "receipts 2026-10-05-ladder-refresh-* both abort-anomaly, zero ops",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -965,7 +979,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "posting-only ops, idempotent",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       },
@@ -980,7 +994,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "117o incident: all 4 authorities rotated 2026-09-08; holder census of the CURRENT active key does not exist",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       }
@@ -1062,7 +1076,7 @@
           {
             "source": "R29 forensics (chain + GitHub runs API + repo code), 2026-10-05",
             "ref": "all 10 ops at 17:07:36Z signed by the same account authority the CI uses",
-            "at": "2026-10-05T21:38:50.406Z"
+            "at": "2026-10-05T22:30:44.398Z"
           }
         ]
       }
