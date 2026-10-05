@@ -134,7 +134,7 @@ export async function GET() {
         verdict: learn.verdict ?? null,
         at: learn.at ?? null,
         runsTotal: learn.runsTotal ?? 0,
-        lessons: (learn.lessons ?? []).slice(0, 4).map((l: any) => ({ id: l.id, severity: l.severity, lesson: l.lesson, evidence: l.evidence, action: l.action })),
+        lessons: (learn.lessons ?? []).slice(0, 4).map((l: any) => ({ id: l.id, severity: l.severity, lesson: l.lesson, evidence: l.evidence, action: l.action, resolved: l.resolved ?? null })),
         tuningsApplied: learn.tuningsApplied ?? [],
         tunings: learn.tunings ?? null,
         lessonsTotal: learn.lessonsTotal ?? null,

@@ -439,7 +439,7 @@ export default function Home() {
                     ) : (
                       <span>מדידת-דופק-השוק תרוץ במחזור-הבא (מקצב 30 דק)</span>
                     )}
-                    {!!s?.offer?.market?.book?.spreadBps && <span>מרווח-ספר <b className="tnum text-slate-200">{s.offer.market.book.spreadBps}bps</b></span>}
+                    {!!s?.offer?.market?.book?.spreadBps && <span>מרווח-ספר <b className="tnum text-slate-200">{s.offer.market.book.spreadBps}bps</b>{s?.offer?.publishedAt && <span className="text-slate-600" dir="ltr"> @{s.offer.publishedAt.slice(11, 19)}Z</span>}</span>}
                     {!!s?.offer?.market?.rangeBps && <span>תנודה-24ש <b className="tnum text-slate-200">{s.offer.market.rangeBps}bps</b></span>}
                   </div>
                   {s?.offer?.flow ? (
@@ -526,7 +526,7 @@ export default function Home() {
                     <Stat label="אסקים" value={s?.offer?.plan?.asks?.length ?? '—'} tone="amber" />
                     <Stat label="בידים" value={s?.offer?.plan?.bids?.length ?? '—'} tone="emerald" />
                     <Stat label="רצפה" value={s?.offer?.marks?.floor ?? '—'} ltr />
-                    <Stat label="dragK" value={s?.offer?.marks?.dragK ?? '—'} ltr />
+                    <Stat label="dragK" value={s?.offer?.marks?.dragK ?? '—'} ltr hint="מבנה-החזקה — נגזר ממרווח-הספר במחזור-זה (dragK-הטיק ביומן נגרר-בנפרד מסטיית-הפאריטי)" />
                   </div>
                   <p className="mt-2 text-[11px] text-slate-500">דוקטרינה: אמת-מחיר-או-כלום · אין-מכירה-מתחת-לפאריטי · מקור: {s?.offer?.marks?.source ?? '—'}</p>
                 </SectionCard>
@@ -713,7 +713,7 @@ export default function Home() {
                       </div>
                       <Separator className="my-3 bg-slate-800" />
                       <ul className="space-y-1.5 text-[11px] leading-relaxed text-slate-300">
-                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">ספר-פאריטי</b> — תשתית מוכנה מלאה: תכנון OFFER-READY בכל-מחזור + ביצוע-מוסיף (D-021/D-022) + רצפת-ערך (r134-VF1). הפוטנציאל: קציר-מרווחים מעל-פאריטי על ~925 STEEM.</span></li>
+                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">ספר-פאריטי</b> — תשתית מוכנה מלאה: תכנון OFFER-READY בכל-מחזור + ביצוע-מוסיף (D-021/D-022) + רצפת-ערך (r134-VF1). הפוטנציאל: קציר-מרווחים מעל-פאריטי על {s?.rails?.bookEmpty ? 'הנזיל-המלא (הספר כרגע באמת ריק — התוכנית מוכנה בכל-מחזור)' : <span dir="ltr">~{f2(s?.rails?.deployedSteem)} STEEM בספר</span>}.</span></li>
                         <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">קיורציה</b> — נמדדה $4.26/יום כשהייתה פעילה; כרגע רדומה, ממתינה ל-authority פוסטינג (שער X-1). הכלי קיים ומתוכנת (A-12).</span></li>
                         <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">מסילת-המרה D-023</b> — יתרון פנימי שנמדד +40.8% (SBD→STEEM פנ-$1); מתחממת אוטומטית כשהאסקים קוצרים SBD.</span></li>
                         <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">ריבונות-רציפה (היום)</b> — watchdog + מחזורים-אוטומטיים + ביקורת-איכות + ריפוי-עצמי; זמן-רציפות חי בכרטיס הראשון.</span></li>
@@ -758,7 +758,11 @@ export default function Home() {
                   <div className="mt-2 grid grid-cols-3 gap-2">
                     <Stat label="הצבעות-היום" value={`${s?.curator?.votesToday ?? 0}/${s?.curator?.maxPerDay ?? 10}`} tone="emerald" />
                     <Stat label="סה״כ" value={s?.curator?.totalVotes ?? 0} />
-                    <Stat label="מועמדים-נסרקו" value={s?.curator?.candidatesScanned ?? '—'} />
+                    <Stat
+                      label="מועמדים-נסרקו"
+                      value={s?.curator?.candidatesScanned ?? 0}
+                      hint={s?.curator?.candidatesScanned == null && s?.curator?.verdict && s.curator.verdict !== 'VOTED' ? `שער: ${s.curator.verdict} — הסריקה לא רצה במחזור-זה (חוקי)` : undefined}
+                    />
                   </div>
                   {!!s?.curator?.lastVotes?.length && (
                     <div className="mt-2 max-h-32 space-y-1 overflow-y-auto">
@@ -771,7 +775,7 @@ export default function Home() {
                     </div>
                   )}
                   <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                    ה-VP המלא (98%+) ישב בטל — עכשיו 4034 SP עובדים: הצבעות-בוקר טריות עם-ירידת-משקל-לפי-גיל, מכסה-יומית, רצפת-VP, אפס-הצבעה-עצמית, סינון-ספאם. מפתח-פרסום בלבד — פעולת-הצבעה לא-יכולה להזיז כספים. התשואה נמדדת מ-curation_reward חי (מסילת-הדלק).
+                    ה-VP המלא (98%+) ישב בטל — עכשיו ~4,034 SP עובדים (נמדד 05.10): הצבעות-בוקר טריות עם-ירידת-משקל-לפי-גיל, מכסה-יומית, רצפת-VP, אפס-הצבעה-עצמית, סינון-ספאם. מפתח-פרסום בלבד — פעולת-הצבעה לא-יכולה להזיז כספים. התשואה נמדדת מ-curation_reward חי (מסילת-הדלק).
                   </p>
                 </SectionCard>
 
@@ -825,11 +829,11 @@ export default function Home() {
                       {s.learning.lessons.map((l, i) => (
                         <li key={i} className="text-[11px] leading-relaxed">
                           <div className="flex items-start gap-1.5">
-                            <StatusBadge tone={l.severity === 'high' ? 'rose' : l.severity === 'medium' ? 'amber' : 'slate'} className="shrink-0">{l.severity ?? '?'}</StatusBadge>
+                            <StatusBadge tone={l.resolved ? 'emerald' : l.severity === 'high' ? 'rose' : l.severity === 'medium' ? 'amber' : 'slate'} className="shrink-0">{l.resolved ? 'נפתר · היסטורי' : l.severity ?? '?'}</StatusBadge>
                             <span><b className="text-slate-100">{l.lesson}</b></span>
                           </div>
                           {l.evidence && <div className="text-slate-500 me-6">ראיה: {l.evidence}</div>}
-                          {l.action && <div className="text-emerald-400/90 me-6">פעולה: {l.action}</div>}
+                          {l.action && <div className={l.resolved ? 'text-slate-500 me-6' : 'text-emerald-400/90 me-6'}>פעולה: {l.action}</div>}
                         </li>
                       ))}
                     </ul>
@@ -875,10 +879,11 @@ export default function Home() {
                   title={<>אינטליגנציה · מחליטה-בעצמה <span dir="ltr" className="text-slate-500">(T-12)</span></>}
                 >
                   {s?.intel?.book?.spreadBps != null && (
-                    <div className="mb-2 flex items-center gap-3 text-xs text-slate-400">
-                      <span>מרווח-ספר: <b className="tnum text-slate-200">{s.intel.book.spreadBps}bps</b></span>
+                    <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+                      <span>מרווח-ספר-חי (חיצוני): <b className="tnum text-slate-200">{s.intel.book.spreadBps}bps</b></span>
                       {s.intel.book.bestAsk != null && <span>ask {s.intel.book.bestAsk.toFixed(4)}</span>}
                       {s.intel.book.bestBid != null && <span>bid {s.intel.book.bestBid.toFixed(4)}</span>}
+                      {s?.intel?.at && <span className="text-[10px] text-slate-600" dir="ltr">measured {s.intel.at.slice(11, 19)}Z</span>}
                     </div>
                   )}
                   {!s?.intel?.decisions?.length ? (
@@ -996,6 +1001,7 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
             <span className="tnum">מחזורים {sov?.state?.cycles?.ok ?? 0} תקינים · {sov?.state?.cycles?.blocked ?? 0} חסומים · {sov?.state?.cycles?.fail ?? 0} כשלים</span>
             <span className="tnum">דופק {sov?.state?.watchdog?.checks ?? 0} · ריפויים {sov?.state?.watchdog?.heals ?? 0}</span>
+            {!!sov?.state?.custodian && <span className="tnum">זיכרות {sov.state.custodian.up ? 'שלמה' : 'פגועה'} · דופק-משמורת {sov.state.custodian.checks ?? 0} · ריפויים {sov.state.custodian.heals ?? 0}</span>}
             {!!sov?.state?.selftest?.total && <span className="tnum">selftest {sov.state.selftest.passed}/{sov.state.selftest.total}</span>}
           </div>
           <p className="text-center sm:text-end">

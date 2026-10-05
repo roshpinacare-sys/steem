@@ -1,19 +1,19 @@
 {
-  "at": "2026-10-05T22:59:14.946Z",
+  "at": "2026-10-05T23:09:50.758Z",
   "enabled": true,
-  "runsTotal": 164,
+  "runsTotal": 165,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 57,
-      "oks": 35,
+      "window": 45,
+      "oks": 26,
       "fails": 0,
-      "blocked": 22,
-      "okRate": 61.4,
-      "blockedRate": 38.6,
+      "blocked": 19,
+      "okRate": 57.8,
+      "blockedRate": 42.2,
       "failReasons": {},
-      "msP50": 6670,
-      "msP90": 16688
+      "msP50": 6570,
+      "msP90": 11391
     },
     "curator": {
       "present": true,
@@ -35,32 +35,34 @@
       "lastError": "missing required posting authority:Missing Posting Authority headcorner"
     },
     "watchdog": {
-      "checks": 1569,
-      "downs": 101,
-      "heals": 33,
-      "healVerified": 32,
+      "checks": 1579,
+      "downs": 103,
+      "heals": 36,
+      "healVerified": 35,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-05T22:59:14.951Z",
+      "lastCheckAt": "2026-10-05T23:09:05.748Z",
       "engineUp": true,
-      "lastSpawnAt": null,
-      "lastUpAt": "2026-10-05T22:59:14.952Z",
+      "lastSpawnAt": "2026-10-05T23:09:07.050Z",
+      "lastUpAt": "2026-10-05T23:09:05.754Z",
       "blips": 1
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×22/57 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×19/45 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "broadcast-fails",
-      "severity": "high",
-      "evidence": "12/12 broadcasts failed · last: missing required posting authority:Missing Posting Authority headcorner",
-      "lesson": "broadcast failures burn RC and delay rails",
-      "action": "fail-closed stop already holds; vote-interval retry added T-14"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "12/12 broadcasts failed in the window (last: missing required posting authority:Missing Posting Authority) · last fail 2026-10-04T20:24:51.578Z < last OK broadcast 2026-10-05T23:02:42.443Z (live posting-role ops succeed)",
+      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
+      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},
@@ -68,8 +70,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 83,
-    "broadcast-fails": 58
+    "signing-cred-blocked": 84,
+    "broadcast-fails": 59
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }

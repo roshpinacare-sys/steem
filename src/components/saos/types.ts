@@ -87,7 +87,7 @@ export type Status = {
   } | null
   learning?: {
     verdict?: string | null; at?: string | null; runsTotal?: number
-    lessons?: { id?: string; severity?: string; lesson?: string; evidence?: string; action?: string }[]
+    lessons?: { id?: string; severity?: string; lesson?: string; evidence?: string; action?: string; resolved?: boolean | null }[]
     tuningsApplied?: { key?: string; from?: number; to?: number; added?: string; because?: string }[]
     tunings?: Record<string, unknown> | null
     lessonsTotal?: Record<string, number> | null
@@ -274,6 +274,8 @@ export type Sovereign = {
     watchdog?: { checks?: number; downs?: number; heals?: number; healVerified?: number; healFailed?: number; engineUp?: boolean; lastSpawnAt?: string | null }
     cycles?: { autoRuns?: number; ok?: number; fail?: number; blocked?: number; lastAt?: string | null; lastOk?: boolean | null; lastHealth?: string | null; lastMs?: number | null; nextAt?: string | null }
     selftest?: { runs?: number; lastAt?: string | null; lastOk?: boolean | null; passed?: number | null; total?: number | null }
+    cred?: { present?: boolean | null; firstDownAt?: string | null; lastDownAt?: string | null; alerts?: number; lastAlertAt?: string | null }
+    custodian?: { checks?: number; downs?: number; heals?: number; healFailed?: number; lastCheckAt?: string | null; up?: boolean; lastUpAt?: string | null; lastSpawnAt?: string | null }
   }
   intervals?: { watchdogSec?: number; cycleSec?: number; selftestSec?: number }
   events?: { at?: string; kind?: string; [k: string]: unknown }[]

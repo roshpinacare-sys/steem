@@ -77,7 +77,7 @@ type Core = {
  * evaluation (HMR/API-route recompile, no server restart needed) clear the
  * previous generation's timers — so stale closures can never double-heal —
  * and arm a fresh core carrying state over from sovereign.json. */
-const SOVEREIGN_GEN = 2; // v2: + custodian guard (R216-b)
+const SOVEREIGN_GEN = 3; // v3: plain-bun spawns (determinism law, R217 — no mid-flight hot reloads of a signing organism)
 const g = globalThis as unknown as { __saosSovereign?: Core; __saosSovereignGen?: number };
 
 const nowIso = () => new Date().toISOString();
@@ -143,7 +143,11 @@ function spawnCustodian(core: Core, reason: string, force = false): void {
   try {
     fs.mkdirSync(CUSTODIAN_DIR, { recursive: true });
     const logFd = fs.openSync(CUSTODIAN_LOG, "a");
-    const child = spawn("bun", ["--hot", "index.ts"], {
+    /* R217 · PLAIN RUN (determinism law): bun --hot re-executes the entry on
+     * any watched-file edit — measured live (23:03Z) as a 65s blind window +
+     * heal churn on the ENGINE side. Code swaps must be deliberate:
+     * edit → kill → watchdog heal-verify. No silent in-place reloads. */
+    const child = spawn("bun", ["index.ts"], {
       cwd: CUSTODIAN_DIR, detached: true, stdio: ["ignore", logFd, logFd],
       env: { ...process.env },
     });
@@ -204,7 +208,10 @@ function spawnEngine(core: Core, reason: string, force = false): void {
   try {
     fs.mkdirSync(STATE_DIR, { recursive: true });
     const logFd = fs.openSync(LOG_FILE, "a");
-    const child = spawn("bun", ["--hot", "index.ts"], {
+    /* R217: plain bun (no --hot) — same determinism law as the custodian: a
+     * watched-file edit must NEVER silently reload a signing organism
+     * mid-cycle (measured 65s blind window → watchdog heal churn). */
+    const child = spawn("bun", ["index.ts"], {
       cwd: ENGINE_DIR, detached: true, stdio: ["ignore", logFd, logFd],
       env: { ...process.env, SAOS_ACCOUNT: process.env.SAOS_ACCOUNT || "headcorner" },
     });
