@@ -15,6 +15,11 @@ if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> 
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv);
@@ -85,6 +90,7 @@ async function main() {
 
   for (const p of active) {
     try {
+      if (stasisStop('muster')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
       const conf = await steem.broadcast.sendAsync({
         operations: [['transfer', { from: p.username, to: ACCOUNT, amount: p.want.toFixed(3) + ' STEEM', memo: 'saos:escrow' }]],
         extensions: [],

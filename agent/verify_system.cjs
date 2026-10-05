@@ -20,6 +20,7 @@ const path = require('path');
 const https = require('https');
 const steem = require('steem');
 const { deriveIdentities, base58Decode, eip191Hash, sigFromEvmHex, ecdsaRecover } = require('./identity.cjs');
+// measurement-only lane — capital gate N/A (STASIS scope)
 
 function loadDotEnv(dir) {
   const envPath = path.join(dir, '.env');

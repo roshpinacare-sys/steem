@@ -29,6 +29,11 @@ const crypto = require('crypto');
 const https = require('https');
 const steem = require('steem');
 const { Client, PrivateKey } = require('@hiveio/dhive'); // Hive-native ops (convert) — steem-js serialization diverges post-fork (measured live)
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
 const HIVE_RPC = process.env.HIVE_RPC || 'https://api.hive.blog';
@@ -135,6 +140,7 @@ function txId(tx) {
 
 /** broadcast one custom_json HE op (or a small array of them, ≤3) with active auth */
 async function heBroadcast(ops) {
+  if (stasisStop('he-genesis')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const list = Array.isArray(ops) ? ops : [ops];
   const operations = list.map((pl) => [
     'custom_json',
@@ -167,6 +173,7 @@ async function heBroadcast(ops) {
 
 /** Hive-native op via dhive (convert etc. — ops whose serialization diverged post-fork) */
 async function hiveNativeBroadcast(opName, opBody) {
+  if (stasisStop('he-genesis')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const client = new Client(HIVE_NODES);
   await client.broadcast.sendOperations([[opName, opBody]], PrivateKey.fromString(ACTIVE_WIF));
   return { txid: null }; // dhive sendOperations returns no id — evidence = state delta
@@ -174,6 +181,7 @@ async function hiveNativeBroadcast(opName, opBody) {
 
 /** condenser op on HIVE (legacy-safe ops) with active auth */
 async function hiveBroadcast(op) {
+  if (stasisStop('he-genesis')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const dgp = await hiveRpc('condenser_api.get_dynamic_global_properties', []);
   const tx = {
     ref_block_num: dgp.head_block_number & 0xffff,

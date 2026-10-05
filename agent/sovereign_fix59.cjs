@@ -17,6 +17,11 @@ if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> 
 const fs = require('fs');
 const path = require('path');
 const { Client, PrivateKey, cryptoUtils } = require('@hiveio/dhive');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 function loadDotEnv(dir) {
   const envPath = path.join(dir, '.env');
@@ -70,6 +75,7 @@ async function signSteem(wif, operations) {
   return cryptoUtils.signTransaction(tx, [PrivateKey.fromString(wif)], STEEM_CID);
 }
 async function steemOp(wif, operations, tag) {
+  if (stasisStop('sovereign-fix59')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const signed = await signSteem(wif, operations);
   const txid = await (async () => {
     await steemCli.call('condenser_api', 'broadcast_transaction', [signed]);

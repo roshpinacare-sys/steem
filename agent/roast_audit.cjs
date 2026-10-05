@@ -18,7 +18,8 @@ const http = require('http');
 const { execSync } = require('child_process');
 const steem = require('steem');
 
-const STEEM_RPC = 'https://api.steemit.com';
+const STEEM_RPC// measurement-only lane — capital gate N/A (STASIS scope)
+ = 'https://api.steemit.com';
 const HIVE_RPC = 'https://api.hive.blog';
 steem.api.setOptions({ url: STEEM_RPC, useAppbaseApi: true });
 const AGENT = __dirname;

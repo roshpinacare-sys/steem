@@ -15,6 +15,11 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const HIVE_CHAIN_ID = 'beeab0de00000000000000000000000000000000000000000000000000000000';
 const HIVE_RPC = process.env.HIVE_RPC || 'https://api.hive.blog';
@@ -81,6 +86,7 @@ const heFindOne = (contract, table, query) =>
   rpcV4(HE_RPC, { jsonrpc: '2.0', method: 'findOne', params: { contract, table, query }, id: 1 });
 
 async function heOp(payload, wif) {
+  if (stasisStop('he-unstake')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const op = [
     'custom_json',
     {

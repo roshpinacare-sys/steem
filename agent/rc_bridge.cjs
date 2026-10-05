@@ -22,6 +22,11 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const STEEM_RPC = 'https://api.steemit.com';
 steem.api.setOptions({ url: STEEM_RPC, useAppbaseApi: true });
@@ -103,6 +108,7 @@ async function main() {
       rep.delegated.push({ account: acc.username, key: mask(wif), max_rc: Number(rcInfo.max).toString(), delegate: Number(amount).toString() });
       totalDeleg += amount;
       if (LIVE) {
+        if (stasisStop('rc-bridge')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
         await steem.broadcast.sendAsync({
           operations: [['delegate_rc', { from: acc.username, to: HEAD, max_rc: Number(amount).toString(), extensions: [] }]],
           extensions: [],

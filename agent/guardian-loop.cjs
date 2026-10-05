@@ -45,6 +45,9 @@ function log(msg) {
 }
 
 function firePass() {
+  // STASIS note (R24-b 2026-10-05): the guardian only REVIVES daemons — it never signs.
+  // Capital gates live inside the daemons themselves (per-site stasisStop vs lib/capital_gate.cjs),
+  // so a revived process re-enters the brake at its own sign sites — see DAEMONS.md.
   try {
     const out = fs.openSync(LOG, 'a');
     const child = spawn(process.execPath, [GUARDIAN, '--loop'], { cwd: AGENT_DIR, detached: true, stdio: ['ignore', out, out] });

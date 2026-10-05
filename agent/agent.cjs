@@ -39,6 +39,12 @@ const { deriveIdentities } = require('./identity.cjs');
 const HIVE_RC = require('./hive_rc.cjs'); // 103 — RC-DISCIPLINE: שער-תקציב-ריבוני לכל-שידורי-Hive
 const { runAnchor } = require('./anchor.cjs');
 const { runChainAttest } = require('./chain_attest.cjs');
+// owner directive 2026-10-04 (STASIS): gates live AT THE SIGN SITE, not at process entry —
+// long-lived daemons hold stale code in memory, so every capital broadcast re-checks the brake below.
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 /* ------------------------------------------------------------------ *
  * .env — טעינה ידנית מבן-תיקייה (בלי dotenv)
@@ -805,6 +811,7 @@ async function claimCycle() {
   }
 
   try {
+    if (stasisStop('agent:claim')) return; // STASIS — sign-time brake (owner 2026-10-04)
     const conf = await steem.broadcast.sendAsync(
       { operations: [op], extensions: [] },
       [CONFIG.postingWif]
@@ -1241,6 +1248,7 @@ async function armyClaimCycle() {
       continue;
     }
     try {
+      if (stasisStop('agent:army-claim')) continue; // STASIS — sign-time brake (owner 2026-10-04)
       const conf = await steem.broadcast.sendAsync({ operations: [op], extensions: [] }, [a.postingWif]);
       armyDaySet('claims', armyDayGet('claims', 0) + 1);
       log('army-claim @' + a.username + ': broadcast ok txid=' + ((conf && conf.id) || 'n/a') + ' (≈' + sp.toFixed(3) + ' SP)');
@@ -1390,6 +1398,7 @@ async function armySweepCycle() {
       continue;
     }
     try {
+      if (stasisStop('agent:army-sweep')) continue; // STASIS — sign-time brake (owner 2026-10-04)
       const conf = await steem.broadcast.sendAsync({ operations: [op], extensions: [] }, [a.activeWif]);
       swept++;
       sweptAmount += liquid - 0.001;
@@ -1779,6 +1788,7 @@ async function netTaskCycle() {
     // הפקודה המוצפנת — אותו ערוץ memo-ECDH מאומת
     const enc = steem.memo.encode(CONFIG.memoWif, soldier.memoPub, '#' + JSON.stringify({ nonce, cmd: t.cmd, args: t.args || undefined, task: id, ts: new Date().toISOString() }));
     try {
+      if (stasisStop('agent:nettask-command')) continue; // STASIS — sign-time brake (owner 2026-10-04)
       const c2 = await steem.broadcast.sendAsync({
         operations: [['transfer', { from: CONFIG.account, to: soldier.username, amount: '0.001 STEEM', memo: enc }]],
         extensions: [],
@@ -2011,6 +2021,7 @@ async function factoryCycle() {
 
   // שידור אמיתי — מפתח active. רגע האמת של A2: עלות-RC מדודה לפני/אחרי.
   try {
+    if (stasisStop('agent:factory-claim-account')) return; // STASIS — sign-time brake (owner 2026-10-04)
     const accBefore = await api.accounts(CONFIG.account);
     const ticketsBefore = Number(accBefore && accBefore[0] && accBefore[0].pending_claimed_accounts) || 0;
     const rcBefore = rcFromRaw(await api.call('rc_api.find_rc_accounts', { accounts: [CONFIG.account] }));
@@ -2359,6 +2370,7 @@ async function dexBroadcast(ops, label) {
     return false;
   }
   const hasTransfer = ops.some((op) => op[0] === 'transfer');
+  if (hasTransfer && stasisStop('agent:dex-transfer')) return false; // STASIS — sign-time brake (owner 2026-10-04): quotes may fly, escrow/transfer may not
   const hasJson = ops.some((op) => op[0] === 'custom_json');
   // transfer = active בלבד · custom_json פס = posting בלבד · אצווה מעורבת באמת צריכה את שניהם
   const keys = hasTransfer && hasJson
@@ -2819,6 +2831,7 @@ async function liqCycle() {
       if (want < 0.005) continue;
       if (CONFIG.dryRun) { actions.push('DRY escrow ' + want + ' @' + a.username); continue; }
       try {
+        if (stasisStop('agent:liq-escrow')) continue; // STASIS — sign-time brake (owner 2026-10-04)
         const conf = await steem.broadcast.sendAsync({
           operations: [['transfer', { from: a.username, to: CONFIG.account, amount: want.toFixed(3) + ' STEEM', memo: 'saos:escrow' }]],
           extensions: [],
@@ -2923,6 +2936,7 @@ async function paySoldier(soldier, taskId, st) {
       log('payroll: treasury too low (' + steemBal + ' STEEM) — skip');
       return;
     }
+    if (stasisStop('agent:payroll')) return; // STASIS — sign-time brake (owner 2026-10-04)
     const conf = await steem.broadcast.sendAsync({
       operations: [['transfer', { from: CONFIG.account, to: soldier, amount: CONFIG.payrollPerTask.toFixed(3) + ' STEEM', memo: 'SAOS-PAY ' + taskId }]],
       extensions: [],
@@ -3294,6 +3308,7 @@ async function hiveFleetAnchor(ops, expectTime) {
 
 /** חתימה מקומית במפתח-active + שידור ל-Hive (עבור ssc-mainnet-hive / transfer_to_vesting). */
 async function hiveBroadcastActive(ops) {
+  if (stasisStop('agent:hive-capital')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // covers HE withdraw + transfer_to_vesting
   const dgp = await hiveRpc('condenser_api.get_dynamic_global_properties', []);
   const tx = {
     ref_block_num: dgp.head_block_number & 0xffff,
@@ -4338,6 +4353,7 @@ async function paymasterCycle() {
       const [dNum, dCur] = String(acc.delegated_vesting_shares).split(' ');
       const newDel = (parseFloat(dNum) + 3000).toFixed(6) + ' ' + dCur;
       const before = hungriest.max;
+      if (stasisStop('agent:paymaster-fuel')) return; // STASIS — sign-time brake (owner 2026-10-04)
       const conf = await hive.broadcast.sendOperations([['delegate_vesting_shares', { delegator: CONFIG.account, delegatee: hungriest.account, vesting_shares: newDel }]], PrivateKey.fromString(CONFIG.activeWif));
       await new Promise((r) => setTimeout(r, 2500));
       const after = await hiveCall('rc_api.find_rc_accounts', { accounts: [hungriest.account] });

@@ -23,6 +23,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const STEEM_RPC = 'https://api.steemit.com';
 steem.api.setOptions({ url: STEEM_RPC, useAppbaseApi: true });
@@ -78,6 +83,7 @@ async function selfTest() {
 }
 
 function signSend(ops, wifs) {
+  if (stasisStop('fleet-mint-v3')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   return steem.broadcast.sendAsync({ operations: ops, extensions: [] }, wifs);
 }
 

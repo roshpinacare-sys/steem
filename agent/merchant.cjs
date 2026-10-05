@@ -21,6 +21,11 @@ if (!ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> node agent/merchan
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv, { account: ACCOUNT }); // 8-b: השער נעוץ בחשבון-הפעולה מה-env — לא בשם-קבוע
@@ -258,6 +263,7 @@ async function selfDemand() {
     const wif = acc && acc.keys && acc.keys.active && (acc.keys.active.wif || acc.keys.active);
     if (!wif) throw new Error('active-WIF חסר ל-' + soldier);
     const memo = 'saos:buy:SAOS:' + qty;
+    if (stasisStop('merchant:self-demand')) return log('STASIS-HALT — capital lane closed (capital gate 2026-10-04) — nothing broadcast'); // sign-time brake
     const conf = await steem.broadcast.sendAsync({
       operations: [['transfer', { from: soldier, to: ACCOUNT, amount: steemAmt.toFixed(3) + ' STEEM', memo }]],
       extensions: [],

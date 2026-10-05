@@ -25,6 +25,11 @@ const path = require('path');
 const https = require('https');
 const { spawnSync } = require('child_process');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const DIR = __dirname;
 steem.api.setOptions({ url: 'https://api.steemit.com', useAppbaseApi: true });
@@ -87,12 +92,14 @@ function rcApi() {
   /* A. תביעת-תגמולים + power-up */
   if (hasRw && !DRY && ACTIVE_WIF) {
     try {
+      if (stasisStop('fleetv3-autopilot:claim')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
       await steem.broadcast.sendAsync({ operations: [['claim_reward_balance', { account: HEAD, reward_steem: rw.steem, reward_sbd: rw.sbd, reward_vests: rw.vests }]], extensions: [] }, [ACTIVE_WIF]);
       run.claimedNow = true; state.claimed = (state.claimed || 0) + 1;
       log('claim ✓ ' + rw.steem + ' + ' + rw.vests);
     } catch (x) { run.error = String(x.message).slice(0, 120); log('claim ✗ ' + run.error); }
     if (parseFloat(rw.steem) > 0.001 && !run.error) {
       try {
+        if (stasisStop('fleetv3-autopilot:powerup')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
         await steem.broadcast.sendAsync({ operations: [['transfer_to_vesting', { from: HEAD, to: HEAD, amount: rw.steem }]], extensions: [] }, [ACTIVE_WIF]);
         run.poweredNow = true; state.lifetimePoweredUp = +(((state.lifetimePoweredUp || 0) + parseFloat(rw.steem))).toFixed(4);
         log('power-up ✓ ' + rw.steem);

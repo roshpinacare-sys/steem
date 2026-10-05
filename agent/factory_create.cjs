@@ -14,6 +14,11 @@ const path = require('path');
 const https = require('https');
 const crypto = require('crypto');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const STEEM_RPC = 'https://api.steemit.com';
 const RPCS = ['https://api.steemit.com', 'https://api.steem.fans', 'https://api.justyy.com', 'https://steem.61bts.com'];
@@ -103,6 +108,7 @@ const auth = pub => ({ weight_threshold: 1, account_auths: [], key_auths: [[pub,
     extensions: [],
   };
   if (DRY) { log('[DRY] would mint @' + NAME + ' with ' + vests + ' endowment in 1 tx'); return; }
+  if (stasisStop('factory-create')) return log('STASIS-HALT — capital lane closed (capital gate 2026-10-04) — nothing broadcast'); // sign-time brake
   const signed = steem.auth.signTransaction(tx, [ACTIVE_WIF]);
   const res = await rpcV4(STEEM_RPC, { jsonrpc: '2.0', method: 'condenser_api.broadcast_transaction', params: [signed], id: 3 });
   const txid = Buffer.from(steem.crypto ? [] : []).length ? '' : (signed.id || require('crypto').createHash('sha256').update(JSON.stringify(signed)).digest('hex'));

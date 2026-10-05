@@ -26,6 +26,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { Client, cryptoUtils } = require('@hiveio/dhive');
+// measurement-only lane — capital gate N/A (STASIS scope)
 
 function loadDotEnv(dir) {
   const envPath = path.join(dir, '.env');

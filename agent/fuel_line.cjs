@@ -17,6 +17,11 @@ if (!process.env.AGENT_ACCOUNT) { console.error('usage: AGENT_ACCOUNT=<account> 
 const fs = require('fs');
 const path = require('path');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 const { resolveLiveGate, announceGate } = require('./lib/live_gate.cjs');
 const GATE = resolveLiveGate(process.argv);
@@ -118,6 +123,7 @@ async function main() {
   }
 
   // שידור tx1 — נציבות
+  if (stasisStop('fuel-line')) return log('STASIS-HALT — capital lane closed (capital gate 2026-10-04) — nothing broadcast'); // sign-time brake
   log('שידור tx1: ' + delOps.length + ' נציבויות (' + (SP_PER_SOLDIER * fuelPlan.length) + ' SP סה"כ)...');
   const conf1 = await steem.broadcast.sendAsync({ operations: delOps, extensions: [] }, [activeWif]);
   const txid1 = (conf1 && conf1.id) || null;
@@ -125,6 +131,7 @@ async function main() {
   result.delegations = { txid: txid1, ops: delOps.length, vestsEach: vestsAmt };
 
   // שידור tx2 — הון-חוזר
+  if (stasisStop('fuel-line:tx2')) return log('STASIS-HALT — capital lane closed (capital gate 2026-10-04) — nothing broadcast'); // sign-time brake
   log('שידור tx2: ' + fuelOps.length + ' העברות (' + needLiq.toFixed(3) + ' STEEM סה"כ)...');
   const conf2 = await steem.broadcast.sendAsync({ operations: fuelOps, extensions: [] }, [activeWif]);
   const txid2 = (conf2 && conf2.id) || null;

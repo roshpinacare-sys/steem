@@ -38,6 +38,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const steem = require('steem');
+// owner directive 2026-10-04 (STASIS): sign-time brake — every broadcast re-checks the breaker (stale-process lesson)
+const capGate = require('./lib/capital_gate.cjs');
+function stasisStop(tool) {
+  try { return !!capGate.stasisHalt(tool); } catch (e) { console.log('[CAPITAL-GATE] ' + tool + ' — gate module error, lane halts fail-closed: ' + String((e && e.message) || e).slice(0, 80)); return true; }
+}
 
 /* ── .env ── */
 function loadDotEnv(dir) {
@@ -153,6 +158,7 @@ function txidOf(signed) {
   return (signed && signed.id) || crypto.createHash('sha256').update(JSON.stringify(signed)).digest('hex');
 }
 async function broadcast(tx, wif) {
+  if (stasisStop('factory-v2')) throw new Error('STASIS-HALT — capital lane closed (capital gate 2026-10-04)'); // sign-time brake
   const signed = steem.auth.signTransaction(tx, [wif]);
   await rpcV4(RPCS[0], { jsonrpc: '2.0', method: 'condenser_api.broadcast_transaction', params: [signed], id: 3 });
   return txidOf(signed);
