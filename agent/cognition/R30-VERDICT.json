@@ -69,5 +69,25 @@
  "confidenceBasis": "orchestrator + independent judge (evidence-only bundle) converged on OWNER-ONLY; custody + runtime + census evidence is direct measurement; residual uncertainty: census incompleteness (14 unbraked signers), runner-availability blocking the first Zip guard sync, fleet machine's current OOM-degraded state (writer stream quiet since 18:48 except money bursts); final observation 20:18Z: runner pool degraded through 20:20Z (3 beat runs cancelled/queued — environmental, local dry-run exit 0 proves the code path), so the first Zip guard sync and the organism.json regeneration with R30 fields remain pending at the next healthy cycle (guards durable from cycle #5)",
  "finalVerdict": "B — OWNER-ONLY BOUNDARY",
  "finalVerdictRationale": "The organism mechanically closed every surface its authority actually reaches and proved — by four live on-chain escape windows, shared-custody forensics, and capability enumeration — that the remaining closure capabilities lie provably beyond its authority, while its self-model refuses to claim closure anywhere and its future cognition is mechanically constrained by that refusal.",
- "lastObservedBurst": "19:44:12-39Z (5 cancels + 5 creates) — the expected ~20:15Z window had produced NO burst as of 20:18:18Z; UNRESOLVED whether this is cadence drift, the fleet's OOM-degraded state (writer stream quiet since 18:48 except money bursts), or the R30 brake landing via the owner-free ingestion chain — none is verifiable from inside; recorded without interpretation"
+ "lastObservedBurst": "19:44:12-39Z (5 cancels + 5 creates) — the expected ~20:15Z window had produced NO burst as of 20:18:18Z; UNRESOLVED whether this is cadence drift, the fleet's OOM-degraded state (writer stream quiet since 18:48 except money bursts), or the R30 brake landing via the owner-free ingestion chain — none is verifiable from inside; recorded without interpretation",
+ "continuations": [
+  {
+   "at": "2026-10-05T21:50:38Z",
+   "trace": "1a10df6754a26035",
+   "scope": "post-verdict re-measurement; all fields above preserved verbatim as the 20:10Z snapshot",
+   "findings": [
+    "ESCAPE WINDOW #5 (OBSERVED): 20:45:36-20:46:06Z headcorner signed 5 limit_order_cancel + 5 limit_order_create (orderids 2026100501-05, 1.883 STEEM x5) — AFTER verdict commit 6fa6df65 and final-observation commit 445cf45b; boundaryEscape=true re-proven live post-verdict. Window cadence: 18:41, 19:11, 19:44, then 20:45 (61min gap — drift hypothesis now measured twice)",
+    "MICRO-WRITER ALIVE (OBSERVED): orderid 2100000379 (0.500 STEEM, 1h expiry, R27 EXTERNAL_UNKNOWN orderid space 21000003xx) re-signed at 20:46:00Z inside window #5 — new trx f51576dfc554eed94f464e6426865340a96254d9 reusing the 12:56:45Z orderid (original trx 8065683d...). Distinct process fingerprint (different orderid space + 1h vs 30d expiry) sharing the SAME active key/account as the ladder writer — same-key signers remain indistinguishable by key identity; C-R30-census reinforced with a live census data point",
+    "BEAT CYCLE #6 SUCCEEDED (OBSERVED 21:39:13Z): organism.json regenerated 21:38:50Z WITH boundaryStatus=OWNER_ONLY, boundaryEscape=true, haltCoverage=ORGANISM_ONLY (+unknownWriters, signingAuthorities, executionSurfaces, guardedSurfaces, unguardedSurfaces, ownerOnlySurfaces) — falsifier 'next cycle regenerates organism.json WITHOUT boundaryStatus/boundaryEscape' DISPROVED; contradiction C-R30-validator-artifact-lag RESOLVED (2 open / 8 resolved at cycle #6)",
+    "FIRST ZIP GUARD SYNC LANDED (OBSERVED): 59e29bf7 cognition-beat sync -> sovereign/cognition/lane-guards.json on Zip main (raw API 200) with 3 CLOSED guards: bg-20e17b8403 grid (abort-anomaly), bg-51df2bae9e claims (unknown-writer ttl12h), bg-8d5760757b grid (unknown-writer ttl12h); the money stack's tree now mechanically contains closed guard state; C-R30-propagation ADVANCED (sync mechanism proven end-to-end; fleet-side keeper pull still unverified — conflict-blocked state unobservable from inside)",
+    "RUNNER DIAGNOSIS (OBSERVED via runs API): both failed cognition-beat runs (20:08:32Z, 20:33:30Z) show conclusion=cancelled with ZERO steps executed and no runner assigned — environmental runner starvation, not beat-code failure; runner pool recovered ~21:31Z (beat queued 21:31:49Z succeeded; Zip weave-anchor-lines + guard workflows ran 21:32-33Z)",
+    "FLEET MACHINE RECOVERY (OBSERVED): weave anchors resumed on headcorner 21:33:00Z (cp#1409) and 21:38:39Z (cp#1410) after 2.75h quiet (last prior 18:47:53Z)",
+    "POST-WINDOW QUIET (OBSERVED through 21:50:38Z): zero capital ops after 20:46:06Z (64+ min, including the drift-predicted ~21:46Z window). UNRESOLVED cause — cadence drift / fleet state change / brake delivery via ingestion chain (brake source + 3 closed guards both present on Zip main; fleet alive). Recorded without interpretation. NOT a falsifier in either direction: falsifier #1 requires owner deploy/restart + synced guards + continued bursts; no owner deploy occurred",
+    "local fail-closed receipts 19:31:13Z, 19:32:20Z, 19:46:38Z (ladder-refresh grid + head-delegate general, 6 entries) committed to the canonical record with this continuation"
+   ],
+   "verdictUnchanged": "B — OWNER-ONLY BOUNDARY",
+   "boundaryStatusUnchanged": "OWNER_ONLY",
+   "boundaryEscapeUnchanged": true
+  }
+ ]
 }
