@@ -319,6 +319,17 @@ vec('V16 structural saos-dex gap: contradiction open, decideShrink not fired by 
   assert(firing.length === 1 && firing[0].note.includes('ttl=6h'), 'real coverage/broken-chain gap still fires close-all TTL 6h');
 });
 
+/* V17 (V-b retry): lane-failure guard recheck measured against the streak itself, not a proxy */
+vec('V17 lane-failure guard recheck: dirty while streak≥3, clean only after reset, dirty when unmeasured', () => {
+  const guard = { id: 'bg-lf', lane: 'grid', closed: true, reason: 'lane-failure streak=4 (beat cycle 1)', expiryOk: true };
+  const dirtyStreak = BEAT.recheckGuard(guard, { freshUnknown: [], gapsOpen: false, brakeDarkOpen: false, laneFailures: [{ lane: 'grid', tool: 'ladder-refresh', consecutive: 4, evidence: [], measured: true }] });
+  assert(dirtyStreak.result === 'dirty' && dirtyStreak.detail.includes('still 4'), 'streak still ≥3 → dirty (guard stays)');
+  const cleanReset = BEAT.recheckGuard(guard, { freshUnknown: [], gapsOpen: false, brakeDarkOpen: false, laneFailures: [{ lane: 'grid', tool: 'ladder-refresh', consecutive: 0, evidence: [], measured: true }] });
+  assert(cleanReset.result === 'clean' && cleanReset.detail.includes('reset'), 'healthy receipts reset streak → clean (release path)');
+  const unmeasured = BEAT.recheckGuard(guard, { freshUnknown: [], gapsOpen: false, brakeDarkOpen: false, laneFailures: [{ lane: 'grid', tool: 'ladder-refresh', consecutive: 0, evidence: [], measured: false }] });
+  assert(unmeasured.result === 'dirty' && unmeasured.detail.includes('UNMEASURED'), 'unmeasured streak → dirty (no release on unmeasured), never fake-clean');
+});
+
 console.log('════════════════════════════════════════');
 console.log(`beat-selftest: ${pass} PASS / ${fail} FAIL (exit ${fail ? 1 : 0})`);
 if (fail) { for (const f of failures) console.log(`  ✗ ${f.name}: ${f.error}`); }
