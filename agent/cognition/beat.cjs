@@ -751,7 +751,11 @@ function git(...args) {
 }
 function publish(msg) {
   try { git('config', 'user.name', 'saos-cognition'); git('config', 'user.email', 'cognition@saos.local'); } catch (_) {}
-  git('add', '-f', '--', ...OUR_FILES); /* -f: the gate journal (capital-decisions.jsonl) is ignore-listed from the pre-beat era — decision memory MUST reach git (measured FATAL without it, cycle #3) */
+  /* -f: the gate journal may be ignore-listed from the pre-beat era; existence-filter:
+     in a fresh runner the journal may not exist yet (first real gate decision creates it)
+     — git add on a missing pathspec dies (measured FATAL cycle #3). Missing = skipped. */
+  const present = OUR_FILES.filter((f) => fs.existsSync(path.join(REPO_ROOT, f)));
+  if (present.length) git('add', '-f', '--', ...present);
   const staged = git('diff', '--cached', '--name-only');
   if (!staged) return { sha: git('rev-parse', 'HEAD'), committed: false };
   git('commit', '-m', msg);
