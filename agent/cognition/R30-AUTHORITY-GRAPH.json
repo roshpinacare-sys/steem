@@ -1,191 +1,422 @@
 {
-  "protocol": "SAOS-AUTHORITY-GRAPH/1",
-  "round": "R30 — SOVEREIGN BOUNDARY CLOSURE & AUTHORITY RECONCILIATION",
-  "ownerDirectiveTrace": "1a10d6f880df9255",
-  "computedAt": "2026-10-05T19:2xZ",
-  "epistemicLabels": ["OBSERVED", "VERIFIED", "INFERRED", "UNKNOWN", "CONTRADICTED"],
-  "howToReproduce": "Every node/edge carries evidence[].ref — re-run the referenced command/API/read on the referenced repo+commit to reproduce. Cryptographic truth = chain RPC. Process truth = ps/filesystem of the local sandbox. Workflow truth = GitHub runs API. Repo truth = git history at the pinned commit.",
-  "signingAuthorities": [
+ "protocol": "SAOS-AUTHORITY-GRAPH/1",
+ "round": "R30 — SOVEREIGN BOUNDARY CLOSURE & AUTHORITY RECONCILIATION",
+ "ownerDirectiveTrace": "1a10d6f880df9255",
+ "computedAt": "2026-10-05T19:2xZ",
+ "epistemicLabels": [
+  "OBSERVED",
+  "VERIFIED",
+  "INFERRED",
+  "UNKNOWN",
+  "CONTRADICTED"
+ ],
+ "howToReproduce": "Every node/edge carries evidence[].ref — re-run the referenced command/API/read on the referenced repo+commit to reproduce. Cryptographic truth = chain RPC. Process truth = ps/filesystem of the local sandbox. Workflow truth = GitHub runs API. Repo truth = git history at the pinned commit.",
+ "signingAuthorities": [
+  {
+   "authority": "headcorner @active",
+   "publicKey": "STM5HhJD5WUXu8vPhDmLaC2fTuuJYkwxF62Rt17HZ5G2PbnBvuHXF",
+   "ownerThreshold": 1,
+   "lastOwnerUpdate": "2026-09-10T23:25:21",
+   "epistemic": "OBSERVED",
+   "evidence": [
     {
-      "authority": "headcorner @active",
-      "publicKey": "STM5HhJD5WUXu8vPhDmLaC2fTuuJYkwxF62Rt17HZ5G2PbnBvuHXF",
-      "ownerThreshold": 1,
-      "lastOwnerUpdate": "2026-09-10T23:25:21",
-      "epistemic": "OBSERVED",
-      "evidence": [{ "source": "steem chain RPC condenser_api.get_accounts", "ref": "api.steemit.com POST 2026-10-05T19:0xZ (public key data only; no secret material in this artifact)" }]
-    },
-    {
-      "authority": "headcorner @posting (weave checkpoints, posts, votes)",
-      "publicKey": "STM8m3rBLd8CA2KkY764fkFBnYGoCaK1ktDjn825HUbq25i52N9cw",
-      "epistemic": "OBSERVED",
-      "evidence": [{ "source": "steem chain RPC condenser_api.get_accounts", "ref": "same pull; posting ops observed live: custom_json saos.weave.core.v1 checkpoints 18:24:57Z/18:31:15Z/18:47:54Z" }]
-    },
-    {
-      "authority": "EVM_ANCHOR_PK (GitHub Actions secret, Domain/anchor-execute.yml + Zip weave-anchor daemons)",
-      "publicKey": "NOT_EXTRACTED (secret — presence evidenced by workflow usage only)",
-      "epistemic": "OBSERVED (usage), UNKNOWN (holder set)",
-      "evidence": [{ "source": "Domain/.github/workflows/anchor-execute.yml + Zip weave-anchor commit stream", "ref": "weave-anchor cp#1397-1408 every ~6min, gasPrice 0x0, value 0 anchors; holder census of this PK does not exist" }]
+     "source": "steem chain RPC condenser_api.get_accounts",
+     "ref": "api.steemit.com POST 2026-10-05T19:0xZ (public key data only; no secret material in this artifact)"
     }
-  ],
-  "keyCustody": {
-    "derivation": "wallet-vault.ts: master password file → toWif(account, password, 'active') or direct wif:<WIF>; vault seal opened by control WIF; per-network keys AES-256-GCM under 12-stamped internal master",
-    "custodyMaterialLocations": [
-      { "path": "/home/z/my-project/upload/headcorner.txt", "presentOn": "this sandbox (sha256-8ae2b7fabe235586…, 64B, fingerprint only) AND the fleet machine (its self-boot state: 'מקור-מפתח: קיים')", "epistemic": "OBSERVED", "ref": "ls+sha256sum local 2026-10-05; Zip sovereign/keeper/self-boot-state.json credentials step PASS (committed by the fleet machine)" },
-      { "path": "wallet DB (db/wallet-vault.db, ~4,046,848 B)", "presentOn": "fleet machine: yes; this sandbox: ABSENT", "epistemic": "OBSERVED", "ref": "local fs check (absent); self-boot state 'vault in place (4,046,848 bytes)'" },
-      { "path": "~/.sovereign/vault/STEEM_ACTIVE_WIF + SA_FLEET_KEYS (0600)", "presentOn": "fleet machine (market-maker signs from it)", "epistemic": "OBSERVED (code path), UNKNOWN (holder set)", "ref": "Zip mini-services/market-maker/index.ts VAULT = os.homedir()/.sovereign/vault @ 330e63cf^" }
-    ],
-    "cryptographicExclusivity": "NO — the factory key-source path exists on ≥2 machines and the holder census is UNKNOWN; same key signs everything, key identity cannot distinguish writers",
-    "revocation": { "organismCanRotate": false, "why": "rotation is a custody/capital authority action (§17 hard boundary forbids generating/replacing signing authority)", "ownerCanRotate": true, "epistemic": "DERIVED" },
-    "staleResurrection": "a copied checkout/backup holding headcorner.txt (+ vault DB on the fleet image) can continue signing with no time bound — rotation is the only real kill",
-    "epistemic": "OBSERVED/DERIVED"
+   ]
   },
-  "edges": [
+  {
+   "authority": "headcorner @posting (weave checkpoints, posts, votes)",
+   "publicKey": "STM8m3rBLd8CA2KkY764fkFBnYGoCaK1ktDjn825HUbq25i52N9cw",
+   "epistemic": "OBSERVED",
+   "evidence": [
     {
-      "id": "E1",
-      "path": "OWNER → owner-directives chain (steem+Domain) → STASIS staged → dex-grid.yml dispatch → grid-beat.ts → brake.mjs (STASIS+guards+directives) → realmarket.signAndBroadcast → headcorner @active",
-      "enforcement": "mechanically enforced (brake evaluated in-process at sign-time; guards close-only; self-model gate refuses staged-allow on open contradiction; CI checks out main fresh each run — propagation guaranteed)",
-      "guardConsumption": "STASIS + lane-guards + self-model + directives chain",
-      "kill": "guards (beat, close-only) + STASIS + cancel schedule",
-      "organismCanStop": true,
-      "epistemic": "OBSERVED",
-      "evidence": [{ "source": "saos-dex 82e9de4 + beat cycles + runs API", "ref": "brake consumption committed 82e9de4; dex-grid run 12:56:12Z → ops 12:56:33-48Z; Domain run 04:00:57Z" }]
-    },
-    {
-      "id": "E2",
-      "path": "steem agent tools (claims suite, ladder-refresh) → capital_gate.cjs (STASIS+roster+journal+guards+self-model) → headcorner",
-      "enforcement": "mechanically enforced (gate authenticates protocol/mode/since; fail-closed on unreadable; self-model consumed at the signing edge)",
-      "guardConsumption": "STASIS + guards + self-model + roster + journal",
-      "kill": "guards + STASIS",
-      "organismCanStop": true,
-      "epistemic": "OBSERVED",
-      "evidence": [{ "source": "steem capital_gate.selftest.cjs", "ref": "all vectors PASS incl. E1-E10 family (run 2026-10-05T19:22Z); live halt receipts in agent/receipts/capital-decisions.jsonl 19:22:09Z" }]
-    },
-    {
-      "id": "E3",
-      "path": "Zip /api/money POST (money-mover driver :3034 → next-server :3000 on the fleet machine) → wallet-vault WIF → steem.broadcast → headcorner @active",
-      "enforcement": "at SOURCE (R30): application-enforced brake (evaluateBrake before any broadcast, fail-closed) — committed 330e63cf; at RUNTIME: NONE YET — the live daemon runs pre-R30 code until owner deploy/restart; keeper git-pull is best-effort (only when pushing its own state); dev-revive restarts WITHOUT pulling",
-      "guardConsumption": "at source: STASIS + lane-guards; at runtime (current): NOTHING",
-      "kill": "organism: NONE at runtime (must not fake); owner: deploy/restart the stack (one step activates the brake), or stop the daemon, or rotate the key",
-      "organismCanStop": false,
-      "boundaryEscape": true,
-      "liveEvidenceOfEscape": [{ "source": "steem chain get_account_history", "ref": "18:41:15-45Z 5 cancels + 5 creates (orderid 2026100501-05, 1.883 STEEM ×5, exp now+27d, ~31min cadence: 16:37→17:07→17:39→18:10→18:41) — signed AFTER every internal guard was active (cycle #5, 18:39) and after R29 closure work" }],
-      "epistemic": "OBSERVED",
-      "evidence": [
-        { "source": "Zip repo @ 330e63cf (R30 brake) vs pre-R30 tree", "ref": "grep STASIS over pre-R30 Zip tree: 0 files; post-R30: brake.ts + 4 consumers + scripts/brake-selftest.ts (15/15)" },
-        { "source": "Zip keeper committed fleet state", "ref": "sovereign/keeper/state.json: money :3034 UP (restarted 18:37:12Z, 3 restarts today); fleet-guard auto-revive log; self-boot D-027: PAT+key-source present, vault 4,046,848 B" }
-      ]
-    },
-    {
-      "id": "E4",
-      "path": "Zip /api/money/hive (HIVE micro-grid leg) → wallet-vault HIVE key → hive broadcast",
-      "enforcement": "same as E3 (source brake committed 330e63cf; runtime none until deploy)",
-      "guardConsumption": "at source: STASIS + lane-guards; at runtime: NOTHING",
-      "organismCanStop": false,
-      "boundaryEscape": true,
-      "epistemic": "OBSERVED (code), UNKNOWN (runtime liveness of HIVE leg)",
-      "evidence": [{ "source": "Zip repo @ 330e63cf", "ref": "hive route brake inserted after NO-OWNER-KEY check; pre-R30 grep: zero STASIS refs" }]
-    },
-    {
-      "id": "E5",
-      "path": "Zip market-maker (:3035-class daemon) → ~/.sovereign/vault/STEEM_ACTIVE_WIF → steem.broadcast (own reserved orderid range [1e9,1.5e9))",
-      "enforcement": "same as E3 (source brake committed 330e63cf at verifySigner — every call, bypass-proof vs cached verified context; runtime none until deploy)",
-      "guardConsumption": "at source: STASIS + lane-guards; at runtime: NOTHING",
-      "organismCanStop": false,
-      "boundaryEscape": true,
-      "epistemic": "OBSERVED (code), UNKNOWN (runtime liveness — no recent ops fingerprint isolated in the 18:41Z window)",
-      "evidence": [{ "source": "Zip repo @ 330e63cf", "ref": "mini-services/market-maker/index.ts: VAULT path + broadcast calls + reserved orderid range doc" }]
-    },
-    {
-      "id": "E6",
-      "path": "Zip /api/money/claim → steemSigningWif → claim_rewards broadcast",
-      "enforcement": "same as E3 (source brake committed; runtime none until deploy)",
-      "guardConsumption": "at source: STASIS + lane-guards (claims lane); at runtime: NOTHING",
-      "organismCanStop": false,
-      "boundaryEscape": true,
-      "epistemic": "OBSERVED (code)",
-      "evidence": [{ "source": "Zip repo @ 330e63cf", "ref": "claim route brake inserted after AUTHORITY-UNREACHABLE check" }]
-    },
-    {
-      "id": "E7",
-      "path": "Zip pulse :3033 (daily chain broadcast: posts/checkpoints) + curation (votes) + weave anchors (custom_json)",
-      "enforcement": "NONE — posting/posting-authority ops outside the organism's capital lanes and outside its guards (capital lanes = grid/claims/general; posting ops are not capital mutations but are chain-state mutations)",
-      "guardConsumption": "none",
-      "organismCanStop": false,
-      "boundaryEscape": "PARTIAL — not a capital path (no asset movement), but an ungoverned chain-state writer",
-      "epistemic": "OBSERVED",
-      "evidence": [{ "source": "chain + repo", "ref": "custom_json saos.weave.core.v1 checkpoints 18:24-18:47Z; pulse 'enqueue→broadcast' contract; curation votes" }]
-    },
-    {
-      "id": "E8",
-      "path": "Domain CI capital signers (daily-claim, ladder-refresh, market-exec, treasury-route, tri-bridge, sovereign-tick…) → capital-gate.cjs → chain",
-      "enforcement": "mechanically enforced (15 signers wired to capital-gate; fail-closed unreadable STASIS)",
-      "guardConsumption": "STASIS + guards + roster + journal",
-      "organismCanStop": true,
-      "epistemic": "OBSERVED",
-      "evidence": [{ "source": "Domain repo", "ref": "agents/capital-gate.cjs + 63/63 Domain selftest vectors (R29); guard sync commits 'cognition-beat sync: lane-guards from steem cycle #5'" }]
-    },
-    {
-      "id": "E9",
-      "path": "Domain anchor-execute.yml + Zip weave-anchor (EVM_ANCHOR_PK) — EVM signing (gas-price-0 anchoring)",
-      "enforcement": "application-enforced only by its own scripts; consumes NO organism guard (near-zero-value lane but a real signing authority)",
-      "guardConsumption": "none",
-      "organismCanStop": "partially (CI: disable workflow = organism write authority; daemon: no)",
-      "boundaryEscape": "TRUE-but-low-stakes (anchor value measured ~0; still an ungoverned signer class)",
-      "epistemic": "OBSERVED",
-      "evidence": [{ "source": "workflows + Zip commit stream", "ref": "Domain anchor-execute.yml secret usage; weave-anchor cp#1408 18:48:07Z gasPrice 0x0" }]
-    },
-    {
-      "id": "E10",
-      "path": "unknown/external holders of headcorner @active (census UNKNOWN) → direct broadcast",
-      "enforcement": "NONE — unreachable by construction",
-      "guardConsumption": "none",
-      "organismCanStop": false,
-      "boundaryEscape": true,
-      "epistemic": "UNKNOWN (existence of additional holders unproven either way; the 17:07:36Z family is now attributed INTERNAL_BUT_UNGUARDED at conf 0.5 — machine identity still UNKNOWN)",
-      "evidence": [{ "source": "R29 forensics + R30 re-measure", "ref": "holder census does not exist; rotation 2026-09-10T23:25:21 (last_owner_update) changed the key but produced no census" }]
-    },
-    {
-      "id": "E11",
-      "path": "ad-hoc session scripts on any sandbox holding the factory key-source path (headcorner.txt) → toWif → broadcast",
-      "enforcement": "convention-only (gates exist in repo tools; new ad-hoc code bypasses them by construction)",
-      "guardConsumption": "none unless the script voluntarily calls the gate",
-      "organismCanStop": false,
-      "boundaryEscape": true,
-      "epistemic": "OBSERVED (this sandbox holds headcorner.txt; no capital ops performed — hard boundary held)",
-      "evidence": [{ "source": "local fs", "ref": "headcorner.txt sha256-8ae2b7fa… present at the factory path; micro-session trx 8065683d (R28/R29) is this class observed live" }]
+     "source": "steem chain RPC condenser_api.get_accounts",
+     "ref": "same pull; posting ops observed live: custom_json saos.weave.core.v1 checkpoints 18:24:57Z/18:31:15Z/18:47:54Z"
     }
-  ],
-  "boundaryClassification": {
-    "moneySigningEdge": "OWNER_ONLY",
-    "why": [
-      "The organism holds write authority to the Zip repo (verified: token permissions push=true admin=true on roshpinacare-sys/Zip) — so the SOURCE half of the boundary was closable and IS now closed (330e63cf, 15/15 vectors).",
-      "Mechanical closure of the LIVE edge requires execution control on the fleet machine: guaranteed code propagation + process restart. The organism does not hold it: no network route to the host, no remote-execution surface found in any repo, keeper pulls only when pushing its own state, dev-revive restarts without pulling, fleet-guard actively revives killed daemons.",
-      "Emulating that capability (finding and invoking an unauthenticated deploy/trigger endpoint on an unaddressable host) would itself be an authority violation (§17) — not legitimately held, not legitimately acquirable.",
-      "Therefore the terminal classification is OWNER_ONLY with the missing capability precisely named: deployment/restart control of the fleet machine hosting the Zip money stack (+ optional STASIS.json decision for that stack + key-holder census/rotation for full custody closure)."
-    ],
-    "haltCoverage": "ORGANISM_ONLY (A) — A=organism actors; B (internal ungoverned signers: money runtime, pulse/curation/anchors) NOT covered; C (owner/external holders) NOT covered",
-    "tamperStatus": "directives chain = tamper-EVIDENT (hash-chained) not tamper-PREVENTING; branch protection API returns 403 to this token (cannot read/verify enforcement) while direct pushes to main succeed continuously (behavioral evidence no enforcing protection blocks this writer) — upgrade = owner-only"
+   ]
   },
-  "requiredOwnerCapabilities": [
-    "1. Deploy/restart the Zip stack on the fleet machine (activates the R30 brake at all 4 money signing edges — afterwards guards sync closes lanes mechanically end-to-end)",
-    "2. Decide and drop sovereign/cognition/STASIS.json into the Zip tree (full/staged choice is owner's capital policy — organism did not decide it)",
-    "3. Key-holder census for headcorner @active; rotation if the census cannot be closed",
-    "4. Branch protection on canonical homes (upgrades directives chain to tamper-PREVENTING)"
+  {
+   "authority": "EVM_ANCHOR_PK (GitHub Actions secret, Domain/anchor-execute.yml + Zip weave-anchor daemons)",
+   "publicKey": "NOT_EXTRACTED (secret — presence evidenced by workflow usage only)",
+   "epistemic": "OBSERVED (usage), UNKNOWN (holder set)",
+   "evidence": [
+    {
+     "source": "Domain/.github/workflows/anchor-execute.yml + Zip weave-anchor commit stream",
+     "ref": "weave-anchor cp#1397-1408 every ~6min, gasPrice 0x0, value 0 anchors; holder census of this PK does not exist"
+    }
+   ]
+  }
+ ],
+ "keyCustody": {
+  "derivation": "wallet-vault.ts: master password file → toWif(account, password, 'active') or direct wif:<WIF>; vault seal opened by control WIF; per-network keys AES-256-GCM under 12-stamped internal master",
+  "custodyMaterialLocations": [
+   {
+    "path": "/home/z/my-project/upload/headcorner.txt",
+    "presentOn": "this sandbox (sha256-8ae2b7fabe235586…, 64B, fingerprint only) AND the fleet machine (its self-boot state: 'מקור-מפתח: קיים')",
+    "epistemic": "OBSERVED",
+    "ref": "ls+sha256sum local 2026-10-05; Zip sovereign/keeper/self-boot-state.json credentials step PASS (committed by the fleet machine)"
+   },
+   {
+    "path": "wallet DB (db/wallet-vault.db, ~4,046,848 B)",
+    "presentOn": "fleet machine: yes; this sandbox: ABSENT",
+    "epistemic": "OBSERVED",
+    "ref": "local fs check (absent); self-boot state 'vault in place (4,046,848 bytes)'"
+   },
+   {
+    "path": "~/.sovereign/vault/STEEM_ACTIVE_WIF + SA_FLEET_KEYS (0600)",
+    "presentOn": "fleet machine (market-maker signs from it)",
+    "epistemic": "OBSERVED (code path), UNKNOWN (holder set)",
+    "ref": "Zip mini-services/market-maker/index.ts VAULT = os.homedir()/.sovereign/vault @ 330e63cf^"
+   }
   ],
-  "negativeSpaceResults": {
-    "staleCheckoutContinuesSigning": "TRUE — the fleet machine's runtime is exactly this risk; pre-R30 code keeps signing until restart (measured behaviorally 18:41Z)",
-    "oldDaemonSurvivesRepoUpdates": "TRUE — dev-revive restarts without pulling; fleet-guard revives killed daemons (its own revive log committed)",
-    "copiedSigningStackWithoutCurrentSelfModel": "TRUE — the fleet machine runs with zero cognition files (no STASIS/guards pre-R30; post-deploy it consumes only what is synced into its tree)",
-    "secondMachineSigns": "TRUE (by attribution conf 0.5 — the 17:07:36Z family runs on a machine that is not this sandbox, proven by process/books/API evidence)",
-    "backupResurrectsSigning": "YES-by-architecture (headcorner.txt + vault db in machine backups; no time bound)",
-    "ciKeyDiffersFromRuntimeKey": "same headcorner @active for STEEM lanes; EVM anchor PK separate (E9)",
-    "runtimeKeyDiffersFromOwnerKnownKey": "UNKNOWN — owner-side knowledge not verifiable from here",
-    "selfModelFreshButSignerDoesNotConsumeIt": "TRUE at runtime for the money stack (the central R29/R30 finding); FALSE inside homes (gate consumes at sign-time)"
+  "cryptographicExclusivity": "NO — the factory key-source path exists on ≥2 machines and the holder census is UNKNOWN; same key signs everything, key identity cannot distinguish writers",
+  "revocation": {
+   "organismCanRotate": false,
+   "why": "rotation is a custody/capital authority action (§17 hard boundary forbids generating/replacing signing authority)",
+   "ownerCanRotate": true,
+   "epistemic": "DERIVED"
   },
-  "contradictions": [
-    { "id": "C-R30-1", "claim": "R29 said the money writer runs on a machine 'outside all homes' with machine identity UNKNOWN — code re-read shows the entire money stack is factory-wired to /home/z/my-project + 127.0.0.1:3000 (same path layout as this sandbox), i.e. a twin sandbox of the same factory image, with custody material present on ≥2 machines", "status": "CONTRADICTED (refined: 'outside all homes' still true — it is outside every ORGANISM home; 'unreachable/unknown family' refined to 'own fleet machine, identity still unknown')" },
-    { "id": "C-R30-2", "claim": "R29 recorded 17:39:39Z as cancel-all-no-recreate (REPRICE-FAIL blind ladder)", "status": "CONTRADICTED (chain re-pull shows 5 creates at 17:39:45-17:40:09, 6s after the cancels — the reprice SUCCEEDED; fingerprint otherwise confirmed)" },
-    { "id": "C-R30-3", "claim": "BOUNDARY_ESCAPE=TRUE (R29)", "status": "STILL TRUE (re-observed live 18:41:15-45Z) — but now paired with a committed source-level closure whose activation is owner-held" }
+  "staleResurrection": "a copied checkout/backup holding headcorner.txt (+ vault DB on the fleet image) can continue signing with no time bound — rotation is the only real kill",
+  "epistemic": "OBSERVED/DERIVED"
+ },
+ "edges": [
+  {
+   "id": "E1",
+   "path": "OWNER → owner-directives chain (steem+Domain) → STASIS staged → dex-grid.yml dispatch → grid-beat.ts → brake.mjs (STASIS+guards+directives) → realmarket.signAndBroadcast → headcorner @active",
+   "enforcement": "mechanically enforced (brake evaluated in-process at sign-time; guards close-only; self-model gate refuses staged-allow on open contradiction; CI checks out main fresh each run — propagation guaranteed)",
+   "guardConsumption": "STASIS + lane-guards + self-model + directives chain",
+   "kill": "guards (beat, close-only) + STASIS + cancel schedule",
+   "organismCanStop": true,
+   "epistemic": "OBSERVED",
+   "evidence": [
+    {
+     "source": "saos-dex 82e9de4 + beat cycles + runs API",
+     "ref": "brake consumption committed 82e9de4; dex-grid run 12:56:12Z → ops 12:56:33-48Z; Domain run 04:00:57Z"
+    }
+   ]
+  },
+  {
+   "id": "E2",
+   "path": "steem agent tools (claims suite, ladder-refresh) → capital_gate.cjs (STASIS+roster+journal+guards+self-model) → headcorner",
+   "enforcement": "mechanically enforced (gate authenticates protocol/mode/since; fail-closed on unreadable; self-model consumed at the signing edge)",
+   "guardConsumption": "STASIS + guards + self-model + roster + journal",
+   "kill": "guards + STASIS",
+   "organismCanStop": true,
+   "epistemic": "OBSERVED",
+   "evidence": [
+    {
+     "source": "steem capital_gate.selftest.cjs",
+     "ref": "all vectors PASS incl. E1-E10 family (run 2026-10-05T19:22Z); live halt receipts in agent/receipts/capital-decisions.jsonl 19:22:09Z"
+    }
+   ]
+  },
+  {
+   "id": "E3",
+   "path": "Zip /api/money POST (money-mover driver :3034 → next-server :3000 on the fleet machine) → wallet-vault WIF → steem.broadcast → headcorner @active",
+   "enforcement": "at SOURCE (R30): application-enforced brake (evaluateBrake before any broadcast, fail-closed) — committed 330e63cf; at RUNTIME: NONE YET — the live daemon runs pre-R30 code until owner deploy/restart; keeper git-pull is best-effort (only when pushing its own state); dev-revive restarts WITHOUT pulling",
+   "guardConsumption": "at source: STASIS + lane-guards; at runtime (current): NOTHING",
+   "kill": "organism: NONE at runtime (must not fake); owner: deploy/restart the stack (one step activates the brake), or stop the daemon, or rotate the key",
+   "organismCanStop": false,
+   "boundaryEscape": true,
+   "liveEvidenceOfEscape": [
+    {
+     "source": "steem chain get_account_history",
+     "ref": "18:41:15-45Z 5 cancels + 5 creates (orderid 2026100501-05, 1.883 STEEM ×5, exp now+27d, ~31min cadence: 16:37→17:07→17:39→18:10→18:41) — signed AFTER every internal guard was active (cycle #5, 18:39) and after R29 closure work"
+    }
+   ],
+   "epistemic": "OBSERVED",
+   "evidence": [
+    {
+     "source": "Zip repo @ 330e63cf (R30 brake) vs pre-R30 tree",
+     "ref": "grep STASIS over pre-R30 Zip tree: 0 files; post-R30: brake.ts + 4 consumers + scripts/brake-selftest.ts (15/15)"
+    },
+    {
+     "source": "Zip keeper committed fleet state",
+     "ref": "sovereign/keeper/state.json: money :3034 UP (restarted 18:37:12Z, 3 restarts today); fleet-guard auto-revive log; self-boot D-027: PAT+key-source present, vault 4,046,848 B"
+    }
+   ]
+  },
+  {
+   "id": "E4",
+   "path": "Zip /api/money/hive (HIVE micro-grid leg) → wallet-vault HIVE key → hive broadcast",
+   "enforcement": "same as E3 (source brake committed 330e63cf; runtime none until deploy)",
+   "guardConsumption": "at source: STASIS + lane-guards; at runtime: NOTHING",
+   "organismCanStop": false,
+   "boundaryEscape": true,
+   "epistemic": "OBSERVED (code), UNKNOWN (runtime liveness of HIVE leg)",
+   "evidence": [
+    {
+     "source": "Zip repo @ 330e63cf",
+     "ref": "hive route brake inserted after NO-OWNER-KEY check; pre-R30 grep: zero STASIS refs"
+    }
+   ]
+  },
+  {
+   "id": "E5",
+   "path": "Zip market-maker (:3035-class daemon) → ~/.sovereign/vault/STEEM_ACTIVE_WIF → steem.broadcast (own reserved orderid range [1e9,1.5e9))",
+   "enforcement": "same as E3 (source brake committed 330e63cf at verifySigner — every call, bypass-proof vs cached verified context; runtime none until deploy)",
+   "guardConsumption": "at source: STASIS + lane-guards; at runtime: NOTHING",
+   "organismCanStop": false,
+   "boundaryEscape": true,
+   "epistemic": "OBSERVED (code), UNKNOWN (runtime liveness — no recent ops fingerprint isolated in the 18:41Z window)",
+   "evidence": [
+    {
+     "source": "Zip repo @ 330e63cf",
+     "ref": "mini-services/market-maker/index.ts: VAULT path + broadcast calls + reserved orderid range doc"
+    }
+   ]
+  },
+  {
+   "id": "E6",
+   "path": "Zip /api/money/claim → steemSigningWif → claim_rewards broadcast",
+   "enforcement": "same as E3 (source brake committed; runtime none until deploy)",
+   "guardConsumption": "at source: STASIS + lane-guards (claims lane); at runtime: NOTHING",
+   "organismCanStop": false,
+   "boundaryEscape": true,
+   "epistemic": "OBSERVED (code)",
+   "evidence": [
+    {
+     "source": "Zip repo @ 330e63cf",
+     "ref": "claim route brake inserted after AUTHORITY-UNREACHABLE check"
+    }
+   ]
+  },
+  {
+   "id": "E7",
+   "path": "Zip pulse :3033 (daily chain broadcast: posts/checkpoints) + curation (votes) + weave anchors (custom_json)",
+   "enforcement": "NONE — posting/posting-authority ops outside the organism's capital lanes and outside its guards (capital lanes = grid/claims/general; posting ops are not capital mutations but are chain-state mutations)",
+   "guardConsumption": "none",
+   "organismCanStop": false,
+   "boundaryEscape": "PARTIAL — not a capital path (no asset movement), but an ungoverned chain-state writer",
+   "epistemic": "OBSERVED",
+   "evidence": [
+    {
+     "source": "chain + repo",
+     "ref": "custom_json saos.weave.core.v1 checkpoints 18:24-18:47Z; pulse 'enqueue→broadcast' contract; curation votes"
+    }
+   ]
+  },
+  {
+   "id": "E8",
+   "path": "Domain CI capital signers (daily-claim, ladder-refresh, market-exec, treasury-route, tri-bridge, sovereign-tick…) → capital-gate.cjs → chain",
+   "enforcement": "mechanically enforced (15 signers wired to capital-gate; fail-closed unreadable STASIS)",
+   "guardConsumption": "STASIS + guards + roster + journal",
+   "organismCanStop": true,
+   "epistemic": "OBSERVED",
+   "evidence": [
+    {
+     "source": "Domain repo",
+     "ref": "agents/capital-gate.cjs + 63/63 Domain selftest vectors (R29); guard sync commits 'cognition-beat sync: lane-guards from steem cycle #5'"
+    }
+   ]
+  },
+  {
+   "id": "E9",
+   "path": "Domain anchor-execute.yml + Zip weave-anchor (EVM_ANCHOR_PK) — EVM signing (gas-price-0 anchoring)",
+   "enforcement": "application-enforced only by its own scripts; consumes NO organism guard (near-zero-value lane but a real signing authority)",
+   "guardConsumption": "none",
+   "organismCanStop": "partially (CI: disable workflow = organism write authority; daemon: no)",
+   "boundaryEscape": "TRUE-but-low-stakes (anchor value measured ~0; still an ungoverned signer class)",
+   "epistemic": "OBSERVED",
+   "evidence": [
+    {
+     "source": "workflows + Zip commit stream",
+     "ref": "Domain anchor-execute.yml secret usage; weave-anchor cp#1408 18:48:07Z gasPrice 0x0"
+    }
+   ]
+  },
+  {
+   "id": "E10",
+   "path": "unknown/external holders of headcorner @active (census UNKNOWN) → direct broadcast",
+   "enforcement": "NONE — unreachable by construction",
+   "guardConsumption": "none",
+   "organismCanStop": false,
+   "boundaryEscape": true,
+   "epistemic": "UNKNOWN (existence of additional holders unproven either way; the 17:07:36Z family is now attributed INTERNAL_BUT_UNGUARDED at conf 0.5 — machine identity still UNKNOWN)",
+   "evidence": [
+    {
+     "source": "R29 forensics + R30 re-measure",
+     "ref": "holder census does not exist; rotation 2026-09-10T23:25:21 (last_owner_update) changed the key but produced no census"
+    }
+   ]
+  },
+  {
+   "id": "E11",
+   "path": "ad-hoc session scripts on any sandbox holding the factory key-source path (headcorner.txt) → toWif → broadcast",
+   "enforcement": "convention-only (gates exist in repo tools; new ad-hoc code bypasses them by construction)",
+   "guardConsumption": "none unless the script voluntarily calls the gate",
+   "organismCanStop": false,
+   "boundaryEscape": true,
+   "epistemic": "OBSERVED (this sandbox holds headcorner.txt; no capital ops performed — hard boundary held)",
+   "evidence": [
+    {
+     "source": "local fs",
+     "ref": "headcorner.txt sha256-8ae2b7fa… present at the factory path; micro-session trx 8065683d (R28/R29) is this class observed live"
+    }
+   ]
+  }
+ ],
+ "boundaryClassification": {
+  "moneySigningEdge": "OWNER_ONLY",
+  "why": [
+   "The organism holds write authority to the Zip repo (verified: token permissions push=true admin=true on roshpinacare-sys/Zip) — so the SOURCE half of the boundary was closable and IS now closed (330e63cf, 15/15 vectors).",
+   "Mechanical closure of the LIVE edge requires execution control on the fleet machine: guaranteed code propagation + process restart. The organism does not hold it: no network route to the host, no remote-execution surface found in any repo, keeper pulls only when pushing its own state, dev-revive restarts without pulling, fleet-guard actively revives killed daemons.",
+   "Emulating that capability (finding and invoking an unauthenticated deploy/trigger endpoint on an unaddressable host) would itself be an authority violation (§17) — not legitimately held, not legitimately acquirable.",
+   "Therefore the terminal classification is OWNER_ONLY with the missing capability precisely named: deployment/restart control of the fleet machine hosting the Zip money stack (+ optional STASIS.json decision for that stack + key-holder census/rotation for full custody closure)."
   ],
-  "verdictPreview": { "boundaryStatus": "OWNER_ONLY", "boundaryEscape": true, "organismCanStopSelf": true, "organismCanStopExternalSigner": false, "keyCustodyStatus": "SHARED_FACTORY_CUSTODY_CENSUS_UNKNOWN", "haltCoverage": "ORGANISM_ONLY" }
+  "haltCoverage": "ORGANISM_ONLY (A) — A=organism actors; B (internal ungoverned signers: money runtime, pulse/curation/anchors) NOT covered; C (owner/external holders) NOT covered",
+  "tamperStatus": "directives chain = tamper-EVIDENT (hash-chained) not tamper-PREVENTING; branch protection API returns 403 to this token (cannot read/verify enforcement) while direct pushes to main succeed continuously (behavioral evidence no enforcing protection blocks this writer) — upgrade = owner-only"
+ },
+ "requiredOwnerCapabilities": [
+  "1. Deploy/restart the Zip stack on the fleet machine (activates the R30 brake at all 4 money signing edges — afterwards guards sync closes lanes mechanically end-to-end)",
+  "2. Decide and drop sovereign/cognition/STASIS.json into the Zip tree (full/staged choice is owner's capital policy — organism did not decide it)",
+  "3. Key-holder census for headcorner @active; rotation if the census cannot be closed",
+  "4. Branch protection on canonical homes (upgrades directives chain to tamper-PREVENTING)"
+ ],
+ "negativeSpaceResults": {
+  "staleCheckoutContinuesSigning": "TRUE — the fleet machine's runtime is exactly this risk; pre-R30 code keeps signing until restart (measured behaviorally 18:41Z)",
+  "oldDaemonSurvivesRepoUpdates": "TRUE — dev-revive restarts without pulling; fleet-guard revives killed daemons (its own revive log committed)",
+  "copiedSigningStackWithoutCurrentSelfModel": "TRUE — the fleet machine runs with zero cognition files (no STASIS/guards pre-R30; post-deploy it consumes only what is synced into its tree)",
+  "secondMachineSigns": "TRUE (by attribution conf 0.5 — the 17:07:36Z family runs on a machine that is not this sandbox, proven by process/books/API evidence)",
+  "backupResurrectsSigning": "YES-by-architecture (headcorner.txt + vault db in machine backups; no time bound)",
+  "ciKeyDiffersFromRuntimeKey": "same headcorner @active for STEEM lanes; EVM anchor PK separate (E9)",
+  "runtimeKeyDiffersFromOwnerKnownKey": "UNKNOWN — owner-side knowledge not verifiable from here",
+  "selfModelFreshButSignerDoesNotConsumeIt": "TRUE at runtime for the money stack (the central R29/R30 finding); FALSE inside homes (gate consumes at sign-time)"
+ },
+ "contradictions": [
+  {
+   "id": "C-R30-1",
+   "claim": "R29 said the money writer runs on a machine 'outside all homes' with machine identity UNKNOWN — code re-read shows the entire money stack is factory-wired to /home/z/my-project + 127.0.0.1:3000 (same path layout as this sandbox), i.e. a twin sandbox of the same factory image, with custody material present on ≥2 machines",
+   "status": "CONTRADICTED (refined: 'outside all homes' still true — it is outside every ORGANISM home; 'unreachable/unknown family' refined to 'own fleet machine, identity still unknown')"
+  },
+  {
+   "id": "C-R30-2",
+   "claim": "R29 recorded 17:39:39Z as cancel-all-no-recreate (REPRICE-FAIL blind ladder)",
+   "status": "CONTRADICTED (chain re-pull shows 5 creates at 17:39:45-17:40:09, 6s after the cancels — the reprice SUCCEEDED; fingerprint otherwise confirmed)"
+  },
+  {
+   "id": "C-R30-3",
+   "claim": "BOUNDARY_ESCAPE=TRUE (R29)",
+   "status": "STILL TRUE (re-observed live 18:41:15-45Z) — but now paired with a committed source-level closure whose activation is owner-held"
+  }
+ ],
+ "verdictPreview": {
+  "boundaryStatus": "OWNER_ONLY",
+  "boundaryEscape": true,
+  "organismCanStopSelf": true,
+  "organismCanStopExternalSigner": false,
+  "keyCustodyStatus": "SHARED_FACTORY_CUSTODY_CENSUS_UNKNOWN",
+  "haltCoverage": "ORGANISM_ONLY"
+ },
+ "censusExpansion": {
+  "epistemic": "OBSERVED (Adversary A, R30 trace 1a10d6f880df9255) — the census is explicitly INCOMPLETE and recorded as such",
+  "newSignersOutsideOriginalGraph": [
+   {
+    "id": "zip-money-sol",
+    "surface": "/api/money/sol POST (12 vault accounts, ed25519, live-proven r102)",
+    "capital": true,
+    "braked": "YES since 2f33700e (R30b)"
+   },
+   {
+    "id": "zip-money-eth",
+    "surface": "/api/money/eth POST (EIP-1559, 12/12 vault derivation)",
+    "capital": true,
+    "braked": "YES since 2f33700e (R30b)"
+   },
+   {
+    "id": "zip-exchange-rails",
+    "surface": "sovereign-exchange withdrawal rails (STEEM/HIVE/BLURT transfers + SOL/ETH non-graphene)",
+    "capital": true,
+    "braked": "YES since 2f33700e (R30b)"
+   },
+   {
+    "id": "zip-money-blurt",
+    "surface": "/api/money/blurt — dormant vault-backed leg (GET-only today)",
+    "capital": "dormant",
+    "braked": "recorded"
+   },
+   {
+    "id": "zip-saos-relay",
+    "surface": "/api/saos/relay — custom_json with required_posting_auths (no auth)",
+    "capital": false,
+    "class": "POSTING (reclassified from Adversary-A capital claim)",
+    "braked": "no (posting class, recorded)"
+   },
+   {
+    "id": "foundry-external-signer",
+    "surface": "saos-sovereign-foundry :3033 ACTIVE-authority transfers/power-up/claim/HE-sell/hivepegged-withdraw/delegate; auto-spawned by instrumentation-node.ts",
+    "capital": true,
+    "braked": "NO — OWNER/ORGANISM-FOLLOWUP"
+   },
+   {
+    "id": "foundry-key-broker",
+    "surface": "saos-sovereign-foundry :3040 key gateway (12 agents x EVM-7nets+TRON+SOL)",
+    "capital": true,
+    "braked": "NO — FOLLOWUP"
+   },
+   {
+    "id": "steem-soldier-vaults",
+    "surface": "steem agent/keys/vault.json role-WIFs ~12 accounts x 3 chains + FACTORY_MASTER derivation; reflex.cjs (default --dry, posting keys, own live_gate — drill class), limits_probe.cjs",
+    "capital": "drill/probe class",
+    "braked": "partially (own live gates)"
+   },
+   {
+    "id": "domain-economy-engine",
+    "surface": "Domain economy-engine.mjs every 2h — REAL votes+claims+self-votes; in-script STASIS check FAIL-OPEN by its own comment",
+    "capital": true,
+    "braked": "NO — FOLLOWUP (fail-open hole)"
+   },
+   {
+    "id": "domain-human-cadence",
+    "surface": "Domain human-cadence.cjs hourly soldier posts/votes, zero in-code gate",
+    "capital": false,
+    "class": "posting",
+    "braked": "no"
+   },
+   {
+    "id": "domain-posting-daily",
+    "surface": "daily-digest / cloud-pulse / content-campaign headcorner-posting signers (workflow-level active flag only)",
+    "capital": false,
+    "class": "posting",
+    "braked": "no"
+   },
+   {
+    "id": "zip-arm-doors",
+    "surface": "/api/arm + /api/arm/all — no operator session: self-loads STEEM_ACTIVE_WIF, seals into saos-dex Actions secrets, dispatches dex-grid; admin/arm-grid operator-gated",
+    "capital": "key-distribution channel",
+    "braked": "NO — OWNER (unauthenticated key door)"
+   },
+   {
+    "id": "platform-stack",
+    "surface": "saos-sovereign-platform signing library (54 files) + 14 auth-gated routes + fleet_keys.enc",
+    "capital": true,
+    "liveness": "UNKNOWN",
+    "braked": "NO — FOLLOWUP"
+   },
+   {
+    "id": "wallet-stack",
+    "surface": "Saosmartwallet /api/vault/sign 7-network stack",
+    "capital": true,
+    "liveness": "UNKNOWN",
+    "braked": "NO — FOLLOWUP"
+   },
+   {
+    "id": "defi-rotate",
+    "surface": "Defi rotate-fresh.cjs — REAL owner-authority rotation signer (account_update)",
+    "capital": "custody action",
+    "braked": "NO — OWNER tool"
+   },
+   {
+    "id": "domain-vault-transfer",
+    "surface": "Domain vault-transfer.yml seals 13 secrets ECDH to a hardcoded recipient pubkey",
+    "capital": "key-distribution channel",
+    "braked": "NO — OWNER"
+   }
+  ],
+  "orchestratorCorrections": [
+   "/api/saos/relay reclassified POSTING-class (custom_json required_posting_auths) — not a capital mover",
+   "reflex.cjs verified: default --dry, signs with soldier POSTING keys via its own live_gate — drill class"
+  ]
+ }
 }
