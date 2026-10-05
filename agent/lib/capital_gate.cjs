@@ -35,11 +35,47 @@ function stasisState() {
   try { return JSON.parse(fs.readFileSync(STASIS_FILE, 'utf8')); } catch (_) { return { active: true, unreadable: true, reason: 'stasis file unreadable — fail-closed' }; }
 }
 
-/** true = הקורא חייב לצאת 0 (no-op בריא) מיד, לפני-כל-טעינת-מפתחות. */
+/**
+ * מסילת-הכלי — laneOf(tool) (owner directive 2026-10-05, trace 1a10bfe1342b2391 —
+ * staged re-entry + calibration mandate). מיפוי-מפורש מהאודיט של R24-b (כל-אתר-חתימה
+ * נבדק-מול-האופ-שלו בקוד — לא לפי-שם-בלבד):
+ *   'claims' — כלים שהאופ-שלהם claim_reward_balance (posting-only, אידמפוטנטי):
+ *              agent:claim, agent:army-claim, fleet-claim, head-revive:claim, fleetv3-autopilot:claim.
+ *   'grid'   — כלים שהאופ-שלהם limit_order_create/cancel על הספר-הפנימי:
+ *              ladder-refresh (מכונת-הסולם).
+ *   'general'— כל-יתר: האצלות, העברות, converts, מכירות-HE, mint/escrow, וכל-כלי-לא-מוכר.
+ * כלי-לא-מוכר → 'general' (fail-closed: אין-היכרות = אין-מסילה-פתוחה).
+ */
+const LANES = Object.freeze({
+  claims: Object.freeze(['agent:claim', 'agent:army-claim', 'fleet-claim', 'head-revive:claim', 'fleetv3-autopilot:claim']),
+  grid: Object.freeze(['ladder-refresh']),
+});
+
+function laneOf(tool) {
+  const t = String(tool || '').trim().toLowerCase();
+  for (const lane of Object.keys(LANES)) {
+    if (LANES[lane].includes(t)) return lane;
+  }
+  return 'general';
+}
+
+/**
+ * true = הקורא חייב לצאת 0 (no-op בריא) מיד, לפני-כל-טעינת-מפתחות.
+ * STAGED (owner directive 2026-10-05, trace 1a10bfe1342b2391 — 'Re-enable its autonomous
+ * capabilities intelligently. Let it operate.' + calibration mandate): כש-mode=staged
+ * והמסילה של הכלי ∈ stagedLanes.allow → קבלת STASIS-STAGED-ALLOW והיתר-מותנה;
+ * כל-יתר נעצר בדיוק-כמו-קודם. אין-נפילה-פתוחה: קובץ-חסר/פגום = active=true = עצירה.
+ */
 function stasisHalt(tool) {
   const s = stasisState();
   if (s.active !== true) return false;
-  console.log(`[CAPITAL-GATE] STASIS-HALT ${tool} · reason: ${String(s.reason || 'unspecified').slice(0, 160)} · since ${s.since || '?'}`);
+  const lane = laneOf(tool);
+  const allow = Array.isArray(s.stagedLanes && s.stagedLanes.allow) ? s.stagedLanes.allow.map((x) => String(x).toLowerCase()) : [];
+  if (s.mode === 'staged' && allow.includes(lane)) {
+    console.log(`[CAPITAL-GATE] STASIS-STAGED-ALLOW ${tool} (lane=${lane}) · reason: ${String(s.reason || 'unspecified').slice(0, 160)} · since ${s.since || '?'}`);
+    return false;
+  }
+  console.log(`[CAPITAL-GATE] STASIS-HALT ${tool} (lane=${lane}) · reason: ${String(s.reason || 'unspecified').slice(0, 160)} · since ${s.since || '?'}`);
   return true;
 }
 
@@ -82,4 +118,4 @@ function journal(tool, row) {
   } catch (_) { /* יומן לא מפיל ריצה — השערים כן */ }
 }
 
-module.exports = { stasisState, stasisHalt, guardTargets, journal, BANNED_CAPITAL, STASIS_FILE, JOURNAL };
+module.exports = { stasisState, stasisHalt, laneOf, guardTargets, journal, BANNED_CAPITAL, STASIS_FILE, JOURNAL };
