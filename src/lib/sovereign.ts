@@ -21,6 +21,15 @@ const PID_FILE = path.join(STATE_DIR, "engine.pid");
 const LOG_FILE = path.join(ENGINE_DIR, "engine.log");
 const SOV_FILE = path.join(STATE_DIR, "sovereign.json");
 const SOV_EVENTS = path.join(STATE_DIR, "sovereign-events.jsonl");
+/* R216-b · CUSTODIAN SUPERVISION — the R215 custodian (:3041, bounded-staleness
+ * ≤10min persistence) had NO supervisor: ad-hoc tool-session launches are
+ * reaped by the sandbox (observed live 22:35→22:43Z — process died, loss
+ * window silently unbounded again). Same survival doctrine as the engine:
+ * spawn from the SURVIVING next-server tree, guard it every watchdog tick. */
+const CUSTODIAN_HTTP = "http://127.0.0.1:3041";
+const CUSTODIAN_DIR = path.join(process.cwd(), "mini-services", "saos-custodian");
+const CUSTODIAN_PID_FILE = path.join(CUSTODIAN_DIR, "custodian.pid");
+const CUSTODIAN_LOG = path.join(CUSTODIAN_DIR, "custodian.log");
 
 const WD_MS = 60_000;      // watchdog tick
 const CYCLE_MS = 600_000;  // autonomous cycle every 10 min
@@ -48,6 +57,10 @@ type SovereignState = {
     present: boolean | null; firstDownAt: string | null; lastDownAt: string | null;
     alerts: number; lastAlertAt: string | null;
   };
+  custodian: {
+    checks: number; downs: number; heals: number; healFailed: number;
+    lastCheckAt: string | null; up: boolean; lastUpAt: string | null; lastSpawnAt: string | null;
+  };
   control: { at: string; action: string; by: string; note?: string }[];
 };
 
@@ -60,7 +73,12 @@ type Core = {
   wdBusy: boolean;
 };
 
-const g = globalThis as unknown as { __saosSovereign?: Core };
+/* SOVEREIGN_GEN — upgrade generation. Bumping it makes the next module
+ * evaluation (HMR/API-route recompile, no server restart needed) clear the
+ * previous generation's timers — so stale closures can never double-heal —
+ * and arm a fresh core carrying state over from sovereign.json. */
+const SOVEREIGN_GEN = 2; // v2: + custodian guard (R216-b)
+const g = globalThis as unknown as { __saosSovereign?: Core; __saosSovereignGen?: number };
 
 const nowIso = () => new Date().toISOString();
 const r6 = (v: number) => Math.round(v * 1e6) / 1e6;
@@ -101,6 +119,82 @@ function pidIsOurEngine(pid: number): boolean {
     const cmd = fs.readFileSync(`/proc/${pid}/cmdline`, "utf8");
     return cmd.includes("index.ts");
   } catch { return false; }
+}
+
+async function custodianHealth(timeoutMs = 3000): Promise<boolean> {
+  try {
+    const r = await fetch(`${CUSTODIAN_HTTP}/health`, { signal: AbortSignal.timeout(timeoutMs), cache: "no-store" });
+    return r.ok;
+  } catch { return false; }
+}
+
+/** בעלות-על-custodian: ה-cwd של התהליך חייב להיות תיקיית-ה-custodian (ה-cmdline
+ * זהה למנוע — "bun --hot index.ts" — ולכן ה-cwd הוא המבחין האמין) */
+function pidIsOurCustodian(pid: number): boolean {
+  try {
+    const cwd = fs.readlinkSync(`/proc/${pid}/cwd`);
+    return cwd.includes("saos-custodian");
+  } catch { return false; }
+}
+
+function spawnCustodian(core: Core, reason: string, force = false): void {
+  const t = Date.now();
+  if (!force && core.state.custodian.lastSpawnAt && t - new Date(core.state.custodian.lastSpawnAt).getTime() < SPAWN_COOLDOWN_MS) return;
+  try {
+    fs.mkdirSync(CUSTODIAN_DIR, { recursive: true });
+    const logFd = fs.openSync(CUSTODIAN_LOG, "a");
+    const child = spawn("bun", ["--hot", "index.ts"], {
+      cwd: CUSTODIAN_DIR, detached: true, stdio: ["ignore", logFd, logFd],
+      env: { ...process.env },
+    });
+    child.unref();
+    fs.writeFileSync(CUSTODIAN_PID_FILE, String(child.pid));
+    core.state.custodian.lastSpawnAt = nowIso();
+    core.state.custodian.heals++;
+    appendEvent(core, "custodian-spawn", { reason, pid: child.pid });
+  } catch (e) {
+    appendEvent(core, "custodian-spawn-error", { reason, error: String((e as Error)?.message ?? e).slice(0, 160) });
+  }
+}
+
+/** ריפוי-custodian: אותה לולאת-אימות כמו המנוע — הריגת-תהליך-תקוע שלנו,
+ * הרמה, ו-3 סבבי-אימות דופק. */
+async function healCustodian(core: Core, reason: string): Promise<void> {
+  appendEvent(core, "custodian-heal-attempt", { reason });
+  let pid = NaN;
+  try { pid = parseInt(fs.readFileSync(CUSTODIAN_PID_FILE, "utf8").trim(), 10); } catch { /* no pidfile — first boot or externally started */ }
+  if (Number.isFinite(pid) && pid > 0 && pidAlive(pid)) {
+    if (!pidIsOurCustodian(pid)) {
+      appendEvent(core, "custodian-heal-skip-foreign-pid", { pid });
+    } else {
+      appendEvent(core, "custodian-heal-kill-stale", { pid });
+      try { process.kill(pid, "SIGTERM"); } catch { /* already gone */ }
+      for (let i = 0; i < 10 && pidAlive(pid); i++) await new Promise((r) => setTimeout(r, 500));
+      try { if (pidAlive(pid)) process.kill(pid, "SIGKILL"); } catch { /* gone */ }
+      await new Promise((r) => setTimeout(r, 300));
+    }
+  }
+  let up = false;
+  for (let round = 1; round <= 3 && !up; round++) {
+    if (round > 1) {
+      appendEvent(core, "custodian-heal-retry", { round });
+      spawnCustodian(core, `${reason}:retry${round}`, true);
+      await new Promise((r) => setTimeout(r, 4000));
+    } else {
+      spawnCustodian(core, reason);
+      await new Promise((r) => setTimeout(r, 4000));
+    }
+    up = await custodianHealth();
+    if (!up) await new Promise((r) => setTimeout(r, 3000));
+    if (!up) up = await custodianHealth();
+  }
+  core.state.custodian.up = up;
+  if (up) {
+    appendEvent(core, "custodian-heal-verified", { up: true });
+  } else {
+    core.state.custodian.healFailed++;
+    appendEvent(core, "custodian-heal-failed", { up: false });
+  }
 }
 
 /** הרמת תהליך-מנוע נפרד (detached) — שורד גם ריסטרט של שרת-Next; force=ניסיון-חוזר-פנימי בתוך ריפוי */
@@ -245,6 +339,32 @@ async function watchdogTickInner(core: Core): Promise<void> {
       core.state.cred.firstDownAt = null;
     }
   } catch { /* credential-pulse is best-effort; never break the watchdog */ }
+  // R216-b · CUSTODIAN PULSE — same two-strike doctrine as the engine.
+  // Custody is bookkeeping, NOT an on-chain act: healing is deliberately
+  // independent of pause/STASIS — a paused organism still deserves an
+  // intact memory.
+  try {
+    core.state.custodian.checks++;
+    core.state.custodian.lastCheckAt = nowIso();
+    const cup = await custodianHealth();
+    if (cup) {
+      core.state.custodian.up = true;
+      core.state.custodian.lastUpAt = nowIso();
+    } else {
+      await new Promise((r) => setTimeout(r, 4000));
+      const cup2 = await custodianHealth();
+      if (cup2) {
+        core.state.custodian.up = true;
+        core.state.custodian.lastUpAt = nowIso();
+      } else {
+        const wasUp = core.state.custodian.up;
+        core.state.custodian.downs++;
+        core.state.custodian.up = false;
+        appendEvent(core, wasUp ? "custodian-down" : "custodian-down-again", { confirmMs: 4000 });
+        await healCustodian(core, "watchdog");
+      }
+    }
+  } catch { /* custodian pulse is best-effort; never break the watchdog */ }
   writeJson(SOV_FILE, core.state);
 }
 
@@ -432,7 +552,14 @@ function control(core: Core, action: string, by: string, note?: string): void {
 
 /** נקודת-הצתה אחת — idempotent, HMR-safe, self-arming */
 export function ensureSovereign(by = "auto"): Core {
-  if (g.__saosSovereign) return g.__saosSovereign;
+  if (g.__saosSovereign && g.__saosSovereignGen === SOVEREIGN_GEN) return g.__saosSovereign;
+  if (g.__saosSovereign) {
+    /* generation bump: stop the previous generation's timers so old closures
+     * can't double-heal behind the new core; state continuity comes from the
+     * sovereign.json carryover below. */
+    for (const t of Object.values(g.__saosSovereign.timers)) { if (t) clearInterval(t); }
+    g.__saosSovereign = undefined;
+  }
   const prev = readJson<SovereignState | null>(SOV_FILE, null);
   const core: Core = {
     state: {
@@ -462,6 +589,11 @@ export function ensureSovereign(by = "auto"): Core {
         lastDownAt: prev?.cred?.lastDownAt ?? null, alerts: prev?.cred?.alerts ?? 0,
         lastAlertAt: prev?.cred?.lastAlertAt ?? null,
       },
+      custodian: {
+        checks: prev?.custodian?.checks ?? 0, downs: prev?.custodian?.downs ?? 0,
+        heals: prev?.custodian?.heals ?? 0, healFailed: prev?.custodian?.healFailed ?? 0,
+        lastCheckAt: null, up: false, lastUpAt: prev?.custodian?.lastUpAt ?? null, lastSpawnAt: null,
+      },
       control: prev?.control?.slice(0, 20) ?? [],
     },
     events: [],
@@ -471,7 +603,8 @@ export function ensureSovereign(by = "auto"): Core {
     wdBusy: false,
   };
   g.__saosSovereign = core;
-  control(core, "boot", by, "SovereignCore armed");
+  g.__saosSovereignGen = SOVEREIGN_GEN;
+  control(core, "boot", by, `SovereignCore armed (gen ${SOVEREIGN_GEN})`);
   appendEvent(core, "boot", {
     pid: process.pid,
     resumed: prev?.paused ?? false,
