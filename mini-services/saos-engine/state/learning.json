@@ -1,18 +1,18 @@
 {
-  "at": "2026-10-05T23:59:05.761Z",
+  "at": "2026-10-06T00:09:05.760Z",
   "enabled": true,
-  "runsTotal": 170,
+  "runsTotal": 171,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 47,
-      "oks": 31,
+      "window": 48,
+      "oks": 32,
       "fails": 0,
       "blocked": 16,
-      "okRate": 66,
-      "blockedRate": 34,
+      "okRate": 66.7,
+      "blockedRate": 33.3,
       "failReasons": {},
-      "msP50": 6570,
+      "msP50": 6601,
       "msP90": 11391
     },
     "curator": {
@@ -30,20 +30,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 12,
-      "fails": 12,
+      "window": 10,
+      "fails": 9,
       "lastError": "missing required posting authority:Missing Posting Authority headcorner"
     },
     "watchdog": {
-      "checks": 1629,
+      "checks": 1639,
       "downs": 103,
       "heals": 36,
       "healVerified": 35,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-05T23:59:05.786Z",
+      "lastCheckAt": "2026-10-06T00:09:05.796Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-05T23:09:07.050Z",
-      "lastUpAt": "2026-10-05T23:59:05.791Z",
+      "lastUpAt": "2026-10-06T00:09:05.797Z",
       "blips": 1
     }
   },
@@ -52,7 +52,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×16/47 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×16/48 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
@@ -60,7 +60,7 @@
       "id": "broadcast-fails",
       "severity": "low",
       "resolved": true,
-      "evidence": "12/12 broadcasts failed in the window (last: missing required posting authority:Missing Posting Authority) · last fail 2026-10-04T20:24:51.578Z < last OK broadcast 2026-10-05T23:02:42.443Z (live posting-role ops succeed)",
+      "evidence": "9/10 broadcasts failed in the window (last: missing required posting authority:Missing Posting Authority) · last fail 2026-10-04T20:24:51.578Z < last OK broadcast 2026-10-06T00:09:18.790Z (live posting-role ops succeed)",
       "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
       "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
@@ -70,8 +70,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 89,
-    "broadcast-fails": 64
+    "signing-cred-blocked": 90,
+    "broadcast-fails": 65
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
