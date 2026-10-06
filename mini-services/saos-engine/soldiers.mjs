@@ -122,13 +122,50 @@ export async function deploySoldiers() {
   if (found.length !== conf.count) {
     return { ok: false, verdict: "DEPLOY-UNVERIFIED", txid: res.txid, found: found.length, wanted: conf.count };
   }
+  /* T-90: self-custody proof — the fresh keys were chain-installed by THIS
+   * deploy tx; wait one block, then verify each soldier immediately so the
+   * custody gates open this era (the sweep re-proves after any restart). */
+  await new Promise((r) => setTimeout(r, 5000));
+  const custody = [];
+  for (const s of secs) {
+    try {
+      const ver = await verifyRoles(s.name);
+      custody.push({ name: s.name, verified: !!ver.ok, verdict: ver.ok ? "VERIFIED" : (ver.verdict ?? "MISMATCH") });
+    } catch (e) {
+      custody.push({ name: s.name, verified: false, verdict: "VERIFY-ERROR", reason: String(e?.message ?? e).slice(0, 100) });
+    }
+  }
   writeJson(SOLDIERS_STATE, {
     deployed: true, at: new Date().toISOString(),
     accounts: secs.map((s) => ({ name: s.name, fingerprint: s.fingerprint, pubkeys: s.keys })),
+    custody,
     fundingTxid: res.txid, fundedEach: { steem: steemEach, sbd: sbdEach },
     sbdDeferred: sbdEach === 0 ? "SBD liquid was committed to master bids — soldier bid sides self-bootstrap from ask fills" : null,
   });
-  return { ok: true, verdict: "DEPLOYED", txid: res.txid, accounts: names, steemEach, sbdEach };
+  return { ok: true, verdict: "DEPLOYED", txid: res.txid, accounts: names, steemEach, sbdEach, custody };
+}
+
+/* T-90 · SOLDIER SELF-CUSTODY SWEEP: .secrets/soldiers.json passwords are
+ * 0600-held HERE; after deploy or an engine restart the in-memory key cache
+ * is empty and every custody gate reads "keyed-unverified" — freezing live
+ * soldiers forever. This sweep proves each stored credential against the
+ * LIVE chain authorities (verifyRoles — the same fail-closed law as the
+ * master): a match flips custody to "verified"; a mismatch stays frozen and
+ * is journaled. Idempotent, bounded by the roster itself. */
+export async function verifySoldierCustody() {
+  const s = readJson(SOLDIERS_SECRET, null);
+  const names = (s?.accounts ?? []).map((a) => a.name).slice(0, 8);
+  const out = [];
+  for (const name of names) {
+    if (custodyOf(name) === "verified") { out.push({ name, verdict: "ALREADY-VERIFIED" }); continue; }
+    try {
+      const ver = await verifyRoles(name);
+      out.push({ name, verdict: ver.ok ? "VERIFIED" : (ver.verdict ?? "MISMATCH"), reason: ver.reason ?? null });
+    } catch (e) {
+      out.push({ name, verdict: "VERIFY-ERROR", reason: String(e?.message ?? e).slice(0, 100) });
+    }
+  }
+  return { ok: out.every((o) => o.verdict === "ALREADY-VERIFIED" || o.verdict === "VERIFIED"), out };
 }
 
 /** per-soldier ladder: same laws as the master (VF1 floor, skew, drag),
