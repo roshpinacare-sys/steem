@@ -1,19 +1,19 @@
 {
-  "at": "2026-10-06T17:14:54.650Z",
+  "at": "2026-10-06T17:24:54.649Z",
   "enabled": true,
-  "runsTotal": 230,
+  "runsTotal": 231,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 90,
-      "oks": 81,
+      "window": 91,
+      "oks": 82,
       "fails": 0,
       "blocked": 9,
-      "okRate": 90,
-      "blockedRate": 10,
+      "okRate": 90.1,
+      "blockedRate": 9.9,
       "failReasons": {},
       "msP50": 8966,
-      "msP90": 15361
+      "msP90": 15148
     },
     "curator": {
       "present": true,
@@ -23,27 +23,27 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 0,
+      "vpEff": 4.3,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 7,
+      "window": 8,
       "fails": 0,
       "lastError": null
     },
     "watchdog": {
-      "checks": 2224,
+      "checks": 2234,
       "downs": 103,
       "heals": 36,
       "healVerified": 35,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-06T17:14:54.878Z",
+      "lastCheckAt": "2026-10-06T17:24:54.908Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-06T17:14:54.881Z",
+      "lastUpAt": "2026-10-06T17:24:54.910Z",
       "blips": 1
     }
   },
@@ -51,7 +51,7 @@
     {
       "id": "signing-cred-blocked",
       "severity": "high",
-      "evidence": "cycle-blocked ×9/90 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "evidence": "cycle-blocked ×9/91 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
       "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
       "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
     }
@@ -67,7 +67,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 149,
+    "signing-cred-blocked": 150,
     "broadcast-fails": 65
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
