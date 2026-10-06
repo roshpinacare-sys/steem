@@ -3,6 +3,7 @@
 # Law: SOVEREIGN-WRITER-LAW.md — fast-forward ONLY; force is forbidden FOREVER.
 # Usage: scripts/sovereign-push.sh            # push HEAD -> origin/saos-cockpit
 # Exit codes: 0 pushed/synced | 2 divergence (abort, by law) | 3 law-violation attempt
+# R220 clause 2.5: unsigned body-prefixed commits in the push range -> exit 3.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -32,6 +33,21 @@ else
   echo "DIVERGENCE-ABORT: remote tip $REMOTE_TIP is NOT an ancestor of local HEAD $LOCAL_HEAD"
   echo "LAW: never force. Reconcile by explicit decision: fetch + merge with worklog entry, or operator order."
   exit 2
+fi
+
+# --- LAW CLAUSE 2.5 (R220): body-prefixed commits MUST be GPG-signed ---
+# Unsigned commits with a body prefix (R2xx / SAOS-custodian) are a writer-law
+# violation (identity clause 7) — the gate now REFUSES to publish them.
+# Unsigned UUID-subject commits are environment checkpoint noise (see law v1.1)
+# and pass. Detective control lives in the claims-auditor (git.bodySigned).
+if [[ "$REMOTE_TIP" != "$LOCAL_HEAD" ]]; then
+  UNSIGNED_BODY=$(git log --format='%G?|%s' "${REMOTE_TIP}..${LOCAL_HEAD}" \
+    | awk -F'|' '$1 != "G" && ($2 ~ /^R2[0-9]+/ || $2 ~ /^SAOS-custodian/)')
+  if [[ -n "${UNSIGNED_BODY:-}" ]]; then
+    echo "LAW-VIOLATION: unsigned body commits in push range — refusing to publish:"
+    echo "$UNSIGNED_BODY"
+    exit 3
+  fi
 fi
 
 git push origin "HEAD:refs/heads/$TARGET"

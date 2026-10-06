@@ -1148,3 +1148,23 @@ Work Log:
 Stage Summary:
 - The wide audit verdict: all four steps of the approved plan are LIVE, DRILLED, and MUTUALLY CONSISTENT; the other agents' work survived line-level review with zero security findings; the one real gap the audit found — nobody watches the watcher's own chain-law properties — is now closed by two standing claims in the claims-auditor, so the body now MEASURES its own writer-law (signed body commits, bounded push custody) every audit cycle instead of asserting it.
 - The organism at R219: 4 organs, one keyless engineering team with a proven full loop, tamper-evident memory with external witnessing, a self-auditing cockpit that now also audits the chain itself — and every claim in this entry is measured, not asserted.
+
+---
+Task ID: R220
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: OPERATOR ORDER "תתקן הכל בכל זאת" — fix every item flagged in the R219 wide audit, including the ones outside my previous lane reservation. Five fixes, each verified live.
+
+Work Log:
+- FIX A (pid churn): root .gitignore += `*.pid`; untracked custodian.pid + .zscripts/dev.pid + engine.pid (×2, incl. one inside a stale recovery/ dir). Working-tree files kept; `git add -A` sweeps can no longer re-add them (ignore respected). The one-line churn the custodian carried every sweep is gone from the NEXT sweep on.
+- FIX B (LLM bridge hardening): /api/saos/ai/code now carries its own honest bounds — sliding-window 12 req/min + max 2 in-flight, in-memory by design (abuse dampening, not accounting); 429 with truthful Hebrew reason, never a fake success. PROVEN: 13 cheap requests -> 12×400 (prompt-missing) then 1×429 RATE-LIMITED.
+- FIX C (builder capability bug): the syntax gate force-fed EVERY non-TS file to the JS transpiler — .json/.jsonl/.md proposals were rejected by construction. New syntaxGate() picks the honest gate per type: json -> JSON.parse, jsonl -> per-line parse, ts/tsx/js/jsx -> bun transpiler, text -> find-unique+changed only (no syntax gate exists for prose). Proposal records now carry the gate type; evidence lines read `find-unique+syntax-ok(<gate>)`.
+- FIX C DRILL (full cycle, live): drill doc docs/builder-capabilities.md with a real misspelling -> enqueue -> PROPOSAL in 4.6s with gate:"text" -> sandbox evidence copy -> deliberate apply (validated sandbox bytes over live file) -> misspelling GONE -> evidence line in memory/build-proposals.jsonl. (Honest note: two earlier drill attempts failed — the first because MY drill doc accidentally contained the correct spelling, the LLM returned find==replace; the failures stay in the queue as honest evidence.)
+- FIX C+ (found DURING the drill): the R218-d retry loop CLAIMED "feed the error back on attempt 2" but built the prompt once outside the loop — attempt 2 was a blind re-roll. Fixed: attempt-2 prompt now carries the exact rejection reason. Another agent's claim vs implementation gap closed by measurement.
+- FIX D (preventive chain control): push gate clause 2.5 — if the push range contains an unsigned commit with a BODY prefix (R2xx/SAOS-custodian), the gate refuses to publish (exit 3). Unsigned UUID-subject environment checkpoints pass (see FIX E). Detective control (git.bodySigned) + preventive control (gate) now pair. Gate exercised live twice this round (synced path + real push at round end).
+- FIX E (law v1.1, append-only per clause 9): checkpoint-noise doctrine codified in SOVEREIGN-WRITER-LAW.md — unsigned UUID-subject sandbox checkpoints are NOT body commits and NOT violations; body-prefixed commits MUST be signed and the gate now enforces it; *.pid hygiene recorded.
+- VERIFIED: lint clean; browser — all four R218 cards render post-hydration, audit/merkle/builder OK, zero page errors (one false alarm during verification was pre-hydration timing, not a regression); dev.log clean; builder + metrics organs code-swapped via demand-heal (builder resurrected twice with new code, first task re-proven).
+- Lane note: this round's operator order explicitly released the previous "never touch custodian/push-gate/law" reservations; every touch stayed minimal, additive, and verified (custodian code itself needed NO edit — its pid churn was fixed from the gitignore/index side, zero custodian downtime).
+
+Stage Summary:
+- Every flagged item from R219 is now FIXED and MEASURED: no pid churn in future sweeps, the LLM bridge self-bounds, the builder handles all four file-type gates with real evidence, the retry actually retries with feedback, the gate PUBLISHES only signed body commits, and the law says so in v1.1.
+- The audit-fix loop closed twice in one day: R219 found the gaps by measurement; R220 closed them the same way — nothing asserted that wasn't drilled.

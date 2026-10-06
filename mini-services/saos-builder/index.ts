@@ -63,7 +63,7 @@ type Proposal = {
   find: string;
   replace: string;
   analysis: string;
-  validation: { findUnique: boolean; changed: boolean; syntaxOk: boolean };
+  validation: { findUnique: boolean; changed: boolean; syntaxOk: boolean; gate: string };
   status: "PROPOSED" | "REJECTED";
 };
 
@@ -104,8 +104,46 @@ function extractJson(text: string): any | null {
   }
 }
 
-/* ---------- the validation harness (the whole safety story) ---------- */
-function validate(file: string, find: string, replace: string): { ok: boolean; reason?: string; newContent?: string; count: number } {
+/* ---------- the validation harness (the whole safety story) ----------
+ * R220: syntax gates are now chosen HONESTLY by file type. Previously every
+ * non-TS target (.json/.jsonl/.md) was force-fed to the JS transpiler and
+ * rejected by construction — a capability bug, not a safety feature. Each
+ * type now gets its real gate; plain text gets find-unique + changed only. */
+function syntaxGate(file: string, content: string): { ok: boolean; reason?: string; gate: "ts" | "json" | "jsonl" | "text" } {
+  if (file.endsWith(".json")) {
+    try {
+      JSON.parse(content);
+      return { ok: true, gate: "json" };
+    } catch (e) {
+      return { ok: false, reason: `JSON פגום בתוצאה: ${(e as Error).message.slice(0, 120)}`, gate: "json" };
+    }
+  }
+  if (file.endsWith(".jsonl")) {
+    const lines = content.split("\n").filter((l) => l.trim());
+    for (let i = 0; i < lines.length; i++) {
+      try {
+        JSON.parse(lines[i]);
+      } catch {
+        return { ok: false, reason: `שורה ${i + 1} בתוצאה אינה JSON תקני`, gate: "jsonl" };
+      }
+    }
+    return { ok: true, gate: "jsonl" };
+  }
+  if (/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(file)) {
+    try {
+      const loader = file.endsWith(".tsx") ? "tsx" : file.endsWith(".jsx") ? "jsx" : file.endsWith(".ts") ? "ts" : "js";
+      new Bun.Transpiler({ loader: loader as any }).transformSync(content);
+      return { ok: true, gate: "ts" };
+    } catch (e) {
+      return { ok: false, reason: `תחביר-תוצאה שגוי: ${(e as Error).message.slice(0, 120)}`, gate: "ts" };
+    }
+  }
+  /* md/txt: no syntax gate exists for prose — find-unique + changed are the
+   * guards, and application remains a deliberate outside act (path law 60KB cap still holds) */
+  return { ok: true, gate: "text" };
+}
+
+function validate(file: string, find: string, replace: string): { ok: boolean; reason?: string; newContent?: string; count: number; gate?: string } {
   const full = path.join(ROOT, file);
   let cur: string;
   try {
@@ -119,18 +157,13 @@ function validate(file: string, find: string, replace: string): { ok: boolean; r
   if (count !== 1) return { ok: false, reason: `find מופיע ${count} פעמים — חייב בדיוק אחת`, count };
   const newContent = cur.replace(find, replace);
   if (newContent === cur) return { ok: false, reason: "ההצעה אינה משנה דבר", count };
-  /* syntax gate: bun transpiler parses the RESULT (no import resolution) */
-  try {
-    const loader = file.endsWith(".tsx") ? "tsx" : file.endsWith(".ts") ? "ts" : "js";
-    new Bun.Transpiler({ loader: loader as any }).transformSync(newContent);
-  } catch (e) {
-    return { ok: false, reason: `תחביר-תוצאה שגוי: ${(e as Error).message.slice(0, 120)}`, count };
-  }
+  const gate = syntaxGate(file, newContent);
+  if (!gate.ok) return { ok: false, reason: gate.reason, count };
   /* sandbox copy for the record (never the live tree) */
   try {
     fs.writeFileSync(path.join(SANDBOX_DIR, `${sha(newContent)}-${path.basename(file)}`), newContent);
   } catch { /* evidence copy is best-effort */ }
-  return { ok: true, newContent, count };
+  return { ok: true, newContent, count, gate: gate.gate };
 }
 
 /* ---------- one task -> one validated proposal (max 2 LLM attempts) ---------- */
@@ -147,9 +180,13 @@ async function processTask(t: Task): Promise<Task> {
     "החזר אך ורק JSON: {\"analysis\": string, \"find\": string, \"replace\": string}. " +
     "find חייב להופיע בדיוק פעם אחת בקובץ ולהיות מדויק תו-תו (כולל רווחים). " +
     "replace הוא הטקסט החדש. אסור להמציא קוד שאינו קשור למשימה. אין markdown, אין הסברים מחוץ ל-JSON.";
-  const prompt = `משימה: ${t.task}\n\nקובץ (${t.file}, ${cur.length} בייטים):\n\`\`\`\n${cur}\n\`\`\`\n\nהצע את העריכה הכירורגית.`;
+  /* R220: the retry prompt now CARRIES the failure reason — the original
+   * comment claimed "feed the error back on attempt 2" but the prompt was
+   * built once outside the loop, so attempt 2 was a blind re-roll. */
+  const basePrompt = `משימה: ${t.task}\n\nקובץ (${t.file}, ${cur.length} בייטים):\n\`\`\`\n${cur}\n\`\`\`\n\nהצע את העריכה הכירורגית.`;
 
   let lastReason = "";
+  let prompt = basePrompt;
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       const r = await fetch(LLM_BRIDGE, {
@@ -176,7 +213,10 @@ async function processTask(t: Task): Promise<Task> {
       if (!v.ok) {
         lastReason = `ולידציה: ${v.reason}`;
         /* feed the error back on attempt 2 — the retry sees why it failed */
-        if (attempt === 1) continue;
+        if (attempt === 1) {
+          prompt = `${basePrompt}\n\nחשוב: ניסיונך הקודם נדחה בדיוק בגלל: "${lastReason}". תקן את הבעיה הזו בלבד והצע עריכה חדשה שעוברת אותה.`;
+          continue;
+        }
         return { ...t, status: "REJECTED", reason: lastReason };
       }
       const id = `P-${Date.now().toString(36)}-${sha(parsed.find + parsed.replace)}`;
@@ -189,7 +229,7 @@ async function processTask(t: Task): Promise<Task> {
         find: parsed.find,
         replace: parsed.replace,
         analysis: String(parsed.analysis ?? "").slice(0, 500),
-        validation: { findUnique: true, changed: true, syntaxOk: true },
+        validation: { findUnique: true, changed: true, syntaxOk: true, gate: v.gate ?? "ts" },
         status: "PROPOSED",
       };
       fs.writeFileSync(path.join(PROPOSALS_DIR, `${id}.json`), JSON.stringify(proposal, null, 2) + "\n");
@@ -204,7 +244,7 @@ async function processTask(t: Task): Promise<Task> {
             verdict: "PROPOSED",
             task: t.task.slice(0, 120),
             newContentHash: sha(v.newContent!),
-            validation: "find-unique+syntax-ok",
+            validation: `find-unique+syntax-ok(${v.gate ?? "ts"})`,
           }) + "\n"
         );
       } catch { /* best-effort */ }
