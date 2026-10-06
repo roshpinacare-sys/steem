@@ -1187,3 +1187,18 @@ Work Log:
 
 Stage Summary:
 - The body died and was reborn from its own signed chain — the exact scenario the whole custody architecture was built for. Git carried the code, the laws, the worklog, the merkle record and the evidence files; the merkle chain resumed with zero break; the auditor learned the difference between "unsigned" and "unverifiable"; a new key signs from here on. The organism's immortality claim is no longer a design statement — it survived one death and measured the resurrection.
+
+---
+Task ID: R222
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: OPERATOR-SUPPLIED CONSOLE ERROR — React duplicate key in the TeamsCard findings list ("Encountered two children with the same key, https://www.coingecko.com", TeamsCard.tsx:148). Root-cause, fix, verify in browser, sign + push.
+
+Work Log:
+- ROOT CAUSE (read, not guessed): TeamsCard's roundRobinPick() pulls findings breadth-first from MULTIPLE scans; when two different scans surface the SAME url, both rows rendered with key={f.url ?? i} → duplicate React keys. Not an engine bug — a presentation-layer collision that the round-robin spread made reachable.
+- FIX (two layers): (1) roundRobinPick now dedups by url — same url surfaced by several scans = one truth shown once (findings without url are exempt); (2) collision-proof composite keys on BOTH lists: findings key={`${url ?? 'row'}-${i}`}, drafts key={`${id ?? 'draft'}-${i}`} — the drafts list carried the same latent class-bug, hardened in the same touch. Card doc-comment updated to state the dedup law.
+- LINT clean; Turbopack hot-reloaded the card (✓ Compiled in 230ms → GET / 200).
+- BROWSER VERIFIED (agent-browser): page errors = 0; console grep same-key/duplicate/error = empty; webintel section renders 5 finding rows / 5 unique urls / coingeckoCount exactly 1 (was ≥2 pre-fix) / verdict INTEL-OK. No layout change — dedup is display-law only; totalFindings stat still reports the engine's raw truth.
+- Commit signed under the R221-rotated key, pushed FF-only through scripts/sovereign-push.sh with gate clause 2.5 active.
+
+Stage Summary:
+- First bug reported from the OUTSIDE (the operator's own browser console) since the resurrection — fixed within one round. Duplicate truth is no longer renderable: the card now states and enforces "same url = one row", and the evidence is measured, not asserted: 5 rows, 5 unique urls, 1 coingecko, zero console noise.
