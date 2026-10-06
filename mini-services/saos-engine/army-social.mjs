@@ -27,9 +27,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { rpcCall } from "./measure.mjs";
+import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
+import { reviveArmyCustody } from "./vault-revival.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -163,6 +164,13 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
   const nowMs = Date.parse(now);
   const minuteOfDay = nowMs ? new Date(nowMs).getUTCHours() * 60 + new Date(nowMs).getUTCMinutes() : 0;
 
+  /* T-86 · SELF-HEALING CUSTODY: idempotent git-vault revival runs first —
+   * post-reset (empty memory + missing cache) it re-pulls + re-adopts;
+   * healthy boots short-circuit on ALREADY-VERIFIED. Never blocks the rail
+   * on failure (verdict journaled, accounts stay honestly REFUSED). */
+  let custody = null;
+  try { custody = await reviveArmyCustody({ now }); } catch { custody = { verdict: "REVIVAL-ERROR" }; }
+
   const prev = readJson(SOCIAL_FILE, null);
   const carried = prev?.day === day ? prev : { day, accounts: {}, seeds: {} };
 
@@ -176,6 +184,15 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
   const accounts = {};
   let executed = 0, refused = 0, dueCount = 0;
 
+  /* RC day-guard — never burn a doomed broadcast on a drained account */
+  const rcOk = async (account, st) => {
+    const today = day;
+    if (st.rc?.day === today) return st.rc.rcPct >= 15;
+    const acc = await accountState(account).catch(() => ({ ok: false }));
+    st.rc = { day: today, rcPct: acc.ok ? (acc.rcPct ?? 100) : 100 };
+    return st.rc.rcPct >= 15;
+  };
+
   for (const account of [master, ...ARMY_ROSTER]) {
     const st = carried.accounts[account] ?? {
       done: { publish: 0, "fleet-vote": 0, reply: 0 },
@@ -185,7 +202,7 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     const custody = custodyOf(account);
     if (custody !== "master-verified" && custody !== "verified") {
       refused++;
-      accounts[account] = { ...st, verdict: "REFUSED-NO-CUSTODY", custody, note: "operator-gated: credential via upload/ → adopt-credential → the rail lights up unchanged" };
+      accounts[account] = { ...st, verdict: "REFUSED-NO-CUSTODY", custody, note: "no chain-verified credential — the git-vault revival (state/army-custody.json) is the lawful path; nothing is ever fabricated" };
       continue;
     }
 
@@ -198,12 +215,15 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
 
     for (const slot of due) {
       if (slot.kind === "publish") {
+        if (!(await rcOk(account, st))) continue;
         const ok = await doPublish(account, st, p, now, day);
         if (ok) { st.done.publish++; executed++; }
       } else if (slot.kind === "fleet-vote") {
+        if (!(await rcOk(account, st))) continue;
         const ok = await doFleetVote({ account, master, st, p, nowMs, now });
         if (ok) { st.done["fleet-vote"]++; executed++; }
       } else if (slot.kind === "reply") {
+        if (!(await rcOk(account, st))) continue;
         const ok = await doReply({ account, st, p, now });
         if (ok) { st.done.reply++; executed++; }
       }
@@ -211,7 +231,7 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     accounts[account] = { ...st, verdict: "SOCIAL-LIVE", custody, schedule, seeds: seed };
   }
 
-  const doc = { ...base, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
+  const doc = { ...base, custodyVerdict: custody?.verdict ?? null, custodyVerified: custody?.after?.verified ?? null, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
   writeJson(SOCIAL_FILE, doc);
   appendLine(path.join(STATE, "events.jsonl"), { type: "social.run", at: now, day, executed, refused });
   return { verdict: executed > 0 ? "SOCIAL-EXECUTED" : refused ? "PART-GATED" : "SOCIAL-IDLE", executed, refused, due: dueCount };
