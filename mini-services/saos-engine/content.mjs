@@ -21,6 +21,23 @@ const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
  * (3 drafts/round × 6 rounds = up to 18/day, caps still enforced downstream). */
 const CADENCE_MS = Number(process.env.SAOS_CONTENT_CADENCE_MS) || 4 * 3600_000;
 
+/* T-87 · ANGLE ROTATION (pure): the drafting LLM gets a day-seeded trio from
+ * a six-family pool — eleven publisher voices stop sounding like one bot,
+ * and open-question drafts feed the reply rail with real community comments. */
+const ANGLE_POOL = [
+  "educational explainer",
+  "open question to the community",
+  "tooling or workflow tip",
+  "beginner pitfall and how to avoid it",
+  "myth vs fact",
+  "practical checklist",
+];
+export function angleRotationFor(dayIso) {
+  const dayMs = Date.parse(dayIso);
+  const dayIdx = Number.isFinite(dayMs) ? Math.floor(dayMs / 86400000) : 0;
+  return [0, 1, 2].map((i) => ANGLE_POOL[((dayIdx % ANGLE_POOL.length) + i) % ANGLE_POOL.length]);
+}
+
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson = (p, v) => {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -84,7 +101,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ findings, telemetry, exposureLaw: EXPOSURE_LAW }),
+      body: JSON.stringify({ findings, telemetry, angles: angleRotationFor(now), exposureLaw: EXPOSURE_LAW }),
       signal: AbortSignal.timeout(120_000),
     });
     if (!r.ok) throw new Error(`bridge ${r.status}`);
