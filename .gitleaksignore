@@ -936,3 +936,12 @@ f7ac1511b3110d0deed3be936ae175bbcd51a9eb:agent/recovery-meta.json:generic-api-ke
 #   NOT present at HEAD (historical-only, commit 100a3bf3, 2026-09-12)
 # 1 fingerprints
 100a3bf398de0c2ffdd03ba668e61dc2229831d6:agent/vault/recovery-meta-2026-09-12.json:generic-api-key:3
+
+# steem triage 2026-10-06 (headcorner cockpit CI-green round): the remaining 4 findings
+# live ONLY in deleted research-archive history (download/research/extracted/*) —
+# planted dummy-credential fixtures in scanner-admission PROOF harnesses; nothing at HEAD.
+b99948770754cd944913fb9df9983add453627fb:download/research/extracted/unified-platform-v33.56-custody-authority-persistence_2/tests/malicious-repository-admission-v33_11.test.ts:generic-api-key:18
+b99948770754cd944913fb9df9983add453627fb:download/research/extracted/unified-platform-v33.56-custody-authority-persistence_2/tests/release-manifest.test.ts:generic-api-key:71
+b99948770754cd944913fb9df9983add453627fb:download/research/extracted/unified-platform-v33.56-custody-authority-persistence_2/tests/remaining-branch-matrix-v27.test.ts:generic-api-key:79
+# (2026-10-06) the planted PAT fixture is detected by github-pat, not generic-api-key — official Fingerprint:
+b99948770754cd944913fb9df9983add453627fb:download/research/extracted/unified-platform-v33.56-custody-authority-persistence_2/scripts/malicious-repository-admission-proof-v33_11.mjs:github-pat:21

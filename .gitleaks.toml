@@ -1,0 +1,42 @@
+# .gitleaks.toml — steem (headcorner cockpit triage, 2026-10-06)
+#
+# WHY THIS FILE EXISTS (mirrors Zip's Task-15 pattern): the agent bots append
+# to agent/receipts/*.jsonl on every cognition/capital cycle, so line-number
+# fingerprints in .gitleaksignore shift on every write and re-flag honestly.
+# Line fingerprints can never win that race; a NARROW RULE-LEVEL allowlist can.
+#
+# WHAT IT ALLOWS — exactly two known-inert classes, nothing else:
+#
+# 1. agent/receipts/{cognition-beat,capital-decisions}.jsonl `idempotencyKey`
+#    fields — sha256 digests (64-hex, non-invertible) recorded as cycle
+#    idempotency markers. A digest of prior state is not a secret: it cannot
+#    authenticate anything on its own.
+#
+# 2. agent/reclaim-lost-soldiers.cjs `OWNER_DIRECTIVE_TOKEN` — an operator
+#    directive constant (a command phrase checked by the script itself).
+#    ZERO-ROTATION LAW (operator order 2026-10-06): no key, token or secret is
+#    rotated or rewritten in this triage — the token stays exactly as-is and is
+#    allowlisted, not changed. It is not a chain credential; signing keys enter
+#    only via ACTIVE_WIF / agent/.env, which are NOT tracked by git.
+#
+# GITLEAKS v8.24.3 TRAPS (documented empirically by Zip Task 14-a/15):
+#   1. Config MUST be named `.gitleaks.toml` (dot-prefixed).
+#   2. A GLOBAL `[allowlist]` with `paths` makes the walker SKIP WHOLE FILES —
+#      NOT acceptable. This allowlist is RULE-level, evaluated per-finding.
+#   3. `regexes`/`paths` are COMMA-SEPARATED — no literal commas inside any
+#      single regex.
+#   4. `condition` defaults to OR; `condition = "and"` required so a finding is
+#      suppressed ONLY when its path AND its match-shape are both allowlisted.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"  # same-ID stub: base regex/entropy kept, allowlist appended
+
+[rules.allowlists]
+description = "idempotency sha256 digests in receipts + operator directive constant (zero-rotation, not a credential) — headcorner cockpit triage 2026-10-06"
+condition = "and"
+paths = '''(^|/)agent/receipts/(cognition-beat|capital-decisions)\.jsonl$,(^|/)agent/reclaim-lost-soldiers\.cjs$'''
+regexTarget = "match"
+regexes = '''(idempotencyKey)":\s*"[0-9a-f][0-9a-f]+,OWNER_DIRECTIVE_TOKEN\s*=\s*'[A-Za-z0-9][A-Za-z0-9]+'''
