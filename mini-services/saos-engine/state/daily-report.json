@@ -1,31 +1,32 @@
 {
-  "startedAt": "2026-10-06T00:39:05.765Z",
+  "startedAt": "2026-10-06T00:49:05.763Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2062,
+      "ms": 2978,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.06358,
-        "sbdUsd": 0.586139,
-        "parity": 0.1084725636751692,
-        "source": "coingecko"
+        "steemUsd": 0.06408,
+        "sbdUsd": 0.6155651880334758,
+        "parity": 0.10409945403948864,
+        "source": "internal-feed-fallback+derived-sbd",
+        "lowConfidence": true
       },
       "feed": 0.10409945403948864,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 420
+        "bps": 0
       },
-      "steemUsd": 0.06358,
-      "sbdUsd": 0.586139,
+      "steemUsd": 0.06408,
+      "sbdUsd": 0.6155651880334758,
       "inventory": {
         "steem": 33.718,
         "sbd": 0.015,
-        "spOwn": 899.6170493424243,
-        "rcPct": 77.4
+        "spOwn": 899.6174717263772,
+        "rcPct": 77.1
       },
       "ordersOk": true,
       "orders": [
@@ -118,28 +119,28 @@
           "created": "2026-10-05T22:29:06"
         },
         {
-          "orderid": 2100000485,
+          "orderid": 2100000510,
           "side": "ask",
           "base": "0.500 STEEM",
           "quote": "0.054 SBD",
           "unit": 0.108,
-          "created": "2026-10-06T00:38:36"
+          "created": "2026-10-06T00:48:48"
         },
         {
-          "orderid": 2100000486,
+          "orderid": 2100000511,
           "side": "ask",
           "base": "0.500 STEEM",
           "quote": "0.055 SBD",
           "unit": 0.11,
-          "created": "2026-10-06T00:38:36"
+          "created": "2026-10-06T00:48:48"
         },
         {
-          "orderid": 2100000487,
+          "orderid": 2100000512,
           "side": "ask",
           "base": "0.500 STEEM",
           "quote": "0.053 SBD",
           "unit": 0.106,
-          "created": "2026-10-06T00:38:54"
+          "created": "2026-10-06T00:48:57"
         }
       ],
       "fills": 21,
@@ -165,7 +166,7 @@
         "authorVestsPerDay": 0,
         "curationOps": 0,
         "authorOps": 0,
-        "windowSpanDays": 1.92,
+        "windowSpanDays": 1.87,
         "windowOps": 1001,
         "measured": true,
         "fuelUsdPerDay": 0,
@@ -174,57 +175,56 @@
         "node": "https://steemapi.boylikegirl.club",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.1084725636751692 (coingecko) · fills 21 · fuel 0$"
+      "summary": "parity 0.10409945403948864 (internal-feed-fallback+derived-sbd) · fills 21 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1420,
-      "verdict": "DECISIONS:5",
+      "ms": 1505,
+      "verdict": "DECISIONS:4",
       "decisions": [
         "book-depth:hold-shape",
-        "parity-drift:monitor",
         "soldiers:grids-live",
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 26,
+      "spreadBpsRec": 16,
       "book": {
-        "bestAsk": 0.10047580622721834,
+        "bestAsk": 0.10038183279742766,
         "bestBid": 0.100217,
-        "spreadBps": 26
+        "spreadBps": 16
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 0,
-      "runCount": 216,
+      "runCount": 217,
       "simFills": 21,
       "simFeesMu": 10500,
-      "events": 4
+      "events": 3
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 720,
+      "ms": 1476,
       "verdict": "OFFER-BLOCKED",
       "asks": 0,
       "bids": 0,
       "flowAsks": 3,
       "flowBids": 0,
-      "staleCount": 2,
-      "skew": 0.297549,
+      "staleCount": 0,
+      "skew": 0.297447,
       "book": {
-        "bestAsk": 0.10047580622721834,
+        "bestAsk": 0.10038183279742766,
         "bestBid": 0.100217,
-        "askDepthSteem": 403.478,
-        "bidDepthSbd": 2923.384,
-        "at": "2026-10-06T00:39:05.765Z"
+        "askDepthSteem": 403.489,
+        "bidDepthSbd": 2929.014,
+        "at": "2026-10-06T00:49:05.763Z"
       },
       "market": {
         "tradesPerDay": 59,
-        "spreadBps": 70.25
+        "spreadBps": 16.45
       },
       "liquidity": {
         "deployedAsks": 50.195,
@@ -240,15 +240,15 @@
       "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 7061,
-      "marketSbdUsd": 0.586139,
-      "impliedSbdUsd": 0.610762,
+      "edgeBps": 6245,
+      "marketSbdUsd": 0.615565,
+      "impliedSbdUsd": 0.615565,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 692,
+      "ms": 690,
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
@@ -259,7 +259,7 @@
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 731,
+      "ms": 754,
       "verdict": "NO-OPS",
       "ops": 0,
       "opsToday": 6,
@@ -274,13 +274,13 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 1021,
+      "ms": 2,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked"
       ],
       "tunings": [],
-      "discoveryVerdict": "OPTIONS-FOUND",
+      "discoveryVerdict": "FRESH-CACHED",
       "topOpportunities": [
         "book-cold(measured)",
         "spread-normal(measured)",
@@ -318,7 +318,7 @@
     "payouts": {
       "name": "payouts",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "MEASURED",
       "day": "2026-10-06",
       "pendingVests": 0,
@@ -349,7 +349,7 @@
       "ok": true,
       "ms": 0,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.548581,
+      "totalEstUsdPerDay": 0.552895,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -395,5 +395,5 @@
     "failedSteps": [],
     "blockedSteps": []
   },
-  "finishedAt": "2026-10-06T00:39:11.722Z"
+  "finishedAt": "2026-10-06T00:49:12.481Z"
 }
