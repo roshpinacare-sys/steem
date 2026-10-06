@@ -1221,3 +1221,20 @@ Work Log:
 
 Stage Summary:
 - The full re-audit found ZERO live defects: every error in every log was forensically traced to the resurrection window and disproven as fossil with static + runtime + chain evidence. The one real improvement — closing the duplicate-key bug-class across ALL cards before it ever fires — is hardened, measured, signed, and pushed. The organism post-R223: 5 processes, 24/0 audit, VERIFIED merkle, firing payout executors, and a presentation layer that can no longer collide on any list it renders.
+
+---
+Task ID: R224
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: OPERATOR ORDER "תמשיך ודחוף" — take the remaining item from R223's "observed, not fixed" list (engine /health credential semantics), execute the drilled code-swap law on the live engine, sign + push.
+
+Work Log:
+- PRE-CHECKS: organ logs confirmed IGNORED (R220's `*.log` law already covers them — no pid-style churn possible); demand-heal path identified (/api/saos/spawn-engine — idempotent, single-instance law, refuses when :3040 healthy).
+- CREDENTIAL-LAW CLARIFIED (read signer.mjs, not guessed): the engine is honestly NOT keyless — it adopts a runtime credential (.secrets/headcorner.key) and derives WIFs on demand, held in a module map, never persisted/logged/returned. The bare `keyless:false` boolean was true-but-ambiguous.
+- FIX (additive one-liner in index.ts /health): new `credentialMode` field states the law inline — "runtime-adopted · WIFs derived on demand (signer.mjs) · memory-only — never persisted, never logged, never returned". `keyless:false` KEPT (flipping it would be a lie).
+- CODE-SWAP LAW (6th execution, live organ): cycle verified NOT running → kill pid 1437 → POST /api/saos/spawn-engine → SPAWNED-AND-HEALTHY (new pid 8147, ~7s).
+- POST-SWAP VERIFICATION: /health carries credentialMode (raw JSON checked); engine /status ok:true; cycle marker ok:true health:"ok"; exec-status credentialPresent:true fingerprint c056922c (byte-identical to exec-log entries — signing capability survived the swap); fleet FLEET-OK (15 agents: 12 alive / 3 idle / 0 blocked / 0 dead).
+- Note (behavioral honesty): the heal route spawns `bun run dev` = `bun index.ts` — no --hot flag, i.e. the respawned engine is MORE deterministic than the pre-crash manual boot (no surprise module reloads mid-cycle).
+- Commit signed under the rotated key, pushed FF-only through scripts/sovereign-push.sh.
+
+Stage Summary:
+- R223's observation list is now EMPTY: logs were already law-covered, the search 429 is an external dependency handled honestly by the engine, and the last item — ambiguous /health semantics — is now self-describing. The engine survived its sixth code-swap with credentials, fleet, and cycle law all verified in place; the body's self-description now says exactly what it is.

@@ -46,7 +46,7 @@ const adoptAttempts: number[] = [];
 async function handle(req) {
   const url = new URL(req.url);
   const p = url.pathname;
-  if (p === "/health") return json({ ok: true, service: "saos-engine", account: ACCOUNT, at: new Date().toISOString(), keyless: false, doctrine: "capped-autonomy" });
+  if (p === "/health") return json({ ok: true, service: "saos-engine", account: ACCOUNT, at: new Date().toISOString(), keyless: false, credentialMode: "runtime-adopted · WIFs derived on demand (signer.mjs) · memory-only — never persisted, never logged, never returned", doctrine: "capped-autonomy" });
   if (p === "/status") {
     const execLog = (() => { try { return fs.readFileSync(path.join(STATE, "exec-log.jsonl"), "utf8").trim().split("\n").filter(Boolean).slice(-8).map((l) => { try { return JSON.parse(l); } catch { return { unparsed: l.slice(0, 80) }; } }); } catch { return []; } })();
     let exec = null;
