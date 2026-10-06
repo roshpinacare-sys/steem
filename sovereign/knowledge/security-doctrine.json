@@ -1,0 +1,68 @@
+{
+  "schema": "security-doctrine-v1",
+  "created": "2026-10-03",
+  "wave": "r160",
+  "trace": "1a0ff89853f34b5d",
+  "source": {
+    "repo": "https://github.com/usestrix/strix",
+    "commit": "99c0711687ac7d6acbe5a214143f97b8d6f8f282",
+    "license": "Apache-2.0",
+    "vendored": "sovereign/knowledge/vendor/strix/",
+    "provenance": "sovereign/knowledge/vendor/strix/PROVENANCE.md"
+  },
+  "status": "vendored",
+  "wired": [],
+  "statusRationale": "No runtime consumer exists for offensive-security tooling in the sandbox: strix scans are hard-blocked by its own gate (DOCKER NOT INSTALLED, measured 2026-10-03, strix 1.6.2 installed and reproducing the banner). Doctrine is knowledge-layer only, like loop-library in r157.",
+  "whyNotRevenue": [
+    "Bug-bounty automation (upstream use case) requires docker-sandboxed execution - blocked here; platform accounts (HackerOne/Bugcrowd), scoped targets and legal authorization are prerequisites with unpredictable, non-daily payouts - fails the measurable-daily-revenue bar.",
+    "Strix Cloud route (no docker) requires browser sign-in to an external managed platform and hands source to a third party - the sovereign tree holds the account keychain; not acceptable without operator-level approval.",
+    "Selling pentest services requires credentials and a channel we do not have - speculation, not measurement."
+  ],
+  "activationRoutes": [
+    "docker-appears: strix -n -t ./ --scan-mode quick --max-budget 10 against a CLEAN CHECKOUT (targets are mounted writable; never scan the sovereign working tree)",
+    "ci-route: GitHub Action on PRs with STRIX_LLM + LLM_API_KEY as repo secrets, diff-scoped (--scope-mode diff --diff-base origin/main)",
+    "cloud-route: only with explicit fresh operator approval - third-party managed platform"
+  ],
+  "rules": [
+    {
+      "id": "SEC-1",
+      "rule": "scope-before-scan",
+      "doctrine": "Point the review at the risky subtree and state what agents cannot infer reliably: tenancy model, trust boundaries, which inputs are attacker-controlled. Unscoped whole-tree scans are wasteful and shallow."
+    },
+    {
+      "id": "SEC-2",
+      "rule": "poc-or-not-a-finding",
+      "doctrine": "A reported issue must carry a working proof-of-concept. 'This looks unsafe' is a hypothesis, not a finding; static-only findings are labeled unconfirmed. Same law as the census: no status without evidence."
+    },
+    {
+      "id": "SEC-3",
+      "rule": "exit-zero-is-not-clean",
+      "doctrine": "Exit 0 means nothing exploitable was PROVEN in what was analyzed - not that the code is clean. Check run status, budget cap, and list which paths went unreviewed before declaring health. (Same anti-false-positive family as the init.sh behind-count fix.)"
+    },
+    {
+      "id": "SEC-4",
+      "rule": "clean-checkout-target",
+      "doctrine": "Scan targets are mounted WRITABLE by the tool. Always scan a clean checkout or a copy; never the live sovereign working tree with uncommitted state."
+    },
+    {
+      "id": "SEC-5",
+      "rule": "diff-gated-review",
+      "doctrine": "On every change wave, review what changed (diff against the rebase anchor), not the whole repo - whole-tree review on each wave is the expensive habit that kills budgets."
+    },
+    {
+      "id": "SEC-6",
+      "rule": "secrets-and-deps-are-separate",
+      "doctrine": "Exploit-validated review does not replace secret scanning or dependency auditing. Keep the dedicated guards running (git.secrets guard pack) and extend to periodic dependency inventory - known-CVE dependencies and committed credentials are structurally invisible to logic-focused review."
+    },
+    {
+      "id": "SEC-7",
+      "rule": "fix-root-cause-then-reprove",
+      "doctrine": "Patch the shared cause (the one authorization helper), not the one route, then re-run the check to prove the exploit is dead. Matches census/init.sh fix pattern: measure -> fix -> re-measure."
+    },
+    {
+      "id": "SEC-8",
+      "rule": "sandbox-boundary",
+      "doctrine": "Never point offensive tooling at third-party services without explicit authorization. Only our own tree, our own services, our own accounts. This is a hard rule, not a preference."
+    }
+  ]
+}

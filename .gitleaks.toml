@@ -1,0 +1,70 @@
+# .gitleaks.toml — Zip (Task 15, 2026-10-02 — mirrors Console's 14-a pattern)
+#
+# WHY THIS FILE EXISTS: the weave anchor/ledger bots rewrite sovereign/ledger.json
+# on every publish cycle, so line-number fingerprints in .gitleaksignore shift on
+# every write and re-flag honestly (org-gitleaks regression: Zip findingsHead=8
+# asOf 2026-10-02T11:40Z run 3700xxx). Line fingerprints can never win that
+# race; a NARROW RULE-LEVEL allowlist can.
+#
+# WHAT IT ALLOWS — exactly one known-inert class, nothing else:
+# sovereign/ledger.json `.{encKey,keyIv,keyTag}` envelope fields — the
+# AES-256-GCM envelope of the weave brain-key pool, published BY DESIGN in the
+# public replay book:
+#   · keyIv = 12-byte GCM nonce, keyTag = 16-byte GCM auth tag — ciphertext
+#     METADATA, not secret material, in any GCM scheme;
+#   · encKey = the ciphertext itself. Its KEK is derived from devKeyHex which
+#     lives ONLY in the Zip operator DB ("חוק הברזל — אין devKeyHex בקובץ",
+#     iron law). The repo alone cannot open these blobs.
+# Same-ID merge keeps the base generic-api-key regex; condition=and means a
+# finding is suppressed ONLY if it is in sovereign/ledger.json AND the match is
+# one of the three envelope fields with a hex value. Any OTHER field (or file)
+# still scans normally.
+#
+# GITLEAKS v8.24.3 TRAPS (verified empirically by Task 14-a on Console):
+#   1. The config MUST be named `.gitleaks.toml` (dot-prefixed) — plain
+#      `gitleaks.toml` is silently ignored unless passed via --config.
+#   2. A GLOBAL `[allowlist]` with matching `paths` makes the walker SKIP WHOLE
+#      FILES (blanket exclusion — NOT acceptable doctrine). This allowlist is
+#      RULE-level, evaluated per-finding.
+#   3. `regexes`/`paths` are COMMA-SEPARATED LISTS — a regex containing a
+#      literal comma is split into broken fragments. Hence
+#      `[0-9a-f][0-9a-f]+`, not `{12,}`.
+#   4. Allowlist `condition` defaults to OR (path-match alone would suppress
+#      every finding in the file). `condition = "and"` is required.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"  # same-ID stub: base regex/entropy kept, allowlist appended
+
+[rules.allowlists]
+description = "weave ledger sealed-envelope fields (by-design inert GCM ciphertext metadata; KEK never in repo — Task 15 triage of Zip org-gitleaks findingsHead=8)"
+condition = "and"
+paths = '''(^|/)sovereign/ledger\.json$,(^|/)sovereign/proofs/evidence/[0-9]+/ledger\.json$'''
+regexTarget = "match"
+# regexTarget=match: the generic-api-key Match starts mid-field (verified shape
+# `encKey": "…"`), so the field-name key is unquoted here. Hex-gated (no comma
+# allowed — trap 3) so a non-hex value in these fields would still flag.
+regexes = '''(encKey|keyIv|keyTag)":\s*"[0-9a-f][0-9a-f]+'''
+
+# ── headcorner-seal triage (2026-10-06): paths widened to the evidence-ledger
+# books sovereign/proofs/evidence/*/ledger.json — SAME known-inert class as the
+# main ledger (encKey/keyIv/keyTag GCM envelope metadata, digests and chain
+# hashes only; KEK never in repo). Also: headcorner-seal.meta.json stores NO
+# key material (fingerprint lives inside the encrypted envelope only).
+#
+# ── r186-a: BIP39 seed-literal tripwire ─────────────────────────────
+# WHY: gitleaks default rules have NO seed-phrase rule (verified empirically
+# r186-a) — the 12-word TRON seed lived tracked in scripts/check-tron-
+# connection.mjs from 0e252dab (2026-09-21) until r186 sealed it into the
+# agent vault and no scanner ever screamed. This rule catches the exact
+# class: a mnemonic/seed-phrase variable assigned a 12–24 lowercase-word
+# literal. No commas in the regex (trap 3). Gitleaks has no entropy floor
+# configured here on purpose — word-lists are low-entropy by design.
+[[rules]]
+id = "bip39-literal-assignment"
+description = "BIP39 seed phrase assigned as a literal (12-24 lowercase words) — r186-a tripwire after the TRON seed bleed (0e252dab)"
+regex = '''(?i)(mnemonic|seed[ _-]?phrase|seedphrase|recovery[ _-]?phrase|recoveryphrase)["']?\s*[:=]\s*["'][a-z]{3,}([ ]+[a-z]{3,}){11,23}["']'''
+keywords = ["mnemonic", "seedphrase", "seed_phrase", "seed-phrase", "recoveryphrase", "recovery_phrase", "recovery-phrase"]
+

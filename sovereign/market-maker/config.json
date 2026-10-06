@@ -1,0 +1,66 @@
+{
+  "rails": {
+    "steem": {
+      "enabled": true,
+      "mode": "live",
+      "pair": "SBD:STEEM",
+      "gridLevels": 5,
+      "spreadBps": 120,
+      "levelSpacingBps": 60,
+      "orderCap": 25,
+      "minOrder": 0.05,
+      "budgetPct": 0.35,
+      "refreshHours": 24,
+      "feeRate": 0.0075,
+      "minProfitBps": 120,
+      "parityLadder": true,
+      "cexSpreadProxyBps": 25,
+      "minNotionalUsd": 2,
+      "skewWidenAt": 0.4,
+      "skewHaltAt": 0.6,
+      "fleetChurn": true,
+      "churnSize": 0.05
+    },
+    "hive": {
+      "enabled": false,
+      "reason": "no-verified-active-key-or-liquidity-yet (0.034 HIVE = אבק — DRY עד דלק-מגל-ה-convert)",
+      "mode": "dry",
+      "pair": "HBD:HIVE",
+      "account": "headcorner",
+      "rpc": "https://api.hive.blog",
+      "gridLevels": 5,
+      "spreadBps": 120,
+      "levelSpacingBps": 60,
+      "orderCap": 25,
+      "minOrder": 0.05,
+      "budgetPct": 0.35,
+      "refreshHours": 24,
+      "feeRate": 0.0075,
+      "minProfitBps": 120,
+      "parityLadder": true,
+      "cexSpreadProxyBps": 25,
+      "minNotionalUsd": 2,
+      "skewWidenAt": 0.4,
+      "skewHaltAt": 0.6,
+      "orderIdBand": {
+        "lo": 1000000000,
+        "hi": 1500000000
+      }
+    }
+  },
+  "dailyLossCapSbd": 0.5,
+  "tickSec": 60,
+  "_docs": {
+    "budgetLaw": "budget = free_balance × budgetPct · היתרה-החופשית (get_accounts) כבר מנוכה את כל הפקודות-הנעולות — שלנו ושל money-mover — לכן שני-הסוחרים לא מתחרים על אותם כספים",
+    "cancelLaw": "ביטול רק לפי orderid מרישום-המנוע עצמו (state.registry) — פקודות money-mover נוגעות-אסור",
+    "ladderLaw": "5 מכירות מעל המרכז + 5 קניות מתחתיו; רמה-ראשונה ב-±spreadBps/2, אחריהן צעדים של levelSpacingBps",
+    "driftLaw": "אם המרכז זז מעל 2×levelSpacingBps מאז הפריסה — ביטול+פריסה מחדש (r192: המדידה מול מרכז-הפאריטה-החי)",
+    "fleetChurnLaw": "מופעל רק אחרי אימות-חי של רשות-active לחיילים מהכספת; אין-אימות ⇒ כבוי-בכנות, אין-ממציאים-מפתחות",
+    "killSwitchLaw": "קובץ ~/.sovereign/mm-kill קיים ⇒ אפס פריסות חדשות; מעבר-ל-live נסרב",
+    "orderIdBandLaw": "טווח-orderid שמור-בלעדי למנוע-הגריד [1_000_000_000, 1_500_000_000) — חוזה-r190 זהה-לעורק /api/money; סכמה-ישנה (mod 2^31, ~739.9M) נשכחה: לא מאומצת, לא נספרת",
+    "reconcileLaw": "בעלייה-ובכל-פעימה get_open_orders = השופט: פקודה-חיה-בטווח ⇒ מאומצת-לרישום (chain-truth); רישום-מחוץ-לטווח/שאינו-חי ⇒ נמחק. אימוץ-חי-בטווח בעלייה ⇒ RECOVERY-LIVE — כבוי-אם kill-switch/halted/מפתח-חסר",
+    "profitLaw": "חוק-רווחיות r191 (רווחיות-גם-אם-קטנה): פנקס-לוטות-FIFO — קנייה-ממולאת פותחת-לוט-במחיר-המילוי, מכירה-ממולאת צורכת-לוטות-FIFO ומממשת (מחיר-מכירה − עלות-לוט)×כמות − עמלה-מוערכת. רצפת-מכירה = basisBlended×(1+minProfitBps/10000) — minProfitBps=120 חייב-לעלות על feeRate=75bps; השוק-הפנימי-של-Steem למעשה-לא-גובה-עמלת-לימיט ולכן feeRate נשאר-הערכה-שמרנית-בחישוב-PnL-בלבד. מכירות-ללא-לוטות (מלאי-שקדם-לעידן-המנוע) אינן-נספרות-ב-PnL-ממומש — היקף-כנה — ונספרות-ב-unmatchedSellSteem/unmatchedSellSbd. אין-לוטות ⇒ סולם-סימטרי (guardBasis:no-lots). קניות-לעולם-לא-מעל-הבסיס-הממוצע (ממוצע-מטה-מותר, תחום-בתקרת-הפסד-היומית); מכירות-חיות-שנפלו-מתחת-לרצפה מוחלפות-בפעימה-הבאה — אין-הצעות-הפסד-מובטח",
+    "parityLaw": "חוזה-r192 (סולם-פאריטה, חוק-L3): parityLadder=true ⇒ מרכז-הסולם = מחיר-הפיד החי מ-get_current_median_history_price (1 SBD ≈ 9.6062 STEEM ⇒ 0.1041 SBD/STEEM) — לא מרכז-הספר; פיד-נפל ⇒ נפילה-כנה-למרכז-הספר (centerSource=book). רצפת-עמלה = 3×cexSpreadProxyBps (פרוקסי-מוצהר — אין-הזנת-CEX-חיה); הספרד-האפקטיבית = max(spreadBps, רצפת-העמלה) ומתרחבת ×1.5 על |skew|>skewWidenAt (40%); |skew|>skewHaltAt (60%) ⇒ L3-SKEW-HALT — אפס-פריסה-וביטול בפעימה. רצפת-נוטיונל minNotionalUsd=$2 לפקודה (SBD≈USD עיקרון-ערך-הרשת) — דלק-מתחת-לרצפה ⇒ NO-BUDGET-כנה-עד-נחיתת-גל-ה-convert. orderCap הועלה ל-25 STEEM כי-הישן (1.0 ≈ $0.10) היה-מונע-לנצח פריסה-שמקיימת-את-הרצפה. רצפת-הרווח-120bps-ופנקס-הלוטות-FIFO נותרו-ללא-שינוי — הפאריטה מזיזה-את-המרכז, לא-את-הרצפה",
+    "hiveBandLaw": "חוזה-r192 — רגל-HIVE (חוק-L2 במרחב-Hive): Hive הוא ספר-חשבונות-נפרד ובו מרחב-orderid עצמאי — HIVE_GRID_ORDERID_BAND = [1_000_000_000, 1_500_000_000) (חצי-פתוח) עם-אותה-סכמת-נגזרת: deriveHiveOrderid = 1G + ((⌊ts/1000⌋×16 + level×2 + side) mod 500M) — אי-התנגשות-בין-השרשרות מובטחת-מבנית. הרגל DRY מלאה (enabled:false, mode:dry): 0.034 HIVE = אבק — אפס-שידור-Hive עד דלק-מגל-ה-convert ומפתח-active-מאומת-בכספת; הנגזרות-כאן לבדיקות-לוגיות-ולנראות-/status"
+  }
+}

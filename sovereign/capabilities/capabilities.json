@@ -1,0 +1,178 @@
+{
+  "schema": "capability-census-v1",
+  "at": "2026-10-03T01:25:35.921Z",
+  "ms": 1759,
+  "layers": {
+    "compute": {
+      "binaries": {
+        "bun": true,
+        "node": true,
+        "python3": true,
+        "git": true,
+        "agent-browser": true,
+        "z-ai": false,
+        "playwright": true,
+        "tectonic": true,
+        "uv": true,
+        "docker": false,
+        "podman": false
+      },
+      "kvmDevice": false,
+      "note": "docker/podman/kvm נמדדו — הסביבה-הזו-חסרת-וירטואליזציה (מדידה-כנה, לא-החמצה)"
+    },
+    "perception": {
+      "zaiVision": true,
+      "browserDriver": true,
+      "browserTools": [
+        "open",
+        "click",
+        "type",
+        "press",
+        "mouse",
+        "scroll",
+        "snapshot(אינדקס-refs)",
+        "screenshot",
+        "eval",
+        "find(role/text)",
+        "set(viewport/geo/headers)"
+      ]
+    },
+    "voice": {
+      "tts": true,
+      "asr": true,
+      "note": "z-ai CLI — כבר-חי"
+    },
+    "creation": {
+      "image": true,
+      "imageEdit": true,
+      "imageSearch": true,
+      "video": "דרך-ה-skill"
+    },
+    "chains": {
+      "steemRpc": true,
+      "zChainZeroGas": "0x2499",
+      "gitSovereign": true
+    },
+    "fleet": {
+      "alive": "10/10",
+      "ports": {
+        "3000": true,
+        "3034": true,
+        "3038": true,
+        "3040": true,
+        "3041": true,
+        "3042": true,
+        "3043": true,
+        "3044": true,
+        "3045": true,
+        "3046": true
+      }
+    },
+    "law": {
+      "sovereignGuard": true,
+      "harness": true
+    },
+    "sovereignScripts": [
+      "scripts/capability-census.mjs",
+      "scripts/check-tron-connection.mjs",
+      "scripts/check-tron-history.mjs",
+      "scripts/check-tron-live.mjs",
+      "scripts/daemons-revive.mjs",
+      "scripts/dev-revive.mjs",
+      "scripts/fold-live-state.mjs",
+      "scripts/full-revive.mjs",
+      "scripts/r104-saos-rail-proof.mjs",
+      "scripts/r105-sol-deposit-proof.mjs",
+      "scripts/r111-chain-orders.mjs",
+      "scripts/r147a-forensics.mjs",
+      "scripts/revenue-census.mjs",
+      "scripts/seal-adopt.mjs",
+      "scripts/secret-relay.mjs",
+      "scripts/see-verify.mjs",
+      "scripts/sovereign-guard.mjs",
+      "scripts/sovereign-index.mjs",
+      "scripts/sovereignty-proof.mjs",
+      "scripts/verify-owner-input.mjs"
+    ],
+    "toolsRegistry": [
+      {
+        "name": "see-verify",
+        "cmd": "bun scripts/see-verify.mjs \"<url>\" \"<בדיקה>\" [--tag n]",
+        "what": "לולאת-computer-use: פתח→צלם→VLM→פסק-דין-מגובה-ראיה (exit 0=PASS)",
+        "law": "הפרימיטיב-לאימות-חזותי — שאל-את-המסך-לא-את-הלוג",
+        "path": "scripts/see-verify.mjs",
+        "exists": true
+      },
+      {
+        "name": "agent-browser",
+        "cmd": "agent-browser open|click|type|snapshot|screenshot|eval|mouse",
+        "what": "driver-המחשב: אוטומציה-מלאה-בדפדפן (snapshot=עץ-נגישות-עם-refs)",
+        "law": "לפעולות-גריד/קלט — בדוק-אחרי-כל-פעולה-ב-see-verify",
+        "path": null,
+        "exists": true
+      },
+      {
+        "name": "z-ai",
+        "cmd": "z-ai chat|vision|tts|asr|image|image-edit|image-search",
+        "what": "מוח+עיניים+קול+יצירה (VLM=שופט-ה-see-verify)",
+        "law": "רק-דרך-קוד-שרת-או-CLI — לא-בדפדפן",
+        "path": null,
+        "exists": true
+      },
+      {
+        "name": "revenue-census",
+        "cmd": "bun scripts/revenue-census.mjs [--force]",
+        "what": "מפקד-ההכנסות-מהשרשרת (curation/author/powerdown/attribution)",
+        "law": "טריות-26ש' — חובה-לפני-דיון-כלכלי",
+        "path": "scripts/revenue-census.mjs",
+        "exists": true
+      },
+      {
+        "name": "capability-census",
+        "cmd": "bun scripts/capability-census.mjs [--force]",
+        "what": "מפקד-היכולות הזה — מה-יש-בידיים-עכשיו",
+        "law": "טריות-12ש'",
+        "path": "scripts/capability-census.mjs",
+        "exists": true
+      },
+      {
+        "name": "sovereign-guard",
+        "cmd": "bun scripts/sovereign-guard.mjs --check \"<cmd>\"",
+        "what": "שער-ההרג: חוסם-פקודות-הרסניות (7-חבילות)",
+        "law": "חוק-קשיח: לפני-כל-פקודה-הרסנית",
+        "path": "scripts/sovereign-guard.mjs",
+        "exists": true
+      },
+      {
+        "name": "sovereignty-proof",
+        "cmd": "bun scripts/sovereignty-proof.mjs",
+        "what": "scorecard-9-בדיקות מול-מצבי-כישלון-המחקר (Emergence)",
+        "law": "init.sh-סעיף-6-בכל-ריצה",
+        "path": "scripts/sovereignty-proof.mjs",
+        "exists": true
+      },
+      {
+        "name": "sovereign-index",
+        "cmd": "bun scripts/sovereign-index.mjs",
+        "what": "מפת-האמת-האחת — מיוצרת-מהמכונות",
+        "law": "init.sh-סעיף-7",
+        "path": "scripts/sovereign-index.mjs",
+        "exists": true
+      }
+    ]
+  },
+  "cuaAdoption": {
+    "source": "https://github.com/trycua/cua",
+    "adopted": [
+      "לולאת-see→think→act→verify (Computer-Use 2.0) — scripts/see-verify.mjs על-הדפדפן+VLM",
+      "אינדקס-refs-של-אלמנטים (snapshot) = קלט-מובנה-להחלטה (הגישה-של-cua-driver)",
+      "מדידת-יכולות-מהחי-לפני-הצהרות (capability-census זה)",
+      "registry-כלים-מכונתי-לגילוי-עצמי של-הסוכנים"
+    ],
+    "deferred": [
+      "VM-sandbox (gVisor/Lume) — אין-וירטואליזציה-בסביבה (נמדד: אין-docker/kvm); השער-שלנו-ממלא-את-תפקיד-הבידוד",
+      "שליטה-ביישומי-מחשב-נייטיב (macOS/Windows) — סביבה-חסרת-ראש; הדפדפן-הוא-המחשב-שלנו",
+      "CUA-S1-מודלים-קטנים — המערכת-שלנו-קטנה-מכדי-להצדיק-אימון-מודל; VLM-כללי-מספיק"
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "format": "weave-pnl-snapshots-v1",
+  "savedAt": "2026-10-01T21:19:21.662Z",
+  "entries": [
+    {
+      "seq": 1,
+      "at": "2026-10-01T21:19:21.662Z",
+      "account": "headcorner",
+      "realized": {
+        "measured": true,
+        "fillsTotal": 65,
+        "trips": 26,
+        "capturedSbd": -0.038755,
+        "capturedUsd": -0.025,
+        "netSteem": 8.38,
+        "netSbd": -0.088,
+        "openLongSteem": 168.39,
+        "firstFillAt": "2026-09-10T20:48:42Z",
+        "lastFillAt": "2026-10-01T20:16:27Z",
+        "note": "FIFO על fill_order אמיתיים מהשרשרת (צ'קפוינט 2026-10-01T21:08:49.754Z) · סבב נסגר רק במכירה שסוגרת קנייה; מלאי פתוח אינו רווח"
+      },
+      "unrealized": {
+        "measured": true,
+        "ordersOpen": 3,
+        "deployedSteem": 756.909,
+        "ladderPremiumSbd": 5.558235,
+        "ladderPremiumUsd": 3.5835,
+        "ordersBelowParity": 0,
+        "openLongMarkSbd": -1.326028,
+        "openLongMarkUsd": -0.8549,
+        "bidsOpenSbd": 0.15,
+        "note": "פרמיית-הסולם = Σ(amount×(price−parity)) על פקודות-המכירה הפתוחות מול הפאריטה החיה (oracle:steemUsd/sbdUsd) · מלאי פתוח מסומן לפאריטה"
+      },
+      "marks": {
+        "parity": 0.098553,
+        "paritySource": "oracle:steemUsd/sbdUsd",
+        "steemUsd": 0.06354,
+        "sbdUsd": 0.644727,
+        "sbdSource": "console:money.json@2026-10-01T21:18Z"
+      },
+      "sources": {
+        "fills": "chain:fill_order (steem get_account_history) via sovereign/money/pnl-scan.json checkpoint savedAt=2026-10-01T21:08:49.754Z maxIndex=58232 — כל מילוי נושא אינדקס-ראיה (idx)",
+        "ordersAndMarks": "live /api/money → condenser_api.get_open_orders + get_order_book (כל פקודה נושאת orderid; פאריטה: oracle:steemUsd/sbdUsd)",
+        "receipts": "sovereign/money/history.json (money daemon MoverReceipts — txid לכל cancel/create) · unmeasured (קובץ נעדר/פגום)",
+        "usdConversion": "SBD→USD בשער-היום בלבד: 0.644727 (console:money.json@2026-10-01T21:18Z) — שער היסטורי לא נמדד כאן"
+      },
+      "receipts": {
+        "total": 0,
+        "withTxid": 0,
+        "lastAt": null,
+        "lastKinds": [],
+        "lastTxids": []
+      },
+      "fillsLast": [
+        {
+          "idx": 58019,
+          "at": "2026-09-30T20:14:24Z",
+          "side": "bought-steem",
+          "price": 0.097561,
+          "steem": 0.041,
+          "sbd": 0.004
+        },
+        {
+          "idx": 58020,
+          "at": "2026-09-30T20:14:24Z",
+          "side": "bought-steem",
+          "price": 0.104348,
+          "steem": 0.805,
+          "sbd": 0.084
+        },
+        {
+          "idx": 58022,
+          "at": "2026-09-30T20:14:24Z",
+          "side": "sold-steem",
+          "price": 0.104,
+          "steem": 0.5,
+          "sbd": 0.052
+        },
+        {
+          "idx": 58224,
+          "at": "2026-10-01T19:46:03Z",
+          "side": "sold-steem",
+          "price": 0.1,
+          "steem": 0.75,
+          "sbd": 0.075
+        },
+        {
+          "idx": 58226,
+          "at": "2026-10-01T20:16:27Z",
+          "side": "sold-steem",
+          "price": 0.1,
+          "steem": 0.08,
+          "sbd": 0.008
+        }
+      ],
+      "prevHash": "GENESIS",
+      "entryHash": "c945704bdd9ff64e2a8f75860b965ef83da6abaa705cbabaffad85a624d17546"
+    }
+  ]
+}

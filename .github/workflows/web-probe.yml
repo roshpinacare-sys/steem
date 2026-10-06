@@ -1,0 +1,31 @@
+# WEB-PROBE — אבחון חד-פעמי: comment מול custom_json באותו מפתח.
+# workflow_dispatch בלבד. שום דבר לא נכתב לריפו.
+
+name: web-probe
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Run probe (reports only, writes nothing)
+        run: bun scripts/web-probe.ts
+        env:
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}

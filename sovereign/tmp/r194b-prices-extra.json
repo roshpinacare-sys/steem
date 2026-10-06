@@ -1,0 +1,179 @@
+{
+  "at": "2026-10-04T11:01:01.118Z",
+  "probes": [
+    {
+      "name": "mexc-blurt",
+      "url": "https://api.mexc.com/api/v3/ticker/price?symbol=BLURTUSDT",
+      "status": 400,
+      "ms": 89,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"msg\":\"invalid symbol\",\"code\":-1121}"
+    },
+    {
+      "name": "poloniex-blurt",
+      "url": "https://api.poloniex.com/markets/BLURT_USDT/price",
+      "status": 400,
+      "ms": 86,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "\"{\\\"code\\\": 24101,\\\"message\\\": \\\"Invalid symbol!\\\",\\\"data\\\":}\""
+    },
+    {
+      "name": "binance-blurt-doc",
+      "url": "https://api.binance.com/api/v3/ticker/price?symbol=BLURTUSDT",
+      "status": 400,
+      "ms": 78,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"code\":-1121,\"msg\":\"Invalid symbol.\"}"
+    },
+    {
+      "name": "coinlore-blurt",
+      "url": "https://api.coinlore.net/api/tickers/?start=0&limit=100",
+      "status": 200,
+      "ms": 452,
+      "ok": true,
+      "price": {
+        "hit": false
+      },
+      "bodyPreview": "{\"data\":[{\"id\":\"90\",\"symbol\":\"BTC\",\"name\":\"Bitcoin\",\"nameid\":\"bitcoin\",\"rank\":1,\"price_usd\":\"85328.43\",\"percent_change_24h\":\"0.82\",\"percent_change_1h\":\"0.09\",\"percent_change_7d\":\"1.23\",\"price_btc\":\"1.00\",\"market_cap_usd\":\"1704081541521.10\",\"volume24\":14723134598.29244,\"volume24a\":27843341230.585037,\"csupply\":\"19970852.00\",\"tsupply\":\"19970852\",\"msupply\":\"21000000\"},{\"id\":\"80\",\"symbol\":\"ETH\",\"name\":\"Ethereum\",\"nameid\":\"ethereum\",\"rank\":2,\"price_usd\":\"2703.31\",\"percent_change_24h\":\"0.72\",\"percent_change_1h\":\"0.02\",\"percent_change_7d\":\"0.53\",\"price_btc\":\"0.033349\",\"market_cap_usd\":\"330816269194.84"
+    },
+    {
+      "name": "paprika-sbd-search",
+      "url": "https://api.coinpaprika.com/v1/search/?q=steem%20dollar&c=currencies&limit=5",
+      "status": 200,
+      "ms": 281,
+      "ok": true,
+      "price": [
+        {
+          "id": "sbd-steem-dollars",
+          "symbol": "SBD",
+          "active": false,
+          "rank": 0
+        }
+      ],
+      "bodyPreview": "{\"currencies\":[{\"id\":\"sbd-steem-dollars\",\"name\":\"Steem Dollars\",\"symbol\":\"SBD\",\"rank\":0,\"is_new\":false,\"is_active\":false,\"type\":\"coin\",\"rev\":112893}]}"
+    },
+    {
+      "name": "paprika-blurt-ticker-direct",
+      "url": "https://api.coinpaprika.com/v1/tickers/blurt-blurt?quotes=USD",
+      "status": 404,
+      "ms": 236,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"error\":\"id not found\"}"
+    },
+    {
+      "name": "coinpaprika-steem",
+      "url": "https://api.coinpaprika.com/v1/tickers/steem-steem",
+      "status": 200,
+      "ms": 243,
+      "ok": true,
+      "price": {
+        "usd": 0.06329953557270673
+      },
+      "bodyPreview": "{\"id\":\"steem-steem\",\"name\":\"Steem\",\"symbol\":\"STEEM\",\"rank\":494,\"total_supply\":559748410,\"max_supply\":0,\"beta_value\":0.991427,\"first_data_at\":\"2016-04-18T00:00:00Z\",\"last_updated\":\"2026-10-04T10:58:16Z\",\"quotes\":{\"USD\":{\"price\":0.06329953557270673,\"volume_24h\":3146266.1560349446,\"volume_24h_change_24h\":-8.899999618530273,\"market_cap\":35431841,\"market_cap_change_24h\":0.6800000071525574,\"percent_change_15m\":-0.019999999552965164,\"percent_change_30m\":-0.07999999821186066,\"percent_change_1h\":-0.2199999988079071,\"percent_change_6h\":0.5699999928474426,\"percent_change_12h\":-0.4399999976158142,\"percent"
+    }
+  ],
+  "steemBookFields": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "asks": [
+        {
+          "created": "2026-09-28T16:02:06",
+          "order_price": {
+            "base": "362.000 STEEM",
+            "quote": "37.778 SBD"
+          },
+          "real_price": "0.10435911602209945",
+          "sbd": 4570,
+          "steem": 43798
+        },
+        {
+          "created": "2026-09-30T18:18:36",
+          "order_price": {
+            "base": "20.958 STEEM",
+            "quote": "2.200 SBD"
+          },
+          "real_price": "0.10497184845882240",
+          "sbd": 2200,
+          "steem": 20958
+        }
+      ],
+      "bids": [
+        {
+          "created": "2026-10-04T07:32:36",
+          "order_price": {
+            "base": "1.000 SBD",
+            "quote": "9.991 STEEM"
+          },
+          "real_price": "0.10009008107296567",
+          "sbd": 1000,
+          "steem": 9991
+        },
+        {
+          "created": "2026-10-03T05:40:30",
+          "order_price": {
+            "base": "200.174 SBD",
+            "quote": "2000.000 STEEM"
+          },
+          "real_price": "0.10008700000000000",
+          "sbd": 175127,
+          "steem": 1749747
+        }
+      ]
+    }
+  },
+  "hiveBookFields": {
+    "jsonrpc": "2.0",
+    "result": {
+      "bids": [
+        {
+          "order_price": {
+            "base": "0.724 HBD",
+            "quote": "12.882 HIVE"
+          },
+          "real_price": "0.05620245303524297",
+          "hive": 12882,
+          "hbd": 724,
+          "created": "2026-10-04T10:56:24"
+        },
+        {
+          "order_price": {
+            "base": "4.375 HBD",
+            "quote": "77.847 HIVE"
+          },
+          "real_price": "0.05619998201600575",
+          "hive": 29092,
+          "hbd": 1635,
+          "created": "2026-10-04T09:19:36"
+        }
+      ],
+      "asks": [
+        {
+          "order_price": {
+            "base": "19.293 HIVE",
+            "quote": "1.086 HBD"
+          },
+          "real_price": "0.05628984605815581",
+          "hive": 8297,
+          "hbd": 467,
+          "created": "2026-10-04T10:56:48"
+        },
+        {
+          "order_price": {
+            "base": "12.818 HIVE",
+            "quote": "0.722 HBD"
+          },
+          "real_price": "0.05632704009985957",
+          "hive": 12818,
+          "hbd": 722,
+          "created": "2026-10-04T10:57:33"
+        }
+      ]
+    },
+    "id": 1
+  }
+}

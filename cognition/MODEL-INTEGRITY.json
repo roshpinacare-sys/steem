@@ -1,0 +1,73 @@
+{
+ "_meta": {
+  "schema": "r208r-model-integrity-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "at": "2026-10-05T21:48:28.006Z",
+  "law": "בייטס-שנצרכו == בייטס-שהוכרזו == בייטס-המשויכים-לתחזית == בייטס-המשויכים-לתוצאה (§IX)"
+ },
+ "consumedContentProof": {
+  "mechanism": "objectiveSnapshotHash = sha256(join(per-file sha256)) — מחויבות-ניתנת-לאימות-חוזר מול-הדיסק בכל-עת; ביקורת-אמצע-מחזור (MODEL-CHANGED-MIDCYCLE) נוספה ב-decide() (§IX)",
+  "withinCycleTOCTOU": "בלתי-אפשרי-מבנית: קריאות-fs.readFileSync סינכרוניות בתוך-פעימה-חד-חוטית; החלון הוא-בין-שלבים — ומנוטר (OBSERVED B2)",
+  "epistemic": "OBSERVED+DERIVED"
+ },
+ "attacks": [
+  {
+   "attack": "B1|consumed-bytes==disk-bytes",
+   "section": "IX",
+   "injected": "השוואת modelHashes-מהתצוגה מול-דיסק",
+   "pass": true,
+   "detail": "כל-4-הקבצים זהים בייט-לבייט — הקבלה מעידה על בייטס-נצרכים",
+   "expectation": "identity",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B2|midcycle-replacement-detected",
+   "section": "IX",
+   "injected": "החלפת-options.json אחרי-צריכה",
+   "pass": true,
+   "detail": "before=1a99654abf64 after=f53d80e894ef — MODEL-CHANGED-MIDCYCLE יירשם",
+   "expectation": "detected",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B3|symlink-replacement",
+   "section": "IX",
+   "injected": "options.json→symlink-לקובץ-זר-תקין",
+   "pass": true,
+   "detail": "reject=MODEL-UNANCHORED · options.json: בייטס-דיסק (78495c214275) ≠ עיגון (f81263041cb5) — שינוי-מודל-בלי-התאמה-חתומה (§IX)",
+   "expectation": "EVIDENCE-HASH-DRIFT|MODEL-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B4|partial-write",
+   "section": "IX",
+   "injected": "חצי-קובץ-JSON",
+   "pass": true,
+   "detail": "reject=MODEL-JSON-BROKEN",
+   "expectation": "JSON-BROKEN|UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B5|concurrent-identical-writes",
+   "section": "IX",
+   "injected": "20-כתיבות-זהות",
+   "pass": true,
+   "detail": "האש-יציב — אפס-שקר-חיובי",
+   "expectation": "stable",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B6|restart-hash-determinism",
+   "section": "IX",
+   "injected": "טעינה-כפולה",
+   "pass": true,
+   "detail": "אותם-האשים — דטרמיניזם",
+   "expectation": "deterministic",
+   "epistemic": "OBSERVED"
+  }
+ ],
+ "anchors": "עיגון-מלא (modelSha256 לארבעת-הקבצים) בספר-העיגון — symlink/החלפה/כתיבה-חלקית נדחים MODEL-UNANCHORED/MODEL-JSON-BROKEN/EVIDENCE-HASH-DRIFT",
+ "openLimitation": "מודל-תקין-אך-שקרי (valid-but-false) אינו ניתן-לגילוי מקומי: עיגון-האש מוכיח מיוחסות-בייטס (מה-נצרך), לא נכונות-תוכן (מה-אמת) — נכונות-התוכן נשענת על אדג'ודיקציית-המקור + חתימות-ההעדפה",
+ "epistemic": "OBSERVED"
+}

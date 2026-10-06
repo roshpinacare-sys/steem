@@ -1,0 +1,240 @@
+{
+ "_meta": {
+  "schema": "r208r-zero-point-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "at": "2026-10-05T21:38:15.048Z",
+  "law": "כל-שדה נושא סיווג-אפיסטמי: OBSERVED | DERIVED | CLAIMED | UNKNOWN | REFUTED. איסור: מבחן→עולם · תחזית→תוצאה · שורת-DB→סיבתיות · חוסר-מדידה→אפס."
+ },
+ "liveModel": {
+  "files": {
+   "objectives.json": {
+    "exists": true,
+    "sha256": "6f4dc3453e839beaa86db25c575035f5974e9d7e678c6b3cc8e1d71e819cff82",
+    "mtime": "2026-10-05T18:45:46.227Z",
+    "schema": "sovereign-objectives-v1",
+    "builtAt": "2026-10-05T18:05:00Z",
+    "round": "R207"
+   },
+   "options.json": {
+    "exists": true,
+    "sha256": "f81263041cb501f79649c23c4afc4bba7fda297b39d11002aa450895bfd1eb49",
+    "mtime": "2026-10-05T21:08:08.676Z",
+    "schema": "sovereign-options-v1",
+    "builtAt": "2026-10-05T18:05:00Z",
+    "round": "R207"
+   },
+   "capabilities.json": {
+    "exists": true,
+    "sha256": "91b31511be4e1c3d15253fe5efaa127d20c9ed5249ee1799353b1dd8d236f64b",
+    "mtime": "2026-10-05T18:45:46.227Z",
+    "schema": "sovereign-capabilities-v1",
+    "builtAt": "2026-10-05T18:05:00Z",
+    "round": "R207"
+   },
+   "authority-map.json": {
+    "exists": true,
+    "sha256": "a84280b6a77c0c20261104ee8afa36cb9fdd28d71b025f062e12d8ed876dc18f",
+    "mtime": "2026-10-05T19:35:13.850Z",
+    "schema": "sovereign-authority-map-v1",
+    "builtAt": "2026-10-05T18:05:00Z",
+    "round": "R207"
+   }
+  },
+  "epistemic": "OBSERVED"
+ },
+ "livePreferences": {
+  "bookCount": 3,
+  "torn": false,
+  "chainVerified": true,
+  "p1": {
+   "kind": "PREFERENCE-UPDATE",
+   "subject": "grid-pool-seed",
+   "direction": "DOWN",
+   "scope": {
+    "regime": [
+     "pre-landing-window",
+     "sbd-unfunded"
+    ]
+   },
+   "confidence": "medium",
+   "expiresAt": "2026-10-12T21:08:08.680Z",
+   "evidence": [
+    {
+     "book": "sovereign/objectives/options.json",
+     "ref": "unitErrorCorrection",
+     "value": "סף-זריעה אמיתי ~160 WSTEEM (תיקון-שגיאת-יחידות 96) · צד-SBD בלתי-ממומן",
+     "at": "2026-10-05T21:08:08.680Z",
+     "sha256": "f81263041cb501f79649c23c4afc4bba7fda297b39d11002aa450895bfd1eb49"
+    },
+    {
+     "book": "sovereign/objectives/capabilities.json",
+     "ref": "C5",
+     "value": "SBD מדיד 0.015 — מתחת-למימון-צד-העטיפה",
+     "at": "2026-10-05T21:08:08.680Z",
+     "sha256": "91b31511be4e1c3d15253fe5efaa127d20c9ed5249ee1799353b1dd8d236f64b"
+    },
+    {
+     "book": "sovereign/objectives/options.json",
+     "ref": "_meta.armingThreshold",
+     "value": "הסף-הרג'ימי חי-כעת במודל — OBJECTIVE-PARAMETER (§VII R208R)",
+     "at": "2026-10-05T21:08:08.680Z",
+     "sha256": "f81263041cb501f79649c23c4afc4bba7fda297b39d11002aa450895bfd1eb49"
+    }
+   ],
+   "reason": "העדפה-נלמדת מראיות-מעוגנות: התנאי-החי שלילי (ראה evidence) — דיכוי-advisory בלבד; חתימה-מחדש R208R",
+   "authority": "ADVISORY-ONLY",
+   "seq": 3,
+   "at": "2026-10-05T21:08:08.680Z",
+   "prevHash": "aad3874eced2ba9f81749dcb3ea4f77d6f788344d1c57c225a8455772dba2fc4",
+   "entryHash": "6d0186350838042ad6f12ebc4f7908c7ff676c773821ab59019e9699623b6111"
+  },
+  "state": {
+   "chain": {
+    "lastEntryHash": "6d0186350838042ad6f12ebc4f7908c7ff676c773821ab59019e9699623b6111",
+    "count": 3
+   },
+   "suspended": false,
+   "conditionStreaks": {},
+   "updatedAt": "2026-10-05T21:35:42.484Z"
+  },
+  "epistemic": "OBSERVED"
+ },
+ "liveDaemon": {
+  "service": "money-mover",
+  "version": "1.13.0",
+  "bootedAt": "2026-10-05T21:35:42.479Z",
+  "beats": 3894,
+  "lastTotalSteem": 10.792,
+  "actionsToday": 8,
+  "lastStreamDay": "2026-09-27",
+  "historyTail": [
+   {
+    "at": "2026-10-05T20:46:10.071Z",
+    "kind": "REPRICE",
+    "reason": "נזיל 1.377 STEEM יושב מחוץ לסולם — נפרס לעבודה (חוק 2)",
+    "parity": 0.108036,
+    "placed": 5,
+    "cancelled": 5,
+    "foreignSkipped": 0,
+    "error": "rebid: בידים מיושנים אך מלאי-החימוש קטן מרמה אחת (0.013 SBD) — צד-הקנייה נשאר כמותו",
+    "code": null
+   },
+   {
+    "at": "2026-10-05T20:46:33.485Z",
+    "kind": "POOL-GUARD",
+    "reason": "איזון-בריכות נמדד · 2 בריכות · USDS-עוגן $0.6287"
+   },
+   {
+    "at": "2026-10-05T20:57:33.478Z",
+    "kind": "POOL-GUARD",
+    "reason": "איזון-בריכות נמדד · 2 בריכות · USDS-עוגן $0.5855"
+   }
+  ],
+  "epistemic": "OBSERVED"
+ },
+ "livePredictionBook": {
+  "path": "/home/z/my-project/sovereign/objectives/predictions.jsonl",
+  "exists": false,
+  "lines": 0,
+  "entries": [],
+  "claim": "R208: «GENESIS-חי — נכתב רק בחציית-גבול-חי»",
+  "epistemic": "OBSERVED: ספר-ריק — אין-חציית-גבול-חי-מעולם"
+ },
+ "liveAccumulator": {
+  "dexMode": "dry",
+  "dexTicks": 853,
+  "realizedPnlUsd": 0,
+  "dailyVolumeUsd": 0,
+  "fillsInState": 0,
+  "fillsLedgerLines": 0,
+  "canonicalEventIdExists": false,
+  "epistemic": "OBSERVED"
+ },
+ "autonomyGate": {
+  "gate": {
+   "mode": "THINKING",
+   "since": "2026-10-05T09:44:29.398Z",
+   "reason": "הוראת-מפעיל (trace 1a10b605a4bf8da5): סדר-מסיבי + 'שנוכל להתקדם בלי בעיות ובלי לממן חיילים מתים' — מצב-חשיבה: כל-פעולה-עם-דיון-מלא",
+   "setBy": "operator-order:r198",
+   "updatedAt": "2026-10-05T09:44:29.398Z"
+  },
+  "epistemic": "OBSERVED"
+ },
+ "thresholdProvenance": {
+  "hardcodedLine": "NOT-FOUND",
+  "claim_R208": "סף-3.0-קבוע-בקוד-הצרכן",
+  "epistemic": "REFUTED"
+ },
+ "predictorIndependence": {
+  "predictWaveDecisionLivesIn": "mini-services/objective-consumer.ts (אותו-קובץ-כצרכן)",
+  "waveDecisionImportsPredictor": false,
+  "consumerImportsWaveDecision": false,
+  "sharedDecisionCode": false,
+  "claim_R208": "המנבא=מכריע אותו-מחבר/אותו-מושב",
+  "epistemic": "OBSERVED — מבנה-נפרד-אך-מחבר-זהה; עצמאות-תהליכית אינה-קיימת"
+ },
+ "authorityIndependence": {
+  "txGateReadsModelFiles": false,
+  "autonomyLawReadsModelFiles": false,
+  "claim_R208": "השערים אינם קוראים קבצי-מודל כלל",
+  "epistemic": "OBSERVED — השער-עצמאי-מהמודל (קריאת-קוד)"
+ },
+ "authorityMapAnchoring": {
+  "anchoredInPreferenceChain": false,
+  "note": "R208 רשם: «authority-map לא-מעוגן-האש בספר-ההעדפות» — סתירה-פתוחה",
+  "epistemic": "OBSERVED"
+ },
+ "claims_R208_toReverify": [
+  {
+   "id": "A",
+   "claim": "decide() החי טוען את מודל-R207",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "B",
+   "claim": "המודל הנטען משפיע על ההכרעה",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "C",
+   "claim": "ההשפעה אינה-רישום-בלבד",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "D",
+   "claim": "המודל אינו-מאציל-עצמו",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "E",
+   "claim": "המודל שורד-הפעלה-מחדש",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "F",
+   "claim": "החיישן כנה",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "G",
+   "claim": "גבול-הסמכות נשאר-בלתי-תלוי",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "H",
+   "claim": "המעבדה-הנגטיבית הייתה-מבודדת-אמיתית",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "I",
+   "claim": "אפס-זיהום-מעבדה→חי",
+   "status": "CLAIMED→לבדיקה"
+  },
+  {
+   "id": "J",
+   "claim": "15/15 משוחזר מ-HEAD הנוכחי",
+   "status": "CLAIMED→לבדיקה"
+  }
+ ]
+}

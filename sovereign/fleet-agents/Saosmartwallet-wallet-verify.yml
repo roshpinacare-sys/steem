@@ -1,0 +1,119 @@
+# WALLET-VERIFY - שעת האיכות של הארנק
+#
+# Saosmartwallet הוא הארנק של הרשת: 7 רשתות חיות, כספת מפתחות
+# ריבונית ושכבת גשרים. הסוכן מתקין תלויות, מריץ בדיקת טיפוסים מלאה
+# ובילד ייצור, ומוודה שדוחות מצב-המערכת קיימים. כל כשל נרשם בכנות.
+# דוח אמת ל-agent/status.json.
+
+name: wallet-verify
+
+on:
+  schedule:
+    - cron: '43 14 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wallet-verify
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Run the wallet quality gate
+        run: |
+          set -u
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          VERDICT="FAIL"
+          REASON=""
+
+          if [ ! -f package.json ]; then
+            echo "no package.json - nothing to verify"; exit 1
+          fi
+
+          # 1) התקנה מהנעילה הקפואה
+          INSTALL="fail"
+          if [ -f bun.lock ]; then
+            if bun install --frozen-lockfile; then INSTALL="pass"; fi
+          else
+            if bun install; then INSTALL="pass"; fi
+          fi
+          if [ "$INSTALL" = "fail" ]; then
+            REASON="dependency install failed"
+          fi
+
+          # 2) ג'נרוט לקוח ה-Prisma אם קיים
+          PRISMA="skipped"
+          if [ "$INSTALL" = "pass" ] && [ -f prisma/schema.prisma ]; then
+            if bunx prisma generate; then PRISMA="pass"; else PRISMA="fail"; fi
+          fi
+
+          # 3) בדיקת טיפוסים מלאה
+          TSC="skipped"
+          if [ "$INSTALL" = "pass" ] && [ -f tsconfig.json ]; then
+            if bunx tsc --noEmit; then TSC="pass"; else TSC="fail"; fi
+          fi
+
+          # 4) בילד ייצור - לארנק יש קונפיגורציית webpack; Next החדש בונה ב-Turbopack כברירת מחדל ודורש דגל מפורש
+          BUILD="skipped"
+          if [ "$INSTALL" = "pass" ] && grep -q '"build"' package.json; then
+            [ -f .env.example ] && cp .env.example .env
+            if grep -q "webpack" next.config.* 2>/dev/null; then
+              if bunx next build --webpack; then BUILD="pass"; else BUILD="fail"; fi
+            else
+              if bunx next build; then BUILD="pass"; else BUILD="fail"; fi
+            fi
+          fi
+
+          # 5) דוחות מצב-המערכת קיימים (מדידה רכה - מדווחת ולא מכשילה)
+          SYSSTATUS=0
+          ls docs/system-status* > /dev/null 2>&1 && SYSSTATUS=1
+          MINI_SERVICES=0
+          [ -d mini-services ] && MINI_SERVICES=1
+
+          if [ "$INSTALL" = "pass" ] && [ "$TSC" != "fail" ] && [ "$BUILD" != "fail" ] && [ "$PRISMA" != "fail" ]; then
+            VERDICT="PASS"; REASON="install, typecheck and build all pass"
+          else
+            REASON="install=$INSTALL prisma=$PRISMA tsc=$TSC build=$BUILD"
+          fi
+
+          mkdir -p agent
+          cat > agent/status.json <<EOF
+          {
+           "agent": "wallet-verify",
+           "generatedAt": "$NOW",
+           "verdict": "$VERDICT",
+           "checks": {
+            "install": "$INSTALL",
+            "prismaGenerate": "$PRISMA",
+            "typecheck": "$TSC",
+            "productionBuild": "$BUILD",
+            "systemStatusDocs": $SYSSTATUS,
+            "miniServicesDir": $MINI_SERVICES
+           },
+           "reason": "$REASON"
+          }
+          EOF
+          git config user.name "wallet-verify[bot]"
+          git config user.email "wallet-verify[bot]@users.noreply.github.com"
+          git add agent/status.json
+          if git diff --cached --quiet agent/status.json; then
+            echo "status unchanged - no commit"
+          else
+            git commit -m "wallet-verify: $VERDICT at $NOW"
+            git push
+          fi
+          echo "verdict: $VERDICT ($REASON)"
+          [ "$VERDICT" = "PASS" ] || exit 1

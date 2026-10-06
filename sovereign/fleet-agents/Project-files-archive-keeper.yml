@@ -1,0 +1,80 @@
+# ARCHIVE-KEEPER - שומר הארכיון
+#
+# Project-files הוא הכספת של הארכיונים הקנוניים: מתקינים, פאטצ'ים
+# ותשתית זמן-ריצה בקבצי zip. הסוכן בודק שלמות של כל ארכיון (בדיקת
+# פתיחה מלאה), בונה מניפסט SHA-256 וקטלוג גדלים. ארכיון מושחת הוא אדום.
+
+name: archive-keeper
+
+on:
+  schedule:
+    - cron: '31 11 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: archive-keeper
+  cancel-in-progress: false
+
+jobs:
+  keep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run the archive keeper
+        run: |
+          set -u
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          VERDICT="PASS"
+          REASON="all archives open cleanly"
+
+          TOTAL=0; OKZ=0; CORRUPT=0
+          find . -name '*.zip' -not -path './.git/*' -print0 | while IFS= read -r -d '' z; do
+            if unzip -tq "$z" > /dev/null 2>&1; then
+              echo "OK $z"
+            else
+              echo "CORRUPT $z"
+            fi
+          done > /tmp/zipcheck.log
+          cat /tmp/zipcheck.log
+          TOTAL="$(grep -c . /tmp/zipcheck.log || true)"
+          OKZ="$(grep -c '^OK ' /tmp/zipcheck.log || true)"
+          CORRUPT="$(grep -c '^CORRUPT ' /tmp/zipcheck.log || true)"
+          BYTES="$({ find . -name '*.zip' -not -path './.git/*' -exec stat -c %s {} + || true; } | awk '{s+=$1} END {print s+0}')"
+          ROOT_MD="$({ find . -maxdepth 1 -name '*.md' || true; } | wc -l | tr -d ' ')"
+
+          if [ "$CORRUPT" -gt 0 ]; then VERDICT="FAIL"; REASON="$CORRUPT archives failed the open test"; fi
+
+          mkdir -p agent
+          find . -name '*.zip' -not -path './.git/*' -print0 | xargs -0 sha256sum > agent/archives.sha256 || true
+          cat > agent/status.json <<EOF
+          {
+           "agent": "archive-keeper",
+           "generatedAt": "$NOW",
+           "verdict": "$VERDICT",
+           "checks": {
+            "archivesTotal": $TOTAL,
+            "archivesIntact": $OKZ,
+            "archivesCorrupt": $CORRUPT,
+            "archivesBytes": $BYTES,
+            "rootDocuments": $ROOT_MD
+           },
+           "reason": "$REASON"
+          }
+          EOF
+          git config user.name "archive-keeper[bot]"
+          git config user.email "archive-keeper[bot]@users.noreply.github.com"
+          git add -f agent/status.json agent/archives.sha256
+          if git diff --cached --quiet; then
+            echo "status unchanged - no commit"
+          else
+            git commit -m "archive-keeper: $VERDICT at $NOW"
+            git push
+          fi
+          echo "verdict: $VERDICT ($REASON)"
+          [ "$VERDICT" = "PASS" ] || exit 1

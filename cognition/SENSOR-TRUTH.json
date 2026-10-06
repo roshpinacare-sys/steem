@@ -1,0 +1,177 @@
+{
+ "_meta": {
+  "schema": "r208r-sensor-truth-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "at": "2026-10-05T21:48:28.006Z",
+  "law": "כשל-מדידה → UNMEASURED · לעולם לא → 0 (§X)"
+ },
+ "r208Baseline": "32-וקטורים (R208-D): 3-פרצות נמצאו ונאטמו (staleness-NaN, יחידה-חסרה, 1e308) — 15/15 PASS מחדש",
+ "newVectorsThisRound": [
+  {
+   "attack": "S1|NaN",
+   "section": "X",
+   "injected": "{\"value\":null,\"unit\":\"SBD\",\"at\":\"2026-10-05T21:32:49.748Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD לא-מספרית",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S2|Infinity",
+   "section": "X",
+   "injected": "{\"value\":null,\"unit\":\"SBD\",\"at\":\"2026-10-05T21:32:49.748Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD לא-מספרית",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S3|1e308",
+   "section": "X",
+   "injected": "{\"value\":1e+308,\"unit\":\"SBD\",\"at\":\"2026-10-05T21:32:49.748Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD מחוץ-לטווח-סביר (1e+308) — לקח חיישן-powerdown ×4",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S4|negative",
+   "section": "X",
+   "injected": "{\"value\":-3.5,\"unit\":\"SBD\",\"at\":\"2026-10-05T21:32:49.748Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD מחוץ-לטווח-סביר (-3.5) — לקח חיישן-powerdown ×4",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S5|missing-unit",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"at\":\"2026-10-05T21:32:49.748Z\"}",
+   "reject": "UNIT-MISMATCH",
+   "detail": "מדידה בלי-יחידה — היחידה חובה (לקח 0.1041); אין ברירת-מחדל-שקטה",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=UNIT-MISMATCH",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S6|SBD-STEEM-substitution",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD/STEEM\",\"at\":\"2026-10-05T21:32:49.748Z\"}",
+   "reject": "UNIT-MISMATCH",
+   "detail": "ההכרעה דורשת SBD אך המדידה נושאת SBD/STEEM — אין המרה-שקטה (לקח 0.1041)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=UNIT-MISMATCH",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S7|USD-STEEM-substitution(0.1041-lesson)",
+   "section": "X",
+   "injected": "{\"value\":0.1041,\"unit\":\"USD/STEEM\",\"at\":\"2026-10-05T21:32:49.748Z\"}",
+   "reject": "UNIT-MISMATCH",
+   "detail": "ההכרעה דורשת SBD אך המדידה נושאת USD/STEEM — אין המרה-שקטה (לקח 0.1041)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=UNIT-MISMATCH",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S8|stale-2h",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-05T19:32:49.748Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD בת 120 דק' — נחשבת UNKNOWN להכרעה",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S9|frozen-future-clock(+1h)",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-05T22:32:49.748Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "זמן-מדידה בעתיד (2026-10-05T22:32:49.748Z) — שעון-חיישן לא-אמין ⇒ UNKNOWN (§X)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S10|future-clock-slight(+120s)",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-05T21:34:49.748Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "זמן-מדידה בעתיד (2026-10-05T21:34:49.748Z) — שעון-חיישן לא-אמין ⇒ UNKNOWN (§X)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S11|future-clock-tolerance(+30s)(control-accept)",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-05T21:33:19.748Z\"}",
+   "reject": null,
+   "detail": null,
+   "verdictForSeed": "QUALIFIED-AFTER-ARMING",
+   "pass": true,
+   "expectation": "view-accepted",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S12|not-a-date",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"not-a-date\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "זמן-מדידה לא-תקין (not-a-date) — זקנה לא-ניתנת-לחישוב ⇒ UNKNOWN",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S13|empty-response(null)",
+   "section": "X",
+   "injected": "null",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "אין מדידת-SBD וההכרעה דורשת אותה",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S14|unmeasured-resets-release-streak",
+   "section": "X",
+   "injected": "2-מדידות-חיוביות ואז UNMEASURED",
+   "pass": true,
+   "detail": "streak 2→0 — זקן-ישן לא שורד מדידה-נעדרת (§X: חוסר-מדידה ≠ 0)",
+   "expectation": "2→0",
+   "epistemic": "OBSERVED"
+  }
+ ],
+ "newFindingAndRepair": {
+  "finding": "S9/S10 — חותמת-זמן-עתידית התקבלה כ«טרייה» (staleness נחתך-ל-0): התקפת-שעון-עתידי הייתה עוברת בשקט",
+  "repair": "מדידה-מהעתיד (>60ש') ⇒ RESOURCE-UNKNOWN-REQUIRED (UNKNOWN), גם-בצרכן וגם-במנבא-העצמאי",
+  "epistemic": "OBSERVED — נמצא-בהתקפה, תוקן-בסבב, נבדק-מחדש"
+ },
+ "preferencePathZeroFix": {
+  "finding": "money/index.ts:1187 — `sbdArming?.balance ?? 0`: כשל-מדידה → 0 בנתיב-כתיבת-ההעדפה (הפרה-ישירה של חוק-החיישן; היה כותב DOWN מ«0.000 מדומה» ומשאיר רצף-שחרור-ישן)",
+  "repair": "מדידה-לא-ספרתית ⇒ resetConditionStreak + אין-כתיבת-DOWN; והסף נקרא מהמודל (אפס-שכפול); S14 מוכיח: רצף 2→0 על מדידה-נעדרת",
+  "epistemic": "OBSERVED — פגם-חי-נמצא-מ-HEAD ותוקן-בסבב"
+ },
+ "unitMetadataMandatory": "כל-מדידה נושאת value/unit/source/at/stalenessSec/transformation — S5/S6/S7 מוכיחים דחיית-יחידות-שקטות (לקח 0.1041)",
+ "limitation": "מדידות-סותרות-ממקורות-מרובים: הגבול צורך-חיישן-אחד (money measure()); זיהוי-סתירות-בין-מקורות אינו-ממומש — UNKNOWN-כנה",
+ "finalVerdict": "SENSOR TRUTH = 14/14 PASS + פגם-נתיב-העדפה תוקן"
+}

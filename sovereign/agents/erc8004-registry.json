@@ -1,0 +1,396 @@
+{
+  "schema": "weave-erc8004-registry-v1",
+  "at": "2026-10-03T17:06:55.384Z",
+  "standard": "ERC-8004 (Trustless Agents) — metadata export, not an onchain tx",
+  "networkWitnesses": [
+    {
+      "chain": "steem",
+      "role": "checkpoint roots as custom_json (posting auth)"
+    },
+    {
+      "chain": "hive",
+      "role": "planned — blocked on posting WIF (honest gap, r179)"
+    },
+    {
+      "chain": "eip155:9369",
+      "role": "checkpoint+attestation anchors, zero-gas, nonce 658+"
+    }
+  ],
+  "counters": {
+    "agents": 13,
+    "attestations": 1251,
+    "checkpoints": 1241,
+    "chainCount": 1251
+  },
+  "agents": [
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-auditor",
+      "description": "THE WEAVE sovereign agent — role AUDITOR. Signs hash-chain attestations (EIP-712) over the weave ledger; 8 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0xca7612bF3AE6f06A1857eA2B4F5a80F33c38E48a"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu16xzwa001bsqwz1ryi8041"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "AUDITOR",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x04f47c42fd6b9f58cbb6b55e2039727eda1a2c9edc74b8aed84392565385c87f7fbad03873f80ecd2ea0b4acc08c3d8efd91e31dbeaaa8276857225b252768c489",
+        "nonce": 0,
+        "createdAt": "2026-09-14T12:00:10.235Z",
+        "attestationsCount": 8
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "scout-r19",
+      "description": "THE WEAVE sovereign agent — role SCOUT. Signs hash-chain attestations (EIP-712) over the weave ledger; 1 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0xd731366E2e6E6AF6e7821EEf88872eE51D3a3668"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu16xzwl001csqwzd8bsp80i"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "SCOUT",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x04bb2bae62cab4aa11d6b396ffe6f186b727182cbf6a4bfc90769c29830e5f35b0a6c5a352b42be63c5d92a44ee30cfc4eef9891da057d3d63ce831850ccf17bff",
+        "nonce": 0,
+        "createdAt": "2026-09-14T12:00:10.245Z",
+        "attestationsCount": 1
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "gitkeeper",
+      "description": "THE WEAVE sovereign agent — role DAEMON. Signs hash-chain attestations (EIP-712) over the weave ledger; 1 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x0bBE6e5361a2601737b8Ac9Dc2DCfAA8e85aC92c"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu16xzwt001dsqwzmchyssue"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "DAEMON",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x0436ac880c5bfe4656eacdb25afae467ee3fc5b28ae7ca608a3dff90cf873286b44fc8e2bc3ad011d0ce46b4a2a3fcb6842342fcc10edcf1ebbd96a1db27cd3077",
+        "nonce": 0,
+        "createdAt": "2026-09-14T12:00:10.253Z",
+        "attestationsCount": 1
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-relayer",
+      "description": "THE WEAVE sovereign agent — role RELAYER. Signs hash-chain attestations (EIP-712) over the weave ledger; 1 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x2Ba272B5fa370Fe58577CA4f5B6D3e89Ddcb9446"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu18b4h4002hsqwzhd6azjek"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "RELAYER",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x04720113edc22a42fd629d75bee9b8d4ef2ea19b11d9316e038a69d1ab171ec884c645f3e720c0c897881586b454d9349f383cac01b1f8eaa64a574af1bc156e30",
+        "nonce": 4,
+        "createdAt": "2026-09-14T12:38:22.312Z",
+        "attestationsCount": 1
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-cloud-heart",
+      "description": "THE WEAVE sovereign agent — role RELAYER. Signs hash-chain attestations (EIP-712) over the weave ledger; 1221 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0xaB07095053FC50a306A6d26FAa2c8887c5827B92"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu1cyhj50000sqvur96avqf9"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "RELAYER",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x0409921eb0d60525f16d0b6504a2d3cde7dbf5130e53a5b167677f36a9aa4186cde1c4293ef1515c1b12263886ba8305a70188c5a2cee0ab25004510bc505ade01",
+        "nonce": 0,
+        "createdAt": "2026-09-14T14:48:30.786Z",
+        "attestationsCount": 1221
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-market-regulator-v1-retired",
+      "description": "THE WEAVE sovereign agent — role DAEMON. Signs hash-chain attestations (EIP-712) over the weave ledger; 3 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x3D0ab9984887DfEc431434017808E0B802e96184"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu1r4lfs000fsqvb9d0nyqmm"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "DAEMON",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x043c200e6c4834ee55c92a3778408ff0a897cf137558a64cc53d3ea264eab5d7c19bcee452f1cf16aa2a3807dfcd85e72947b1250428e1f7b2c3475169929cd6cc",
+        "nonce": 0,
+        "createdAt": "2026-09-14T21:25:10.408Z",
+        "attestationsCount": 3
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-market-regulator",
+      "description": "THE WEAVE sovereign agent — role DAEMON. Signs hash-chain attestations (EIP-712) over the weave ledger; 7 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x3EE9c78D8bb3cBd9116147E2f99bB28dCa5D1D4d"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu1tp2vg0000sqame6y2tom6"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "DAEMON",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x04ea6a2f0cf5d964a8c8196c4bfba5eac94d925b2d222975e9af1c3a62ceb5a3432df023bd383ba2c948121f45dd0c226a7fd8d723ecce6b110f1d8ba35a9593cb",
+        "nonce": 0,
+        "createdAt": "2026-09-14T22:37:05.357Z",
+        "attestationsCount": 7
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-saosnet-witness",
+      "description": "THE WEAVE sovereign agent — role DAEMON. Signs hash-chain attestations (EIP-712) over the weave ledger; 2 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x92678d1Fef5724265BCd263A7394D1C226b5f4e3"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu1tpcgz000rsqvbsefufeq9"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "DAEMON",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x044ad5f09e78798fb62af0fa9db8e24d1c0b93c6eed5b5cbc92ff81383c962e36507a47332b30f544008cdb59a738ee5e0b1e566b214e971341adc9adbe8b52a0e",
+        "nonce": 0,
+        "createdAt": "2026-09-14T22:37:17.795Z",
+        "attestationsCount": 2
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-archive-witness",
+      "description": "THE WEAVE sovereign agent — role DAEMON. Signs hash-chain attestations (EIP-712) over the weave ledger; 1 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x3f2c2a991EA6f7605561fabe85E5CB283a3986b2"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmu1w0ezn0012sqvbq9jjowsy"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "DAEMON",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x0437b6569890a0c20e46a9048f53409025d75319feabd2e292cf50532df2e9cee47a9dcac13f6dcdbae774a8e5417f8dcd8ec6966673172c73723187aeec8593de",
+        "nonce": 0,
+        "createdAt": "2026-09-14T23:41:53.507Z",
+        "attestationsCount": 1
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "glm-53-builder",
+      "description": "THE WEAVE sovereign agent — role BUILDER. Signs hash-chain attestations (EIP-712) over the weave ledger; 0 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0xa04A13940724159096e7183366Bc720994Ce58B2"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmuddtves000ugqxrxsazhbaz"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "BUILDER",
+        "status": "ACTIVE",
+        "pubKeyHex": "(healed-from-canon)",
+        "nonce": 0,
+        "createdAt": "2026-09-23T00:46:09.220Z",
+        "attestationsCount": 0
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "glm-53-ui-builder",
+      "description": "THE WEAVE sovereign agent — role BUILDER. Signs hash-chain attestations (EIP-712) over the weave ledger; 0 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x0dEFE1D429fb643731D3942AC028d2E025e42256"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmuddtvey000xgqxrewktv340"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "BUILDER",
+        "status": "ACTIVE",
+        "pubKeyHex": "(healed-from-canon)",
+        "nonce": 0,
+        "createdAt": "2026-09-23T00:46:09.226Z",
+        "attestationsCount": 0
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-charter-restore",
+      "description": "THE WEAVE sovereign agent — role DAEMON. Signs hash-chain attestations (EIP-712) over the weave ledger; 2 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x68E2Bbf06800f3E81E23d17F3e476d41b8bC450B"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmuddtvp2001ggqxr03g04uc4"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "DAEMON",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x04da44ffab8448ded6549d82f85750498feb50ae3b8acc2ff1a38bdd7e84b43731800f17245e30b78ab35643de5cf484a680a85fae69345c9922db7e410c8cef79",
+        "nonce": 0,
+        "createdAt": "2026-09-23T00:46:09.591Z",
+        "attestationsCount": 2
+      }
+    },
+    {
+      "type": "https://eips.ethereum.org/EIPS/eip-8004#identity-registry-metadata",
+      "name": "weave-charter-anchor",
+      "description": "THE WEAVE sovereign agent — role DAEMON. Signs hash-chain attestations (EIP-712) over the weave ledger; 4 attestations on record.",
+      "registrations": [
+        {
+          "domain": "eip155:9369",
+          "identifier": "0x77Ffc7BeB627B220956BC34fDD1B988604531196"
+        },
+        {
+          "domain": "x-weave:hash-chain",
+          "identifier": "cmuddu3u7001ngqxrgwtmfqe0"
+        }
+      ],
+      "supportsTrustlessAgents": {
+        "identity": true,
+        "reputation": "x-weave:attestations",
+        "validation": "x-weave:checkpoint-anchors"
+      },
+      "x_weave": {
+        "role": "DAEMON",
+        "status": "ACTIVE",
+        "pubKeyHex": "0x0426eb299df9c883ee52707e08015b16b6349ee998ea011fcdbb7de8e309ea30902f96f19bf3add0bf6c4915b2c57815e052134d93727daa244f1008aed623100d",
+        "nonce": 0,
+        "createdAt": "2026-09-23T00:46:20.144Z",
+        "attestationsCount": 4
+      }
+    }
+  ],
+  "notes": [
+    "מקור-אמת: sovereign/ledger.json (חתום-ב-hash-chain) — הקובץ-הזה-הוא-תצפית-תואמת-סטנדרט, לא-הצהרה",
+    "מחקר-r179-a: https://www.quicknode.com · https://best-practices.8004scan.io · arXiv-SoK-2026",
+    "אפס-סודות: רק-מידע-ציבורי — pubKey-וכתובות, בלי-WIF-ובלי-מפתחות-פרטיים"
+  ]
+}

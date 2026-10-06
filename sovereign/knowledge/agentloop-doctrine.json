@@ -1,0 +1,26 @@
+{
+  "schema": "agentloop-doctrine-v1",
+  "status": "proven-live",
+  "upstream": {
+    "repo": "https://github.com/SWE-agent/mini-swe-agent",
+    "head": "04d809ceab9df28f9adaed044884180159172930",
+    "pypi": "mini-swe-agent 2.4.6",
+    "license": "MIT (verified via PyPI metadata, (c) 2025 Kilian A. Lieret and Carlos E. Jimenez)"
+  },
+  "rules": [
+    {"id": "MAG-1", "rule": "minimalism-first", "text": "mini proves a useful agent is ~100 lines: bash-only tools, linear history, subprocess.run per action. When we add agent capability, build the smallest loop first — scaffold complexity is where bugs and drift live."},
+    {"id": "MAG-2", "rule": "bridge-not-keys", "text": "Third-party LLM keys stay forbidden. The llm-bridge (port 3048) exposes an OpenAI-compatible endpoint over our own z-ai backend; any OpenAI/litellm client runs against sovereign infrastructure. This also re-opens the reef-infra activation route blocked in r162."},
+    {"id": "MAG-3", "rule": "textbased-for-text-models", "text": "Native tool-calling scaffolds assume tool_calls in responses. For models served as plain text through the bridge, use mini's LitellmTextbasedModel + mini_textbased.yaml (```mswea_bash_command format) — measured: 5/5 correct actions incl. Hebrew file content."},
+    {"id": "MAG-4", "rule": "cost-honesty", "text": "Unknown-model cost tracking is disabled (MSWEA_COST_TRACKING=ignore_errors) because our bridge reports estimated tokens (chars/4). Any real spend accounting must come from fleet-side counters, never invented prices."},
+    {"id": "MAG-5", "rule": "register-the-agent", "text": "Agents are fleet services too: llm-bridge is declared in fleet.yaml (FLO-1). Every new agent loop gets a manifest row before its second run."}
+  ],
+  "wired": [
+    {"service": "llm-bridge", "port": 3048, "file": "mini-services/llm-bridge/index.ts", "state": "live, OpenAI-compatible, z-ai backend"},
+    {"service": "mini-swe-agent", "state": "installed in /home/z/laya-eval/venv (2.4.6), proven: hello_sovereign.py created+run autonomously in /home/z/mini-proof"}
+  ],
+  "activationRoutes": [
+    {"route": "reef-route", "condition": "reef-infra needs an OpenAI-style endpoint (r162 blocker)", "action": "point reef at llm-bridge; re-evaluate full reef adoption"},
+    {"route": "fleet-tasks-route", "condition": "a recurring fleet chore needs reasoning over files (repo hygiene, digest drafting, triage)", "action": "run mini with a task file against llm-bridge, bounded by step_limit, in a scratch cwd; commit outputs through the normal evidence flow"}
+  ],
+  "whyNotRevenue": "mini-swe-agent itself earns nothing; it is a capability unlock: sovereign autonomous coding/ops agent with zero marginal API cost. Indirect value: fleet chores that needed human-grade reasoning can now run bounded and local."
+}

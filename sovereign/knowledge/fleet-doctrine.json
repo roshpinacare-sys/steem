@@ -1,0 +1,31 @@
+{
+  "schema": "fleet-doctrine-v1",
+  "status": "adapted",
+  "upstream": {
+    "repo": "https://github.com/google/ax",
+    "head": "ac2332829f22360ff97b0ba34d94dd0dd782f17e",
+    "license": "Apache-2.0",
+    "runnable": false,
+    "blockEvidence": "prerequisites demand Kubernetes+Agent Substrate+Go+ko+registry; sandbox has none (measured r164)"
+  },
+  "role": "Declarative fleet discipline adopted from ax's Task/Workspace/Model pattern, applied to our 16-service single-host fleet. The platform stays blocked; the pattern is law.",
+  "rules": [
+    {"id": "FLO-1", "rule": "declare-before-run", "text": "Every fleet service gets a manifest in sovereign/fleet/fleet.yaml before or at boot. A service without a manifest is unmanaged drift — the auditor hunts it by port-scan. Evidence: first audit found 6 unmanaged services (3033,3035-3039)."},
+    {"id": "FLO-2", "rule": "limits-or-no-admission", "text": "No service is admitted without a declared memory limit, backed by a measured RSS. Motivating evidence: r163 — decision-brain's model load (2GB peak, undeclared) was OOM-killed twice and degraded fleet memory trust."},
+    {"id": "FLO-3", "rule": "suspend-not-kill", "text": "Heavy services declare a suspendPolicy (e.g. idle-unload-120s) instead of being killed by the OOM killer. SIGKILL = unplanned eviction = incident to record, never a lifecycle step."},
+    {"id": "FLO-4", "rule": "warm-workspaces", "text": "Preinstalled environments (venvs, model caches, pinned repos) are declared as workspaces in the manifest — ax's Workspace pattern: setup once, declaratively, then every restart starts warm."},
+    {"id": "FLO-5", "rule": "conditions-over-phrases", "text": "No status without a receipt: phase is one word, truth lives in measured conditions (health probe, RSS, port). The auditor emits audit-latest.json as the evidence record."},
+    {"id": "FLO-6", "rule": "declared-vs-actual", "text": "Reality wins over declarations: when the audit measures something different from the manifest (wrong healthPath, wrong limit), the manifest is corrected in the same wave, not argued with."},
+    {"id": "FLO-7", "rule": "platform-honesty", "text": "Cluster-grade platforms (ax, Agent Substrate, k8s) are adopted as doctrine, not pretending to run them. Activation route documented; re-examine when a real cluster exists."}
+  ],
+  "wired": [
+    {"artifact": "sovereign/fleet/fleet.yaml", "state": "16 services declared"},
+    {"artifact": "scripts/fleet-manifests-audit.mjs", "state": "runnable evidence gate"},
+    {"artifact": "sovereign/fleet/audit-latest.json", "state": "16/16 alive, 0 violations, 0 undeclared (r164 first-pass reconciliation)"}
+  ],
+  "activationRoutes": [
+    {"route": "cluster-route", "condition": "real Kubernetes cluster with Agent Substrate becomes available", "action": "translate sovereign.io/v1alpha1 manifests to ax.io/v1alpha1 Tasks, bind decision-brain as suspend/resume Task with its 2048MB limit"},
+    {"route": "audit-cron-route", "condition": "keeper or fleet-verify next-touch", "action": "run fleet-manifests-audit.mjs on a schedule; a new VIOLATION opens a wave automatically"}
+  ],
+  "whyNotRevenue": "ax is orchestration infrastructure — it sells nothing and pays nothing. Accepted for discipline value: the manifest+audit layer prevents the class of silent drift and OOM incidents that threaten revenue systems (curation, money-mover) rather than earning directly."
+}

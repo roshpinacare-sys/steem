@@ -30,3 +30,14 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ── SEAL custody cache (r135 door · cockpit port) ──────────────────
+// Keys restored from the seal envelopes live here ONLY — the same place
+// the cloud pulse would write them. Local DB cache, never in git.
+model SealKey {
+  id        String   @id // "weave-network" | "weave-cloud" | "headcorner-key"
+  address   String // network address / key fingerprint (public-safe)
+  secretHex String? // dev key hex — never returned by any API, never logged
+  source    String   @default("custody-return") // custody-return | lineage
+  updatedAt DateTime @updatedAt
+}

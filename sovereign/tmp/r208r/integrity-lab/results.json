@@ -1,0 +1,308 @@
+{
+ "at": "2026-10-06T00:24:14.059Z",
+ "results": [
+  {
+   "attack": "A1|byte-mutation-in-may(preserve-JSON+schema)",
+   "section": "VIII",
+   "injected": "«פקודות-ספר»→«פקודות-ספרX» בלבד",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (ed9653d47f6e) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A2|priority-role-mutation",
+   "section": "VIII",
+   "injected": "«רק <$100»→«רק <$1000»",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (36e88c1313e4) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A3|timestamp-mutation",
+   "section": "VIII",
+   "injected": "builtAt→עכשיו",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (11004db33861) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A4|older-valid-map-replay",
+   "section": "VIII",
+   "injected": "מפה-היסטורית-תקפה-לכאורה (בלי-verdict-אחד)",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (617972d81aeb) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A5|valid-schema-authority-poisoning",
+   "section": "VIII",
+   "injected": "הוספת-verdict-מעניק-הרשאה",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (4ba52fd6a34a) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A6|map-deleted",
+   "section": "VIII",
+   "injected": "מחיקת-מפה",
+   "reject": "MODEL-FILE-MISSING",
+   "detail": "קובץ-מודל חסר",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=MODEL-FILE-MISSING",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A7|legal-change-WITH-reanchor(control)",
+   "section": "VIII",
+   "injected": "אותו-שינוי + עיגון-מעודכן",
+   "reject": null,
+   "detail": null,
+   "verdictForSeed": "QUALIFIED-AFTER-ARMING",
+   "pass": true,
+   "expectation": "view-accepted",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A8|torn-anchor-book",
+   "section": "VIII",
+   "injected": "שורה-קרועה בספר-העיגון",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "ספר-עיגון קרוע (fail-closed)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B1|consumed-bytes==disk-bytes",
+   "section": "IX",
+   "injected": "השוואת modelHashes-מהתצוגה מול-דיסק",
+   "pass": true,
+   "detail": "כל-4-הקבצים זהים בייט-לבייט — הקבלה מעידה על בייטס-נצרכים",
+   "expectation": "identity",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B2|midcycle-replacement-detected",
+   "section": "IX",
+   "injected": "החלפת-options.json אחרי-צריכה",
+   "pass": true,
+   "detail": "before=3bd7f6ceb7b2 after=aeb0d41599fc — MODEL-CHANGED-MIDCYCLE יירשם",
+   "expectation": "detected",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B3|symlink-replacement",
+   "section": "IX",
+   "injected": "options.json→symlink-לקובץ-זר-תקין",
+   "pass": true,
+   "detail": "reject=MODEL-UNANCHORED · options.json: בייטס-דיסק (78495c214275) ≠ עיגון (f81263041cb5) — שינוי-מודל-בלי-התאמה-חתומה (§IX)",
+   "expectation": "EVIDENCE-HASH-DRIFT|MODEL-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B4|partial-write",
+   "section": "IX",
+   "injected": "חצי-קובץ-JSON",
+   "pass": true,
+   "detail": "reject=MODEL-JSON-BROKEN",
+   "expectation": "JSON-BROKEN|UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B5|concurrent-identical-writes",
+   "section": "IX",
+   "injected": "20-כתיבות-זהות",
+   "pass": true,
+   "detail": "האש-יציב — אפס-שקר-חיובי",
+   "expectation": "stable",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B6|restart-hash-determinism",
+   "section": "IX",
+   "injected": "טעינה-כפולה",
+   "pass": true,
+   "detail": "אותם-האשים — דטרמיניזם",
+   "expectation": "deterministic",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "B7|threshold-source-is-model-only",
+   "section": "VII",
+   "injected": "קריאת-getArmingThresholdSbd על החי",
+   "pass": true,
+   "detail": "thr={\"value\":3,\"unit\":\"SBD\",\"source\":\"options.json#_meta.armingThreshold (OBJECTIVE-PARAMETER, §VII)\"} · קבוע-סמוי-בקוד=false",
+   "expectation": "from-model-only",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S1|NaN",
+   "section": "X",
+   "injected": "{\"value\":null,\"unit\":\"SBD\",\"at\":\"2026-10-06T00:24:14.029Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD לא-מספרית",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S2|Infinity",
+   "section": "X",
+   "injected": "{\"value\":null,\"unit\":\"SBD\",\"at\":\"2026-10-06T00:24:14.029Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD לא-מספרית",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S3|1e308",
+   "section": "X",
+   "injected": "{\"value\":1e+308,\"unit\":\"SBD\",\"at\":\"2026-10-06T00:24:14.029Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD מחוץ-לטווח-סביר (1e+308) — לקח חיישן-powerdown ×4",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S4|negative",
+   "section": "X",
+   "injected": "{\"value\":-3.5,\"unit\":\"SBD\",\"at\":\"2026-10-06T00:24:14.029Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD מחוץ-לטווח-סביר (-3.5) — לקח חיישן-powerdown ×4",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S5|missing-unit",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"at\":\"2026-10-06T00:24:14.029Z\"}",
+   "reject": "UNIT-MISMATCH",
+   "detail": "מדידה בלי-יחידה — היחידה חובה (לקח 0.1041); אין ברירת-מחדל-שקטה",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=UNIT-MISMATCH",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S6|SBD-STEEM-substitution",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD/STEEM\",\"at\":\"2026-10-06T00:24:14.029Z\"}",
+   "reject": "UNIT-MISMATCH",
+   "detail": "ההכרעה דורשת SBD אך המדידה נושאת SBD/STEEM — אין המרה-שקטה (לקח 0.1041)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=UNIT-MISMATCH",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S7|USD-STEEM-substitution(0.1041-lesson)",
+   "section": "X",
+   "injected": "{\"value\":0.1041,\"unit\":\"USD/STEEM\",\"at\":\"2026-10-06T00:24:14.029Z\"}",
+   "reject": "UNIT-MISMATCH",
+   "detail": "ההכרעה דורשת SBD אך המדידה נושאת USD/STEEM — אין המרה-שקטה (לקח 0.1041)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=UNIT-MISMATCH",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S8|stale-2h",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-05T22:24:14.029Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "מדידת-SBD בת 120 דק' — נחשבת UNKNOWN להכרעה",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S9|frozen-future-clock(+1h)",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-06T01:24:14.029Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "זמן-מדידה בעתיד (2026-10-06T01:24:14.029Z) — שעון-חיישן לא-אמין ⇒ UNKNOWN (§X)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S10|future-clock-slight(+120s)",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-06T00:26:14.029Z\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "זמן-מדידה בעתיד (2026-10-06T00:26:14.029Z) — שעון-חיישן לא-אמין ⇒ UNKNOWN (§X)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S11|future-clock-tolerance(+30s)(control-accept)",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"2026-10-06T00:24:44.029Z\"}",
+   "reject": null,
+   "detail": null,
+   "verdictForSeed": "QUALIFIED-AFTER-ARMING",
+   "pass": true,
+   "expectation": "view-accepted",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S12|not-a-date",
+   "section": "X",
+   "injected": "{\"value\":3.5,\"unit\":\"SBD\",\"at\":\"not-a-date\"}",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "זמן-מדידה לא-תקין (not-a-date) — זקנה לא-ניתנת-לחישוב ⇒ UNKNOWN",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S13|empty-response(null)",
+   "section": "X",
+   "injected": "null",
+   "reject": "RESOURCE-UNKNOWN-REQUIRED",
+   "detail": "אין מדידת-SBD וההכרעה דורשת אותה",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=RESOURCE-UNKNOWN-REQUIRED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "S14|unmeasured-resets-release-streak",
+   "section": "X",
+   "injected": "2-מדידות-חיוביות ואז UNMEASURED",
+   "pass": true,
+   "detail": "streak 2→0 — זקן-ישן לא שורד מדידה-נעדרת (§X: חוסר-מדידה ≠ 0)",
+   "expectation": "2→0",
+   "epistemic": "OBSERVED"
+  }
+ ]
+}

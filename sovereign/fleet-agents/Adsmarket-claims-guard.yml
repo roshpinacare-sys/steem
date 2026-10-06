@@ -1,0 +1,135 @@
+# CLAIMS-GUARD - שומר הטענות של ערכת השיווק
+#
+# עקרון הברזל של הריפו הזה: כל טענה שיווקית חייבת להיות מגובה בקבלה
+# או במדידה. הסוכן אוכף את זה מדי יום: עמודי נחיתה שלמים, אפס גליפים
+# אסורים (מדיניות המפעיל), קישורים חיים - וקישור מת של הרשת שלנו הוא אדום.
+# כל הבדיקות בפייתון אחיד; דוח אמת נכתב ל-agent/status.json.
+# אדום כנה עדיף על ירוק מזויף.
+
+name: claims-guard
+
+on:
+  schedule:
+    - cron: '11 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claims-guard
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run the claims guard
+        run: |
+          set -u
+          python3 - <<'PY'
+          import glob, json, re, urllib.request, ssl
+
+          FORBIDDEN = [(0x2013,0x2015),(0x2190,0x21FF),(0x2600,0x27BF),(0x2B00,0x2BFF),(0x1F000,0x1FAFF),(0xFE0F,0xFE0F)]
+          verdict = "PASS"
+          reason = "all checks passed"
+
+          # 1) עמודי נחיתה קיימים וסגורים כראוי
+          pages = sorted(glob.glob('*.html') + glob.glob('onepager/*.html') + glob.glob('deck/*.html') + glob.glob('content/*.html'))
+          closed = sum(1 for p in pages if '</html>' not in open(p, encoding='utf-8', errors='replace').read())
+          if not pages:
+              verdict = "FAIL"; reason = "no landing pages found"
+          elif closed:
+              verdict = "FAIL"; reason = str(closed) + " pages missing closing html tag"
+
+          # 2) סריקת גליפים אסורים: אימוג'י, חצים, דינגבטים, מקפים טיפוגרפיים
+          glyphs = 0
+          for p in pages + sorted(glob.glob('*.md')):
+              try:
+                  text = open(p, encoding='utf-8', errors='replace').read()
+              except Exception:
+                  continue
+              for ch in text:
+                  cp = ord(ch)
+                  for a, b in FORBIDDEN:
+                      if a <= cp <= b:
+                          glyphs += 1
+                          break
+          if glyphs:
+              verdict = "FAIL"; reason = str(glyphs) + " forbidden glyphs in marketing files"
+
+          # 3) קישורים חיים - קישור מת של הרשת שלנו הוא כשל; קישור חיצוני מת מדווח
+          urls = set()
+          pat = re.compile(r'https?://[^"\'<> )]+')
+          for p in pages:
+              for u in pat.findall(open(p, encoding='utf-8', errors='replace').read()):
+                  u = u.rstrip('.,;')
+                  if 'localhost' in u or '127.0.0.1' in u:
+                      continue
+                  urls.add(u)
+          urls = sorted(urls)[:25]
+          ctx = ssl.create_default_context()
+          ok_l = own_dead = ext_dead = 0
+          for u in urls:
+              try:
+                  req = urllib.request.Request(u, headers={'User-Agent': 'claims-guard'})
+                  with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
+                      code = r.status
+              except Exception as e:
+                  code = getattr(e, 'code', 0)
+              if code in (200, 301, 302, 307, 308):
+                  ok_l += 1
+              elif 'roshpinacare' in u or 'github.io' in u:
+                  own_dead += 1
+              else:
+                  ext_dead += 1
+          if own_dead:
+              verdict = "FAIL"; reason = str(own_dead) + " dead links to our own network"
+
+          # 4) קבלות - כמה גיבויי txid ומדידה מלווים את הטענות
+          receipts = 0
+          rx = re.compile(r'(0x[a-fA-F0-9]{64}|txid)')
+          for p in pages + sorted(glob.glob('*.md')):
+              try:
+                  receipts += len(rx.findall(open(p, encoding='utf-8', errors='replace').read()))
+              except Exception:
+                  pass
+
+          status = {
+              "agent": "claims-guard",
+              "verdict": verdict,
+              "checks": {
+                  "landingPages": len(pages),
+                  "pagesMissingCloseTag": closed,
+                  "forbiddenGlyphs": glyphs,
+                  "linksChecked": len(urls),
+                  "linksAlive": ok_l,
+                  "ownNetworkDeadLinks": own_dead,
+                  "externalDeadLinks": ext_dead,
+                  "receiptMentions": receipts
+              },
+              "reason": reason
+          }
+          import datetime
+          status["generatedAt"] = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          with open('agent-status.tmp.json', 'w', encoding='utf-8') as f:
+              json.dump(status, f, indent=1, ensure_ascii=False)
+          print('verdict:', verdict, '|', reason)
+          PY
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          mkdir -p agent
+          mv agent-status.tmp.json agent/status.json
+          git config user.name "claims-guard[bot]"
+          git config user.email "claims-guard[bot]@users.noreply.github.com"
+          git add -f agent/status.json
+          if git diff --cached --quiet; then
+            echo "status unchanged - no commit"
+          else
+            git commit -m "claims-guard: $(python3 -c "import json;print(json.load(open('agent/status.json'))['verdict'])") at $NOW"
+            git push
+          fi
+          [ "$(python3 -c "import json;print(json.load(open('agent/status.json'))['verdict'])")" = "PASS" ] || exit 1

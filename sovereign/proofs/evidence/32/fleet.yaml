@@ -1,0 +1,235 @@
+# Fleet manifest of record — r164
+# Modeled on ax.io/v1alpha1 (https://github.com/google/ax) — Task/Workspace/Model
+# concepts adapted to our single-host fleet. Declared-vs-actual is audited by
+# scripts/fleet-manifests-audit.mjs; evidence lands in sovereign/fleet/audit-latest.json.
+# Rule FLO-1: a service without a manifest here is unmanaged. Rule FLO-2: no
+# admission without a declared memory limit.
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: home
+  notes: Next.js dev server + gateway surface (the only operator-facing route)
+spec:
+  port: 3000
+  healthPath: /api/money
+  entry: bun run dev (repo root)
+  resources:
+    limits: { memoryMB: 2000 }   # measured 1596MB in first audit (r164)
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: money-mover
+spec:
+  port: 3034
+  healthPath: /   # identity+state served at root; /health is 404 here
+  entry: mini-services/money (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: curation
+spec:
+  port: 3040
+  healthPath: /   # identity+state served at root; /health is 404 here
+  entry: mini-services/curation (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: kpi-scribe
+spec:
+  port: 3041
+  healthPath: /health
+  entry: mini-services/kpi (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: governance
+spec:
+  port: 3042
+  healthPath: /health
+  entry: mini-services/governance (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: treasury-audit
+spec:
+  port: 3043
+  healthPath: /health
+  entry: mini-services/treasury-audit (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: scout-market
+spec:
+  port: 3044
+  healthPath: /health
+  entry: mini-services/scout-market (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: business-engine
+spec:
+  port: 3045
+  healthPath: /health
+  entry: mini-services/business (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: content-factory
+spec:
+  port: 3046
+  healthPath: /health
+  entry: mini-services/content-factory (bun)
+  resources:
+    limits: { memoryMB: 400 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: decision-brain
+  notes: laya engine (r163). OOM lesson of r163 is this manifest — lazy load only,
+    idle reaper as the suspend/resume route, 2GB admission ceiling.
+spec:
+  port: 3047
+  healthPath: /health
+  entry: mini-services/decision-brain (python venv)
+  workspaces:
+    - name: laya-venv
+      path: /home/z/laya-eval/venv
+      notes: warm workspace — torch 2.14.1+cpu + laya 0.3.24 preinstalled
+    - name: hf-checkpoint-cache
+      path: /home/z/laya-eval/hf-cache
+      notes: warm workspace — 644MB multilingual checkpoint, offline after download
+  resources:
+    limits: { memoryMB: 2048 }
+  suspendPolicy: idle-unload-120s
+  phase: Suspended   # resident model load OOMs under full fleet; wake = POST /decide
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: llm-bridge
+  notes: OpenAI-compatible endpoint over z-ai-web-dev-sdk (r166). Unlocks litellm/OpenAI-client
+    agents (mini-swe-agent proven live) and the reef-infra activation route — no third-party keys.
+spec:
+  port: 3048
+  healthPath: /health
+  entry: mini-services/llm-bridge (bun)
+  resources:
+    limits: { memoryMB: 300 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: pulse
+spec:
+  port: 3033
+  healthPath: /
+  entry: mini-services/pulse (bun)
+  resources:
+    limits: { memoryMB: 200 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: hunter
+spec:
+  port: 3035
+  healthPath: /
+  entry: mini-services/hunter (bun)
+  resources:
+    limits: { memoryMB: 200 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: keeper
+spec:
+  port: 3036
+  healthPath: /
+  entry: mini-services/keeper (bun)
+  resources:
+    limits: { memoryMB: 250 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: student
+spec:
+  port: 3037
+  healthPath: /
+  entry: mini-services/student (bun)
+  resources:
+    limits: { memoryMB: 200 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: fleet-verify
+spec:
+  port: 3038
+  healthPath: /health
+  entry: mini-services/fleet-verify (bun)
+  resources:
+    limits: { memoryMB: 200 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: weblift
+spec:
+  port: 3039
+  healthPath: /health
+  entry: mini-services/weblift (bun)
+  resources:
+    limits: { memoryMB: 200 }
+  phase: Running
+---
+apiVersion: sovereign.io/v1alpha1
+kind: FleetService
+metadata:
+  name: proof-law
+  notes: R209 standing enforcer of the proof-book gate (chain+evidence+rotating live repro)
+spec:
+  port: 3052
+  healthPath: /health
+  entry: mini-services/proof-law (bun)
+  resources:
+    limits: { memoryMB: 120 }
+  phase: Running

@@ -1,0 +1,73 @@
+{
+ "_meta": {
+  "schema": "r208r-rearm-eligibility-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "at": "2026-10-05T21:48:28.006Z",
+  "law": "«חימוש» = מעבר dex-grid מ-dry ל-armed — דורש הכרעת-ממשל/מפעיל; האורגניזם אינו מעניק-לעצמו (§XIX)"
+ },
+ "eligibility": false,
+ "conditions": [
+  {
+   "cond": "מצב-מודל תקף-ומעוגן",
+   "status": "OBSERVED-TRUE",
+   "evidence": "MODEL-UNANCHORED checks pass; anchor seq=2"
+  },
+  {
+   "cond": "חיישן-SBD כשיר",
+   "status": "OBSERVED-TRUE-MECHANSIM",
+   "evidence": "S1–S14 fail-closed; מדידה-חיה 0.015 SBD (פורמט-תקין)"
+  },
+  {
+   "cond": "תחילת-מקור-הסף",
+   "status": "OBSERVED-TRUE",
+   "evidence": "THRESHOLD-PROVENANCE: הסף במודל-בלבד"
+  },
+  {
+   "cond": "שימור-המצבר",
+   "status": "OBSERVED-TRUE",
+   "evidence": "ACCUMULATOR-INTEGRITY 11/11 (מנופח-לפי-אירועים-קנוניים)"
+  },
+  {
+   "cond": "סמכות-מעוגנת",
+   "status": "OBSERVED-TRUE",
+   "evidence": "AUTHORITY-INTEGRITY 8/8 PREVENTED"
+  },
+  {
+   "cond": "העדפה תקפה",
+   "status": "OBSERVED",
+   "evidence": "P#1 פעילה (seq 3, פוגה 2026-10-12)"
+  },
+  {
+   "cond": "מימון-צד-SBD ≥ הסף-הרג'ימי (3.0 SBD)",
+   "status": "OBSERVED-FALSE",
+   "evidence": "מדידה-חיה 0.015 SBD — בלתי-ממומן"
+  },
+  {
+   "cond": "עומק-בריכה ≥ $20 (depthOk)",
+   "status": "OBSERVED-FALSE",
+   "evidence": "depthUsd ≈ $0.025 (unitErrorCorrection)"
+  },
+  {
+   "cond": "גל-דלק חי נמדד (≥200 STEEM עליית-הון-כולל)",
+   "status": "OBSERVED-FALSE",
+   "evidence": "lastTotalSteem=10.792; אפס-אירועי-הזרמה אי-פעם"
+  },
+  {
+   "cond": "הכרעת-ממשל/מפעיל ל-armed",
+   "status": "UNKNOWN — לא-נדרשה-ולא-נתבעה בסבב",
+   "evidence": "GATE mode=THINKING; אין-בקשה"
+  },
+  {
+   "cond": "HARD_CAPS/econ-gate/kill-switch",
+   "status": "OBSERVED-TRUE (מנגנונים חיים)",
+   "evidence": "קפסות-קוד const · kill-switch קיים"
+  },
+  {
+   "cond": "התוצאה-החוצה-הראשונה נצפית מחיישן-בלתי-תלוי",
+   "status": "UNOBSERVED — תלוי-עולם",
+   "evidence": "LIVE-OUTCOME-LEDGER"
+  }
+ ],
+ "verdict": "לא-כשיר-לחימוש: 3-תנאי-עולם שליליים-מדיד (מימון/עומק/גל) + 1-הכרעת-ממשל שלא-נתבעה — האורגניזם ממתין-לעולם, לא מייצר-אותו"
+}

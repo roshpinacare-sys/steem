@@ -1,0 +1,76 @@
+{
+  "format": "truth-gate-v1",
+  "at": "2026-09-25T03:01:09.191Z",
+  "target": "https://roshpinacare-sys.github.io/Console",
+  "verdict": "ALL-GREEN",
+  "counts": {
+    "pass": 7,
+    "fail": 0,
+    "warn": 2
+  },
+  "results": [
+    {
+      "gate": "G1-site-up",
+      "status": "PASS",
+      "measured": "HTTP 200 · 166014 bytes",
+      "note": "",
+      "at": "2026-09-25T03:00:40.541Z"
+    },
+    {
+      "gate": "G2-zero-broken-links",
+      "status": "PASS",
+      "measured": "14 עמודים · 84 קישורים נבדקו · 0 שבורים · 5 בלתי-מוכרעים",
+      "note": "",
+      "at": "2026-09-25T03:01:02.516Z"
+    },
+    {
+      "gate": "G3-witness-freshness",
+      "status": "PASS",
+      "measured": "cp#561 · att 571 · גיל 0.1h (סף 26h)",
+      "note": "",
+      "at": "2026-09-25T03:01:02.576Z"
+    },
+    {
+      "gate": "G4-no-forged-twins",
+      "status": "PASS",
+      "measured": "אף קובץ שנולד בציבורי לא מחזיק תאום בריבוני ✓",
+      "note": "",
+      "at": "2026-09-25T03:01:02.576Z"
+    },
+    {
+      "gate": "G5-live-format-consistency",
+      "status": "PASS",
+      "measured": "ספר ציבורי=\"saos-live-v1\" · קובץ-בשם-שמור מקומי=אין ✓ · מצב-דמון בנפרד ✓",
+      "note": "",
+      "at": "2026-09-25T03:01:02.818Z"
+    },
+    {
+      "gate": "G6-delivery-numbering",
+      "status": "SKIP",
+      "measured": "git=null bridge=61",
+      "note": "",
+      "at": "2026-09-25T03:01:02.888Z"
+    },
+    {
+      "gate": "G7-dev-server",
+      "status": "WARN",
+      "measured": "HTTP 0 (סנדבוקס ארעי - לא מקור האמת, רק מקום העבודה)",
+      "note": "",
+      "at": "2026-09-25T03:01:07.889Z"
+    },
+    {
+      "gate": "G8-complete-map",
+      "status": "PASS",
+      "measured": "9 עמודי מערכת (רצפה 10000B) · קישורים מהבית 9/9 · במפה 9/9 · stub של roast תקין · hub/docs/reports 404 (איסור, כנדרש)",
+      "note": "",
+      "at": "2026-09-25T03:01:09.112Z"
+    },
+    {
+      "gate": "G9-slo-published",
+      "status": "PASS",
+      "measured": "4 SLOs · חלון 30d · מילוי 18.8% · גיל פנקס 0.7h (סף 26h)",
+      "note": "",
+      "at": "2026-09-25T03:01:09.190Z"
+    }
+  ]
+}

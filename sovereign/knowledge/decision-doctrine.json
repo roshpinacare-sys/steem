@@ -1,0 +1,33 @@
+{
+  "schema": "decision-doctrine-v1",
+  "status": "proven-blocked",
+  "upstream": {
+    "repo": "https://github.com/NandhaKishorM/laya",
+    "head": "fa9a2a7070b1789912a49ae24603bbfb1a78b001",
+    "tag": "v0.3.24",
+    "license": "Apache-2.0",
+    "installed": "laya 0.3.24 on Python 3.12.14 / torch 2.14.1+cpu"
+  },
+  "role": "System-1 triage layer UNDER the z-ai LLM (System-2). Classifies, gates, routes. Never reasons, never decides money alone.",
+  "rules": [
+    {"id": "LAY-1", "rule": "system1-under-system2", "text": "laya answers are probabilities, not orders. Every fleet use must wrap them in application policy with our thresholds (upstream example 41 pattern: model returns probabilities; the policy is ours)."},
+    {"id": "LAY-2", "rule": "zero-shot-noul-distrust", "text": "DISTRUST zero-shot Hebrew noul quality/vote gates until fine-tuned or calibrated on our labeled history. Evidence: contradictory pairs in sandbox (is_spam=0.999 AND is_quality=0.992 on the same spam post; vote_worthy=0.096 on real tech content)."},
+    {"id": "LAY-3", "rule": "spam-direction-works", "text": "Negative-direction noul (is_spam) is reliable enough for a pre-filter gate: spam 0.999, diary 0.003, tech 0.058. Use as FIRST gate only, never as final judge; anything above threshold escalates to System-2 or human review."},
+    {"id": "LAY-4", "rule": "choice-with-concrete-criteria", "text": "choice questions with concrete per-option criteria are reliable in Hebrew (billing 1.0, tech 0.97). Prefer choice over noul for multi-way classification."},
+    {"id": "LAY-5", "rule": "one-checkpoint-resident", "text": "Router(max_loaded=1) always. Peak RSS ~2GB in a 4GB shared sandbox. Load lazily, unload after 120s idle (decision-brain reaper)."},
+    {"id": "LAY-6", "rule": "offline-after-download", "text": "Network is needed once, for the first checkpoint download (644MB, 12s measured). After that HF_HUB_OFFLINE=1 keeps decisions fully autonomous — verified."},
+    {"id": "LAY-7", "rule": "no-romanticizing", "text": "This is decision infrastructure, not an income engine. It earns indirectly: cheaper triage (zero LLM tokens), spam gate protecting publisher reputation, faster fleet routing. Direct yield impact only after fine-tuning proves vote-gate quality on our own history."}
+  ],
+  "wired": [
+    {"service": "decision-brain", "port": 3047, "file": "mini-services/decision-brain/server.py", "state": "code-live, model-load-OOM-under-full-fleet"}
+  ],
+  "blocked": [
+    {"blocker": "OOM SIGKILL at checkpoint load when all 9 fleet services run (~1.57GB free vs ~2GB load peak)", "evidence": "two SIGKILL events in /tmp/decision-brain.log (r162)", "engineStillProven": "tests 1-2 completed with full predictions when memory allowed"}
+  ],
+  "activationRoutes": [
+    {"route": "ram-route", "condition": "sandbox RAM >= 8GB (or fleet memory freed)", "action": "start decision-brain, wire scout-market + content-factory spam/topic gates first"},
+    {"route": "onnx-route", "condition": "quiet memory window", "action": "pip install 'laya[onnx]', export INT8 (~322MB), switch server to ONNXAgent, retry under full load"},
+    {"route": "finetune-route", "condition": "after decision-brain serves steadily + labeled curation history exported", "action": "fine-tune typed-decisions on OUR Hebrew vote history (upstream RLCD notebooks), re-prove LAY-2, then wire curation vote pre-gate"}
+  ],
+  "whyNotRevenue": "laya sells nothing and pays nothing. It is accepted as decision infrastructure: it cuts System-2 token cost per triage to zero and protects revenue surfaces (content-factory spam gate) — measurable via decision counts and avoided LLM calls once the service goes live."
+}

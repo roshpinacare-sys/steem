@@ -1,0 +1,64 @@
+{
+  "schema": "router-doctrine-v1",
+  "status": "distilled",
+  "created": "2026-10-03",
+  "wave": "r168",
+  "source": {
+    "repo": "Alishahryar1/free-claude-code",
+    "head": "03aca36eb3b9f2bf07805b1c39ec4d61f6f740c1",
+    "license": "AGPL-3.0-only (verified LICENSE file + SPDX) — verbatim vendor forbidden, patterns only",
+    "vendorDir": "sovereign/knowledge/vendor/free-claude-code"
+  },
+  "honestVerdict": "not-adoptable-as-tool; pattern-source-for-llm-layer",
+  "blockEvidence": [
+    "requires-python ==3.14.7 exact pin vs sandbox 3.12.14",
+    "utility requires third-party provider credentials — forbidden by MAG-2 sovereignty",
+    "client side (Claude Code/Codex/Cline) unused here — our agent is mini-swe-agent",
+    "FCC-in-front-of-our-own-bridge is a symbolic loop: added latency, added AGPL boundary, zero new capability"
+  ],
+  "rules": [
+    {
+      "id": "RTC-1",
+      "name": "classify-before-retry",
+      "law": "LLM-layer failures must be classified (rate-limit | overload | internal | auth | permission | billing) via cheap deterministic marker-sets BEFORE any retry/failover decision. Unqualified blanket retries are forbidden (from FCC failure_policy.py)."
+    },
+    {
+      "id": "RTC-2",
+      "name": "admission-limits-before-second-upstream",
+      "law": "No second LLM upstream is admitted without frozen, validated admission limits (rate_limit, rate_window, max_concurrency) independent of client lifetime. FLO-2 twin at the LLM layer (from FCC admission_policy.py)."
+    },
+    {
+      "id": "RTC-3",
+      "name": "turn-is-the-resilience-unit",
+      "law": "Failover must not restart the turn: retries exhausted -> next qualified model within the same turn; request and stream recovery are separate layers (from FCC mid-turn failover + request_recovery/stream_recovery)."
+    },
+    {
+      "id": "RTC-4",
+      "name": "history-replay-on-switch",
+      "law": "Switching models mid-session must replay carried context, not restart the session (from FCC history_replay.py). Relevant only when >1 upstream exists."
+    },
+    {
+      "id": "RTC-5",
+      "name": "deterministic-interception",
+      "law": "Routine sub-requests (titles, quota probes, command-prefix detection, filepath suggestions) must be answered deterministically without an LLM call when volume justifies (from FCC built-in optimizations; token honesty per MAG-4)."
+    }
+  ],
+  "activationRoutes": [
+    {
+      "route": "second-upstream-route",
+      "status": "blocked",
+      "blocked": "no second sovereign upstream exists; external keys forbidden (MAG-2). Revisit only via local model (laya onnx-route, decision-doctrine LAY-1) and even then narrow-capability only"
+    },
+    {
+      "route": "bridge-hardening-route",
+      "status": "conditional",
+      "how": "implement RTC-1 classification + single retry with backoff in llm-bridge when bridge traffic makes failures observable (baseline: 15 completions served as of r168 — below threshold, premature per MAG-1)"
+    }
+  ],
+  "crossRefs": {
+    "fleet": "fleet-doctrine FLO-2 (limits-or-no-admission) — RTC-2 is its LLM-layer twin",
+    "agentloop": "agentloop-doctrine MAG-2 (bridge-not-keys), MAG-4 (cost-honesty), MAG-1 (minimalism-first)",
+    "decision": "decision-doctrine LAY-1 onnx-route as the only plausible local second upstream"
+  },
+  "whyNotRevenue": "FCC consumes free tokens; it produces none. Recorded as insurance-pattern literature for the LLM layer — indirect value only if a second upstream ever materializes."
+}

@@ -1,0 +1,72 @@
+# DEX-MIRROR - סוכן שיקוף הספר החי לבית Domain (R63)
+#
+# הבעיה שנמדדה: דפי הכסף וה-defi של הבית החדש קוראים את dex/grid.json,
+# dex/world.json, dex/state.json, dex/credits.json ו-dex/portfolio.json
+# בנתיב יחסי - אבל המנוע מפרסם את פעימותיו ל-Console החיה, והעתקים
+# ב-Domain קפאו מאז ההעברה (grid בן יום, world בן שעות). אתר שמציג
+# אתמול כאילו הוא עכשיו הוא השקר העמוק ביותר שאתר נתונים יכול לספר.
+# שער 11 של מכונת האמת מודד את טריות המראות המוגשות; הסוכן הזה
+# הוא הריפוי: שיקוף שעתי, חסר-מפתחות, מהמראה הציבורית החיה.
+#
+# תזמון: שעתי ב-:52 (מפת-הדקות של הצי ללא חפיפה אחת: money
+# :02/:17/:32/:47 · dex-watch :09/:29/:49 · truth-gate :07 · moment
+# :12/:42 · agents-watch :37 · console-publish :45 · agent-verify :55
+# דו-שעתי). אפס-סודות: קריאה ציבורית בלבד + הטוקן של הריפו.
+
+name: dex-mirror
+
+on:
+  schedule:
+    - cron: '52 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dex-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Mirror the live engine book (keyless public read)
+        run: node agents/dex-mirror.mjs
+
+      - name: Publish the mirrored book
+        if: always()
+        run: |
+          git config user.name "dex-mirror"
+          git config user.email "dex-mirror@users.noreply.github.com"
+          git add dex/
+          if git diff --cached --quiet; then
+            echo "mirror unchanged - the live book is already ours"
+            exit 0
+          fi
+          for attempt in 1 2 3; do
+            git add dex/
+            git commit -m "dex-mirror: $(date -u +%Y-%m-%dT%H:%M:%SZ) · live engine book mirrored from the live Console mirror (keyless)"
+            git pull --rebase origin main
+            if git push; then echo "mirror published (attempt ${attempt})"; exit 0; fi
+            echo "push failed (attempt ${attempt}); resetting to origin and re-mirroring"
+            git checkout -- .
+            git reset --hard origin/main
+            node agents/dex-mirror.mjs
+            git add dex/
+            if git diff --cached --quiet; then
+              echo "after re-mirror there is nothing to commit - the live book is already ours"
+              exit 0
+            fi
+          done
+          echo "ERROR: could not publish the mirror after 3 attempts"
+          exit 1

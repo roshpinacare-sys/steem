@@ -1,0 +1,141 @@
+{
+  "format": "agent-inspection-v1",
+  "id": "INS-R73-001",
+  "inspectionId": "INS-R73-001",
+  "task": "R73 — gitkeeper race fix + steem cron re-removal",
+  "subject": "R73 — the 2026-09-21 11:21Z gitkeeper race: the takeover auto-save dac4d1e silently re-instated the cron that ef06cc914/R71 had removed 3 seconds earlier; delivery under inspection: (1) .github/workflows/cloud-heart.yml re-fixed (dispatch-only, honest R73 comment), (2) agent/gitkeeper.cjs hardened (healOntoOrigin: reset --hard + cherry-pick -X theirs, empty-pick detection, defensive sequencer abort at runOnce start)",
+  "inspector": "standing supervisor-inspector (general-purpose agent, fresh context, zero-trust)",
+  "inspectedAt": "2026-09-21T17:10:00Z-17:35:00Z",
+  "scope": "The two staged files (/tmp/r73/cloud-heart-fixed.yml, /tmp/r73/gitkeeper-hardened.cjs) vs the live steem HEAD snapshots (blob fc1b77dc and e9fecb22, both re-fetched and byte-compared by this inspection); the incident reconstruction over the GitHub API (commits ef06cc914/dac4d1e07 + their diffs and file lists, run 35593540429 job-step timeline, the post-incident scheduled-failure census, the auto-save lineage dac4d1e → 0047c0eee5 → 53a1624110 → b71e1d9eaa); the live Domain twin workflow + cloud_heartbeat.cjs spawn chain; the other 6 private originals (Zip x4, saos-dex x2, YAML-parsed); the operator's race-test.sh RE-RUN TWICE by this inspection; a NEW adversarial battery written by this inspection (/home/z/r73/adv-test.sh, 15 checks).",
+  "method": "Zero-trust re-measurement: every timestamp, sha, file list and code path claimed by the operator was re-derived from the GitHub API (Bearer the 93-char token from the remote — never printed) and from my own local execution; nothing was accepted from the operator's narrative. The race mechanism was reproduced empirically (Test A), the fix verified empirically (Tests B-E + ADV-1..5), the empty-pick detection branch was proven to actually fire (ADV-1 — the operator's Test D never reached it, see F-1), foreign deletions of non-state files and of the workflow itself were proven adopted (ADV-2/ADV-4), a foreign deletion of a keeper-written state file was measured to resolve as an honest heal-conflict with a recorded push failure (ADV-3), and the old keeper was contrasted on the same scenario (ADV-5). Consumption arithmetic re-measured from the pre-death run census (73 runs / 36.6h / mean 59s; 09-18 and 09-16..18 windows corroborate).",
+  "claims": [
+    {
+      "id": "C1",
+      "claim": "ef06cc914 (pushed 2026-09-21T11:21:03Z by r71-quota-sovereignty) removed the 'schedule: cron */30 * * * *' block from steem .github/workflows/cloud-heart.yml — one file, nothing else.",
+      "measured": "Commits API + diff: sha ef06cc91479d8ca91e630ff774b38ebbe7d3b1e1, author+committer r71-quota-sovereignty at 2026-09-21T11:21:03Z, parent 3eebb83df4461f0684234ddd612c6bc8271119aa, files = exactly ['.github/workflows/cloud-heart.yml'] (modified). The diff is a single hunk: 2 lines (schedule + cron) removed, 4 Hebrew R71 comment lines added; workflow_dispatch + inputs + permissions + jobs untouched.",
+      "verdict": "true"
+    },
+    {
+      "id": "C2",
+      "claim": "Three seconds later the takeover run's auto-save dac4d1e07 landed, its file list INCLUDES .github/workflows/cloud-heart.yml, re-instating the cron (the briefing said 'one second later').",
+      "measured": "Commits API: dac4d1e079c2e268bc0f349d59d208cb91eb1935, author+committer cloud-heart[bot] at 2026-09-21T11:21:06Z (parent ef06cc914) — exactly 3s after the R71 push, not one; the commit message's own timestamp reads 11:21:04Z (message-build time, pre-heal). File list = 9 files: .github/workflows/cloud-heart.yml (the foreign revert: -4 R71 comment lines, +2 schedule/cron lines) + 8 state files. The message says '8 files · loop 21' while the commit carries 9 — the 9th (workflow) was committed silently by the stale index; this discrepancy is the bug's fingerprint (F-9).",
+      "verdict": "true (with the 3-seconds-not-1 briefing precision nit, F-3)"
+    },
+    {
+      "id": "C3",
+      "claim": "Root cause: run 35593540429 checked out steem at 3eebb83 (pre-fix) and the live keeper's pushWithHeal, on push rejection, did 'git reset --soft origin/main' + re-commit — re-committing the run's whole stale index and silently reverting foreign mid-run edits to non-state files.",
+      "measured": "Run 35593540429 (Domain, workflow_dispatch, SUCCESS, head ec70c1c): checkout step 11:20:38-41Z (steem HEAD then = 3eebb83; ef06cc914 was pushed 22s later at 11:21:03Z); heartbeat step 11:20:57-11:21:07Z — the operator's push landed INSIDE this step, the keeper's push at ~11:21:06Z was rejected, the old heal fired. The live HEAD keeper code (blob e9fecb22, verified == /tmp/r73/gitkeeper.cjs) lines 141-150/154-160: on PUSH_REJECT — fetch, 'git reset --soft origin/' + BRANCH, re-commit the whole index. Mechanism reproduced empirically by my own re-run of Test A (old keeper): origin's workflow REVERTED to cron, state writes landed — the dac4d1e behavior exactly.",
+      "verdict": "true (mechanism independently reproduced, not just read)"
+    },
+    {
+      "id": "C4",
+      "claim": "Consequence: steem cloud-heart scheduled runs keep firing and failing (quota-death rejections), e.g. run 35626669625 at 2026-09-21T16:36:22Z; if the quota returns, the private original would resume burning ~3,300 Actions-min/month, defeating R71.",
+      "measured": "Runs API: 15 consecutive scheduled failures measured (11:36:46Z through 17:02:46Z, at heads dac4d1e/0047c0eee5/53a1624110/b71e1d9eaa); run 35626669625 verified at exactly 16:36:22Z: schedule event, failure, 4s duration, job with ZERO steps — the R71 quota-rejection signature. Consumption re-measured from the pre-death green census: 48 runs/day, mean 59-62s (73 runs / 36.6h = 71.7 min wall; 09-18: 48 runs / 49.1 min; 09-16..18: 96 runs / 98.9 min) → ~1,450-1,490 min/month, NOT ~3,300 (F-2). The structural claim stands: ~73% of the 2,000 free minutes re-burned by one dormant-original cron — R71's arithmetic is defeated either way.",
+      "verdict": "true in structure and in every measured fact (the 3,300 figure is unsupported — F-2)"
+    },
+    {
+      "id": "C5",
+      "claim": "File 1 (/tmp/r73/cloud-heart-fixed.yml): the live HEAD file (blob fc1b77dc) with ONLY the on: schedule block replaced by an honest Hebrew R73 comment; workflow_dispatch + inputs + permissions + jobs verbatim identical; YAML parses.",
+      "measured": "Operator's base snapshot byte-identical to my own live fetch (git hash-object both = fc1b77dc0c60901389999ccb688ef3d2de75a8e9 — the live HEAD blob). diff -u: EXACTLY ONE hunk — 2 lines (schedule/cron) → 5 Hebrew R73 comment lines documenting the race (dac4d1e 11:21:06Z, run from 3eebb83, stale tree drugged the edit; twin is the machine; this is dispatch-only backup). yaml.safe_load both files: parse; after deleting on.schedule the structures are DEEP-EQUAL (dispatch inputs mode/description/options, permissions contents:write, concurrency, timeout 30, all steps/env identical). on-keys: live=[schedule, workflow_dispatch], fixed=[workflow_dispatch]. No secrets; no emoji (Hebrew + pre-existing ·—→≈ only); both timestamps (2026-09-21, 11:21:06Z) past at inspection (17:1xZ).",
+      "verdict": "true"
+    },
+    {
+      "id": "C6",
+      "claim": "File 2 (/tmp/r73/gitkeeper-hardened.cjs): (a) both heal paths replaced by healOntoOrigin() — fetch + 'git reset --hard origin/main' (ORIG_HEAD holds the snapshot) + 'git cherry-pick -X theirs ORIG_HEAD', empty-pick detection ('nothing to commit|empty' → clean), conflict → abort + honest error; (b) defensive 'git cherry-pick --abort 2>/dev/null || true' at runOnce start; (c) header comments updated honestly; everything else (secret gate, noise filter, seal step, lock, state file) untouched.",
+      "measured": "Operator's base byte-identical to my live fetch (both e9fecb2230dc165aa457a71a3b4c73e9aeb3ba6e). node --check: OK. diff -u: EXACTLY THREE hunks — (1) the pushWithHeal header comment (soft-reset description → the R73 hardened description, honestly citing the dac4d1e incident and '3 seconds earlier') + the new healOntoOrigin() function (lines 144-161: fetch; reset --hard with ORIG_HEAD comment; cherry-pick -X theirs ORIG_HEAD with 60s timeout + 64MB maxBuffer; on catch: abort, then /nothing to commit|empty/i → {emptyPick:true} + honest log, else 'heal conflict — snapshot dropped, origin keeps the truth' + throw heal-conflict) + heal path 1 rewritten to call it; (2) heal path 2 (auth-then-reject) likewise; (3) runOnce step 0a — the defensive abort BEFORE status/staging. NOTHING else differs: SECRET_PATTERNS, NOISE, seal step 0b, lock, state file, commit-message format, main() all byte-identical. Semantic check: reset --hard sets ORIG_HEAD = the keeper's committed snapshot (standard git behavior), so the pick re-applies exactly the run's own writes; -X theirs takes the snapshot side on content conflicts (last-writer-wins for state files) while files the run never touched stay at origin's version (foreign edits adopted). No secrets; no emoji (one new glyph ← U+2190 in the ORIG_HEAD comment — the same logic-arrow family as the committed →/⇒, F-7); all timestamps past.",
+      "verdict": "true"
+    },
+    {
+      "id": "C7",
+      "claim": "The operator's scratch race test (/home/z/r73/race-test.sh) passes 12/12 — tests A (old keeper reproduces the revert), B (new keeper adopts foreign edit + re-applies own writes), C (normal path), D (empty pick), E (kill-mid-heal recovery).",
+      "measured": "RE-RUN BY THIS INSPECTION TWICE: 12 passed, 0 failed both times. The heals genuinely fired (log evidence per test directory): A (old keeper) logged 'snapshot re-based (soft) onto origin/main, re-committed' and origin's workflow REVERTED to cron while state writes landed — the incident reproduced; B logged 'snapshot re-applied onto origin/main (cherry-pick -X theirs; foreign edits adopted)' + 'pushed after heal[snapshot-reapplied]' — cron stayed removed, seq=2 landed, exit 0; C normal push, commit format preserved; D exit 0 and origin intact — BUT the pick was NOT empty (see F-1: the healed commit 602169b carries agent/gitkeeper.lock + agent/gitkeeper.log — runtime noise the test repo does not gitignore — so the empty-pick branch was never reached; the operator's Test D passed for the wrong reason); E recovered from a real stuck sequencer (CHERRY_PICK_HEAD present pre-run; abort fired; noise-only pass, exit 0; sequencer cleaned).",
+      "verdict": "true as a pass count, FALSE as a coverage claim for Test D (F-1, MEDIUM)"
+    },
+    {
+      "id": "C8",
+      "claim": "New adversarial verification (this inspection's own battery, /home/z/r73/adv-test.sh): a TRUE empty pick; a binary state file in the race; foreign deletions; the old keeper as contrast.",
+      "measured": "15 passed, 0 failed. ADV-1 (true empty pick — noise files gitignored, mirroring the real repo): the detection branch ACTUALLY fired ('snapshot already carried by origin (empty pick)' in the log), exit 0, origin intact, no garbage commit (git 2.47.3's empty-pick message matches the /nothing to commit|empty/i regex). ADV-2 (foreign re-seal of the binary chain-archive + foreign deletion of docs/book.md, while the keeper writes state + its own binary re-seal): book.md stays deleted (adopted), the binary on origin is byte-identical to the keeper's own write (both != base), state writes land, exit 0. ADV-3 (foreign deletion of sovereign/node/state.json, a file the keeper modifies): modify/delete does NOT auto-resolve under -X theirs — the keeper resolved it HONESTLY: cherry-pick abort, 'heal conflict — snapshot dropped, origin keeps the truth', 'commit ok, push FAILED (kept local): heal-conflict', state.json records pushed:false, exit 0, origin keeps the deletion (no silent revert, no corruption; the keeper's own write is dropped — the documented last-writer-wins honesty). ADV-4 (foreign deletion of the workflow itself): the file stays GONE on origin (the keeper never touches non-state files), own writes land, exit 0. ADV-5 (old keeper, same scenario): the deleted workflow was RESURRECTED — the bug class confirmed in its most extreme form.",
+      "verdict": "true — the fix holds under every adversarial scenario this inspector could construct"
+    },
+    {
+      "id": "C9",
+      "claim": "The twin in Domain is intact and is the machine: cron '17,47 * * * *'; it checks out roshpinacare-sys/steem and runs node agent/cloud_heartbeat.cjs which spawns 'node agent/gitkeeper.cjs' (~line 230) — so the hardened keeper pushed to steem WILL be the one the live twin runs.",
+      "measured": "Live twin workflow fetched from Domain main (byte-identical to the operator's /tmp/r73/twin.yml): cron '17,47 * * * *' present; checkout step 'repository: roshpinacare-sys/steem' + 'token: secrets.WEAVE_OPS_PAT' + fetch-depth 1; run step 'node agent/cloud_heartbeat.cjs'. Live steem agent/cloud_heartbeat.cjs (byte-identical to the operator's snapshot): line 230 = 'const gk = sh('node agent/gitkeeper.cjs', { timeout: 3 * 60_000 });' — the keeper is spawned from the STEEM CHECKOUT, so any twin run that starts after the R73 push runs the hardened keeper. Twin cadence live: 12 runs total, all success, ~30 min apart (16:54:28, 16:28:34, 15:54:01 ... — nominal :17/:47 delayed 7-11 min by GitHub's scheduler, F-4), each ~35-65s; auto-saves to steem continue every ~90 min (12:55, 14:29, 15:54 — the loop-21 pattern).",
+      "verdict": "true"
+    },
+    {
+      "id": "C10",
+      "claim": "The race hit only steem: the other 6 private originals (Zip weave-heart / weave-anchor-lines / weave-ecosystem / web-publish; saos-dex dex-beat / dex-grid) have NO cron.",
+      "measured": "Each workflow fetched live and yaml.safe_load-parsed: on-keys = ['workflow_dispatch'] in ALL SIX; schedule key = none anywhere; the R71 removal comments present. Their Domain twins keep the cadence (weave-heart/anchor-lines observed running at 17:19Z on schedule).",
+      "verdict": "true"
+    },
+    {
+      "id": "C11",
+      "claim": "Race-class closure: after this fix lands, future takeover saves cannot re-introduce the cron, because the next twin run checks out the FIXED head, its working tree matches its base for the workflow file, and the keeper only commits differences (git add -A + status-porcelain noise filter).",
+      "measured": "Verified against the keeper's actual staging flow: status --porcelain lists only files differing from the checkout base; git add -A stages only those; the commit carries only the run's writes. LIVE EMPIRICAL PROOF: the three post-incident auto-saves (0047c0eee5 12:55:19Z, 53a1624110 14:29:34Z, b71e1d9eaa 15:54:31Z — each '6 files') touch ONLY the 6 state files (cloud_takeover, chain, state-snapshot, state-snapshot.prev, state, tron-bridge-state), NOT the workflow — a twin that checked out a cron-bearing tree did not re-touch it, so a twin that checks out the FIXED tree will not re-touch it either. Plus the hardened heal covers the remaining window (origin moves mid-run): the cherry-pick re-applies only the run's own writes; foreign non-state edits — including deletions — are adopted (C8 ADV-2/ADV-4). The old code's exposure (stale-index wholesale re-commit) is gone.",
+      "verdict": "true — closed mechanically, not just procedurally"
+    },
+    {
+      "id": "C12",
+      "claim": "Push-timing rule to be recorded in the books: non-state pushes to steem should happen when no twin run is in flight.",
+      "measured": "Evaluated against the live cadence: twin runs last ~35-70s but GitHub's scheduler currently starts them 7-11 min after the nominal :17/:47 (measured starts :26-:28 / :54-:55) — so the rule must be enforced VIA THE API (/repos/roshpinacare-sys/Domain/actions/runs?status=in_progress), not by the clock. At inspection end (17:29:10Z): zero runs in flight. The rule alone is procedural (forgettable); the hardened heal alone is already sufficient for THIS race class; together they close it twice over — the rule prevents the rejected-push churn, the heal makes even a raced push harmless. Recorded for the books as: 'non-state pushes to a heart repo land only with zero in-flight twin runs for that repo (API-verified), and the hardened heal is the mechanical backstop'.",
+      "verdict": "true — rule sound; API-verification is mandatory because the scheduler drifts"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-1",
+      "severity": "MEDIUM",
+      "text": "The operator's Test D ('empty pick') never exercised the empty-pick detection branch it claims to verify: the test repo has no .gitignore, so the keeper's runtime files (agent/gitkeeper.log + agent/gitkeeper.lock) are committed by 'git add -A' and make the cherry-pick NON-empty — my inspection of the healed commit (602169b) shows it carries exactly those two noise files while the state change was already on origin. The test passed through the normal success path; had the /nothing to commit|empty/i regex been broken, Test D would still have passed. My own ADV-1 (noise gitignored, mirroring the real repo — whose auto-saves carry only the 6 state files) proves the branch itself is correct: the detection fired, exit 0, no garbage commit. The '12/12' claim is pass-count-true but coverage-false for D."
+    },
+    {
+      "id": "F-2",
+      "severity": "LOW",
+      "text": "The '~3,300 Actions-min/month' re-burn figure is unsupported by measurement: the pre-death census (73 green runs / 36.6h, mean 59s; corroborated by the 09-18 and 09-16..18 windows at 61-62s mean) gives ~1,450-1,490 min/month for cloud-heart alone at 48 runs/day. The structural conclusion is unaffected and severe (~73% of the 2,000-minute free quota re-burned by one dormant-original cron), but the books must not carry the 3,300 number."
+    },
+    {
+      "id": "F-3",
+      "severity": "LOW",
+      "text": "Briefing precision: the operator's claim says the auto-save landed 'one second later'; measured interval ef06cc914 (11:21:03Z) → dac4d1e07 (11:21:06Z) is 3 seconds. The COMMITTED artifacts are accurate ('3 seconds earlier' in the hardened keeper header; the yml comment cites 11:21:06Z without an interval claim), so this is a briefing-only nit. Also noted: the auto-save message says 11:21:04Z (message-build time) while the commit's author date is 11:21:06Z (post-heal) — both honest, different clocks."
+    },
+    {
+      "id": "F-4",
+      "severity": "INFO",
+      "text": "The twin's cron is nominal ':17/:47' but GitHub's scheduler currently starts the runs 7-11 minutes late (measured run starts :26-:28 and :54-:55 over the last 8 runs, durations 35-67s). The push-timing rule is therefore only enforceable via the API (in_progress check), never via the wall clock. Recorded in the push conditions."
+    },
+    {
+      "id": "F-5",
+      "severity": "INFO",
+      "text": "Network census drift outside this delivery: a new EMPTY private repo 'Defi' was created 2026-09-21T13:28:43Z (between R72 and this inspection) — no workflows, no contents, no consumption; the books still say 15 repos (R71 census). No action needed for R73; the next book-touching delivery should ledger the 16th repo or remove it."
+    },
+    {
+      "id": "F-6",
+      "severity": "INFO",
+      "text": "race-test.sh has a nesting quirk: setup() re-cds to 'dirname $0' with a RELATIVE path, so each test nests one level deeper (T/, T/T/, ... T/T/T/T/T/ after one full run). Harmless for results (each test is self-contained; keepers install by absolute path — this inspection verified the per-test logs), but the working tree accumulates nested directories and the 'current' directory after the run is not the script's home. My adv-test.sh uses an absolute BASE (and hit the same bug before I fixed it — a useful reminder of why the operator's own test needs the fix)."
+    },
+    {
+      "id": "F-7",
+      "severity": "INFO",
+      "text": "One new glyph in the hardened keeper: ← (U+2190 LEFTWARDS ARROW) in the 'ORIG_HEAD ← our snapshot' comment — same logic-arrow family as the committed → (U+2192) and the R71-approved ⇒ (U+21D2); not an emoji. Zero emoji ranges in both staged files; all other non-ASCII is pre-existing (·, —, …, →, ⇄, ─, Hebrew)."
+    },
+    {
+      "id": "F-8",
+      "severity": "INFO",
+      "text": "In the heal-conflict path (measured live in ADV-3), the keeper logs both 'heal conflict — snapshot dropped, origin keeps the truth' AND the pre-existing 'commit ok, push FAILED (kept local)' — the second wording is imprecise (the snapshot was actually discarded by reset --hard + aborted pick, nothing is kept locally). The state records pushed:false + pushError 'heal-conflict' honestly, so no book lies; pre-existing wording, non-blocking, fold into any future keeper touch."
+    },
+    {
+      "id": "F-9",
+      "severity": "INFO",
+      "text": "The incident's tell, worth recording in the books as a detection heuristic: dac4d1e's message said '8 files' (the status-porcelain count of the run's own writes) while the commit carried 9 (the stale-index wholesale re-commit adds every foreign mid-run edit). Post-fix, the healed commit is a cherry-pick of the run's own snapshot, so message-count == commit-content again; any future mismatch of this shape means the old heal is running somewhere (e.g., a straggler checkout) and should be investigated."
+    }
+  ],
+  "pushConditions": [
+    "PC-1 (blocking, mechanical): push BOTH files to steem in ONE commit (.github/workflows/cloud-heart.yml + agent/gitkeeper.cjs) — the twin must never observe a half-fixed tree; commit message honest about the R73 race fix (no emoji, ·—×⇒← allowed).",
+    "PC-2 (blocking, THE window — this push is itself exposed to the exact race it fixes): verify via the API that ZERO cloud-heart runs are in flight on Domain (/repos/roshpinacare-sys/Domain/actions/runs?status=in_progress → total_count 0) IMMEDIATELY before pushing — an in-flight run still holds the OLD keeper from its pre-R73 checkout and a raced push would re-instate the cron a THIRD time. The clock is NOT a safe proxy (F-4: nominal :17/:47 currently fires 7-11 min late, runs last 35-70s); use the API, and prefer the moment right after a completed twin run (e.g. verified-clean window between one run's end and the next nominal slot).",
+    "PC-3 (post-push, required measurement): (a) the first twin auto-save after the push must NOT contain .github/workflows/cloud-heart.yml (the b71e1d9eaa 6-file pattern — if it does, the race repeated; investigate immediately); (b) no NEW 'schedule'-event runs may appear on steem after the push (the failure line ends at the last pre-push slot); (c) confirm the next twin run checks out the fixed head (its auto-save parent = the R73 commit) — from that run on, the live machine carries the hardened keeper; if any heal fires in a future run, the log line must read 'snapshot re-applied ... foreign edits adopted' (or 'snapshot already carried by origin'), never 'snapshot re-based (soft)'.",
+    "PC-4 (books, same-day): install this report at Domain agent/inspections/INS-R73-001.json + the byte-identical sovereign mirror at console/agent/inspections/ (the R71/R72 house pattern); append the r73 worklog record; record the push-timing rule in the books (C12's wording); record the measured re-burn figure honestly (~1,470-1,490 min/month at the pre-death pattern — NOT 3,300, F-2); ledger the Defi repo's existence or its removal (F-5).",
+    "PC-5 (fast-follow, non-blocking): repair race-test.sh — gitignore the keeper's runtime noise in the test repo so Test D's pick is genuinely empty (copy ADV-1's setup), and make the script's BASE absolute (F-6); the fixed script should re-pass 12/12 with Test D now reaching the empty-pick branch."
+  ],
+  "claimsSummary": "12/12 claims measured TRUE in substance (two with precision corrections: the 3,300 figure → measured ~1,470-1,490 (F-2); 'one second' → 3 seconds, briefing-only, committed files accurate (F-3); and Test D's coverage claim false-though-pass-count-true (F-1)). The incident reconstruction survived every re-measurement: the 3-second race window (checkout 11:20:41 → push 11:21:03 → auto-save 11:21:06), the 9-file commit vs the 8-file message, the old heal's code path, the reproducing test, and the continuing scheduled failures. Both staged files are surgical beyond reasonable doubt (one hunk / three hunks, everything else byte-identical, syntax-clean, secret-clean, emoji-clean, timestamps past, wording honest). The fix is proven empirically under this inspection's own re-runs AND its own adversarial battery — including scenarios the operator never tested: a true empty pick, a binary state race, foreign deletions of non-state files, a foreign deletion of the workflow itself, and a foreign deletion of a keeper-written state file (resolved honestly as a recorded push failure, never a silent revert).",
+  "verdict": "APPROVE-WITH-CONDITIONS"
+}

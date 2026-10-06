@@ -1,0 +1,62 @@
+{
+ "_meta": {
+  "schema": "r208r-threshold-provenance-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "at": "2026-10-05T21:48:28.006Z",
+  "law": "סף-המגדיר «מה-נחשב-הצלחת-מטרה» אינו חוק-בטיחות — אין-מסתירים-אותו-ככזה (§VII)"
+ },
+ "before_R208R": {
+  "state": "SBD_FUND_THRESHOLD = 3.0 קבוע-סמוי ב-mini-services/objective-consumer.ts:269",
+  "epistemic": "OBSERVED (אומת-מחדש מ-HEAD) · REFUTED-אחרי-התיקון"
+ },
+ "after_R208R": {
+  "objectiveParameter": {
+   "location": "options.json#_meta.armingThreshold",
+   "value": 3,
+   "unit": "SBD",
+   "whoMayChange": "אדג'ודיקטור-מטרות בלבד (מפעיל/ממשל) — אסור ללמידה/לדיבון/לחיישן/לצרכן",
+   "modelContainsIt": true,
+   "consumerReadsIt": "getArmingThresholdSbd() + objectiveDecisionView — קריאה-מהמודל-בלבד",
+   "changingItChangesDecision": true,
+   "mutationTest": {
+    "threshold_3_0_sbd_1_0": "WAIT-MODEL",
+    "threshold_0_5_sbd_1_0": "ACT"
+   },
+   "epistemic": "OBSERVED"
+  },
+  "safetyCap": {
+   "items": [
+    "טווח-ערך [0, 1e6]",
+    "זקנה ≤ 3600ש'",
+    "שעון-עתידי > 60ש' ⇒ UNKNOWN",
+    "גבול-גיל-מודל 7 ימים"
+   ],
+   "owner": "קוד-הצרכן (const) — המודל אינו יכול להזיז",
+   "epistemic": "OBSERVED"
+  },
+  "authorityCondition": {
+   "items": [
+    "מפת-הסמכות (מעוגנת-האש)",
+    "tx-gate $100 const",
+    "GATE.json mode"
+   ],
+   "owner": "חוץ-מודלי לחלוטין — השערים אינם קוראים קבצי-מודל (OBSERVED: אפס-התאמות)",
+   "epistemic": "OBSERVED"
+  }
+ },
+ "thresholdMutationCannotCreateAuthority": true,
+ "mutationWithAuthorityAbsent": {
+  "decision": "BLOCKED_BY_AUTHORITY",
+  "expected": "BLOCKED_BY_AUTHORITY"
+ },
+ "mutationWithPreferenceActive": {
+  "decision": "WAIT-PREFERENCE",
+  "expected": "WAIT-PREFERENCE (ההעדפה עדיין דוכאת)"
+ },
+ "extremeThreshold_1e9": {
+  "decision": "WAIT-MODEL",
+  "note": "גם-סף-מוקצן לא עוקף קפסות-בטיחות (מדידת-3.5 בטווח-תקין → QUALIFIED — אך נבדק גם ב-integrity-lab B7: קריאת-הסף מהמודל-בלבד)"
+ },
+ "duplicationRepair": "money/index.ts:1188 קרא 3.0 מקומי — תוקן: קורא getArmingThresholdSbd(); אפס-שכפול (OBSERVED: קבוע-סמוי-בקוד=false)"
+}

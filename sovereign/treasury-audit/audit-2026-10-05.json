@@ -1,0 +1,88 @@
+{
+  "format": "treasury-audit-v1",
+  "seq": 942,
+  "at": "2026-10-05T23:59:43.906Z",
+  "verdict": "PASS",
+  "checks": [
+    {
+      "id": "decision-chain",
+      "status": "pass",
+      "detail": "יומן-ההחלטות מאומת — 385 רשומות, שרשרת sha256 תקינה",
+      "numbers": {
+        "entries": 385,
+        "brokenAt": null,
+        "ok": true
+      }
+    },
+    {
+      "id": "pnl-snapshot-chain",
+      "status": "pass",
+      "detail": "שרשרת-תמונות-ה-PnL מאומתת — 13 תמונות (אחרונה seq 13 בת 780 דק')",
+      "numbers": {
+        "entries": 13,
+        "brokenAt": null,
+        "ok": true,
+        "lastSeq": 13
+      }
+    },
+    {
+      "id": "receipts-book",
+      "status": "pass",
+      "detail": "ספר-הקבלות תקין — 200 קבלות · 11 עם txid · אחרונה בת 9 דק'",
+      "numbers": {
+        "total": 200,
+        "withTxid": 11,
+        "outOfOrder": 0,
+        "lastAgeMinutes": 9
+      }
+    },
+    {
+      "id": "ladder-floor",
+      "status": "pass",
+      "detail": "רצפת-הערך מוחזקת — אף פקודת-מכירה מתחת לפאריטה (5 פקודות פתוחות)",
+      "numbers": {
+        "state": "HELD",
+        "asksBelowParity": 0,
+        "worstBps": 0,
+        "maxDriftLossSbd": 0,
+        "ordersOpen": 5
+      }
+    },
+    {
+      "id": "orders-stale",
+      "status": "pass",
+      "detail": "אין פקודות-ישנות מעל 48ש' (5 פקודות נבדקו)",
+      "numbers": {
+        "staleCount": 0,
+        "thresholdHours": 48,
+        "oldestHours": null
+      }
+    },
+    {
+      "id": "balances-drift",
+      "status": "pass",
+      "detail": "יתרות מתואמות מול השרשרת — STEEM 1.377 · SBD 0.015 (סטייה ≤ 0.001)",
+      "numbers": {
+        "measured": true,
+        "homeSteem": 1.377,
+        "homeSbd": 0.015,
+        "chainSteem": 1.377,
+        "chainSbd": 0.015,
+        "driftSteem": 0,
+        "driftSbd": 0
+      }
+    },
+    {
+      "id": "tron-rail",
+      "status": "pass",
+      "detail": "מסילת-TRON חיה ונמדדת — TYVwwuvdDmfy3shxT3cb3RKLrRCshaZxTy · 2.000002 TRX על-השרשרת · כלי-היתרות בן 48.8ש'",
+      "numbers": {
+        "measured": true,
+        "trx": 2.000002,
+        "exists": true,
+        "toolAgeHours": 48.8
+      }
+    }
+  ],
+  "anomalies": []
+}

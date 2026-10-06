@@ -1,0 +1,76 @@
+{
+  "format": "truth-gate-v1",
+  "at": "2026-09-19T14:11:29.983Z",
+  "target": "https://roshpinacare-sys.github.io/Console",
+  "verdict": "1 RED",
+  "counts": {
+    "pass": 8,
+    "fail": 1,
+    "warn": 0
+  },
+  "results": [
+    {
+      "gate": "G1-site-up",
+      "status": "PASS",
+      "measured": "HTTP 200 · 157900 bytes",
+      "note": "",
+      "at": "2026-09-19T14:11:06.683Z"
+    },
+    {
+      "gate": "G2-zero-broken-links",
+      "status": "PASS",
+      "measured": "5 עמודים · 76 קישורים נבדקו · 0 שבורים · 5 בלתי-מוכרעים",
+      "note": "",
+      "at": "2026-09-19T14:11:26.019Z"
+    },
+    {
+      "gate": "G3-witness-freshness",
+      "status": "PASS",
+      "measured": "cp#234 · att 241 · גיל 0.3h (סף 26h)",
+      "note": "",
+      "at": "2026-09-19T14:11:26.082Z"
+    },
+    {
+      "gate": "G4-no-forged-twins",
+      "status": "PASS",
+      "measured": "אף קובץ שנולד בציבורי לא מחזיק תאום בריבוני ✓",
+      "note": "",
+      "at": "2026-09-19T14:11:26.083Z"
+    },
+    {
+      "gate": "G5-live-format-consistency",
+      "status": "PASS",
+      "measured": "ספר ציבורי=\"saos-live-v1\" · קובץ-בשם-שמור מקומי=אין ✓ · מצב-דמון בנפרד ✓",
+      "note": "",
+      "at": "2026-09-19T14:11:26.308Z"
+    },
+    {
+      "gate": "G6-delivery-numbering",
+      "status": "FAIL",
+      "measured": "bridgehead R58 מול git R59",
+      "note": "האתר הציבורי לא יודע על המסירות האחרונות — מענה לשתי אמיתות",
+      "at": "2026-09-19T14:11:26.379Z"
+    },
+    {
+      "gate": "G7-dev-server",
+      "status": "PASS",
+      "measured": "HTTP 200 (סנדבוקס ארעי — לא מקור האמת, רק מקום העבודה)",
+      "note": "",
+      "at": "2026-09-19T14:11:27.391Z"
+    },
+    {
+      "gate": "G8-single-generation",
+      "status": "PASS",
+      "measured": "10 stubs מוצאים · hrefs מוצאים באינדקס 0 · אמת מקושרת כן · במפה 0",
+      "note": "",
+      "at": "2026-09-19T14:11:29.921Z"
+    },
+    {
+      "gate": "G9-slo-published",
+      "status": "PASS",
+      "measured": "4 SLOs · חלון 30d · מילוי 0.4% · גיל פנקס 0.1h (סף 26h)",
+      "note": "",
+      "at": "2026-09-19T14:11:29.983Z"
+    }
+  ]
+}

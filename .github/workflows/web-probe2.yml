@@ -1,0 +1,20 @@
+# WEB-PROBE2 — מדידת מחירי RC לפי גודל custom_json, Steem מול Hive.
+name: web-probe2
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+      - name: Run size probe
+        run: bun scripts/web-probe2.ts
+        env:
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}

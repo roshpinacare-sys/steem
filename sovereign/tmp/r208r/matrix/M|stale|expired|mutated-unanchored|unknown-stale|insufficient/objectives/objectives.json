@@ -1,0 +1,233 @@
+{
+ "_meta": {
+  "schema": "sovereign-objectives-v1",
+  "round": "R207",
+  "trace": "1a10d1ddb659450d",
+  "builtAt": "2026-08-07T00:14:38.230Z",
+  "builtBy": "r207 main agent (אדג'ודיקטור) מתוך גל-חמישה-סוכנים A–E (קריאה-בלבד) + אימות עצמאי",
+  "law": "לא ממציאים מטרות — OBJECTIVE_UNDEFINED כנה כשאין · כל רשומה נושאת אסמכתא · מודל-זה אינו סמכות: הוא מפת-אמת בלבד",
+  "classes": [
+   "explicit-declared",
+   "implicit-in-code",
+   "operator-inherited",
+   "learned",
+   "temporary-policy",
+   "safety-constraint",
+   "undefined"
+  ]
+ },
+ "objectives": [
+  {
+   "id": "O1",
+   "statement": "הכנסה $1,000/יום",
+   "class": "operator-inherited",
+   "source": "src/app/api/mission/route.ts:2-5,247",
+   "enforcement": "תצוגה בלבד — אפס-אקטואטור; decide() לא מכיל ביטוי-הכנסה כלשהו",
+   "conflicts": [
+    "O12 (תגמול-לפעולה סותר דוקטרינת Activity≠Value)"
+   ]
+  },
+  {
+   "id": "O2",
+   "statement": "שער-אוטונומיה PAUSED|THINKING|ACTIVE",
+   "class": "safety-constraint",
+   "source": "mini-services/autonomy.ts:183-202 + src/lib/autonomy-law.ts (שני-עותקים בסנכרון)",
+   "enforcement": "כל פעולה עוברת evaluateGate; THINKING דורש דיון מלא",
+   "conflicts": [
+    "THINKING=היתר-עצמי (כותב-הדיון מאשר-עצמו, autonomy.ts:129-141) — תוקן חלקית ב-r206 (דיון נוסע לשער)"
+   ]
+  },
+  {
+   "id": "O3",
+   "statement": "סף-מפעיל $100 לפעולה",
+   "class": "safety-constraint",
+   "source": "src/lib/weave/tx-gate.ts:20 · GATE_THRESHOLD_USD const מ-343bf8d6 (23/09/2026)",
+   "enforcement": "≥$100 → QUEUED להכרעת-מפעיל בלבד; מצב-נלמד אינו יכול להזיז (const)",
+   "conflicts": []
+  },
+  {
+   "id": "O5",
+   "statement": "שבעה-חוקים-כלכליים + תקרת 16 פעולות/יום",
+   "class": "safety-constraint",
+   "source": "src/lib/econ-gate.ts:44-99",
+   "enforcement": "עסקאות-בעסקים בלבד — ההון-העצמי של האורגניזם אינו עובר דרכן",
+   "conflicts": []
+  },
+  {
+   "id": "O10",
+   "statement": "«רווחיות-גם-אם-קטנה»",
+   "class": "explicit-declared",
+   "source": "mini-services/keeper/index.ts:675",
+   "enforcement": "WARN בלבד לפי-חוקו-הקדוש (:679-683) — אפס-אקטואטור; capturedSbd −1.51 לא הפיק פעולה",
+   "conflicts": [
+    "המטרה-הכלכלית היחידה המוכרזת היא חסרת-זרוע"
+   ]
+  },
+  {
+   "id": "O12",
+   "statement": "מסילות-תגמול משלמות-למילוי",
+   "class": "implicit-in-code",
+   "source": "mini-services/money/index.ts:73",
+   "enforcement": "reward-pay פעיל בשער (4/4 סירובי NO-DELIBERATION — הדיון עוד לא נוסע ל-reward-pay)",
+   "conflicts": [
+    "דוקטרינת-היסוד (NETWORK-EVOLUTION.md): «משלמים-על-פעולה = משלמים-על-זבל» — סתירה חיה"
+   ]
+  },
+  {
+   "id": "O16",
+   "statement": "חוקי-המוביל: חוק-2 (נזיל-מחוץ-לסולם נפרס לעבודה) · חוק-3 · L4 · R127",
+   "class": "implicit-in-code",
+   "source": "mini-services/money/index.ts:527,546,550-567",
+   "enforcement": "אלו מניעי-ההון החיים בפועל: יישור-הספר לפאריטה — לא לכידת-ערך",
+   "conflicts": [
+    "המטרה הכלכלית האמיתית בריצה = התאמת-מצב-ספר, לא רווח"
+   ]
+  },
+  {
+   "id": "O17",
+   "statement": "אפס-מימון-חיילים-מתים",
+   "class": "safety-constraint",
+   "source": "mini-services/keeper/index.ts:818-899 (אסור-אף-לממן; alarm על received/delegated>0)",
+   "enforcement": "מדיד keyless כל 30 דק' · snapshot.json · אפס-חוק-מימון-חיובי",
+   "conflicts": []
+  },
+  {
+   "id": "O18",
+   "statement": "NO POWER DOWN — איסור מוחלט על יורד-עוצמה",
+   "class": "operator-inherited",
+   "source": "הנחיית-מפעיל R205/R206/R207 (trace 1a10ca89ec270095, 1a10d1ddb659450d)",
+   "enforcement": "אפס-נתיב broadcast withdraw_vesting בכל-הקוד החי (ממצא r207-e, מאומת); לוח-ה-powerdown הקיים (מפעיל-עידן) אינו נגע ואינו נשלט",
+   "conflicts": []
+  },
+  {
+   "id": "O19",
+   "statement": "STEEM FIRST — איסור הרחבת-רשתות לפני הוכחה",
+   "class": "operator-inherited",
+   "source": "הנחיות-מפעיל R205–R207",
+   "enforcement": "crosschain.ts אפס-אטסטציות; אין-נתיב-הפעלה בריצה",
+   "conflicts": []
+  },
+  {
+   "id": "O20",
+   "statement": "פעילות ≠ ערך — איסור מקסום-פעולות",
+   "class": "operator-inherited",
+   "source": "הנחיה R206 §III + R207 §I",
+   "enforcement": "מוצהר; לא מקודד — מבחן-הפרוקסי (למטה) מוכיח שהמדידות-החיות עדיין מתגמלות-פעילות",
+   "conflicts": [
+    "O12",
+    "מדידות-הצי (beats/uptime/fills)"
+   ]
+  },
+  {
+   "id": "O21",
+   "statement": "למידה חסומה: פרמטר-קצב יחיד retryBackoffMin∈[0,120] · אסור לגעת בסמכות",
+   "class": "safety-constraint",
+   "source": "mini-services/learning.ts (runAdaptation · bounds · rebuild · applyMisattributionCorrection)",
+   "enforcement": "מוכח-מקודד (r207-e: יבוא-יחיד money/index.ts:37 · צרכן-יחיד effectiveCooldown)",
+   "conflicts": []
+  },
+  {
+   "id": "O22",
+   "statement": "עיגון תלת-שרשרתי (steem+hive+blurt) של כל-אמת",
+   "class": "implicit-in-code",
+   "source": "scripts/weave-anchor.ts · sovereign/steem-line.json (cp#1401/att#1411, 17:25Z)",
+   "enforcement": "github-actions runner (תלות-חוץ — נמדדה-חיה)",
+   "conflicts": []
+  },
+  {
+   "id": "O23",
+   "statement": "החייאה-עצמאית של שרת-הרשת",
+   "class": "safety-constraint",
+   "source": "mini-services/keeper/index.ts + scripts/dev-revive.mjs",
+   "enforcement": "8 חייאות היום · הסגר-החייאות WEB-HOLD 4/4 בחלון-6ש' (כנות, לא ספירלה) — נמדד 17:37Z",
+   "conflicts": []
+  }
+ ],
+ "objectiveUndefined": [
+  {
+   "id": "U1",
+   "domain": "יעד-רווח של האורגניזם עצמו (מה הוא מנסה להרוויח, באיזה אופק)",
+   "evidence": "אין ביטוי-הכנסה ב-decide() · O10 חסר-זרוע · grep-מאומת"
+  },
+  {
+   "id": "U2",
+   "domain": "מדיניות-רזרבה: כמה מ-$73.88 ומ-1,368.69 SP נטו נשמר להישרדות/אופציונליות",
+   "evidence": "אין-הצהרה בשום-קובץ"
+  },
+  {
+   "id": "U3",
+   "domain": "מדיניות-delegation: האם להמשיך להקצות 360.14 SP חוץ (תשואה מדידה 0.12% APR) · 622.99 SP-נכנסת חציה עצמית-מעגלית",
+   "evidence": "אין-בעלים להערכת-שכירות · אין-מסמך-הצדקה ל-delegation-היוצאת הפעילה"
+  },
+  {
+   "id": "U4",
+   "domain": "משימת-החיילים (56.0 STEEM+0.417 SBD, אפס-VESTS, מפתחות-אבודים r196/r200): רק חוק-שלילי",
+   "evidence": "keeper/index.ts:818-899 — אסור-לממן, לא-כתוב למה-הם"
+  },
+  {
+   "id": "U5",
+   "domain": "כוננות-הרחבה: מתי מותר לפתוח רשת-חדשה",
+   "evidence": "רק «עד-ש-PnL-מנומק מצדיק» — הגדרה-חסרה"
+  },
+  {
+   "id": "U6",
+   "domain": "מצב-יעד של ההון (end-state): למה מגיעים",
+   "evidence": "אין-הצהרה"
+  },
+  {
+   "id": "U7",
+   "domain": "העדפת-סיכון (כמה הפסד-יומי חוקי בכל-זרוע)",
+   "evidence": "תקרות-גריד ($1/יום) קיימות-כקבועים; אין-הצהרת-סיכון-כללית"
+  },
+  {
+   "id": "U8",
+   "domain": "תכלית 1,903.775-SP הנותרים בלוח-ה-powerdown (לאחר התשלום-האחרון 10/10): סופם לא-הוכרע",
+   "evidence": "לוח-מפעיל-עידן · אין-החלטת-מפעיל/ממשל על-סיומו"
+  },
+  {
+   "id": "U9",
+   "domain": "קווי-עצירה (kill-lines) לסולם/גריד: מתי זרוע-פעילה מפסיקה",
+   "evidence": "−1.51 SBD/274-סבבים לא הפיק שום-שיקול-עצירה"
+  }
+ ],
+ "contradictions": [
+  {
+   "id": "X1",
+   "statement": "קצב-קיורציה: mission:308 אומר 2% · curation/index.ts:13 אומר 6%",
+   "status": "חיה-מדיד"
+  },
+  {
+   "id": "X2",
+   "statement": "O12 (תשלום-למילוי) סותר דוקטרינת-היסוד «תשלום-על-פעולה=זבל»",
+   "status": "חיה-מדיד"
+  },
+  {
+   "id": "X3",
+   "statement": "D-OP-01 מושעה בהוראת-מפעיל בלי קריטריון-מדיד לחזרה ל-ACTIVE",
+   "status": "מוכרעת-מדיד (קריטריון-חזרה נקבע R208P)",
+   "resolutionCriterion": {
+    "setBy": "R208P (trace 1a10e219d0860c0d) — הכרעת-אדג'ודיקטור ריבונית: השעיה בלי-קריטריון-מדיד היא סתירה; זה הקריטריון",
+    "returnToActive": "D-OP-01 חוזר ל-ACTIVE ביום-הראשון שבו יומן-יומי (daily-YYYY-MM-DD) רושם usdToday ≥ 0.01 מדיד-חי",
+    "horizon": "2026-10-15 — אם usdToday עדיין 0: ההסבר-המבני (פרעוני-פוסטים/קיורציה/המרות-בשלות) נחשב מופרך וההשעיה חייבת-הסלקה למפעיל — אסור-להאריך-בשקט",
+    "authorityScope": "קריטריון-מדיד-בלבד · אפס-הרחבת-סמכות · אפס-שינוי-הוראת-המפעיל עצמה",
+    "anchoredAfterChange": "עיגון-מעודכן חובה (מי-שינה-מודל-מעדכן-עיגון)"
+   }
+  }
+ ],
+ "proxyAudit": {
+  "note": "מדדים שהמערכת מציגה כהצלחה אך אינם מטרה-מוצהרת (Activity≠Value עדיין לא מקודד):",
+  "proxies": [
+   "beats",
+   "uptime 9/9 + רצף-L0 ירוק",
+   "מספר-מילויים (326 ב-7d על capturedSbd −1.51)",
+   "placed/cancelled",
+   "actionsToday",
+   "תקרות-הצבעה + candidatesSeen 1,901",
+   "גודל-delegation",
+   "ספירות-עיגון/אטסטציה (עדות-עצמית)",
+   "מספר-דיונים עם expected אחיד",
+   "streak-למידה"
+  ]
+ },
+ "adversarialVerdict_A": "לא — כל טריגר-הקצאה כיום הוא הוראת-מפעיל, היוריסטיקת-קוד («חוקים» מיישרי-ספר), או הצהרה-חסרת-זרוע. מודל-זה הוא מפת-אמת; הצריכה-שלו ב-decide() היא החזית-הבאה."
+}

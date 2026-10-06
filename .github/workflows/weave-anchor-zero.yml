@@ -1,0 +1,100 @@
+# WEAVE-ANCHOR-ZERO — מסילת ה-EVM בגז-אפס (G1)
+#
+# הפער האחרון נסגר בלי אגורה: root של ה-checkpoint האחרון עולה כטרנזקציית
+# EVM אמיתית על Z Chain (Zero Network, chainId 9369) — רשת EVM ראשית ציבורית
+# שבה הגז מדוד 0x0 (הפריצה שנמדדה באקוסיסטם, R9 2026-09-12). החותם: מפתח
+# הרשת מה-seal — אותו מפתח שחותם checkpoints ב-EIP-712; הכתובת במאזן 0,
+# וזו בדיוק הנקודה: העלות 0.000000.
+#
+# שרשרת ההסתמכות: ledger.json (בגיט) → checkpoint root → Z Chain (txid
+# ב-etherscan שלה zscan.live) → העדות החתומה חוזרת לספר. כל צד שלישי
+# מאמת מה-RPC הציבורי (rpc.zero.tech) בלי לסמוך עלינו כלל.
+#
+# הקדנס מיושר ללב: פעימה :00 → עוגן Steem/Hive :15 → עוגן ZERO :25 →
+# הקונסולה קוראת :40. שלושה קווי עדות חיים בכל שעה.
+#
+# משמרת: אפס סודות חדשים — המפתח בא מה-seal שנפתח עם
+# WEAVE_SEAL_PASSPHRASE (Actions Secret קיים). GITHUB_TOKEN לדחיפה.
+#
+# דדופליקציה: root שלא השתנה לא משודר (ALREADY-ANCHORED) — רק
+# checkpoints חדשים מקבלים עדות חדשה. שער כנות מובנה: אם הרשת אי-פעם
+# תתחיל לגבות גז — הריצה אדומה בלי עדות (לא נניח, נמדוד).
+
+name: weave-anchor-zero
+
+on:
+  # dispatch-only (Task 24): ההנעה השעתית עברה ל-weave-anchor-lines.
+  # הקובץ הזה נשאר להפעלה ידנית של קו ZERO בלבד (dry/verify-only/recover).
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'zero anchor mode — auto: anchor the latest checkpoint root on Z Chain if not yet anchored; dry: build payload, broadcast nothing; verify-only: keyless readback, never broadcast'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - dry
+          - verify-only
+      recover:
+        description: 'recovery — txid (0x…64hex) of an on-chain ZERO anchor whose push reddened pre-verification (e.g. secret-gate block): re-verify payload from chain and write the attestation'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weave-anchor-zero
+  cancel-in-progress: false
+
+jobs:
+  anchor-zero:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout origin/main (the sovereign home)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Prisma client + DB skeleton
+        run: bunx prisma generate && bunx prisma db push
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      - name: Zero-gas EVM anchor (witness the ledger on a public EVM mainnet at $0)
+        run: |
+          MODE_FLAG=""
+          case "${MODE_INPUT}" in
+            dry) MODE_FLAG="--dry" ;;
+            verify-only) MODE_FLAG="--verify-only" ;;
+          esac
+          if [ -n "$RECOVER_INPUT" ]; then
+            case "$RECOVER_INPUT" in
+              *\"*|*\'*|*\`*|*\$*|*\;*|*\|*|*(*|*)*|*[!0-9a-fA-Fx]*) echo "recover input rejected (audit 2026-09-28: txid must be hex)"; exit 1 ;;
+            esac
+            MODE_FLAG="--recover=$RECOVER_INPUT"
+          fi
+          bun scripts/weave-anchor-zero.ts $MODE_FLAG
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE }}
+          MODE_INPUT: ${{ inputs.mode }}
+          RECOVER_INPUT: ${{ inputs.recover }}
+
+      - name: Upload zero anchor report (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weave-zero-anchor-report
+          path: sovereign/zero-anchor-report.json
+          retention-days: 30

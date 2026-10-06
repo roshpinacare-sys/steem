@@ -1,0 +1,84 @@
+# BASELINE-INTEGRITY - שומר שלמות קו הבסיס
+#
+# קו הבסיס הוא הרשומה ההיסטורית של הרשת: שידורים, מסמכים והורדות.
+# הסוכן בונה מניפסט SHA-256 של כל הקבצים, משווה למניפסט הקודם ומדווח
+# בכנות: תוספות בסדר, שינויים מדווחים ונספרים, מחיקה של היסטוריה היא אדום.
+
+name: baseline-integrity
+
+on:
+  schedule:
+    - cron: '13 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: baseline-integrity
+  cancel-in-progress: false
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run the baseline integrity check
+        run: |
+          set -u
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          VERDICT="PASS"
+          REASON="baseline intact"
+
+          # מניפסט SHA-256 של כל תוכן ההיסטוריה
+          find broadcasts docs download -type f 2>/dev/null | LC_ALL=C sort | xargs -r sha256sum > /tmp/manifest.new || true
+          FILES="$(wc -l < /tmp/manifest.new | tr -d ' ')"
+          BYTES="$({ find broadcasts docs download -type f 2>/dev/null -exec stat -c %s {} + || true; } | awk '{s+=$1} END {print s+0}')"
+
+          ADDED=0; REMOVED=0; CHANGED=0
+          if [ -f agent/manifest.sha256 ]; then
+            sort agent/manifest.sha256 > /tmp/old.sorted
+            sort /tmp/manifest.new > /tmp/new.sorted
+            cut -d' ' -f3- /tmp/old.sorted > /tmp/old.paths
+            cut -d' ' -f3- /tmp/new.sorted > /tmp/new.paths
+            REMOVED="$(comm -23 /tmp/old.paths /tmp/new.paths | grep -c . || true)"
+            ADDED="$(comm -13 /tmp/old.paths /tmp/new.paths | grep -c . || true)"
+            CHANGED="$(comm -3 /tmp/old.sorted /tmp/new.sorted | grep -c . || true)"
+          fi
+          if [ "$REMOVED" -gt 0 ]; then VERDICT="FAIL"; REASON="$REMOVED history files removed"; fi
+
+          # מוסכמת שמות: קובץ שידור נפתח בתאריך
+          BADNAME="$(find broadcasts -type f 2>/dev/null | grep -v -E '/[0-9]{4}-[0-9]{2}-[0-9]{2}-' | grep -c . || true)"
+
+          mkdir -p agent
+          cp /tmp/manifest.new agent/manifest.sha256
+          cat > agent/status.json <<EOF
+          {
+           "agent": "baseline-integrity",
+           "generatedAt": "$NOW",
+           "verdict": "$VERDICT",
+           "checks": {
+            "historyFiles": $FILES,
+            "historyBytes": $BYTES,
+            "addedSinceLast": $ADDED,
+            "removedSinceLast": $REMOVED,
+            "changedLinesSinceLast": $CHANGED,
+            "broadcastsBadNaming": $BADNAME
+           },
+           "reason": "$REASON"
+          }
+          EOF
+          git config user.name "baseline-integrity[bot]"
+          git config user.email "baseline-integrity[bot]@users.noreply.github.com"
+          git add -f agent/status.json agent/manifest.sha256
+          if git diff --cached --quiet; then
+            echo "status unchanged - no commit"
+          else
+            git commit -m "baseline-integrity: $VERDICT at $NOW"
+            git push
+          fi
+          echo "verdict: $VERDICT ($REASON)"
+          [ "$VERDICT" = "PASS" ] || exit 1

@@ -1,0 +1,15 @@
+{
+  "format": "HEADCORNER-KEY-SEAL-1",
+  "account": "headcorner",
+  "sealedAt": "2026-10-06T10:25:36.263Z",
+  "algo": "AES-256-GCM",
+  "kdf": "scrypt(dkLen 32)",
+  "envelope": "hex(salt16 + iv12 + tag16 + ct)",
+  "zeroRotation": true,
+  "passphraseCustody": [
+    "GitHub Actions Secret HEADCORNER_SEAL_PASSPHRASE @ roshpinacare-sys/Zip (cloud)",
+    "Zip clone .env.local in the sandbox (0600, not in git)",
+    "operator personal vault (read: cat .env.local)"
+  ],
+  "note": "key fingerprint lives inside the encrypted envelope only (no scanner noise)"
+}

@@ -1,0 +1,80 @@
+# SDK-VERIFY - מאמת ה-SDK
+#
+# ריפו ה-SDK מחזיק את התיעוד ואת ארכיון השידורים של ממשקי הרשת. הסוכן
+# מוודה מדי יום שהתיקיות קיימות ולא התרוקנו, בונה מניפסט SHA-256 וסופר
+# את מלאי המסמכים. דוח אמת ל-agent/status.json.
+
+name: sdk-verify
+
+on:
+  schedule:
+    - cron: '23 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sdk-verify
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run the sdk verify
+        run: |
+          set -u
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          VERDICT="PASS"
+          REASON="sdk content intact"
+
+          DOCS=0; BCASTS=0; DOCS_FILES=0; BC_FILES=0; ROOT_MD=0
+          [ -d docs ] && DOCS=1
+          [ -d broadcasts ] && BCASTS=1
+          DOCS_FILES="$({ find docs -type f 2>/dev/null || true; } | wc -l | tr -d ' ')"
+          BC_FILES="$({ find broadcasts -type f 2>/dev/null || true; } | wc -l | tr -d ' ')"
+          ROOT_MD="$({ find . -maxdepth 1 -name '*.md' || true; } | wc -l | tr -d ' ')"
+
+          if [ "$DOCS" -eq 0 ] && [ "$BCASTS" -eq 0 ]; then VERDICT="FAIL"; REASON="both docs and broadcasts missing"; fi
+          if [ "$DOCS" -eq 1 ] && [ "$DOCS_FILES" -eq 0 ]; then VERDICT="FAIL"; REASON="docs directory is empty"; fi
+          if [ "$BCASTS" -eq 1 ] && [ "$BC_FILES" -eq 0 ]; then VERDICT="FAIL"; REASON="broadcasts directory is empty"; fi
+
+          find docs broadcasts -type f 2>/dev/null | LC_ALL=C sort | xargs -r sha256sum > agent.tmp.sha256 || true
+          TOTAL_FILES="$((DOCS_FILES + BC_FILES))"
+          TOTAL_BYTES="$({ find docs broadcasts -type f 2>/dev/null -exec stat -c %s {} + || true; } | awk '{s+=$1} END {print s+0}')"
+
+          mkdir -p agent
+          mv agent.tmp.sha256 agent/manifest.sha256
+          cat > agent/status.json <<EOF
+          {
+           "agent": "sdk-verify",
+           "generatedAt": "$NOW",
+           "verdict": "$VERDICT",
+           "checks": {
+            "docsDirExists": $DOCS,
+            "docsFiles": $DOCS_FILES,
+            "broadcastsDirExists": $BCASTS,
+            "broadcastFiles": $BC_FILES,
+            "rootDocuments": $ROOT_MD,
+            "totalFiles": $TOTAL_FILES,
+            "totalBytes": $TOTAL_BYTES
+           },
+           "reason": "$REASON"
+          }
+          EOF
+          git config user.name "sdk-verify[bot]"
+          git config user.email "sdk-verify[bot]@users.noreply.github.com"
+          git add -f agent/status.json agent/manifest.sha256
+          if git diff --cached --quiet; then
+            echo "status unchanged - no commit"
+          else
+            git commit -m "sdk-verify: $VERDICT at $NOW"
+            git push
+          fi
+          echo "verdict: $VERDICT ($REASON)"
+          [ "$VERDICT" = "PASS" ] || exit 1

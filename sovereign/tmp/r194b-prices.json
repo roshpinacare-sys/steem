@@ -1,0 +1,198 @@
+{
+  "summary": {
+    "at": "2026-10-04T10:59:47.998Z",
+    "task": "r194-b M1",
+    "blurtSources": [
+      {
+        "name": "paprika-blurt-ticker",
+        "url": "https://api.coinpaprika.com/v1/tickers/blurt-blurt",
+        "status": 404,
+        "ms": 233,
+        "ok": false,
+        "price": null,
+        "bodyPreview": "{\"error\":\"id not found\"}"
+      },
+      {
+        "name": "paprika-blurt-search",
+        "url": "https://api.coinpaprika.com/v1/search/?q=blurt&c=currencies&limit=5",
+        "status": 200,
+        "ms": 250,
+        "ok": true,
+        "price": {
+          "found": "blurt-blurt",
+          "symbol": "BLURT",
+          "active": false
+        },
+        "bodyPreview": "{\"currencies\":[{\"id\":\"blurt-blurt\",\"name\":\"BLURT\",\"symbol\":\"BLURT\",\"rank\":0,\"is_new\":false,\"is_active\":false,\"type\":\"token\",\"rev\":10608867,\"contract_address\":[{\"type\":\"BEP20\",\"address\":\"0xb0458283033e5a3f7867f409477f53754b667dcc\"}]}]}"
+      },
+      {
+        "name": "coincap-blurt-search",
+        "url": "https://api.coincap.io/v2/assets?search=blurt",
+        "status": 0,
+        "ms": 9,
+        "ok": false,
+        "error": "Error: Unable to connect. Is the computer able to access the url?"
+      },
+      {
+        "name": "cryptocompare-blurt",
+        "url": "https://min-api.cryptocompare.com/data/price?fsym=BLURT&tsyms=USD",
+        "status": 401,
+        "ms": 24,
+        "ok": false,
+        "price": null,
+        "bodyPreview": "{\"Data\":{},\"Err\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\",\"http_status_code\":401,\"frontend\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\"}}}"
+      },
+      {
+        "name": "coingecko-blurt",
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=blurt&vs_currencies=usd",
+        "status": 429,
+        "ms": 28,
+        "ok": false,
+        "price": null,
+        "bodyPreview": "{\"status\":{\"error_code\":429,\"error_message\":\"You've exceeded the Rate Limit. Please visit https://www.coingecko.com/en/api/pricing to subscribe to our API plans for higher rate limits.\"}}"
+      }
+    ],
+    "sbdSources": [
+      {
+        "name": "cryptocompare-sbd",
+        "url": "https://min-api.cryptocompare.com/data/price?fsym=SBD&tsyms=USD",
+        "status": 401,
+        "ms": 24,
+        "ok": false,
+        "price": null,
+        "bodyPreview": "{\"Data\":{},\"Err\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\",\"http_status_code\":401,\"frontend\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\"}}}"
+      },
+      {
+        "name": "paprika-sbd-ticker",
+        "url": "https://api.coinpaprika.com/v1/tickers/sbd-sbd",
+        "status": 404,
+        "ms": 265,
+        "ok": false,
+        "price": null,
+        "bodyPreview": "{\"error\":\"id not found\"}"
+      },
+      {
+        "name": "coingecko-sbd",
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=steem-dollars&vs_currencies=usd",
+        "status": 429,
+        "ms": 33,
+        "ok": false,
+        "price": null,
+        "bodyPreview": "{\"status\":{\"error_code\":429,\"error_message\":\"You've exceeded the Rate Limit. Please visit https://www.coingecko.com/en/api/pricing to subscribe to our API plans for higher rate limits.\"}}"
+      },
+      {
+        "name": "coincap-sbd-search",
+        "url": "https://api.coincap.io/v2/assets?search=steem%20dollars",
+        "status": 0,
+        "ms": 9,
+        "ok": false,
+        "error": "Error: Unable to connect. Is the computer able to access the url?"
+      }
+    ],
+    "bonus": [
+      {
+        "name": "cryptocompare-steem",
+        "url": "https://min-api.cryptocompare.com/data/price?fsym=STEEM&tsyms=USD",
+        "status": 401,
+        "ms": 25,
+        "ok": false,
+        "price": null,
+        "bodyPreview": "{\"Data\":{},\"Err\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\",\"http_status_code\":401,\"frontend\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\"}}}"
+      }
+    ]
+  },
+  "raw": [
+    {
+      "name": "paprika-blurt-ticker",
+      "url": "https://api.coinpaprika.com/v1/tickers/blurt-blurt",
+      "status": 404,
+      "ms": 233,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"error\":\"id not found\"}"
+    },
+    {
+      "name": "paprika-blurt-search",
+      "url": "https://api.coinpaprika.com/v1/search/?q=blurt&c=currencies&limit=5",
+      "status": 200,
+      "ms": 250,
+      "ok": true,
+      "price": {
+        "found": "blurt-blurt",
+        "symbol": "BLURT",
+        "active": false
+      },
+      "bodyPreview": "{\"currencies\":[{\"id\":\"blurt-blurt\",\"name\":\"BLURT\",\"symbol\":\"BLURT\",\"rank\":0,\"is_new\":false,\"is_active\":false,\"type\":\"token\",\"rev\":10608867,\"contract_address\":[{\"type\":\"BEP20\",\"address\":\"0xb0458283033e5a3f7867f409477f53754b667dcc\"}]}]}"
+    },
+    {
+      "name": "coincap-blurt-search",
+      "url": "https://api.coincap.io/v2/assets?search=blurt",
+      "status": 0,
+      "ms": 9,
+      "ok": false,
+      "error": "Error: Unable to connect. Is the computer able to access the url?"
+    },
+    {
+      "name": "cryptocompare-blurt",
+      "url": "https://min-api.cryptocompare.com/data/price?fsym=BLURT&tsyms=USD",
+      "status": 401,
+      "ms": 24,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"Data\":{},\"Err\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\",\"http_status_code\":401,\"frontend\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\"}}}"
+    },
+    {
+      "name": "coingecko-blurt",
+      "url": "https://api.coingecko.com/api/v3/simple/price?ids=blurt&vs_currencies=usd",
+      "status": 429,
+      "ms": 28,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"status\":{\"error_code\":429,\"error_message\":\"You've exceeded the Rate Limit. Please visit https://www.coingecko.com/en/api/pricing to subscribe to our API plans for higher rate limits.\"}}"
+    },
+    {
+      "name": "cryptocompare-sbd",
+      "url": "https://min-api.cryptocompare.com/data/price?fsym=SBD&tsyms=USD",
+      "status": 401,
+      "ms": 24,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"Data\":{},\"Err\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\",\"http_status_code\":401,\"frontend\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\"}}}"
+    },
+    {
+      "name": "paprika-sbd-ticker",
+      "url": "https://api.coinpaprika.com/v1/tickers/sbd-sbd",
+      "status": 404,
+      "ms": 265,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"error\":\"id not found\"}"
+    },
+    {
+      "name": "coingecko-sbd",
+      "url": "https://api.coingecko.com/api/v3/simple/price?ids=steem-dollars&vs_currencies=usd",
+      "status": 429,
+      "ms": 33,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"status\":{\"error_code\":429,\"error_message\":\"You've exceeded the Rate Limit. Please visit https://www.coingecko.com/en/api/pricing to subscribe to our API plans for higher rate limits.\"}}"
+    },
+    {
+      "name": "coincap-sbd-search",
+      "url": "https://api.coincap.io/v2/assets?search=steem%20dollars",
+      "status": 0,
+      "ms": 9,
+      "ok": false,
+      "error": "Error: Unable to connect. Is the computer able to access the url?"
+    },
+    {
+      "name": "cryptocompare-steem",
+      "url": "https://min-api.cryptocompare.com/data/price?fsym=STEEM&tsyms=USD",
+      "status": 401,
+      "ms": 25,
+      "ok": false,
+      "price": null,
+      "bodyPreview": "{\"Data\":{},\"Err\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\",\"http_status_code\":401,\"frontend\":{\"type\":2,\"message\":\"API key required, please refer to the documentation at https://developers.coindesk.com/\"}}}"
+    }
+  ]
+}

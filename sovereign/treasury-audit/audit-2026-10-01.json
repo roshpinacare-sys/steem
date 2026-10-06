@@ -1,0 +1,79 @@
+{
+  "format": "treasury-audit-v1",
+  "seq": 4,
+  "at": "2026-10-01T23:56:40.363Z",
+  "verdict": "FAIL",
+  "checks": [
+    {
+      "id": "decision-chain",
+      "status": "pass",
+      "detail": "יומן-ההחלטות מאומת — 83 רשומות, שרשרת sha256 תקינה",
+      "numbers": {
+        "entries": 83,
+        "brokenAt": null,
+        "ok": true
+      }
+    },
+    {
+      "id": "pnl-snapshot-chain",
+      "status": "pass",
+      "detail": "שרשרת-תמונות-ה-PnL מאומתת — 3 תמונות (אחרונה seq 3 בת 19 דק')",
+      "numbers": {
+        "entries": 3,
+        "brokenAt": null,
+        "ok": true,
+        "lastSeq": 3
+      }
+    },
+    {
+      "id": "receipts-book",
+      "status": "pass",
+      "detail": "ספר-הקבלות תקין — 60 קבלות · 6 עם txid · אחרונה בת 7 דק'",
+      "numbers": {
+        "total": 60,
+        "withTxid": 6,
+        "outOfOrder": 0,
+        "lastAgeMinutes": 7
+      }
+    },
+    {
+      "id": "ladder-floor",
+      "status": "pass",
+      "detail": "רצפת-הערך מוחזקת — אף פקודת-מכירה מתחת לפאריטה (4 פקודות פתוחות)",
+      "numbers": {
+        "state": "HELD",
+        "asksBelowParity": 0,
+        "worstBps": 0,
+        "maxDriftLossSbd": 0,
+        "ordersOpen": 4
+      }
+    },
+    {
+      "id": "orders-stale",
+      "status": "pass",
+      "detail": "אין פקודות-ישנות מעל 48ש' (4 פקודות נבדקו)",
+      "numbers": {
+        "staleCount": 0,
+        "thresholdHours": 48,
+        "oldestHours": null
+      }
+    },
+    {
+      "id": "balances-drift",
+      "status": "fail",
+      "detail": "אי-התאמת יתרות מול השרשרת — דריפת STEEM 9.317 · דריפת SBD 4.643 (אנומליה)",
+      "numbers": {
+        "measured": true,
+        "homeSteem": 115.975,
+        "homeSbd": 46.927,
+        "chainSteem": 106.658,
+        "chainSbd": 42.284,
+        "driftSteem": 9.317,
+        "driftSbd": 4.643
+      }
+    }
+  ],
+  "anomalies": [
+    "balances-drift: אי-התאמת יתרות מול השרשרת — דריפת STEEM 9.317 · דריפת SBD 4.643 (אנומליה)"
+  ]
+}

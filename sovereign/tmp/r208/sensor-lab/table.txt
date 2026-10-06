@@ -1,0 +1,34 @@
+vector                           | inject                                                     | reject                       | resource     | decision             | verdict
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+V1-stale-all-8d                  | 3.5                                                        | MODEL-STALE                  | -            | WAIT-SAFETY          | PASS
+V1b-stale-options-only-8d        | 3.5                                                        | MODEL-STALE                  | -            | WAIT-SAFETY          | PASS
+V1c-fresh-6d23h                  | 0.015                                                      | -                            | INSUFFICIENT | WAIT-MODEL           | PASS(גבול)
+V1d-stale-7d1s                   | 3.5                                                        | MODEL-STALE                  | -            | WAIT-SAFETY          | PASS(גבול)
+V2-falsifier-delta-missing       | 3.5                                                        | FALSIFIER-MISSING            | -            | WAIT-SAFETY          | PASS
+V2b-falsifiers-empty             | 3.5                                                        | FALSIFIER-MISSING            | -            | WAIT-SAFETY          | PASS
+V3-schema-v2                     | 3.5                                                        | MODEL-SCHEMA-INVALID         | -            | WAIT-SAFETY          | PASS
+V3b-schema-absent                | 3.5                                                        | MODEL-SCHEMA-INVALID         | -            | WAIT-SAFETY          | PASS
+V4-trace-removed                 | 3.5                                                        | MODEL-PROVENANCE-BROKEN      | -            | WAIT-SAFETY          | PASS
+V4b-law-removed                  | 3.5                                                        | MODEL-PROVENANCE-BROKEN      | -            | WAIT-SAFETY          | PASS
+V4c-builtAt-garbage              | 3.5                                                        | MODEL-PROVENANCE-BROKEN      | -            | WAIT-SAFETY          | PASS
+V5-zero-fresh                    | 0                                                          | -                            | INSUFFICIENT | WAIT-MODEL           | PASS(הערה)
+V5b-zero-stale-2h                | 0                                                          | RESOURCE-UNKNOWN-REQUIRED    | -            | WAIT-SAFETY          | PASS
+V5c-missing-measurement          | None                                                       | RESOURCE-UNKNOWN-REQUIRED    | -            | WAIT-SAFETY          | PASS
+V6a-unit-USD/STEEM-3.5           | 3.5                                                        | UNIT-MISMATCH                | -            | WAIT-SAFETY          | PASS
+V6b-unit-lowercase-usd-3.5       | 3.5                                                        | UNIT-MISMATCH                | -            | WAIT-SAFETY          | PASS
+V6c-unit-empty-3.5               | 3.5                                                        | UNIT-MISMATCH                | -            | WAIT-SAFETY          | PASS
+V6d-unit-absent-0.1041           | 0.1041                                                     | -                            | INSUFFICIENT | WAIT-MODEL           | PASS(הערה §XV)
+V6e-unit-absent-3.5              | 3.5                                                        | -                            | SUFFICIENT   | ACT                  | VULNERABILITY
+V7-contradiction-3.5-vs-model-0.015 | 3.5                                                        | -                            | SUFFICIENT   | ACT                  | DESIGN-NOTE
+V7b-model-threshold-ignored      | 3.5                                                        | -                            | SUFFICIENT   | ACT                  | DESIGN-NOTE
+V8-at-not-a-date-3.5             | 3.5                                                        | -                            | SUFFICIENT   | ACT                  | VULNERABILITY
+V8b-at-not-a-date-0              | 0                                                          | -                            | INSUFFICIENT | WAIT-MODEL           | PASS(הערה)
+V8c-at-exactly-3600s             | 0.015                                                      | -                            | INSUFFICIENT | WAIT-MODEL           | PASS(גבול)
+V8d-at-3601s                     | 0.015                                                      | RESOURCE-UNKNOWN-REQUIRED    | -            | WAIT-SAFETY          | PASS(גבול)
+V9-nan                           | None                                                       | RESOURCE-UNKNOWN-REQUIRED    | -            | WAIT-SAFETY          | PASS
+V9b-infinity                     | None                                                       | RESOURCE-UNKNOWN-REQUIRED    | -            | WAIT-SAFETY          | PASS
+V9c-1e308                        | 1e+308                                                     | -                            | SUFFICIENT   | ACT                  | VULNERABILITY
+V9d-neg1e308                     | -1e+308                                                    | -                            | INSUFFICIENT | WAIT-MODEL           | PASS
+V10a-exactly-3.0                 | 3                                                          | -                            | SUFFICIENT   | ACT                  | PASS(גבול)
+V10b-2.999                       | 2.999                                                      | -                            | INSUFFICIENT | WAIT-MODEL           | PASS(גבול)
+V15-traceability                 | 0.015                                                      | -                            | INSUFFICIENT | WAIT-MODEL           | PASS(§XV)

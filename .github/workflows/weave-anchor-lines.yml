@@ -1,0 +1,148 @@
+# WEAVE-ANCHOR-LINES — שני קווי העדות כרצף אחד (Task 24)
+#
+# לקח 11:09: שני קווים במקביל מאותו בסיס כתבו שני "אימות 46" שונים —
+# הדחיפות התנגשו מבנית (קונפליקט תוכן, לא מרוץ-רגע). מעתה: עבודה
+# אחת, ייבוא אחד, עיגון Steem/Hive ⇒ עיגון ZERO ⇒ ייצוא ודחיפה אחת.
+# הסדר זהה לדוקטרינה: פעימה ⇒ עוגן Steem ⇒ עוגן ZERO — והקווים
+# עצמאיים בכשל: אם Steem אדום, ZERO עדיין מעיד (if: always) —
+# והריצה אדומה בכנות אם אחד מהם נכשל.
+#
+# משגר הלב את הקווים בעקבות כל פעימה (workflow_dispatch); ה-cron
+# הדו-שעתי הוא רשת-ביטחון למקרה שמנגנון השיגור עצמו ייפול.
+#
+# תקציב (נמדד): ~70ש' למחזור מלא — חיסכון ממקביל (הכנה אחת) ⇒
+# ~24 מחזורים/יום ≈ 28 דק'/יום ≈ 850 דק'/חודש לצד הלב.
+
+name: weave-anchor-lines
+
+on:
+  # R71: הקדנס הוסר — התאום ב-Domain (:33) נושא את הקווים. גיבוי ידני בלבד.
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'anchor mode — auto: anchor the latest checkpoint root on both lines if not yet anchored; dry: build payloads, broadcast nothing; verify-only: keyless readback, never broadcast'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - dry
+          - verify-only
+      recover:
+        description: 'recovery — txid (0x…64hex) of an on-chain ZERO anchor whose push reddened pre-verification: re-verify payload from chain and write the attestation'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weave-anchor-lines
+  cancel-in-progress: false
+
+jobs:
+  anchor-lines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout origin/main (the sovereign home)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Prisma client + DB skeleton
+        run: bunx prisma generate && bunx prisma db push
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      # ── שומר-עדיפות רשת-האחסון (R50) ──
+      # בזמן העלאת תוכן לשרשרת, תקציב ה-RC מוקדש קודם לסוכן השידור
+      # (web-publish). הקווים חוזרים לפעום ברגע שהדואר הנכנס מתרוקן —
+      # דילוג-כנה ומדווח, לא כישלון.
+      - name: Web-upload priority guard (honest skip while inbox pending)
+        id: webguard
+        run: |
+          PENDING=$(ls sovereign/web/inbox/*/job.json 2>/dev/null | wc -l)
+          echo "pending=$PENDING" >> "$GITHUB_OUTPUT"
+          if [ "$PENDING" -gt 0 ]; then
+            echo "דואר נכנס של רשת-האחסון לא ריק ($PENDING חבילות) — תקציב ה-RC מוקדש לשידור התוכן. הקווים יעגנו במחזור הבא."
+          else
+            echo "דואר נכנס ריק — הקווים פועלים כסדרם"
+          fi
+
+      - name: Line 1 — Steem/Hive anchor (external witness, posting authority)
+        id: steem
+        if: steps.webguard.outputs.pending == '0'
+        continue-on-error: true
+        run: |
+          MODE_FLAG=""
+          case "${MODE_INPUT}" in
+            dry) MODE_FLAG="--dry" ;;
+            verify-only) MODE_FLAG="--verify-only" ;;
+          esac
+          bun scripts/weave-anchor.ts $MODE_FLAG
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          WEAVE_HIVE_WIF: ${{ secrets.WEAVE_HIVE_WIF || secrets.HIVE_POSTING_WIF }}   # r181: קשירת-שם — HIVE_POSTING_WIF בכספת מאז 2026-09-23 (נמדד); בהיעדר-שניהם fallback ל-WIF-ה-Steem, דילוג-כנה
+          BLURT_ACTIVE_WIF: ${{ secrets.BLURT_ACTIVE_WIF }}   # r183: המסילה השלישית — הבעלות הוכחה חי (body זהה BLT5HhJD…)
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE }}
+          MODE_INPUT: ${{ inputs.mode }}
+
+      - name: Line 2 — Zero-gas EVM anchor on Z Chain 9369
+        id: zero
+        if: steps.webguard.outputs.pending == '0'
+        continue-on-error: true
+        run: |
+          MODE_FLAG=""
+          case "${MODE_INPUT}" in
+            dry) MODE_FLAG="--dry" ;;
+            verify-only) MODE_FLAG="--verify-only" ;;
+          esac
+          if [ -n "$RECOVER_INPUT" ]; then
+            case "$RECOVER_INPUT" in
+              # hex-only contract (audit 2026-09-28) — one quote-clean clause covers every
+              # dangerous char: anything outside [0-9a-fA-Fx] (the x allows a 0x prefix).
+              # The old clause list mixed unbalanced quotes into the pattern and was a bash
+              # SYNTAX ERROR (exit 2 at job time — Task 25 caught it via the failure sweep).
+              *[!0-9a-fA-Fx]*) echo "recover input rejected (audit 2026-09-28: txid must be hex)"; exit 1 ;;
+            esac
+            MODE_FLAG="--recover=$RECOVER_INPUT"
+          fi
+          bun scripts/weave-anchor-zero.ts $MODE_FLAG
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE }}
+          MODE_INPUT: ${{ inputs.mode }}
+          RECOVER_INPUT: ${{ inputs.recover }}
+
+      - name: Honesty verdict — red if any line failed (skipped-by-guard = green honest skip)
+        if: always()
+        run: |
+          if [ "${{ steps.webguard.outputs.pending }}" != "0" ]; then
+            echo "דילוג-כנה: העלאת תוכן בעדיפות — אף קו לא רץ המחזור הזה"; exit 0
+          fi
+          echo "steem: ${{ steps.steem.outcome }} · zero: ${{ steps.zero.outcome }}"
+          if [ "${{ steps.steem.outcome }}" = "failure" ] || [ "${{ steps.zero.outcome }}" = "failure" ]; then
+            echo "לפחות קו עדות אחד אדום — הריצה אדומה בכנות"; exit 1
+          fi
+          echo "שני קווי העדות הושלמו"
+
+      - name: Upload anchor reports (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weave-anchor-reports
+          path: |
+            sovereign/anchor-report.json
+            sovereign/zero-anchor-report.json
+          retention-days: 30
+          if-no-files-found: ignore

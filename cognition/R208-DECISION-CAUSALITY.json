@@ -1,0 +1,155 @@
+{
+ "_meta": {
+  "schema": "r208-decision-causality-v1",
+  "round": "R208",
+  "trace": "1a10d7a051e822d1",
+  "writtenAt": "2026-10-05T20:02:39Z",
+  "law": "כל-חץ-עם-אסמכתא · אין-חצים-דקורטיביים · המודל משפיע-העדפה, לעולם לא סמכות"
+ },
+ "boundary": "money-mover/decide#liquidity-wave (arena-stream, חוק r103, ספר-פנימי <$100)",
+ "consumer": {
+  "module": "mini-services/objective-consumer.ts",
+  "decisionFn": "mini-services/wave-decision.ts",
+  "integration": "mini-services/money/index.ts decide() ענף-הגל (472-568)",
+  "daemonVersion": "1.13.0",
+  "liveBoot": "2026-10-05T19:43:40Z"
+ },
+ "modelFiles": {
+  "objectives.json": "6f4dc3453e839beaa86db25c575035f5974e9d7e678c6b3cc8e1d71e819cff82",
+  "options.json": "be5c4327cdd6643e5728c12cd955c00c2f6b68d0da038c14e0e13a199fcc8c00",
+  "capabilities.json": "91b31511be4e1c3d15253fe5efaa127d20c9ed5249ee1799353b1dd8d236f64b",
+  "authority-map.json": "a84280b6a77c0c20261104ee8afa36cb9fdd28d71b025f062e12d8ed876dc18f"
+ },
+ "authorityMapRepair": {
+  "found": "JSON שבור ב-commit r207 (מרכאות-לא-מוחרגות, שורת-I1)",
+  "before": "790afcd8f76509644b4a9ba598262bbbe538b67a4a35e4750d7b0a0732c6886d",
+  "after": "a84280b6a77c0c20261104ee8afa36cb9fdd28d71b025f062e12d8ed876dc18f",
+  "semanticChange": "אפס (verdicts מילה-במילה — אומת מפריך-B)",
+  "pinned": false,
+  "note": "לא חתום בספר-ההעדפות — חולשה-ידועה"
+ },
+ "goldenChain": [
+  {
+   "arrow": "REALITY→SENSOR",
+   "evidence": "measure() 60ש' ← /api/money; מדידה-חיה 19:18Z: idle 1.377 STEEM · parity 0.1041 SBD/STEEM · SBD 0.015"
+  },
+  {
+   "arrow": "SENSOR→OBJECTIVE MODEL",
+   "evidence": "loadModel: 4-קבצים · סכמה/היוחסות/זקנה-7d/מפריך-חובה · דחיות מאומתות ב-15-עולמות+32-וקטורי-D"
+  },
+  {
+   "arrow": "MODEL→RESOURCE STATE",
+   "evidence": "measuredSbd עם יחידה/מקור/זמן/זקנה/טרנספורמציה; אפס→UNKNOWN נבדל מאפס-כנה (D:V5b/V5c)"
+  },
+  {
+   "arrow": "RESOURCE→ALTERNATIVES",
+   "evidence": "תצוגה: A′/B/C1 מ-options.json — לא-המצאה"
+  },
+  {
+   "arrow": "ALTERNATIVES→OPPORTUNITY COST",
+   "evidence": "foregone/learningValue/risk מהמודל; סדרתי HIGHER/LOWER/UNKNOWN בלבד"
+  },
+  {
+   "arrow": "→PRE-ACTION PREDICTION",
+   "evidence": "ספר-משורשר; 13/13 PREDICTION לפני-הכרעה; סגירה-כפולה/זרה נדחות; כשל-כתיבה גלוי"
+  },
+  {
+   "arrow": "PREDICTION→DECISION",
+   "evidence": "waveDecision טהור; 15/15-עולמות מתנהגים-כחוזה; PREDICTION-DIVERGENCE מפריך-רשום"
+  },
+  {
+   "arrow": "DECISION→AUTHORITY CHECK",
+   "evidence": "gateFleetAction+tx-gate בלתי-תלויי-מודל (מפריך-C); BLOCKED_BY_AUTHORITY כשהמפה אוסרת (W-B7)"
+  },
+  {
+   "arrow": "→ACTION/REFUSAL",
+   "evidence": "חי: REPRICE רגיל לאחר-ההחייה; WAIT-PREFERENCE/WAIT-MODEL/WAIT-SAFETY = refusal מנומק"
+  },
+  {
+   "arrow": "→EXTERNAL OUTCOME",
+   "evidence": "OUTCOME_UNOBSERVED — אין-גל-חי בסבב; אין-מניפולציה (§IX)"
+  },
+  {
+   "arrow": "EXPECTED vs ACTUAL",
+   "evidence": "PREDICTION-CLOSE match=13/13 בגבול-מעבדה; divergence מנוטר"
+  },
+  {
+   "arrow": "→LEARNING",
+   "evidence": "I7-חי: notePreferenceCondition ×3 → PREFERENCE-EXPIRE משורשר (3aa134df→016c7b1d)"
+  },
+  {
+   "arrow": "→PREFERENCE UPDATE",
+   "evidence": "W-B1: שחרור-מכונה מראיה-סותרת"
+  },
+  {
+   "arrow": "→FUTURE DECISION",
+   "evidence": "W-B1: ACT במקום WAIT-PREFERENCE — החלטה-עתידית-שונה"
+  }
+ ],
+ "causalAttribution": {
+  "verdict": "סיבתי-בגבול; מבודד על-ידי זיווג-פקטוריאלי",
+  "isolationPair": "W-B1b↔W-B1: משתנה-יחיד SBD (0.015→3.5) — WAIT-MODEL→ACT",
+  "modelAloneSuppresses": "W-B1b/W-B8: בלי-העדפה, המודל NOT-QUALIFIED-NOW מדכא (WAIT-MODEL)",
+  "preferenceAloneNotEnough": "W-B1b: שחרור-העדפה לבדו אינו מפיק ACT כשהמשאב חסר",
+  "authorityIndependent": "W-B7: BLOCKED_BY_AUTHORITY אף-כשהמודל מאשר",
+  "residualDoubts": [
+   "מנבא-ומכריע אותו-מחבר (קיבוע-חוק, לא-חזון)",
+   "אין-דגימת-גבול-חי",
+   "סף-3.0-קבוע-בקוד",
+   "authority-map לא-מעוגן"
+  ]
+ },
+ "prediction": {
+  "book": "sovereign/objectives/predictions.jsonl",
+  "liveState": "לא-נוצר עדיין (אין-גל-חי) — כנה",
+  "labEntries": "בעותקים-מבודדים בלבד",
+  "order": "PREDICTION→PREDICTION-CLOSE בכל-עולם-גבול",
+  "expectedDecisionVsActual": "13/13 match"
+ },
+ "externalOutcome": "OUTCOME_UNOBSERVED (חי) · מעבדה-אינה-מדווחת-כעולם",
+ "preferenceUpdate": {
+  "mechanism": "notePreferenceCondition I7 (3-מדידות-סותרות)",
+  "evidence": "releaseTrace streak#3:PREFERENCE-EXPIRE"
+ },
+ "futureDecision": "W-B1 → ACT (החלטה-שונה-מ-W-A)",
+ "restartConsistency": {
+  "killedAt": "2026-10-05T19:37:08Z",
+  "keeperRefusal": "כנה — תקציב-הקמות 3/3 אזל (FAIL-11)",
+  "revivedVia": "scripts/daemons-revive.mjs (חוק-R84) 19:43:40Z",
+  "stateSurvived": [
+   "version 1.13.0",
+   "beats 3767 נמשכו",
+   "actionsToday 6",
+   "lastTotalSteem 10.792",
+   "ספר-העדפות verifyChain ok",
+   "האשי-מודל יציבים"
+  ],
+  "sameEvidenceSameDecision": "WAIT-PREFERENCE (חי-קריאה-בלבד אחרי-החייאה)",
+  "oneVariableChangeDifferentDecision": "W-B1-חוזר: ACT"
+ },
+ "sensorIntegrity": {
+  "unitMetadata": "value/unit/source/at/stalenessSec/transformation חובה",
+  "fixedInRound": [
+   "V8: staleness NaN fail-open → RESOURCE-UNKNOWN-REQUIRED",
+   "V6e: יחידה-חסרה שקטה → UNIT-MISMATCH",
+   "V9c: ערך-בלתי-סביר (1e308) → RESOURCE-UNKNOWN-REQUIRED",
+   "V6d: 0.1041 בלי-יחידה → נדחה"
+  ],
+  "postFixMatrix": "15/15 PASS (replay-worlds-postfix.jsonl)"
+ },
+ "openContradictions": [
+  "X1 קצב-קיורציה 2%↔6% (לא-נוגע בגבול-זה)",
+  "X2 O12 סותר דוקטרינת Activity≠Value (מסומן בתצוגה)",
+  "X3 D-OP-01 מושעה בלי-קריטריון-חזרה"
+ ],
+ "unknowns": [
+  "מילוי-גבול-חי ראשון (תלוי-גל ≥200 STEEM)",
+  "התנהגות-אחרי-פק-תוקף-המודל 10-12 (WAIT-SAFETY צפוי — דורש ריענון-מודל)",
+  "הצריכה ב-11-הענפים האחרים (מודל-עיוורים כמתוכנן)"
+ ],
+ "confidence": {
+  "causalConsumptionAtBoundary": "גבוה (מעבדה)",
+  "liveEndToEnd": "OUTCOME_UNOBSERVED",
+  "overall": "B"
+ }
+}

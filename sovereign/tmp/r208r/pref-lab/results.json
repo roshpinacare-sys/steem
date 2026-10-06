@@ -1,0 +1,77 @@
+{
+ "at": "2026-10-06T00:34:14.108Z",
+ "results": [
+  {
+   "attack": "P1|exact-release-threshold",
+   "injected": "2-סתירות→לא · 3→כן",
+   "pass": true,
+   "detail": "אחרי-2 פעילה=true · אחרי-3 wrote=PREFERENCE-EXPIRE פעילה=לא",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P2|non-consecutive-never-releases",
+   "injected": "לא-רצופות",
+   "pass": true,
+   "detail": "העדפה עדיין פעילה=true — רק רצף-משחרר",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P3|duplicate-measurement-counts",
+   "injected": "3×אותה-מדידה-חיובית",
+   "pass": true,
+   "detail": "שוחרר=true — מגבלה-מתועדת: המנגנון סופר-מדידות-פעימה (זמן-מופרד), לא-תוכן-עצמאי; המקור הוא-חיישן-הפעימה-החי (§X מאוטם), לא-קלט-חוץ",
+   "expectation": "documented-limitation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P4|corruption-fail-closed",
+   "injected": "ספר-קרוע",
+   "pass": true,
+   "detail": "chain.ok=false — אין-שחרור על-שרשרת-שבורה (fail-closed)",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P5|restart-resets-streak",
+   "injected": "rebuild אחרי-2",
+   "pass": true,
+   "detail": "chainOk=true streak-after-rebuild=0 — שחרור-כוזב-בלתי-אפשרי אחרי-מוות (שמרני)",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P6|replayed-contradiction-deduped",
+   "injected": "אותה-ראיה ×2",
+   "pass": true,
+   "detail": "רישום-אחד בלבד (count=1) · ריפליי=already-active",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P7|forbidden-content-rejected",
+   "injected": "הזרקת-תוכן-אסור",
+   "pass": true,
+   "detail": "wrote=null why=FORBIDDEN-CONTENT: /private|wif|secret|password/i (I5) · count=0 — I5 דוח (fail-closed)",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P8|suspend-resume-semantics",
+   "injected": "SUSPEND→RESUME",
+   "pass": true,
+   "detail": "suspended=true resumed=true — ההשעיה גלויה-משורשרת",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "P9|expiry-by-time",
+   "injected": "פק-תוקף-כנה",
+   "pass": true,
+   "detail": "activeDown אחרי-הזמן=לא-פעילה — ההעדפה אינה-נצחית (I7)",
+   "expectation": "release-discipline",
+   "epistemic": "OBSERVED"
+  }
+ ]
+}

@@ -1,0 +1,117 @@
+# WEAVE-HEART — הלב הענן של THE WEAVE (שכבת ALWAYS-UP)
+#
+# הסנדבוקס הוא רק ה-runner הראשי. הריפו (הבית הריבוני) חי כאן —
+# וגיטהאב עצמו מפעיל את הרשת: כל שעה הענן קורא את הספר מה-clone
+# הטרי ופוסק:
+#   · עבודת runner-ראשי טרייה (אימות לא-ANCHOR < 26h) ⇒ SANDBOX-ALIVE ⇒
+#     אימות-בלבד, אפס כתיבה. השרשרת עצמה השופטת — כמו cloud-heart של הצי.
+#     (Task 19: אימותי ANCHOR ודחיפות העוגנים אינם נספרים — הם חיים
+#     תמיד מעצם קיום הקווים ואינם מוכיחים שה-runner הראשי חי.)
+#   · ישן/חסר ⇒ TAKEOVER: פתיחת seal (zero-touch) ⇒ פעימה חתומה ⇒
+#     checkpoint ⇒ ledger.json ⇒ שער-סודות ⇒ commit+push.
+#     שער SOV-2 נסגר אוטומטית ע"י פעימת הענן הראשונה.
+#
+# אימות: GITHUB_TOKEN של הריפו עצמו (contents:write + actions:write)
+# — ה-PAT של המפעיל לא נחוץ כאן כלל ולעולם לא מגיע לענן.
+#
+# משעול-הבטחה לקווי העיגון (Task 19): רישום ה-cron של גיטהאב
+# ל-workflows חדשים אמין-למחצה — נמדד 0/3 חלונות לקווים שנוספו
+# היום (:20/:30) בזמן שהלב הוותיק ירה 2/2. לכן הלב עצמו משגר את
+# שני הקווים בעקבותיו (workflow_dispatch — פטור ממגבלת ה-GITHUB_TOKEN);
+# הדה-דופליקציה בקווים עצמם מבטיחה שאין שידור כפול (root שכבר
+# עוגן ⇒ ALREADY-ANCHORED בכנות), וה-concurrency בקווים מסדר ריצות
+# כפולות לתור. הקדנס: פעימה ⇒ עוגן Steem ⇒ עוגן ZERO — אותו מחזור
+# 6-שעות, אותו סדר.
+#
+# תקציב (נמדד 2026-09-15): פעימה ~29ש' · עוגן ~41ש' · ZERO ~38ש' ⇒ מחזור
+# שעתי מלא ≈ 44 דק'/יום ≈ 1330 דק'/חודש — בתוך המכסה החודשית (2000) לצד
+# קווי הצי בריפואים האחרים.
+
+name: weave-heart
+
+on:
+  # R71 (2026-09-21, ריבונות המכסה): הקדנס המתוזמן הוסר — התאום הציבורי ב-Domain
+  # (weave-heart :13, דקות Actions בלתי-מוגבלות) הוא המכונה. המקור הזה — גיבוי
+  # להזנקה ידנית בלבד (workflow_dispatch); החזרת הקדנס = קומיט אחד.
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'heartbeat mode — auto: judge from the ledger/git freshness; force-beat: always take over and beat'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - force-beat
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: weave-heart
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout origin/main (the sovereign home)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Prisma client + DB skeleton
+        run: bunx prisma generate && bunx prisma db push
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      - name: Sovereign beat (verify, or take over if the ledger is stale)
+        run: bun scripts/weave-beat.ts
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          # משמרת ה-seal (G3): הסיסמה מ-Actions Secrets — הענן פותח
+          # את ה-seal בלי שום סוד בגיט (המעטפת בריפו חסרת-ערך לבדה)
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE }}
+          # force-beat ⇒ דגל מפורש; הספים הם ברירת המחדל של הדוקטרינה
+          WEAVE_FORCE_BEAT: ${{ inputs.mode == 'force-beat' && '1' || '0' }}
+          WEAVE_STALE_MIN: '1560'
+          # שער הכניסה (Task 26): הלב קורא פקודות מפעיל מהשרשרת הציבורית
+          # (@headcorner, saos.weave.ops.v1) ומבצע — beat/anchor ב-GITHUB_TOKEN
+          # של הריפו, console בפרסום המשואה דרך WEAVE_OPS_PAT (Actions Secret).
+          GITHUB_TOKEN: ${{ github.token }}
+          WEAVE_OPS_PAT: ${{ secrets.WEAVE_OPS_PAT }}
+          # SAOS-LIVE v1 (Task 29): הנחת הג'נזיס של המטבע החי — אותו
+          # מפתח posting של קו העדות (cashmachine) שמעגן checkpoints.
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          WEAVE_STEEM_ACCOUNT: cashmachine
+
+      - name: Upload beat report (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weave-beat-report
+          path: sovereign/beat-report.json
+          retention-days: 30
+
+      - name: Dispatch anchor lines (schedule backstop)
+        # הקווים תמיד רצים בעקבות הלב — גם ב-SANDBOX-ALIVE (הקווים
+        # עצמאיים במדינת הלב: הם מייבאים, מאמתים ומעגנים בעצמם,
+        # fail-closed על ספר שבור) וגם אם הפעימה האדימה.
+        if: always()
+        run: |
+          set -e
+          echo "[heart] משגר את קווי העיגון בעקבות הפעימה (backstop)…"
+          gh workflow run weave-anchor-lines.yml --ref "${{ github.ref_name }}"
+          echo "[heart] הקווים שוגרו כרצף אחד — הקדנס: פעימה ⇒ Steem/Hive ⇒ ZERO ⇒ דחיפה"
+        env:
+          GH_TOKEN: ${{ github.token }}

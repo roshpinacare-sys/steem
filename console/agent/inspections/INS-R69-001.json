@@ -1,0 +1,74 @@
+{
+  "format": "agent-inspection-v1",
+  "id": "INS-R69-001",
+  "inspectionOf": [
+    "R69 pre-push: 6 edited HTML files in each of Domain/Console working trees + sovereign records (TRUTH-AUDIT §14, R30, state.json, worklog)"
+  ],
+  "inspector": "standing supervisor-inspector (general-purpose agent, fresh context)",
+  "conductedAt": "2026-09-21T02:48:34Z",
+  "operatorOrder": "continue (secrets pending); all work examined before every push",
+  "verdict": "APPROVE",
+  "pushDecision": "APPROVE — push all 6 files (about/index.html, onepager/index.html, deck/index.html, receipts/index.html, hub/social.html, pitch/en.html) in BOTH Domain and Console; every checklist item passed with zero blocking findings",
+  "method": "zero-trust re-measurement, nothing accepted from the delivering agent: git status/diff --stat in both working copies, every diff hunk read AND re-verified char-level (difflib SequenceMatcher old-vs-new on all 6 files) to defeat minified-long-line truncation, a byte-compare of the two repos' full diffs, post-edit orphan regex scans in both repos, live curl re-measurement of the deployed contradiction (about/onepager og 'witnessed by 7', social '9 networks' occurrence count), live receipts-wall h2 chain count, live fact-sheet definition grep, safety grep of truth-gate-ci.cjs + verify/assertions.json for pins on edited strings, JSON-parse of requests.json and state.json (OL-7 status), TRUTH-AUDIT §14 and worklog r69-truth-numbers reads, and sha256 byte-identity of all 6 files across the two repos plus a line-diff of hub/social.html.",
+  "claimsTable": [
+    {
+      "claim": "1. Only the 6 expected files are modified in each working tree (~10 insertions/10 deletions each)",
+      "measured": "Domain: M about/index.html, onepager/index.html, deck/index.html, receipts/index.html, hub/social.html, pitch/en.html — 6 files changed, 10 insertions(+), 10 deletions(-); Console: identical file list and identical stat (6 files, 10/10). No staged entries, no untracked files.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "2. The diffs contain ONLY the specified text replacements — no link or attribute changes",
+      "measured": "Every hunk read in both repos plus char-level SequenceMatcher old-vs-new on all 6 files: about (og 'witnessed by 7 public chains'→'with receipts on 8 public chains'; tag 'Live on 10 networks'→'Live presence on 10 networks'; body 'every refusal to 10 public chains it does not own'→'to 8 public chains'), onepager (same og 7→8; tagline '9 public networks are its periphery'→'10'; 'Nine public chains are its periphery.'→'Ten'), deck ('על 9 רשתות ציבוריות שהיא לא שולטת בהן'→'על 8 ...'), receipts ('על 9 רשתות ציבוריות'→'על 8 ...'), social ('9 networks'→'8 networks', exactly 4 replacements, nothing else), pitch ('Nine networks witness it.'→'Eight networks witness it.'). The two repos' full diffs are byte-identical except the git-index line of hub/social.html (expected: base blobs legitimately differ). No href/src/attribute touched anywhere.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "3. Post-edit orphan scan returns zero network-count 9s in both repos",
+      "measured": "grep -rInE '9 (public )?(networks?|chains?)|Nine (public )?(networks?|chains?)|על 9 רשתות' --include='*.html' . → zero matches (exit 1) in Domain AND in Console. Legitimate non-network 9s (nine doors, nine scenes, תשעה מחזורים, 9/9 attack) do not match the patterns and were not disturbed.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "4. The old contradictory text is still live today (fix is real, not already deployed)",
+      "measured": "curl live: https://.../Domain/about/ 'witnessed by 7 public chains' = 1; onepager = 1; hub/social.html '9 networks' occurrences = 4 (grep -o; note: grep -c returns 1 because all 4 sit on one minified line — occurrence count is the correct measure and equals the expected 4); live social '8 networks' = 0 (edit not yet deployed).",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "5. Live receipts wall shows exactly 8 chains, so 'receipts on 8 public chains' is the right number",
+      "measured": "Live h2 sections: '// ETHEREUM', '// SOLANA', '// STEEM', '// HIVE · BLURT · TRON · XRPL · BSC' → exactly 8 chains (ETH, SOL, STEEM, HIVE, BLURT, TRON, XRPL, BSC); remaining h2s are cycle/failure sections, not chain sections. Local working-tree receipts page has the identical 8-chain wall (only its meta description changed). Count is 8, not 7 and not 9.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "6. Live fact-sheet carries both definitions: 'rented from 7 public networks' and 'Network presence: 10 public networks'",
+      "measured": "Both strings appear verbatim in live hub/fact-sheet.html; fact-sheet presence is 10 (not 9) — no contradiction with the edits; the fact-sheet is the source the edits align to (7 rented · 8 receipts · 10 presence).",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "7. No CI gate or verification assertion pins any edited string",
+      "measured": "grep -nE '9 networks|Nine|periphery|witnessed|Live on 10' over /home/z/r68/domain/truth/truth-gate-ci.cjs and /home/z/my-project/console/agent/verify/assertions.json → zero matches (exit 1).",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "8. Sovereign books are in order: requests.json last entry R30, TRUTH-AUDIT '## 14. R69', state.json parses with OL-7 closed, worklog carries r69-truth-numbers",
+      "measured": "requests.json parses (dict: format/generatedAt/note/requests; 30 entries, last id = R30); TRUTH-AUDIT.md line 352 = '## 14. R69 — OL-7: סתירת מספר-הרשתות על הדפים החיים (2026-09-21)'; state.json parses as JSON and OL-7 status = 'closed'; worklog.md line 2896 = 'Task ID: r69-truth-numbers' with full R69 stage summary.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "9. Overclaim check: no new falsehood introduced by the new wordings",
+      "measured": "New about body sentence '...anchors every claim, every seal and every refusal to 8 public chains it does not own' — the receipts wall (the network's own evidence standard, live) shows exactly 8 chains with live receipts, so the anchor/receipt number 8 is measured, not asserted; the pre-edit number was 10, so this edit strictly REDUCES overclaim. Badge 'Live presence on 10 networks' is a verbatim match to the live fact-sheet definition 'Network presence: 10 public networks'. onepager '10 public networks/Ten public chains are its periphery' uses the presence=10 definition; pitch 'Eight networks witness it' uses the receipts=8 count. TRUTH-AUDIT §14 pins the canon from fact-sheet v3.36 (7 rented · 8 receipts · 10 presence · 12 fleet). Minor nuance, pre-existing and unchanged in pattern: 'every claim, every seal and every refusal to 8 public chains' reads collectively — the fact-sheet records e.g. h16 anchored on six networks — but only the number changed (10→8, now measured) and no new falsehood was introduced.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "10. Byte-identity across the two repos (except hub/social.html canonical+footer)",
+      "measured": "sha256: about/index.html, onepager/index.html, deck/index.html, receipts/index.html, pitch/en.html IDENTICAL across Domain/Console; hub/social.html differs in exactly 2 lines — line 9 canonical link (.../Domain/hub/ vs .../Console/hub/) and line 61 footer links (.../Domain/ vs .../Console/) — the two legitimate self-referential differences, nothing else.",
+      "verdict": "PASS"
+    }
+  ],
+  "findings": [
+    "F1 (PASS, scope): Both working trees contain exactly the 6 declared files modified, 10 insertions/10 deletions each, nothing staged or untracked; every change is a text-only number/wording replacement verified char-level — no links, attributes, or structure touched.",
+    "F2 (PASS, live defect confirmed): The contradiction is still deployed live today — about and onepager og still say 'witnessed by 7 public chains' and the live social page still carries 4 occurrences of '9 networks' (plus 0 of '8 networks'), so the fix targets a real, present, public defect.",
+    "F3 (PASS, number is measured): The live receipts wall counts exactly 8 chains (ETHEREUM, SOLANA, STEEM, HIVE, BLURT, TRON, XRPL, BSC) and the live fact-sheet defines presence = 10 — the two number families (8 receipts/anchoring vs 10 presence/periphery) each map to a live-measured, fact-sheet-defined quantity; TRUTH-AUDIT §14 records the derivation (the orphan 9 was fact-sheet v2's presence number, orphaned when presence grew to 10).",
+    "F4 (measurement nuance, non-blocking): The checklist's 'grep -c \"9 networks\" should be 4' measures 1 by line-count because all 4 occurrences sit on a single minified line; occurrence count via 'grep -o | wc -l' is exactly 4 — the intent of the check is met.",
+    "F5 (prose nit, non-blocking): TRUTH-AUDIT §14 says 'twelve edits in six files in each house' while the working trees measure 13 string-replacement sites on 10 changed lines in 6 files (the social 4-some shares one line) — counting-prose ambiguity only, no content impact.",
+    "F6 (recommendation, post-push): after pushing, re-measure the live pages once GitHub Pages deploys: about og → 'receipts on 8 public chains', social → 4× '8 networks', zero orphan 9s — closing the loop per the standing order that all work is examined after push as well."
+  ],
+  "conditions": []
+}

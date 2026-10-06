@@ -1,0 +1,201 @@
+{
+  "$schema": "harness-feature-list-v1",
+  "$he": "עוקב-המצב הקנוני של הרשת (harness-creator · r151). חוק: אין סטטוס בלי ראיה. כל feature נושא evidence_path + last_verified_at. מעודכן בסוף-כל-גל על-ידי הסוכן הפעיל.",
+  "last_updated": "2026-10-02T23:18:00Z",
+  "active_feature": "r158-computer-use",
+  "features": [
+    {
+      "id": "F-1",
+      "name": "מפעל-התוכן (B-5) — מכונת-ההכנסה שאינה תלוית-הון",
+      "status": "running",
+      "evidence_path": "sovereign/businesses/content-factory-state.json",
+      "last_verified_at": "2026-10-02T22:00:49Z",
+      "evidence": "פורט 3046 /health ok · 2 פוסטים-אמת על-השרשרת (txids) · אינגייג'מנט מדוד 22:00Z: פוסט-1 10 הצבעות · פוסט-2 12 הצבעות+1 תגובה+0.006 SBD · שורת-הרג מוזנת בפועל (r151)",
+      "next_step": "למדוד-התכנסות שבועית: רצף הצבעות-חוץ לפי פוסט; אם רצף-אפס 7 — FORMAT-REVIEW כנה",
+      "description": "Content factory: publishes measured ledger + agents-at-work posts on-chain via econ gate; income path via votes/curation.",
+      "dependencies": [
+        "F-4"
+      ]
+    },
+    {
+      "id": "F-2",
+      "name": "מנוע-הקיורציה — הנתיב-הראשי להכנסה מ-4,285 SP",
+      "status": "running",
+      "evidence_path": "sovereign/curation/state.json",
+      "last_verified_at": "2026-10-02T21:50:00Z",
+      "evidence": "פורט 3040 · 217 beats · armed=true · משקל 6% (3× פריסה מהמדידה 4,285 SP נטו) · votesToday נמדד ב-API",
+      "next_step": "מדידה-שבועית של curation-rewards מהשרשרת; שיפור-ברירת-הפוסטים לפי תשואה-ממומשת",
+      "description": "Curation engine votes with 6% weight on 4,285 SP net stake; the primary capital-free income path.",
+      "dependencies": []
+    },
+    {
+      "id": "F-3",
+      "name": "דיבון-הכסף (money-mover) — המיקרו-גריד הדו-צדדי",
+      "status": "running",
+      "evidence_path": "sovereign/money/state.json",
+      "last_verified_at": "2026-10-02T21:51:26Z",
+      "evidence": "2,925 beats · PnL ממומש −1.119 SBD/89 מילויים-מבוקר · r151: armBuy הודק מהמדידה (קנייה-avg 0.1056 מול מכירה-avg 0.1019) — רמת-320bps נקצצה, רף-חימוש 0.15→0.30",
+      "next_step": "מדידת-7-יום אחרי-ההידוק: האם ממוצע-קנייה יורד מתחת ממוצע-מכירה; אם לא — קצץ עוד רמה או העלה רף",
+      "description": "Money mover micro-grid: two-sided ladder on SBD/STEEM; r151 buy-side tightened from measured PnL evidence.",
+      "dependencies": []
+    },
+    {
+      "id": "F-4",
+      "name": "מנוע-העסקים (business-engine) — תדריך-השוק ו-4 העסקים",
+      "status": "running",
+      "evidence_path": "sovereign/businesses/engine-state.json",
+      "last_verified_at": "2026-10-02T23:00:00Z",
+      "evidence": "פורט 3045 · 54+ ticks · תדריך-שוק על-השרשרת (txid 2628839…) · B-1 RUNNING, B-2..B-5 PILOT · r152: דלק-חדש בדרך-מדידה — powerdown פעיל, תשלום-ראשון 475.853 STEEM ב-2026-10-03T02:01Z (4 תשלומים, 1903 STEEM) · WEAVE_PUBLIC_URL: נמדד — אין-בסיס-ציבורי-נגיש בסביבה (:81/:3000 מבחוץ = timeout) · D-TREASURY: המלצת-v1 מוצעת-למפעיל (שער-חתום)",
+      "next_step": "אחרי-02:01Z: לאמת שהדלק החדש נפרס על-הסולם (fuel.totalFuel>0) — סוגר את B-1 עד-שורת-ההרג",
+      "description": "Business engine publishes on-chain market brief and runs B-1..B-5 with kill lines and budget gates.",
+      "dependencies": [
+        "F-2"
+      ]
+    },
+    {
+      "id": "F-5",
+      "name": "הגיט-הריבוני + ריפוי-עצמי (askpass) — שלטון-המאגר",
+      "status": "running",
+      "evidence_path": "sovereign/fleet-verify/state.json",
+      "last_verified_at": "2026-10-02T22:05:00Z",
+      "evidence": "origin==local==b9216de · ensureAskpass משחזר askpass-בית בכל-ריצה · r151: .git-askpass.sh (PAT) נוסף ל-.gitignore בשורש — דליפה-אפשרית נסתמה (git check-ignore מאומת)",
+      "next_step": "ביקורת-תקופתית: git status לא יראה אף קובץ-סודות; git check-ignore .git-askpass.sh = 0",
+      "description": "Git sovereignty: self-healing askpass, rebase discipline, secrets never staged.",
+      "dependencies": []
+    },
+    {
+      "id": "F-6",
+      "name": "ה-harness הקנוני — חמשת-המערכות (r151, אימוץ learn-harness-engineering)",
+      "status": "running",
+      "evidence_path": "feature_list.json",
+      "last_verified_at": "2026-10-02T22:05:00Z",
+      "evidence": "ביקורת-פתיחה 28/100 → 100/100 (r151) · r152: הספרייה-החיה-מוחזקת — feature_list/progress/handoff מתעדכנים-בכל-גל כחוק",
+      "next_step": "כל סוכן: עדכון feature_list.json בסוף-גל + progress.md + handoff — נאכף ב-init.sh (בדיקת-קיום)",
+      "description": "Canonical harness five subsystems adopted from learn-harness-engineering (r151).",
+      "dependencies": [
+        "F-5"
+      ]
+    },
+    {
+      "id": "F-7",
+      "name": "צי-השירותים החיים — 3000/3038/3040/3041-3046",
+      "status": "running",
+      "evidence_path": "sovereign/fleet-verify/state.json",
+      "last_verified_at": "2026-10-02T22:00:00Z",
+      "evidence": "נמדד חי 22:00Z: 3000 בית · 3038 fleet-verify · 3040 קיורציה · 3041 kpi-scribe · 3042 governance · 3043 treasury-audit · 3044 scout-market · 3045 business-engine · 3046 מפעל-התוכן",
+      "next_step": "init.sh מאמת את הצי בכל-ריצה — פורט-מת = כישלון-מהיר",
+      "description": "Live fleet of services ports 3000/3038/3040-3046 with health verification in init.sh.",
+      "dependencies": []
+    },
+    {
+      "id": "F-8",
+      "name": "מחקר-השראה: learn-harness-engineering — רואסט+אימוץ",
+      "status": "done",
+      "evidence_path": "progress.md",
+      "last_verified_at": "2026-10-02T22:05:00Z",
+      "evidence": "קורס walkinglabs נחקר (14 הרצאות · 5 מערכות · harness-creator skill) · השקלול: הרשת שלנו כבר רצה לולאות-ומדידות אבל חסרה לה שכבת-ה-state הקנונית — תוקן ב-F-6",
+      "next_step": "להחזיק את המשמעת: אין 'בוצע' בלי ראיה ב-feature_list.json",
+      "description": "Study + adoption of walkinglabs learn-harness-engineering; honest critique and economic-thinking extraction documented in progress.md.",
+      "dependencies": []
+    },
+    {
+      "id": "F-9",
+      "name": "ספריית-תפקידי-המומחה (prompts.chat → ריבונות)",
+      "status": "running",
+      "description": "Curated expert-role library from github.com/f/prompts.chat (143k stars), adapted to the truth-law (no forecasts, no invention), wired into the content factory LLM prompts and mapped to future LLM paths (B-2, treasury-audit, B-3/B-4).",
+      "evidence_path": "sovereign/agents/role-library.json",
+      "last_verified_at": "2026-10-02T22:55:00Z",
+      "evidence": "R1+R2 wired (חי) ב-mini-services/content-factory/index.ts (loadExpertRole, fail-soft) · מדידה-חיה 22:52Z: PASS — טיוטה JSON-קפדני 2297 תווים · 18 מספרים-עשרוניים 0-לא-מעוגנים · 8.3 שניות (/tmp/measure-role-layer.ts) · R3..R7 ממופים עם תנאי-הפעלה מדודים",
+      "dependencies": [
+        "F-1",
+        "F-6"
+      ],
+      "next_step": "טיק-הייצור הראשון עם-השכבה אחרי-חצות UTC (~03:42Z) — למדוד gate-ואינגייג׳מנט מול-הקודם"
+    },
+    {
+      "id": "F-10",
+      "name": "שער-ההרג הריבוני (destructive_command_guard → sovereign-guard)",
+      "status": "running",
+      "description": "Guard layer adapted from Dicklesworthstone/destructive_command_guard: whitelist-first, default-allow, zero-false-negatives, modular packs, context detection, explain/scan modes, bounded failure, evidence log. Two incident-derived packs unique to this fleet: git.race (rebase autostash discipline from r150/r151 broken rebases) and git.secrets (r151 PAT near-miss) plus fleet.life (blind process kills would nuke the 9-port fleet).",
+      "evidence_path": "sovereign/guard/selftest.json",
+      "last_verified_at": "2026-10-02T22:50:00Z",
+      "evidence": "selftest 60/60 PASS · pre-commit מותקן · ירי-חי: 'git reset --hard HEAD~1' נחסם exit 1 + פאנל + ראיה ב-blocked.jsonl (אירוע-ראשון 22:49:11Z) · allow-שקט exit 0 · explain-ללא-תופעות-לוואי · init.sh סעיף 5 מאמת-השער בכל-ריצה · AGENTS.md חוק-קשיח",
+      "dependencies": [
+        "F-5",
+        "F-6"
+      ],
+      "next_step": "החסימות-האמתיות-של-הסוכנים ייאספו ב-blocked.jsonl — סקירת-המונים בכל-גל; אם-חבילה-מייצרת false-positive חוזר — הקפדה-מנומקת-בראיה"
+    },
+    {
+      "id": "F-11",
+      "name": "הוכחת-הריבונות מול Emergence World (scorecard רץ)",
+      "status": "running",
+      "description": "Executable proof engine comparing every documented failure mode of the Emergence World Season 2 research (683 crimes despite written prohibitions; cross-contamination; passive death; rubber-stamp democracy; phase transitions too fast for monitor-and-intervene) against this network's live countermeasures, each with a real-time measurement and evidence path. Roast + full comparison in sovereign/bloc/EMERGENCE-WORLD-roast.md.",
+      "evidence_path": "sovereign/bloc/EMERGENCE-scorecard.json",
+      "last_verified_at": "2026-10-02T23:07:00Z",
+      "evidence": "9/9 PROVEN בריצה-הראשונה (23:06:52Z): E1 selftest-60/60+hook · E1b CAP=16 · E2 roles=7+wired · E3 beats=2999/ticks=12 · E4 147-החלטות/30-עדויות · E5 kill-armed · E6 שערים-2/2 · E7 worklog-5891-שורות · E8 sealed · init.sh סעיף 6",
+      "dependencies": [
+        "F-10",
+        "F-6"
+      ],
+      "next_step": "הרצה-בכל-גל (init.sh); אם-מצב-כישלון-חדש-מתפרסם-במחקר-ההמשך — הוספת-בדיקה-מקבילה-ל-scorecard"
+    },
+    {
+      "id": "F-12",
+      "name": "מפת-האמת האחת (SOVEREIGN-INDEX) + ההתלכדות",
+      "status": "running",
+      "description": "Generated-from-live truth map: one file (SOVEREIGN-INDEX.md) produced by scripts/sovereign-index.mjs from the machines themselves at every init.sh run — fleet health, subsystem-to-state map, measured achievements ledger, one-block work protocol, live open items. Cannot drift from truth because it is measured from truth. Convergence wave r155 also merged the unmerged security-audit-2026-09-28 branch (workflow input hardening + SAOS.md truth corrections) into main and deleted the stale branch.",
+      "evidence_path": "SOVEREIGN-INDEX.md",
+      "last_verified_at": "2026-10-02T23:16:20Z",
+      "evidence": "מיוצר-חי 23:16:20Z · 10/10-שירותים-חיים-נמדדו · 11-features · scorecard 9/9 · guard 1-חסימה-מתועדת · security-branch d99f8dc צורף-ל-main-ב-cherry-pick נקי (7ff3df1) והענף-נמחק",
+      "dependencies": [
+        "F-6",
+        "F-7"
+      ],
+      "next_step": "המפה-מתחדשת-בכל-init.sh; כל-תת-מערכת-חדשה-נרשמת-ב-TRUTH_MAP-של-המנוע — לא-במסמך"
+    },
+    {
+      "id": "F-13",
+      "name": "מפקד-ההכנסות הריבוני (revenue-census)",
+      "status": "running",
+      "description": "Chain-truth revenue engine: scripts/revenue-census.mjs scans account_history (9-day window, cached 26h) measuring curation_reward, author_reward, withdraw_vesting (powerdown landings incl. the 2026-10-03T02:01Z verification), fill_order activity, and vote-weight disaggregation (sovereign machine vs external second-writer) — all from the chain, zero declarations. Wired into init.sh section 4b (freshness gate). Built after live measurement exposed: 0 revenue collected yet (structural: first votes 27/09 pay out from 04/10; first factory posts 02/10 pay out from 09/10) and an external writer on @headcorner casting 146 votes at avg 42.3% vs machine's 32 votes ≤6% — VP-budget competition now continuously monitored (V1b).",
+      "evidence_path": "sovereign/revenue/census.json",
+      "last_verified_at": "2026-10-02T23:52:00Z",
+      "evidence": "4646-פעולות-נסרקו-ב-46-באצ'ים · SP-נטו 4,286.123-ביחס-החי-1613.31 · הכנסה-נמדדת-בחלון 0.0000-USD-עם-הסבר-מבני (pending-פרעונים 04-09/10) · powerdown-פעיל 475.855SP/שבוע-הבא 02:01:27Z · פיצול-הצבעות: מנוע-32-מול-חוץ-146-ב-42.3%",
+      "dependencies": [
+        "F-3",
+        "F-2"
+      ],
+      "next_step": "אימות-פרעוני-קיורציה-הראשונים (04-07/10) ופרעוני-מפעל (09/10); אימות-נחיתת-powerdown-ב-02:01Z-דרך-withdraw_vesting; מעקב-V1b-אחרי-כותב-החוץ"
+    },
+    {
+      "id": "F-14",
+      "name": "תיאום-VP + שיוך-הכנסה-להצבעה (D-r157-VP-COORD)",
+      "status": "running",
+      "description": "Operator-approved (explicit 00:04Z approval of the VP-coordination question) governance layer for the shared @headcorner voting account: (1) hourly VP curve ring (480 samples ≈ 20 days) inside the curation machine's state — finds the daily VP peak window vs the external writer's burn pattern; (2) revenue attribution in the census — every curation_reward payout is credited to its originating vote (last vote op before payout), split machine (≤6%) vs external writer — turning the coordination question from theory into per-writer measured ROI starting 2026-10-04.",
+      "evidence_path": "sovereign/revenue/census.json",
+      "last_verified_at": "2026-10-03T00:12:00Z",
+      "evidence": "DECISION_LOG D-r157-VP-COORD (hash 7c18c1bc8c94) · votingPowerCurve-דגימה-ראשונה 00:07:42Z=53.63% (state.json) · census V2b attribution-חי (PENDING-מבני-עד-04/10) · census-V1b: 146@42.3%-חוץ-מול-32@≤6%-מנוע",
+      "dependencies": [
+        "F-13",
+        "F-2"
+      ],
+      "next_step": "אימות-נחיתת-powerdown-ב-02:01Z-דרך-census · פרעונים-ראשונים-04/10→השיוך-הראשון-המדוד-מנוע/חוץ · אחרי-48ש'-עקומת-VP-תחשוף-את-חלון-השיא-היומי"
+    },
+    {
+      "id": "F-15",
+      "name": "כוח-מחשב: לולאת-computer-use + מפקד-יכולות (אימוץ-תבנית trycua/cua)",
+      "status": "running",
+      "description": "Operator-directed capability expansion ('give the sovereign autonomy more capabilities and more power', citing trycua/cua). Adopted: (1) see-verify.mjs — the Computer-Use 2.0 loop (open→screenshot→VLM-judge→evidence-backed verdict, exit-gate) with agent-browser as the computer driver and z-ai vision as eyes; (2) capability-census.mjs — measured inventory of everything the fleet has in its hands (binaries, browser driver, VLM, voice, creation, chains incl. Z-Chain 0x2499, fleet ports, law layer) + machine-readable tools registry (8 tools with usage laws), freshness-gated in init.sh; (3) adoption notes with measured deferrals (no docker/kvm/virtualization in environment — the guard fills the sandbox role). Live demos: local home PASS; steemit.com honest FAIL (Cloudflare wall — proof the loop reports truth, not HTTP codes).",
+      "evidence_path": "sovereign/capabilities/capabilities.json",
+      "last_verified_at": "2026-10-03T01:29:00Z",
+      "evidence": "see-verify-PASS-מקומי (sovereign/see/1790990682344-home-check.png) · see-verify-FAIL-כנה-steemit/Cloudflare (1790990762155-steemit-profile.png) · toolsRegistry-8-כלים-קיימים · z-chain-0x2499-נמדד · fleet-10/10 · sovereign/bloc/CUA-adoption.md",
+      "dependencies": [
+        "F-13",
+        "F-7"
+      ],
+      "next_step": "לולאת-see-verify-כשער-קבוע-לפני-הכרזת-בוצע-על-UI · הרחבת-registry-עם-כלים-חדשים · אם-המפעיל-מכריז-סביבה-עם-VM — אימוץ-סנדבוקסים-אמיתיים"
+    }
+  ],
+  "dependencies_note": "חוק-היקף: one feature at a time — active_feature יחיד; תלות: F-6 דורש F-5; F-1 דורש F-4; F-4 דורש F-2. Stay in scope: אין פתיחת-feature חדשה בלי סגירת-הפעילה או הקפאתה בראיה."
+}

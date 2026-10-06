@@ -1,0 +1,56 @@
+{
+ "header": {
+  "what": "content-dedupe log — append-only, honest (r144-i2)",
+  "threshold": 0.6,
+  "similarity": "content-Jaccard, normalized tokens (markdown-stripped, stopwords removed, len>=3)",
+  "window": 50,
+  "accounts": [
+   "cashmachine",
+   "haran",
+   "israelnews",
+   "lsa",
+   "macrame",
+   "siq",
+   "tov",
+   "wic",
+   "wog",
+   "woq",
+   "headcorner"
+  ],
+  "note": "an entry = a measured near-duplicate (would-SKIP under the pre-cast gate); no natural duplicates = only this header"
+ },
+ "entries": [
+  {
+   "key": "wog/re-saos-wic-20261001-wog~tov/re-saos-lsa-20261001-tov",
+   "at": "2026-10-01T22:17:26.508Z",
+   "a": {
+    "author": "wog",
+    "permlink": "re-saos-wic-20261001-wog",
+    "source": "steem-live"
+   },
+   "b": {
+    "author": "tov",
+    "permlink": "re-saos-lsa-20261001-tov",
+    "source": "steem-live"
+   },
+   "sim": 0.654,
+   "verdict": "would-SKIP under pre-cast gate"
+  },
+  {
+   "key": "cashmachine/re-saos-siq-20260930-cashmachine~israelnews/re-saos-siq-20260930-israelnews",
+   "at": "2026-10-01T22:17:26.514Z",
+   "a": {
+    "author": "cashmachine",
+    "permlink": "re-saos-siq-20260930-cashmachine",
+    "source": "steem-live"
+   },
+   "b": {
+    "author": "israelnews",
+    "permlink": "re-saos-siq-20260930-israelnews",
+    "source": "steem-live"
+   },
+   "sim": 0.629,
+   "verdict": "would-SKIP under pre-cast gate"
+  }
+ ]
+}

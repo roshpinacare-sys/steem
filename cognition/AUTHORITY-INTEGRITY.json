@@ -1,0 +1,125 @@
+{
+ "_meta": {
+  "schema": "r208r-authority-integrity-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "at": "2026-10-05T21:48:28.006Z",
+  "law": "פורמט-תקין ≠ סמכות-תקינה · מפתח-הסמכות חייב היותו אסמכתא, לא קובץ-JSON-טוב"
+ },
+ "before_R208R": {
+  "verdict": "AUTHORITY INTEGRITY = DETECTION ONLY (ולמעשה: אפס-גילוי) — כל-מוטציית-JSON-תקינה הייתה מתקבלת בשקט",
+  "epistemic": "OBSERVED (קריאת-HEAD + ניתוח; R208 רשם-זאת-כסתירה-פתוחה)"
+ },
+ "repair": {
+  "mechanism": "sovereign/objectives/authority-anchor.jsonl — ספר-עיגון-האש append-only; loadModel מאמת בייטס-דיסק מול-העיגון-האחרון; עיגון-מלא לארבעת-קבצי-המודל (§IX); כלי-עיגון-רשמי: sovereign/tmp/r208r/anchor-tool.mts",
+  "anchorsWritten": [
+   {
+    "seq": 1,
+    "scope": "authority-map"
+   },
+   {
+    "seq": 2,
+    "scope": "full-model (4 קבצים)"
+   }
+  ],
+  "epistemic": "OBSERVED"
+ },
+ "attacks": [
+  {
+   "attack": "A1|byte-mutation-in-may(preserve-JSON+schema)",
+   "section": "VIII",
+   "injected": "«פקודות-ספר»→«פקודות-ספרX» בלבד",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (ed9653d47f6e) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A2|priority-role-mutation",
+   "section": "VIII",
+   "injected": "«רק <$100»→«רק <$1000»",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (36e88c1313e4) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A3|timestamp-mutation",
+   "section": "VIII",
+   "injected": "builtAt→עכשיו",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (60c24150cf71) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A4|older-valid-map-replay",
+   "section": "VIII",
+   "injected": "מפה-היסטורית-תקפה-לכאורה (בלי-verdict-אחד)",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (617972d81aeb) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A5|valid-schema-authority-poisoning",
+   "section": "VIII",
+   "injected": "הוספת-verdict-מעניק-הרשאה",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "בייטס-המפה (4ba52fd6a34a) ≠ העיגון (a84280b6a77c) — פורמט-תקין אינו סמכות-תקינה (§VIII)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A6|map-deleted",
+   "section": "VIII",
+   "injected": "מחיקת-מפה",
+   "reject": "MODEL-FILE-MISSING",
+   "detail": "קובץ-מודל חסר",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=MODEL-FILE-MISSING",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A7|legal-change-WITH-reanchor(control)",
+   "section": "VIII",
+   "injected": "אותו-שינוי + עיגון-מעודכן",
+   "reject": null,
+   "detail": null,
+   "verdictForSeed": "QUALIFIED-AFTER-ARMING",
+   "pass": true,
+   "expectation": "view-accepted",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "A8|torn-anchor-book",
+   "section": "VIII",
+   "injected": "שורה-קרועה בספר-העיגון",
+   "reject": "AUTHORITY-MAP-UNANCHORED",
+   "detail": "ספר-עיגון קרוע (fail-closed)",
+   "verdictForSeed": null,
+   "pass": true,
+   "expectation": "reject=AUTHORITY-MAP-UNANCHORED",
+   "epistemic": "OBSERVED"
+  }
+ ],
+ "attackVerdict": "8/8 — כל-מוטציית-בייט/ריפליי/הזרקה/ספר-קרוע נדחית AUTHORITY-MAP-UNANCHORED (fail-closed); שינוי-חוקי + עיגון-מעודכן מתקבל (בקרה)",
+ "gatesIndependent": {
+  "txGateReadsModel": false,
+  "autonomyLawReadsModel": false,
+  "note": "השערים אינם קוראים מודל — טמפר-מודל מדרדר לחוק-בסיס, לעולם לא עוקף (אומת-שוב R208R)",
+  "epistemic": "OBSERVED"
+ },
+ "finalVerdict": "AUTHORITY INTEGRITY = PREVENTED (fail-closed) — שדרוג מ-DETECTION-ONLY"
+}

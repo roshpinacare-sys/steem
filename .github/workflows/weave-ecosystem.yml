@@ -1,0 +1,94 @@
+# WEAVE-ECOSYSTEM — האכיפה היומית של G6 (איחוד האקוסיסטם לתמיד)
+#
+# פריט 8 במפת הדרכים (ECOSYSTEM-ROADMAP §3): "סריקת אקוסיסטם
+# מתוזמנת בענן (dup<0.2 לתמיד)". המדידה מלאה — ~1550 קריאות
+# contents-API — דורשת מכסת 5000/שעה: WEAVE_OPS_PAT (Actions
+# Secret) מחליף את ה-remote, ולכן ריצה אחת מספיקה (לא שתיים).
+#
+# מה קורה כאן:
+#   1. מדידת שכפול מלאה על כל 14 הריפואים (--dup-scan — אותה
+#      הגדרה מדידה מתועדת: קובצי-סטטוס, sha256, קבוצה = תוכן
+#      זהה ב-≥2 ריפואים; הדוח מתחייב רק אם הושלם במלואו)
+#   2. dup ≥ 0.2 ⇒ ריצה אדומה בכנות (הפרת G6) + דוח מתחייב
+#   3. הדוח sovereign/reports/ecosystem-dup-latest.json נדחף כמשואה —
+#      הלב יעיד עליו בספר (אימות ECOSYSTEM חתום) בפעימה הבאה
+#
+# היסטוריה: 0.5959 → 0.0537 (מעבר ראשון, 2026-09-14) → 0.0065
+# (מעבר שני ב-steem — 73 מצבתות, commit 28ed9d91a3, 2026-09-15).
+
+name: weave-ecosystem
+
+on:
+  # R71: הקדנס הוסר — התאום ב-Domain (06:30) מבצע אכיפה יומית. גיבוי ידני בלבד.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weave-ecosystem
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout origin/main (the sovereign home)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps (prisma client for the module graph)
+        run: bun install --no-save
+
+      - name: Prisma client (the scan module imports the db graph)
+        run: bunx prisma generate
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      - name: Measure the ecosystem (full dup scan via ops PAT)
+        run: |
+          set -e
+          git remote set-url origin "https://x-access-token:${{ secrets.WEAVE_OPS_PAT }}@github.com/${{ github.repository }}.git"
+          bun scripts/weave-ecosystem.ts --dup-scan --json sovereign/reports/ecosystem-dup-latest.json
+          DUP=$(jq -r '.totals.dupRatio' sovereign/reports/ecosystem-dup-latest.json)
+          REDUNDANT=$(jq -r '.totals.redundantCopies' sovereign/reports/ecosystem-dup-latest.json)
+          MEASURED=$(jq -r '.totals.measured' sovereign/reports/ecosystem-dup-latest.json)
+          echo "dup=$DUP · redundant=$REDUNDANT/$MEASURED (target < 0.2)"
+          if awk "BEGIN{exit !($DUP >= 0.2)}"; then
+            echo "::warning::G6 VIOLATION: dup=$DUP >= 0.2 — the report is committed, the run fails honestly"
+            echo "G6_VIOLATION=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Commit the measurement beacon
+        run: |
+          set -e
+          git config user.name "weave-ecosystem[bot]"
+          git config user.email "weave-ecosystem[bot]@users.noreply.github.com"
+          git add sovereign/reports/ecosystem-dup-latest.json
+          if git diff --cached --quiet; then
+            echo "no status change — the ecosystem is stable"
+            exit 0
+          fi
+          DUP=$(jq -r '.totals.dupRatio' sovereign/reports/ecosystem-dup-latest.json)
+          git commit -m "weave-ecosystem: $(date -u +%FT%TZ) · dup=$DUP · G6 daily enforcement" 
+          for i in 1 2 3; do
+            if git push origin main; then echo "pushed ✓"; exit 0; fi
+            echo "race with the heart (attempt $i) — rebase and retry"
+            git pull --rebase origin main --no-edit || true
+            sleep 15
+          done
+          echo "push failed after 3 honest attempts — the next cycle re-commits the same measurement"
+          exit 1
+
+      - name: Honest red on G6 violation
+        if: env.G6_VIOLATION == '1'
+        run: |
+          echo "❌ G6 violation recorded — see the committed report"
+          exit 1

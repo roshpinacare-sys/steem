@@ -1,0 +1,116 @@
+{
+  "contract": "WeaveAnchorRegistry",
+  "compiler": "solc 0.8.37+commit.f401782d.Emscripten.clang (solc-js)",
+  "evmVersion": "cancun",
+  "optimizer": {
+    "enabled": true,
+    "runs": 200
+  },
+  "compiledAt": "2026-09-14T13:22:08.610Z",
+  "deterministicRecompileMatch": true,
+  "runtimeEmbeddedInCreation": true,
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n/// @title WeaveAnchorRegistry — עוגן שורשים עבור ספר אימותים\n/// @notice רק שורשים יורדים לשרשרת. אף סוד, אף מפתח, אף ciphertext.\ncontract WeaveAnchorRegistry {\n    mapping(uint256 => bytes32) public roots;\n    uint256 public latestIndex;\n\n    event RootAnchored(uint256 indexed index, bytes32 root, address indexed anchorer);\n\n    function anchor(bytes32 root) external {\n        require(root != bytes32(0), \"empty root\");\n        latestIndex += 1;\n        roots[latestIndex] = root;\n        emit RootAnchored(latestIndex, root, msg.sender);\n    }\n\n    function verifyRoot(uint256 index, bytes32 expected) external view returns (bool) {\n        return roots[index] == expected;\n    }\n}",
+  "sourceKeccak": "0xda7cbe4db50f189fb117549b25ad44af842fc0ebd995883d40323c92db4b336d",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "root",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "anchorer",
+          "type": "address"
+        }
+      ],
+      "name": "RootAnchored",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "root",
+          "type": "bytes32"
+        }
+      ],
+      "name": "anchor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "latestIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "roots",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "expected",
+          "type": "bytes32"
+        }
+      ],
+      "name": "verifyRoot",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600e575f5ffd5b506102058061001c5f395ff3fe608060405234801561000f575f5ffd5b506004361061004a575f3560e01c8063578f2aa01461004e578063b0cd48021461006a578063c2b40ae41461008d578063eecdf927146100ac575b5f5ffd5b61005760015481565b6040519081526020015b60405180910390f35b61007d610078366004610179565b6100c1565b6040519015158152602001610061565b61005761009b366004610199565b5f6020819052908152604090205481565b6100bf6100ba366004610199565b6100d8565b005b5f8281526020819052604090205481145b92915050565b806101165760405162461bcd60e51b815260206004820152600a602482015269195b5c1d1e481c9bdbdd60b21b604482015260640160405180910390fd5b6001805f82825461012791906101b0565b9091555050600180545f90815260208181526040918290208490559154905183815233927f30065f995073407df50973b31758f2f9fb4d273d056f0dce1709079bcaa00816910160405180910390a350565b5f5f6040838503121561018a575f5ffd5b50508035926020909101359150565b5f602082840312156101a9575f5ffd5b5035919050565b808201808211156100d257634e487b7160e01b5f52601160045260245ffdfea2646970667358221220435fb64e83f760f5bc0d26706e165e1865bb933c17532df98a7faf02f50ecfbc64736f6c63430008250033",
+  "bytecodeKeccak": "0x694c16ffd262fa8733b04612f01a926cf8b3d7c9136ddeb8df8893e3bb602bce",
+  "deployedBytecode": "0x608060405234801561000f575f5ffd5b506004361061004a575f3560e01c8063578f2aa01461004e578063b0cd48021461006a578063c2b40ae41461008d578063eecdf927146100ac575b5f5ffd5b61005760015481565b6040519081526020015b60405180910390f35b61007d610078366004610179565b6100c1565b6040519015158152602001610061565b61005761009b366004610199565b5f6020819052908152604090205481565b6100bf6100ba366004610199565b6100d8565b005b5f8281526020819052604090205481145b92915050565b806101165760405162461bcd60e51b815260206004820152600a602482015269195b5c1d1e481c9bdbdd60b21b604482015260640160405180910390fd5b6001805f82825461012791906101b0565b9091555050600180545f90815260208181526040918290208490559154905183815233927f30065f995073407df50973b31758f2f9fb4d273d056f0dce1709079bcaa00816910160405180910390a350565b5f5f6040838503121561018a575f5ffd5b50508035926020909101359150565b5f602082840312156101a9575f5ffd5b5035919050565b808201808211156100d257634e487b7160e01b5f52601160045260245ffdfea2646970667358221220435fb64e83f760f5bc0d26706e165e1865bb933c17532df98a7faf02f50ecfbc64736f6c63430008250033",
+  "deployedBytecodeKeccak": "0x0ed8ab0a9d0b94f1dda78a0d8956e2fa25d295d8b135e9b9ab1d13d3bd5030f0",
+  "codeDepositGas": 103400,
+  "gate": "EVM-1"
+}

@@ -1,0 +1,79 @@
+{
+  "service": "money-mover",
+  "version": "1.13.0",
+  "bootedAt": "2026-10-05T21:44:12.366Z",
+  "beats": 3977,
+  "checkIntervalSec": 60,
+  "policy": {
+    "triggers": {
+      "parityDriftBps": 50,
+      "floorBps": -50,
+      "idleTriggerSteem": 1
+    },
+    "cooldownMin": 30,
+    "actionsBudgetPerDay": 12,
+    "fillDeploy": {
+      "cooldownMin": 5
+    },
+    "armBuy": {
+      "minSbd": 0.3,
+      "offsetsBps": [
+        20,
+        40,
+        80,
+        160
+      ]
+    },
+    "hive": {
+      "driftBps": 50
+    },
+    "stockSbd": {
+      "premiumCapBps": 200,
+      "keepSteem": 0.5
+    },
+    "rewards": {
+      "saosPerFill": 2,
+      "member": "money-mover"
+    },
+    "liquidityStream": {
+      "waveSteem": 200,
+      "share": 0.2
+    },
+    "truthSource": "api.steemit.com · get_open_orders/get_accounts (via /api/money) + api.hive.blog (via /api/money/hive)"
+  },
+  "lastActionAt": "2026-10-05T22:59:27.130Z",
+  "actionsToday": 9,
+  "actionDay": "2026-10-05",
+  "acting": false,
+  "lastDecision": {
+    "at": "2026-10-05T22:59:28.150Z",
+    "kind": "REPRICE-FAIL",
+    "detail": "כישלון כנה: הבלם-הריבוני עצר את נתיב-החתימה לפני השידור (STASIS/lane-guards) — אפס פעולות. זו סירוב-כנה. note: stasis file absent at"
+  },
+  "canonLast": {
+    "at": "2026-10-05T22:29:11.611Z",
+    "ok": true,
+    "path": "reports/money-2026-10-05.md"
+  },
+  "fillsSeen": 0,
+  "fillDeployPending": false,
+  "lastActionOk": false,
+  "lastDepositScanAt": "2026-10-05T22:54:27.104Z",
+  "lastStreamDay": "2026-09-27",
+  "lastTotalSteem": 10.792,
+  "fleetSeen": {
+    "pulseDay": "2026-10-05",
+    "studentDay": "2026-10-05",
+    "keeperRestartAt": "2026-10-05T18:37:12.427Z"
+  },
+  "lastPoolGuardAt": "2026-10-05T22:59:27.103Z",
+  "lastFleetSweepAt": "2026-10-05T22:54:53.601Z",
+  "autonomyMode": "THINKING",
+  "autonomyHeldCount": 78,
+  "learning": {
+    "backoffMin": 0,
+    "epistemic": "baseline",
+    "suspended": false,
+    "updatedAt": "2026-10-05T16:36:44.713Z"
+  }
+}

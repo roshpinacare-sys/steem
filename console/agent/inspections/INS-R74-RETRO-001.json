@@ -1,0 +1,76 @@
+{
+  "format": "agent-inspection-v1",
+  "id": "INS-R74-RETRO-001",
+  "inspectionId": "INS-R74-RETRO-001",
+  "task": "R74 retrospective inspection — the r74 delivery went out WITHOUT a pre-push inspection report (an institution violation of the standing-inspector regime, R65). This report re-measures that delivery post-hoc and records the violation honestly. It was written during the R75 cycle because INS-R75-001 F-2/F-3 exposed the books gap that hid it.",
+  "subject": "R74 delivery: (1) sovereign-anchor.html pushed to Console main (f1435ae) — the browser-signed sovereign anchor; (2) scripts/secret-relay.mjs + .github/workflows/secret-relay.yml in Zip — the one-shot sealed-box vault relay; (3) books: TRUTH-AUDIT 18, state R74, requestRef R37.",
+  "inspector": "standing supervisor-inspector role, post-hoc (written by the R75 session operator from the independent measurements of INS-R75-001, 2026-09-21)",
+  "inspectedAt": "2026-09-21T19:39:00Z-20:10:00Z (post-hoc; delivery itself landed 2026-09-21T18:47-19:03Z)",
+  "retroactive": true,
+  "violation": {
+    "rule": "R65 standing inspector: every delivery is inspected BEFORE push",
+    "breach": "The r74 session pushed Console f1435ae and the Zip secret-relay files with no inspection report. No report file for R74 exists anywhere in the fleet.",
+    "recorded": "Recorded here honestly, not painted over. The A69 machine check could not see it because the r74 session also failed to register R35-R37 in the requests book (INS-R75-001 F-3) — two defects hiding each other."
+  },
+  "claims": [
+    {
+      "id": "C1",
+      "claim": "sovereign-anchor.html is live on the public Console at /sovereign-anchor.html (HTTP 200) and behaves honestly",
+      "verdict": "TRUE",
+      "evidence": "Live fetch during INS-R75-001: 200, the page renders, honest STALE verdict with age, live RC read, refusal path proven on the live page with a foreign key. Independent re-verification in a fresh browser session (INS-R75-001 C5)."
+    },
+    {
+      "id": "C2",
+      "claim": "secret-relay was tested end-to-end without leaking the real secret",
+      "verdict": "TRUE",
+      "evidence": "r74 worklog receipts: dummy-value PUT 201 into the Domain vault, verified by listing, deleted 204. No real secret was transmitted. The relay machine remains dormant in Zip (private, quota-dead) awaiting a clean window or the operator's direct paste."
+    },
+    {
+      "id": "C3",
+      "claim": "the 'why red' answer of r74 (quota death + wrong-vault WIF) was correct",
+      "verdict": "TRUE",
+      "evidence": "INS-R75-001 re-measured the ground truth independently: steem scheduled runs dying with the R73 quota signature; vault inventory via API — Domain vault lacks WEAVE_STEEM_WIF while Zip holds it (16:45Z operator delivery)."
+    },
+    {
+      "id": "C4",
+      "claim": "the r74 books were whole",
+      "verdict": "FALSE",
+      "evidence": "requestRef R37 was left dangling (R35-R37 never registered in the requests book); R34's inspection reference was left in the bare form that fails the A69 check. Both repaired in the R75 cycle (INS-R75-001 F-2/F-3)."
+    },
+    {
+      "id": "C5",
+      "claim": "the r74 delivery contained no material defect",
+      "verdict": "FALSE",
+      "evidence": "INS-R75-001 F-1 (HIGH): the delivered page signs as the account the key declares, but Console's render.mjs still read only @cashmachine's history — so a non-cashmachine-signed anchor would land on-chain while status.json stayed STALE. The r74 promise 'the line refreshes' was false for any other signer. Repaired in the same R75 cycle (fleet-aware render.mjs)."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-R1",
+      "severity": "HIGH",
+      "finding": "Institution violation: delivery without pre-push inspection. Root cause class: session-context exhaustion — the r74 session ran out of context after the delivery and never closed the institution loop."
+    },
+    {
+      "id": "F-R2",
+      "severity": "MEDIUM",
+      "finding": "Books not updated: R35-R37 unregistered, requestRef dangling. The two defects (missing inspection + missing registration) hid each other from the A69 machine check."
+    },
+    {
+      "id": "F-R3",
+      "severity": "HIGH",
+      "finding": "Material defect in the delivered design: single-account witness reader (render.mjs), discovered post-hoc by INS-R75-001 F-1."
+    },
+    {
+      "id": "F-R4",
+      "severity": "INFO",
+      "finding": "The delivered artifacts themselves (the page, the relay machine) measured TRUE on every re-measurement — the violation was procedural, not substantive."
+    }
+  ],
+  "pushConditions": [
+    "This report is installed and R35-R37 registered in the same books commit (done in the R75 cycle)",
+    "The render.mjs fleet fix ships before or with the R75 page push (done: R75 cycle)",
+    "The violation is recorded in TRUTH-AUDIT 19 — future sessions must not repeat it"
+  ],
+  "verdict": "APPROVE-WITH-CONDITIONS",
+  "verdictNote": "Post-hoc approval only. The delivery's artifacts re-measure TRUE; the process defect (no pre-push inspection, unregistered requests) is recorded honestly and its repairs are the R75 cycle itself. This report exists so the A69 machine check can see the truth — it does not erase the violation."
+}

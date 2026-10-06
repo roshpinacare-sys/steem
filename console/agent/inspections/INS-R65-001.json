@@ -1,0 +1,184 @@
+{
+  "format": "agent-inspection-v1",
+  "id": "INS-R65-001",
+  "inspectionOf": [
+    "R64 (post-hoc - it escaped inspection)",
+    "R65 (pre-push, staged working tree)"
+  ],
+  "inspector": "standing supervisor-inspector (general-purpose agent, fresh context, founding run)",
+  "conductedAt": "2026-09-20T10:16:05Z",
+  "operatorOrder": "all work is examined thoroughly before every push (2026-09-19)",
+  "verdict": "PASS-WITH-FINDINGS",
+  "r65PushDecision": "APPROVE",
+  "method": "every claim re-measured from scratch: live HTTP fetches, git archaeology in both repos, verifier re-runs from scratch copies, a truth-gate run from a scratch copy with an injected fault, 12 synthetic edge-case runs of the new verifier kinds against a local mock, a keyless Steem chain query, and secret-pattern sweeps of both public trees. Nothing was accepted from the delivering agent without a command and an observation.",
+  "claimsTable": [
+    {
+      "claim": "Console book repaired retroactively R22-R61 with sources, era note, closed-book pointer; 61 entries",
+      "measured": "live fetch HTTP 200: 61 entries R01-R61; era note names the retroactive repair, TRUTH-AUDIT section 9, and points to the live Domain book; all 40 retroactive entries carry ledgeredAt retroactive markers and evidence of 88-541 chars",
+      "verdict": "verified"
+    },
+    {
+      "claim": "every delivered entry has real evidence (>=20 chars)",
+      "measured": "Console 55 delivered entries: minimum evidence length 88 chars; Domain 24 delivered: none below 20; both books zero violations",
+      "verdict": "verified"
+    },
+    {
+      "claim": "Domain book: R23 evidence filled, R26 born, schema normalized; 26 entries; bridgehead requestRef R26",
+      "measured": "live fetch: 26 entries, last R26; R23 evidence now carries the fleet-full/fleet-inspect/fleet-fix map matching the worklog; R01+ entries carry evidenceNormalized markers; pre-repair state measured from git (b03cf62^): 25 entries, R23 had NO evidence key; bridgehead requestRef R26 exists and is delivered",
+      "verdict": "verified"
+    },
+    {
+      "claim": "A65/A67 red-before measured 48/49 and 50/51 (only the new assertion failing)",
+      "measured": "green-after independently re-measured from scratch: Console ALL_PASS 49/49, Domain ALL_PASS 51/51 against the live sites. Red-before substance reproduced against the pre-repair books (extracted from git at 07dbcfd^/b03cf62^) via a local mock: A65/A67 FAIL with the exact recorded detail (R01 delivered without real evidence... +11/+12 more). The exact 48/49 live isolation is no longer re-measurable because the pre-fix live state is gone",
+      "verdict": "verified-in-substance"
+    },
+    {
+      "claim": "green-after public runs 35501142813 (Console) and 35501143861 (Domain)",
+      "measured": "GitHub anonymous API rate-limited (403) - run IDs not verifiable from this sandbox; the outcomes they represent are verified via machine commits 6fadf13 (Console ALL_PASS 49/49, 09:01:22Z) and a9f833c (Domain ALL_PASS 51/51, 09:04:37Z) plus the live results.json",
+      "verdict": "partial (IDs unverified, outcomes verified)"
+    },
+    {
+      "claim": "sampled retroactive entries truthful vs the worklog",
+      "measured": "16 entries sampled (R22 R23 R25 R27 R28 R30 R34 R40 R41 R44 R45 R50 R55 R58 R60 R61); commits cited verified to exist with matching dates (5a88d29, 2f2d18d, bf94927, 95365a1, bf1cc03, 0a4baad, 594e656); two attribution imprecisions found (F-5, F-6); no fabrication, no copy-paste artifact",
+      "verdict": "verified with 2 low findings"
+    },
+    {
+      "claim": "TRUTH-AUDIT section 9 record",
+      "measured": "all 5 rows measured against git pre-repair state: Console book frozen at 21 entries (R21), Domain R23 without evidence key, early-schema entries without evidence field, numbering fork documented in both books, no worklog section carries R41/R42/R49 and R40 is referenced only inside the R43 section",
+      "verdict": "verified"
+    },
+    {
+      "claim": "R65: the stale preLive block cured at the root",
+      "measured": "live slo.json still carries preLive (Pages not enabled) while dataSince 02:47Z - false about the present; A68 measured FAIL against it (52/53); truth-gate run from a scratch copy with preLive injected into the input: verdict ALL-GREEN, written slo.json contains NO preLive key",
+      "verdict": "verified"
+    },
+    {
+      "claim": "R65: A69 enforces the institution",
+      "measured": "code review + 12 synthetic edge cases (grandfathering below R27, delivered-without-inspection, ref outside prefix, 404 report, non-JSON report, bridgehead agreement, empty/non-JSON book): all behave exactly as specified",
+      "verdict": "verified"
+    },
+    {
+      "claim": "R65: R23 public evidence redacted (private vault map removed)",
+      "measured": "the diff removes the per-repo vault-name map; live book still carries it (fix pending push); nothing else in the diff adds secret names or values; full-tree secret sweep of both repos: zero values (workflow placeholders and documented bootstrap commands only)",
+      "verdict": "verified"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-1",
+      "severity": "MEDIUM",
+      "area": "truth/slo.json (Domain, live)",
+      "finding": "The served SLO ledger carries a dead pre-live block: preLive.reason says GitHub Pages is not enabled while dataSince (02:47Z) proves the ledger was born live - a false statement about the present regenerated hourly in a public file",
+      "evidence": "curl of live truth/slo.json; A68 FAIL against it; the R65 diff cures it (delete slo.preLive + cleaned file)",
+      "recommendation": "push the R65 fix (this delivery); A68 then enforces it forever",
+      "status": "fixed-by-R65 (verify green after push)"
+    },
+    {
+      "id": "F-2",
+      "severity": "MEDIUM",
+      "area": "Domain home data planes",
+      "finding": "mirror.json and saos-live.json on the Domain home are frozen snapshots (generatedAt 2026-09-19T23:07:2xZ, ~11.4h old at audit; Console equivalents fresh at 10:08Z). The Domain network view renders their counts (267 attestations / 260 checkpoints) as the network numbers while the live truth on Console is 289/282. No freshness gate covers them: A09 checks a count only; G11 covers the dex books only",
+      "evidence": "curl + node compare of both homes; assertions.json scan shows no json_age on mirror/saos-live",
+      "recommendation": "extend the dex-mirror machine or G11-class gate to the weave books, or label their age in the views that render them (the R63 doctrine: a served file is part of the site truth)",
+      "status": "open (pre-existing, not a regression of R65)"
+    },
+    {
+      "id": "F-3",
+      "severity": "MEDIUM",
+      "area": "agent/handoff.md (Domain, live)",
+      "finding": "The public handoff still describes the PRE-LIVE era as the present: truth-gate records an honest PRE-LIVE verdict, agent-verify pre-live suspends all assertions, and the fleet list omits moment-watch and dex-mirror. Pages has been live since ~02:22-02:47Z; agent-verify is 51/51 with 0 suspended",
+      "evidence": "live fetch identical to the committed file; lines 47-54; not touched by the R65 diff",
+      "recommendation": "refresh the machine paragraphs (and add the two new machines) in the next delivery or a hotfix commit",
+      "status": "open (pre-existing)"
+    },
+    {
+      "id": "F-4",
+      "severity": "LOW",
+      "area": "agent/state.json (staged R65 diff)",
+      "finding": "OL-12 was refreshed in English only: the Hebrew detailHe still says Pages activation is the one pending click and that A34/A36/A37 stay suspended - contradicting the refreshed English detail and reality after this push",
+      "evidence": "git diff shows detail updated, detailHe left as context",
+      "recommendation": "update detailHe before or immediately after the push",
+      "status": "open in the staged diff"
+    },
+    {
+      "id": "F-5",
+      "severity": "LOW",
+      "area": "Console book (R64 retroactive entries)",
+      "finding": "R28 evidence attributes the verify-cadence change (6h -> 2h) to R28; the worklog and commit 2f2d18d (R27 message: Cadence tightened: every 6h -> every 2h) show it belongs to R27, whose own ledger entry omits it",
+      "evidence": "worklog Task 51 + git log of 2f2d18d vs the live book entries R27/R28",
+      "recommendation": "one-line evidence fix in a future book-touching delivery",
+      "status": "open"
+    },
+    {
+      "id": "F-6",
+      "severity": "LOW",
+      "area": "Console book (R61 entry)",
+      "finding": "R61 evidence cites (Console ee9df46, 594e656): ee9df46 is not a Console commit (absent from the full 1216-commit history); per the worklog it is the sovereign app commit of the games-view removal (R61-C). The public cannot verify it",
+      "evidence": "git cat-file in console-repo: not a valid object; worklog R61-C: committed and pushed to the sovereign origin",
+      "recommendation": "correct the repo attribution when the book is next touched",
+      "status": "open"
+    },
+    {
+      "id": "F-7",
+      "severity": "LOW",
+      "area": "agent/verify/run.mjs (staged A69)",
+      "finding": "A69 validates that an inspection reference is served and is valid JSON, but accepts any JSON body - the current placeholder file would pass it. The machine cannot distinguish a real report from a placeholder",
+      "evidence": "code review + mock tests (a {placeholder:true} body passes)",
+      "recommendation": "strengthen in a future delivery: require report id to match the file and a verdict field; until then the protocol (report committed with the delivery) is the enforcement",
+      "status": "accepted for this push"
+    },
+    {
+      "id": "F-8",
+      "severity": "INFO",
+      "area": "staged R65 book",
+      "finding": "R27 deliveredAt (10:30:00Z) and state.json generatedAt (10:35:00Z) are anticipatory timestamps written before the push",
+      "evidence": "diff review at 10:16-10:30Z",
+      "recommendation": "honest only if the push lands in that window - verify after push",
+      "status": "noted"
+    },
+    {
+      "id": "F-9",
+      "severity": "INFO",
+      "area": "documentation pointer",
+      "finding": "The redacted R23 evidence and the bridgehead reference TRUTH-AUDIT section 10, which does not exist yet (the file ends at section 9)",
+      "evidence": "read of /home/z/my-project/TRUTH-AUDIT.md (169 lines)",
+      "recommendation": "write section 10 with the r65 worklog entry before push",
+      "status": "pending on the deliverer"
+    },
+    {
+      "id": "F-10",
+      "severity": "INFO",
+      "area": "verification limits",
+      "finding": "The R64 run IDs (35501142813, 35501143861) could not be verified: anonymous GitHub API is rate-limited (403) from this sandbox IP",
+      "evidence": "curl of api.github.com returned rate-limit message",
+      "recommendation": "none - outcomes independently verified via machine commits and live results.json",
+      "status": "noted"
+    },
+    {
+      "id": "F-11",
+      "severity": "INFO",
+      "area": "environment",
+      "finding": "The domain-repo working clone is shallow (23 commits, since 08:22Z) - R63-era commits cited in the book (db06e38, dbcc88f, 18cf43e) are not present locally; the live site and the machine commit chain on top of them are consistent with their existence on the remote",
+      "evidence": "git rev-parse --is-shallow-repository = true; .git/shallow lists b1c86f5",
+      "recommendation": "future sessions: clone full or unshallow before citing history",
+      "status": "noted"
+    },
+    {
+      "id": "F-12",
+      "severity": "INFO",
+      "area": "moment agent",
+      "finding": "callStats resolved=0 is honest and expected to stay 0 for now: all 17 recorded calls since 03:41Z are FLAT (steem 24h move never crossed the ±3% threshold), so no call has ever been scoreable; hitRatePct null is correct",
+      "evidence": "moment/history.json fetch: 17 entries, every call FLAT; agent code threshold CALL_THRESHOLD_PCT",
+      "recommendation": "none",
+      "status": "noted"
+    }
+  ],
+  "liveStateSweep": {
+    "homes": "Domain 200 166093B · Console 200 166014B",
+    "chainReconciliation": "get_accounts headcorner: 86.679 STEEM / 0.049 SBD - matches the moment agent live fuel read; get_open_orders: 3 orders (#2026092001-03, 3x129.986 STEEM) - matches served openOrdersNow=3; grid inventory.steem 433.788 is a start-of-run snapshot carried inside the book with its publishedAt and rendered by NO public page as a current balance (money.html renders verdict/book/fills/blocker with honest source notes)",
+    "machines": "all present and green on both homes: truth-gate ALL-GREEN (Domain 09:19Z, Console 09:20Z), agent-verify 49/49 + 51/51, money-watch steady, dex-watch 0 deposits 4 chains, moment-watch RISK_ON age 0.13h, weave-console cp#280 FRESH 0.7h, dex-mirror hourly",
+    "security": "zero secret values in both public trees (patterns: x-access-token with value, ghp_, github_pat_, 93-char token, STEEM_ACTIVE_WIF with value, WIF5, PRIVATE KEY headers); matches are documented bootstrap commands and the machines own scan regexes; no workflow triggers on pull_request(_target)",
+    "professionalism": "public books clean of emojis and banned glyphs; sandbox paths appear only as documented doctrine; the R65 staged diff is clean of emojis and banned glyphs"
+  },
+  "stagedDiffVerdict": "APPROVE - the diff is surgical (6 files + the new inspections dir), matches its stated scope exactly, introduces no secret or attack surface (it removes one), the new verifier kinds are correct under 12 edge cases, and its red-before proofs reproduce. Conditions: replace the INS-R65-001.json placeholder with this report before pushing (A69 would otherwise pass on a placeholder), write TRUTH-AUDIT section 10 with the worklog entry, and fix F-4 (Hebrew OL-12) and F-3 (handoff) as immediate follow-ups."
+}

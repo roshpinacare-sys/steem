@@ -1,0 +1,60 @@
+# FLEET-AUDIT — ביקורת-מבנה-עצמאית-מהסנדבוקס (r175)
+#
+# הריבונות נמדדת בעצמאות: הסנדבוקס הוא ה-runner הראשי, אבל אם הוא מת —
+# אין-מי-שיבדוק-שהמניפסט-עדיין-אמת. גיטהאב עצמו מריץ כאן כל 6 שעות את
+# אימות-המבנה של רשומת-הצי (sovereign/fleet/fleet.yaml):
+#   · parse-תקין · שמות/פורטים-ייחודיים · פורטים-בטווח 3000-3060
+#   · FLO-2: אין-שירות-בלי-מגבלת-זיכרון מוצהרת
+#   · תיקיות-entry קיימות · רשימות-ההחייאה ⊆ המניפסט (FLO-1)
+# זהו מצב --manifests-only (r175) — בלי-פרובות-ריצה: ב-runner-של-גיטהאב
+# אין-צי-חי, ואימות-הריצה-החיה-נשאר-בסנדבוקס (17/17).
+#
+# R71-מודע: cron-של-workflows-חדשים-אמין-למחצה (נמדד 0/3-חלונות-ב-2026-09-15).
+# לכן יש גם workflow_dispatch-ידני; הביקורת-המקומית-רצה-בכל-גל-עבודה —
+# הקו-הזה הוא גיבוי-העצמאות, לא-המקור-היחיד. עלות: ~4-ריצות/יום × ~20ש' ≈
+# 40-דקות/חודש מתוך-מכסת-2000.
+#
+# אפס-סודות: הסקריפט קורא-גיט-בלבד. כשל = run-אדום-גלוי-למפעיל.
+
+name: fleet-audit
+
+on:
+  schedule:
+    - cron: '37 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fleet-audit
+  cancel-in-progress: true
+
+jobs:
+  manifest-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps (yaml only)
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Fleet manifest structural audit
+        run: node scripts/fleet-manifests-audit.mjs --manifests-only
+
+      - name: Upload audit report (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fleet-audit-report
+          path: sovereign/fleet/audit-latest.json
+          retention-days: 30

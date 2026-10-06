@@ -1,0 +1,64 @@
+{
+  "format": "weave-program-state-v1",
+  "schemaVersion": "1.0.0",
+  "version": "r142",
+  "updatedAt": "2026-09-30T18:00:00.000Z",
+  "program": "The Weave — Sovereign Autonomous Economy",
+  "protocolOrigin": "unified-platform v33.56 governance-state (operator's legacy project, adopted 2026-09-30, see MINING-REPORT.md)",
+  "phase": "Sovereign Decision Loop — the network decides and acts without operator presence",
+  "readiness": "Integrated Pilot",
+  "status": "decision-loop-activation",
+  "operatorStandingApproval": {
+    "decisionId": "D-OP-01",
+    "givenAt": "2026-09-30",
+    "source": "operator message (verbatim intent): אני מאשר הכל — הרשת מתקדמת לבד, בלי המתנה למפעיל",
+    "meaning": "The operator pre-approves every decision inside the AUTO boundary. The fleet decides, acts, records evidence, and moves on. Waiting for the operator is no longer a valid state.",
+    "revocableBy": "operator message superseding D-OP-01, recorded here"
+  },
+  "executionBoundary": {
+    "auto": [
+      "evidence refresh and re-measurement",
+      "decision triage among pre-approved classes",
+      "next-action selection and advancement",
+      "fleet revival, watchdog, agent sweep (existing daemons)",
+      "anchor operations within existing quota laws",
+      "content lift and publication within CONSOLE-POLICY",
+      "grid and ladder operations within existing value-floor and action-quota laws",
+      "O2 external-leg operations within bounded exposure (see OPEN_DECISIONS D-O2)"
+    ],
+    "gate": [
+      "owner/active key rotation or replacement",
+      "new external funds deposit or withdrawal beyond existing rails",
+      "identity, legal, or external-contract commitments",
+      "raw secret exposure in any artifact (absolute, never auto)"
+    ],
+    "forbidden": [
+      "claiming results without measurement",
+      "marking a decision executed without its evidence entry",
+      "editing the past — DECISION_LOG.jsonl is append-only, hash-chained",
+      "secrets in logs, ledger, or UI (fingerprints only)"
+    ]
+  },
+  "completed": [
+    "self-boot: schema+book+vault+credentials revive on server start (D-027, r138)",
+    "fleet-guard: 9 daemons patrolled every 60s with anti-spiral laws (D-016)",
+    "cloud hearts: weave-heart hourly + steem cloud-heart 30min with takeover",
+    "owner key present in home (D-026 dual-mode, keyPresent=true, r141)",
+    "living ladder signed and placed on chain: 818.9 STEEM in orders (r141)",
+    "floor law dead-zone fix measured live: valueFloor HELD, drift $0 (r141)",
+    "fleet self-measured from home: 41 lives / 28 degrading / 0 dormant (r141)",
+    "revival sweep: keeper dispatches dormant cloud flows daily without operator (r140)"
+  ],
+  "blockedGates": [
+    "quota strangulation of private-repo Actions flows — revives itself when quota reopens (measured by revival sweep)",
+    "X-gates that are operator-only by law (key rotation, HEADCORNER secret handling beyond presence)",
+    "real-money scale beyond existing rails until measured PnL justifies it"
+  ],
+  "evidencePaths": [
+    "sovereign/governance/DECISION_LOG.jsonl",
+    "sovereign/governance/NEXT_ACTION.json",
+    "sovereign/governance/OPEN_DECISIONS.json",
+    "sovereign/ops-log.json",
+    "sovereign/keeper/revival-sweep.json"
+  ]
+}

@@ -1,0 +1,58 @@
+# WEB-PUBLISH — סוכן הענן של רשת-האחסון הריבונית (R50 · v2 ב-R51)
+#
+# לוקח חבילות מהדואר הנכנס (sovereign/web/inbox) ומעלה אותן
+# לשרשרת Steem הציבורית בסמכות posting בלבד:
+#   · חותם: custom_json id=saos.web.v1 (sha256 ראשון; Hive רשת-ביטחון)
+#   · צ׳אנקים: custom_json id=saos.web.c.v1 {h,i,d} — מטען קומפקטי,
+#     בגודל אדפטיבי לפי המנה החיה, עד 10 צ׳אנקים בריצה (R51)
+#   · שלמות: רצף קונטיגואלי 1..k ⇒ אורך + sha256 — השופט היחיד
+#   · חותם-כפילות: אחרי השלמת הבייטים, חותם Steem נוסף ל-Hive
+#
+# אידמפוטנטי לחלוטין: סריקת-היסטוריה chain-aware (Steem 100/עמוד,
+# נמדד חי) לפני כל שידור; אין RC ⇒ דילוג-כנה והריצה הבאה ממשיכה.
+# הסוד (WEAVE_STEEM_WIF) חי ב-Actions Secrets בלבד — לעולם לא בקוד, לא בלוג.
+#
+# קדנס: כל 20 דקות + הזנקה ידנית מהאפליקציה.
+
+name: web-publish
+
+on:
+  # R71: הקדנס הוסר — התאום ב-Domain (:03/:23/:43) מפרסם לשרשרת. גיבוי ידני בלבד.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: web-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout origin/main (the sovereign home)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Publish inbox packages to Steem (posting authority, RC-gated)
+        run: bun scripts/web-publish.ts
+        env:
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          WEAVE_STEEM_ACCOUNT: cashmachine
+          # רצפה נמוכה בזמן העלאה: קווי העוגן מדלגים בכנות כל-עוד הדואר
+          # הנכנס לא-ריק (השומר ב-weave-anchor-lines), ולכן כל הרגנרציה
+          # שייכת לשידור התוכן. המחיר נלמד-חי: בסיס + לתו (probe2: 65M+320k).
+          WEB_RC_RESERVE: '20000000'
+          WEB_RC_BASE: '65000000'
+          WEB_RC_PER_CHAR: '320000'

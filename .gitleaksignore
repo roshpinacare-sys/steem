@@ -1,0 +1,33 @@
+# .gitleaksignore — triaged 2026-10-01 by Task 13-d2 (org-gitleaks run 36763896413)
+# one fingerprint per line; git form (commit:file:rule:line) + HEAD-only form (file:rule:line)
+# so full-history AND --no-git scans agree. No secret material in this file (fingerprints+comments only).
+
+# false-positive: AES-256-GCM ciphertext envelope fields (encKey/keyIv/keyTag) of the by-design secret-free ledger book (plaintext valueless without the seal password, which is not in the repo)
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2630
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2631
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2632
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2642
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2643
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2644
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2654
+5726b3246e1f24cc3970e73edd36082a11dca768:sovereign/ledger.json:generic-api-key:2656
+sovereign/ledger.json:generic-api-key:32939
+sovereign/ledger.json:generic-api-key:32940
+sovereign/ledger.json:generic-api-key:32941
+sovereign/ledger.json:generic-api-key:32951
+sovereign/ledger.json:generic-api-key:32952
+sovereign/ledger.json:generic-api-key:32953
+sovereign/ledger.json:generic-api-key:32963
+sovereign/ledger.json:generic-api-key:32965
+
+# TRIAGED HISTORICAL BLEED (X-1, Z-74 2026-10-04): real BIP39 mnemonic literal, git-tracked
+# since 0e252dab (2026-09-22) — mitigated by r186-a: the seed now lives ONLY in the agents
+# vault (~/.sovereign/vault/secrets/TRON_SEED, 0600, fail-closed) and the tree is clean.
+# This entry names the exception; it is not a blind green. History rewrite intentionally NOT
+# performed (multi-clone estate divergence risk) — the exposed address ROTATION is the real
+# remediation and stays an owner-level decision until booked.
+0e252dabcbd04f317b1448dfc42d381d2ba66244:scripts/check-tron-connection.mjs:bip39-literal-assignment:32
+scripts/check-tron-connection.mjs:bip39-literal-assignment:32
+
+# headcorner-seal triage (2026-10-06): meta.json carried keySha256 only in commit bd7e3c31 — the field was removed same-day; the live file stores no key material (fingerprint inside the encrypted envelope only).
+bd7e3c318cdd2d2685876848618fa156ea080604:sovereign/headcorner-seal.meta.json:generic-api-key:8

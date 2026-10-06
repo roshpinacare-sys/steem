@@ -1,0 +1,451 @@
+{
+ "task": "r144-i2",
+ "agent": "army-content-i2",
+ "at": "2026-10-01T22:13:00.938Z",
+ "method": {
+  "accounts": [
+   "cashmachine",
+   "haran",
+   "israelnews",
+   "lsa",
+   "macrame",
+   "siq",
+   "tov",
+   "wic",
+   "wog",
+   "woq",
+   "headcorner"
+  ],
+  "rosterSource": "Domain/agents/self-audience.cjs FLEET (11) + fleet-social.cjs ROTATION (10+headcorner) — the live posting machinery; curation daemon state carries the voter (headcorner) only, no roster (measured deviation from mission wording)",
+  "perAccountSample": "last 5 comments via bridge.get_account_posts {sort:\"comments\"} (condenser_api.get_discussions_by_comments measured dead: \"Invalid parameters\" on api.steemit.com)",
+  "similarity": "normalized token-overlap: content-Jaccard on lowercased, markdown-stripped, stopword-filtered tokens (len>=3); near-duplicate threshold 0.6",
+  "secondary": "containment = |A∩B|/min(|A|,|B|) reported per pair"
+ },
+ "fetched": {
+  "accounts": 11,
+  "comments": 52,
+  "errors": []
+ },
+ "language": {
+  "distribution": {
+   "en": 42,
+   "he": 10
+  },
+  "verdict": "mixed — see distribution"
+ },
+ "duplication": {
+  "threshold": 0.6,
+  "totalComparablePairs": 1326,
+  "pairsReported": 50,
+  "nearDuplicatePairs": 2,
+  "crossAccountPairs": 49,
+  "crossAccountNearDuplicatePairs": 2,
+  "pairDuplicationPct": 4.1,
+  "commentLevelDuplicationPct": 7.7,
+  "commentLevelCrossAccountPct": 7.7
+ },
+ "templateFingerprints": {
+  "source": "Domain/agents/fleet-social.cjs v2 — single shared comment template: opener (\"Your piece \"…\" stopped me, specifically the part with <fragment>\") + knowledge-card sentence + one of 5 fixed closers rotated by (dayOfYear+rotationIndex)%5",
+  "commentsMatchingSharedTemplate": 10,
+  "ofComments": 52,
+  "matchPct": 19.2,
+  "perCommentHits": [
+   {
+    "author": "cashmachine",
+    "permlink": "re-saos-haran-20261001-cashmachine",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "the chain keeps the score either way."
+    ]
+   },
+   {
+    "author": "haran",
+    "permlink": "re-saos-woq-20261001-haran",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "where do you take this next?"
+    ]
+   },
+   {
+    "author": "israelnews",
+    "permlink": "re-saos-macrame-20261001-israelnews",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "where do you take this next?"
+    ]
+   },
+   {
+    "author": "lsa",
+    "permlink": "re-saos-cashmachine-20261001-lsa",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "how are you tracking that number on your side?"
+    ]
+   },
+   {
+    "author": "macrame",
+    "permlink": "re-saos-wog-20261001-macrame",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "would be curious how this looks a week from now."
+    ]
+   },
+   {
+    "author": "siq",
+    "permlink": "re-saos-israelnews-20261001-siq",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "the chain keeps the score either way."
+    ]
+   },
+   {
+    "author": "tov",
+    "permlink": "re-saos-lsa-20261001-tov",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "did anything in the data surprise you this week?"
+    ]
+   },
+   {
+    "author": "wic",
+    "permlink": "re-saos-siq-20261001-wic",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "how are you tracking that number on your side?"
+    ]
+   },
+   {
+    "author": "wog",
+    "permlink": "re-saos-wic-20261001-wog",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "did anything in the data surprise you this week?"
+    ]
+   },
+   {
+    "author": "woq",
+    "permlink": "re-saos-tov-20261001-woq",
+    "hits": [
+     "stopped me",
+     "specifically the part with",
+     "your piece \"",
+     "would be curious how this looks a week from now."
+    ]
+   }
+  ]
+ },
+ "nearDuplicatePairs": [
+  {
+   "a": {
+    "author": "cashmachine",
+    "permlink": "re-saos-siq-20260930-cashmachine"
+   },
+   "b": {
+    "author": "israelnews",
+    "permlink": "re-saos-siq-20260930-israelnews"
+   },
+   "crossAccount": true,
+   "sim": 0.629,
+   "containment": 1,
+   "nearDuplicate": true,
+   "snippetA": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. סוכנים-אוטונומיים-נשפטים-על-קצב: רץ-כ",
+   "snippetB": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. שאלה שנשארה איתי: איך זה נמדד אצלכם ב"
+  },
+  {
+   "a": {
+    "author": "tov",
+    "permlink": "re-saos-lsa-20261001-tov"
+   },
+   "b": {
+    "author": "wog",
+    "permlink": "re-saos-wic-20261001-wog"
+   },
+   "crossAccount": true,
+   "sim": 0.654,
+   "containment": 0.81,
+   "nearDuplicate": true,
+   "snippetA": "Your piece \"Derivation instead of paste: keys from one string\" stopped me, specifically the part with 4,616 SP. Private ",
+   "snippetB": "Your piece \"x times y equals k: the one equation behind most DEXes\" stopped me, specifically the part with 4,616 SP. Pri"
+  }
+ ],
+ "reportablePairsBelowThreshold": [
+  {
+   "a": {
+    "author": "haran",
+    "permlink": "re-saos-woq-20261001-haran"
+   },
+   "b": {
+    "author": "lsa",
+    "permlink": "re-saos-cashmachine-20261001-lsa"
+   },
+   "crossAccount": true,
+   "sim": 0.59,
+   "containment": 0.767,
+   "nearDuplicate": false,
+   "snippetA": "Your piece \"minOut: the guard that turns a trade into a serious trade (measured 2026-10-01)\" stopped me, specifically th",
+   "snippetB": "Your piece \"Four signs a message is trying to steal your key (measured 2026-10-01)\" stopped me, specifically the part wi"
+  },
+  {
+   "a": {
+    "author": "haran",
+    "permlink": "re-saos-tov-20260930-haran"
+   },
+   "b": {
+    "author": "wog",
+    "permlink": "re-saos-tov-20260930-wog"
+   },
+   "crossAccount": true,
+   "sim": 0.575,
+   "containment": 0.767,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. STEEM POWER הוא חלק-הה",
+   "snippetB": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. שידור שחזר בלי שגיאה ה"
+  },
+  {
+   "a": {
+    "author": "cashmachine",
+    "permlink": "re-saos-haran-20261001-cashmachine"
+   },
+   "b": {
+    "author": "siq",
+    "permlink": "re-saos-israelnews-20261001-siq"
+   },
+   "crossAccount": true,
+   "sim": 0.568,
+   "containment": 0.75,
+   "nearDuplicate": false,
+   "snippetA": "Your piece \"custom_json: the cheap engine under the whole social layer\" stopped me, specifically the part with 4,616 SP.",
+   "snippetB": "Your piece \"The key hierarchy: why publishing uses the posting key and nothing else (measured 2026-10-01)\" stopped me, s"
+  },
+  {
+   "a": {
+    "author": "israelnews",
+    "permlink": "re-saos-siq-20260930-israelnews"
+   },
+   "b": {
+    "author": "woq",
+    "permlink": "re-saos-siq-20260930-woq"
+   },
+   "crossAccount": true,
+   "sim": 0.564,
+   "containment": 1,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. שאלה שנשארה איתי: איך זה נמדד אצלכם ב",
+   "snippetB": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. התוכן-הטוב-ביותר שלך שווה-שלוש-קהלים:"
+  },
+  {
+   "a": {
+    "author": "tov",
+    "permlink": "re-saos-israelnews-20260930-tov"
+   },
+   "b": {
+    "author": "wic",
+    "permlink": "re-saos-israelnews-20260930-wic"
+   },
+   "crossAccount": true,
+   "sim": 0.538,
+   "containment": 0.75,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. ב-Steem לכל חשבון כוח-הצבעה (VP) בין 0% ל-10",
+   "snippetB": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. מפתחות-וויתנס-אינם-מקרים: הם-base58check — 3"
+  },
+  {
+   "a": {
+    "author": "lsa",
+    "permlink": "re-saos-tov-20260930-lsa"
+   },
+   "b": {
+    "author": "wog",
+    "permlink": "re-saos-tov-20260930-wog"
+   },
+   "crossAccount": true,
+   "sim": 0.511,
+   "containment": 0.767,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. ניהול-מפתחות-הוא-הרגל-",
+   "snippetB": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. שידור שחזר בלי שגיאה ה"
+  },
+  {
+   "a": {
+    "author": "macrame",
+    "permlink": "re-saos-israelnews-20260930-macrame"
+   },
+   "b": {
+    "author": "tov",
+    "permlink": "re-saos-israelnews-20260930-tov"
+   },
+   "crossAccount": true,
+   "sim": 0.5,
+   "containment": 0.75,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. בשרשראות-גרפניות הבלוקים-מיוצרים-על-ידי-וויט",
+   "snippetB": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. ב-Steem לכל חשבון כוח-הצבעה (VP) בין 0% ל-10"
+  },
+  {
+   "a": {
+    "author": "israelnews",
+    "permlink": "re-saos-siq-20260930-israelnews"
+   },
+   "b": {
+    "author": "wog",
+    "permlink": "re-saos-tov-20260930-wog"
+   },
+   "crossAccount": true,
+   "sim": 0.486,
+   "containment": 0.773,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. שאלה שנשארה איתי: איך זה נמדד אצלכם ב",
+   "snippetB": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. שידור שחזר בלי שגיאה ה"
+  },
+  {
+   "a": {
+    "author": "haran",
+    "permlink": "re-saos-tov-20260930-haran"
+   },
+   "b": {
+    "author": "lsa",
+    "permlink": "re-saos-tov-20260930-lsa"
+   },
+   "crossAccount": true,
+   "sim": 0.479,
+   "containment": 0.697,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. STEEM POWER הוא חלק-הה",
+   "snippetB": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. ניהול-מפתחות-הוא-הרגל-"
+  },
+  {
+   "a": {
+    "author": "israelnews",
+    "permlink": "re-saos-siq-20260930-israelnews"
+   },
+   "b": {
+    "author": "tov",
+    "permlink": "re-saos-israelnews-20260930-tov"
+   },
+   "crossAccount": true,
+   "sim": 0.471,
+   "containment": 0.727,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. שאלה שנשארה איתי: איך זה נמדד אצלכם ב",
+   "snippetB": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. ב-Steem לכל חשבון כוח-הצבעה (VP) בין 0% ל-10"
+  },
+  {
+   "a": {
+    "author": "macrame",
+    "permlink": "re-saos-israelnews-20260930-macrame"
+   },
+   "b": {
+    "author": "wic",
+    "permlink": "re-saos-israelnews-20260930-wic"
+   },
+   "crossAccount": true,
+   "sim": 0.457,
+   "containment": 0.656,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. בשרשראות-גרפניות הבלוקים-מיוצרים-על-ידי-וויט",
+   "snippetB": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. מפתחות-וויתנס-אינם-מקרים: הם-base58check — 3"
+  },
+  {
+   "a": {
+    "author": "haran",
+    "permlink": "re-saos-tov-20260930-haran"
+   },
+   "b": {
+    "author": "israelnews",
+    "permlink": "re-saos-siq-20260930-israelnews"
+   },
+   "crossAccount": true,
+   "sim": 0.447,
+   "containment": 0.773,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. STEEM POWER הוא חלק-הה",
+   "snippetB": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. שאלה שנשארה איתי: איך זה נמדד אצלכם ב"
+  },
+  {
+   "a": {
+    "author": "cashmachine",
+    "permlink": "re-saos-siq-20260930-cashmachine"
+   },
+   "b": {
+    "author": "woq",
+    "permlink": "re-saos-siq-20260930-woq"
+   },
+   "crossAccount": true,
+   "sim": 0.423,
+   "containment": 0.629,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. סוכנים-אוטונומיים-נשפטים-על-קצב: רץ-כ",
+   "snippetB": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. התוכן-הטוב-ביותר שלך שווה-שלוש-קהלים:"
+  },
+  {
+   "a": {
+    "author": "israelnews",
+    "permlink": "re-saos-siq-20260930-israelnews"
+   },
+   "b": {
+    "author": "wic",
+    "permlink": "re-saos-israelnews-20260930-wic"
+   },
+   "crossAccount": true,
+   "sim": 0.421,
+   "containment": 0.727,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «עדכון תהליך 2026-09-30 — מחזור האימות המלא» — החלק עם 11 חשבונ עצר אותי. שאלה שנשארה איתי: איך זה נמדד אצלכם ב",
+   "snippetB": "קראתי את «מדדי רשת 2026-09-30 — הגיליון היומי» — החלק עם 4,616 SP עצר אותי. מפתחות-וויתנס-אינם-מקרים: הם-base58check — 3"
+  },
+  {
+   "a": {
+    "author": "haran",
+    "permlink": "re-saos-tov-20260930-haran"
+   },
+   "b": {
+    "author": "siq",
+    "permlink": "re-saos-tov-20260930-siq"
+   },
+   "crossAccount": true,
+   "sim": 0.411,
+   "containment": 0.697,
+   "nearDuplicate": false,
+   "snippetA": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. STEEM POWER הוא חלק-הה",
+   "snippetB": "קראתי את «מסה קצרה 2026-09-30 — אמון שנבנה מכיוון האימות» — החלק עם מסה קצרה 2026-09-30 עצר אותי. פוסט-על-Steem מסיים-חל"
+  }
+ ],
+ "verdict": {
+  "headline": "cross-account near-duplicates found: 2 pairs",
+  "strongestPairMeasured": {
+   "a": {
+    "author": "tov",
+    "permlink": "re-saos-lsa-20261001-tov"
+   },
+   "b": {
+    "author": "wog",
+    "permlink": "re-saos-wic-20261001-wog"
+   },
+   "crossAccount": true,
+   "sim": 0.654,
+   "containment": 0.81,
+   "nearDuplicate": true,
+   "snippetA": "Your piece \"Derivation instead of paste: keys from one string\" stopped me, specifically the part with 4,616 SP. Private ",
+   "snippetB": "Your piece \"x times y equals k: the one equation behind most DEXes\" stopped me, specifically the part with 4,616 SP. Pri"
+  },
+  "note": "template fingerprints make accounts recognizably mechanical even when token-overlap stays low — the dedupe gate + voice-profile rotation target exactly this"
+ }
+}

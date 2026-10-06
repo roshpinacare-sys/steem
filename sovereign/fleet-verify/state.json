@@ -1,0 +1,714 @@
+{
+  "service": "fleet-verify",
+  "version": "2.0.0",
+  "bootedAt": "2026-10-06T11:22:41.288Z",
+  "beats": 2,
+  "patAvailable": true,
+  "current": null,
+  "jobs": [
+    {
+      "id": "jumpper-tests",
+      "repo": "saos-jummper",
+      "titleHe": "מבחני הנוטריון חוצה-השרשרות",
+      "layer": "QA",
+      "roleHe": "JUMPPER הוא נוטריון ההוכחות של הרשת: כל טענה דיגיטלית הופכת לרשומה ציבורית זולה לאימות. המאמת מריץ את מלוא מבחני היחידה, קומפילציה מלאה והדמו החי מול שרשרות ציבוריות.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-06T11:22:41.305Z",
+      "durationMs": 8571,
+      "checks": {
+        "unitTestsRan": 673,
+        "unitTestsOk": 1,
+        "packageCompiles": 1,
+        "liveWitnessDemo": "pass"
+      },
+      "reason": "unit tests pass, package compiles",
+      "outputTail": [
+        "test_the_amount_mismatch_is_reconciled_exactly (test_xlock.TestReconciliationOfTheRealLedger.test_the_amount_mismatch_is_reconciled_exactly) ... ok",
+        "test_the_two_referenceless_locks_are_flagged (test_xlock.TestReconciliationOfTheRealLedger.test_the_two_referenceless_locks_are_flagged) ... ok",
+        "test_the_unresolved_citation_is_flagged_and_says_what_it_cannot_decide (test_xlock.TestReconciliationOfTheRealLedger.test_the_unresolved_citation_is_flagged_and_says_what_it_cannot_decide) ... ok",
+        "test_a_balanced_protocol_between_two_parties_reconciles (test_xlock.TestTheCheckerDiscriminates.test_a_balanced_protocol_between_two_parties_reconciles) ... ok",
+        "test_a_lock_beside_an_unlock_is_not_format_drift (test_xlock.TestTheCheckerDiscriminates.test_a_lock_beside_an_unlock_is_not_format_drift) ... ok",
+        "test_an_empty_ledger_reconciles (test_xlock.TestTheCheckerDiscriminates.test_an_empty_ledger_reconciles) ... ok",
+        "test_an_unlock_citing_its_own_lock_txid_is_not_foreign (test_xlock.TestTheCheckerDiscriminates.test_an_unlock_citing_its_own_lock_txid_is_not_foreign) ... ok",
+        "----------------------------------------------------------------------",
+        "Ran 673 tests in 0.138s",
+        "OK",
+        "verdict: PASS (unit tests pass, package compiles)"
+      ],
+      "nextDueAt": "2026-10-07T11:22:51.555Z",
+      "commit": "7be830a",
+      "runs": 12,
+      "push": {
+        "at": "2026-10-06T11:22:49.877Z",
+        "commit": "8ddad02",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · saos-jummper@8ddad02"
+      }
+    },
+    {
+      "id": "wallet-verify",
+      "repo": "Saosmartwallet",
+      "titleHe": "שעת האיכות של הארנק",
+      "layer": "QA",
+      "roleHe": "Saosmartwallet הוא הארנק של הרשת: 7 רשתות חיות, כספת מפתחות ריבונית ושכבת גשרים. המאמת מתקין מהנעילה הקפואה, מג'נרט לקוח Prisma ומריץ בדיקת טיפוסים מלאה.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-06T11:23:41.303Z",
+      "durationMs": 35288,
+      "checks": {
+        "install": "pass",
+        "prismaGenerate": "pass",
+        "typecheck": "pass",
+        "productionBuild": "skipped-local"
+      },
+      "reason": "install+typecheck pass (local gate: build skipped by sandbox policy)",
+      "outputTail": [
+        "verdict: PASS (install+typecheck pass (local gate: build skipped by sandbox policy))"
+      ],
+      "nextDueAt": "2026-10-07T11:24:18.728Z",
+      "commit": "edd1b9d",
+      "runs": 10,
+      "push": {
+        "at": "2026-10-06T11:24:16.592Z",
+        "commit": "d73783d",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · Saosmartwallet@d73783d"
+      }
+    },
+    {
+      "id": "sdk-verify",
+      "repo": "Sdk",
+      "titleHe": "שלמות תוכן ה-SDK",
+      "layer": "QA",
+      "roleHe": "מאמת שכבת ה-SDK: מסמכים ושידורים קיימים, לא ריקים, ומניפסט SHA-256 נבנה על כל התוכן — שינוי נמדד בריצה הבאה.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T21:49:19.021Z",
+      "durationMs": 1215,
+      "checks": {
+        "docsDir": 1,
+        "docsFiles": 37,
+        "broadcastsDir": 1,
+        "broadcastFiles": 29,
+        "rootDocs": 18,
+        "totalFiles": 66,
+        "totalBytes": 82568
+      },
+      "reason": "sdk content intact",
+      "outputTail": [
+        "verdict: PASS (sdk content intact)"
+      ],
+      "nextDueAt": "2026-10-05T21:49:21.877Z",
+      "commit": "f827167",
+      "runs": 8,
+      "push": {
+        "at": "2026-10-04T21:49:20.238Z",
+        "commit": "90048a1",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · Sdk@90048a1"
+      }
+    },
+    {
+      "id": "claims-guard",
+      "repo": "Adsmarket",
+      "titleHe": "שומר הטענות של השיווק",
+      "layer": "ENFORCEMENT",
+      "roleHe": "בודק שעמודי הנחיתה סגורים כראוי, שאין גליפים אסורים (אימוג'י/חצים/דינגבטים), ושקישורי הרשת שלנו חיים — קישור מת שלנו הוא כשל, חיצוני מדווח בכנות.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T21:51:19.021Z",
+      "durationMs": 4580,
+      "checks": {
+        "landingPages": 9,
+        "pagesMissingCloseTag": 0,
+        "forbiddenGlyphs": 0,
+        "linksChecked": 8,
+        "linksAlive": 3,
+        "ownNetworkDeadLinks": 0,
+        "externalDeadLinks": 5,
+        "receiptMentions": 76
+      },
+      "reason": "5 external links dead (reported, not a failure)",
+      "outputTail": [
+        "verdict: PASS | 5 external links dead (reported, not a failure)"
+      ],
+      "nextDueAt": "2026-10-05T21:51:25.252Z",
+      "commit": "d08f170",
+      "runs": 8,
+      "push": {
+        "at": "2026-10-04T21:51:23.602Z",
+        "commit": "7ce87ec",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · Adsmarket@7ce87ec"
+      }
+    },
+    {
+      "id": "controls-audit",
+      "repo": "roshpina",
+      "titleHe": "מבקר הבקרות של רושפינה",
+      "layer": "ENFORCEMENT",
+      "roleHe": "הריפו מתעד אילו בקרות באמת קיימות ואת תדריך הסוכן. המאמת מוודה שהמסמכים קיימים, לא ריקים, שכל בקרה בסעיף משלה — וסופר את ארכיון השידורים.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T21:52:19.021Z",
+      "durationMs": 1435,
+      "checks": {
+        "controlsDocumentExists": 1,
+        "controlsDocumentBytes": 1245,
+        "controlSections": 0,
+        "agentBriefingExists": 1,
+        "patchSpecExists": 1,
+        "broadcastFiles": 29,
+        "broadcastsBadNaming": 1
+      },
+      "reason": "controls documented",
+      "outputTail": [
+        "verdict: PASS (controls documented)"
+      ],
+      "nextDueAt": "2026-10-05T21:52:22.218Z",
+      "commit": "444c369",
+      "runs": 8,
+      "push": {
+        "at": "2026-10-04T21:52:20.457Z",
+        "commit": "bd8779d",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · roshpina@bd8779d"
+      }
+    },
+    {
+      "id": "control-center-build",
+      "repo": "saos-control-center",
+      "titleHe": "שער הבנייה של מרכז הבקרה",
+      "layer": "QA",
+      "roleHe": "מרכז הבקרה של הרשת: המאמת מתקין מהנעילה הקפואה, מג'נרט לקוח Prisma ומריץ בדיקת טיפוסים מלאה — השער לפני שכל שינוי רואה עולם.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T20:14:19.021Z",
+      "durationMs": 17628,
+      "checks": {
+        "install": "pass",
+        "prismaGenerate": "pass",
+        "typecheck": "pass",
+        "productionBuild": "skipped-local"
+      },
+      "reason": "install+typecheck pass (local gate: build skipped by sandbox policy)",
+      "outputTail": [
+        "verdict: PASS (install+typecheck pass (local gate: build skipped by sandbox policy))"
+      ],
+      "nextDueAt": "2026-10-05T20:14:38.358Z",
+      "commit": "6d88d13",
+      "runs": 7,
+      "push": {
+        "at": "2026-10-04T20:14:36.649Z",
+        "commit": "d4b5443",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · saos-control-center@d4b5443"
+      }
+    },
+    {
+      "id": "platform-selftest",
+      "repo": "saos-sovereign-platform",
+      "titleHe": "בחינה-עצמית של מנוע הקצה",
+      "layer": "QA",
+      "roleHe": "מנוע ההשקיה של הפלטפורמה הריבונית: המאמת מריץ את ה-selftest המלא, טוען את שכבת הכללים הקפואה ומריץ קומפילציה של רץ-הרקע.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T20:15:19.020Z",
+      "durationMs": 5269,
+      "checks": {
+        "selftestPassed": 12,
+        "selftestTotal": 12,
+        "selftestExitOk": 0,
+        "ruleLayerLoad": "pass",
+        "edgeRunnerCompile": "compiles"
+      },
+      "reason": "selftest 12/12, rule layer loads",
+      "outputTail": [
+        "  ✓ battery-alert — battery=12% → ALERT",
+        "  ✓ dose-model — גרעון 11% → 9.9 מ״מ · 49 דק' (צפוי 9.9/49)",
+        "  ✓ advisor-reduce-only — הגדלה נדחית (9.9=9.9) · רצפה 50% (5.0=5.0)",
+        "  ✓ advisor-critical-sacred — קריטי + override → IRRIGATE 18.0מ״מ (מלא)",
+        "  ✓ valve-closed-loop — מנה 10מ״מ נכנסת לקריאה הבאה ונשאבת פעם אחת",
+        "  ✓ audit-trail — JSONL נכתב: 1 שורה · decision=IRRIGATE · trace+doseModel ✓",
+        "═ ירוק: 12/12 · 12מ״ש ═",
+        "  3. סבלנות קצורה — 6 מחזורי דחייה והגשם לא בא: משקים בכל זאת. צמא-נצחי הוא טיפשות, לא חוכמה.",
+        "  4. רק נתוני-אמת דוחים — דחיית-גשם נחשבת רק מתחזית חיה (Open-Meteo); המודל-החלופי לעולם לא ממציא גשם.",
+        "  5. מינון לפי גרעון — כמות המים = המרחק ליעד × פקטור-קרקע, לא תקן קבוע; החישוב מפורש בכל שורת ביקורת.",
+        "  6. חיישן חשוד = עצירה — סוללה < 15% או ערכים בלתי-אפשריים: התראה, לא השקיה עיוורת.",
+        "  7. כל טיפה מתועדת — לכל החלטה: העקבה המלאה, התחזית ששימשה, וחוות-דעת היועץ כשנתבקשה.",
+        "  8. היועץ בלולאה — השקיה משמעותית (≥5 מ״מ) נבחנת על-ידי אגרונום-ה-LLM לפני הביצוע: מאשר, מגרע (עד 50%), או לא עונה — והכישלון מתועד בכנות. קו-העקה לפני הכל, גם נגד דעת היועץ.",
+        "verdict: PASS (selftest 12/12, rule layer loads)"
+      ],
+      "nextDueAt": "2026-10-05T20:15:25.945Z",
+      "commit": "9f6440e",
+      "runs": 7,
+      "push": {
+        "at": "2026-10-04T20:15:24.290Z",
+        "commit": "fde00ec",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · saos-sovereign-platform@fde00ec"
+      }
+    },
+    {
+      "id": "archive-keeper",
+      "repo": "Project-files",
+      "titleHe": "שומר הארכיונים",
+      "layer": "RECOVERY",
+      "roleHe": "כל ארכיון חייב להיפתח נקי: המאמת פותח-מבחן כל קובץ zip, בונה מניפסט SHA-256 ומדווח בכנות על כל ארכיון פגום.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T21:55:19.021Z",
+      "durationMs": 7879,
+      "checks": {
+        "archivesTotal": 10,
+        "archivesIntact": 10,
+        "archivesCorrupt": 0,
+        "archivesBytes": 68852453,
+        "rootDocuments": 19
+      },
+      "reason": "all archives open cleanly",
+      "outputTail": [
+        "OK ./tfa-evolution-studio-validated (2).zip",
+        "OK ./V33_30_controlled_human_ux_pilot_instrumentation_patch (2).zip",
+        "OK ./srs_sovereign_runtime_substrate_v8.2.0 (2).zip",
+        "OK ./unified-platform-v33.56-custody-authority-persistence (2).zip",
+        "OK ./steem-main (1).zip",
+        "OK ./ecos_v568_canonical.zip",
+        "OK ./qodo-v24.30.49-pass76-quota-gauge (2).zip",
+        "OK ./workspace-v0.0.1 (2).zip",
+        "OK ./TITAI_v18_VERIFIED_INSTALLER_WITH_ARCHITECTURE (3).zip",
+        "OK ./zip-to-pdf-polyglot-9.1.0 (3).zip",
+        "verdict: PASS (all archives open cleanly)"
+      ],
+      "nextDueAt": "2026-10-05T21:55:29.462Z",
+      "commit": "50c4746",
+      "runs": 8,
+      "push": {
+        "at": "2026-10-04T21:55:26.901Z",
+        "commit": "703748c",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · Project-files@703748c"
+      }
+    },
+    {
+      "id": "baseline-integrity",
+      "repo": "anchor-baseline",
+      "titleHe": "שלמות קו-הבסיס",
+      "layer": "WITNESS",
+      "roleHe": "ההיסטוריה לא נמחקת לעולם: המאמת בונה מניפסט SHA-256 של כל תוכן ההיסטוריה, משווה לריצה הקודמת ופוסל אם קובץ הוסר. מוסכמת שמות השידורים נבדקת.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T21:56:19.021Z",
+      "durationMs": 1372,
+      "checks": {
+        "files": 67,
+        "bytes": 393212,
+        "added": 0,
+        "removed": 0,
+        "changed": 0,
+        "badNaming": 1
+      },
+      "reason": "baseline intact",
+      "outputTail": [
+        "verdict: PASS (baseline intact)"
+      ],
+      "nextDueAt": "2026-10-05T21:56:22.029Z",
+      "commit": "c38c2f4",
+      "runs": 8,
+      "push": {
+        "at": "2026-10-04T21:56:20.394Z",
+        "commit": "72f923e",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · anchor-baseline@72f923e"
+      }
+    },
+    {
+      "id": "foundry-selftest",
+      "repo": "saos-sovereign-foundry",
+      "titleHe": "בחינה-עצמית של בית-היציקה",
+      "layer": "QA",
+      "roleHe": "saos-sovereign-foundry הוא בית-היציקה של הרשת — הריפו שממנו נולדו הכלים והעדויות. מ-R109 עד R118 עמד מחוץ לכיסוי המפעל (המאמת העשירי). המאמת מתקין מהנעילה הקפואה, מג'נרט לקוח Prisma ומריץ בדיקת טיפוסים מלאה.",
+      "verdict": "PASS",
+      "lastRunAt": "2026-10-04T20:16:19.022Z",
+      "durationMs": 13820,
+      "checks": {
+        "install": "pass",
+        "prismaGenerate": "pass",
+        "typecheck": "pass",
+        "productionBuild": "skipped-local"
+      },
+      "reason": "install+typecheck pass (local gate: build skipped by sandbox policy)",
+      "outputTail": [
+        "verdict: PASS (install+typecheck pass (local gate: build skipped by sandbox policy))"
+      ],
+      "nextDueAt": "2026-10-05T20:16:34.587Z",
+      "commit": "9b9b80a",
+      "runs": 6,
+      "push": {
+        "at": "2026-10-04T20:16:32.842Z",
+        "commit": "6fcbbf9",
+        "verdict": "PASS",
+        "detail": "נדחף לגיט · saos-sovereign-foundry@6fcbbf9"
+      }
+    }
+  ],
+  "lastDecision": {
+    "at": "2026-10-06T11:24:18.728Z",
+    "kind": "PASS",
+    "detail": "wallet-verify: PASS · 35ש' · install+typecheck pass (local gate: build skipped by sandbox policy) · נדחף לגיט · Saosmartwallet@d73783d"
+  },
+  "history": [
+    {
+      "at": "2026-09-27T13:55:10.694Z",
+      "id": "platform-selftest",
+      "verdict": "PASS",
+      "detail": "4806ms · selftest 12/12, rule layer loads · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-27T13:56:10.694Z",
+      "id": "archive-keeper",
+      "verdict": "PASS",
+      "detail": "8503ms · all archives open cleanly · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-27T13:57:10.694Z",
+      "id": "baseline-integrity",
+      "verdict": "PASS",
+      "detail": "1619ms · baseline intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-27T13:58:10.695Z",
+      "id": "foundry-selftest",
+      "verdict": "DEFER",
+      "detail": "low memory 840MB"
+    },
+    {
+      "at": "2026-09-27T14:58:10.702Z",
+      "id": "foundry-selftest",
+      "verdict": "DEFER",
+      "detail": "low memory 847MB"
+    },
+    {
+      "at": "2026-09-27T15:58:10.703Z",
+      "id": "foundry-selftest",
+      "verdict": "PASS",
+      "detail": "14815ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:28:54.166Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "2918ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:29:54.166Z",
+      "id": "wallet-verify",
+      "verdict": "PASS",
+      "detail": "28253ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:30:54.165Z",
+      "id": "sdk-verify",
+      "verdict": "PASS",
+      "detail": "1465ms · sdk content intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:31:54.165Z",
+      "id": "claims-guard",
+      "verdict": "PASS",
+      "detail": "6400ms · 5 external links dead (reported, not a failure) · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:32:54.166Z",
+      "id": "controls-audit",
+      "verdict": "PASS",
+      "detail": "1513ms · controls documented · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:33:54.166Z",
+      "id": "control-center-build",
+      "verdict": "PASS",
+      "detail": "13986ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:34:54.166Z",
+      "id": "platform-selftest",
+      "verdict": "PASS",
+      "detail": "4885ms · selftest 12/12, rule layer loads · גיט: UNCHANGED"
+    },
+    {
+      "at": "2026-09-30T15:35:54.166Z",
+      "id": "archive-keeper",
+      "verdict": "PASS",
+      "detail": "8765ms · all archives open cleanly · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:36:54.183Z",
+      "id": "baseline-integrity",
+      "verdict": "PASS",
+      "detail": "1662ms · baseline intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-09-30T15:37:54.184Z",
+      "id": "foundry-selftest",
+      "verdict": "PASS",
+      "detail": "18565ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:44:24.070Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "6553ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:45:24.058Z",
+      "id": "wallet-verify",
+      "verdict": "PASS",
+      "detail": "27650ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:46:24.057Z",
+      "id": "sdk-verify",
+      "verdict": "PASS",
+      "detail": "1404ms · sdk content intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:47:24.057Z",
+      "id": "claims-guard",
+      "verdict": "PASS",
+      "detail": "6089ms · 5 external links dead (reported, not a failure) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:48:24.057Z",
+      "id": "controls-audit",
+      "verdict": "PASS",
+      "detail": "1459ms · controls documented · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:49:24.057Z",
+      "id": "control-center-build",
+      "verdict": "PASS",
+      "detail": "16322ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:50:24.057Z",
+      "id": "platform-selftest",
+      "verdict": "PASS",
+      "detail": "4891ms · selftest 12/12, rule layer loads · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:51:24.057Z",
+      "id": "archive-keeper",
+      "verdict": "PASS",
+      "detail": "8616ms · all archives open cleanly · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:52:24.057Z",
+      "id": "baseline-integrity",
+      "verdict": "PASS",
+      "detail": "1432ms · baseline intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-01T19:53:24.057Z",
+      "id": "foundry-selftest",
+      "verdict": "PASS",
+      "detail": "14444ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T21:46:56.162Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "2620ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T21:47:56.162Z",
+      "id": "wallet-verify",
+      "verdict": "DEFER",
+      "detail": "low memory 888MB"
+    },
+    {
+      "at": "2026-10-02T21:48:56.161Z",
+      "id": "sdk-verify",
+      "verdict": "PASS",
+      "detail": "1553ms · sdk content intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T21:49:56.161Z",
+      "id": "claims-guard",
+      "verdict": "PASS",
+      "detail": "4606ms · 5 external links dead (reported, not a failure) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T21:50:56.161Z",
+      "id": "controls-audit",
+      "verdict": "PASS",
+      "detail": "1345ms · controls documented · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T21:51:56.161Z",
+      "id": "control-center-build",
+      "verdict": "DEFER",
+      "detail": "low memory 876MB"
+    },
+    {
+      "at": "2026-10-02T21:52:56.161Z",
+      "id": "platform-selftest",
+      "verdict": "DEFER",
+      "detail": "low memory 850MB"
+    },
+    {
+      "at": "2026-10-02T21:53:56.161Z",
+      "id": "archive-keeper",
+      "verdict": "PASS",
+      "detail": "2398ms · all archives open cleanly · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T21:54:56.161Z",
+      "id": "baseline-integrity",
+      "verdict": "PASS",
+      "detail": "1277ms · baseline intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T21:55:56.162Z",
+      "id": "foundry-selftest",
+      "verdict": "DEFER",
+      "detail": "low memory 897MB"
+    },
+    {
+      "at": "2026-10-02T22:47:56.166Z",
+      "id": "wallet-verify",
+      "verdict": "PASS",
+      "detail": "6893ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T22:51:56.166Z",
+      "id": "control-center-build",
+      "verdict": "PASS",
+      "detail": "5218ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T22:52:56.166Z",
+      "id": "platform-selftest",
+      "verdict": "PASS",
+      "detail": "1696ms · selftest 12/12, rule layer loads · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-02T22:55:56.166Z",
+      "id": "foundry-selftest",
+      "verdict": "PASS",
+      "detail": "4978ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T13:55:10.553Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "2750ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T14:00:18.688Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "2279ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T14:01:32.239Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "5628ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T21:49:15.079Z",
+      "id": "sdk-verify",
+      "verdict": "PASS",
+      "detail": "1224ms · sdk content intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T21:50:15.078Z",
+      "id": "claims-guard",
+      "verdict": "PASS",
+      "detail": "5122ms · 5 external links dead (reported, not a failure) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T21:51:15.080Z",
+      "id": "controls-audit",
+      "verdict": "PASS",
+      "detail": "1603ms · controls documented · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T21:54:22.979Z",
+      "id": "archive-keeper",
+      "verdict": "PASS",
+      "detail": "2684ms · all archives open cleanly · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-03T21:55:22.920Z",
+      "id": "baseline-integrity",
+      "verdict": "PASS",
+      "detail": "1518ms · baseline intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T20:12:19.023Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "6173ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T20:13:19.021Z",
+      "id": "wallet-verify",
+      "verdict": "PASS",
+      "detail": "39364ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T20:14:19.021Z",
+      "id": "control-center-build",
+      "verdict": "PASS",
+      "detail": "17628ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T20:15:19.020Z",
+      "id": "platform-selftest",
+      "verdict": "PASS",
+      "detail": "5269ms · selftest 12/12, rule layer loads · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T20:16:19.022Z",
+      "id": "foundry-selftest",
+      "verdict": "PASS",
+      "detail": "13820ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T21:49:19.021Z",
+      "id": "sdk-verify",
+      "verdict": "PASS",
+      "detail": "1215ms · sdk content intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T21:51:19.021Z",
+      "id": "claims-guard",
+      "verdict": "PASS",
+      "detail": "4580ms · 5 external links dead (reported, not a failure) · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T21:52:19.021Z",
+      "id": "controls-audit",
+      "verdict": "PASS",
+      "detail": "1435ms · controls documented · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T21:55:19.021Z",
+      "id": "archive-keeper",
+      "verdict": "PASS",
+      "detail": "7879ms · all archives open cleanly · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-04T21:56:19.021Z",
+      "id": "baseline-integrity",
+      "verdict": "PASS",
+      "detail": "1372ms · baseline intact · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-06T11:22:41.305Z",
+      "id": "jumpper-tests",
+      "verdict": "PASS",
+      "detail": "8571ms · unit tests pass, package compiles · גיט: נדחף"
+    },
+    {
+      "at": "2026-10-06T11:23:41.303Z",
+      "id": "wallet-verify",
+      "verdict": "PASS",
+      "detail": "35288ms · install+typecheck pass (local gate: build skipped by sandbox policy) · גיט: נדחף"
+    }
+  ]
+}

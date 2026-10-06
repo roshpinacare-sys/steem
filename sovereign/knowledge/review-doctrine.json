@@ -1,0 +1,66 @@
+{
+  "schema": "review-doctrine-v1",
+  "status": "proven-live",
+  "created": "2026-10-03",
+  "wave": "r167",
+  "source": {
+    "repo": "vercel-labs/openreview",
+    "head": "672deb21e70e471e0536d5ad7a67c14b8359e97e",
+    "license": "none-found (verbatim code forbidden; patterns only)",
+    "vendorDir": "sovereign/knowledge/vendor/openreview"
+  },
+  "rules": [
+    {
+      "id": "REV-1",
+      "name": "gate-before-push",
+      "law": "Autonomous push is not unaudited push. Every wave that changes running code may run node scripts/pre-push-review.mjs before git push; exit 1 = stop and fix before pushing."
+    },
+    {
+      "id": "REV-2",
+      "name": "lazy-skills",
+      "law": "Skill INDEX (name+description) enters the prompt first; full bodies load only for skills the router picks. Never paste all skill bodies by default — token honesty (learned from openreview loadSkill)."
+    },
+    {
+      "id": "REV-3",
+      "name": "verdict-or-record",
+      "law": "Every gate run ends in a machine-readable verdict (pass|block|error) written to sovereign/review-gate/last-review.json. Silence is not a verdict."
+    },
+    {
+      "id": "REV-4",
+      "name": "problem-why-fix-with-citations",
+      "law": "Findings must cite file:line and give problem, why it matters, and a concrete fix. Style nitpicks are forbidden findings (from openreview prompt craft)."
+    },
+    {
+      "id": "REV-5",
+      "name": "own-llm-only",
+      "law": "The gate reviews through llm-bridge (:3048, z-ai backend). No Anthropic key, no third-party review API. Aligns with MAG-2 bridge-not-keys."
+    },
+    {
+      "id": "REV-6",
+      "name": "gate-fails-open-not-stuck",
+      "law": "Bridge/parse failure = verdict=error, recorded, exit 0. The gate must never deadlock autonomous pushes (D-OP-01: never wait for the operator). Block only on explicit blocker findings."
+    },
+    {
+      "id": "REV-7",
+      "name": "license-clean-skills",
+      "law": "Skill content with no license (openreview itself, vercel-labs/next-skills) is distilled in our own words, never copied verbatim. MIT sources (vercel-labs/agent-skills) may be vendored with attribution."
+    }
+  ],
+  "activationRoutes": [
+    {
+      "route": "pre-push-route",
+      "status": "live",
+      "how": "node scripts/pre-push-review.mjs --source staged|worktree|last-commit before git push",
+      "evidence": "r167: bad seed blocked (4 blockers, 9468ms); clean seed passed (1054ms, selective 1-of-2 skill load)"
+    },
+    {
+      "route": "pr-route",
+      "status": "blocked",
+      "how": "external GitHub PR review needs GitHub App + public webhook URL",
+      "blocked": "sandbox has no public webhook endpoint; revisit if repo goes public with PRs"
+    }
+  ],
+  "skillsRegistry": "sovereign/knowledge/review-skills/",
+  "gateOutput": "sovereign/review-gate/last-review.json",
+  "whyNotRevenue": "Gate is quality infrastructure: fewer broken pushes → more autonomous cycles per day → indirect revenue protection. Same class as fleet-manifests-audit (r164), not a money path itself."
+}

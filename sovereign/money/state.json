@@ -1,0 +1,80 @@
+{
+  "service": "money-mover",
+  "version": "1.13.0",
+  "bootedAt": "2026-10-06T11:22:40.657Z",
+  "beats": 4109,
+  "checkIntervalSec": 60,
+  "policy": {
+    "triggers": {
+      "parityDriftBps": 50,
+      "floorBps": -50,
+      "idleTriggerSteem": 1
+    },
+    "cooldownMin": 30,
+    "actionsBudgetPerDay": 12,
+    "fillDeploy": {
+      "cooldownMin": 5
+    },
+    "armBuy": {
+      "minSbd": 0.3,
+      "offsetsBps": [
+        20,
+        40,
+        80,
+        160
+      ]
+    },
+    "hive": {
+      "driftBps": 50
+    },
+    "stockSbd": {
+      "premiumCapBps": 200,
+      "keepSteem": 0.5
+    },
+    "rewards": {
+      "saosPerFill": 2,
+      "member": "money-mover"
+    },
+    "liquidityStream": {
+      "waveSteem": 200,
+      "share": 0.2
+    },
+    "truthSource": "api.steemit.com · get_open_orders/get_accounts (via /api/money) + api.hive.blog (via /api/money/hive)"
+  },
+  "lastActionAt": "2026-10-06T11:23:27.682Z",
+  "actionsToday": 1,
+  "actionDay": "2026-10-06",
+  "acting": false,
+  "lastDecision": {
+    "at": "2026-10-06T11:23:40.770Z",
+    "kind": "WAIT-COOLDOWN",
+    "detail": "WAIT-COOLDOWN · עוד 90 דק' · צינון-נלמד +60' (ראיות: 4 כישלונות רצופים זהים (exp#53–#56)) · WAIT-COOLDOWN · עוד 90 דק' · צינון-נלמד +60' (ראיות: 4 כישלונות רצופים זהים (exp#53–#56))"
+  },
+  "canonLast": {
+    "at": "2026-10-06T11:23:31.779Z",
+    "ok": true,
+    "path": "reports/money-2026-10-06.md"
+  },
+  "fillsSeen": 0,
+  "fillDeployPending": false,
+  "lastActionOk": true,
+  "lastDepositScanAt": "2026-10-06T11:22:49.119Z",
+  "lastStreamDay": "2026-09-27",
+  "lastTotalSteem": 697.429,
+  "fleetSeen": {
+    "pulseDay": "2026-10-06",
+    "studentDay": "2026-10-06",
+    "keeperRestartAt": "2026-10-05T23:28:12.463Z"
+  },
+  "lastPoolGuardAt": "2026-10-06T11:23:25.485Z",
+  "lastFleetSweepAt": "2026-10-06T11:23:22.602Z",
+  "autonomyMode": "THINKING",
+  "autonomyHeldCount": 78,
+  "learning": {
+    "backoffMin": 60,
+    "epistemic": "inferred-bounded",
+    "suspended": false,
+    "streak": 4,
+    "updatedAt": "2026-10-06T01:02:40.308Z"
+  }
+}

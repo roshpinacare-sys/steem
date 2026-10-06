@@ -1,0 +1,123 @@
+{
+ "_meta": {
+  "schema": "r208r-verdict-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "writtenAt": "2026-10-05T22:20:00Z",
+  "law": "לא מייעלים-ל-A — מייעלים-לאמת · B-אמת עדיף על A-מזויף · העדר-עולם-חיובי הוא ראיה כשהעולם באמת לא חצה"
+ },
+ "verdict": "B",
+ "verdictLabel": "OBJECTIVE CONSUMED, CAUSALITY PARTIAL — הפסק-דין-B של R208 שרד-את-ההפרכה-וחוזק; הלולאה-החיה-מקצה-לקצה נותרת-לא-נצפית (כנות)",
+ "revalidationVerdict": "B-of-R208 CONFIRMED & UPGRADED-EVIDENCE — ההשערה נבחנה-ב-493-עולמות + 45-וקטורי-התקפה + מוות-חי; לא-הופרכה; לא-שודרגה-ל-A משום-שהעולם לא סיפק-גבול-חיובי",
+ "objectiveConsumed": true,
+ "consumer": {
+  "module": "mini-services/objective-consumer.ts + mini-services/wave-decision.ts",
+  "integratedIn": "mini-services/money/index.ts decide() ענף-גל-הדלק",
+  "boundary": "money-mover/decide#liquidity-wave",
+  "daemonVersion": "1.13.0 (כולל תיקוני-R208R לאחר-החייאה-הרשמית 21:38Z)",
+  "consumptionMap": "יבוא-יחיד · אתר-קריאה-יחיד · 11-ענפים-אחרים מודל-עיוורים-כמתוכנן"
+ },
+ "objectiveId": "O16+O20×options.decision (grid-pool-seed)",
+ "resourceInputs": [
+  {
+   "resource": "SBD (מימון-צד-עטיפה)",
+   "unit": "SBD",
+   "source": "money-mover measure() ← /api/money sbdArming",
+   "liveMeasured": 0.015,
+   "requiredByModel": "≥3.0 (הסף-חי-כעת-במודל: options#_meta.armingThreshold)",
+   "unitMetadata": "value/unit/source/at/stalenessSec/transformation — חובה; מדידה-כושלת → UNMEASURED לעולם לא 0"
+  }
+ ],
+ "alternativeSet": ["A-prime (זריעה-מותאמת ~160 WSTEEM)", "B (החזקה-עד 11/10)", "C1 (פרוב ~20 WSTEEM)"],
+ "opportunityCost": { "represented": true, "ordinalOnly": true, "source": "options.json#options[*].opportunityCost — אפס-המצאת-דולר" },
+ "prediction": {
+  "book": "sovereign/objectives/predictions.jsonl — נותר ריק (0 שורות) לאורך-כל-הסבב: אין-חציית-גבול-חי; המעבדה כתבה-רק-לעותקיה",
+  "labPredictionIntegrity": "493/493 עולמות: תחזית-לפני-הכרעה · סגירה-מתואמת · אפס-סטיות-ספר",
+  "independentPredictor": "מנבא-עצמאי-תהליכי (§VI) — הסכמה-493/493 מול-ההכרעה-החיה-בקוד; מגבלה-מוצהרת: עצמאות-בקוד/תהליך/טעינה, לא-בחוק (סדר-ההכרעה-משותף-כחוזה); ההסכמה-פוסט-יישור מוכיחה-ביצוע"
+ },
+ "decision": {
+  "worldA_live_truth": "WAIT-PREFERENCE (P#1 דוכאת) — לא-נשבר בסבב",
+  "matrixWorlds": "493 עולמות פקטוריאליים (objective×pref×authority×sensor×resource) — 0-שגיאות, 0-סטיות-מנבא, 0-אי-התאמות-ספר",
+  "fourFlips": { "FLIP1_objective": true, "FLIP2_authority": true, "FLIP3_sensor": true, "FLIP4_preference": true, "preferenceNeverTouchesAuthority": true },
+  "sections": { "XIV_objectivePositive_authorityAbsent": "BLOCKED_BY_AUTHORITY — אף-פעולה", "XV_authorityValid_objectiveNegative": "WAIT — לעולם לא ACT", "XVI_resourcePressure": "240-עולמות — לעולם לא ACT" }
+ },
+ "authorityResult": {
+  "separation": "objective→preference · authority→permission · model-never-grants",
+  "blockedByAuthority": "BLOCKED_BY_AUTHORITY = act:false תמיד; אפס-השפעה-חוצה",
+  "gatesIndependentOfModel": true,
+  "authorityLeaks": 0,
+  "integrityUpgrade": "DETECTION-ONLY(אפס-גילוי) → PREVENTED: עיגון-האש + אימות-בייטס-בצרכן; 8/8-התקפות-מפה נדחות; שינוי-חוקי-דורש-עיגון-מעודכן",
+  "powerDownTouch": 0,
+  "openResidual": "שורש-האמון של ספר-העיגון מקומי — דורש-עיגון-חוץ (המשך-R22)"
+ },
+ "externalOutcome": "OUTCOME_UNOBSERVED — LIVE_POSITIVE_WORLD = UNOBSERVED (נזיל-חי 10.792 מול-דרישה-200; אפס-אירועי-הזרמה-אי-פעם); לא-יוצרו-תנאים, לא-נוצקו-גלים (§IV/§XIX נשמרו)",
+ "causalAttribution": {
+  "goldenQuestion": "עולמות-מבוקרים: כן — היפוך-משתנה-יחיד (מטרה/סף-במודל/סמכות/חיישן/העדפה) מהפך-את-ההכרעה-הניתנת-לביצוע · חי: לא-נצפה (אין-חצייה)",
+  "thresholdInModel": "שינוי-סף-במודל-בלבד (3.0→0.5) מהפך WAIT-MODEL→ACT — צריכה-סיבתית-של-פרמטר-מטרה; לא-יוצר-סמכות",
+  "residualDoubts": [
+   "אין-דגימת-גבול-חי (OUTCOME_UNOBSERVED)",
+   "עצמאות-המנבא: קוד/תהליך — לא-חוק (מוצהר)",
+   "הסכמה-מושלמת-פוסט-יישור = ביצוע-לא-הפרכה-מפרט",
+   "שורש-אמון-העיגון מקומי",
+   "חלון-כפילות-פעולה intent-last (money:858) — מוגן-משולש, פתוח"
+  ]
+ },
+ "preferenceUpdate": {
+  "mechanism": "I7-חי: 3-מדידות-סותרות-רצופות → PREFERENCE-EXPIRE משורשר · P#1 נחתמה-מחדש-חוקית (seq 3) על-המודל-שאחרי-התיקון",
+  "revalidated": "P1–P9: סף-מדויק · לא-רצוף-לא-משחרר · שרשרת-שבורה fail-closed · ריסטרט מאפס-רצף · ריפליי נדחה · תוכן-אסור נדחה (I5) · פק-תוקף-כנה",
+  "documentedLimitation": "המנגנון סופר-מדידות-פעימה (זמן-מופרד), לא-ראיות-עצמאיות-מתויגות-מקור"
+ },
+ "futureDecision": "ההכרעה-החיה מוכוונת-מודל: הגבול-החי-הראשון יירשם-בספר-התחזיות-החי עם-החוזה-המעוגן-והסף-מהמודל — זהו-המבחן-שמפריך-את-כל-השאר",
+ "counterfactualDecision": "ACT מול WAIT — מכונה-מבודדת, 493-עולמות, אפס-זליגה-לחי",
+ "restartConsistency": {
+  "liveKill": "kill -9 21:38:20Z בתוך-חסד-עליית-השומר",
+  "keeperHonestRefusal": "BOOT-GRACE 90ד' (bootedAtSeen 21:35:42 < kill) — סירוב-חוקי-נרשם, לא-נעקף",
+  "revival": "הנתיב-הרשמי R84 (scripts/daemons-revive.mjs) — money UP",
+  "cognitionReconstructed": ["beats/lastTotalSteem/lastStreamDay/actionsToday נשמרו", "ספר-התחזיות-החי עדיין-ריק — אפס-המצאה", "שרשרת-ההעדפות שלמה (3-רשומות)", "האשי-המודל יציבים"],
+  "labDeathMatrix": "8-שלבים × 2-סדרים: אפס-כפילויות-תחזית/סגירה · שרשרת-שלמה-אחרי-החזרה · חלון-כפילות-פעולה נמצא-וידוע",
+  "sameEvidenceSameDecision": true,
+  "variableChangeDifferentDecision": true
+ },
+ "sensorIntegrity": {
+  "unitMetadataMandatory": true,
+  "newHolesFoundAndFixed": ["חותמת-עתידית התקבלה-כטרייה (S9/S10) → דחייה >60ש'", "מדידה-כושלת→0 בנתיב-ההעדפה (money:1187) → resetConditionStreak + אין-DOWN-מאפס"],
+  "vectors": "14-חדשים + 32-של-R208 — כל-כשל → UNMEASURED",
+  "limitation": "אין-זיהוי-סתירות-בין-מקורות-מרובים (חיישן-יחיד-בגבול) — UNKNOWN-כנה"
+ },
+ "accumulatorConservation": { "repaired": true, "invariant": "total_realized = Σ אירועים-קנוניים-ייחודיים (canonical_event_id + גזירה-מהספר)", "attacks": "11/11 — ריטריי/ריפליי/כפילות/מאוחר/קרוע/מקבילי/ריסטרט/שעון — אפס-כפילות", "liveState": "dry, 0 מילויים — התיקון-קדם-למילוי-החי-הראשון" },
+ "thresholdProvenance": { "before": "קבוע-סמוי-משוכפל (צרכן+money:1188)", "after": "OBJECTIVE-PARAMETER במודל-בלבד · SAFETY-CAP בקוד · AUTHORITY-CONDITION חוץ-מודלי · שינוי-סף=שינוי-הכרעה, לעולם לא-שינוי-היתר" },
+ "openContradictions": [
+  "X1 קצב-קיורציה 2%↔6% — חיה, מחוץ-לגבול-זה",
+  "X2 O12↔דוקטרינת Activity≠Value — מסומן",
+  "X3 D-OP-01 מושעה בלי-קריטריון-חזרה",
+  "חלון-כפילות-פעולה intent-last (money:858) — מוגן-משולש; התיקון-דורש-הכרעה-מול-תיקון-כנות-קודם",
+  "שורש-אמון-ספר-העיגון מקומי — דורש-עיגון-חוץ",
+  "שחרור-העדפה סופר-מדידות-לא-ראיות-מתויגות"
+ ],
+ "unknowns": [
+  "חציית-גבול-חי ראשונה (תלוי-גל-אמיתי ≥200 STEEM)",
+  "התוצאה-החוצה-הראשונה מחיישן-בלתי-תלוי (ACTION_SENT ≠ SUCCESS)",
+  "התנהגות-ענפי-המודל-האחרים (11-מודל-עיוורים — מתוכנן)"
+ ],
+ "confidence": {
+  "boundaryCausalConsumption": "גבוה (493-עולמות + 45-וקטורים + מוות-חי + שופט-חוץ-עצמאי)",
+  "independentPrediction": "בינוני-גבוה — עצמאות-קוד/תהליך מוכחת; עצמאות-חוק מוגבלת-מוצהרת",
+  "liveEndToEnd": "OUTCOME_UNOBSERVED",
+  "safety": "גבוה — אפס-דליפות-סמכות; שני-חורי-חיישן-נמצאו-ונאטמו-בגילוי-עצמי"
+ },
+ "judgeE": {
+  "file": "cognition/R208R-JUDGE-E.json",
+  "independence": "קרא-ארטיפקטים-בלבד · אפס-גישה-למסקנות-המנהל · מצא-5-סתירות-בעצמו (נרשמו-ותוקנו/מוסברו)",
+  "verdict": "B",
+  "essence": "המודל נצרך בפועל ואינו דקורטיבי: ב-493 עולמות מבוקרים, היפוך-משתנה-יחיד במטרה או בסף-שבמודל מהפך-את-ההכרעה, וטמפר מוביל תמיד-ל-WAIT/BLOCKED — לעולם לא-ל-ACT. הסמכות אטומה, החיישן כנה-אחרי-2-חורים-שתוקנו-בגילוי-עצמי, המצבר משומר. אך הלולאה-החיה מקצה-לקצה מעולם לא נצפתה: ספר-התחזיות-החי ריק לחלוטין, הגבול-החיובי לא נחצה (10.792 מול 200 STEEM), ולא נצפתה תוצאה-חוצה-בלתי-תלויה — ולכן A אסור.",
+  "residuals": ["עצמאות-המנבא בקוד-ולא-בחוק (מוצהר)", "שורש-אמון-העיגון מקומי", "valid-but-false model בלתי-ניתן-לגילוי-מקומי"]
+ },
+ "conditionsForA": [
+  "חציית-גבול-חי אחת עם-השרשרת-המלאה (תחזית-משורשרת-חיה → הכרעה → סמכות → פעולה)",
+  "תוצאה-חוצה-אחת נצפית מחיישן-בלתי-תלוי (סגירת-תחזית-מול-עולם)",
+  "עיגון-חוץ-לשרשרת של מפת-הסמכות/המודל (המשך-R22)",
+  "הכרעת-החלון intent-first (write-ahead) — הכרעה-מנומקת-מול-התיקון-הכנה-הקודם"
+ ],
+ "successCriteria": { "met": "כל-קריטריוני-הצריכה-הסיבתית-המבוקרת + שלמות/שימור/שחזור", "unmet": ["גבול-חי-חוצה-בפועל (OUTCOME_UNOBSERVED)", "תוצאה-חוצה-נצפית"], "compensationRule": "לא-נוספה-תשתית-לפיצוי — הקצוות-השבורים נרשמו-בדיוק" },
+ "finalWord": "R208R לא הפריך את B — הוא הפריך את הסבלנות ל-B: המנבא-העצמאי, הסף-שבמודל, הסמכות-המעוגנת-האש והמצבר-המשומר הם עכשיו חוק-ולא נרטיב. מה שנשאר הוא לא בעיית-תוכנה אלא עולם: הגל-החי-הראשון יהיה הראיה-היחידה שמפריכה-את-כל-השאר — והאורגניזם לא ייצור-אותו."
+}

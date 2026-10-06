@@ -1,0 +1,52 @@
+{
+  "schema": "team-doctrine-v1",
+  "status": "partially-live",
+  "created": "2026-10-03",
+  "wave": "r169",
+  "source": {
+    "batch": "viral 'hot five' agent repos (operator relay)",
+    "provenance": "sovereign/knowledge/vendor/hot-five-2026-10/PROVENANCE.md",
+    "repos": ["NanoNets/Graft fe30ead MIT", "msitarzewski/agency-agents d3f71c4 MIT", "DeusData/codebase-memory-mcp 96c3f41 MIT", "calesthio/OpenMontage 08e2151 AGPLv3", "stablyai/orca 77ad467e MIT"]
+  },
+  "postVsMeasured": [
+    "Graft '4x cheaper' -> own table: +42% tokens, +60% time, +46% fewer tool-calls",
+    "cbmem '>99% token reduction' -> paper: 10x (=90%), 83% answer quality — post exaggerated ~10x",
+    "agency '232 sub-agents' -> measured 328 persona files",
+    "orca 'multi-agent manager' -> Electron desktop GUI; portable idea is worktree fan-out"
+  ],
+  "rules": [
+    {
+      "id": "AT-1",
+      "name": "context-pack-before-task",
+      "law": "Give an agent a pre-computed context pack (repo tree, key file summaries, conventions) BEFORE it starts exploring; exploration turns are the expensive part (from Graft)."
+    },
+    {
+      "id": "AT-2",
+      "name": "persona-as-system-prompt",
+      "law": "Specialist roles are versioned markdown personas (frontmatter name/description + identity/mission) injected as system prompts over llm-bridge — proven live in r169 with marketing-aeo-foundations. Personas live in sovereign/knowledge/vendor/agency-agents/personas/ (MIT, attributed)."
+    },
+    {
+      "id": "AT-3",
+      "name": "structural-index-over-exploration",
+      "law": "When a codebase outgrows direct exploration, answer structural questions from a persistent index/graph, not by reading file-by-file (from codebase-memory-mcp; blocked at our current scale)."
+    },
+    {
+      "id": "AT-4",
+      "name": "stage-decomposed-media-pipeline",
+      "law": "Media production decomposes into stages (brief->assets->compose->review->render) with a schema per hand-off (from OpenMontage shape); we execute stages with sovereign skills, not local GPU pipelines."
+    },
+    {
+      "id": "AT-5",
+      "name": "worktree-fanout",
+      "law": "Parallel bounded agent tasks each get their own git worktree of the repo — no cross-task file interference — with one central tracker (from Orca; enables r166 fleet-tasks-route at scale)."
+    }
+  ],
+  "activationRoutes": [
+    { "route": "persona-route", "status": "live", "how": "persona body -> llm-bridge system prompt; tested r169" },
+    { "route": "context-pack-route", "status": "conditional", "how": "sovereign repo-context pack for mini-swe-agent tasks when volume rises" },
+    { "route": "worktree-fanout-route", "status": "conditional", "how": "git worktree per parallel agent task when >1 recurring task needed" },
+    { "route": "code-graph-route", "status": "blocked", "blocked": "repos too small to justify a 710M-index engine" },
+    { "route": "video-studio-route", "status": "rejected", "blocked": "AGPL + no GPU + sovereign video skill already covers us" }
+  ],
+  "whyNotRevenue": "One direct revenue lever adopted: billable AEO/GEO/content personas for weblift and content-factory. AT-1/3/5 are cost-reduction infrastructure for agent tasks; AT-4 is a checklist."
+}

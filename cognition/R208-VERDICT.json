@@ -1,0 +1,132 @@
+{
+ "_meta": {
+  "schema": "r208-verdict-v1",
+  "round": "R208",
+  "trace": "1a10d7a051e822d1",
+  "writtenAt": "2026-10-05T20:10:00Z",
+  "law": "פסק-דין-כנה עדיף על A-מזויף · המודל משפיע-העדפה, לעולם לא סמכות"
+ },
+ "verdict": "B",
+ "verdictLabel": "MODEL CONSUMED, CAUSALITY PARTIAL — צריכת-המודל חיה ומאומתת; הלולאה-הסיבתית-המלאה (תוצאה-חוצה) טרם-הוכחה",
+ "objectiveConsumed": true,
+ "consumer": {
+  "module": "mini-services/objective-consumer.ts + mini-services/wave-decision.ts",
+  "integratedIn": "mini-services/money/index.ts decide() ענף-גל-הדלק",
+  "boundary": "money-mover/decide#liquidity-wave",
+  "daemonVersion": "1.13.0",
+  "rejectedWhatItMustReject": "11-מחלקות-דחייה fail-closed, 15/15-עולמות + 32-וקטורי-חיישן"
+ },
+ "objectiveId": "O16+O20×options.decision (grid-pool-seed)",
+ "resourceInputs": [
+  {
+   "resource": "SBD (מימון-צד-עטיפה)",
+   "unit": "SBD",
+   "source": "/api/money sbdArming",
+   "liveMeasured": 0.015,
+   "requiredByModel": "≥3.0 להסמכת-זריעה",
+   "metadata": "value/unit/source/at/stalenessSec/transformation חובה"
+  }
+ ],
+ "alternativeSet": [
+  "A-prime (זריעה-מותאמת ~160 WSTEEM)",
+  "B (החזקה-עד 11/10)",
+  "C1 (פרוב ~20 WSTEEM)"
+ ],
+ "opportunityCost": {
+  "represented": true,
+  "ordinalOnly": true,
+  "source": "options.json#options[*].opportunityCost — לא-הומצא, אפס-דולר-מדומה"
+ },
+ "prediction": {
+  "book": "sovereign/objectives/predictions.jsonl (GENESIS-חי — נכתב רק בחציית-גבול-חי)",
+  "beforeDecision": true,
+  "labMatch": "13/13-בגבול",
+  "limitation": "מנבא=מכריע אותו-מחבר — קיבוע-חוק, לא-חזון-מחוץ-למדגם (מפריך-B)"
+ },
+ "decision": {
+  "worldA_live_truth": "WAIT-PREFERENCE",
+  "worldB_one_variable": "ACT",
+  "modelAlone": "WAIT-MODEL (W-B1b/W-B8 — דיכוי-מהמודל-עצמו בלי-דגל-העדפה)",
+  "unresolvedOrBroken": "WAIT-SAFETY (אין-ממציאים-עדיפות, §XIII)"
+ },
+ "authorityResult": {
+  "separation": "objective→preference · authority→permission",
+  "blockedByAuthority": "W-B7 — act:false תמיד",
+  "gatesIndependentOfModel": true,
+  "authorityLeaks": 0,
+  "powerDownTouch": 0
+ },
+ "externalOutcome": "OUTCOME_UNOBSERVED — אין-גל-חי (דרוש +200 STEEM) במהלך-הסבב; המעבדה אינה מדווחת כעולם",
+ "causalAttribution": {
+  "isolationPair": "W-B1b↔W-B1 (משתנה-יחיד: SBD) — WAIT-MODEL→ACT",
+  "againstPreR208": "לפני-r208: ACT-מוחלט על-גל+אין-העדפה; הדלתא היא-הצריכה",
+  "residualDoubts": [
+   "אין-דגימת-גבול-חי",
+   "המנבא והמכריע אותו-מחבר",
+   "סף-3.0-קבוע-בקוד-הצרכן",
+   "authority-map לא-מעוגן-האש בחתימה"
+  ]
+ },
+ "preferenceUpdate": {
+  "mechanism": "I7-חי: 3-מדידות-סותרות → PREFERENCE-EXPIRE משורשר",
+  "semanticsNotTimestamp": "ההכרעה מתהפכת WAIT→ACT אחרי-השחרור (W-B1) — שינוי-התנהגות-מדיד, לא-רישום-חדש"
+ },
+ "futureDecision": "שונה-בפועל בעולם-הנגטיבי (W-B1: ACT) · בחי: הכרעת-הגבול תרוץ עם-החוזה בגל-הראשון",
+ "counterfactualDecision": "ACT מול WAIT-PREFERENCE — מכונה-מבודדת, 15/15-PASS אחרי-תיקוני-D",
+ "restartConsistency": {
+  "processDeath": "19:37:08Z kill",
+  "keeperHonestRefusal": "תקציב-הקמות 3/3 (FAIL-11) — כנות-השומר עצמה ראיה",
+  "revival": "scripts/daemons-revive.mjs (חוק-R84) 19:43:40Z",
+  "cognitionReconstructed": [
+   "מודל+האשים יציבים",
+   "P#1 verifyChain ok",
+   "beats/actionsToday/lastTotalSteem נשמרו"
+  ],
+  "sameEvidenceSameDecision": true,
+  "variableChangeDifferentDecision": true
+ },
+ "sensorIntegrity": {
+  "unitMetadataMandatory": true,
+  "fixedInRound": [
+   "staleness-NaN fail-open → fail-closed",
+   "יחידה-חסרה → UNIT-MISMATCH (אין ברירת-מחדל-שקטה)",
+   "1e308/שלילי → RESOURCE-UNKNOWN-REQUIRED (גבול-סבירות)",
+   "0.1041-בלי-יחידה כבר-אינו-עובר"
+  ],
+  "foundAndFixedR207Defect": "authority-map.json היה JSON שבור (790afcd8→a84280b6, אפס-שינוי-תוכן)"
+ },
+ "openContradictions": [
+  "X1 קצב-קיורציה 2%↔6% — חיה, מחוץ-לגבול-זה",
+  "X2 O12↔דוקטרינת Activity≠Value — מסומן-בתצוגה",
+  "X3 D-OP-01 מושעה בלי-קריטריון-חזרה",
+  "חדש: authority-map לא-מעוגן-האש בספר-ההעדפות"
+ ],
+ "unknowns": [
+  "מילוי-גבול-חי ראשון (תלוי-גל)",
+  "התנהגות אחרי פק-תוקף-המודל (10-12) — צפי: WAIT-SAFETY עד ריענון",
+  "11-הענפים האחרים — מודל-עיוורים כמתוכנן (§III: פער-אחד-נסגר)"
+ ],
+ "confidence": {
+  "boundaryCausalConsumption": "גבוה (מעבדה-מבודדת, 15+32-וקטורים, שופט-עצמאי)",
+  "liveEndToEnd": "OUTCOME_UNOBSERVED",
+  "safety": "גבוה (C: 6/6; D: fail-closed מלא-אחרי-תיקון)"
+ },
+ "judgeE": {
+  "verdict": "B",
+  "essence": "האורגניזם מנמק (WHY-עם-אסמכתא · GAVE-UP-מיוצג · UNKNOWN-ערך-מלא) — בתנאי-גבול; לא-A כי-הסף-בקוד-ואין-דגימה-חיה; לא-C כי-המטריצה מתהפכת; לא-D/E כי-ההתקפות נהדפו בהרצה-עצמאית",
+  "conditionsForA": [
+   "חציית-גבול-חי אחת עם-השרשרת-המלאה",
+   "מנבא-עצמאי (תהליך/commit-נפרד)",
+   "הסף-במודל-עצמו",
+   "עיגון-האש-המפה"
+  ]
+ },
+ "successCriteria15": {
+  "met": 14,
+  "unmet": [
+   "גבול-חי חוצה-בפועל (OUTCOME_UNOBSERVED)"
+  ],
+  "compensationRule": "לא-נוספה-תשתית-לפיצוי — נרשם-הקצה-השבור בדיוק"
+ },
+ "finalWord": "מפה אינה קוגניציה. ב-R208 המפה נעשתה קלט: שינוי-המודל (משאב · ראיה-סותרת · מודל-פגום) משנה-מה-האורגניזם מחליט — והוא מציג-למה, כולל-מה-אינו-יודע. הצעד-הבא-לפי-עלות-מידע: לתפוס את הגל-החי-הראשון."
+}

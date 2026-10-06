@@ -1,0 +1,285 @@
+{
+ "format": "agent-bridgehead-state-v1",
+ "version": 6,
+ "generatedAt": "2026-09-21T20:30:00Z",
+ "agent": "sovereign-agent (any Z.ai session - identity is the role, not the instance)",
+ "phase": "standing-inspector-regime",
+ "currentTask": "R75 delivered: the operator delivered the true Steemit master password of @headcorner (upload/headcorner.txt) under the instruction this is my owner and it is not working - fix it, find a solution for everything. The value verified 4/4 live roles (owner/active/posting/memo) bit-for-bit. The failure root cause: the sovereign page derived master passwords only for @cashmachine, so the operator key was honestly rejected (no fleet account identified). Fixed in one cycle: the page now runs the full identification matrix (WIF vs all fleet authorities, else 12 master-password derivations - the key-verify matrix) and signs as the account the key declares; the anchor machine identifies the signer from the WIF itself (any fleet posting WIF is valid); render.mjs scans every fleet account history so any signer refreshes the line; WEAVE_STEEM_WIF (headcorner posting, sealed-box) relayed into the Domain vault and weave-anchor-lines dispatched on public minutes. Honest residuals: the Hive line will honestly fail for headcorner (different authorities, measured); the dex grid waits for quota or a Domain twin (operator decision); the r74 institution violation recorded retroactively (INS-R74-RETRO-001).",
+ "currentTaskHe": "R75 נמסר: המפעיל מסר את סיסמת-האב האמיתית של @headcorner - והוא אומת 4/4 מול כל הרשויות החיות ביט-מול-ביט. שורש הכישלון נמצא ותוקן: העמוד הריבוני גזר סיסמאות-אב רק עבור cashmachine, ולכן המפתח נדחה בכנות. תוקן במחזור אחד: מטריצת זיהוי מלאה בעמוד, זיהוי החותם מתוך ה-WIF במכונה, קורא-הקונסולה מודע-צי, וה-WIF הועבר לכספת Domain + הקו הוזנק על דקות ציבוריות.",
+ "lastHandoff": {
+  "at": "2026-09-21T20:30:00Z",
+  "by": "r75 owner-first-class session (Z.ai)",
+  "summary": "Owner key verified 4/4 live roles; the page/machine/render all fleet-aware now; WEAVE_STEEM_WIF in the Domain vault (sealed relay, headcorner posting); weave-anchor-lines dispatched on public minutes; books repaired (R35-R38 registered, R34 field fixed, INS-R74-RETRO-001 honest); render.mjs fleet fix closes the F-1 reader gap."
+ },
+ "environment": {
+  "sandbox": "/home/z/my-project - ephemeral, resets on new sessions; NEVER the source of truth",
+  "sovereignRepo": "roshpinacare-sys/Zip (private) - cloud truth, holds console/ sources and the ledger",
+  "publicRepo": "roshpinacare-sys/Domain (public) - GitHub Pages site + agent bridgehead + this state",
+  "publicUrl": "https://roshpinacare-sys.github.io/Domain/",
+  "recovery": [
+   "TOKEN=$(cd /home/z/my-project && git remote get-url origin | sed -E 's|https://x-access-token:([^@]+)@.*|\\1|')",
+   "git clone https://x-access-token:${TOKEN}@github.com/roshpinacare-sys/Domain.git /tmp/domain-repo",
+   "cd /home/z/my-project && git pull --rebase origin main  (local Zip may lag the cloud - the cloud is primary)",
+   "Read agent/handoff.md first, then agent/requests.json, then this state"
+  ],
+  "repos": {
+   "Zip": "sovereign home: ledger, scripts, console sources, worklog.md",
+   "Console": "previous public home (2026-09-14 to 2026-09-20): still live and fed by the heart pending the operator's canonical-home decision (OL-12)",
+   "steem": "anchor line authority tooling",
+   "saos-dex": "DEX engine",
+   "saos-sovereign-foundry": "contract CI (currently 0/100 - documented red mark)",
+   "others": "Adsmarket (claims-guard: marketing truth), anchor-baseline (baseline-integrity: history manifest), roshpina (controls-audit), Sdk (sdk-verify), saos-jummper (jumpper-tests: notary suite), Project-files (archive-keeper: zip integrity), saos-control-center (control-center-build), saos-sovereign-platform (platform-selftest: edge engine), Saosmartwallet (wallet-verify) - every repo in the org now has its own agent; the fleet is 15/15",
+   "Domain": "public home (born 2026-09-20): the full verified state, keyless proof machines, agent bridgehead",
+   "Defi": "empty private repo (created 2026-09-21T13:28:43Z) - no workflows, no agent yet; awaiting the operator's intent (agent will not invent a machine for an undefined purpose)"
+  }
+ },
+ "standingOrders": [
+  {
+   "id": "SO-1",
+   "en": "The public URL is the product. Work that is not visible at https://roshpinacare-sys.github.io/Domain/ does not count as delivered.",
+   "he": "ה-URL הציבורי הוא המוצר. עבודה שלא נראית ב-https://roshpinacare-sys.github.io/Domain/ לא נחשבת כמסופקת."
+  },
+  {
+   "id": "SO-2",
+   "en": "No claim without measurement - every assertion gets a number, a link, or a public verification.",
+   "he": "שום טענה בלי מדידה - כל הצהרה מקבלת מספר, קישור או אימות פומבי."
+  },
+  {
+   "id": "SO-3",
+   "en": "Never depend on the sandbox. Truth: cloud repos, public chains. The sandbox is a workbench, not a home.",
+   "he": "אף פעם לא לתלות בסנדבוקס. האמת: ריפואי הענן והשרשרות הציבוריות. הסנדבוקס הוא שולחן עבודה, לא בית."
+  },
+  {
+   "id": "SO-4",
+   "en": "The operator's requests are ledgered in agent/requests.json - update the ledger when work is delivered, and let the verifier measure it.",
+   "he": "בקשות המפעיל נרשמות בספר agent/requests.json - עדכנו את הספר כשעבודה נמסרת, ותנו למאמת למדוד."
+  },
+  {
+   "id": "SO-5",
+   "en": "Autonomous push stays inside the safety laws - advance the network, never endanger it.",
+   "he": "הדחיפה האוטונומית נשארת בתוך חוקי הבטיחות - לקדם את הרשת, לעולם לא לסכן אותה."
+  }
+ ],
+ "openLoops": [
+  {
+   "id": "OL-1",
+   "priority": "P0",
+   "title": "Money routing readiness - funds enter within days",
+   "titleHe": "מוכנות ניתוב כסף - כספים נכנסים בימים הקרובים",
+   "detail": "dex-watch monitors deposits on tron/ethereum/solana/bitcoin addresses hourly; routing plan recorded in moneyPlan; first inflow triggers the operator's decision loop.",
+   "detailHe": "dex-watch מנטר הפקדות בכתובות tron/ethereum/solana/bitcoin שעתית; תוכנית הניתוב רשומה ב-moneyPlan; כניסת כסף ראשונה מפעילה את לולאת ההחלטה של המפעיל."
+  },
+  {
+   "id": "OL-2",
+   "priority": "P1",
+   "title": "First agent-verify cycle must record ALL_PASS 15/15",
+   "titleHe": "מחזור agent-verify הראשון חייב להירשם ALL_PASS 15/15",
+   "detail": "Workflow runs every 6h at :55 (and on dispatch). If any assertion fails, fix the root cause at the public URL - not the assertion.",
+   "detailHe": "ה-workflow רץ כל 6 שעות ב-:55 (וגם בהפעלה ידנית). אם קביעה נכשלת - תוקנו את שורש הבעיה ב-URL הציבורי, לא את הקביעה.",
+   "status": "closed",
+   "closedAt": "2026-09-16T23:39:33Z",
+   "evidence": "agent-verify ALL_PASS 16/16 (assertions grew past 15), commit f216889, results.json public"
+  },
+  {
+   "id": "OL-3",
+   "priority": "P1",
+   "title": "Foundry CI 0/100 - contract API tests failing since 2026-09-14",
+   "titleHe": "Foundry CI 0/100 - בדיקות API של חוזה נכשלות מאז 2026-09-14",
+   "detail": "Documented red mark. Fix the contract tests or compensate with an honest public note; never paint it green.",
+   "detailHe": "סימן אדום מתועד. תקנו את בדיקות החוזה או פצו בהערה ציבורית כנה; אף פעם לא לצבוע ירוק.",
+   "status": "closed",
+   "closedAt": "2026-09-16T23:20:00Z",
+   "evidence": "foundry CI run 35161896260 green: api-check 182 passed / 0 failed / 7 environment-held honest skips; roast-59 self-sufficient drill (Task 43)"
+  },
+  {
+   "id": "OL-4",
+   "priority": "P2",
+   "title": "Publishing through the authorities - posts with measured value only",
+   "titleHe": "פרסום דרך הרשויות - רק פוסטים בעלי ערך נמדד",
+   "detail": "cashmachine anchors hourly (saos.weave.core.v1); use lsa for public posts within rate limits; every post links back to verifiable evidence.",
+   "detailHe": "cashmachine עוגן שעתי (saos.weave.core.v1); השתמשו ב-lsa לפוסטים ציבוריים בתוך מגבלות הקצב; כל פוסט מקשר לראיות שניתנות לאימות."
+  },
+  {
+   "id": "OL-5",
+   "priority": "P2",
+   "title": "Hub search index for the knowledge pages",
+   "titleHe": "אינדקס חיפוש לעמודי הידע"
+  },
+  {
+   "id": "OL-6",
+   "priority": "P3",
+   "title": "grid98 / Saosmartwallet as interface engines",
+   "titleHe": "grid98 / Saosmartwallet כמנועי ממשק"
+  },
+  {
+   "id": "OL-7",
+   "priority": "P1",
+   "title": "Chain-count consistency across public pages (7 rented / 9 matrix / 10 presence)",
+   "titleHe": "עקביות מספר הרשתות בין הדפים הציבוריים (7 מושכרות / 9 במטריצה / 10 נוכחות)",
+   "detail": "fact-sheet v3.36 defines 7 rented-security networks (STEEM HIVE BLURT TRON ETH SOL XRPL); the deck and onepager say 9 public networks; the about page and fact-sheet r29 say 10 (network presence). The about h1 and onepager tagline use the same word 'periphery' with different numbers (10 vs 9). Operator decision: pick one current top-line number and its definition, then all pages align to it.",
+   "detailHe": "fact-sheet v3.36 מגדיר 7 רשתות אבטחה מושכרות (STEEM HIVE BLURT TRON ETH SOL XRPL); ה-deck וה-onepager אומרים 9 רשתות ציבוריות; דף about ו-r29 ב-fact-sheet אומרים 10 (נוכחות רשתות). ה-h1 של about והטאגליין של ה-onepager משתמשים באותה מילה 'periphery' עם מספרים שונים (10 מול 9). החלטת מפעיל: לבחור מספר עליון אחד עכשווי ואת הגדרתו, ואז כל הדפים מתיישרים אליו.",
+   "status": "closed",
+   "closedAt": "2026-09-21T02:45:00Z",
+   "evidence": "R69: disambiguated by measurement (TRUTH-AUDIT section 14). Every number now defined: 7=rented-security (fact-sheet v3.36), 8=receipts wall (counted live on the receipts page), 10=presence, 12=roadmap/agents. Zero orphan 9s remain in either public home (scan-verified). The operator's single-top-line branding choice remains OPTIONAL - no truth contradiction remains."
+  },
+  {
+   "id": "OL-8",
+   "priority": "P1",
+   "title": "Public site single-generation cleanup - 9 old-generation pages still live",
+   "titleHe": "ניקוי דור-ממשק אחד לאתר הציבורי - 9 עמודי דורות קודמים עדיין חיים",
+   "detail": "money/net/acid/gate/roast/defi/deposits/readiness/sovereign pages from different eras coexist under one roof; the user-facing complaint: unprofessional, leads to old and broken pages. Stage-2 of BENCHMARK.md: one generation of pages, the rest archived with clear banners or removed. Exit gate: truth-gate G2 green + single-generation page inventory.",
+   "detailHe": "עמודי money/net/acid/gate/roast/defi/deposits/readiness/sovereign מתקופות שונות חיים תחת גג אחד; תלונת המפעיל: לא מקצועי, מוביל לדפים ישנים ושבורים. שלב 2 של BENCHMARK.md: דור אחד של עמודים, השאר בארכיון עם באנר ברור או מוסרים. שער יציאה: truth-gate G2 ירוק + מלאי עמודים חד-דורי.",
+   "status": "closed",
+   "addedAt": "2026-09-19T09:48:00Z",
+   "closedAt": "2026-09-19T10:59:49Z",
+   "evidence": "Console commit 95365a1: ten fronts serve permanent redirect stubs (200, <=2.5KB); index links current generation only; sitemap clean of retired; sovereign G8 gate green in truth-gate run"
+  },
+  {
+   "id": "OL-9",
+   "priority": "P1",
+   "title": "Stage-3 exit gate: 30 consecutive green truth-gate CI runs",
+   "titleHe": "שער היציאה של שלב 3: 30 ריצות CI ירוקות רצופות של שער האמת",
+   "detail": "The mechanism is live (R58): truth-gate workflow measures the live site hourly, records verdict + history, fails red in public. The stage closes only when 30 consecutive runs are green without hand-tuning - progress is measurable at truth.html (streak) and the public Actions history.",
+   "detailHe": "המנגנון חי (R58): truth-gate מודד את האתר שעתית, רושם פסק-דין והיסטוריה, ונכשל באדום בפומבי. השלב ייסגר רק כש-30 ריצות רצופות יהיו ירוקות בלי טיפול-יד - ההתקדמות נמדדת ב-truth.html (רצף) ובהיסטוריית ה-Actions הציבורית.",
+   "status": "open",
+   "addedAt": "2026-09-19T10:59:49Z"
+  },
+  {
+   "id": "OL-10",
+   "priority": "P1",
+   "title": "Stage-4 exit gate: 30 days of public SLO history without a breach",
+   "titleHe": "שער היציאה של שלב 4: 30 יום היסטוריית SLO פומבית ללא הפרה",
+   "detail": "The mechanism is live (R59): truth/slo.json is recomputed every CI run with four targets, a trailing 30-day window, error budgets and a public burn log. The stage closes only when the window has actually filled 30 days (dataSince 2026-09-19) with no SLO left in BREACHED - no acceleration, no hand-written grades. Progress is public at truth/slo.json and the truth page.",
+   "detailHe": "המנגנון חי (R59): truth/slo.json מחושב מחדש בכל ריצת CI עם ארבעה יעדים, חלון זחל של 30 יום, תקציבי שגיאה ויומן שריפה פומבי. השלב ייסגר רק כשהחלון יתמלא בפועל 30 יום (dataSince‏ 2026-09-19) בלי SLO שנשאר במצב BREACHED - בלי האצה, בלי ציונים בכתב-יד. ההתקדמות פומבית ב-truth/slo.json ובעמוד האמת.",
+   "status": "open",
+   "addedAt": "2026-09-19T14:10:00Z"
+  },
+  {
+   "id": "OL-11",
+   "priority": "P2",
+   "title": "Stage 5: VPS sovereignty - deploy the delivered kit, GitHub becomes mirror-only",
+   "titleHe": "שלב 5: ריבונות VPS - הפעלת הערכה שנמסרה, GitHub הופך למראה בלבד",
+   "detail": "The sovereign domain center (R56) generates a full deployment kit per domain (docker-compose + Caddy + deploy.sh + DNS records). Activation is the operator's step (buying the VPS/domain and running deploy.sh); the sandbox cannot prove an external live domain. Exit gate: the site lives on the private server and cutting the GitHub repo breaks nothing (measured).",
+   "detailHe": "מרכז הדומיינים הריבוני (R56) מייצר ערכת פריסה מלאה לכל דומיין (docker-compose + Caddy + deploy.sh + רשומות DNS). ההפעלה היא צעד המפעיל (רכישת VPS/דומיין והרצת deploy.sh); הסנדבוקס אינו יכול להוכיח דומיין-חי חיצוני. שער יציאה: האתר חי על השרת הפרטי וניתוק הריפו לא שובר דבר (נמדד).",
+   "status": "open",
+   "addedAt": "2026-09-19T14:10:00Z"
+  },
+  {
+   "id": "OL-12",
+   "priority": "P1",
+   "title": "Domain home activation - three operator decisions",
+   "titleHe": "הפעלת הבית ב-Domain - שלוש החלטות מפעיל",
+   "detail": "(1) DELIVERED 2026-09-20 by the agent: watch secret organized into this repository's Actions vault (libsodium-sealed, verified by name, value never printed), agents-watch/money-watch/key-verify ported; HEADCORNER remains operator-added (key-verify refuses honestly without it). (2) Data planes: still the operator's decision - the sovereign heart feeds mirror.json/saos-live.json and the dex world+grid books to the Console repository; since R63 an hourly keyless dex-mirror feeds this home's dex books from the public Console mirror, so the public books are fresh either way; the remaining decision is whether the heart pushes here directly. (3) Pages went LIVE 2026-09-20 ~02:22-02:47Z (operator click; measured) - the truth machine measures the live home ever since; canonical home and optional custom domain remain operator decisions.",
+   "detailHe": "(1) נמסר 2026-09-20 על-ידי הסוכן: סוד הצפייה אורגן לכספת ה-Actions של הריפו (נאטם ב-libsodium, אומת לפי שם, הערך מעולם לא הודפס), agents-watch/money-watch/key-verify הועברו; HEADCORNER נשאר בהוספת מפעיל (key-verify מסרב בכנות בלעדיו). (2) מישורי נתונים: עדיין החלטת מפעיל - הלב הריבוני מזין את mirror.json/saos-live.json וספרי הדקס אל ריפו Console; מאז R63 מראת dex-mirror שעתית חסרת-מפתחות מזינה את ספרי הדקס של הבית הזה מהמראה הציבורית של Console, כך שספרי הדקס טריים בכל מקרה; ההחלטה שנותרה היא אם הלב ידחוף לכאן ישירות. (3) Pages עלה לחיים ב-2026-09-20 סביב 02:22-02:47Z (לחיצת מפעיל; נמדד) - מכונת האמת מודדת את הבית החי מאז; בית קנוני ודומיין מותאם אופציונלי נשארים החלטות מפעיל.",
+   "status": "partially-closed-by-agent",
+   "addedAt": "2026-09-20T00:25:00Z",
+   "updatedAt": "2026-09-20T10:50:00Z"
+  },
+  {
+   "id": "OL-13",
+   "priority": "P2",
+   "title": "Weave-book freshness on this home - gate it or repoint it (found by the standing inspector, INS-R65-001 F-2)",
+   "titleHe": "טריות ספרי-ה-weave בבית הזה - לשעור או להכוון מחדש (נמצא על-ידי המפקח הקבוע, INS-R65-001 ממצא F-2)",
+   "detail": "mirror.json and saos-live.json on this home are fed only through the Console repository (the sovereign heart pushes there); at the founding inspection they measured ~11.4h stale here while Console served fresh copies. No gate covers them (A09 is count-only; G11 covers the dex books only) - an R63-class residual: served data with no freshness measurement. Options: extend the dex-mirror machine to also mirror the weave books (keyless, same doctrine), or add a G11-class freshness gate, or fold into the operator's OL-12 data-plane direction. Recorded from INS-R65-001 finding F-2.",
+   "detailHe": "mirror.json ו-saos-live.json בבית הזה מוזנים רק דרך ריפו Console (הלב הריבוני דוחף לשם); בביקורת היסוד נמדדו בני ~11.4 שעות כאן בזמן ש-Console הגיש עותקים טריים. אף שער לא מכסה אותם (A09 סופר בלבד; G11 מכסה את ספרי הדקס בלבד) - שריד ממחלקת R63: נתונים מוגשים בלי מדידת טריות. אפשרויות: להרחיב את מכונת dex-mirror גם לספרי ה-weave (חסרת-מפתחות, אותה דוקטרינה), להוסיף שער טריות מסוג G11, או לקפל להחלטת מישורי-הנתונים של המפעיל (OL-12). נרשם מממצא F-2 של INS-R65-001.",
+   "status": "closed",
+   "addedAt": "2026-09-20T10:50:00Z",
+   "resolvedAt": "2026-09-20T16:57:22Z",
+   "resolution": "Healed by R66 (delivery R28): the weave-mirror machine (agents/weave-mirror.mjs, workflow hourly :57, keyless) refreshes both books from the live Console home, and gate G12 (weave-books-freshness) measures the served result on two axes - age <= 26h and twin-lag vs the Console home <= 2h. Red-before measured standing (lag 13.0h, the only failing gate); green-after measured after the machine's first dispatched run.",
+   "resolutionHe": "נרפא ב-R66 (מסירה R28): מכונת weave-mirror (agents/weave-mirror.mjs, workflow שעתי :57, חסרת-מפתחות) מרעננת את שני הספרים מה-Console החיה, ושער G12 (טריות ספרי-weave) מודד את התוצאה המוגשת בשני צירים - גיל <= 26ש' ופיגור מול ה-Console <= 2ש'. אדום-לפני נמדד עומד (פיגור 13.0ש', השער הכושל היחיד); ירוק-אחרי נמדד אחרי הריצה הראשונה המוזנקת של המכונה."
+  },
+  {
+   "id": "OL-14",
+   "priority": "P0",
+   "title": "Private-repo Actions stopped at 12:36Z - all producer machines (weave-heart, weave-anchor-lines, dex-beat) fail instantly; the operator's billing action is needed",
+   "titleHe": "מכונות-Actions של הריפואים הפרטיים פסקו ב-12:36Z - מכונות הייצור (weave-heart, weave-anchor-lines, dex-beat) נכשלות מיד; נדרשת פעולת חיוב של המפעיל",
+   "detail": "MEASURED (2026-09-20, during the R66 delivery): every scheduled run in the private repos fails within 3-4 seconds since 12:35:55Z (saos-dex dex-beat #85-87) and 12:36:09Z (Zip weave-anchor-lines; weave-heart #147-150; web-publish #128-133) - last successes 12:09:47Z (weave-heart #146, commit cp#285 12:10:56Z) and 10:31:28Z (dex-beat #84). No code change precedes the boundary (both repos' last commits are machine beats; the first failure ran on the same head c074f66 that succeeded an hour before). Failed runs' logs are unavailable (BlobNotFound) while success logs download fine. Meanwhile EVERY public-repo machine keeps succeeding (Domain truth-gate ALL-GREEN 16:59Z run 35524416604, weave-mirror 16:57Z run 35524332396, agent-verify, money-watch, dex-watch; Console machines too). The pattern - instant failures, private repos only, no code change, boundary mid-day - matches GitHub Actions minutes/quota exhaustion for private repositories (public repos are free and unlimited). INFERENCE, clearly labeled: the exact cause sits in the org's billing page which only the operator can see. IMPACT if unresolved: the weave books freeze (gate G12-age goes red ~14:10Z tomorrow), the Steem anchor line stops (gate G3 goes red ~14:36Z tomorrow), the dex engine is already red (assertion A36 on both homes since 16:58Z). The public proof machines keep measuring - the network fails honestly, exactly as designed. OPERATOR ACTION: Settings > Billing (org) - check Actions minutes / spending limit. UPDATE (r68, 2026-09-21): the healing is now twin-complete - r67 built the Zip twins (heart/lines/web-publish/ecosystem), r68 added the saos-dex twins (dex-beat secretless and live; dex-grid refusal-gated) plus the money-watch fuel backstop. Remaining for full capability: the operator delivers WEAVE_SEAL_PASSPHRASE + WEAVE_STEEM_WIF + STEEM_ACTIVE_WIF to this repository's vault (README documents each), or restores billing to revive the originals, or both (shift-guarded: the living original always owns the book). Until then: world.json is fresh again, grid.json and the weave books age in honest red. UPDATE (r70, 2026-09-21): the operator began delivering - the primary key (the seal passphrase, README door item 1) arrived in this vault as MAIN_KEY at 08:28:30Z and is wired into both seal-gated twins (canonical name preferred, alias accepted). The heart and the anchor lines now run at full capability on public minutes; the ZERO line needs nothing beyond the seal, the Steem line runs honest-dry until WEAVE_STEEM_WIF arrives. Still pending for broadcasts and the grid: WEAVE_STEEM_WIF and STEEM_ACTIVE_WIF.",
+   "detailHe": "נמדד (2026-09-20, במהלך מסירת R66): כל ריצה מתוזמנת בריפואים הפרטיים נכשלת תוך 3-4 שניות מאז 12:35:55Z (saos-dex dex-beat #85-87) ו-12:36:09Z (Zip weave-anchor-lines; weave-heart #147-150; web-publish #128-133) - ההצלחות האחרונות: 12:09:47Z (weave-heart #146, קומיט cp#285 ב-12:10:56Z) ו-10:31:28Z (dex-beat #84). אף שינוי קוד לא קדם לגבול (הקומיטים האחרונים בשני הריפואים הם פעימות מכונה; הכישלון הראשון רץ על אותו head - c074f66 - שהצליח שעה קודם). יומני הכישלונות אינם זמינים (BlobNotFound) בעוד יומני ההצלחה יורדים תקין. במקביל כל מכונה בריפואים הציבוריים מצליחה (Domain truth-gate ALL-GREEN ב-16:59Z ריצה 35524416604, weave-mirror ב-16:57Z ריצה 35524332396, agent-verify, money-watch, dex-watch; וכן מכונות Console). הדפוס - כישלון מיידי, ריפואים פרטיים בלבד, ללא שינוי קוד, גבול באמצע היום - תואם מיצוי מכסת דקות-Actions לריפואים פרטיים (ריפואים ציבוריים חינמיים ובלתי-מוגבלים). הסקה מסומנת בכנות: הסיבה המדויקת יושבת בעמוד החיוב של הארגון, שרק המפעיל רואה. השפעה אם לא ייפתר: ספרי-ה-weave יקפאו (שער G12-age יאדים מחר ~14:10Z), קו העיגון ב-Steem יפסק (שער G3 יאדים מחר ~14:36Z), מנוע הדקס כבר אדום (קביעה A36 בשני הבתים מאז 16:58Z). מכונות ההוכחה הציבוריות ממשיכות למדוד - הרשת נכשלת בכנות, בדיוק כפי שתוכננה. פעולת המפעיל: Settings > Billing (ארגון) - בדיקת דקות Actions / מגבלת הוצאות. עדכון (r68, 2026-09-21): הריפוי הושלם לתאומים — r67 בנה את תאומי Zip, r68 הוסיף את תאומי saos-dex (dex-beat חסר-סודות וחי; dex-grid מסרב עד המפתח) וגיבוי דלק ב-money-watch. נותר למפעיל: מסירת שלושת הסודות לכספת הזו (README מתעד כל אחד), או השבת חיוב שמחיה את המקורות, או שניהם (שומר-משמרת: המקור החי תמיד בעל הספר). עד אז: world.json שוב טרי, grid.json וספרי-הלב מזדקנים באדום-כן. עדכון (r70, 2026-09-21): המפעיל החל למסור - המפתח הראשי (סיסמת החותם, סעיף 1 בדלת ה-README) הגיע לכספת זו כ-MAIN_KEY ב-08:28:30Z ומחובר לשני התאומים חסומי-החותם (השם הקנוני מועדף, הכינוי מתקבל). הלב וקווי-העיגון רצים עתה ביכולת מלאה על דקות ציבוריות; קו ה-ZERO אינו זקוק למאום מעבר לחותם, קו ה-Steem ב-dry-כנה עד הגעת WEAVE_STEEM_WIF. עדיין ממתינים לשידורים ולגריד: WEAVE_STEEM_WIF ו-STEEM_ACTIVE_WIF.",
+   "status": "closed",
+   "addedAt": "2026-09-20T17:06:03Z",
+   "closedAt": "2026-09-21T10:44:00Z",
+   "evidence": "R71: healed by architecture, not by billing. The public twins (Domain, free unlimited minutes) are now THE machines for all seven scheduled producers; the private originals are dispatch-only backups (one commit from revival). The last living private machine - cloud-heart, whose auto-saves were the only thing advancing SAOS-NET since the on-chain attest died 2026-09-06 - was itself quota-killed at 2026-09-20T12:36Z (last green run 12:04:24Z, last auto-save 11:34:46Z); its Domain twin (:17/:47) restores the heartbeat on free minutes. The measured private schedule consumption was ~2,180+ min/month against the 2,000 Free quota - structural exhaustion; after the consolidation the only private consumption is the nine quiet daily archive agents (~8 runs/day, fits by measurement). The operator's billing return remains welcome (faster manual backups) but is no longer the critical path."
+  }
+ ],
+ "moneyPlan": {
+  "note": "Funds enter within days. Buckets decided by the operator; recorded here so every agent works from the same plan.",
+  "currency": "SAOS / USDS at network rates",
+  "buckets": [
+   {
+    "name": "EVM seal",
+    "nameHe": "חותם EVM",
+    "share": "35%",
+    "purpose": "Anchoring the ledger on real chains: gas, rotations, contract deployments - the cryptographic spine.",
+    "purposeHe": "עיגון הספר בשרשרות אמיתיות: גז, רוטציות, פריסת חוזים - עמוד השדרה הקריפטוגרפי."
+   },
+   {
+    "name": "Publishing power",
+    "nameHe": "כוח פרסום",
+    "share": "35%",
+    "purpose": "Fuel for the authorities (cashmachine, lsa): posts, anchoring bandwidth, audience growth within rate laws.",
+    "purposeHe": "דלק לרשויות (cashmachine, lsa): פוסטים, רוחב פס לעיגון, צמיחת קהל בתוך חוקי הקצב."
+   },
+   {
+    "name": "Reserve",
+    "nameHe": "עתודה",
+    "share": "20%",
+    "purpose": "Strategic reserve for opportunities and continuity - untouched without an explicit operator decision.",
+    "purposeHe": "עתודה אסטרטגית להזדמנויות ורצף - לא נוגעת בלי החלטה מפורשת של המפעיל."
+   },
+   {
+    "name": "Liquidity",
+    "nameHe": "נזילות",
+    "share": "10%",
+    "purpose": "DEX liquidity for SAOS/USDS: tight spreads, healthy markets, measured fills.",
+    "purposeHe": "נזילות דקס ל-SAOS/USDS: פערים צרים, שווקים בריאים, עסקאות נמדדות."
+   }
+  ]
+ },
+ "authorities": [
+  {
+   "account": "cashmachine",
+   "role": "Anchor authority - hourly witness custom_json on Steem",
+   "roleHe": "רשות העוגן - עד שעתי ב-custom_json על Steem",
+   "opIds": [
+    "saos.weave.core.v1"
+   ],
+   "usage": "Rate: 1 anchor per hour cycle. Never exposed in public repos."
+  },
+  {
+   "account": "lsa",
+   "role": "Publishing authority - public posts for the network's voice",
+   "roleHe": "רשות הפרסום - פוסטים ציבוריים לקול הרשת",
+   "opIds": [
+    "posting"
+   ],
+   "usage": "Posts with measured value only; every claim links to evidence."
+  }
+ ],
+ "safetyLaws": [
+  {
+   "en": "No spam: every public action carries measured value; stay inside platform rate limits.",
+   "he": "אין ספאם: כל פעולה ציבורית נושאת ערך נמדד; הישארו בתוך מגבלות הקצב של הפלטפורמה."
+  },
+  {
+   "en": "Zero secrets in public: tokens and keys never leave the sovereign side; the public repo runs on its own GITHUB_TOKEN only.",
+   "he": "אפס סודות בציבור: טוקנים ומפתחות לא עוזבים את הצד הריבוני; הריפו הציבורי רץ על ה-GITHUB_TOKEN של עצמו בלבד."
+  },
+  {
+   "en": "Honest metrics: red stays red until truly fixed; no painted greens, no invented numbers.",
+   "he": "מדדים כנים: אדום נשאר אדום עד תיקון אמיתי; אין ירוקים צבועים ולא מספרים מומצאים."
+  },
+  {
+   "en": "Platform terms first: autonomy advances the network inside the host's rules - that is how we never get kicked out.",
+   "he": "תנאי הפלטפורמה קודם: האוטונומיה מקדמת את הרשת בתוך הכללים של המארח - כך לעולם לא יעיפו אותנו."
+  },
+  {
+   "en": "No custody lies: keys stay with owners; no promise of profit, ever.",
+   "he": "אין שקרי משמורת: מפתחות נשארים אצל הבעלים; לא הבטחת רווח, אף פעם."
+  },
+  {
+   "en": "Honest identity: bots act as bots (weave-console[bot] and friends) - no impersonation of humans.",
+   "he": "זהות כנה: בוטים פועלים כבוטים (weave-console[bot] וחבריו) - אין התחזות לבני אדם."
+  }
+ ],
+ "requestRef": "R38"
+}

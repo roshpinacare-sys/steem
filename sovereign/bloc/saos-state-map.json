@@ -1,0 +1,79 @@
+{
+  "format": "saos-state-map-v1",
+  "task": "r144-h",
+  "agent": "one-bloc-h",
+  "measuredAt": "2026-10-01T21:52:38Z",
+  "verdict": "UNRESOLVED",
+  "verdictWhy": "Two different treasury addresses appear as 'the' authority across the three (really four) sources: saos14wWGY… (v0 genesis treasury, local state + genesis field of the cloud fold) vs saos1CKtm… (live network-treasury wallet created on-chain 2026-09-16 inside the cloud fold). Two different treasuries = potentially two different authorities. Not decided by an agent — this is an operator gate. All facts below are measured, nothing forced.",
+  "sources": [
+    {
+      "id": "A-console-fold",
+      "path": "roshpinacare-sys/Console : saos-live.json (cloud)",
+      "role": "public live fold (saos-live-v1) rendered keyless from Steem custom_json by Console/saos-live.js",
+      "sha256": "50338d696c910afe4111aa19d4701179a4d57bd21597344cdfb65b9ef7372ec0",
+      "commit": "b1e05ed (2026-10-01T21:23:54Z)",
+      "generatedAt": "2026-10-01T21:23:53.668Z",
+      "stateRoot": "9ac42df4e84ad0f55aba2408bdad61353d0598b7ece95ebd4e3ad1f195fdb0f5",
+      "genesisTreasury": "saos14wWGYvqHdwuHj5ZU42SDYwZBqFxWRw3bP",
+      "stateTreasury_live": "saos1CKtmFmsKpVuGFvqpZew9kPp24MfvFhj5k",
+      "treasuryNote": "state.treasury = saos1CKtm… nicked 'network-treasury', holds full 126,682.000 SAOS; genesis.treasury = saos14wWGY… (initial mint note: mirrors SAOS-NET v0 supply 1:1, issuer headcorner)",
+      "ops": 5,
+      "opsValid": 3,
+      "opsInvalid": 2,
+      "invalidOps": "2× token.transfer 2,000 SAOS saos1CKtm…→saos14wWGY… rejected 'no-recipient' (2026-09-24)",
+      "verify": "replayed=5 valid=3 readFrom=api.steemit.com",
+      "wallets": 1,
+      "truthLabel": "REAL - deterministic fold of public-chain custom_json ops; every signature re-verified; relayer = transport only"
+    },
+    {
+      "id": "B-local-live-state",
+      "path": "sovereign/saos-live-state.json (home platform repo, local)",
+      "role": "the heart's local tracker of the live fold (saos-live-state-v1)",
+      "sha256": "b768d4355656b2476ec84026e5deafc821879c94734ec8e85761abfb6657e083",
+      "mtime": "2026-10-01T21:23:05Z",
+      "updatedAt": "2026-10-01T20:25:41.059Z",
+      "lastStateRoot": "9ac42df4e84ad0f55aba2408bdad61353d0598b7ece95ebd4e3ad1f195fdb0f5",
+      "genesisTreasury": "saos14wWGYvqHdwuHj5ZU42SDYwZBqFxWRw3bP",
+      "genesisNote": "genesis.done=true, attempted=false — 'הג'נזיס נמצא על השרשרת (אומת בקיפול)'",
+      "seen": 6,
+      "opsValid": 3,
+      "opsInvalid": 2
+    },
+    {
+      "id": "C-saosnet-snapshot",
+      "path": "sovereign/saosnet-snapshot.json (home platform repo, local)",
+      "role": "SAOS-NET v0 archive snapshot (pre-live-rail chain)",
+      "sha256": "3bf012f9f2c9e7021e0c1199689fbc4dbb6e8658eafe9c5f3d54ccc972de75f0",
+      "mtime": "2026-09-28T09:57:23Z",
+      "netVersion": "saos-net/0",
+      "genesisHash": "5a8b98311c8333efd361fc88972d3f0936216d6ff0e6d39ea7d8e30a35a12ad8",
+      "height": 223838,
+      "stateRoot": "29778d14850f7eb8a9f8415201dd0d8c109a5fc2342972399dfad56be6601494",
+      "lastTime": "2026-09-14T11:04:06.955Z",
+      "issuer": "headcorner",
+      "supply": 126682,
+      "wallets": 12,
+      "verify": "FULLY-VERIFIED — replayed 38, hashMatch 38/38, rootMatch+heightMatch true",
+      "truthLabel": "REAL (דטרמיניסטי — replay מתמטי) · ה-pack: DERIVED מריפו הפלטפורמה של הצי"
+    },
+    {
+      "id": "D-domain-mirror-copy",
+      "path": "roshpinacare-sys/Domain : saos-live.json (cloud mirror)",
+      "role": "weave-mirror (:57) copy of source A — proves the mirror rail",
+      "sha256": "7c01116d95aaad3d4a06fa4224fd4c06e9124168a420d964a743cdbb9ecea3a7",
+      "generatedAt": "2026-10-01T20:25:40.176Z",
+      "stateTreasury_live": "saos1CKtmFmsKpVuGFvqpZew9kPp24MfvFhj5k",
+      "genesisTreasury": "saos14wWGYvqHdwuHj5ZU42SDYwZBqFxWRw3bP",
+      "ops": 5,
+      "supply": "126682000"
+    }
+  ],
+  "measuredRelations": {
+    "A_vs_B": "SAME fold lineage — identical stateRoot 9ac42df4e84a…; B lags A by one fold cycle (B.updatedAt 20:25:41Z vs A.generatedAt 21:23:53Z); both carry BOTH treasury addresses in different roles",
+    "A_vs_C": "layered, not contradictory on supply: C (v0, frozen at 2026-09-14, height 223838) declares 126,682 SAOS issued by headcorner; A's genesis note mirrors that supply 1:1 into the v1 live fold — but the v1 treasury wallet (saos1CKtm…) differs from C's v0-era treasury (saos14wWGY…)",
+    "treasuryDivergence": "saos1CKtmFmsKpVuGFvqpZew9kPp24MfvFhj5k (live v1 network-treasury, on-chain wallet.create 2026-09-16T08:09:14.787Z, txid c049dd102b50bb7d0a670595d8cca5acf88065c8) vs saos14wWGYvqHdwuHj5ZU42SDYwZBqFxWRw3bP (v0 genesis treasury, local genesis.done=true). The only attempted v1 movement toward saos14wWGY… (2×2,000 SAOS on 2026-09-24) was REJECTED by the fold itself ('no-recipient' — the address is not a registered wallet in the v1 state)."
+  },
+  "whyUnresolved": "The public fold treats saos14wWGY… as an unregistered address (transfers to it fail), while the local state declares a saos14wWGY…-treasury genesis as done=true. Whether that means (a) the v0 treasury is historical-only and saos1CKtm… is THE treasury, or (b) the v1 fold failed to recognize the v0 authority and the treasury must be re-anchored — is an authority question, not a measurement question. Only the operator can decide which chain of custody binds.",
+  "nextStepHint": "operator-gate decision D-TREASURY: pick the binding chain of custody (v0 saos14wWGY… vs live v1 saos1CKtm…), then fold the loser into an explicit archive label in all four sources",
+  "doNotTouch": "no source was edited, forced or canonicalized by r144-h — measurement only"
+}

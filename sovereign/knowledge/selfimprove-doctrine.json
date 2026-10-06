@@ -1,0 +1,96 @@
+{
+ "schema": "selfimprove-doctrine-v1",
+ "created": "2026-10-03",
+ "wave": "r162",
+ "trace": "1a0ffb0043d7ef41",
+ "source": {
+  "repo": "https://github.com/Human-Agent-Society/reef",
+  "commit": "297af97ab0483d0e52169b364c1be70a239453e8",
+  "license": "Apache-2.0",
+  "vendored": "sovereign/knowledge/vendor/reef/",
+  "provenance": "sovereign/knowledge/vendor/reef/PROVENANCE.md"
+ },
+ "status": "vendored",
+ "wired": [
+  "worklog.md (r162 onward: every wave entry declares its evaluator — LOOP-3 self-demonstrated)"
+ ],
+ "statusRationale": "Reef is the reference implementation of the fleet's own wave loop (serve/observe/grow/commit). Running reef-infra needs an OpenAI-style endpoint we do not host plus another always-on Python service; the doctrine is adopted, the infra is watchlisted.",
+ "mappingToFleet": {
+  "serve": "fleet mini-services (curation 3040 · content-factory 3046 · money-mover 3034 · …)",
+  "observe": "revenue-census (26h freshness gate) · capability-census · VP curve · worklog",
+  "grow": "r-series waves (this file's writers)",
+  "commit": "git anchor-rebase → commit → push · feature_list.json · init.sh gates",
+  "evaluate": "census verdicts V1-V6 · tsc/eslint · on-chain receipts · operator approval for policy",
+  "revert": "git revert + rebase-anchor · guard packs (sovereign-guard r153)"
+ },
+ "rules": [
+  {
+   "id": "LOOP-1",
+   "rule": "four-station-loop",
+   "doctrine": "Every improvement cycles the same four stations: serve (produce value), observe (record interactions + outcomes), grow (produce a candidate change), commit (apply a selection policy and publish). A wave that skips a station is not a wave — it is an edit."
+  },
+  {
+   "id": "LOOP-2",
+   "rule": "paired-episodes-or-it-is-anecdote",
+   "doctrine": "A candidate is judged against the CURRENT harness on the SAME tasks in fresh runs; it publishes only when it wins more than it loses, by a pre-declared margin. Before/after stories without a control are anecdotes, not evidence."
+  },
+  {
+   "id": "LOOP-3",
+   "rule": "declare-the-evaluator-first",
+   "doctrine": "propose/evaluate are two separate contracts: a change wave must name its evaluator and pass criteria BEFORE making the edit. Post-hoc metrics chosen after seeing results are disqualified."
+  },
+  {
+   "id": "LOOP-4",
+   "rule": "revert-is-cheap-keep-it-that-way",
+   "doctrine": "A rejected candidate reverts fully to the snapshot — automatically, without ceremony. Cheap reverts are what make bold candidates safe to try. (Ours: git anchors + rebase + guard packs.)"
+  },
+  {
+   "id": "LOOP-5",
+   "rule": "failures-grow-the-suite",
+   "doctrine": "Every failure that escapes (a bug, a false-positive gate, a missed receipt) joins the permanent task suite as a gate/check after screening — the suite only grows. (Proven here: the init.sh false-positive became a gate; the census bugs became the fill_vesting_withdraw + units checks.)"
+  },
+  {
+   "id": "LOOP-6",
+   "rule": "periodic-recheck",
+   "doctrine": "Published wins are re-scored periodically against the grown suite; a publish that a newer suite scores as regression gets rolled back. Nothing stays 'done' by seniority. (Ours: census 26h freshness + verdict re-runs each wave.)"
+  },
+  {
+   "id": "LOOP-7",
+   "rule": "episodes-in-a-sandbox",
+   "doctrine": "Episodes run without host credentials and without network beyond what the task needs. The learner never holds the keychain. (Ours: sovereign-guard packs; scan/learn targets are clean checkouts — SEC-4.)"
+  },
+  {
+   "id": "LOOP-8",
+   "name": "deep-efficiency-over-activity",
+   "law": "Activity is not progress: every N waves, audit where wall-clock, tokens, disk and commits actually go (r171/r172 method: count-objects, blob-census, bridge-call counts, LLM calls per gate run). Kill waste in place: no-code diffs bypass the gate in 0 LLM calls; eval clones are deleted after distillation; history bloat is rotated before it compounds. Efficiency is measured in before/after numbers, not intentions.",
+   "added": "2026-10-03",
+   "evidence": "r172: gate txt-path 42ms/0-calls (was 1.5-3.3s/2-calls) · git-gc 253M->94M (r171) · eval-space freed 584M"
+  },
+  {
+   "id": "LOOP-9",
+   "name": "fetch-before-wave",
+   "law": "Every wave opens with git fetch + compare HEAD to origin/main before any work. The server-side anchor bots move origin continuously (measured: behind-30 in one session, r173); working from a stale HEAD manufactures divergence that later costs rebase tax. Waves that forget this law repeat the same preventable mess.",
+   "added": "2026-10-03",
+   "evidence": "r173: live divergence caught (ahead-1/behind-30) healed via rebase+reword with zero conflict (file-ownership disjointness verified first); UUID snapshot commits reworded to honest labels"
+  },
+  {
+   "id": "LOOP-10",
+   "name": "hot-reload-is-not-deploy",
+   "law": "bun --hot re-evaluates the module but the singleton server/timer closures (G.__SRV__ guard) keep serving the OLD code. Any edit to a fleet service is deployed only after a controlled process restart (kill port owner -> daemons-revive). Proof of change = new behavior measured, not a file save.",
+   "added": "2026-10-03",
+   "evidence": "r174: TTL sweep wired in 3 paths, /run/jumpper-tests ran twice with zero pruning while hot-reloaded; after restart the same call pruned 1 dir/5MB and recorded lastWorkSweep"
+  },
+  {
+   "id": "LOOP-11",
+   "name": "quota-window-aware-push",
+   "law": "The z-ai account is shared with consumers outside this machine — the quota window is a state to plan around, not a bug to fix. Measured window ~45-60min; each coded push costs 2 review calls (24K-char diffs). Before a coded push: check llm-bridge /health quota.rateLimited — if limited, defer non-urgent pushes or expect honest fail-open (REV-6). Never burst multiple coded pushes; batch edits into one wave per window.",
+   "added": "2026-10-03",
+   "evidence": "r176-r177: 429 events measured directly (not boot-502 as first hypothesized — falsified); window blocked ~15:15Z->~16:00Z (~45-60min); gate fail-open preserved autonomy throughout; r177 push after window cleared -> phase2 PASS with 2 clean completions, no retries needed."
+  }
+ ],
+ "activationRoutes": [
+  "endpoint-appears: an OpenAI-style inference endpoint we control → reef-infra serve + native harness loop against a clean fleet checkout (harness surface only, no GPU)",
+  "gpu-appears: weight-surface recipes (sdft/sdpo/sao) become evaluable — re-judge against revenue impact first",
+  "reef-eval-integration: if task-suite automation is wanted before an endpoint, reef-eval (separate repo) is the scorer to study next"
+ ]
+}

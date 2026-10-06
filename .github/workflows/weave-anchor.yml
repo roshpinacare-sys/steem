@@ -1,0 +1,100 @@
+# WEAVE-ANCHOR — קו ה-Steem/Hive מהספר (G2)
+#
+# כל שעה הענן מעיד על הספר מחוץ לגיטהאב: root של ה-checkpoint
+# האחרון עולה כ-custom_json (saos.weave.core.v1, סמכות posting —
+# אפס סיכון הון) על Steem + Hive. ה-txids חוזרים לספר כאימות ANCHOR
+# חתום. הקדנס מיושר ללב (פעימה ב-:00 → עיגון ב-:15), והקונסולה
+# הציבורית קוראת את הקו חזרה ב-:40 — שרשרת ההסתמכות של החוץ.
+#
+# שרשרות ההסתמכות: ledger.json (בגיט) → checkpoint root → השרשראות
+# הציבוריות → txids בראיה חתומה. כל צד שלישי יכול לאמת מה-RPC הציבורי
+# בלי לסמוך עלינו כלל — העד החיצוני של הרשת.
+#
+# משמרת: WEAVE_STEEM_WIF (Actions Secret, sealed-box) — ה-WIF לעולם לא
+# בגיט ולא בלוגים; המקור בכספת הצי. GITHUB_TOKEN לדחיפה — אפס-סוד-נוסף.
+#
+# תקציב (נמדד): 24 ריצות/יום × ~41ש' ≈ 17 דק'/יום ≈ 500 דק'/חודש לצד הלב.
+# RC-חסר ב-Hive/Steem מדולג בכנות (hiveSkip) — הקו לעולם לא משקר.
+# דדופליקציה: root שלא השתנה לא משודר (ALREADY-ANCHORED) — רק
+# checkpoints חדשים מהפעימה מקבלים עדות חדשה.
+
+name: weave-anchor
+
+on:
+  # dispatch-only (Task 24): ההנעה השעתית עברה ל-weave-anchor-lines (רצף אחד,
+  # דחיפה אחת — שני קווים מקבילים כתבו "אימות 46" כפול והתנגשו מבנית).
+  # הקובץ הזה נשאר להפעלה ידנית של קו Steem/Hive בלבד (dry/verify-only).
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'anchor mode — auto: anchor the latest checkpoint root if not yet anchored; dry: build payload, broadcast nothing; verify-only: keyless readback, never broadcast'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - dry
+          - verify-only
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weave-anchor
+  cancel-in-progress: false
+
+jobs:
+  anchor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout origin/main (the sovereign home)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Prisma client + DB skeleton
+        run: bunx prisma generate && bunx prisma db push
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      - name: Steem/Hive anchor (witness the ledger on public chains)
+        run: |
+          MODE_FLAG=""
+          case "${MODE_INPUT}" in
+            dry) MODE_FLAG="--dry" ;;
+            verify-only) MODE_FLAG="--verify-only" ;;
+          esac
+          bun scripts/weave-anchor.ts $MODE_FLAG
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE }}
+          WEAVE_STEEM_WIF: ${{ secrets.WEAVE_STEEM_WIF }}
+          WEAVE_HIVE_WIF: ${{ secrets.WEAVE_HIVE_WIF || secrets.HIVE_POSTING_WIF }}   # r181: קשירת-שם — HIVE_POSTING_WIF בכספת מאז 2026-09-23 (נמדד); בהיעדר-שניהם fallback ל-WIF-ה-Steem, דילוג-כנה
+          BLURT_ACTIVE_WIF: ${{ secrets.BLURT_ACTIVE_WIF }}   # r183: המסילה השלישית — הבעלות הוכחה חי (body זהה BLT5HhJD…)
+
+      # G5 · בדיקת הקונסולה הציבורית אחרי העיגון: מקצה לקצה, ledger→שרשרת→חוץ.
+      # Pages שעוד לא הופעל ע"י המפעיל (הרשאת Administration) ⇒ דילוג כנה
+      # וריצה ירוקה. במחזור הראשון שאחרי ההפעלה: אימות CONSOLE חתום
+      # נכתב מ-runner ענן נקי וסוגר את G5 — כמו SOV-3, הרשת מברכת את עצמה.
+      - name: Public console check (G5, self-closing when Pages is live)
+        run: bun scripts/weave-console.ts --attest-g5
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE }}
+
+      - name: Upload anchor report (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weave-anchor-report
+          path: sovereign/anchor-report.json
+          retention-days: 30

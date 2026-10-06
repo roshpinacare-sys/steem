@@ -1,0 +1,92 @@
+{
+  "format": "business-registry-v1",
+  "createdAt": "2026-10-02T12:20:00Z",
+  "decisionId": "D-r147-BIZ",
+  "lawHe": "אין עסק בלי ראיה, אין ראיה בלי מספרים, אין עסק בלי שורת-הרג מדודה מראש. עלות-שולית קודמת להון. גינה קודמת לברז.",
+  "businesses": [
+    {
+      "id": "B-1-fuel-desk",
+      "nameHe": "דלפק-הדלק",
+      "stage": "RUNNING",
+      "thesisHe": "המכונה היחידה שמחזירה דלק-אמת מעל תביעת-העטיפה: הכנסות הרשת (הצבעות יומיות עם txid, צינור-תביעת-תגמולים, powerdown שבועי) הופכות לדלק-מכירה אמיתי — היום SELL-FROZEN עם totalFuel=0 מול 17.983 WSTEEM תביעות.",
+      "demandEvidence": "מדידה חיה /api/money 2026-10-02T11:47Z: fuel.state=SELL-FROZEN totalFuel=0 claim=17.983 WSTEEM · income חי: 4 הצבעות txid אמתיים, votesToday=7 · powerdown במעקב ב-/api/money",
+      "unitEconomics": {
+        "cost": "≈0 — המסילות חיות (הצבעות=חובה-יומית קיימת, תביעות=צינור קיים, powerdown=פסיבי)",
+        "output": "realFuelAboveClaim STEEM",
+        "measuredNow": 82.536,
+        "target": "> 4 STEEM תוך 14 יום"
+      },
+      "killLine": "אם בעוד 14 יום (2026-10-16) הדלק עדיין 0 — אין כישלון-סוכן אלא שער-הון: דוח-מפעיל חד-קריאה עם המספרים (החלטת-הון, לא החלטת-תפעול)",
+      "budgetCap": "כפוף לתקציב-הפעולות הגלובלי 12/יום — אף פעולה נוספת לא נדרשת",
+      "metricSource": "GET /api/money → fuel.{state,totalFuel,arenaClaimWsteem}",
+      "reviewCadence": "שבועי בלולאת-הממשל"
+    },
+    {
+      "id": "B-2-market-brief",
+      "nameHe": "תדריך-השוק",
+      "stage": "PILOT",
+      "thesisHe": "הדיג'סט של הסייר (נוצר כל 6 ש' ממילא — עלות-שולית אפס) הופך תדריך-שוק יומי ציבורי (עברית+אנגלית) דרך מסילות-הפרסום הקיימות: מוצר-ידע על גבי גינה בבעלותנו, לא ברז שכור.",
+      "demandEvidence": "audience digest 2026-10-02: נושא-רזוננט hebrew · 12 הצבעות-חוץ · 538.6G rshares-חוץ · 19 תגובות · scout: 12 מקורות-שוק אמיתיים (STEEM $0.0645 חי)",
+      "unitEconomics": {
+        "cost": "≈0 — הדיג'סט כבר מיוצר; הפרסום על מסילה קיימת ללא עלות",
+        "output": "תדריך יומי · ערך-מדוד = externalEngagement לתדריך (rshares+תגובות)",
+        "measuredNow": 0,
+        "target": "מדידת-בסיס ב-7 התדריכים הראשונים"
+      },
+      "killLine": "7 תדריכים רצופים עם 0 הצבעות-חוץ → הכרעת-פורמט בשרשרת (פיוט, לא סתם ויתור)",
+      "budgetCap": "מקס 1 תדריך/יום · קשוח: אין פרסום מעל מה-שהמסילה מאפשרת, אפס-כפילות מול הסוכן-היומי (content-reviewer בודק)",
+      "metricSource": "sovereign/audience/latest-digest.json + קבלות-פרסום ב-Domain",
+      "reviewCadence": "שבועי"
+    },
+    {
+      "id": "B-3-truth-desk",
+      "nameHe": "דלפק-האמת",
+      "stage": "PILOT",
+      "thesisHe": "מנועי-האמת שכבר הוכיחו את עצמם (truth-sweep 167 פריטים · 3 תיקוני-שקר · כפילות 0.0% על 1129 זוגות) מציעים שירות-קהילה: תיקונים-כנים ותמיכת-אימות לתוכן ציבורי — מוניטין כערך-מדיד.",
+      "demandEvidence": "תגובות-תמיכה חוץ אמיתיות נענו (wgonz ×2, steem.history — SUPPORTED-VERIFIED) · הצבעות-חוץ על תוכן-אמת (audience digest)",
+      "unitEconomics": {
+        "cost": "מוגבל 3 ביקורות/שבוע × דקות-סוכן — נמוך וקבוע",
+        "output": "ביקורות-אמת ציבוריות · ערך = מוניטין + curation (עקיף, נמדד דרך engagement)",
+        "measuredNow": "תמיכות/תיקוני-חוץ ב-7 ימים: 4 שיחות-תמיכה (re-re- אל מגיבי-חוץ) מתוך 50 תגובות-חוץ-חיות · קבלות steem-live מ-comment-memory · תקרה 14/שבוע (r150): ok",
+        "target": "מדידת-בסיס חודשית"
+      },
+      "killLine": "אין ב-v0 (עלות ≈ 0) — ביקורת חודשית: אם אפס-מעורבות-חוץ חודש שלם, פורמט נבחן",
+      "budgetCap": "3/שבוע קשוח · אפס-כפילות: המנועים הקיימים עושים את העבודה, הדלפק רק מפרסם",
+      "metricSource": "sovereign/curation/duplication-audit-*.json + קבלות truth-fix ב-Domain",
+      "reviewCadence": "חודשי"
+    },
+    {
+      "id": "B-4-public-feed-desk",
+      "nameHe": "דלפק-הפיד הציבורי",
+      "stage": "PILOT",
+      "thesisHe": "ממשקי-ה-JSON הציבוריים של הרשת (pulse · businesses · kpi) הם מוצר-נתונים בפני עצמו: מתועדים בקטלוג-עצמי (/api/businesses/docs), כן — כל מספר עם measuredAt+source, אפס-סודות, אפס-זיוף — ורצים על המסילות שלנו: גינה ציבורית, לא ברז-שכור.",
+      "demandEvidence": "הפיד חי מאז r147-c (commit b5c291d) עם שדות-מדידה אמת · קהל-חוץ מדוד (sovereign/audience/latest-digest.json, 2026-10-02): 32 הצבעות-חוץ על 38 פוסטים · 540.1G rshares-חוץ · 43 תגובות של 16 מגיבים-חוץ · ביקוש-מדוד ל-API עצמו: 0 — מוני-השימוש (r148-d) חיים עכשיו ומדווחים בשדה usage של /api/businesses ו-/api/public/pulse",
+      "unitEconomics": {
+        "cost": "≈0 — אותן מסילות, אפס תשתית-חדשה; מונים בזיכרון + כתיבה-אטומית מדוחסת (60ש')",
+        "output": "בקשות-API מדודות + אימוץ-חוץ (external adoption)",
+        "measuredNow": 0,
+        "target": "בסיס-מדידה על 30 יום — כמה שימוש אמת"
+      },
+      "killLine": "30 יום עם אפס-שימוש חוץ-רשת מדוד → הכרעת-פורמט בשרשרת",
+      "budgetCap": "אפס פעולות — קריאה בלבד, מונים בלבד",
+      "metricSource": "GET /api/businesses + sovereign/businesses/feed-metrics.json",
+      "reviewCadence": "חודשי"
+    },
+    {
+      "id": "B-5-content-factory",
+      "nameHe": "מפעל-התוכן",
+      "stage": "PILOT",
+      "bornAt": "2026-10-02T14:10:00Z",
+      "decisionId": "D-r149-BIZ",
+      "thesisHe": "תגמולי-הפרסום על Steem הם נתיב-ההכנסה היחיד שמתמחק באיכות-ובתשומת-לב-חוץ ולא בהון (ההון 52$ קובע הכנסת-קיורציה של סנטים). המפעל מייצר 2 פוסטים/יום באנגלית לקהילות-השרשרת מחבילת-מדידה-חיה בלבד: 'The Measured Ledger' (שערים+ספרים-אמתיים — הכנות כמותג) ו-'Agents at Work' (יומן-בניין-הנדסי עם קבלות-txid). עלות-שולית ≈0 — רץ על מה שכבר מיוצר (חבילות-המדידה, מסילת-הפרסום, שער-הכלכלה).",
+      "demandEvidence": "קהל-חוץ מדוד: 16 מגיבים-חוץ ב-7 ימים · 25 תגובות-חוץ (sovereign/audience/latest-digest.json דרך יומן-המנוע) · נתיב-הכנסה מוכח בקטן: 5 אירועי-תגמול-פרסום ב-30d (0.451 STEEM · 732 VESTS · sovereign/income/daily-*.json) — הפוטנציאל נמדד, ההגדלה היא איכות-וקצב",
+      "unitEconomics": "עלות-שולית: ≈0 (LLM על חבילת-מדידה קיימת · מסילת-פרסום קיימת · שער-קיים) · הכנסה: תגמולי-פרסום STEEM+SBD אחרי 7 ימים לפוסט שתופס-אוצרים חוץ · יחידת-מדידה: net_votes + pending_payout לפוסט-מפעל (get_content · שעתית) · הכנסה-מתואמת: sovereign/income/daily-*.json author-rewards",
+      "killLine": "7 פוסטי-מפעל רצופים עם 0 הצבעות-חוץ (net_votes=0 מדוד get_content) → FORMAT-REVIEW חתום בשרשרת: הפורמט לא נתפס — מחליפים פורמט, לא מגדילים תקציב",
+      "budgetCap": "גג 2 פוסטים/יום (אחד לכל מוצר) · כל פרסום עובר שער-כלכלה spend=true · כפוף לתקציב-הפעולות הגלובלי 16/יום (D-r149-BUDGET)",
+      "metricSource": "mini-services/content-factory (3046) → sovereign/businesses/content-factory-state.json + content-log.jsonl · engagement: condenser_api.get_content · קבלות: db.publishTask PUBLISHED",
+      "reviewCadence": "מדידת-אינגייג'מנט שעתית · ביקורת-שבועית בלולאת-הממשל · שורת-הרג נקראת בכל טיק"
+    }
+  ],
+  "capacityLawHe": "חוק-הקיבולת (מהלקח מ-governor של clodfarm): הפסקות-קשות מול קצב-רך · אף עסק לא חורג מתקציב-הפעולות הגלובלי · איבוד-מודע לא שורף תקציב (D-r147-ECO) · לעולם לא מעל-התקרה.",
+  "nextReview": "2026-10-09"
+}

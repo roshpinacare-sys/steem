@@ -1,0 +1,218 @@
+{
+ "_meta": {
+  "schema": "sovereign-capabilities-v1",
+  "round": "R207",
+  "trace": "1a10d1ddb659450d",
+  "builtAt": "2026-08-07T00:14:36.750Z",
+  "law": "יתרה ≠ יכולת · כל רשומה: ערך-חי → אסמכתא → מגבלה → תלות → מה-מאפשר · סיווג עם סכומים ולא מראה",
+  "classes": [
+   "AVAILABLE",
+   "COMMITTED",
+   "OPERATIONAL",
+   "RESERVE",
+   "PRODUCTIVE",
+   "EXPERIMENTAL",
+   "EXPANSION"
+  ]
+ },
+ "measuredAt": "2026-10-05T17:46:35Z–18:00Z",
+ "chainTruth": {
+  "perVestSp": 0.0006199578,
+  "headcorner": {
+   "vestingSharesVests": 6366836.322857,
+   "delegatedVests": 4552866.947848,
+   "receivedVests": 393740.001933,
+   "balanceSteem": 1.377,
+   "sbd": 0.015,
+   "source": "condenser_api.get_accounts keyless"
+  },
+  "identityProof": "360.14 SP פעילה (580,884.772718 VESTS) + refundQueue 2,462.46 SP (3,971,982.175130 VESTS) = 4,552,866.947848 VESTS = delegated_vesting_shares במדויק-עד-סטושי (פער +0.000000) ⇒ ההחזרות הן תת-קבוצה של ה-delegation-היוצאת"
+ },
+ "capabilities": [
+  {
+   "id": "C1",
+   "resource": "SP גולמי headcorner",
+   "value": "3,947.17 SP",
+   "evidence": "שרשרת 17:46:35Z",
+   "classes": {},
+   "enables": "משקל-קול/RC לפי-הנטו בלבד",
+   "limitation": "מתוכו 2,822.57 SP delegated-out",
+   "dependency": "רשת-steem"
+  },
+  {
+   "id": "C2",
+   "resource": "SP נטו-אפקטיבי",
+   "value": "1,368.69 SP = 2,207,709.38 VESTS",
+   "evidence": "גזירה: גולמי − delegated + received",
+   "classes": {
+    "OPERATIONAL": "כולו"
+   },
+   "enables": "גוף-הצבעה/RC/משקל-קיורציה",
+   "limitation": "244.10 SP ממנו REVOCABLE (התקבל-בהקצאה)",
+   "dependency": "VP-רצפה (כותב-החוץ רוקן; 11.85% @17:50Z, +0.454%/ש'"
+  },
+  {
+   "id": "C3",
+   "resource": "delegation-יוצאת פעילה",
+   "value": "360.14 SP → 12 חשבונות (10×30 SP שולחנות-קהילה + powerspan 50.10 + hive-177702 10.00)",
+   "evidence": "שרשרת 17:46Z + get_vesting_delegations",
+   "classes": {
+    "COMMITTED": "360.14"
+   },
+   "enables": "שכירות-קהילה",
+   "limitation": "תשואה-מדידה ≈0.12% APR (100 VESTS/30d) · אין-מסמך-הצדקה · ניתנת-אחזור undelegate+7d",
+   "dependency": "—"
+  },
+  {
+   "id": "C4",
+   "resource": "refundQueue (החזרות-בדרך)",
+   "value": "2,462.46 SP = 3,971,982.175 VESTS · 46 פרעונות · נוחת 10-09T05:21→10-10T09:47",
+   "evidence": "database_api.find_vesting_delegation_expirations + soldiers/snapshot.json 17:27Z",
+   "classes": {
+    "EXPANSION": "2,462.46"
+   },
+   "enables": "זרם-דלק שלישי (אחרי ההמרות וה-powerdown) בחלון 4–5 ימים",
+   "limitation": "משולם ב-VESTS — נתיב-המרה לא-מוכח (UNKNOWN)",
+   "dependency": "לוח-השרשרת"
+  },
+  {
+   "id": "C5",
+   "resource": "נזיל STEEM+SBD (headcorner)",
+   "value": "1.377 STEEM + 0.015 SBD",
+   "evidence": "שרשרת + /api/money 17:46Z",
+   "classes": {
+    "OPERATIONAL": "1.377"
+   },
+   "enables": "— (ראה C6)",
+   "limitation": "**100% ממושכר 1:1 מול תביעות-WSTEEM חיות (1.377)** — צף-פדיון, לא דלק-חופשי",
+   "dependency": "ספר-WSTEEM"
+  },
+  {
+   "id": "C6",
+   "resource": "פקודות-בסולם",
+   "value": "9.415 STEEM · 5 מכירות ×1.883 · +42..440bps מעל פאריטה 0.106826 · פקיעה 2026-11-01",
+   "evidence": "/api/money 17:46Z",
+   "classes": {
+    "PRODUCTIVE": "9.415",
+    "COMMITTED": "רך — ניתן-אחזור בפקודה אחת (limit_order_cancel קיים route.ts:1508/1735/1911)"
+   },
+   "enables": "לכידת-פרמיה",
+   "limitation": "fills24h=0 · capturedSbd 7d −1.51 · אפס-מילוי-מכירה-מעל-הקו ב-24h",
+   "dependency": "פאריטה חיה"
+  },
+  {
+   "id": "C7",
+   "resource": "חיילים ×3 (hcsoldier1/2/3)",
+   "value": "56.0 STEEM + 0.417 SBD ≈ $3.75 · אפס-VESTS",
+   "evidence": "snapshot.json 17:27:38Z alarm=false + שרשרת",
+   "classes": {
+    "COMMITTED": "חוק-אפס-מימון",
+    "RESERVE": "דה-פקטו פקוע"
+   },
+   "enables": "כיום: הוכחת-אי-מימון (ערבות-שלילית)",
+   "limitation": "מפתחות-אבודים (r196/r200, ~45k נגזרות→0) · אפס-פעילות-חתומה-עצמית מ-29/09 · מחוץ-ל-STEEM_FLEET",
+   "dependency": "—"
+  },
+  {
+   "id": "C8",
+   "resource": "powerdown (מפעיל-עידן, לא-נגע)",
+   "value": "**תשלום-אחרון אחד: 475.944 SP ≈ $29.78 ב-10-10T02:01:27Z ואז הלוח נגמר**",
+   "evidence": "שרשרת: to_withdraw 3,070,814.041830 − withdrawn 2,303,110.531374 = 767,703.510456 VESTS = הקצב בדיוק",
+   "classes": {
+    "COMMITTED": "475.944 (עד 10/10)"
+   },
+   "enables": "—",
+   "limitation": "ה-API דיווח 4/1,903.77 עד-תיקון-החיישן r207 (route.ts:783-784 לא החסיר withdrawn) — תוקן ואומת חי (1/475.944)",
+   "dependency": "—"
+  },
+  {
+   "id": "C9",
+   "resource": "RC (STEEM)",
+   "value": "99.877% = 1,440,256,523,259 / 1,442,026,615,459",
+   "evidence": "rc_api.find_rc_accounts 17:46:36Z — **המספר-החי הראשון בהיסטוריה (סוגר-פער r206-d)**",
+   "classes": {
+    "OPERATIONAL": "מלא"
+   },
+   "enables": "שידור-פעולות ללא-חסימת-RC",
+   "limitation": "שער-ה-RC בקוד הוא HIVE-צד בלבד (graphene.ts:103-129)",
+   "dependency": "regen"
+  },
+  {
+   "id": "C10",
+   "resource": "VP (קיורציה)",
+   "value": "11.85% @17:50:42Z · +0.454%/ש' → רצפת 70% ETA ~5.3 ימים",
+   "evidence": "curation חי",
+   "classes": {
+    "OPERATIONAL": "חוב-מדיד (הכותב-החוץ רוקן)",
+    "RESERVE": "0"
+   },
+   "enables": "הצבעה מ-~11/10",
+   "limitation": "HOLD-POWER-FLOOR חוקי · usd7d $0.0008",
+   "dependency": "התחדשות"
+  },
+  {
+   "id": "C11",
+   "resource": "אוצר-SAOS (אסימון-פנימי)",
+   "value": "126,682 SAOS · מחיר-בריכה-עצמית $0.0000125 → ≈$1.58",
+   "evidence": "בריכות-פנימיות (pools.0 exchange API 17:46Z)",
+   "classes": {
+    "EXPERIMENTAL": "כולו"
+   },
+   "enables": "מסילת-תגמול-פנימית",
+   "limitation": "מחיר-עצמי-מפורסם — אין-שוק-חוץ · 5-התחייבויות-תגמול (2 pulse, 1 student, 2 keeper) טרם-שולמו ו-4/4 נסרבו NO-DELIBERATION",
+   "dependency": "—"
+  },
+  {
+   "id": "C12",
+   "resource": "TRON",
+   "value": "משמרת-דלת 2.000002 TRX · outbox headcorner 0.1928 (<1.05 WAIT)",
+   "evidence": "/api/treasury 17:46Z",
+   "classes": {
+    "OPERATIONAL": "2.0"
+   },
+   "enables": "שער-פדיון-WTRX",
+   "limitation": "שער-פדיון חסום מתחת-למינימום",
+   "dependency": "רשת-TRON"
+  },
+  {
+   "id": "C13",
+   "resource": "חישוב/ריצה",
+   "value": "18 שירותים-ליסן (3047 נפל) · next-server :3000 = 1,656MB RSS = 41% מהמכונה-4GB (33× כל-דיבון) · llm-bridge :3048 completions=0 · decision-brain לא-רץ",
+   "evidence": "ss + ps + state.json 17:46-17:57Z",
+   "classes": {
+    "OPERATIONAL": "keeper+money+web+audit",
+    "EXPERIMENTAL": "money/curation/business/content-factory",
+    "EXPANSION": "arbitrage (הזדמנות-מדידה חיה +283.5bps נטו ≈ $0.28/$10 — אין-זרוע-ביצוע)"
+   },
+   "enables": "הפעלת-האורגניזם",
+   "limitation": "Persisting-failed ×229 (רעש-טורבופק) · llm-bridge כבול-ל-0.0.0.0 (יחיד-מחוץ-ל-loopback)",
+   "dependency": "keeper"
+  },
+  {
+   "id": "C14",
+   "resource": "סמכות-חתימה",
+   "value": "headcorner-ACTIVE דרך owner-key/vault (keyPresent=true) · סף-$100 const · תקרות 12/יום מוביל + 16/יום גלובלי",
+   "evidence": "owner-key.ts:45 · operator-auth.ts:105 · tx-gate.ts:20 · econ-gate.ts:46",
+   "classes": {
+    "OPERATIONAL": "קיים"
+   },
+   "enables": "פקודות-ספר <$100 עם-דיון (THINKING)",
+   "limitation": "מעבר לכך — מפעיל בלבד · אין-נתיב-משיכה/delegation/הרחבה בריצה (ממצא r207-e)",
+   "dependency": "כספת"
+  }
+ ],
+ "hiddenFindings": [
+  "חפיפה נפתרה עד-סטושי: refundQueue ⊂ delegated-out — ההתחייבות-הדורית היא 360.14 SP בלבד",
+  "האוצר-הגלוי ($73.88) הוא ~30.4% מהאמת (~$246.98 + חיילים $3.75): חסרים refundQueue ~$154.08 + received ~$15.27 בחלון-ההחזרה",
+  "חיישן-powerdown דיווח ×4 עד-תיקון r207 (מנה 3 תשלומים שבוצעו שוב)",
+  "צף-הפדיון 1.377 STEEM מוחזק מול-תביעות-WSTEEM — פריסתו לסולם מפרה-את-הגיבוי (מנוסח כהעדפה-נלמדת P#1)",
+  "half-delegation-circular: 300 מ-622.99 SP-הנכנסות הן headcorner→שולחנות-קהילה (20:33-34 04/10) — הערך-העצמי-המעגלי"
+ ],
+ "unknown": [
+  "נתיב-המרת VESTS-מההחזרות ל-SP/דלק",
+  "מנה-RC HIVE-צד",
+  "מפתחות-החיילים (אבודים-מאומת אך לא פורנזית-מלאה)",
+  "מחיר-חוץ ל-SAOS (לא-קיים)",
+  "יעד 3 תשלומי-ה-powerdown שבוצעו (מפעיל-עידן)"
+ ]
+}

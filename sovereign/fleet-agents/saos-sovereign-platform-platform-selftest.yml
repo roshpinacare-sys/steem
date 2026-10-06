@@ -1,0 +1,97 @@
+# PLATFORM-SELFTEST - מבחן-העצמי של מנוע הקצה
+#
+# saos-sovereign-platform מריץ את מנוע ההשקיה דו-השכבתי בקצה: שכבת
+# כללים דטרמיניסטית ויועץ אגרונום. הסוכן מריץ את מבחן-העצמי של המנוע
+# (12 בדיקות, אפס רשת, אפס אקראיות) ואת טעינת שכבת הכללים. המנוע
+# חייב לענות תשובות זהות תמיד - זו הבטחת הפריטיות. דוח ל-agent/status.json.
+
+name: platform-selftest
+
+on:
+  schedule:
+    - cron: '41 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: platform-selftest
+  cancel-in-progress: false
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run the edge engine selftest
+        run: |
+          set -u
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          VERDICT="FAIL"
+          REASON="selftest failed"
+
+          ST_EXIT=1; ST_PASS=0; ST_TOTAL=0
+          if [ -f python/irrigation_engine.py ]; then
+            if python3 python/irrigation_engine.py selftest > /tmp/selftest.log 2>&1; then ST_EXIT=0; fi
+            tail -15 /tmp/selftest.log
+            ST_PASS="$(grep -oE '[0-9]+/[0-9]+' /tmp/selftest.log | tail -1 | cut -d/ -f1 || echo 0)"
+            ST_TOTAL="$(grep -oE '[0-9]+/[0-9]+' /tmp/selftest.log | tail -1 | cut -d/ -f2 || echo 0)"
+          else
+            REASON="irrigation_engine.py not found"
+          fi
+
+          # טעינת שכבת הכללים - המנוע חייב להציג את סדר הכללים הקפוא
+          RULES="skipped"
+          if [ -f python/irrigation_engine.py ]; then
+            if python3 python/irrigation_engine.py rules > /tmp/rules.log 2>&1; then RULES="pass"; else RULES="fail"; fi
+            tail -8 /tmp/rules.log
+          fi
+
+          # הרצת-הרקע של הקצה קיימת ונטענת
+          RUNNER="skipped"
+          if [ -f python/edge_runner.py ]; then
+            if python3 -m py_compile python/edge_runner.py; then RUNNER="compiles"; else RUNNER="compile-failed"; fi
+          fi
+
+          if [ "$ST_EXIT" = "0" ] && [ "$RULES" = "pass" ]; then
+            VERDICT="PASS"; REASON="selftest $ST_PASS/$ST_TOTAL, rule layer loads"
+          elif [ "$ST_EXIT" = "0" ]; then
+            VERDICT="FAIL"; REASON="selftest passed but rule layer failed to load"
+          fi
+
+          mkdir -p agent
+          cat > agent/status.json <<EOF
+          {
+           "agent": "platform-selftest",
+           "generatedAt": "$NOW",
+           "verdict": "$VERDICT",
+           "checks": {
+            "selftestPassed": $ST_PASS,
+            "selftestTotal": $ST_TOTAL,
+            "selftestExitOk": $ST_EXIT,
+            "ruleLayer": "$RULES",
+            "edgeRunner": "$RUNNER"
+           },
+           "reason": "$REASON"
+          }
+          EOF
+          git config user.name "platform-selftest[bot]"
+          git config user.email "platform-selftest[bot]@users.noreply.github.com"
+          git add -f agent/status.json
+          if git diff --cached --quiet agent/status.json; then
+            echo "status unchanged - no commit"
+          else
+            git commit -m "platform-selftest: $VERDICT at $NOW"
+            git push
+          fi
+          echo "verdict: $VERDICT ($REASON)"
+          [ "$VERDICT" = "PASS" ] || exit 1

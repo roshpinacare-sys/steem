@@ -1,0 +1,84 @@
+{
+  "verdict": "PASS",
+  "at": "2026-10-06T00:44:30Z",
+  "falsifier": "r209-f",
+  "independentNumbers": {
+    "perVest": 0.0006199697853189465,
+    "grossSp": 3947.2461,
+    "netSp": 899.6169,
+    "delegatedOutSp": 3047.6292,
+    "receivedInSp": 244.1069,
+    "refundQueueSp": 2462.5089,
+    "source": {
+      "perVest": "api.steemit.com condenser_api.get_dynamic_global_properties @2026-10-06T00:35:57Z: total_vesting_fund_steem 201041341.966 / total_vesting_shares 324276032036.905250",
+      "grossSp": "get_accounts(headcorner).vesting_shares 6,366,836.322857 VESTS × perVest",
+      "delegatedOutSp": "get_accounts(headcorner).delegated_vesting_shares 4,915,770.583563 VESTS × perVest",
+      "receivedInSp": "get_accounts(headcorner).received_vesting_shares 393,740.001933 VESTS × perVest",
+      "netSp": "(vesting_shares − delegated_vesting_shares) × perVest",
+      "refundQueueSp": "sovereign/soldiers/snapshot.json→refundQueue.totalVests 3,971,982.175 VESTS (46 פרעונות, window 2026-10-09T05:21:12→2026-10-10T09:47:09) × perVest"
+    }
+  },
+  "apiNumbers": {
+    "perVest": 0.0006199697794350705,
+    "grossSp": 3947.2461107808494,
+    "grossSpUsd": 250.4922381901527,
+    "delegatedOutSp": 3047.6292044449606,
+    "receivedInSp": 244.10690215316623,
+    "receivedInUsd": 15.49102401063993,
+    "receivedInFleetSp": 847.9942942618676,
+    "receivedInFleetUsd": 53.81371791385812,
+    "refundQueueSp": 2462.5089129547814,
+    "refundQueueUsd": 156.27081561611044,
+    "refundQueueExpirations": 46,
+    "refundQueueWindow": { "earliest": "2026-10-09T05:21:12", "latest": "2026-10-10T09:47:09" },
+    "snapshotMeasuredAt": "2026-10-06T00:20:43.558Z",
+    "headcornerNetSp": 899.6169063358886,
+    "prices.STEEM": 0.06346,
+    "usd": { "total": 65.2030743419114, "liquid": 3.2091702128136035, "deployed": 3.185374700000001, "deployedExit": 3.277226685000001, "vesting": 58.8085294290978 }
+  },
+  "attacks": [
+    {
+      "id": "A",
+      "cmd": "POST api.steemit.com condenser_api.get_dynamic_global_properties + get_accounts([headcorner]) → חישוב עצמאי; curl 127.0.0.1:3000/api/treasury; השוואה ±0.5%",
+      "result": "perVest שלי 0.0006199697853189465 מול route 0.0006199697794350705 (rel 9.5e-9) · grossSp 3947.2461 מול 3947.246111 · delegatedOutSp 3047.6292 מול 3047.629204 · receivedInSp 244.1069 מול 244.106902 · refundQueueSp 2462.5089 מול 2462.508913 · netSp 899.6169 מול headcorner.sp 899.616906 · כל 13 שורות-הצי (sp+receivedSp) נאמתו שורה-שורה, סטייה-מרבית 9.5e-9 — פי-500,000 בתוך-הסבילות",
+      "pass": true
+    },
+    {
+      "id": "B",
+      "cmd": "זהות grossSp ?= netSp + delegatedOutSp — מדידה-עצמאית וגם בתוך-תשובת-ה-API",
+      "result": "עצמאי: 3947.2461 = 899.6169 + 3047.6292, פער 0.0 מדויק · ב-API: פער 4.55e-13 · שארית refundQueue: delegatedOut 3047.6292 − refundQueue 2462.5089 = 585.1203 = ההשכרה-הפעילה-היוצאת — refundQueue ⊂ delegatedOut נמדד, אין-שארית-בלתי-מוסברת",
+      "pass": true
+    },
+    {
+      "id": "C",
+      "cmd": "snapshot.json→refundQueue.totalVests × perVest-שלי מול API.refundQueueSp; NULL-דרך מסקנת-קוד (route.ts:149-156,183-195) — אפס-מחיקה/עריכה של קבצים",
+      "result": "מספרי: 3,971,982.175 × perVest = 2462.508936 מול API 2462.508913 (rel 9.5e-9); expirations 46 ו-window תואמים-מדויק את ה-snapshot · NULL-דרך (מהקוד): readJsonSafe קובץ-חסר/שבור ⇒ null; rq=null ⇒ refundQueueSp/Usd/Expirations/Window/snapshotMeasuredAt כולם null-כנה בעוד שדות-השרשרת נשארים מדודים; typeof-guard על totalVests ו-num() ל-NaN/∞ — אין-המצאה",
+      "pass": true
+    },
+    {
+      "id": "D",
+      "cmd": "keytree-diff מלא מול /tmp/treasury-before-r209.json + חישוב-עצמאי של הנוסחאות-הישנות מתוך-התשובה-החיה (כמויות×מחירים-מאותה-תשובה)",
+      "result": "מבנה: 0 מפתחות-ישנים-נעלמו, 19 נתיבים-חדשים בלבד (inFlight.* עליון אחרי steem + steem.inFlightRaw.*) · נוסחאות-ישנות מחושבות-מחדש מדויקות: usd.liquid diff 8.9e-16 · usd.vesting diff 7.1e-15 · usd.deployed 0 · usd.deployedExit 0 · usd.total diff 1.4e-14 (רעש-צף-בלבד) · cross: חלק-ה-STEEM ב-vesting 57.607768 = Σfleet-net-sp × price מדויק",
+      "pass": true
+    },
+    {
+      "id": "E",
+      "cmd": "מתקפת-יחידות (לקח-r203): API.Usd ?= Sp × prices.STEEM (0.06346) מול Sp × פיד-SBD/STEEM (0.10409945, get_current_median_history_price)",
+      "result": "כל-ארבעת שדות-ה-USD תואמים-מדויק את מסלול-מחיר-השוק ודוחים את מסלול-הפיד: refundQueueUsd 156.270816 = Sp×price diff 0.00e+00 (פיד היה נותן 256.3458, פער $100.07) · receivedInUsd 15.491024 diff 0 (פיד 25.4114) · grossSpUsd 250.492238 diff 0 (פיד 410.9062) · receivedInFleetUsd 53.813718 diff 0 (פיד 88.2757)",
+      "pass": true
+    },
+    {
+      "id": "F",
+      "cmd": "curl פעמיים בהפרש ~70ש' (00:39:38Z ו-00:40:48Z) + keytree-השוואה",
+      "result": "מבנה-זהה מושלם: 0 מפתחות-נעלמו/נוספו בין-הקריאות · שדות-SP נעים רק-עם סחיפת-perVest מהשרשרת (grossSp 3947.246822→3947.247047, rel ~6e-8) · שדות-USD נעים רק-עם-השוק (STEEM 0.06358→0.06363; usd.vesting 58.9216→58.9691) · שדות-ה-snapshot קבועים (measuredAt 00:20:43Z, 46 פרעונות, אותו-חלון) · explanation זהה",
+      "pass": true
+    }
+  ],
+  "failures": [],
+  "notes": [
+    "ניסוח-לא-עקבי ב-explanation (route.ts:228): «בחלון-ההחזרה היא לא-ב-vesting_shares של אף-צד» סותר את-הזהות-הנמדדת באותו-מקטע (r207-d: refundQueue ⊂ delegated_vesting_shares ⊂ vesting_shares של headcorner — זו-בדיוק הסיבה ש-gross = net + delegatedOut בפער-0). המשמעות-התפעולית («נעלמת מהנטו») נכונה ואף-מספר לא-נפגע — תיקון-ניסוח בלבד, לא-פגם-חישובי (המפרך אינו-רשאי-לערוך את route.ts).",
+    "יתרת-headcorner הנזילה נעה 33.718→34.718 STEEM בין הרכבת-ה-API (00:35:49Z) לקריאתי-העצמאית (00:35:57Z) — פעילות-מסחר-חיה נאמתה ב-get_account_history (limit_order_cancel/create orderid 2100000481-486 ב-00:37-00:38Z). התנהגות-שרשרת-חיה, לא-פגם.",
+    "hiveSide מחזיר 12 מתוך 13 חשבונות (אחד-אינו-קיים ב-Hive) — התנהגות-קדם-r209 שלא-נגעה בתיקון; אינה-חלק-מהפסק.",
+    "מטמון-SWR (TTL 60ש') פעיל: קריאות-בתוך-חלון-ה-TTL מחזירות compose ישן-עד-60ש' — הסבילות ±0.5% נועדה-לכך; כל-הסטיות-שנמדדו ≤1e-6%."
+  ]
+}

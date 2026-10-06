@@ -1,0 +1,60 @@
+{
+  "format": "weave-open-decisions-v1",
+  "schemaVersion": "1.0.0",
+  "version": "r142",
+  "updatedAt": "2026-10-02T10:05:11.000Z",
+  "decisions": [
+    {
+      "id": "D-OP-01",
+      "status": "resolved",
+      "resolvedAt": "2026-09-30",
+      "class": "sovereignty",
+      "decision": "Operator standing pre-approval: every AUTO-class decision is approved in advance. The fleet never waits for the operator on pre-approved classes.",
+      "evidence": "operator message 2026-09-30: אני מאשר הכל ... הכל צריך לקרות לבד מעצמו בלי שאני כל פעם אפעיל 6 סוכנים בעצמי על הסנבוקס",
+      "recordedBy": "governance protocol adoption r142"
+    },
+    {
+      "id": "D-O2",
+      "status": "provisional",
+      "class": "external-leg",
+      "recommendation": "O2 external leg proceeds autonomously within bounded exposure: existing rails only, existing value-floor and quota laws bind, every operation measured and logged. The operator 'counts and withdraws' — the network operates.",
+      "preApprovedBy": "D-OP-01"
+    },
+    {
+      "id": "D-SCALE",
+      "status": "open",
+      "class": "economy",
+      "recommendation": "Scale toward $1,000/day by measured steps: the ladder proves the rail (818.9 STEEM placed), PnL decides the next step. No scale jump without a measured day-over-day number."
+    },
+    {
+      "id": "D-KEYS",
+      "status": "open",
+      "class": "gate",
+      "recommendation": "Owner key rotation remains operator-only. The network never rotates, exports, or materializes key secrets. keyPresent stays boolean-only everywhere."
+    },
+    {
+      "id": "D-HEADCORNER",
+      "status": "resolved",
+      "resolvedAt": "2026-09-30",
+      "class": "gate",
+      "decision": "headcorner.txt present in home (dual-mode D-026). Presence is measured, content never logged. Gate remains: file lives outside git, 0600, replaced only by operator.",
+      "evidence": "upload/headcorner.txt on disk, keyPresent=true in /api/gate (r141)"
+    },
+    {
+      "id": "D-PROTOCOL",
+      "status": "resolved",
+      "resolvedAt": "2026-09-30",
+      "class": "governance",
+      "decision": "Adopt the legacy project's governance-state protocol (NEXT_ACTION / OPEN_DECISIONS / PROGRAM_STATE / registries) as the decision spine of The Weave, adapted: fail-closed honesty kept, permanent production blockage dropped — The Weave is already live and measures instead of blocking.",
+      "evidence": "legacy/unified-platform v33.56 governance-state; MINING-REPORT.md r142"
+    },
+    {
+      "id": "D-r146-SCOUT-BT",
+      "status": "provisional",
+      "class": "army",
+      "recommendation": "scout-market digest insight (INS-1-BT, W40 rotation: sybil-resistance mechanisms) surfaced for evaluation: the network's agent-identity story can adopt measured sybil-resistance mechanics (quadratic-voting analysis, hybrid consensus designs) instead of inventing its own. Candidate for evaluation only — nothing adopted. Competitive context measured by the scout: Agent Network Protocol (ANP, agent-network-protocol.com + W3C CG white paper) and IETF Agent Identity Protocol draft already exist publicly; the honest differentiator to keep is the hash-chained decision log + measured-evidence law. Sources: https://www.cyfrin.io/blog/understanding-sybil-attacks-in-blockchain-and-smart-contracts · https://purl.stanford.edu/hj860vc2584 · https://www.agent-network-protocol.com · https://datatracker.ietf.org/doc/draft-prakash-aip",
+      "evidence": "sovereign/scout/latest-digest.json (seq 4 chain ok) · D-r146-SCOUT seq 97",
+      "preApprovedBy": "D-OP-01"
+    }
+  ]
+}

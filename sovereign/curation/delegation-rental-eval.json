@@ -1,0 +1,41 @@
+{
+  "evaluation": "SP delegation rental market — passive income path assessment",
+  "evaluatedBy": "r146-a income-ignition",
+  "measuredAt": "2026-10-02T10:15:00Z",
+  "verdict": "NOT-YET",
+  "verdictReason": "שלושת-תנאי-הסף אינם נמדדים-קיימים: אין-בסיס-APR-אוצרות של 30 יום (הצינור חודש היום), אין-היצע-SP בגודל-לוט-שוק, אין-מנהל-השכרה. החלטה-כנה: לא מיושם עד-שהתנאים יימדדו.",
+  "measurements": {
+    "steemPerVests": 0.000619817592360209,
+    "measuredFrom": "condenser_api.get_dynamic_global_properties @ 2026-10-02T09:54:33 chain-time",
+    "headcorner": {
+      "grossSP": 4415.58,
+      "delegatedOutSP": 380.15,
+      "receivedSP": 244.05,
+      "netSP": 4279.47,
+      "delegationOutDetail": "10× ~30.0 SP לחשבונות-הרשת (cashmachine haran israelnews lsa macrame siq tov wic wog woq) + 50 SP ל-powerspan — מדוד מ-condenser_api.get_vesting_delegations",
+      "note": "ההאצלה-הקיימת היא סובסידיית-צמיחה פנימית (8.9% מה-SP) — מניבה תוכן/מעורבות-רשת, לא בטלה"
+    },
+    "networkAccountsNetSP": {
+      "headcorner": 4279.47,
+      "israelnews": 48.73,
+      "woq": 33.55,
+      "cashmachine": 30.21,
+      "macrame": 30.12
+    },
+    "curationEngineAfterR146aFix": {
+      "votesLandedToday": 4,
+      "weightPctPerVote": 2,
+      "measuredRsharesPerVoteAtVp73": 1970000000,
+      "rewardsPipeline": "rewards.json ledger + תביעה יומית — ה-APR יימדד מהתביעות האמיתיות, לא מהערכה"
+    },
+    "rentalMarketReferenceBandApr": [10, 20],
+    "rentalMarketReferenceNote": "טווח-התעשייה ההיסטורי (dlease/rentsteem בארות); לא נמדד-חי מהסנדבוקס — מסומן-כנה כרפרנס, לא כמדידה"
+  },
+  "viabilityThresholds": [
+    "1) בסיס-מדידה: APR-אוצרות שנמדד ≥30 יום מתוך rewards.json נמוך מה-APR-נטו של השכרה בפועל",
+    "2) גודל: net SP ≥ 10,000 — מתחת לזה הביקוש-בשוק-השכרה מרוכז בלוטות גדולות והניהול אוכל את הרווח",
+    "3) תפעול: מנהל-השכרה קיים (תפקיד-שומר חדש + חתימת active-key) — לא קיים היום; חוק-אין-כפילויות חל"
+  ],
+  "reVisitCondition": "אחרי 30 ימי תביעות-אוצרות מדודות או כש-net SP יחצה 10,000 — הראשון-שיקרה",
+  "law": "אין-דיוק-מזויף: ה-APR-אוצרות לא יוערך כאן — יימדד מהשרשרת דרך צינור-התביעה שנבנה היום"
+}

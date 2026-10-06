@@ -1,0 +1,62 @@
+{
+  "format": "truth-gate-v1",
+  "at": "2026-09-19T07:38:08.590Z",
+  "target": "https://roshpinacare-sys.github.io/Console",
+  "verdict": "3 RED",
+  "counts": {
+    "pass": 3,
+    "fail": 3,
+    "warn": 1
+  },
+  "results": [
+    {
+      "gate": "G1-site-up",
+      "status": "PASS",
+      "measured": "HTTP 200 · 164745 bytes",
+      "note": "",
+      "at": "2026-09-19T07:38:01.094Z"
+    },
+    {
+      "gate": "G2-zero-broken-links",
+      "status": "FAIL",
+      "measured": "23 קישורים נבדקו · 3 שבורים",
+      "note": "https://github.com/roshpinacare-sys/saos-dex/actions → 404 | https://github.com/roshpinacare-sys/saos-dex/settings/secrets/actions → 404 | https://tronscan.org/#/address/TYVwwuvdDmfy3shxT3cb3RKLrRCshaZxTy → 403",
+      "at": "2026-09-19T07:38:07.322Z"
+    },
+    {
+      "gate": "G3-witness-freshness",
+      "status": "PASS",
+      "measured": "cp#221 · att 228 · גיל 0.7h (סף 26h)",
+      "note": "",
+      "at": "2026-09-19T07:38:07.382Z"
+    },
+    {
+      "gate": "G4-mirror-lag",
+      "status": "SKIP",
+      "measured": "חסר עותק מקומי או פרוס",
+      "note": "",
+      "at": "2026-09-19T07:38:07.382Z"
+    },
+    {
+      "gate": "G5-live-format-consistency",
+      "status": "FAIL",
+      "measured": "פרוס=\"saos-live-v1\" מול מקומי=\"saos-live-state-v1\"",
+      "note": "שני פורמטים שונים תחת אותו שם-קובץ = שתי אמיתות",
+      "at": "2026-09-19T07:38:07.611Z"
+    },
+    {
+      "gate": "G6-delivery-numbering",
+      "status": "FAIL",
+      "measured": "bridgehead R48 מול git R55",
+      "note": "האתר הציבורי לא יודע על המסירות האחרונות — מענה לשתי אמיתות",
+      "at": "2026-09-19T07:38:07.678Z"
+    },
+    {
+      "gate": "G7-dev-server",
+      "status": "PASS",
+      "measured": "HTTP 200 (סנדבוקס ארעי — לא מקור האמת, רק מקום העבודה)",
+      "note": "",
+      "at": "2026-09-19T07:38:08.590Z"
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+ "_meta": {
+  "schema": "r208-zero-point-v1",
+  "at": "2026-10-05T19:18:58.358Z",
+  "trace": "1a10d7a051e822d1",
+  "law": "אין הופכים כישלון-API לאפס · אין הופכים נתון-ישן לחי · כל שדה נושא תג"
+ },
+ "git": {
+  "head": {
+   "v": "add01df2f8deae32af5c2cc46c8fae0226126d25",
+   "tag": "OBSERVED"
+  },
+  "dirtyCount": {
+   "v": 30,
+   "tag": "OBSERVED"
+  },
+  "note": {
+   "v": "head=add01df2 (r207 ניקוי) — קוד-ההעדפות-החי ב-decide() כבר-ב-commit",
+   "tag": "VERIFIED"
+  }
+ },
+ "preferences": {
+  "chainOk": {
+   "v": true,
+   "tag": "OBSERVED"
+  },
+  "chainCount": {
+   "v": 1,
+   "tag": "OBSERVED"
+  },
+  "P1_active": {
+   "v": {
+    "seq": 1,
+    "direction": "DOWN",
+    "scope": {
+     "regime": [
+      "pre-landing-window",
+      "sbd-unfunded"
+     ]
+    },
+    "confidence": "medium",
+    "expiresAt": "2026-10-12T18:33:14.033Z",
+    "evidenceHashes": [
+     "be5c4327cdd6",
+     "91b31511be4e"
+    ]
+   },
+   "tag": "OBSERVED"
+  },
+  "full": {
+   "v": {
+    "chainOk": true,
+    "chainCount": 1,
+    "suspended": false,
+    "active": [
+     {
+      "subject": "grid-pool-seed",
+      "direction": "DOWN",
+      "expiresAt": "2026-10-12T18:33:14.033Z",
+      "reason": "העדפה-נלמדת מראיות-מעוגנות: התנאי-החי שלילי (ראה evidence) — דיכוי-advisory בלבד",
+      "evidence": [
+       {
+        "book": "sovereign/objectives/options.json",
+        "ref": "unitErrorCorrection",
+        "value": "סף-זריעה אמיתי ~160 WSTEEM (תיקון-שגיאת-יחידות 96) · צד-SBD בלתי-ממומן",
+        "at": "2026-10-05T18:33:14.033Z",
+        "sha256": "be5c4327cdd6643e5728c12cd955c00c2f6b68d0da038c14e0e13a199fcc8c00"
+       },
+       {
+        "book": "sovereign/objectives/capabilities.json",
+        "ref": "C5",
+        "value": "SBD מדיד 0.015 — מתחת-למימון-צד-העטיפה",
+        "at": "2026-10-05T18:33:14.033Z",
+        "sha256": "91b31511be4e1c3d15253fe5efaa127d20c9ed5249ee1799353b1dd8d236f64b"
+       }
+      ]
+     }
+    ]
+   },
+   "tag": "OBSERVED"
+  },
+  "classification_hypothesis": {
+   "v": "P#1 חיה-בספר-החי (פוגה 10-12) · צרכן-יחיד ב-decide() · מעולם לא הפיקה WAIT-PREFERENCE חי (0 בהיסטוריה) — עדיין DOCUMENTED_PREFERENCE עד-הוכחה-התנהגותית",
+   "tag": "INFERRED"
+  }
+ },
+ "objectiveModel": {
+  "objectives.json": {
+   "sha256": {
+    "v": "6f4dc3453e839beaa86db25c575035f5974e9d7e678c6b3cc8e1d71e819cff82",
+    "tag": "OBSERVED"
+   },
+   "builtAt": {
+    "v": "2026-10-05T18:05:00Z",
+    "tag": "OBSERVED"
+   },
+   "schema": {
+    "v": "sovereign-objectives-v1",
+    "tag": "OBSERVED"
+   }
+  },
+  "options.json": {
+   "sha256": {
+    "v": "be5c4327cdd6643e5728c12cd955c00c2f6b68d0da038c14e0e13a199fcc8c00",
+    "tag": "OBSERVED"
+   },
+   "builtAt": {
+    "v": "2026-10-05T18:05:00Z",
+    "tag": "OBSERVED"
+   },
+   "schema": {
+    "v": "sovereign-options-v1",
+    "tag": "OBSERVED"
+   }
+  },
+  "capabilities.json": {
+   "sha256": {
+    "v": "91b31511be4e1c3d15253fe5efaa127d20c9ed5249ee1799353b1dd8d236f64b",
+    "tag": "OBSERVED"
+   },
+   "builtAt": {
+    "v": "2026-10-05T18:05:00Z",
+    "tag": "OBSERVED"
+   },
+   "schema": {
+    "v": "sovereign-capabilities-v1",
+    "tag": "OBSERVED"
+   }
+  },
+  "authority-map.json": {
+   "sha256": {
+    "v": "790afcd8f76509644b4a9ba598262bbbe538b67a4a35e4750d7b0a0732c6886d",
+    "tag": "OBSERVED"
+   },
+   "builtAt": {
+    "v": null,
+    "tag": "OBSERVED"
+   },
+   "schema": {
+    "v": null,
+    "tag": "OBSERVED"
+   }
+  },
+  "_freshness": {
+   "v": {
+    "builtAt": "2026-10-05T18:05:00Z",
+    "ageMinutes": 74,
+    "verdict": "FRESH"
+   },
+   "tag": "VERIFIED"
+  }
+ },
+ "modelConsumers": {
+  "v": {
+   "files": [
+    "mini-services/money/index.ts",
+    "mini-services/preferences.ts"
+   ],
+   "verdict": "הצרכנים-היחידים: מודול-ההעדפות (אזכור-נתיב-כראיה-טקסטואלית) · decide() לא מייבא/טוען את-המודל"
+  },
+  "tag": "VERIFIED"
+ },
+ "decisionState": {
+  "lastDecision": {
+   "v": {
+    "at": "2026-10-05T19:18:46.257Z",
+    "kind": "WAIT-COOLDOWN",
+    "detail": "WAIT-COOLDOWN · עוד 23 דק' · WAIT-COOLDOWN · עוד 23 דק'"
+   },
+   "tag": "OBSERVED"
+  },
+  "lastTotalSteem": {
+   "v": 10.792,
+   "tag": "OBSERVED"
+  },
+  "lastStreamDay": {
+   "v": "2026-09-27",
+   "tag": "OBSERVED"
+  },
+  "actionsToday": {
+   "v": "6/12",
+   "tag": "OBSERVED"
+  },
+  "waveReacheableNow": {
+   "v": "דורש עלייה ≥200 STEEM בהון-הכולל מעל lastTotalSteem — מהחי הנוכחי לא-צפוי-במהלך-הסבב → צפוי OUTCOME_UNOBSERVED חי (מותר: רק-מעבדה)",
+   "tag": "INFERRED"
+  }
+ },
+ "authorityGate": {
+  "mode": {
+   "v": "THINKING",
+   "tag": "OBSERVED"
+  },
+  "updatedAt": {
+   "v": "2026-10-05T09:44:29.398Z",
+   "tag": "OBSERVED"
+  }
+ },
+ "predictionBook": {
+  "v": {
+   "exists": false,
+   "verdict": "אין ספר-תחזיות-טרום-פעולה — פער §VII פתוח"
+  },
+  "tag": "OBSERVED"
+ },
+ "sensor": {
+  "ok": {
+   "v": true,
+   "tag": "OBSERVED"
+  },
+  "idleSteem": {
+   "v": {
+    "v": 1.377,
+    "unit": "STEEM"
+   },
+   "tag": "OBSERVED"
+  },
+  "deployedSteem": {
+   "v": {
+    "v": 9.415,
+    "unit": "STEEM"
+   },
+   "tag": "OBSERVED"
+  },
+  "parity": {
+   "v": {
+    "v": 0.10757,
+    "unit": "SBD/STEEM",
+    "note": "לעולם לא USD/STEEM — לקח r207 (0.1041)"
+   },
+   "tag": "OBSERVED"
+  },
+  "sbdArming": {
+   "v": {
+    "v": {
+     "state": "WAIT",
+     "balance": 0.015,
+     "commitable": 0.014
+    },
+    "unit": "SBD"
+   },
+   "tag": "OBSERVED"
+  },
+  "orders": {
+   "v": 5,
+   "tag": "OBSERVED"
+  }
+ },
+ "daemons": {
+  "money3034": {
+   "v": true,
+   "tag": "OBSERVED"
+  },
+  "next3000": {
+   "v": true,
+   "tag": "OBSERVED"
+  }
+ }
+}

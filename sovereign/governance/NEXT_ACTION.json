@@ -1,0 +1,30 @@
+{
+  "format": "weave-next-action-v1",
+  "schemaVersion": "1.0.0",
+  "version": "r143",
+  "updatedAt": "2026-09-30T20:22:34.411Z",
+  "actionId": "NA-r143-STEADY-DECISION-LOOP",
+  "title": "Steady state: one signed decision per cycle — decide within boundaries, measure truth, record evidence, close open decisions, advance when criteria are measured met",
+  "allowedActions": [
+    "Run the decision cycle: read state, choose one pre-approved action, execute within boundary, append evidence to DECISION_LOG.jsonl",
+    "Advance NEXT_ACTION when exit criteria are measured met",
+    "Close provisional open decisions whose measured evidence exists (mark resolved with evidence pointer)",
+    "Refresh stale evidence behind any page claim (measure, then update truth)",
+    "Triage degraded fleet agents: classify quota-strangled / operator-gate / code-bug, dispatch revival where pre-approved"
+  ],
+  "forbiddenActions": [
+    "external mutation outside existing rails (new exchanges, new chains, new custody)",
+    "key rotation, key export, or any secret materialization",
+    "claiming revenue, profit, or $1,000/day progress without a measured number and a pointer",
+    "editing DECISION_LOG.jsonl history or PROGRAM_STATE.completed retroactively",
+    "waiting for the operator on any AUTO-class decision (D-OP-01 standing approval)"
+  ],
+  "exitCriteria": [
+    "governance daemon alive on port 3042 and measured by fleet-guard",
+    "at least 3 signed decisions recorded after this action was set (2026-09-30T20:22:34.411Z) with distinct decisionIds",
+    "every logged decision carries: chosen action, why, boundary class, evidence pointer",
+    "governance API (/api/governance) returns live state consumed by the UI",
+    "git advanced: protocol files + daemon + evidence committed and pushed by the fleet itself"
+  ],
+  "qualificationTargetVersion": "r144"
+}

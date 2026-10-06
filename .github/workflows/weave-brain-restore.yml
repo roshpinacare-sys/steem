@@ -1,0 +1,86 @@
+# WEAVE-BRAIN-RESTORE — השבת המוח מכספת הצי, מהענן (Task 25)
+#
+# הוראת המפעיל: "ודא לעגן את הכל — לא לסמוך כלום על הסנדבוקס שלך".
+# המוח (3 מפתחות NVIDIA NIM) אבד עם ה-DB של הסנדבוקס בקריסה —
+# מקורותיו חיים בריפואים הפרטיים, ולכן ההשבה מתרחשת כאן, בבית
+# הריבוני, בלי תלות בשום סביבה חולפת:
+#
+#   WEAVE_SEAL_PASSPHRASE (Actions Secret) — פותח את ה-seal ⇒ מפתח
+#   הרשת לאטימה + מפתח הענן לחתימת אימות ה-RESTORE.
+#   WEAVE_OPS_PAT (Actions Secret) — קריאה בלבד מהריפואים הפרטיים
+#   (steem: הארכיון המוצפן + recovery-meta · Saosmartwallet: ה-DB
+#   הישן). כלום מהמקורות לא נכתב לריפו הזה לעולם — הם נמחקים
+#   מה-runner בסוף הריצה.
+#
+# התוצאה: הגושים האטומים של המוח עולים לספר (ledger.json, שדה
+# brain — כספת אדיטיבית) ונדחפים ל-main. מעתה כל סביבה — ענן,
+# סנדבוקס, clone עתידי — משחזרת את המוח מהגיט בלבד, והלב השעתי
+# מאמת-אמת את המאגר בכל פעימה.
+#
+# חד-פעמי מעצם ההגדרה: dispatch בלבד, אין cron. הרצה חוזרת היא
+# no-op כן (dedup לפי טביעת-אצבע — "כבר בבית").
+
+name: weave-brain-restore
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'restore mode — full: fetch vault, verify live, seal, attest, push; vault-only: fetch + open + probe, stop before sealing (no network key needed)'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - vault-only
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weave-brain-restore
+  cancel-in-progress: false
+
+jobs:
+  brain-restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout origin/main (the sovereign home)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile --no-save 2>/dev/null || bun install --no-save
+
+      - name: Prisma client + DB skeleton
+        run: bunx prisma generate && bunx prisma db push
+        env:
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+
+      - name: Restore the brain home (fetch vault, verify live, seal under network key, anchor in the book)
+        run: |
+          if [ "$MODE_INPUT" = "vault-only" ]; then
+            bun scripts/weave-brain-restore.ts --vault-only --no-push
+          else
+            bun scripts/weave-brain-restore.ts
+          fi
+        env:
+          MODE_INPUT: ${{ inputs.mode }}
+          DATABASE_URL: 'file:${{ github.workspace }}/db/custom.db'
+          WEAVE_SEAL_PASSPHRASE: ${{ secrets.WEAVE_SEAL_PASSPHRASE }}
+          WEAVE_OPS_PAT: ${{ secrets.WEAVE_OPS_PAT }}
+
+      - name: Upload restore report (evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weave-brain-restore-report
+          path: sovereign/brain-restore-report.json
+          retention-days: 90

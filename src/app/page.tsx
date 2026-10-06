@@ -31,6 +31,7 @@ import { RcTankCard } from '@/components/saos/RcTankCard'
 import { EconomicsRailsCard } from '@/components/saos/EconomicsRailsCard'
 import { PayoutsCard } from '@/components/saos/PayoutsCard'
 import { WeaveCard } from '@/components/saos/WeaveCard'
+import SealCard from '@/components/saos/SealCard'
 import { X2Card } from '@/components/saos/X2Card'
 import type { Status, Sovereign } from '@/components/saos/types'
 
@@ -306,6 +307,9 @@ export default function Home() {
             {renderSection('command', (
               <>
                 <WalletConsoleCard s={s} adopt={adopt} orders={orders} />
+
+                {/* חותם-הרשת · המעטפות הקנוניות + דלת-ההשבה (r135) — המפעיל: החותם צריך להיות בתא-הפיקוד */}
+                <SealCard />
 
                 {/* ריבונות-מתמשכת · המערכת דואגת לעצמה (T-10) */}
                 <SectionCard

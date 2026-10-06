@@ -1,0 +1,155 @@
+{
+  "format": "agent-inspection-v1",
+  "inspectionId": "INS-R71-001",
+  "id": "INS-R71-001",
+  "inspectionOf": [
+    "R71 pre-push (quota sovereignty): the cloud-heart DOMAIN TWIN (.github/workflows/cloud-heart.yml, new+untracked in /home/z/r70/domain staged vs HEAD 930182b) + README bullet/paragraph + the book twins (agent/state.json, agent/requests.json with R32) ; the 7 private originals moved to dispatch-only (steem cloud-heart, saos-dex dex-beat/dex-grid vs HEAD 3eebb83/2ffcbf9; Zip weave-heart/weave-anchor-lines/weave-ecosystem/web-publish vs HEAD bf9d847) ; AGENTS.md rewrite + TRUTH-AUDIT §15 + console/agent book twins in the sovereign Zip worktree"
+  ],
+  "subject": "R71 — quota sovereignty: the cloud-heart twin on public minutes, the 7 originals to dispatch-only, AGENTS.md refreshed to the measured truth, OL-14 closed by architecture",
+  "inspector": "standing supervisor-inspector (general-purpose agent, fresh context, zero-trust)",
+  "inspectedAt": "2026-09-21T10:39:00Z–11:15:00Z (window per the standing order)",
+  "operatorOrder": "continue — the blockage is the exhausted free GitHub minutes: strengthen the internal system, all repos, order, testing, bug fixes, and find better sovereign solutions until they return (R32, verbatim in the book)",
+  "scope": "The staged indexes of all four trees (verified: Domain exactly 3 modified + 1 untracked file; steem 1 modified; saos-dex 2 modified; sovereign Zip 8 modified, nothing untracked anywhere). Live GitHub API state (Bearer WEAVE_OPS_PAT — the 93-char token from the Zip remote, never printed): workflow runs and jobs of all 13 private repos + the public Domain/Console, commit history of steem, vault listing (names only), repo census. My own keyless chain read (node /tmp/attest-direct.cjs). Mechanical line-diff of the twin vs the steem original at HEAD. Full re-measurement of the quota-death boundary across every private workflow. Machine-code simulation of A67/A69 on the staged tree.",
+  "method": "Zero-trust re-measurement, nothing accepted from the delivering agent: quota-death census over every workflow of every private repo (runs after the boundary, conclusions, durations, jobs-with-zero-steps, empty logs-zip = the BlobNotFound signature); the last green cloud-heart artifact downloaded and read (verdict, git freshness, on-chain attest block); cloud-heart[bot] authorship census over the last 30 steem commits (authors, 'loop 21', file counts 6-9, inter-commit gaps 87-93 min); keyless chain read re-run from scratch (3 Steem nodes + Hive); contents API 404 checks (fleet_keys.enc, agent/.env); write-probe residue check (refs/heads/write-probe-tmp on both repos — gone, 404); vault listing (4 names); mechanical diff twin-vs-original with every hunk enumerated; per-file diff of all 7 originals vs their HEADs (single-hunk schedule-removal each) + yaml.safe_load on all 8 touched workflow files; cloud_heartbeat.cjs + chain_attest.cjs + gitkeeper.cjs read end-to-end for the env/secret chain (CLOUD_*, SAOS_ATTEST_ACCOUNT default, HIVE_RPC optional, GITHUB_STEP_SUMMARY auto, GITKEEPER_BRANCH default, .env heal absent-by-design); book twins byte-compared; R32 textHe compared to the operator's message char-by-char; A67/A69 simulated on the staged tree with the exact run.mjs logic; security regex sweep of every staged diff + the untracked twin (positive-control validated, all 6 patterns); unicode inventory of added lines vs the committed book set; timestamp future-check; foundry CI full census (201 runs); quiet-agent daily-green census 09-17..09-20; the 09-19 full-day consumption re-measurement (138.7 min raw / 242 min per-job-rounded) to independently test the structural-exhaustion claim.",
+  "claimsVerdicts": [
+    {
+      "claim": "C1. The quota death: last private success steem/cloud-heart 2026-09-20T12:04:24Z (verdict SANDBOX-ALIVE, git 30min fresh), first rejection 12:38:22Z; since then 100% of private scheduled runs fail instantly.",
+      "evidence": "Cloud-heart's own boundary measured exact: last success run 35509546725 (started 12:03:37Z, updated 12:04:28Z, head 3eebb83); its artifact cloud_heart_report.json (downloaded) carries at=2026-09-20T12:04:24.327Z, verdict 'SANDBOX-ALIVE (git 30min fresh)', gitLastCommit 2026-09-20T11:34:46Z, gitStaleMin 30, on-chain attest block = Hive h11124 2026-09-06T14:09:56.897Z. Cloud-heart's first failure: run 35511191984 at 12:38:22Z. Death census: 165 scheduled runs after 12:38:22Z across ALL 13 private repos (steem 45, Zip web-publish 66, weave-heart 22, anchor-lines 11, ecosystem 1, dex-beat 11, dex-grid 1, one each for the 9 quiet agents) — ZERO successes, durations 2-9s, jobs API shows the job with ZERO steps, logs endpoint returns an empty zip (the BlobNotFound signature). PRECISION (F-3): 'the last green private run in the system' is overstated — 4 later green private runs exist (Zip weave-heart 12:09:47Z schedule, weave-anchor-lines 12:10:19Z dispatch, web-publish 12:15:31Z and 12:35:30Z schedule) and the system-wide first rejections were dex-beat 12:35:55Z and weave-anchor-lines 12:36:09Z; the twin header's 'exhausted at 12:36Z' and the books' own OL-14 record use the accurate system boundary.",
+      "verdict": "true (with F-3 precision finding)"
+    },
+    {
+      "claim": "C2. cloud-heart[bot] authored ALL recent steem pushes (auto-save every ~90 min, 'loop 21', 6-9 state files per commit, last at 2026-09-20T11:34:46Z 3eebb83).",
+      "evidence": "Commits API, last 30: all 30 authored AND committed by cloud-heart[bot]; every message 'gitkeeper: auto-save <ts> · N files · loop 21'; file counts measured min 6 / max 9 (24×6, 1×7, 2×8, 1×9); inter-commit gaps 87-93 min (mean ~90); span 2026-09-18T16:03:48Z → 2026-09-20T11:34:46Z; newest = 3eebb83 at 11:34:46Z exactly. The machine was the network's last living heart — after it died, zero commits advanced steem.",
+      "verdict": "true"
+    },
+    {
+      "claim": "C3. The on-chain attest died 2026-09-06 (Hive h11124 at 2026-09-06T14:09:56.897Z; Steem empty in the 800-op window).",
+      "evidence": "My own keyless read (node /tmp/attest-direct.cjs, no trust in the operator's run): 'CHAIN: hive · height=11124 · at=2026-09-06T14:09:56.897Z · ageHours=356.8 · txid=212ef8cc4627dae0 · src=agent · commit=0c03df7'; Steem: 'no attest in window' on both healthy nodes (api.steemit.com, api.justyy.com; the third node refused with a non-JSON error — an infrastructure artifact, not an attest). Matches the last-success artifact's onChainAttest block field-for-field.",
+      "verdict": "true"
+    },
+    {
+      "claim": "C4. agent/fleet_keys.enc does NOT exist in the steem repo — the takeover path is keyless-DRY (the 14-day green history proves it safe).",
+      "evidence": "GET contents agent/fleet_keys.enc → 404; the full agent/ directory listing (230+ files) contains no fleet_keys.enc. The code path confirms the DRY design: cloud_heartbeat.cjs step (b) writes 'no seal in repo — honest DRY mode' when the file is absent; chain_attest.cjs without ACTIVE_WIF throws 'ACTIVE_WIF missing' and the heartbeat records the step failed and CONTINUES to gitkeeper (non-fatal) — exactly the 623-success keyless pattern. History: 669 total runs, 623 successes, first run 2026-09-07T12:03:59Z (repo created 09-07T11:47:10Z) — see F-4 for the '14 days since 09-06' precision nit.",
+      "verdict": "true (with F-4 date precision nit)"
+    },
+    {
+      "claim": "C5. WEAVE_OPS_PAT (the 93-char Zip-remote token) has write access to steem — proven today by a reversible branch create+delete probe; read access re-verifiable.",
+      "evidence": "Read access re-verified by this inspection's own API use throughout (200 on steem runs/commits/contents/workflows). Probe residue check (I did NOT repeat any write probe): refs/heads/write-probe-tmp → 404 on both steem and Domain; steem's only branch is main — the reversible probe was fully cleaned up. The 93-char length and the masked remote URLs match the claim.",
+      "verdict": "true (write side accepted from the operator's 204-receipt; read side independently re-verified)"
+    },
+    {
+      "claim": "C6. Domain vault holds exactly 4 secrets: AGENTS_WATCH_TOKEN, MAIN_KEY, WEAVE_OPS_PAT, ZIP_PAT; the twin needs only WEAVE_OPS_PAT.",
+      "evidence": "Vault listing (names only): total_count=4 — AGENTS_WATCH_TOKEN (2026-09-20T01:21:14Z), MAIN_KEY (2026-09-21T08:28:30Z), WEAVE_OPS_PAT (2026-09-20T23:55:27Z), ZIP_PAT (2026-09-20T23:55:27Z). The twin workflow references exactly one secret (WEAVE_OPS_PAT, checkout token). Secret-env chain audited end-to-end: cloud_heartbeat.cjs reads only GITHUB_STEP_SUMMARY (Actions-provided), CLOUD_HEART/CLOUD_STALE_MIN/CLOUD_FORCE_TAKEOVER/CLOUD_ALIVE_ONLY/CLOUD_GIT_STALE_MIN (set or defaulted), SAOS_ATTEST_ACCOUNT (defaults headcorner); chain_attest.cjs adds only optional HIVE_RPC; gitkeeper.cjs adds only GITKEEPER_BRANCH (default main) and reads agent/.env GITHUB_TOKEN ONLY inside the push-failure heal — agent/.env is gitignored and absent (404), so the heal is a no-op and the push rides the checkout's PAT credentials. No secret the vault lacks is needed.",
+      "verdict": "true"
+    },
+    {
+      "claim": "C7. The twin is functionally identical to the steem original (same script invocation, same env flags, same mode input choices, same timeout 30, same artifact logic); differences allowed: repository+token in checkout, fetch-depth 1 vs 0, cron 17,47 vs */30, concurrency group suffix, artifact name suffix.",
+      "evidence": "Mechanical diff of the twin vs steem HEAD (3eebb83) — every difference enumerated: (1) header comments fully rewritten (the R71 documentation; the original's Task-83 header replaced); (2) cron '*/30 * * * *' → '17,47 * * * *' (+inline Hebrew comment); (3) concurrency group 'cloud-heart' → 'cloud-heart-domain-twin'; (4) checkout step: name + repository: roshpinacare-sys/steem + token: secrets.WEAVE_OPS_PAT + fetch-depth 0 → 1; (5) artifact name 'cloud-heart-report' → 'cloud-heart-report-domain-twin'. EVERYTHING ELSE IS BYTE-IDENTICAL: name, workflow_dispatch inputs (mode: same description, required false, default auto, type choice, options auto/takeover/alive), permissions contents:write, runs-on ubuntu-latest, timeout-minutes 30, Node 20 step, install command 'cd agent && npm install --omit=dev --no-audit --no-fund --loglevel=error', heartbeat run 'node agent/cloud_heartbeat.cjs' with env CLOUD_HEART='1' CLOUD_STALE_MIN='95' CLOUD_FORCE_TAKEOVER/CLOUD_ALIVE_ONLY (identical expressions), upload step (if: always(), upload-artifact@v4, path agent/cloud_heart_report.json, retention-days 14). All five differences are within the allowed list. The header's thresholds match the code (git fresh < 75 min = CLOUD_GIT_STALE_MIN default; attest gate 95 = the set CLOUD_STALE_MIN; alive = attestFresh || gitFresh). 241MB full-clone figure corroborated: the steem packfile is 247,238 KB ≈ 241.4 MB.",
+      "verdict": "true"
+    },
+    {
+      "claim": "C8. All 7 private originals are dispatch-only after the edits (no schedule key remains, workflow_dispatch preserved with its inputs, nothing else changed).",
+      "evidence": "Per-file diff vs each tree's HEAD (steem 3eebb83, saos-dex 2ffcbf9, Zip bf9d847): every file has EXACTLY ONE hunk — the schedule block (2 lines) removed + 1-4 Hebrew R71 comment lines added. workflow_dispatch preserved: cloud-heart + weave-heart + weave-anchor-lines keep their mode/mode+recover inputs verbatim; dex-beat/dex-grid/weave-ecosystem/web-publish keep their bare dispatch. python3 yaml.safe_load: all 8 touched files parse; trigger census: schedule key = 0 in all 7 originals, dispatch = yes in all; the twin parses with schedule '17,47 * * * *' + dispatch. No step/env/permission/concurrency/timeout change anywhere in the 7 originals.",
+      "verdict": "true"
+    },
+    {
+      "claim": "C9. The books: state/requests twins byte-identical between Domain agent/ and sovereign console/agent/; R32 records the operator's words verbatim; OL-14 closed with measured evidence; AGENTS.md claims (15 repos, foundry PRIVATE, foundry CI green 35161896260 at 2026-09-16T23:20:59Z, quiet agents green daily 09-17→09-20) each verified against the API.",
+      "evidence": "Twins: requests.json and state.json byte-identical (cmp) between the staged Domain files and the sovereign worktree copies. R32 textHe compared char-by-char to the operator's message — exact match; date 2026-09-21; evidence '(filled at delivery)'; status delivered-public; deliveredAt 10:44:00Z == state generatedAt. OL-14 now status closed with closedAt 2026-09-21T10:44:00Z and a measured evidence block (last green 12:04:24Z, last auto-save 11:34:46Z, attest death 09-06, twin :17/:47, ~2,180+ vs 2,000) — every re-measurable number in it verified true by this inspection (the 2,180+ figure itself is billing-page data, see F-10). AGENTS.md: 15 repos (API census: exactly 15 owned, 13 private + Console/Domain public) (verified); foundry PRIVATE (verified) (API private=true); CI last run 35161896260 success push at 2026-09-16T23:20:59Z head df621311, and CI is push/PR-only (no schedule — 'no cadence' true), zero runs since (verified); quiet agents: 5/9 green every day 09-17..09-20 (their 09-20 run fired before 12:36Z), 3/9 green 09-17..09-19 with their 09-20 slot after the death (wallet-verify 14:50:48Z, control-center-build 12:45:13Z, platform-selftest 13:44:07Z — quota-rejected), archive-keeper is dispatch-only (last run 09-16, marked 'dispatch' in the AGENTS.md list itself) — see F-5; '~8 runs/day' measured 8.9/day over the last week (verified); the weave-ecosystem receipt '(da6f6ab, 00:00:42Z 09-21)' verified: Zip commit da6f6ab9 by weave-ecosystem[bot] at 2026-09-21T00:00:42Z (verified); agent-verify '52/53, only red A34' matches the served results.json (52/53, A34 grid.json age) (verified).",
+      "verdict": "true (with F-5 blanket-statement precision nit)"
+    },
+    {
+      "claim": "C10. No secrets/tokens/WIF patterns in the staged diffs; no emojis in added lines; no anticipatory twin-is-live claims (R32 evidence is a '(filled at delivery)' placeholder; the delivery describes the twin as delivered-at-push).",
+      "evidence": "Security sweep (positive-control validated — all 6 patterns hit their synthetic strings): 0 matches for ghp_/github_pat_/gh[oaurus]_/WIF-51/PEM/hex-64 across every staged diff in all four trees AND the untracked twin file; all mentions are secret NAMES (WEAVE_OPS_PAT etc.), pre-existing public design. Glyph inventory of added lines: only U+00B7 ·, U+2014 —, and U+21D2 ⇒ (new vs the HEAD book set — a logic arrow in the family of the original's → U+2192; zero emoji ranges anywhere; Hebrew is the working language). Timestamps: latest staged timestamp 10:44:00Z — 27 min in the past at inspection (all past). Anticipatory-claim check: R32 evidence '(filled at delivery)' (verified); lastHandoff ends 'Next: measure the first twin takeover (steem chain advances again)' (verified); README bullet states measured history + design, no run claim (verified). Two mild anticipatory spots remain (F-6): lastHandoff 'cloud-heart twin live in Domain' and currentTask 'is alive again' — present tense for a staged-not-pushed machine, same class as the R70-INSPECT-2 LOW finding, softened by the pending markers in the same files.",
+      "verdict": "true (with F-6 mild-tense LOW finding)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-1",
+      "severity": "MEDIUM",
+      "description": "A69 (inspection_integrity) FAILS on the staged tree: R32 is delivered (status delivered-public) and carries NO inspection reference, and agent/inspections/INS-R71-001.json is not in the tree. The exact run.mjs logic simulated: 'R32: delivered without an inspection reference'. A67 passes (32 entries, 30 delivered, requestRef R31 present and delivered; R32's evidence is exactly 20 chars, clearing the '>= 20' evidence check with zero margin — see F-8).",
+      "requiredFix": "Install this report at agent/inspections/INS-R71-001.json AND add \"inspection\": \"agent/inspections/INS-R71-001.json\" to the R32 entry IN THE SAME COMMIT (the report alone does not fix A69 — the field is required too; R66/R68/R70 precedent)."
+    },
+    {
+      "id": "F-2",
+      "severity": "MEDIUM",
+      "description": "origin/main moved past the staging base during the staging window: Domain 930182b → bc1c5c4 via 3 machine measurement commits (money-watch 10:42:29Z, agents-watch 10:43:46Z, moment-watch 10:47:34Z) touching only agents/gh-snapshot.json, agents/registry.json, dex/money.json, moment/history.json, moment/moment.json — zero overlap with the 4 staged files. A push from the current index is non-fast-forward.",
+      "requiredFix": "Before pushing: git fetch origin && git pull --rebase (expected clean), then re-verify the 4 staged files intact, the twin byte-identity with the sovereign console/agent copies, and that F-1's report + R32 field survived the rebase."
+    },
+    {
+      "id": "F-3",
+      "severity": "LOW",
+      "description": "TRUTH-AUDIT §15 boundary precision: 'the last green private run in the system — steem/cloud-heart 12:04:24Z … the first rejected — 12:38:22Z' is scoped to cloud-heart, not to the system. Measured: the system's last green private runs were Zip/web-publish 12:35:30Z (schedule), 12:15:31Z, weave-heart 12:09:47Z, weave-anchor-lines 12:10:19Z (dispatch); the first system-wide rejections were dex-beat 12:35:55Z and weave-anchor-lines 12:36:09Z. The twin header ('exhausted at 12:36Z') and the books' own OL-14 record (12:35:55Z/12:36:09Z, written in R66) carry the accurate system boundary — the TRUTH-AUDIT sentence overstates the scoping. The substantive claim (structural quota death, 100% instant failure since) is unaffected.",
+      "requiredFix": "Optional one-line precision fix in a later delivery (TRUTH-AUDIT §15 item 1): either scope the sentence to cloud-heart or cite web-publish 12:35:30Z as the system's last green. No machine checks pin it."
+    },
+    {
+      "id": "F-4",
+      "severity": "LOW",
+      "description": "'Ran green 14 consecutive days, 2026-09-06 to 2026-09-20' (twin header, README bullet, lastHandoff): measured — the steem repo was created 2026-09-07T11:47:10Z (restore snapshot), the first cloud-heart run succeeded 2026-09-07T12:03:59Z, the last at 2026-09-20T12:03:37Z — exactly 13.0 days of runs (14 calendar dates 09-07..09-20; 623 successes ≈ 13 × 48 runs/day, corroborating). 09-06 is the on-chain attest death, not the machine's first day. The 14-calendar-day count is defensible; the 09-06 start date is off by one day.",
+      "requiredFix": "None blocking. If touched later: 'green since its first run 2026-09-07 (13 days, 623 successes)' — the safety argument (a long keyless green history) holds either way."
+    },
+    {
+      "id": "F-5",
+      "severity": "LOW",
+      "description": "AGENTS.md blanket claim 'all nine quiet archive agents green in measurement (successful daily run 09-17 to 09-20)': archive-keeper (Project-files) is dispatch-only with its last run 2026-09-16T21:11:56Z — it has no daily run at all (the list itself marks it 'dispatch', so the blanket sentence over-covers it); and for 3 of the 8 scheduled agents (wallet-verify, control-center-build, platform-selftest) the 09-20 daily slot fired AFTER the quota death (12:45Z/13:44Z/14:50Z) and was rejected — their last green daily run is 09-19. The '~8 runs/day' figure is accurate (8 scheduled daily agents; measured 8.9 runs/day over the last week) and the 'fits comfortably in the returned quota' conclusion is measured true (≈10 min/day billed).",
+      "requiredFix": "Optional wording fix: 'the 8 scheduled archive agents green daily through 09-19 (their 09-20 slots fired after the quota death); archive-keeper is dispatch'. No machine checks pin it."
+    },
+    {
+      "id": "F-6",
+      "severity": "LOW",
+      "description": "Mild anticipatory tense pre-push (the R70-INSPECT-2 precedent class): state lastHandoff 'cloud-heart twin live in Domain' and currentTask 'is alive again without waiting for quota' — at inspection time the twin is staged, not pushed; it becomes live with the very commit that publishes these books, and the first RUN is still unmeasured. Mitigations in the same files: lastHandoff ends 'Next: measure the first twin takeover (steem chain advances again)'; R32's evidence is the honest '(filled at delivery)' placeholder.",
+      "requiredFix": "None blocking (the pending markers dominate). If R32's evidence is filled post-push, phrase the first-run result as measured."
+    },
+    {
+      "id": "F-7",
+      "severity": "LOW",
+      "description": "The bridgehead's requestRef still reads R31 while the book's newest entry is R32 (A67/A69 pass either way — R31 exists, is delivered, and is inspected; the R70-INSPECT-3 'state lag' class). Once F-1 adds the inspection field to R32, updating requestRef to R32 keeps the bridgehead pointing at the book's head and still passes A69's bridgehead check.",
+      "requiredFix": "Optional in the same commit as F-1 (or the post-push evidence pass): set requestRef R32."
+    },
+    {
+      "id": "F-8",
+      "severity": "INFO",
+      "description": "R32's placeholder evidence '(filled at delivery)' is EXACTLY 20 characters — A67's delivered-evidence check rejects < 20, so this passes with zero margin. One character shorter ('(filled at push)') would have reddened A67 on the next agent-verify run.",
+      "requiredFix": "None (recorded so the post-push fill keeps the field well above the threshold)."
+    },
+    {
+      "id": "F-9",
+      "severity": "INFO",
+      "description": "Foundry-truth precision: '99 historical failures and then the last run green (35161896260)' is accurate for the newest-100 window (measured: the newest 100 runs = 99 failures + 1 success, the success being the newest run of all 201); the full census is 201 runs / 133 failures / 68 successes with a pre-fix consecutive-failure streak of 116. The claim repairs the old '0/100' stain correctly (the stained window indeed held 99 failures, not 100), but the word 'historical' invites an all-time reading that would be false.",
+      "requiredFix": "None (the scoped reading is the natural one given the '0/100' context being repaired)."
+    },
+    {
+      "id": "F-10",
+      "severity": "INFO",
+      "description": "The '~2,180+ Actions-minutes per month against the 2,000 Free quota' figure is billing-page data (operator-only visibility) and is not independently derivable from public APIs. My independent reconstruction CONFIRMS the structural-exhaustion conclusion: on 2026-09-19, the last full pre-death day, the scheduled private fleet consumed 138.7 min of runner time (242 min with GitHub's per-job minute rounding) across 169 runs — a rate that exhausts a 2,000-minute month in 8-15 days; and the machines were structurally multi-run-per-hour (cloud-heart 48/day, web-publish 72/day, weave-heart 24/day). Post-consolidation private consumption = the quiet agents only (measured ≈10 min/day billed ≈ 300/month — comfortable).",
+      "requiredFix": "None (the direction, structure and post-consolidation arithmetic are all measured true; the exact pre-death figure remains operator-sourced, consistent with the books' own honest labeling of billing-page inferences in OL-14)."
+    },
+    {
+      "id": "F-11",
+      "severity": "INFO",
+      "description": "New glyph in the twin header: ⇒ (U+21D2 RIGHTWARDS DOUBLE ARROW) — not present in any HEAD book file, but a logic/math arrow in the same family as the original workflow's committed → (U+2192), not an emoji. Zero emoji ranges anywhere in any added line of any tree (the fleet glyph ban holds).",
+      "requiredFix": "None."
+    },
+    {
+      "id": "F-12",
+      "severity": "INFO",
+      "description": "The public/private failure signatures are cleanly distinct and both honest: private quota-death runs die in 2-9s with ZERO steps and an empty logs-zip (BlobNotFound), while the Domain public honest-red machines (weave-heart 10:22:33Z, weave-anchor-lines 10:38:33Z, dex-grid, key-verify, truth-gate 1-RED) run 20-25s, execute their steps, and fail at their honesty gates (seal-gated refusals, the pre-documented operator-waiting reds of TRUTH-AUDIT §15 item 6). 'The public ones green in the same minutes' verified: agents-watch 10:42Z, moment-watch 10:47Z, console-publish 10:49Z, web-publish 10:50Z, dex-watch/money-watch/dex-mirror 10:53Z all green while steem's 10:35:29Z run died in 4s.",
+      "requiredFix": "None."
+    },
+    {
+      "id": "F-13",
+      "severity": "INFO",
+      "description": "No assertion or gate pins anything this delivery edits: A67/A69 are the only book checks (simulated: A67 PASS, A69 fails only on F-1), A13 requires requests.length >= 12 (32 now), no assertion references AGENTS.md / README / TRUTH-AUDIT / a requests-count constant, and AGENTS.md is not publicly served anywhere (the Zip repo is private; the public registry is Console agents/registry.json — which already counts 15 repos in its latest commit). The served agent-verify stands at 52/53 with the single pre-documented red A34 (grid.json age) — unchanged by this delivery.",
+      "requiredFix": "None."
+    }
+  ],
+  "verdict": "APPROVE-WITH-CONDITIONS",
+  "pushConditions": [
+    "PC-1 (blocking): Install this report at /home/z/r70/domain/agent/inspections/INS-R71-001.json AND add \"inspection\": \"agent/inspections/INS-R71-001.json\" to the R32 entry — both into the SAME commit as the Domain delivery (A69 measured failing on the staged tree without the field; the report alone is not enough — F-1).",
+    "PC-2 (blocking, mechanical): git fetch origin && git pull --rebase in /home/z/r70/domain (origin/main moved 930182b→bc1c5c4 via 3 machine measurement commits, zero file overlap — rebase expected clean); after rebase re-verify: the twin file intact, the R32 field + report present, the state/requests twins still byte-identical to the sovereign console/agent copies (F-2).",
+    "PC-3 (order): Push Domain first (twin + books + report in one commit), then the sovereign Zip commit (the 8 staged files + this report's mirror at console/agent/inspections/INS-R71-001.json), then the steem and saos-dex dispatch-only commits (their order is immaterial — the originals are already dormant; the twin becomes THE machine with the Domain push).",
+    "PC-4 (post-push, required follow-up — the delivery itself marks it pending): measure the FIRST twin run (the next :17/:47 slot or an immediate dispatch — the verdict will be TAKEOVER: the attest is dead since 09-06 and the git signal is ~24h stale; expected: agent-once cycle, one saosnet beat, honest chain-attest DRY failure, gitkeeper auto-save pushed to steem by cloud-heart[bot], then the NEXT run stands down SANDBOX-ALIVE) — then fill R32's '(filled at delivery)' evidence with the measured receipts, refresh state.requestRef to R32, and append the worklog record.",
+    "PC-5 (fast-follow, non-blocking): the wording precision items F-3 (TRUTH-AUDIT boundary scoping), F-5 (archive-agent blanket sentence), F-7 (requestRef R32 if not done in PC-1's commit) — none is machine-checked; fold them into the next book-touching delivery."
+  ],
+  "claimsSummary": "10/10 operator claims measured TRUE — every re-measurable number survived independent re-measurement from zero (the quota-death census over all 13 private repos and 165 post-death runs, the downloaded last-success artifact, my own keyless chain read, the 30-commit bot census, the mechanical twin-vs-original diff with every difference inside the allowed list, all 7 single-hunk dispatch-only edits, byte-identical book twins, verbatim R32, the vault/foundry/repos/quiet-agent API census, zero secret patterns with validated controls, zero emojis, all timestamps past). Three precision findings (F-3 boundary scoping, F-4 the 09-06 vs 09-07 start date, F-5 the archive-agent blanket) and one operator-sourced figure (F-10, the 2,180+ minutes — its structural conclusion independently re-derived and confirmed) do not change any verdict. The twin is honestly documented as pending-first-run (R32 placeholder + 'Next: measure the first twin takeover')."
+}

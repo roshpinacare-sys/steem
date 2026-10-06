@@ -1,0 +1,112 @@
+{
+ "_meta": {
+  "schema": "r208r-accumulator-integrity-v1",
+  "round": "R208R",
+  "trace": "1a10dda614a62251",
+  "at": "2026-10-05T21:48:28.006Z",
+  "law": "total_realized = Σ אירועים-קנוניים-ייחודיים — לא «סף-קודם + תצוגה-נוכחית» (§XI)"
+ },
+ "before_R208R": {
+  "finding": "state.realizedPnlUsd הצטבר += fill.pnlUsd ללא canonical_event_id; fill.seq היה מיקום-במערך-קטום (≤200); האינווריאנט Σ(ledger)==accumulator לא-נאכף בשום-מקום — כפילות/ריטריי/שחזור-חלקי היו משקרים-את-הרווח-הממומש",
+  "epistemic": "OBSERVED (קריאת-HEAD: mini-services/dex-grid/index.ts:579)"
+ },
+ "repair": {
+  "module": "mini-services/dex-grid/accumulator.ts — מימוש-יחיד (הדיבון והמעבדה מייבאים את-אותו-קוד)",
+  "canonicalEventId": "sha256(fillSeq מונוטוני | at | pair | side | amountIn | amountOut)",
+  "derivationOrder": "ספר-קודם → גזירה-מהספר → persist; בעלייה: recompute מהספר (ריפוי-עצמי מקריסה-בין-שלבים)",
+  "liveState": "dex-grid ב-dry מאז-עלייתו: realized=0, fills=0 — התיקון נכנס-לפני-המילוי-החי-הראשון",
+  "epistemic": "OBSERVED"
+ },
+ "attacks": [
+  {
+   "attack": "X1|baseline-sum-unique",
+   "injected": "3-מילויים",
+   "pass": true,
+   "detail": "total=0.023 unique=3 (צפי 0.023/3)",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X2|restart-idempotent",
+   "injected": "restart",
+   "pass": true,
+   "detail": "total 0.023→0.023",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X3|replay-dedup",
+   "injected": "אותו-אירוע ×2 (ריפליי)",
+   "pass": true,
+   "detail": "total 0.023→0.028 (תוספת 0.005 פעם-אחת בלבד), unique 3→4",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X4|legacy-content-id-dedup",
+   "injected": "מילוי-ישן-בלי-id ×2",
+   "pass": true,
+   "detail": "total 0.028→0.035 (תוספת 0.007 פעם-אחת)",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X5|torn-write-honest",
+   "injected": "שורה-קרועה",
+   "pass": true,
+   "detail": "torn=1 · total לא-השתנה (0.035→0.035) — אין-ספירת-9999",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X6|delayed-event-counted-once",
+   "injected": "אירוע-מאוחר-עם-זמן-ישן",
+   "pass": true,
+   "detail": "total 0.035→0.038",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X7|clock-rollback-safe",
+   "injected": "גלגול-שעון",
+   "pass": true,
+   "detail": "total 0.038→0.041 · ids ייחודיים",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X8|concurrent-recompute",
+   "injected": "הרצה-מקבילה",
+   "pass": true,
+   "detail": "total 0.041==0.041 · unique 8==8",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X9|invariant-total==Σ-unique",
+   "injected": "אינווריאנט-ראשי",
+   "pass": true,
+   "detail": "module=0.041 independent-Σ=0.041 (8 ייחודיים)",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X10|empty-and-missing-honest-zero",
+   "injected": "ספר-ריק/חסר",
+   "pass": true,
+   "detail": "empty=0 missing=0 — אפס-כנה, אין-המצאה",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  },
+  {
+   "attack": "X11|daemon-imports-same-module",
+   "injected": "ביקורת-מקור",
+   "pass": true,
+   "detail": "dex-grid/index.ts מייבא accumulator.ts — מימוש-יחיד",
+   "expectation": "conservation",
+   "epistemic": "OBSERVED"
+  }
+ ],
+ "attackVerdict": "11/11 — שימור-מוכח: ריטריי/ריפליי/כפילות/אירוע-מאוחר/גלגול-שעון/שורה-קרועה/הרצות-מקבילות/הפעלה-מחדש — אפס-כפילות, אפס-שקר, אינווריאנט ראשי מאומת בחישוב-בלתי-תלוי",
+ "impact": "כל-ראיה-חיובית-עתידית על «רווח-ממומש» בגבול-זה כשירה-מעתה להיות מנופחת-לפי-אירועים — כפילות אינה מייצרת-עוד-רווח"
+}
