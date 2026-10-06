@@ -25,7 +25,7 @@ import { tick as gridTick, fold, activeGrids } from "./grid.mjs";
 import { runIntel } from "./intel.mjs";
 import { executeOps, executeAs, armedConf, execPaused, masterAccount, loadCredential, custodyOf } from "./signer.mjs";
 import { writePrediction, evaluateAndJournal, updateBelief, triggerWatch, resolveClaimRole, journalClaimRefusal, claimChainTruth, reconcileOrphans } from "./adaptation.mjs";
-import { deploySoldiers, runSoldierGrids, soldiersState } from "./soldiers.mjs";
+import { deploySoldiers, runSoldierGrids, soldiersState, verifySoldierCustody } from "./soldiers.mjs";
 import { postDailyReport } from "./promo.mjs";
 import { runCurator } from "./curator.mjs";
 import { runLearning } from "./learning.mjs";
@@ -453,7 +453,8 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   /* 7 · soldiers: T-80 FROZEN-BY-DEFAULT (operator stop-order 2026-10-04 —
    * "עדיין מאצילה לחיילים, שלחה להם כסף, עושה בהם שימוש בגריד בלי מפתח").
    * Laws now enforced structurally:
-   *   - config gate: conf.soldiers.enabled must be TRUE (it is now false)
+   *   - config gate: conf.soldiers.enabled must be TRUE (T-90 round-2 order:
+   *     authorized — deploy + fund via explicit allowlist only)
    *   - custody gate: a soldier WITHOUT a chain-verified credential gets
    *     ZERO network reads, ZERO ops, ZERO funds — instant typed freeze
    *   - the top-up rail can only ever fire for custody-VERIFIED soldiers,
@@ -464,27 +465,53 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     if (!conf.armed || execPaused()) return { verdict: "DISARMED-OR-PAUSED" };
     if (!conf.soldiers?.enabled) return { verdict: "DISABLED-T80-OPERATOR-STOP" };
     loadCredential(); // typed CREDENTIAL-MISSING here — before ANY network read
+    /* T-90 SELF-CUSTODY SWEEP (before the partition): engine restarts empty
+     * the key memory; stored soldier credentials are re-proven against the
+     * live chain authorities here — fail-closed, idempotent, journaled. */
+    const sweep = await verifySoldierCustody();
+    if (sweep.out?.length) appendLine(path.join(STATE, "events.jsonl"), { type: "soldiers.custody-sweep", at: now, sweep: sweep.out });
     const st = soldiersState();
     // T-80 CUSTODY LEDGER: partition soldiers by proven custody BEFORE any read
     const frozen = (st.deployed ? st.accounts : []).filter((r) => custodyOf(r.name) !== "verified");
-    const live = (st.deployed ? st.accounts : []).filter((r) => custodyOf(r.name) === "verified");
     if (frozen.length) {
       appendLine(path.join(STATE, "events.jsonl"), { type: "soldiers.custody-frozen", at: now, accounts: frozen.map((r) => r.name), verdict: "NO-CUSTODY-FROZEN", law: "T-80: keyless accounts are never funded, never grid-run, never signed for" });
     }
-    if (!live.length) return { verdict: "NO-CUSTODY-FROZEN", frozen: frozen.map((r) => r.name), topups: [], grids: [] };
+    /* T-90 DEPLOY PATH UNJAMMED: the fresh-era deploy was structurally dead —
+     * the custody early-return fired on a never-deployed era (live=[][]) BEFORE
+     * the deploy call ever ran. Now the deploy runs first and stays double-gated
+     * (operator.allowSoldierDeploy + explicit transfer allowlist); the deploy tx
+     * self-verifies custody before any grid may fire, so the freeze law holds. */
     let deploy = null, topups = [];
     if (!st.deployed) deploy = await deploySoldiers();
+    const stNow = deploy?.ok ? soldiersState() : st;
+    const live = (stNow.deployed ? stNow.accounts : []).filter((r) => custodyOf(r.name) === "verified");
+    if (!live.length) {
+      return {
+        verdict: deploy && !deploy.ok ? `DEPLOY-${deploy.verdict}` : "NO-CUSTODY-FROZEN",
+        deploy: deploy ? { verdict: deploy.verdict, error: deploy.error ?? null } : null,
+        frozen: frozen.map((r) => r.name), topups: [], grids: [],
+      };
+    }
     // top-up rail: custody-VERIFIED soldiers only — the measured leak (auto
     // top-ups into keyless accounts while their STEEM sat locked in orders)
     // is structurally dead: no-custody soldiers never reach this loop.
     const acc = await accountState(ACCOUNT);
     const masterLiquid = Math.max(0, acc.ok ? acc.steem ?? 0 : 0);
+    const masterSbd = Math.max(0, acc.ok ? acc.sbd ?? 0 : 0);
     for (const rec of live) {
       if (topups.length >= 1) break; // max 1 top-up/cycle (doctrine cap)
       const sAcc = await accountState(rec.name);
+      /* T-90 BID-SIDE SEED: a verified soldier holding 0 SBD can never run
+       * its bid tranche — while the master holds ≥3 SBD of fill proceeds,
+       * 1 SBD seeds the soldier's buy side. Same allowlist + custody + cap. */
+      if ((sAcc.sbd ?? 0) < 0.2 && masterSbd >= 3) {
+        const res = await executeAs(ACCOUNT, [["transfer", { from: ACCOUNT, to: rec.name, amount: "1.000 SBD", memo: "grid soldier bid-side funding" }]], { tag: "soldier-topup-sbd" });
+        topups.push({ name: rec.name, kind: "sbd", verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null });
+        continue;
+      }
       if ((sAcc.steem ?? 0) < 1 && masterLiquid - topups.length * 12 > 40) {
         const res = await executeAs(ACCOUNT, [["transfer", { from: ACCOUNT, to: rec.name, amount: "10.000 STEEM", memo: "grid soldier top-up" }]], { tag: "soldier-topup" });
-        topups.push({ name: rec.name, verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null });
+        topups.push({ name: rec.name, kind: "steem", verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null });
       }
     }
     const parity = obs.ok ? obs.parity.parity : 0;
