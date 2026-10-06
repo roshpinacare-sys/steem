@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-06T01:29:05.765Z",
-  "lastFullScanAt": "2026-10-06T01:19:05.764Z",
+  "at": "2026-10-06T01:39:05.766Z",
+  "lastFullScanAt": "2026-10-06T01:39:05.766Z",
   "verdict": "OPTIONS-FOUND",
   "tagBoard": [
     {
       "tag": "hive-129948",
-      "payoutsSbd": 6971.063
+      "payoutsSbd": 6971.036
     },
     {
       "tag": "kr",
-      "payoutsSbd": 2946.363
+      "payoutsSbd": 2946.501
     },
     {
       "tag": "hive-150122",
@@ -17,15 +17,15 @@
     },
     {
       "tag": "hive-166405",
-      "payoutsSbd": 1714.167
+      "payoutsSbd": 1714.357
     },
     {
       "tag": "hive-196917",
-      "payoutsSbd": 1387.276
+      "payoutsSbd": 1387.557
     },
     {
       "tag": "steem",
-      "payoutsSbd": 1165.252
+      "payoutsSbd": 1164.923
     },
     {
       "tag": "hive-180932",
@@ -33,7 +33,7 @@
     },
     {
       "tag": "hive-144064",
-      "payoutsSbd": 972.886
+      "payoutsSbd": 973.343
     },
     {
       "tag": "life",
@@ -41,21 +41,21 @@
     },
     {
       "tag": "hive-183397",
-      "payoutsSbd": 869.253
+      "payoutsSbd": 873.521
     },
     {
       "tag": "hive-183959",
-      "payoutsSbd": 830.859
+      "payoutsSbd": 830.849
     },
     {
       "tag": "hive-188619",
-      "payoutsSbd": 826.874
+      "payoutsSbd": 830.066
     }
   ],
   "curationEst": {
-    "dailyPoolSteem": 930309.016,
-    "voteVestsShare": 0.000009297474761081801,
-    "estimatedSteemPerDay": 8.6495,
+    "dailyPoolSteem": 930834.545,
+    "voteVestsShare": 0.000009303050263654864,
+    "estimatedSteemPerDay": 8.6596,
     "note": "linear approx over reward-fund window — ESTIMATED class, never claimed as measured"
   },
   "vpEff": 0,
@@ -64,7 +64,7 @@
       "id": "book-cold",
       "kind": "fills-velocity",
       "potentialClass": "measured",
-      "evidence": "last fill 33.2h ago (15 fills in measured window)",
+      "evidence": "last fill 33.5h ago (15 fills in measured window)",
       "potential": "cold book → review placement breadth, not price floor",
       "gate": "price law untouched — breadth within per-cycle caps only",
       "effort": "monitor"
@@ -73,7 +73,7 @@
       "id": "spread-normal",
       "kind": "book-spread",
       "potentialClass": "measured",
-      "evidence": "spread 24bps (bestAsk 0.1004625905068383 / bestBid 0.100217)",
+      "evidence": "spread 62bps (bestAsk 0.10083753025960655 / bestBid 0.100217)",
       "potential": "spread inside normal band — hold shape",
       "gate": "VF1 floor law: never sell below external value",
       "effort": "dragK already intel-fed"
@@ -82,7 +82,7 @@
       "id": "tags-realloc",
       "kind": "curation-tags",
       "potentialClass": "measured",
-      "evidence": "top trending tag \"hive-129948\" carries 6971.063 SBD total payouts (get_trending_tags)",
+      "evidence": "top trending tag \"hive-129948\" carries 6971.036 SBD total payouts (get_trending_tags)",
       "potential": "better vote placement inside the SAME 10-vote/day quota",
       "gate": "learning may add ≤1 tag, total ≤8 — daily caps & VP floor untouched",
       "effort": "already wired via learning tunings"
@@ -91,8 +91,8 @@
       "id": "curation-share",
       "kind": "curation-yield",
       "potentialClass": "estimated",
-      "evidence": "reward-fund pool 930309.016 STEEM/window · our vests share 0.0009% → ~8.6495 STEEM/day",
-      "potential": 8.6495,
+      "evidence": "reward-fund pool 930834.545 STEEM/window · our vests share 0.0009% → ~8.6596 STEEM/day",
+      "potential": 8.6596,
       "gate": "measured truth only lands via curation_reward ops (measureAll) — estimator never claims payout",
       "effort": "rail live since T-13"
     },
@@ -107,6 +107,5 @@
     }
   ],
   "learningConsumer": [],
-  "honesty": "ranked options, zero execution · classes: measured>estimated>potential · gates own the decisions",
-  "freshCached": true
+  "honesty": "ranked options, zero execution · classes: measured>estimated>potential · gates own the decisions"
 }
