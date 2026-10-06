@@ -1382,3 +1382,22 @@ Work Log:
 Stage Summary:
 - חי ומאומת בשרשרת: 11/11 חשבונות ביצעו fleet-comment היום (txids ב-exec-log; נבדק on-chain: תגובת cashmachine על פוסט macrame); 20 fleet-votes; 15 replies; פיזור אמיתי על-פני headcorner/wic/macrame/woq
 - סבב 1 הושלם. נותרו: סבב 2 (מסילת-BID דו-כיוונית + גיוס-חיילים ממומן), סבב 3 (דוקטרינת-הצבה-מחדש אחרי-מימוש)
+
+---
+Task ID: R230 (T-90)
+Agent: Z.ai Code (main)
+Task: סבב 2 — גריד דו-כיווני: צי-חיילים חדש (hcs1-3) עם מפתחות-פעילים, תיקון-סתימת-ה-deploy, מימון-מסתגל, זריעת-צד-קנייה
+
+Work Log:
+- נחשפה אמת מדודה: hcsoldier1-3 (גויסו 29.09, 10 STEEM כ״א) — קובץ-הסודות 0600 אבד באיפוס-הסנדבוקס; מפתחות בלתי-ניתנים-לשחזור → T-80 מקפיא אותם לנצח; 30 STEEM נרשמו כהפסד-כנה ב-state reset (legacy נשמר)
+- soldiers.mjs: verifySoldierCustody() — sweep אימות-עצמי מול-השרשרת (מכסה deploy ראשון + restarts עם מטמון-ריק); deploySoldiers מאמת חזקה מיד-אחרי-הגיוס (5s המתנה לבלוק); מימון-מסתגל שמחשב דמי-יצירה (3 STEEM/חשבון) — נכשל TYPED במקום שידורים-כושלים
+- daily.mjs soldiers step: ה-deploy היה חסום מבנית (early-return על live=[] ירה לפני ה-deploy בעידן-טרי) — סודר; sweep רץ לפני-חלוקת-החזקה; מסילת top-up חדשה: זריעת 1 SBD לצד-הקנייה של חייל (כשהמאסטר מחזיק ≥3 SBD, תקרה 1/מחזור)
+- exec-armed.json (הזמנת-קבע של המפעיל, סבב 2): operator.allowSoldierDeploy=true, soldiers.enabled=true, prefix hcs, transferAllowlist=["hcs1","hcs2","hcs3"] (חוק-המימון דורש allowlist מפורש — בלי זה ה-think-gate דוחה כל transfer)
+- אמת-מדודה נוספת: הכותב-השני (weave) חנה 905 STEEM בפקודות-אסק על החשבון-המשותף ב-20:27 (orderids 2026100601-04) — הנזילות ירדה ל-25.7; המימון המסתגל התאים את עצמו: 3.909 STEEM/חייל
+- החלפת-קוד לפי-החוק ×2 (pid 17794 → 18800-ish); selftest 311/311 PASS בכל שלב
+
+Stage Summary:
+- חי בשרשרת: hcs1/hcs2/hcs3 — נוצרו, מומנו, חזקה VERIFIED ×3, 5 פקודות-אסק כ״א (txids ebd540c2/6daec801/ee2b735f); הצי 15 סוכנים — FLEET-OK 12/3/0/0, hcs1-3 ALIVE
+- המאסטר: מסילת-BID כבר-בקוד (peg step: bidBudgetSbd → planLadder) — מתחממת אוטומטית כש-SBD > 0.5; זריעת-החיילים תיבער עם תוצרי-המילוי-הראשונים (1 SBD כשהמאסטר ≥3 SBD)
+- מצב דו-כיווני כנה: 4 סוחרים עם אסקים חיים (מאסטר + 3 חיילים); BIDs מתחילים במילוי-האסק-הראשון
+- נותר: סבב 3 — דוקטרינת-הצבה-מחדש (SBD ממומש → ספר-קנייה / power-up / עתודה)
