@@ -77,15 +77,24 @@ export async function deploySoldiers() {
   const secs = [];
   for (let i = 1; i <= conf.count; i++) secs.push(newSoldierSecret(soldierName(i)));
 
-  // resource-aware funding: fund what the master ACTUALLY has liquid (STEEM
-  // always; SBD only when liquid covers it — soldiers bootstrap their bid
-  // side from ask fills instead of failing the whole deploy)
+  // resource-aware funding: fund what the master ACTUALLY has liquid — the
+  // creation fee (3 STEEM/account) is part of the same atomic tx, and the
+  // shared book may be heavily committed by the second writer (measured
+  // 2026-10-06: 905 STEEM parked in asks left only 25.7 liquid). The deploy
+  // scales funding down to what the body can afford; a too-thin liquid fails
+  // TYPED and retries next cycle instead of burning failed broadcasts.
   const acc = await accountState(master);
   const liquidSteem = Math.max(0, acc.ok ? acc.steem ?? 0 : 0);
   const liquidSbd = Math.max(0, acc.ok ? acc.sbd ?? 0 : 0);
-  const steemEach = Math.min(conf.steemEach, Math.max(0, liquidSteem - 5)); // keep 5 STEEM master float
+  const feeEach = 3.0; // account_create paid fee (RC-claim path measured RC-short)
+  const floatReserve = 5; // master float, always kept
+  const affordable = Math.floor(((liquidSteem - floatReserve) / conf.count - feeEach) * 1000) / 1000;
+  const steemEach = Math.min(conf.steemEach, Math.max(0, affordable));
   const sbdEach = liquidSbd >= conf.count * conf.sbdEach + 0.5 ? conf.sbdEach : 0;
-  if (steemEach < 1) return { ok: false, verdict: "INSUFFICIENT-LIQUID", steemEach, sbdEach };
+  const totalNeed = Math.round(conf.count * (feeEach + steemEach) * 1000) / 1000;
+  if (steemEach < 1 || totalNeed > Math.round((liquidSteem - floatReserve) * 1000) / 1000) {
+    return { ok: false, verdict: "INSUFFICIENT-LIQUID", liquidSteem, needed: totalNeed, note: "retries next cycle — the shared book's liquid must clear first" };
+  }
 
   // persist credentials BEFORE broadcast (if broadcast lands but we crash,
   // keys must exist on our side — write-once, 0600)
