@@ -1,31 +1,32 @@
 {
-  "startedAt": "2026-10-06T04:59:05.792Z",
+  "startedAt": "2026-10-06T05:09:05.831Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 1940,
+      "ms": 2503,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.06256,
-        "sbdUsd": 0.58573,
-        "parity": 0.106806890546839,
-        "source": "coingecko"
+        "steemUsd": 0.06247,
+        "sbdUsd": 0.6001043872583985,
+        "parity": 0.10409855572860706,
+        "source": "internal-feed-fallback+derived-sbd",
+        "lowConfidence": true
       },
       "feed": 0.10409855572860706,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 260
+        "bps": 0
       },
-      "steemUsd": 0.06256,
-      "sbdUsd": 0.58573,
+      "steemUsd": 0.06247,
+      "sbdUsd": 0.6001043872583985,
       "inventory": {
-        "steem": 283.365,
+        "steem": 220.966,
         "sbd": 0.015,
-        "spOwn": 899.6280969482872,
-        "rcPct": 63.7
+        "spOwn": 899.6285196767452,
+        "rcPct": 63.1
       },
       "ordersOk": true,
       "orders": [
@@ -166,6 +167,38 @@
           "created": "2026-10-06T04:49:18"
         },
         {
+          "orderid": 1791262751,
+          "side": "ask",
+          "base": "14.993 STEEM",
+          "quote": "1.605 SBD",
+          "unit": 0.10705,
+          "created": "2026-10-06T04:59:15"
+        },
+        {
+          "orderid": 1791262752,
+          "side": "ask",
+          "base": "14.993 STEEM",
+          "quote": "1.606 SBD",
+          "unit": 0.107117,
+          "created": "2026-10-06T04:59:15"
+        },
+        {
+          "orderid": 1791262753,
+          "side": "ask",
+          "base": "14.993 STEEM",
+          "quote": "1.608 SBD",
+          "unit": 0.10725,
+          "created": "2026-10-06T04:59:15"
+        },
+        {
+          "orderid": 1791262754,
+          "side": "ask",
+          "base": "12.699 STEEM",
+          "quote": "1.364 SBD",
+          "unit": 0.10741,
+          "created": "2026-10-06T04:59:15"
+        },
+        {
           "orderid": 2026100501,
           "side": "ask",
           "base": "1.883 STEEM",
@@ -206,12 +239,28 @@
           "created": "2026-10-05T22:29:06"
         },
         {
-          "orderid": 2100001466,
+          "orderid": 2100001510,
           "side": "ask",
-          "base": "3.235 STEEM",
-          "quote": "0.337 SBD",
-          "unit": 0.104173,
-          "created": "2026-10-06T04:58:57"
+          "base": "2.652 STEEM",
+          "quote": "0.277 SBD",
+          "unit": 0.104449,
+          "created": "2026-10-06T05:08:39"
+        },
+        {
+          "orderid": 2100001511,
+          "side": "ask",
+          "base": "2.652 STEEM",
+          "quote": "0.278 SBD",
+          "unit": 0.104827,
+          "created": "2026-10-06T05:09:03"
+        },
+        {
+          "orderid": 2100001512,
+          "side": "ask",
+          "base": "2.652 STEEM",
+          "quote": "0.279 SBD",
+          "unit": 0.105204,
+          "created": "2026-10-06T05:09:03"
         }
       ],
       "fills": 0,
@@ -246,16 +295,15 @@
         "node": "https://steemapi.boylikegirl.club",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.106806890546839 (coingecko) · fills 0 · fuel 0$"
+      "summary": "parity 0.10409855572860706 (internal-feed-fallback+derived-sbd) · fills 0 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1379,
-      "verdict": "DECISIONS:5",
+      "ms": 2486,
+      "verdict": "DECISIONS:4",
       "decisions": [
         "book-depth:hold-shape",
-        "parity-drift:monitor",
         "soldiers:grids-live",
         "rc-health:healthy",
         "curation:curator-armed"
@@ -270,38 +318,38 @@
     "tick": {
       "name": "tick",
       "ok": true,
-      "ms": 0,
-      "runCount": 242,
+      "ms": 1,
+      "runCount": 243,
       "simFills": 21,
       "simFeesMu": 10500,
-      "events": 4
+      "events": 3
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 761,
+      "ms": 2125,
       "verdict": "OFFER-READY",
-      "asks": 4,
+      "asks": 0,
       "bids": 0,
       "flowAsks": 4,
       "flowBids": 0,
-      "staleCount": 4,
-      "skew": 0.299703,
+      "staleCount": 0,
+      "skew": 0.299609,
       "book": {
         "bestAsk": 0.1037241780622636,
         "bestBid": 0.1003646193499717,
-        "askDepthSteem": 495.937,
-        "bidDepthSbd": 2920.405,
-        "at": "2026-10-06T04:59:05.792Z"
+        "askDepthSteem": 513.867,
+        "bidDepthSbd": 2919.986,
+        "at": "2026-10-06T05:09:05.831Z"
       },
       "market": {
         "tradesPerDay": 66,
-        "spreadBps": 366.01
+        "spreadBps": 334.74
       },
       "liquidity": {
-        "deployedAsks": 280.855,
+        "deployedAsks": 343.254,
         "deployedBids": 0,
-        "askBudget": 57.677,
+        "askBudget": 0,
         "bidBudget": 0,
         "deployCap": 0.6
       }
@@ -309,18 +357,18 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 7073,
-      "marketSbdUsd": 0.58573,
-      "impliedSbdUsd": 0.600969,
+      "edgeBps": 6664,
+      "marketSbdUsd": 0.600104,
+      "impliedSbdUsd": 0.600104,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 677,
+      "ms": 787,
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
@@ -331,44 +379,28 @@
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 7139,
-      "verdict": "BROADCAST",
-      "txid": "d84557189d45111cb53db0d599be43728c79de89",
-      "ops": 4,
-      "opNames": [
-        "limit_order_create",
-        "limit_order_create",
-        "limit_order_create",
-        "limit_order_create"
-      ],
-      "node": "https://steemapi.boylikegirl.club",
-      "error": null,
-      "promo": {
-        "verdict": "ALREADY-POSTED",
-        "permlink": "saos-transparency-20261006"
-      },
+      "ms": 1711,
+      "verdict": "NO-OPS",
+      "ops": 0,
       "opsToday": 85,
-      "opsDayCap": 1500,
-      "cancels": 0,
-      "created": 4,
-      "hyperLayer": "hypergrid-owns-flow"
+      "opsDayCap": 1500
     },
     "soldiers": {
       "name": "soldiers",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "DISABLED-T80-OPERATOR-STOP"
     },
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 1828,
+      "ms": 4,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked"
       ],
       "tunings": [],
-      "discoveryVerdict": "OPTIONS-FOUND",
+      "discoveryVerdict": "FRESH-CACHED",
       "topOpportunities": [
         "spread-wide(measured)",
         "tags-realloc(measured)",
@@ -426,18 +458,18 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "CADENCE-GATED",
       "pass": 311,
       "fail": 0,
-      "at": "2026-10-06T00:09:26.124Z"
+      "at": "2026-10-06T05:09:06.011Z"
     },
     "economics": {
       "name": "economics",
       "ok": true,
       "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.542733,
+      "totalEstUsdPerDay": 0.541952,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -446,7 +478,7 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 2,
+      "ms": 1,
       "verdict": "RECRUITED",
       "active": 10,
       "total": 11
@@ -459,7 +491,7 @@
       "positionSteem": 0,
       "positionAvgCost": null,
       "unbasedSteem": 0,
-      "deployedSteem": 280.85499999999996,
+      "deployedSteem": 343.2539999999999,
       "fuelUsdPerDay": 0,
       "authorUsdPerDay": 0,
       "measuredTotalUsdPerDay": 0,
@@ -471,7 +503,7 @@
     "positionSteem": 0,
     "positionAvgCost": null,
     "unbasedSteem": 0,
-    "deployedSteem": 280.85499999999996,
+    "deployedSteem": 343.2539999999999,
     "fuelUsdPerDay": 0,
     "authorUsdPerDay": 0,
     "measuredTotalUsdPerDay": 0,
@@ -483,5 +515,5 @@
     "failedSteps": [],
     "blockedSteps": []
   },
-  "finishedAt": "2026-10-06T04:59:18.845Z"
+  "finishedAt": "2026-10-06T05:09:14.666Z"
 }
