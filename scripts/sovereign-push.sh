@@ -7,19 +7,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# --- R225 HEAL HATCH (runs on EVERY gate invocation — heal is orthogonal to the
-# push law; the push verdict below is unaffected). Measured R225: the sandbox
-# reaps every tool-session-spawned process within minutes; only boot-spawned
-# trees survive. The gate runs inside the custodian (boot tree), so it carries
-# the guardian into the immune tree. Idempotent: the guardian enforces
-# single-instance by pidfile (stale pidfile = adopt). Law v1.2 documents this. ---
-set +e
-if ! curl -sf --max-time 5 http://127.0.0.1:3000/api/saos/status >/dev/null 2>&1; then
-  nohup bun /home/z/my-project/.zscripts/dev-guardian.mjs >> /home/z/my-project/.zscripts/dev-guardian.log 2>&1 &
-  echo "DEV-HEAL: guardian spawned (pid $!) — cockpit :3000 was unhealthy"
-fi
-set -e
-
 TARGET="saos-cockpit"
 # --- LAW CLAUSE 1: only saos-cockpit, never extra args (no --force can ever pass) ---
 if [[ "$#" -gt 0 && "$1" != "$TARGET" ]]; then
