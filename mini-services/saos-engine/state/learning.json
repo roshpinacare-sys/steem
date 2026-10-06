@@ -1,19 +1,19 @@
 {
-  "at": "2026-10-06T00:29:05.761Z",
+  "at": "2026-10-06T00:39:05.765Z",
   "enabled": true,
-  "runsTotal": 173,
+  "runsTotal": 174,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 50,
-      "oks": 34,
+      "window": 51,
+      "oks": 35,
       "fails": 0,
       "blocked": 16,
-      "okRate": 68,
-      "blockedRate": 32,
+      "okRate": 68.6,
+      "blockedRate": 31.4,
       "failReasons": {},
       "msP50": 6641,
-      "msP90": 13091
+      "msP90": 11499
     },
     "curator": {
       "present": true,
@@ -30,20 +30,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 2,
+      "window": 1,
       "fails": 0,
       "lastError": null
     },
     "watchdog": {
-      "checks": 1659,
+      "checks": 1669,
       "downs": 103,
       "heals": 36,
       "healVerified": 35,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-06T00:29:05.812Z",
+      "lastCheckAt": "2026-10-06T00:39:05.820Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-05T23:09:07.050Z",
-      "lastUpAt": "2026-10-06T00:29:05.813Z",
+      "lastUpAt": "2026-10-06T00:39:05.825Z",
       "blips": 1
     }
   },
@@ -52,7 +52,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×16/50 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×16/51 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
@@ -62,7 +62,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 92,
+    "signing-cred-blocked": 93,
     "broadcast-fails": 65
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"

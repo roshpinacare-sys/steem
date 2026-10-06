@@ -1088,3 +1088,18 @@ Work Log:
 
 Stage Summary:
 - Steps 1-3 of the approved plan are LIVE (time-series, claims-auditor, merkle anchoring) — all three in the single-writer keyless organ, all three kill/tamper/force drilled, all three in the signed chain pending push. The organism's memory is now (a) timely (60s snapshots), (b) self-auditing (page-vs-truth), and (c) tamper-evident over its full event stream with external chain witnessing arriving through the existing custody pipeline. Step 4 (Builder organ) remains the only unclaimed step.
+---
+Task ID: R218-d
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: RESERVATION — Step 4 (final) of approved plan: BUILDER ORGAN. Proposal-only engineering organ; merge power stays OUTSIDE the organ.
+
+Work Log:
+- I OWN (all-new): mini-services/saos-builder/* (:3043), src/lib/builder-organ.ts, src/app/api/saos/builder/*, src/components/builder-queue.tsx, state under its own dir.
+- SAFETY ARCHITECTURE (the round's core):
+  1. PROPOSAL-ONLY: Builder never edits the live tree, never runs git, never pushes. It reads a target file, produces a surgical {find, replace} edit validated against the CURRENT bytes, syntax-checks the RESULT in its sandbox copy, and stores the proposal.
+  2. Custodian-sweep awareness: because the custodian sweeps dirty files, any live-tree edit would auto-enter the signed chain — therefore the live tree stays untouched by the Builder by construction; application of proposals = separate deliberate act (orchestrator/operator), never the Builder.
+  3. Path law: proposals only for src/ + mini-services/ + docs; NEVER .secrets/, scripts/sovereign-push.sh, prisma/schema.prisma, laws, audit/ approvals.
+  4. LLM access via the EXISTING in-project pattern (z-ai-web-dev-sdk stays in the Next backend; the organ calls the local API — no keys in organs, consistent with R218-c law).
+- Shared files: page.tsx ONE insertion + worklog appends. Everything else new.
+- First real task (proposal-only, valuable): the stale "R215-custodian" commit-message prefix flagged in R218-a — Builder must propose the fix for mini-services/saos-custodian/index.ts; owner applies it in a custodian-owned round.
+- Status: reservation made; reading the ai route, then building.
