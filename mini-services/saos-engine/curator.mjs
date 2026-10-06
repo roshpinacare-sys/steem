@@ -51,6 +51,7 @@ export function curatorPolicy() {
     ageMaxMinutes: 1200,     // 20h — beyond that the curation share is dust
     minBodyChars: 600,       // real content, not micro-dust
     maxPendingSbd: 30,       // bandwagon guard — late votes on hot posts earn little
+    maxVotesPerCycle: 3,     // T-85: spread the day's votes across random windows
     tags: ["steem", "crypto", "defi", "trading", "technology", "ai"],
     excludeAccounts: ["headcorner", "hcsoldier1", "hcsoldier2", "hcsoldier3"],
   };
@@ -66,6 +67,39 @@ export function weightForAge(ageMinutes, p) {
   return Math.round(pct * 100); // steem weight units (10000 = 100%)
 }
 
+/* T-85 · EFFECTIVE-VESTS TRUTH (measured 2026-10-06): the VP gate read RAW
+ * vesting_shares, so the 943,788 VESTS delegated to the (keyless) army
+ * dragged the gate — vpEff showed 4.8% while the account's TRUE mana pool
+ * (HF20: vests + received − delegated-out) held ~16.6% and was regenerating.
+ * The battery was never empty; the METER was miscalibrated. Pure +
+ * selftestable — the caller passes the chain account object. */
+export function effectiveVests(acc) {
+  if (!acc || typeof acc !== "object") return 0;
+  const num = (s) => Number(String(s ?? "0").split(" ")[0].replace(/,/g, "")) || 0;
+  return Math.max(0, num(acc.vesting_shares) + num(acc.received_vesting_shares) - num(acc.delegated_vesting_shares));
+}
+
+/* mulberry32 — tiny seeded PRNG. Determinism IS the auditability: the same
+ * seed reproduces the exact schedule after the fact (state/social.json),
+ * while across days/accounts the schedules scatter like natural activity. */
+export function mulberry32(seed) {
+  let a = Number(seed) >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* stable string hash → uint32 seed (FNV-1a) */
+export function hashSeed(str) {
+  let h = 0x811c9dc5;
+  const s = String(str ?? "");
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return h >>> 0;
+}
+
 /* effective voting power from the manabar (mana units: vests × 1e6) */
 export function vpEffPct(currentMana, vests) {
   if (!(vests > 0) || !(currentMana >= 0)) return null;
@@ -75,17 +109,32 @@ export function vpEffPct(currentMana, vests) {
 
 /* THE PURE PLANNER — deterministic, selftestable, zero network.
  * posts: normalized candidates; returns selected votes + honest rejections. */
-export function filterCandidates({ posts, voter, policy, nowMs, votedPermlinks = [], votesToday = 0, authorsToday = {} }) {
+export function filterCandidates({ posts, voter, policy, nowMs, votedPermlinks = [], votesToday = 0, authorsToday = {}, jitterSeed = null }) {
   const p = policy;
   const rejected = [];
   const seenPermlinks = new Set();
   const votedSet = new Set(votedPermlinks);
   const authors = { ...authorsToday };
-  let remaining = Math.max(0, p.maxPerDay - votesToday);
+  /* T-85 · RANDOM-TIME SPREADING: a seeded shuffle re-orders candidates
+   * before selection, and maxVotesPerCycle caps how many fire per 10-min
+   * window — the day's votes land at irregular, natural-looking times
+   * instead of one burst. Same seed ⇒ same plan ⇒ auditable. */
+  let remaining = Math.min(
+    Math.max(0, p.maxPerDay - votesToday),
+    Number.isFinite(p.maxVotesPerCycle) ? Math.max(1, p.maxVotesPerCycle) : Infinity,
+  );
 
-  // deterministic order: newest first, permlink as tiebreak
+  // deterministic order: newest first, permlink as tiebreak…
   const ordered = [...posts].sort((a, b) =>
     (b.createdMs - a.createdMs) || String(a.permlink).localeCompare(String(b.permlink)));
+  // …then a SEEDED shuffle when a seed is given (natural spreading, auditable)
+  if (jitterSeed != null && ordered.length > 1) {
+    const rand = mulberry32(jitterSeed);
+    for (let i = ordered.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [ordered[i], ordered[j]] = [ordered[j], ordered[i]];
+    }
+  }
 
   const selected = [];
   for (const post of ordered) {
@@ -188,11 +237,14 @@ export async function runCurator({ now = new Date().toISOString() } = {}) {
    * only the 12.5s of waste dies. */
   loadCredential();
 
-  /* VP gate — effective mana (read-only, chain truth) */
   const accR = await rpcCall("condenser_api.get_accounts", [[master]]);
   const acc = accR.ok ? accR.result?.[0] : null;
   if (!acc) return { ...base, verdict: "NO-ACCOUNT-READ" };
-  const vests = Number(String(acc.vesting_shares ?? "0").split(" ")[0]) || 0;
+  /* VP gate — effective mana (read-only, chain truth). T-85: the mana pool is
+   * built from EFFECTIVE vests (received − delegated-out), not raw — the old
+   * raw read kept the gate shut while the battery refilled (measured: 4.8%
+   * shown vs ~16.6% true). */
+  const vests = effectiveVests(acc);
   const mana = Number(acc.voting_manabar?.current_mana ?? "0");
   const vpEff = vpEffPct(mana, vests);
   if (vpEff == null || vpEff < p.minVpEffPct) {
@@ -233,9 +285,14 @@ export async function runCurator({ now = new Date().toISOString() } = {}) {
   const { posts, ok: streamOk } = await fetchCandidates(p, master, nowMs);
   if (!streamOk) return { ...base, verdict: "NO-CANDIDATE-STREAM", vpEff };
   const votedPermlinks = carried.votesToday.map((v) => `${v.author}/${v.permlink}`);
+  /* T-85 · seeded jitter: the day + 2h-window + account → one seed, so each
+   * window shuffles candidates differently yet the whole day's plan is
+   * reproducible from the seed recorded in the verdict. */
+  const jitterSeed = hashSeed(`${day}|${Math.floor(nowMs / (2 * 3600_000))}|${master}`);
   const plan = filterCandidates({
     posts, voter: master, policy: p, nowMs,
     votedPermlinks, votesToday: carried.votesToday.length, authorsToday: carried.authorsToday,
+    jitterSeed,
   });
   // (votedPermlinks covers today; votedByUs covers all history — both enforced)
   if (!plan.selected.length) {

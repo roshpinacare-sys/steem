@@ -34,6 +34,7 @@ import { runRecruiter } from "./recruiter.mjs";
 import { runEconomics } from "./economics.mjs";
 import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
+import { runSocial } from "./army-social.mjs";
 import { runRcTank, rcTankState } from "./rctank.mjs";
 import { runPayouts, payoutsState } from "./payouts.mjs";
 import { runWeave, weaveState } from "./weave.mjs";
@@ -534,6 +535,15 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.content = await stepWrap("content", async () => {
     const out = await runContent({ now });
     return { verdict: out.verdict, draftsQueued: out.draftsQueued ?? 0, exposureBlocked: out.exposureBlocked ?? 0, lastAt: out.lastAt ?? null, ms: out.ms ?? null };
+  });
+
+  /* T-85 · SMART-SOCIAL RAIL: random-time publishing (drafts queue),
+   * fleet mutual votes, comment replies — custody-gated per account (T-80):
+   * the master is live today, the 10 army accounts report REFUSED-NO-CUSTODY
+   * until the operator's credentials are adopted. Fail-isolated. */
+  report.steps.social = await stepWrap("social", async () => {
+    const out = await runSocial({ now });
+    return { verdict: out.verdict, executed: out.executed ?? 0, refused: out.refused ?? 0, due: out.due ?? 0, ms: out.ms ?? null };
   });
 
   /* T-22 · RC-TANK: the daily measured curve of the 100,000× law
