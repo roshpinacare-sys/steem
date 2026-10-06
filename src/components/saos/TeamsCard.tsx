@@ -59,14 +59,20 @@ const draftStatusTone = (s?: string): Tone => {
 type Finding = NonNullable<NonNullable<NonNullable<Status['webintel']>['scans']>[number]['findings']>[number]
 type Draft = NonNullable<NonNullable<Status['content']>['queue']>[number]
 
-/** up to `n` findings with breadth-first coverage: one per scan first, then fill (honest spread, not a single-scan dump) */
+/**
+ * up to `n` findings with breadth-first coverage: one per scan first, then fill (honest spread, not a single-scan dump).
+ * Same URL surfaced by several scans = one truth shown once (dedup by url) — no duplicate rows, no duplicate React keys.
+ */
 function roundRobinPick(lists: Finding[][], n: number): NonNullable<Finding>[] {
   const out: NonNullable<Finding>[] = []
+  const seenUrls = new Set<string>()
   for (let i = 0; out.length < n; i++) {
     let any = false
     for (const list of lists) {
       const f = list[i]
       if (f) {
+        if (f.url && seenUrls.has(f.url)) continue
+        if (f.url) seenUrls.add(f.url)
         out.push(f)
         any = true
         if (out.length === n) break
@@ -145,7 +151,7 @@ export function TeamsCard({ webintel, content }: { webintel: Status['webintel'];
             {findings.length === 0 ? (
               <p className="px-3 py-3 text-xs text-slate-500">אין ממצאים בסבב-הסריקה הנוכחי — הסבב-הבא ידווח כאן.</p>
             ) : (
-              findings.map((f, i) => <FindingRow key={f.url ?? i} f={f} />)
+              findings.map((f, i) => <FindingRow key={`${f.url ?? 'row'}-${i}`} f={f} />)
             )}
           </div>
 
@@ -182,7 +188,7 @@ export function TeamsCard({ webintel, content }: { webintel: Status['webintel'];
             {drafts.length === 0 ? (
               <p className="rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-3 text-xs text-slate-500">אין טיוטות-בתור — התור ייכתב מהמחזור-הבא.</p>
             ) : (
-              drafts.map((d, i) => <DraftRow key={d.id ?? i} d={d} />)
+              drafts.map((d, i) => <DraftRow key={`${d.id ?? 'draft'}-${i}`} d={d} />)
             )}
           </div>
 
@@ -206,8 +212,8 @@ function DraftRow({ d }: { d: NonNullable<Draft> }) {
         <StatusBadge tone={draftStatusTone(d.status)}>{d.status ?? '—'}</StatusBadge>
       </div>
       <div className="mt-1.5 flex flex-wrap gap-1">
-        {(d.tags ?? []).slice(0, 4).map((t) => (
-          <span key={t} dir="ltr" className="rounded-full border border-slate-700 bg-slate-900/80 px-1.5 py-0.5 text-[9px] leading-none text-slate-400">
+        {(d.tags ?? []).slice(0, 4).map((t, ti) => (
+          <span key={`${t}-${ti}`} dir="ltr" className="rounded-full border border-slate-700 bg-slate-900/80 px-1.5 py-0.5 text-[9px] leading-none text-slate-400">
             {t}
           </span>
         ))}

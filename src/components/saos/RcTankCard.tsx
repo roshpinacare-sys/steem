@@ -102,7 +102,7 @@ export function RcTankCard({ rcTank }: { rcTank: Status['rcTank'] }) {
               const pct = Math.max(6, Math.round(((p.opsPerDay ?? 0) / maxOps) * 100))
               return (
                 <div
-                  key={p.day ?? i}
+                  key={`${p.day ?? 'day'}-${i}`}
                   className="flex h-full min-w-[3px] flex-1 items-end"
                   title={`${p.day ?? '—'} · maxRC ${compact(p.maxRc)} · ${full(p.opsPerDay)} ops/יום`}
                 >

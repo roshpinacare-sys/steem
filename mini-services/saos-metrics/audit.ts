@@ -90,27 +90,40 @@ function gitOut(args: string[]): string | null {
 
 function chainClaims(): Claim[] {
   const claims: Claim[] = [];
-  const log = gitOut(["log", "--format=%h|%G?|%s", "-25"]);
+  const log = gitOut(["log", "--format=%h|%G?|%aI|%s", "-25"]);
+  /* Signing became ENFORCED at R220 (gate clause 2.5, 2026-10-06T01:13Z).
+   * R221 resurrection: the environment restore lost the old keyring, so
+   * %G? has THREE honest states now — G verified · E signed-but-key-lost
+   * (rotation, NOT a violation) · N unsigned. Pre-enforcement unsigned body
+   * commits are a recorded practice gap, not a live violation. */
+  const ENFORCED_FROM = Date.parse("2026-10-06T01:13:00Z");
   if (log === null) {
     claims.push({ id: "git.bodySigned", label: "חתימת-קומיטים של הגוף", verdict: "UNMEASURABLE", expected: "0 לא-חתומים", actual: "—", detail: "git log אינו זמין מהאיבר" });
   } else {
     const lines = log.trim().split("\n").filter(Boolean);
     const bodyPrefix = /^(R2\d+\b|SAOS-custodian)/;
     let bodyUnsigned = 0;
+    let rotated = 0;
+    let preEnforcement = 0;
     let noise = 0;
     for (const l of lines) {
       const parts = l.split("|");
       const g = parts[1];
-      const subject = parts.slice(2).join("|");
-      if (g !== "G" && bodyPrefix.test(subject)) bodyUnsigned++;
-      else if (g !== "G") noise++; /* UUID-subject checkpoint commits by the sandbox environment */
+      const when = Date.parse(parts[2]);
+      const subject = parts.slice(3).join("|");
+      if (g === "G") continue;
+      if (bodyPrefix.test(subject)) {
+        if (g === "E") rotated++; /* signed under the lost pre-crash key */
+        else if (Number.isFinite(when) && when > ENFORCED_FROM) bodyUnsigned++; /* post-enforcement violation */
+        else preEnforcement++; /* pre-enforcement practice gap */
+      } else noise++; /* UUID-subject checkpoint commits by the sandbox environment */
     }
     claims.push({
       id: "git.bodySigned", label: "חתימת-קומיטים של הגוף",
       verdict: bodyUnsigned === 0 ? "MATCH" : "DRIFT",
-      expected: "0 לא-חתומים מקודמות-גוף",
-      actual: `${bodyUnsigned} לא-חתומים · ${noise} checkpoint-סביבה`,
-      detail: "checkpoint-ים של הסביבה (נושא-UUID) אינם קומיטי-גוף — נספרים ונראים, לא הפרה",
+      expected: "0 לא-חתומים אחרי-האכיפה (R220)",
+      actual: `${bodyUnsigned} הפרות · ${rotated} חתומים-תחת-מפתח-אבוד · ${preEnforcement} קדם-אכיפה · ${noise} checkpoint-סביבה`,
+      detail: "E=חתום-תחת-מפתח-שאבד-בקריסה (סיבוב R221, לא הפרה) · N+קידומת-גוף אחרי-R220 = הפרה",
     });
   }
   const custody = readJson("/home/z/my-project/mini-services/saos-engine/state/push-custody.json");

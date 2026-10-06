@@ -1170,6 +1170,75 @@ Stage Summary:
 - The audit-fix loop closed twice in one day: R219 found the gaps by measurement; R220 closed them the same way — nothing asserted that wasn't drilled.
 
 ---
+Task ID: R221
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: OPERATOR ORDER "הסביבה שלך כנראה נפלה קודם תעלה מחדש מהגיט" — full environment resurrection from git after the sandbox crash + operator-supplied PAT (pat.env) for credentials. Secrets law held: token used ONLY via file-based credential helper, never printed, never entered the tree.
+
+Work Log:
+- CRASH DIAGNOSIS: the sandbox was restored from an OLD snapshot (HEAD 97a15ce, Oct 5 17:53 — pre-R218). Everything gitignored was lost (metrics.db time-series, builder queue state, the GPG keyring — BOTH private AND public keys); everything COMMITTED survived on origin/saos-cockpit. The old environment had lived ~7h past my R220 push (custodian sweeps on the remote run signed+unverifiable until 08:33Z), then died.
+- SECRET GUARD FIRST: upload/pat.env verified gitignored BEFORE any organ could sweep (it was already covered — confirmed, no exposure window). Token wired as a FILE-BASED credential helper (reads the file at call time; helper text contains no secret; chmod blocked by platform, acceptable — the path is outside the tree and ignored).
+- LINEAGE RECONCILIATION: local snapshot lineage (97a15ce, local-only checkpoints) DIVERGED from origin/saos-cockpit. Per the operator order, adopted the remote lineage: `git reset --hard origin/saos-cockpit` (= 110b038, Oct 6 08:33). Nothing valuable lost — local-only content was stale engine state, strictly superseded by the remote's newer sweeps; local-only checkpoint commits remain in reflog. R219 + R220 verified present on the remote (commits + worklog entries) — the pushed chain carried the whole organism home.
+- KEY ROTATION (honest): the pre-crash signing key is unrecoverable (no backup in .secrets/, no private-keys-v1.d). Generated fresh ed25519 key (…CF153516), configured user.signingkey + commit.gpgsign. Old commits stay %G?=E (signature intact in the commit object, verification deferred to whoever holds the old pubkey) — content integrity never depended on git signatures alone (merkle chain + Steem tip anchors).
+- AUDITOR UPGRADED FOR THE THREE-STATE REALITY: git.bodySigned now distinguishes G (verified) / E (signed-under-lost-key — rotation, NOT a violation) / N (unsigned — violation ONLY if body-prefixed AND after the R220 enforcement epoch 01:13Z; pre-enforcement = recorded practice gap). Measured after swap: 0 violations · 25 signed-under-lost-key · 0 pre-enforcement · 0 checkpoints → MATCH. (The first post-resurrection audit ran OLD code — the sandbox auto-heal had spawned the organ mid-configuration; code-swap law applied: kill -> demand-heal -> verify.)
+- ORGANS RESURRECTED: engine :3040 + custodian :3041 (watchdog auto-heal on first status hit), metrics :3042 + builder :3043 (demand-heal, booted 15:54:54Z). All four /health OK; exactly one process each.
+- MERKLE CONTINUITY PROVEN BY RESURRECTION ITSELF: the record restored from git (19 batches, 4,360 events) and the organ resumed anchoring over the restored chainRoot — VERIFIED from raw bytes. Fresh-machine reconstruction is now a DRILLED property: clone + events.jsonl + chain anchors = full memory, integrity-checked.
+- BROWSER VERIFIED: title, all four R218 cards, merkle VERIFIED, engine alive, ~26k chars rendered, zero page errors.
+- EXPECTED SELF-HEALS (bounded-staleness, honest): custody.fresh STALE ~7.9h (last Steem anchor 08:33Z — custodian's next hourly cycle clears), git.pushCustody STALE (last push 08:33Z — next sweep+push clears; THIS commit accelerates it).
+
+Stage Summary:
+- The body died and was reborn from its own signed chain — the exact scenario the whole custody architecture was built for. Git carried the code, the laws, the worklog, the merkle record and the evidence files; the merkle chain resumed with zero break; the auditor learned the difference between "unsigned" and "unverifiable"; a new key signs from here on. The organism's immortality claim is no longer a design statement — it survived one death and measured the resurrection.
+
+---
+Task ID: R222
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: OPERATOR-SUPPLIED CONSOLE ERROR — React duplicate key in the TeamsCard findings list ("Encountered two children with the same key, https://www.coingecko.com", TeamsCard.tsx:148). Root-cause, fix, verify in browser, sign + push.
+
+Work Log:
+- ROOT CAUSE (read, not guessed): TeamsCard's roundRobinPick() pulls findings breadth-first from MULTIPLE scans; when two different scans surface the SAME url, both rows rendered with key={f.url ?? i} → duplicate React keys. Not an engine bug — a presentation-layer collision that the round-robin spread made reachable.
+- FIX (two layers): (1) roundRobinPick now dedups by url — same url surfaced by several scans = one truth shown once (findings without url are exempt); (2) collision-proof composite keys on BOTH lists: findings key={`${url ?? 'row'}-${i}`}, drafts key={`${id ?? 'draft'}-${i}`} — the drafts list carried the same latent class-bug, hardened in the same touch. Card doc-comment updated to state the dedup law.
+- LINT clean; Turbopack hot-reloaded the card (✓ Compiled in 230ms → GET / 200).
+- BROWSER VERIFIED (agent-browser): page errors = 0; console grep same-key/duplicate/error = empty; webintel section renders 5 finding rows / 5 unique urls / coingeckoCount exactly 1 (was ≥2 pre-fix) / verdict INTEL-OK. No layout change — dedup is display-law only; totalFindings stat still reports the engine's raw truth.
+- Commit signed under the R221-rotated key, pushed FF-only through scripts/sovereign-push.sh with gate clause 2.5 active.
+
+Stage Summary:
+- First bug reported from the OUTSIDE (the operator's own browser console) since the resurrection — fixed within one round. Duplicate truth is no longer renderable: the card now states and enforces "same url = one row", and the evidence is measured, not asserted: 5 rows, 5 unique urls, 1 coingecko, zero console noise.
+
+---
+Task ID: R223
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: OPERATOR ORDER "אוקי בדוק עכשיו הכל שוב תראה אם יש עוד דברים" — full re-audit of the whole organism post-R222: infrastructure, chain, organs, browser, code, economics. Find and close anything remaining.
+
+Work Log:
+- INFRASTRUCTURE: exactly 5 processes (cockpit :3000 + 4 organs :3040-43, one each); all /health ok; custodian sweep cadence 10min with every tick committed+pushed (last a8ad8d6 @17:44Z, div=0, invalidJson=[]); metrics 109 snapshots @60s; builder queue clean.
+- CHAIN: local == origin/saos-cockpit (0 behind / 0 ahead); last 15 commits ALL %G?=G (verified signatures — including the platform checkpoints, now signed by the sandbox); R222 pushed and witnessed.
+- SELF-AUDIT (fresh force-run 97dbc19d): 24 MATCH / 0 DRIFT / 0 STALE / 1 UNMEASURABLE. MERKLE: VERIFIED from raw bytes, 22 batches, coverage 4431/4446 (15 pending = normal batching), chainRoot e38bad3f…
+- ENGINE-LOG FORENSICS (the round's real investigation): engine.log held "Cannot find module '@noble/hashes/sha256' from steemtx.mjs" ×1 + "Cannot find module './army.mjs' from daily.mjs" ×4. VERDICT: RESURRECTION FOSSILS, not live bugs — proof chain: (1) grep across every engine .mjs: ZERO army.mjs references in today's tree (only comments/strings); (2) STATIC PROOF: `bun build ./daily.mjs` resolves the full graph → 229.6KB bundle, no missing modules; (3) the RUNNING engine (pid 1437, booted 15:47:27, bun --hot) executes chain txs (exec-log: claim_reward_balance 17:15+17:25, limit orders 16:45, custody-witness 17:15 — ALL ok:true, which requires steemtx+noble working); (4) cycle-run.json 17:44:54 ok:true health:"ok" — ALL 15 steps true (observe→…→payouts→weave), 9.6s duration, zero failed/blocked steps. The errors are boot attempts that hit the tree mid-`git reset` during the resurrection window.
+- ECONOMICS/PAYOUT (window ~03:00Z has PASSED): the payout executors ARE firing — claim_reward_balance broadcast twice, custody-witnessed per law; daily rollup honest ("unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"), deployedSteem 674.86, realizedSbd 0 (honest: nothing measured yet).
+- BROWSER: 0 page errors, 0 console errors/warnings, title ok, 7 sections rendered, no horizontal overflow desktop+mobile(390px), footer pushed naturally (long page 9401px — no floating gap); TeamsCard still 5 rows / 5 unique urls post-R222.
+- CODE SCAN (the round's hardening): grep key={ across src/components/saos found 5 MORE sites of the exact R222 bug-class (`key={x ?? i}` → collides on duplicate values): RcTankCard p.day, X2Card r.mult, RolesCard r.id, EconomicsRailsCard r.id, TeamsCard draft tags. Measured the live state first: roles ids, draft ids, draft tags — all UNIQUE today (the pattern never fired). Hardened all 5 to the R222 composite pattern (`${x ?? 'fallback'}-${i}`) — prevention, not cure; zero behavior change. Lint clean.
+- OBSERVED, NOT FIXED (honest notes): (a) upstream search provider (serper) returned 429/400 during some intel scans — the engine handles it HONESTLY (failedScans counter; current verdict INTEL-OK, scans passing); external dependency, no body-side bug. (b) metrics.log holds one historical "port 3042 in use" from a demand-heal race — process healthy since 15:59, 109 snapshots; fossil, no action. (c) engine /health hardcodes `keyless:false` — cosmetic semantics only, organs remain keyless by construction (no keys in any organ process; custodian signs via its own path).
+- Commit signed under the rotated key, pushed FF-only through scripts/sovereign-push.sh.
+
+Stage Summary:
+- The full re-audit found ZERO live defects: every error in every log was forensically traced to the resurrection window and disproven as fossil with static + runtime + chain evidence. The one real improvement — closing the duplicate-key bug-class across ALL cards before it ever fires — is hardened, measured, signed, and pushed. The organism post-R223: 5 processes, 24/0 audit, VERIFIED merkle, firing payout executors, and a presentation layer that can no longer collide on any list it renders.
+
+---
+Task ID: R224
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: OPERATOR ORDER "תמשיך ודחוף" — take the remaining item from R223's "observed, not fixed" list (engine /health credential semantics), execute the drilled code-swap law on the live engine, sign + push.
+
+Work Log:
+- PRE-CHECKS: organ logs confirmed IGNORED (R220's `*.log` law already covers them — no pid-style churn possible); demand-heal path identified (/api/saos/spawn-engine — idempotent, single-instance law, refuses when :3040 healthy).
+- CREDENTIAL-LAW CLARIFIED (read signer.mjs, not guessed): the engine is honestly NOT keyless — it adopts a runtime credential (.secrets/headcorner.key) and derives WIFs on demand, held in a module map, never persisted/logged/returned. The bare `keyless:false` boolean was true-but-ambiguous.
+- FIX (additive one-liner in index.ts /health): new `credentialMode` field states the law inline — "runtime-adopted · WIFs derived on demand (signer.mjs) · memory-only — never persisted, never logged, never returned". `keyless:false` KEPT (flipping it would be a lie).
+- CODE-SWAP LAW (6th execution, live organ): cycle verified NOT running → kill pid 1437 → POST /api/saos/spawn-engine → SPAWNED-AND-HEALTHY (new pid 8147, ~7s).
+- POST-SWAP VERIFICATION: /health carries credentialMode (raw JSON checked); engine /status ok:true; cycle marker ok:true health:"ok"; exec-status credentialPresent:true fingerprint c056922c (byte-identical to exec-log entries — signing capability survived the swap); fleet FLEET-OK (15 agents: 12 alive / 3 idle / 0 blocked / 0 dead).
+- Note (behavioral honesty): the heal route spawns `bun run dev` = `bun index.ts` — no --hot flag, i.e. the respawned engine is MORE deterministic than the pre-crash manual boot (no surprise module reloads mid-cycle).
+- Commit signed under the rotated key, pushed FF-only through scripts/sovereign-push.sh.
+
+Stage Summary:
+- R223's observation list is now EMPTY: logs were already law-covered, the search 429 is an external dependency handled honestly by the engine, and the last item — ambiguous /health semantics — is now self-describing. The engine survived its sixth code-swap with credentials, fleet, and cycle law all verified in place; the body's self-description now says exactly what it is.
+---
 Task ID: 2
 Agent: Z.ai Code (main)
 Task: Verify the seal lives in SAOS SOVEREIGN COCKPIT (steem@saos-cockpit) per operator guidance

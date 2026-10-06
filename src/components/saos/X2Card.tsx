@@ -70,7 +70,7 @@ export function X2Card({ x2 }: { x2: X2 | null | undefined }) {
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {rows.map((r, i) => (
-                <tr key={r.mult ?? i}>
+                <tr key={`${r.mult ?? 'mult'}-${i}`}>
                   <td className="px-3 py-2 text-start text-xs font-bold text-slate-200" dir="ltr">{r.mult ?? '—'}×</td>
                   <td className="px-3 py-2 text-end text-sm font-bold text-slate-100">{typeof r.sp === 'number' ? r.sp.toLocaleString('en-US') : '—'}</td>
                   <td className="px-3 py-2 text-end text-sm font-bold text-slate-100" dir="ltr">{typeof r.usdPerDay === 'number' ? `$${r.usdPerDay.toFixed(2)}` : '—'}</td>

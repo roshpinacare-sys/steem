@@ -40,7 +40,7 @@ export function EconomicsRailsCard({ economics }: { economics: Status['economics
             const tone = confidenceTone(r.confidence)
             const blocked = r.confidence === 'blocked'
             return (
-              <div key={r.id ?? i} className="rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2">
+              <div key={`${r.id ?? 'rail'}-${i}`} className="rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2">
                 <RailRow
                   label={
                     <span className="flex flex-wrap items-center gap-1.5">
