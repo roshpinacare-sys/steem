@@ -49,10 +49,25 @@ export function wifEncode(seed32) {
 }
 export function wifDecode(wif) {
   const d = b58decode(wif);
-  if (d.length !== 38) throw new Error("wif-length"); // 1 ver + 32 key + 1 flag + 4 chk
-  const body = d.slice(0, 34), chk = d.slice(34);
+  /* T-86 (measured against the git-vault): BOTH WIF encodings exist in the wild —
+   *   38B = 1 ver(0x80) + 32 key + 1 compressed-flag(0x01) + 4 chk  (modern;
+   *         checksum covers ver+key+FLAG = 34 bytes)
+   *   37B = 1 ver(0x80) + 32 key              + 4 chk  (uncompressed-era —
+   *         the vault stores every army key this way; the private key VALUE
+   *         is identical, only the flag byte is absent — STEEM pubkeys are
+   *         always the compressed point, so derivation is unchanged)
+   */
+  let body, chk;
+  if (d.length === 38) {
+    body = d.slice(0, 34); chk = d.slice(34);
+    if (body[0] !== 0x80 || body[33] !== 0x01) throw new Error("wif-format");
+  } else if (d.length === 37) {
+    body = d.slice(0, 33); chk = d.slice(33);
+    if (body[0] !== 0x80) throw new Error("wif-format");
+  } else {
+    throw new Error("wif-length");
+  }
   if (!sha256d(body).slice(0, 4).equals(chk)) throw new Error("wif-checksum");
-  if (body[0] !== 0x80 || body[33] !== 0x01) throw new Error("wif-format");
   return body.slice(1, 33);
 }
 

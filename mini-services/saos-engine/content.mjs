@@ -16,7 +16,10 @@ const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const FILE = path.join(STATE, "content-ops.json");
 const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
-const CADENCE_MS = 12 * 3600_000; // 2 draft rounds/day — bounded, honest
+/* T-86: the fleet grew from 1 publisher to 11 — the drafts queue must feed
+ * ≤11 posts/day, so the drafting cadence tightened from 12h to 4h
+ * (3 drafts/round × 6 rounds = up to 18/day, caps still enforced downstream). */
+const CADENCE_MS = Number(process.env.SAOS_CONTENT_CADENCE_MS) || 4 * 3600_000;
 
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson = (p, v) => {

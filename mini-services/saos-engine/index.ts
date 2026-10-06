@@ -6,7 +6,8 @@
  */
 import { runCycle, cycleRunning, cycleMarker } from "./daily.mjs";
 import { externalParity, internalFeed, accountState, openOrders, measureAll } from "./measure.mjs";
-import { execStatus, credentialState, armedConf, adoptCredentialText, verifyRoles, spoilagePublic } from "./signer.mjs";
+import { execStatus, credentialState, armedConf, adoptCredentialText, verifyRoles, spoilagePublic, armyCustodyState } from "./signer.mjs";
+import { reviveArmyCustody, ARMY_ROSTER_VAULT } from "./vault-revival.mjs";
 import { soldiersPublic } from "./soldiers.mjs";
 import { intelState } from "./intel.mjs";
 import { curatorState } from "./curator.mjs";
@@ -46,7 +47,7 @@ const adoptAttempts: number[] = [];
 async function handle(req) {
   const url = new URL(req.url);
   const p = url.pathname;
-  if (p === "/health") return json({ ok: true, service: "saos-engine", account: ACCOUNT, at: new Date().toISOString(), keyless: false, credentialMode: "runtime-adopted · WIFs derived on demand (signer.mjs) · memory-only — never persisted, never logged, never returned", doctrine: "capped-autonomy" });
+  if (p === "/health") return json({ ok: true, service: "saos-engine", account: ACCOUNT, at: new Date().toISOString(), keyless: false, credentialMode: "runtime-adopted · WIFs derived on demand (signer.mjs) · memory-only — never persisted, never logged, never returned", armyCustody: armyCustodyState([ACCOUNT, ...ARMY_ROSTER_VAULT]), doctrine: "capped-autonomy" });
   if (p === "/status") {
     const execLog = (() => { try { return fs.readFileSync(path.join(STATE, "exec-log.jsonl"), "utf8").trim().split("\n").filter(Boolean).slice(-8).map((l) => { try { return JSON.parse(l); } catch { return { unparsed: l.slice(0, 80) }; } }); } catch { return []; } })();
     let exec = null;
@@ -258,6 +259,16 @@ if (!bound) throw new Error(`failed to bind :${PORT}`);
 try { fs.mkdirSync(STATE, { recursive: true }); fs.writeFileSync(path.join(STATE, "engine.pid"), String(process.pid)); } catch { /* best effort */ }
 
 console.log(`saos-engine listening on :${PORT} (capped-autonomy, account=${ACCOUNT})`);
+
+// T-86 GIT-VAULT ARMY REVIVAL: boot-time self-heal — pull the documented
+// vault from origin/main (sha-pinned), adopt the army posting WIFs
+// fail-closed against the live chain, wipe plaintext. Idempotent; the
+// social rail re-runs it per cycle when memory/cache goes missing.
+try {
+  reviveArmyCustody().then((r) => console.log(`army custody revival: ${r.verdict} (${r.after?.verified ?? 0}/${r.after?.total ?? "?"})`)).catch((e) => console.error(`army revival error: ${String(e?.message ?? e).slice(0, 120)}`));
+} catch (e) {
+  console.error(`army revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
+}
 
 // T-19b HYPER-GRID: the volume layer — one writer, own tick loop, the same
 // signing rail, the same doctrine guards. Booted with the engine, healed by
