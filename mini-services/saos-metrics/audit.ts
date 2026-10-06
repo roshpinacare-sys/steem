@@ -69,6 +69,64 @@ function ageSec(iso: unknown): number | null {
   return Number.isFinite(t) ? Math.round((Date.now() - t) / 1000) : null;
 }
 
+/* ---------- chain-integrity self-audit (R219) ----------
+ * Gap found in the wide round-audit: no component watches the WRITER-LAW
+ * properties of the git chain itself. Read-only git here (log/rev-list) —
+ * the organ still cannot write the tree or the repo. Two claims:
+ *  1. body commits must stay signed — unsigned commits with a body prefix
+ *     (R2xx / SAOS-custodian) are a LAW VIOLATION; unsigned UUID-subject
+ *     commits are environment checkpoint noise — counted, surfaced, tolerated.
+ *  2. push custody age (writer-law clause 6): the custody record is the
+ *     living drift; bounded by ~3 custodian cycles (10 min each). */
+function gitOut(args: string[]): string | null {
+  try {
+    const p = Bun.spawnSync(["git", ...args], { cwd: "/home/z/my-project", stdout: "pipe", stderr: "ignore" });
+    if (p.exitCode !== 0) return null;
+    return p.stdout.toString();
+  } catch {
+    return null;
+  }
+}
+
+function chainClaims(): Claim[] {
+  const claims: Claim[] = [];
+  const log = gitOut(["log", "--format=%h|%G?|%s", "-25"]);
+  if (log === null) {
+    claims.push({ id: "git.bodySigned", label: "חתימת-קומיטים של הגוף", verdict: "UNMEASURABLE", expected: "0 לא-חתומים", actual: "—", detail: "git log אינו זמין מהאיבר" });
+  } else {
+    const lines = log.trim().split("\n").filter(Boolean);
+    const bodyPrefix = /^(R2\d+\b|SAOS-custodian)/;
+    let bodyUnsigned = 0;
+    let noise = 0;
+    for (const l of lines) {
+      const parts = l.split("|");
+      const g = parts[1];
+      const subject = parts.slice(2).join("|");
+      if (g !== "G" && bodyPrefix.test(subject)) bodyUnsigned++;
+      else if (g !== "G") noise++; /* UUID-subject checkpoint commits by the sandbox environment */
+    }
+    claims.push({
+      id: "git.bodySigned", label: "חתימת-קומיטים של הגוף",
+      verdict: bodyUnsigned === 0 ? "MATCH" : "DRIFT",
+      expected: "0 לא-חתומים מקודמות-גוף",
+      actual: `${bodyUnsigned} לא-חתומים · ${noise} checkpoint-סביבה`,
+      detail: "checkpoint-ים של הסביבה (נושא-UUID) אינם קומיטי-גוף — נספרים ונראים, לא הפרה",
+    });
+  }
+  const custody = readJson("/home/z/my-project/mini-services/saos-engine/state/push-custody.json");
+  const a = ageSec(custody?.pushedAt);
+  const behindRaw = custody?.lastPushedSha ? gitOut(["rev-list", "--count", `${custody.lastPushedSha}..HEAD`]) : null;
+  const behind = behindRaw !== null && /^\d+$/.test(behindRaw.trim()) ? behindRaw.trim() : null;
+  claims.push({
+    id: "git.pushCustody", label: "טריות-משמורת-דחיפה",
+    verdict: a === null ? "UNMEASURABLE" : a <= 35 * 60 ? "MATCH" : "STALE",
+    expected: "גיל ≤ 35 דק (3 מחזורי-משמר)",
+    actual: a === null ? "—" : `${Math.round(a / 60)} דק · ${behind ?? "?"} קומיטים מאחור`,
+    detail: "חוק bounded-staleness (סעיף 6): הפער הוא הסטייה-החיה שנמדדת כל מחזור",
+  });
+  return claims;
+}
+
 async function proxyStatus(): Promise<any | null> {
   try {
     const r = await fetch(PROXY, { signal: AbortSignal.timeout(30_000), cache: "no-store" });
@@ -186,6 +244,9 @@ function buildClaims(st: any | null, db: Database): Claim[] {
   if (!st) {
     claims.push({ id: "proxy.reach", label: "מסלול-ה-status של הדף", verdict: "UNMEASURABLE", expected: "200", actual: "—", detail: "הפרוקסי לא ענה — הביקורת השוותה קבצים בלבד" });
   }
+
+  /* chain-integrity self-audit (R219): writer-law properties of the git chain */
+  claims.push(...chainClaims());
   return claims;
 }
 
