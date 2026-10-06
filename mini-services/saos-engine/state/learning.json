@@ -1,16 +1,16 @@
 {
-  "at": "2026-10-06T05:59:05.833Z",
+  "at": "2026-10-06T06:09:05.837Z",
   "enabled": true,
-  "runsTotal": 206,
+  "runsTotal": 207,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 66,
-      "oks": 57,
+      "window": 67,
+      "oks": 58,
       "fails": 0,
       "blocked": 9,
-      "okRate": 86.4,
-      "blockedRate": 13.6,
+      "okRate": 86.6,
+      "blockedRate": 13.4,
       "failReasons": {},
       "msP50": 7462,
       "msP90": 12470
@@ -35,15 +35,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 1989,
+      "checks": 1999,
       "downs": 103,
       "heals": 36,
       "healVerified": 35,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-06T05:59:06.104Z",
+      "lastCheckAt": "2026-10-06T06:09:06.109Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-05T23:09:07.050Z",
-      "lastUpAt": "2026-10-06T05:59:06.106Z",
+      "lastUpAt": "2026-10-06T06:09:06.111Z",
       "blips": 1
     }
   },
@@ -52,7 +52,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×9/66 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×9/67 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
@@ -62,7 +62,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 125,
+    "signing-cred-blocked": 126,
     "broadcast-fails": 65
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
