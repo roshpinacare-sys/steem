@@ -50,7 +50,7 @@ export function RolesCard({ roles }: { roles: Status['roles'] }) {
             </thead>
             <tbody>
               {roster.map((r, i) => (
-                <tr key={r.id ?? i} className="border-t border-slate-800/70 transition-colors hover:bg-slate-800/40">
+                <tr key={`${r.id ?? 'role'}-${i}`} className="border-t border-slate-800/70 transition-colors hover:bg-slate-800/40">
                   <td className="px-3 py-2 font-mono text-xs text-slate-300" dir="ltr">{r.id ?? '—'}</td>
                   <td className="px-3 py-2 text-xs font-bold text-slate-100">{r.role ?? '—'}</td>
                   <td className="px-3 py-2 text-xs text-slate-400">{r.lane ?? '—'}</td>

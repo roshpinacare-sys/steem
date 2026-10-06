@@ -212,8 +212,8 @@ function DraftRow({ d }: { d: NonNullable<Draft> }) {
         <StatusBadge tone={draftStatusTone(d.status)}>{d.status ?? '—'}</StatusBadge>
       </div>
       <div className="mt-1.5 flex flex-wrap gap-1">
-        {(d.tags ?? []).slice(0, 4).map((t) => (
-          <span key={t} dir="ltr" className="rounded-full border border-slate-700 bg-slate-900/80 px-1.5 py-0.5 text-[9px] leading-none text-slate-400">
+        {(d.tags ?? []).slice(0, 4).map((t, ti) => (
+          <span key={`${t}-${ti}`} dir="ltr" className="rounded-full border border-slate-700 bg-slate-900/80 px-1.5 py-0.5 text-[9px] leading-none text-slate-400">
             {t}
           </span>
         ))}
