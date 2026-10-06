@@ -65,6 +65,56 @@ export function custodyOf(name) {
   return "no-custody";
 }
 
+/* ── T-86 · GIT-VAULT ARMY CUSTODY (the operator's law, 2026-10-06):
+ * "אין מה לבקש מפתחות — הכל בכספת בגיט" — the vault IS the delivery, so
+ * direct WIF adoption is the lawful revival path. FAIL-CLOSED LAW: a WIF is
+ * adopted ONLY after its derived public key matches the account's LIVE
+ * on-chain posting authority (the chain is the only judge — same law as
+ * keymine). The WIF lives ONLY in memory (mem.identities) + the 0600 local
+ * cache file; nothing is ever logged/returned but fingerprints. */
+export async function adoptVerifiedWifIdentity(account, wif, { role = "posting", chainPubkeys = null } = {}) {
+  try {
+    const { wifDecode, pubkeyFromSeed } = await import("./steemtx.mjs");
+    const seed32 = wifDecode(String(wif).trim()); // throws on checksum/format fail
+    const derived = pubkeyFromSeed(seed32);
+    let pubs = chainPubkeys;
+    if (!pubs) {
+      const r = await rpcCall("condenser_api.get_accounts", [[account]]);
+      const acc = r.ok ? r.result?.[0] : null;
+      if (!acc) return { ok: false, reason: "account-not-found" };
+      pubs = (acc.posting?.key_auths ?? []).map((k) => k[0]);
+    }
+    if (!pubs.includes(derived)) return { ok: false, reason: "posting-authority-mismatch", pubkey: derived };
+    const fp = fingerprint(wif);
+    mem.identities[account] = {
+      password: null,
+      wifs: { [role]: String(wif).trim() },
+      matchedOrder: "wif-direct",
+      verified: {
+        ok: true, account, matchedOrder: "wif-direct",
+        roles: { [role]: { pubkey: derived, matched: true } },
+        fingerprint: fp,
+      },
+    };
+    appendLine(LOG_FILE, { at: new Date().toISOString(), tag: "army-custody-adopted", account, role, fingerprint: fp, pubkey: derived, verdict: "VERIFIED-VS-CHAIN" });
+    return { ok: true, account, role, pubkey: derived, fingerprint: fp };
+  } catch (e) {
+    return { ok: false, reason: String(e?.message ?? e).slice(0, 120) };
+  }
+}
+
+/* army custody census (public-safe: counts + booleans only) */
+export function armyCustodyState(roster) {
+  const accounts = {};
+  let verified = 0;
+  for (const name of roster) {
+    const c = custodyOf(name);
+    accounts[name] = c;
+    if (c === "verified" || c === "master-verified") verified++;
+  }
+  return { verified, total: roster.length, accounts };
+}
+
 export function thinkGate(account, ops, { source = "execute" } = {}) {
   const conf = armedConf();
   const pol = {
