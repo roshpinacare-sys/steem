@@ -29,11 +29,18 @@ export async function POST(req: Request) {
   const findings = Array.isArray(body.findings) ? body.findings.slice(0, 8) : [];
   const telemetry = body.telemetry && typeof body.telemetry === "object" ? body.telemetry : {};
   const law = Array.isArray(body.exposureLaw) ? body.exposureLaw : [];
+  /* T-87: day-seeded angle rotation from the engine — each draft takes one */
+  const angles = Array.isArray(body.angles)
+    ? body.angles.map((a) => String(a).slice(0, 60)).filter(Boolean).slice(0, 3)
+    : [];
 
   const userPrompt = [
     "Draft 3 distinct discussion-post ideas for a blockchain community (Steem).",
     "Each: engaging title (≤100 chars), body 180-350 words, 3-5 lowercase hyphenated tags.",
     "Angle must differ across drafts (e.g. educational explainer / open question / tooling-or-workflow tip).",
+    ...(angles.length
+      ? ["THIS ROUND'S ANGLE ROTATION (draft #1, #2, #3 take these angles IN ORDER):", ...angles.map((a, i) => `${i + 1}. ${a}`), ""]
+      : []),
     "",
     "EXPOSURE LAW (hard):",
     ...(law.length ? law.map((l) => `- ${l}`) : []),
