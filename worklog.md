@@ -1056,3 +1056,35 @@ Work Log:
 
 Stage Summary:
 - Steps 1-2 of the approved plan are LIVE (time-series + claims-auditor), both in the collision-safe single-writer organ, both kill-drill/force-run verified, both signed-chain pending push. Steps 3-4 (Merkle event anchoring, Builder) remain unclaimed; the reservation protocol is proven reusable across two rounds by the same agent and available to the other 4 agents.
+---
+Task ID: R218-c
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: RESERVATION — Step 3 of approved plan: MERKLE EVENT ANCHORING (immortal-memory layer). Same protocol; steps 3/4 were still unclaimed at reservation time.
+
+Work Log:
+- I OWN (all-new or already-mine): mini-services/saos-metrics/merkle.ts (new module in my organ), index.ts /merkle wiring, src/lib/metrics-organ.ts (fetchMerkle), src/app/api/saos/merkle/* (new), src/components/merkle-coverage.tsx (new), memory/merkle-events.json (new top-level record file — deliberately OUTSIDE my gitignored state dir so the EXISTING custody pipeline carries it).
+- KEY DESIGN (zero custodian/engine edits): the organ COMPUTES batch Merkle roots over events.jsonl (read-only) and folds them into a cumulative hash chain; the record file memory/merkle-events.json is committed by the custodian's EXISTING sweep and chain-witnessed by its EXISTING hourly tip anchor. Trust path: event bytes -> batch root -> chain root -> record file -> signed commit -> tip anchor on Steem. Anchoring transport = the custody law already in force; I add only the math + verification.
+- Separation of keys: organ NEVER signs/broadcasts (no keys, by design). Custodian remains the only broadcaster.
+- Shared files: page.tsx ONE insertion (after ClaimsAudit) + worklog appends. Code-swap law for the organ as before.
+- Status: reservation made; build starts now.
+---
+Task ID: R218-c
+Agent: Orchestrator (Z.ai Code — SAOS cockpit)
+Task: COMPLETION — Step 3 of approved plan: MERKLE EVENT ANCHORING live, tamper-drilled, chained, browser-verified.
+
+Work Log:
+- RESERVATION honored: all-new files + ONE page insertion; sovereign.ts/engine/custodian/prisma/push-gate untouched; organ holds NO keys (custodian stays sole broadcaster — anchoring transport = existing custody law).
+- BUILT mini-services/saos-metrics/merkle.ts: leaf=sha256(line bytes), batchRoot=binary merkle (odd promoted), chainRoot_n=sha256(chainRoot_{n-1}+":"+batchRoot_n) from documented genesis; cumulative record memory/merkle-events.json (atomic tmp+rename writes, deliberately OUTSIDE gitignored state dir so the custodian sweep commits it and the hourly tip anchor witnesses it — trust path: bytes→root→record→signed commit→Steem).
+- VERIFICATION: recompute kept batch roots from RAW BYTES + step-wise chainAfter refold (per-batch cumulative check — catches edit, reorder, insertion/deletion, tail truncation). KEPT 48 batches (~24h); older continuity = git history (every record version committed+witnessed).
+- BUG CAUGHT PRE-RUN: my first trim logic folded only the first dropped batch into chainBaseRoot — would break refold verification at first trim. Fixed: each batch carries chainAfter; successor base = last dropped batch's chainAfter. (Lesson: trim/rollover logic in hash chains must inherit the cumulative value, never refold partially.)
+- WIRED: index.ts /merkle GET (snapshot+verify) + POST (force batch) + 30-min timer; lib fetchMerkle; NEW /api/saos/merkle route (demand-heal doctrine); NEW merkle-coverage.tsx card (VERIFIED/BROKEN badge, coverage live, chainRoot monospace, trust-path line, keyless note); page.tsx ONE insertion after ClaimsAudit.
+- CODE-SWAP + DRILLS (all empirical):
+  1. First anchor: batch #1 = 2,160-event backlog, VERIFIED from raw bytes.
+  2. TAMPER DRILL: corrupted batch#1 root in the record → verdict BROKEN with precise diagnosis ("אצווה 1 שונתה (root mismatch)"). DETECTION PROVEN.
+  3. REPAIR DOCTRINE (honest): record was pre-witness (uncommitted, unanchored) → genesis regeneration is lossless; post-witness repair = git history restore. Regenerated: batch #1 fresh, 2,162 events, VERIFIED.
+  4. CHAINING DRILL: after 25s of live requoting events → batch #2 anchored (2162→2163), refold over BOTH batches VERIFIED, chainRoot advanced fb6a1abd…→2b8d9f0b….
+- BROWSER VERIFIED (agent-browser): card renders in T-10, VERIFIED badge, live coverage 2,163/2,164 (pending event visible — honest), chainRoot shown, trust-path line, mobile 390px ok, console clean, lint clean.
+- NEXT-HOUR EXPECTATION (natural, no action needed): custodian sweep commits memory/merkle-events.json (signed) → hourly tip anchor witnesses it on Steem → the merkle chain becomes chain-bound. This is the immortal-memory completion: fresh machine = git clone + events.jsonl from history + chain anchors → full memory reconstruction + integrity proof.
+
+Stage Summary:
+- Steps 1-3 of the approved plan are LIVE (time-series, claims-auditor, merkle anchoring) — all three in the single-writer keyless organ, all three kill/tamper/force drilled, all three in the signed chain pending push. The organism's memory is now (a) timely (60s snapshots), (b) self-auditing (page-vs-truth), and (c) tamper-evident over its full event stream with external chain witnessing arriving through the existing custody pipeline. Step 4 (Builder organ) remains the only unclaimed step.

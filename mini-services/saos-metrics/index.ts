@@ -21,6 +21,7 @@ import { Database } from "bun:sqlite";
 import fs from "fs";
 import path from "path";
 import { initAudits, maybeRunAudit, forceRunAudit } from "./audit"; // R218-b claims-auditor
+import { merkleSnapshot, anchorNewBatch } from "./merkle"; // R218-c merkle event anchoring
 
 const PORT = 3042;
 const STATE_DIR = "/home/z/my-project/mini-services/saos-engine/state";
@@ -168,6 +169,15 @@ setInterval(persist, EVERY_MS);
 setInterval(() => {
   maybeRunAudit(db).catch((e) => console.error("audit-tick-fail", (e as Error).message));
 }, 6 * 3600 * 1000);
+/* R218-c: anchor new events as a chained Merkle batch every 30 min */
+setInterval(() => {
+  try {
+    const r = anchorNewBatch();
+    if (r.ran) console.log(`[merkle] batch anchored -> offset ${r.record?.anchoredOffset} (batch #${r.record?.batchIndex})`);
+  } catch (e) {
+    console.error("merkle-tick-fail", (e as Error).message);
+  }
+}, 30 * 60 * 1000);
 
 /* ---------- series (15-min buckets, 24h) ---------- */
 function series(): Record<string, [number, number][]> {
@@ -230,6 +240,19 @@ const server = Bun.serve({
       try {
         const res = req.method === "POST" ? await forceRunAudit(db) : await maybeRunAudit(db);
         return Response.json({ ok: true, ran: res.ran, ...(res.result ?? {}) });
+      } catch (e) {
+        return Response.json({ ok: false, error: (e as Error).message }, { status: 500 });
+      }
+    }
+    if (p === "/merkle") {
+      /* R218-c: GET = snapshot + verify; POST = force-anchor a batch now */
+      try {
+        if (req.method === "POST") {
+          const r = anchorNewBatch();
+          const snap = merkleSnapshot();
+          return Response.json({ ok: true, anchored: r.ran, reason: r.reason ?? null, ...snap });
+        }
+        return Response.json(merkleSnapshot());
       } catch (e) {
         return Response.json({ ok: false, error: (e as Error).message }, { status: 500 });
       }

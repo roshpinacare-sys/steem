@@ -87,3 +87,19 @@ export async function fetchAudit(force = false): Promise<unknown | null> {
     return null;
   }
 }
+
+/* R218-c: merkle event-anchoring snapshot. GET = verify now; POST = force
+ * anchor a new batch then verify. Local math only (seconds). */
+export async function fetchMerkle(force = false): Promise<unknown | null> {
+  try {
+    const r = await fetch(`http://127.0.0.1:3042/merkle`, {
+      method: force ? "POST" : "GET",
+      signal: AbortSignal.timeout(15_000),
+      cache: "no-store",
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}

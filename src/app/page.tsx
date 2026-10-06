@@ -20,6 +20,7 @@ import { HonestyBadge } from '@/components/saos/HonestyBadge'
 import { SectionNav, SECTIONS, type SectionId } from '@/components/saos/SectionNav'
 import MetricsTrends from '@/components/metrics-trends'
 import ClaimsAudit from '@/components/claims-audit'
+import MerkleCoverage from '@/components/merkle-coverage'
 import { useAdoptCredential } from '@/components/saos/useAdoptCredential'
 import { WalletConsoleCard } from '@/components/saos/WalletConsoleCard'
 import { FleetCard } from '@/components/saos/FleetCard'
@@ -330,6 +331,7 @@ export default function Home() {
                   </div>
                   <MetricsTrends />
                   <ClaimsAudit />
+                  <MerkleCoverage />
                   <div className="mt-2">
                     <RailRow
                       label="ביקורת-איכות (selftest) · כל 6 שעות"
