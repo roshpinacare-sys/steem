@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
   const userPrompt = [
     "Draft 4 DISTINCT posts for a general Steem audience. NOT about Steem itself — about life, work, mind, streets, craft, food, nature, ideas.",
-    "Each: title ≤90 chars (curiosity gap, concrete nouns, no listicle vibes), body 220-380 words (open inside a scene, question, or surprising claim — never a meta-intro), 3-5 lowercase hyphenated tags (one broad topical tag like life/psychology/technology/food/nature/writing + 2-3 niche).",
+    "Each: title ≤90 chars (curiosity gap, concrete nouns, no listicle vibes), body 450-700 words (R244 law: under 350 words is spam-detector tier and is auto-rejected at the publish gate — write deep, not thin; open inside a scene, question, or surprising claim — never a meta-intro; end with a genuine question that invites replies), 3-5 lowercase hyphenated tags (one broad topical tag like life/psychology/technology/food/nature/writing + 2-3 niche).",
     "The four drafts must be PUBLISHABLE AS-IS by four different humans: no shared sentences, no shared examples, different paragraph rhythms.",
     "",
     "THIS ROUND'S TOPICS — draft #1,2,3,4 take topics #1,2,3,4 IN ORDER (build one concrete piece per topic, do not just restate the hint):",

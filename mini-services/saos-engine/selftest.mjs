@@ -769,9 +769,9 @@ ok("webintel empty-findings-null", webIntelFresh({ fetchedAt: "2026-10-01T22:00:
 ok("webintel scans-shape-counts", webIntelFresh({ fetchedAt: "2026-10-01T22:00:00Z", scans: [{ findings: norm.findings }, { findings: [null, { url: "https://x.y/c", title: "third" }] }] }, Date.parse("2026-10-02T00:00:00Z"))?.findings === 3);
 
 /* ═════ T-22 · CONTENT OPS: the exposure law is enforced in pure code ═════ */
-const goodDraft = sanitizeDraft({ title: "How RC economics shapes Steem trading tools", body: "x".repeat(200), tags: ["steem", "rc", "trading"], angle: "educational" });
+const goodDraft = sanitizeDraft({ title: "How RC economics shapes Steem trading tools", body: "x ".repeat(320), tags: ["steem", "rc", "trading"], angle: "educational" });
 ok("content valid-draft-passes", goodDraft != null && goodDraft.tags.length === 3);
-ok("content tags-normalized", sanitizeDraft({ title: "A title long enough here", body: "x".repeat(150), tags: ["STEEM!", "Trading"] })?.tags.join(",") === "steem,trading");
+ok("content tags-normalized", sanitizeDraft({ title: "A title long enough here", body: "x ".repeat(320), tags: ["STEEM!", "Trading"] })?.tags.join(",") === "steem,trading");
 ok("content stub-blocked", sanitizeDraft({ title: "short", body: "x", tags: ["a", "b"] }) === null);
 ok("content too-few-tags-blocked", sanitizeDraft({ title: "A title long enough here", body: "x".repeat(150), tags: ["onlyone"] }) === null);
 ok("content exposure-headcorner-blocked", sanitizeDraft({ title: "How headcorner trades the SBD book", body: "x".repeat(200), tags: ["a", "b"] }) === null);
@@ -1054,6 +1054,7 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("mesh hostile", meshVerdict(null), "MESH-DARK");
 }
 
+<<<<<<< HEAD
 /* ── R243 · SPAMGATE (the measured @spaminator law) ───────────────────────── */
 {
   eq("normalize strips links", normalizeText("see [x](https://a.b/c) now"), "see x now");
@@ -1149,6 +1150,84 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("deliver handled", out.handled === 1 && seen.length === 1);
   ok("deliver unknown soft", out.unknown.length === 1);
   ok("deliver handler-error soft", deliverInbox([msg], { [BUS_TYPES.CYCLE_RECEIPT]: () => { throw new Error("boom"); } }).delivered[0].note.startsWith("handler-error"));
+=======
+/* R244 · THE INTELLIGENCE ROUND: offline conversation pack, corpus floors,
+ * monoculture veto. Chain truth that motivated these: 45 posts / 0 comments
+ * in 72h; 100–220-word posts; three near-identical "Streamlining" titles. */
+{
+  const { detectTopic, anchorPhrases, synthesizeComment, synthesizeReply, TOPIC_MODULES, readCorpus } = await import("./intel-pack.mjs");
+  const { wordCount, MIN_POST_WORDS, titleSimilarity } = await import("./content.mjs");
+
+  /* word floor: the anti-shitpost law counts words */
+  eq("wordCount basic", wordCount("one two  three\nfour"), 4);
+  const stub = { title: "A Very Short Stub Post", body: "Too short. ".repeat(30).trim(), tags: ["life", "psychology"] };
+  eq("300-word floor rejects stub", sanitizeDraft(stub), null);
+  const longBody = Array.from({ length: 320 }, (_, i) => `word${i % 97}`).join(" ");
+  const real = sanitizeDraft({ title: "A Real Post With Real Words", body: longBody, tags: ["life", "psychology"] });
+  ok("300-word floor accepts real", !!real);
+
+  /* corpus integrity: every hand-crafted pillar post IS a lawful draft */
+  const corpus = readCorpus();
+  ok("corpus non-empty (>=9)", corpus.length >= 9);
+  for (const c of corpus) {
+    const d = sanitizeDraft({ title: c.title, body: c.body, tags: c.tags, angle: c.angle, voice: c.voice });
+    ok(`corpus lawful: ${c.id}`, !!d);
+  }
+
+  /* topic detection: the pack reads what it is about to answer */
+  eq("detect food", detectTopic("A slow simmered soup recipe from my kitchen, the flavor of cumin").topic, "food");
+  eq("detect psychology", detectTopic("habit and attention, how focus survives a stressful week").topic, "psychology");
+  eq("detect travel", detectTopic("backpacking the mountain trail, crossing the border by bus").topic, "travel");
+  eq("detect generic", detectTopic("lorem ipsum dolor sit amet consectetur").topic, "generic");
+
+  /* anchoring: the parent's own words come back in the reply */
+  const anchors = anchorPhrases("The Old Lighthouse Remembers Every Storm", "A lighthouse keeper logs storms; the lighthouse wall holds the marks of every storm season.", { n: 2 });
+  ok("anchor picks parent words", anchors.some((a) => ["lighthouse", "storm", "storms", "keeper"].includes(a)));
+
+  /* synthesis: lawful, anchored, deterministic, varied */
+  const c1 = synthesizeComment({ postTitle: "What a plant hanger actually costs", postExcerpt: "Three meters of cotton cord, a metal ring, hours of knotting and untangling patience.", seed: 7 });
+  ok("synthesizeComment lawful", !!c1 && c1.length >= 120 && c1.length <= 650);
+  ok("synthesizeComment anchored", /cord|knot|ring|hours|hanger|cotton|patience/i.test(c1));
+  eq("synthesizeComment deterministic", synthesizeComment({ postTitle: "What a plant hanger actually costs", postExcerpt: "Three meters of cotton cord, a metal ring, hours of knotting and untangling patience.", seed: 7 }), c1);
+  const c2 = synthesizeComment({ postTitle: "What a plant hanger actually costs", postExcerpt: "Three meters of cotton cord, a metal ring, hours of knotting and untangling patience.", seed: 8 });
+  ok("synthesizeComment varies by seed", c1 !== c2);
+  const r1 = synthesizeReply({ postTitle: "The Waiting Room Is the Most Honest Building in Town", commentBody: "The part about the wrong clock being the most reliable one hit me, I never noticed that.", myPrior: "waiting rooms record what people do when nothing can be done", seed: 3 });
+  ok("synthesizeReply lawful", !!r1 && r1.length >= 120 && r1.length <= 650);
+  ok("synthesizeReply anchored on their words", /clock|reliable|hit/i.test(r1));
+
+  /* module harmony: every synthesis path must satisfy the standing reply law */
+  let allLawful = true;
+  for (let s = 1; s <= 12; s++) {
+    const t = synthesizeComment({ postTitle: "Walking Is How I Think: On Routes, Loops, and Ideas", postExcerpt: "walking the same loop around ordinary blocks, the mind rearranging, boredom as price of admission", seed: s });
+    if (!t || !sanitizeReply(t)) { allLawful = false; break; }
+  }
+  ok("12 seeds × sanitizeReply harmony", allLawful);
+
+  /* the monoculture veto: the chain-observed clones must be catchable */
+  ok("monoculture: streamlining twins", titleSimilarity("Streamlining Your Steem Workflow", "Streamlining Your Steem Workflow: Tools for Efficiency") >= 0.5);
+  ok("monoculture: myth-vs-fact twins", titleSimilarity("Myth vs Fact: Is Steem Truly Decentralized?", "Myth vs Fact: Steem Dollars Are Stable") >= 0.5);
+  ok("monoculture: distinct titles pass", titleSimilarity("The Waiting Room Is the Most Honest Building in Town", "What a plant hanger actually costs") < 0.5);
+
+  /* R244 · THE WORD-BOUNDARY LAW (root-cause of the comment drought): "wic"
+   * must NOT match inside "twice" — but a real mention must still die. */
+  const { mentionsAny } = await import("./intel-pack.mjs");
+  ok("boundary: twice is clean", mentionsAny("I read your post twice and walked the loop twice too", ["wic"]) === false);
+  ok("boundary: real wic mention dies", mentionsAny("say hi to wic for me", ["wic"]) === true);
+  ok("boundary: capital WIC dies", mentionsAny("Say hi to WIC for me", ["wic"]) === true);
+  ok("boundary: saos mention dies", mentionsAny("the saos crew strikes again", ["saos"]) === true);
+  ok("boundary: same word different case clean", mentionsAny("SAOS is also a common typo word but standalone here only as saOs", []) === false);
+  ok("sanitizeReply: twice survives the standing law", sanitizeReply("I have read this piece twice now and the second reading held up; what did you cut last?") !== null);
+
+  /* amplified schedule: the R244 conversation capacity, proven */
+  const sched = buildDaySchedule(12345, { publishWindow: [7, 23] });
+  const count = (k) => sched.filter((s) => s.kind === k).length;
+  eq("amplified fleet-vote slots", count("fleet-vote"), 3);
+  eq("amplified fleet-comment slots", count("fleet-comment"), 2);
+  eq("amplified reply slots", count("reply"), 3);
+  eq("amplified community slots", count("community-comment"), 2);
+  eq("amplified deepen slots", count("deepen"), 2);
+  eq("publish cap stays anti-spam", count("publish"), 1);
+>>>>>>> d3393be9 (R244: sovereign conversation round — engine revived (stale-process /status crash), chain-truth audit 45 posts/0 comments -> live interaction map 111 comments/36h, intel-pack.mjs offline conversation intelligence (12 topic modules, anchor-first synthesis, WARM-UP law), hand-crafted 9-post content corpus in tree, 300-word spam-safety floor + thin-veto at publish gate + monoculture veto (title-similarity vs published), word-boundary root-cause fix ("wic" inside "twice" silently vetoed lawful replies), pacing law (1 conversation act/account/cycle) + chain-truth pair-guard, amplify caps (votes 3, fleet-comments 2, replies 3, community 2, deepens 2; publish stays 1), deepen lane rescued from invalid get_discussions_by_comments -> account_history, ci-cycle.mjs sovereign heartbeat (SAOS_OFFLINE + CI_SKIP_MASTER, git-vault custody), public saos-runtime Actions host (unlimited minutes; private tree cloned at runtime via GH_PAT sealed-box secret), per-action fail isolation; selftest 449->489 PASS)
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

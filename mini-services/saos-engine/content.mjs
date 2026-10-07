@@ -19,6 +19,7 @@
  */
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { readCorpus } from "./intel-pack.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -137,12 +138,19 @@ const EXPOSURE_LAW = [
 
 export function contentState() { return readJson(FILE, null); }
 
+/** pure: word count — the R244 anti-shitpost floor counts WORDS, not chars
+ * (chain truth R244: live posts ran 100–220 words = spam-detector tier) */
+export function wordCount(text) {
+  return String(text ?? "").split(/\s+/).filter(Boolean).length;
+}
+export const MIN_POST_WORDS = Number(process.env.SAOS_MIN_POST_WORDS) || 300;
+
 /** pure: validate one draft against the exposure law (selftest-vectorable) */
 export function sanitizeDraft(d) {
   if (!d || typeof d !== "object") return null;
   const title = String(d.title ?? "").trim();
   const body = String(d.body ?? "").trim();
-  if (title.length < 12 || body.length < 120) return null; // a real post, not a stub
+  if (title.length < 12 || wordCount(body) < MIN_POST_WORDS) return null; // a real post, not a stub (R244: 300-word spam-safety floor)
   const tags = (Array.isArray(d.tags) ? d.tags : [])
     .map((t) => String(t).toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 24))
     .filter(Boolean).slice(0, 5);
@@ -184,7 +192,12 @@ export async function runContent({ now = new Date().toISOString(), force = false
   const recentTitles = recentPublishedTitles(prev?.queue, 12);
   const t0 = Date.now();
   let raw = null, bridgeError = null;
-  try {
+  /* R244: SAOS_OFFLINE=1 (CI / sovereign mode) never dials the bridge — the
+   * corpus is the writers' room, the conversation does not depend on any
+   * single machine. */
+  if (process.env.SAOS_OFFLINE === "1") {
+    bridgeError = "offline-mode (SAOS_OFFLINE=1)";
+  } else try {
     const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -195,6 +208,13 @@ export async function runContent({ now = new Date().toISOString(), force = false
     raw = await r.json();
   } catch (e) { bridgeError = String(e?.message ?? e).slice(0, 160); }
 
+  /* R244 · THE OFFLINE FLOOR: bridge down / CI mode → the sovereign corpus
+   * speaks (hand-crafted pillar posts mined into git — the intelligence lives
+   * IN the tree, so content survives any sandbox wipe by design). */
+  if (!raw) {
+    const corpus = readCorpus();
+    raw = { drafts: corpus.map((c) => ({ title: c.title, body: c.body, tags: c.tags, angle: c.angle, voice: c.voice, groundedOn: [c.topic] })) };
+  }
   const sanitized = (raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean);
   const exposureBlocked = (raw?.drafts ?? []).length - sanitized.length;
   const { kept, dropped } = dedupeTitles(sanitized, recentTitles);
@@ -206,7 +226,9 @@ export async function runContent({ now = new Date().toISOString(), force = false
   const doc = {
     draftedAt: now,
     verdict: kept.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
+    source: raw && bridgeError?.startsWith("offline") ? "corpus" : raw ? "bridge" : "none",
     draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped,
+    minPostWords: MIN_POST_WORDS,
     queue,
     law: "R240: נושאים-אנושיים מסבב-יום + קול-אחד-לחשבון + הסרת-כפילויות; חשיפה = נחסמת בטהרת-הנוסח; שידור רק אחרי אימות-חתימה (דוקטרינת-שער)",
     bridgeError,

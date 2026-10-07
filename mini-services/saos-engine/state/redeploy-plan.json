@@ -1,6 +1,6 @@
 {
-  "verdict": "REDEPLOY-HOLD",
-  "reason": "below-min-powerup",
+  "verdict": "REDEPLOY-PLAN",
+  "reason": "doctrine-ratios",
   "ratios": {
     "buyBookPct": 0.5,
     "powerUpPct": 0.3,
@@ -10,22 +10,35 @@
     "liquidSteemFloor": 5,
     "liquidSbdFloor": 0.5
   },
-  "liquidSteem": 11.307,
-  "liquidSbd": 10.316,
-  "excessSteem": 6.307,
-  "powerUpSteem": 1.892,
+  "liquidSteem": 31.207,
+  "liquidSbd": 22.052,
+  "excessSteem": 26.207,
+  "powerUpSteem": 7.862,
   "minPowerUpSteem": 5,
   "liquidBasis": "free-balance — open-order locks excluded; jitters by ±open-asks between reads, execute re-reads the chain (binding clamp)",
   "buyBookNote": "the BID rail is the buy-book share made real — capped by buyBookPct of SBD above the floor (R231: enforced, not documented), under peg's 60% deploy law",
   "reserveNote": "the floors ARE the reserve — never deployed, always protecting ops",
   "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים, מעל רצפות-ההפעלה בלבד",
-  "at": "2026-10-07T16:29:09.777Z",
+  "at": "2026-10-07T16:59:31.393Z",
   "pacing": {
     "minIntervalSec": 3600,
     "maxPerDay": 12,
     "powerUpsToday": 5,
     "lastPowerUpAt": "2026-10-07T03:45:02.247Z",
-    "sinceLastSec": 45853,
+    "sinceLastSec": 47676,
     "verdict": null
+  },
+  "intel": {
+    "scale": 1,
+    "verdict": "FULL-DOCTRINE",
+    "factors": {
+      "planned": 7.862,
+      "liquidSteem": 31.207,
+      "floorSteem": 5,
+      "askNeed": 0,
+      "rcPct": 32.5
+    },
+    "reason": "no ask-side ladder need measured — nothing to starve",
+    "urgency": null
   }
 }
