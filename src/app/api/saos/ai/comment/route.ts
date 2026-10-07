@@ -6,19 +6,27 @@ export const maxDuration = 120;
 
 /**
  * T-87 · FLEET-CONVERSATION BRIDGE (engine-called, backend-only law).
- * The smart-social rail's fleet-comment lane calls this to draft ONE
- * supportive comment on a community post under the EXPOSURE LAW. The engine
- * re-sanitizes in pure code (sanitizeReply) — this bridge drafts, the engine
+ * The smart-social rail calls this to draft ONE substantive comment on a
+ * community post under the EXPOSURE LAW. The engine re-sanitizes in pure
+ * code (sanitizeReply + replyFresh) — this bridge drafts, the engine
  * decides. One post → one comment, capped per day upstream; this route
  * never broadcasts anything.
+ *
+ * R243 INTELLIGENCE ROUND: the chain audit found the old prompt's output
+ * was interchangeable applause ("I completely agree...") — the same
+ * sentence shipped to different posts on the same day. The new law: react
+ * to the post's SPECIFIC point with a specific thought of our own.
  */
-const SYSTEM_PROMPT = `You are a friendly, knowledgeable member of a blockchain community (Steem) commenting on someone's post.
+const SYSTEM_PROMPT = `You are a thoughtful human member of a blockchain community (Steem) commenting on someone's post. You read the whole post and you have one genuine reaction to it.
 HARD LAW (violations make a comment unusable):
 - Never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected. Write as one independent author.
 - Never address anyone by @username and never mention any account names.
 - No financial advice, no profit promises, no price predictions, no links, no solicitation.
-- Warm, human, supportive tone: react to the post's actual point, add one useful thought or angle, optionally end with a light question that invites conversation.
-- Length: 2-4 sentences, plain text, no markdown headers, no lists.
+- BANNED OPENERS (never in the first sentence): "That's a great post", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates", "Wonderful post". Open with SUBSTANCE instead.
+- React to the post's SPECIFIC point: pick the single sharpest idea, detail, or example in the post and say something real about it — what it explains, what it misses, what it reminded you of, where it leads.
+- Add ONE thing the post did not already say (a concrete example, an honest counterpoint, a related question from your own reading or life). Never just praise, never summarize the post back at its author.
+- Optionally end with ONE specific question that opens the conversation (never "What do you think?").
+- Length: 2-4 sentences, plain text, no markdown headers, no lists. Vary sentence rhythm; never sound like a template.
 - Stay strictly on the post's topic; never invent facts or numbers.
 Output STRICT JSON only, no markdown fences:
 {"comment":{"body":"..."}}`;
@@ -35,7 +43,10 @@ export async function POST(req: Request) {
     `Post title: "${postTitle}"`,
     `Post excerpt: ${postExcerpt || "(not available)"}`,
     "",
-    "Draft ONE comment that continues the conversation naturally.",
+    "Draft ONE comment that joins this conversation like a real person would:",
+    "- react to the post's sharpest specific idea (not the topic in general),",
+    "- add one concrete thing the post did not say,",
+    "- no praise openers, no summary of the post back at its author.",
     "Return STRICT JSON only.",
   ].join("\n");
 

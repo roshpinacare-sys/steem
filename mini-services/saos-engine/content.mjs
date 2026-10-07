@@ -24,6 +24,12 @@ const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const FILE = path.join(STATE, "content-ops.json");
 const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
+/* R243 FIX: readJson/writeJson were lost in a pre-R243 refactor — every
+ * runContent call crashed with ReferenceError before doing anything (the
+ * chain audit's "queue starving" symptom, second root cause). Restored,
+ * atomic-write style, identical to army-social.mjs. */
+const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
+const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); };
 /* R240: 4h → 2h — 11 publishers × ≤1 post/day need a deeper queue, and the
  * dedupe gate now makes a bigger queue SAFE (junk can no longer slip in as
  * "the only option"). */
@@ -106,6 +112,17 @@ export function dedupeTitles(drafts, recentTitles, { threshold = 0.55 } = {}) {
     else { kept.push(d); seen.push(t); }
   }
   return { kept, dropped };
+}
+
+/* ── R243 · OLD-STOCK VETO (pure) ────────────────────────────────────────────
+ * The queue shipped pre-R240 SEO stock for days (chain truth: a 2026-10-01
+ * draft went live on 10-07). A draft drafted before the R240 rebirth is
+ * INELIGIBLE for broadcast forever — the writers' room changed, the old
+ * queue does not get to speak. */
+export const PUBLISH_ELIGIBLE_SINCE = "2026-10-07T10:00:00.000Z";
+export function eligibleDrafts(queue, sinceIso = PUBLISH_ELIGIBLE_SINCE) {
+  return (Array.isArray(queue) ? queue : [])
+    .filter((d) => d?.status === "drafted" && String(d?.draftedAt ?? "") >= sinceIso);
 }
 
 /** exposure law — every draft is checked AGAINST it in the pure normalizer */
