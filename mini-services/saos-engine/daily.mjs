@@ -16,8 +16,9 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import {
   planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, rebuildPacingFromEvents, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
-  cycleHealth, cycleFailureBreakdown,
+  cycleHealth, cycleFailureBreakdown, signalDigest, measuredLayers, redeployIntel, blockageLedger,
 } from "./lib.mjs";
+import { runCouncil } from "./council.mjs";
 import {
   externalParity, internalFeed, accountState, openOrders, measureAll, fuelToUsdPerDay, marketPulse, rpcCall,
 } from "./measure.mjs";
@@ -171,7 +172,14 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     };
   });
 
-  /* 3 · tick: deterministic trigger-grid sim */
+  /* 3 · signal-scan (R237 — THE SIM LAYER IS RETIRED): the operator ruled
+   * "simulations instead of real runs" an architecture failure. The pure
+   * trigger-grid stays an OFFLINE signal generator; the live cycle journals
+   * ZERO simulated fills — `grid.fill`/`fee.spawn` (real:false) never reach
+   * the bus again. Real fills are measured from the chain (measure.mjs),
+   * real presence is measuredLayers (our tranches + hyper + verified
+   * soldiers). Legacy simFills/simFeesMu are FROZEN heritage, never
+   * incremented again. */
   report.steps.tick = await stepWrap("tick", async () => {
     const prev = readJson(path.join(STATE, "state.json"), { runCount: 0, simFills: 0, simFeesMu: 0 });
     const inv = obs.ok && !obs.error ? { steem: obs.inventory?.steem ?? 0, sbd: obs.inventory?.sbd ?? 0 } : { steem: 0, sbd: 0 };
@@ -180,14 +188,30 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       internalFeed: obs.ok ? obs.feed : 0,
       inventory: inv, runCount: prev.runCount, now,
     });
-    const st = fold(prev, res);
+    const digest = signalDigest(res.events);
+    const st = {
+      runCount: (prev.runCount ?? 0) + 1,
+      /* frozen heritage — the honest tombstone of the retired sim layer */
+      simFills: prev.simFills ?? 0, simFeesMu: prev.simFeesMu ?? 0,
+      sim: { retired: true, note: "R237: sim fills retired — real fills measured from chain; counters frozen" },
+      asof: now,
+      market: { refPrice: obs.ok ? obs.parity.parity : null, source: "engine", stale: false },
+    };
     if (persist) {
       // T-15: the tick's recorded output must carry its own timestamp —
       // the fleet registry reads state.json.at as the liveness evidence
-      writeJson(path.join(STATE, "state.json"), { ...st, at: now, grids: activeGrids() });
-      for (const e of res.events) appendLine(path.join(STATE, "events.jsonl"), e);
+      const ourOrders = readJson(path.join(STATE, "our-orders.json"), { orderids: [] })?.orderids ?? [];
+      const hyper = readJson(path.join(STATE, "hyper-grid.json"), null);
+      const soldiers = readJson(path.join(STATE, "soldiers.json"), null);
+      const soldiersVerified = Array.isArray(soldiers?.accounts) ? soldiers.accounts.filter((r) => r?.custody === "verified").length : 0;
+      const layers = measuredLayers({ ourOrders, hyper, soldiersVerified });
+      writeJson(path.join(STATE, "state.json"), { ...st, grids: layers });
+      if (prev.simFills > 0 || prev.simFeesMu > 0) {
+        appendLine(path.join(STATE, "events.jsonl"), { type: "grid.sim-retired", at: now, frozenFills: prev.simFills ?? 0, frozenFeesMu: prev.simFeesMu ?? 0, law: "R237 — real fills are chain-measured, never simulated" });
+      }
+      for (const e of digest.signals) appendLine(path.join(STATE, "events.jsonl"), e);
     }
-    return { runCount: st.runCount, simFills: st.simFills, simFeesMu: st.simFeesMu, events: res.events.length };
+    return { runCount: st.runCount, signals: digest.signals.length, retiredFills: digest.retiredFills, arbSignal: digest.arbSignal, layers: "measured (see state.json.grids)" };
   });
 
   /* 4 · peg: parity-anchored offer plan (skew + floor law), intel-fed spread */
@@ -332,11 +356,29 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       plan.reason = pacing.reason;
     }
     plan.pacing = { minIntervalSec, maxPerDay, powerUpsToday: rs.powerUpsToday ?? 0, lastPowerUpAt: rs.lastPowerUpAt, sinceLastSec, verdict: pacing.verdict };
+    /* R237-C POWER-UP INTELLIGENCE — the calculated layer ON TOP of the pure
+     * doctrine: measured factors (ladder ask-need from this cycle's offer,
+     * RC pressure) explain the decision and may scale the power-up DOWN to
+     * protect the grid. planRedeploy itself stays untouched (doctrine math
+     * exact — selftest P2/P4 hold); the scale lives in execution only. */
+    let intel = null;
+    if (plan.verdict === "REDEPLOY-PLAN") {
+      const offerNow = readJson(path.join(STATE, "offer.json"), null);
+      const askNeed = Math.max(0, offerNow?.liquidity?.askBudget ?? 0);
+      intel = redeployIntel({
+        planned: plan.powerUpSteem,
+        liquidSteem: inv.steem ?? 0,
+        floorSteem: rd.liquidSteemFloor ?? 5,
+        askNeed,
+        rcPct: obs.ok ? obs.inventory?.rcPct ?? null : null,
+      });
+      plan.intel = intel;
+    }
     if (persist) {
       writeJson(path.join(STATE, "redeploy-plan.json"), plan);
-      appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.planned", at: now, verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict });
+      appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.planned", at: now, verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict, intel: intel ? { verdict: intel.verdict, scale: intel.scale, reason: intel.reason } : null });
     }
-    return { verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict ?? null };
+    return { verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict ?? null, intel: intel ? { verdict: intel.verdict, scale: intel.scale, reason: intel.reason, urgency: intel.urgency } : null };
   });
 
   /* join the parallel curate branch here (it never gates the front chain) */
@@ -504,8 +546,21 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
           const steemLockedThisBatch = createdIds
             .filter((c) => c.side === "ask")
             .reduce((s, c) => s + (c.amountSteem ?? 0), 0);
+          /* R237-C: the intelligence layer recomputed on FRESH chain reads
+           * (binding) — doctrine share × protective scale, then the existing
+           * batch-funds guard. Never above doctrine, journaled either way. */
+          const offerExec = readJson(path.join(STATE, "offer.json"), null);
+          const intelExec = redeployIntel({
+            planned: rdExec.powerUpSteem,
+            liquidSteem: accRd.ok ? accRd.steem ?? 0 : 0,
+            floorSteem,
+            askNeed: Math.max(0, offerExec?.liquidity?.askBudget ?? 0),
+            rcPct: accRd.ok ? accRd.rcPct ?? null : null,
+          });
+          report.steps.redeployIntel = { ...intelExec };
+          if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.intel", at: now, planned: rdExec.powerUpSteem, scale: intelExec.scale, verdict: intelExec.verdict, reason: intelExec.reason, urgency: intelExec.urgency ?? null, factors: intelExec.factors });
           const amt = Math.min(
-            rdExec.powerUpSteem,
+            rdExec.powerUpSteem * (intelExec.scale ?? 1),
             Math.max(0, (accRd.ok ? accRd.steem ?? 0 : 0) - floorSteem - steemLockedThisBatch),
           );
           const amt3 = Math.floor(amt * 1000) / 1000;
@@ -520,9 +575,10 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
             writeJson(RS_FILE, { day: rdDay, powerUpsToday: (rsExec.powerUpsToday ?? 0) + 1, lastPowerUpAt: now });
             if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.powerup-op", at: now, amountSteem: amt3 });
           } else {
-            /* R233: the funds-bound skip is JOURNALED, never silent — the
-             * battery found the old path vanished without a trace */
-            report.steps.redeploySkippedForFunds = { planned: rdExec.powerUpSteem, chainSteem: accRd.ok ? accRd.steem ?? null : null, floorSteem, steemLockedThisBatch };
+            /* R233/R237: the funds-bound skip is JOURNALED, never silent —
+             * the battery found the old path vanished without a trace; the
+             * intel verdict names WHICH guard bound (funds vs grid-protect) */
+            report.steps.redeploySkippedForFunds = { planned: rdExec.powerUpSteem, chainSteem: accRd.ok ? accRd.steem ?? null : null, floorSteem, steemLockedThisBatch, intel: intelExec?.verdict ?? null };
             if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.skipped-funds", at: now, ...report.steps.redeploySkippedForFunds });
           }
         } catch (e) {
@@ -784,6 +840,36 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     return { verdict: roster.verdict, active: roster.active, total: roster.total };
   });
 
+  /* R237-B · COUNCIL: the engine reads its fellow organs LIVE (custodian
+   * :3041, metrics :3042, builder :3043) — measured verdicts, never assumed.
+   * Cadence-gated deep gossip: full reads every cycle (cheap, 3 × /health),
+   * the builder work-order at most 1/day and only when its queue is empty —
+   * the machine feeds its engineer organ ONE evidence-backed task carrying
+   * the top measured lesson (memory/ is inside the builder's path law).
+   * Fail-isolated: a dark organ journals DOWN — it never blocks the cycle. */
+  report.steps.council = await stepWrap("council", async () => {
+    const prevCouncil = readJson(path.join(STATE, "council.json"), null);
+    const today = now.slice(0, 10);
+    const taskDay = prevCouncil?.builderTask?.at ? String(prevCouncil.builderTask.at).slice(0, 10) : null;
+    let builderTask = null;
+    const councilPrev = await Promise.resolve(readJson(path.join(STATE, "council.json"), null));
+    const builderOrgan = (councilPrev?.organs ?? []).find((o) => o?.id === "builder");
+    const queueEmpty = (builderOrgan?.evidence?.builder?.queue ?? 0) === 0;
+    if (taskDay !== today && queueEmpty) {
+      const lessons = readJson(path.join(STATE, "learning.json"), null)?.lessons ?? [];
+      const top = Array.isArray(lessons) ? lessons[0] : null;
+      if (top && (top.id || top.lesson)) {
+        builderTask = {
+          file: "memory/lessons.md",
+          basis: `measured lesson ${top.id ?? "?"} from state/learning.json`,
+          task: `הוסף שורת-לקח אחת ל-memory/lessons.md: [${now.slice(0, 10)}] ${String(top.id ?? "").slice(0, 60)} — ${String(top.lesson ?? top.summary ?? "").slice(0, 240)} (מקור: state/learning.json, מדוד). הצע עריכה אחת: find = השורה-האחרונה בקובץ, replace = השורה-האחרונה + שורת-הלקח החדשה.`,
+        };
+      }
+    }
+    const out = await runCouncil({ now, builderTask });
+    return { verdict: out.mesh, organs: out.organs.map((o) => `${o.id}:${o.verdict}`), builderTask: out.builderTask ? { verdict: out.builderTask.verdict, file: out.builderTask.file, error: out.builderTask.error } : null, error: null };
+  });
+
   /* 10 · report: profitability rollup */
   report.steps.report = await stepWrap("report", async () => {
     const pnl = obs.ok ? obs.pnl : null;
@@ -812,6 +898,10 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.ok = Object.values(report.steps).every((s) => s.ok !== false);
   report.health = cycleHealth(report.steps);
   report.failures = cycleFailureBreakdown(report.steps);
+  /* R237-D: every blockage named, owned, classified LAWFUL — surfaced to
+   * the cockpit verbatim. A blockage without an owner is the only kind
+   * this machine no longer tolerates. */
+  report.blockages = blockageLedger({ steps: report.steps, conf: armedConf() });
   report.finishedAt = new Date().toISOString();
   if (persist) writeJson(path.join(STATE, "daily-report.json"), report);
   return report;
