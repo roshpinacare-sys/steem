@@ -1238,3 +1238,25 @@ export function meshVerdict(organs = []) {
   if (downs > 0 || stales > 0) return "MESH-PARTIAL";
   return "MESH-ALIVE";
 }
+
+/* ── R245 · DEX-TAKEOVER GATE (pure, the sandbox-distrust law in code) ─────
+ * Operator order 2026-10-07 (verbatim intent): "ששום פעולה לא תוגדר ריבונית
+ * על הסנדבוקס כי יש לו חיים קצרים" — the sandbox engine is a CONVENIENCE
+ * CACHE, never the sovereign home. Trading duty fails over to GitHub CI when
+ * the sandbox's custodian anchor goes stale (engine dead) and never races a
+ * live engine (fresh anchor = STANDBY). A takeover-gap keeps the failover
+ * from hammering a dying host every 30 minutes. Pure + deterministic. */
+export function dexTakeoverDue({ anchorAt = null, now, staleMs = 90 * 60_000, lastAt = null, gapMs = 3 * 60 * 60_000 } = {}) {
+  const nowMs = typeof now === "number" ? now : Date.parse(now);
+  if (!Number.isFinite(nowMs)) return { due: false, reason: "bad-now" };
+  if (anchorAt == null) return { due: true, reason: "no-anchor" };
+  const anchorMs = typeof anchorAt === "number" ? anchorAt : Date.parse(anchorAt);
+  if (!Number.isFinite(anchorMs)) return { due: true, reason: "anchor-unreadable" };
+  if (nowMs - anchorMs > staleMs) {
+    if (lastAt == null) return { due: true, reason: "anchor-stale" };
+    const lastMs = typeof lastAt === "number" ? lastAt : Date.parse(lastAt);
+    if (!Number.isFinite(lastMs) || nowMs - lastMs >= gapMs) return { due: true, reason: "anchor-stale" };
+    return { due: false, reason: "takeover-gap" };
+  }
+  return { due: false, reason: "engine-alive" };
+}

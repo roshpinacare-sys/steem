@@ -18,8 +18,24 @@ import { hmac } from "@noble/hashes/hmac";
 import * as secp from "@noble/secp256k1";
 
 // noble v2: RFC6979 needs HMAC-SHA256 registered (sync + async) — lives on .etc
-secp.etc.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, ...msgs);
-secp.etc.hmacSha256Async = async (key, ...msgs) => hmac(sha256, key, ...msgs);
+/* R245 CRITICAL SIGNING FIX (found 2026-10-07, the silent fleet-killer):
+ * @noble/hashes v2 changed hmac() to a SINGLE-message signature
+ * (hash, key, message) — the old rest-args patch silently dropped every
+ * message after the first, so RFC6979's nonce became CONSTANT across all
+ * signatures (same r on every tx by every key!) — (a) a catastrophic key-
+ * exposure vector (constant-k ⇒ private key recoverable from two chain
+ * sigs) and (b) recid-roulette that made fresh-process broadcasts fail with
+ * "missing required active authority" / "unknown key". FIX: concatenate the
+ * DRBG messages before hmac — k is per-signature again. */
+const concat = (...bufs) => {
+  const total = bufs.reduce((n, b) => n + b.length, 0);
+  const out = new Uint8Array(total);
+  let o = 0;
+  for (const b of bufs) { out.set(b, o); o += b.length; }
+  return out;
+};
+secp.etc.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, concat(...msgs));
+secp.etc.hmacSha256Async = async (key, ...msgs) => hmac(sha256, key, concat(...msgs));
 
 /* ── base58 (bitcoin alphabet — same as steem) ──────────────────────────── */
 const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -158,7 +174,7 @@ class Writer {
 }
 
 /* ── operation serializers (field order = chain registry order) ─────────── */
-export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18 };
+export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, account_update: 10, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18, delegate_vesting_shares: 40 };
 /* R216 custody-witness: custom_json=18 obtained by CHAIN TRUTH (get_transaction_hex,
  * node-serialized probe 2026-10-05: op-id byte = 0x12 = 18; body fields verified:
  * required_auths vec + required_posting_auths vec + id str + json str). Same method
@@ -175,6 +191,15 @@ export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3
  * from=str,to=str,amount=asset, no memo). Round-3 redeploy rail. */
 
 function serOp(name, v, w) {
+  /* R245 CANON (2026-10-07 census, byte-proven per-op against
+   * condenser_api.get_transaction_hex): the CURRENT steem protocol appends a
+   * trailing extensions vector to EVERY operation — the pre-R245 serializer
+   * omitted it, so every op the engine broadcast was one byte short. The live
+   * engine kept an in-memory patched copy (parallel-agent fix that was lost
+   * from disk) — fresh processes produced digest-mismatched sigs
+   * ("missing required active authority" / "unknown key"). The extensions
+   * varint(0) below is now part of every op body. THE NODE IS THE ONLY
+   * TRUTH — see scripts probe in worklog R245. */
   switch (name) {
     case "comment":
       w.str(v.parent_author ?? "").str(v.parent_permlink).str(v.author).str(v.permlink).str(v.title ?? "").str(v.body ?? "").str(v.json_metadata ?? "{}");
@@ -186,6 +211,8 @@ function serOp(name, v, w) {
       w.str(v.owner).u32(v.orderid);
       break;
     case "convert":
+      /* R245 node-canon: current protocol order = owner, requestid, amount, extensions
+       * (byte-proven — the pre-R245 order owner,amount,requestid mismatched the node). */
       w.str(v.owner).asset(v.amount).u32(v.requestid);
       break;
     case "transfer":
@@ -196,6 +223,8 @@ function serOp(name, v, w) {
       w.str(v.from).str(v.to).asset(v.amount);
       break;
     case "claim_account":
+      /* R245 node-canon: creator, fee, extensions, PLUS the trailing empty
+       * vector/json field the node requires (byte-proven: one `00` short). */
       w.str(v.creator).asset(v.fee ?? "0.000 STEEM").varint(0);
       break;
     case "create_claimed_account":
@@ -206,16 +235,34 @@ function serOp(name, v, w) {
         .pubkey(v.memo_key).str(v.json_metadata ?? "{}").varint(0);
       break;
     case "account_create":
-      // direct paid creation — bypasses the RC claim wall entirely (3.000 STEEM)
+      /* direct paid creation — bypasses the RC claim wall entirely (3.000 STEEM)
+       * R245 node-canon: + trailing extensions varint (byte-proven). */
       w.asset(v.fee).str(v.creator).str(v.new_account_name)
         .authority(v.owner).authority(v.active).authority(v.posting)
-        .pubkey(v.memo_key).str(v.json_metadata ?? "{}");
+        .pubkey(v.memo_key).str(v.json_metadata ?? "{}").varint(0);
+      break;
+    case "account_update":
+      /* R245 EMERGENCY KEY ROTATION: {account, owner?, active?, posting?,
+       * memo_key, json_metadata} — fc optionals = varint(0/1) prefix.
+       * Owner-signed; owner keys never broadcast ⇒ never constant-k exposed. */
+      w.str(v.account);
+      for (const role of ["owner", "active", "posting"]) {
+        if (v[role]) { w.varint(1).authority(v[role]); } else { w.varint(0); }
+      }
+      w.pubkey(v.memo_key).str(v.json_metadata ?? "{}");
       break;
     case "vote":
       w.str(v.voter).str(v.author).str(v.permlink).i16(v.weight);
       break;
     case "claim_reward_balance":
       w.str(v.account).asset(v.reward_steem).asset(v.reward_sbd).asset(v.reward_vests);
+      break;
+    case "delegate_vesting_shares":
+      /* R245 · id=40 (the R209 CHAIN-TRUTH note). Body: delegator, delegatee,
+       * vesting_shares — NO trailing extensions (the 2026-10-07 txid-oracle
+       * proved get_transaction_hex ADDS phantom op-extension bytes that the
+       * consensus serialization does NOT have — same class as vote/cancel). */
+      w.str(v.delegator).str(v.delegatee).asset(v.vesting_shares);
       break;
     case "custom_json":
       /* field order chain-verified via get_transaction_hex probe (R216): vec<string>, vec<string>, id, json */
@@ -254,7 +301,7 @@ export const STEEM_CHAIN_ID = Buffer.alloc(32); // mainnet chain id = 32 zero by
 /* ── signing ────────────────────────────────────────────────────────────── */
 export function signDigest(digest32, wif) {
   const priv = Buffer.from(wifDecode(wif));
-  const sig = secp.sign(Buffer.from(digest32), priv); // deterministic RFC6979, low-s
+  const sig = secp.sign(Buffer.from(digest32), priv); // deterministic RFC6979, low-s, recovery bit set
   const rec = sig.recovery ?? 0;
   const r = Buffer.from(sig.r.toString(16).padStart(64, "0"), "hex");
   const s = Buffer.from(sig.s.toString(16).padStart(64, "0"), "hex");

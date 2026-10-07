@@ -63,8 +63,31 @@ async function main() {
 
   report.steps.custody = await stepWrap("custody", async () => {
     const r = await reviveArmyCustody({ now });
-    const st = armyCustodyState([masterAccount(), "cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq"]);
+    /* R245: full roster — 10 old army + the replacement generation (4/5/6) */
+    const st = armyCustodyState([masterAccount(), "cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq", "hcsoldier4", "hcsoldier5", "hcsoldier6"]);
     return { verdict: r?.verdict ?? null, verified: st?.verified ?? null, total: st?.total ?? null };
+  });
+
+  /* ── R245 · DEX TAKEOVER (operator order: no action is sovereign on the
+   * sandbox) — when the sandbox's custodian anchor goes stale (engine dead),
+   * CI adopts the master's ACTIVE authority (chain-judged, from the workflow
+   * secret) and runs ONE full engine cycle: trading, converts, the economy.
+   * A fresh anchor = engine alive = STANDBY (never races the local engine). */
+  report.steps.dex = await stepWrap("dex-takeover", async () => {
+    const { dexTakeoverDue } = await import("./lib.mjs");
+    const anchor = readJson(path.join(STATE, "custody-anchor.json"), null);
+    const last = readJson(path.join(STATE, "ci-takeover.json"), null);
+    const gate = dexTakeoverDue({ anchorAt: anchor?.at ?? null, now, lastAt: last?.at ?? null });
+    if (!gate.due) return { verdict: "STANDBY", reason: gate.reason, anchorAgeMs: anchor?.at ? Date.now() - (typeof anchor.at === "number" ? anchor.at : Date.parse(anchor.at)) : null };
+    if (!process.env.CI_ADOPT_WIF_ACTIVE) return { verdict: "TAKEOVER-BLOCKED-NO-CREDENTIAL", reason: gate.reason };
+    process.env.CI_ADOPT_WIF_POSTING = process.env.CI_ADOPT_WIF_POSTING ?? "";
+    const { runCycle } = await import("./daily.mjs");
+    const r = await runCycle({ now, persist: true });
+    try {
+      fs.writeFileSync(path.join(STATE, "ci-takeover.json"), JSON.stringify({ at: now, reason: gate.reason, verdict: r?.verdict ?? null, health: r?.health ?? null }, null, 2));
+      appendLine(path.join(STATE, "events.jsonl"), { type: "ci.dex-takeover", at: now, reason: gate.reason, verdict: r?.verdict ?? null });
+    } catch { /* ledger never blocks */ }
+    return { verdict: "TAKEOVER-EXECUTED", reason: gate.reason, cycle: r?.verdict ?? null, health: r?.health ?? null };
   });
 
   report.steps.social = await stepWrap("social", async () => {
@@ -95,6 +118,8 @@ async function main() {
     socialExecuted: report.steps.social?.executed ?? 0,
     content: report.steps.content?.verdict ?? "STEP-FAIL",
     contentSource: report.steps.content?.source ?? null,
+    dex: report.steps.dex?.verdict ?? "STEP-FAIL",
+    dexReason: report.steps.dex?.reason ?? null,
   };
   console.log("CI-HEARTBEAT " + JSON.stringify(summary));
   fs.writeFileSync(path.join(STATE, "ci-last-heartbeat.json"), JSON.stringify({ ...summary, report }, null, 2));

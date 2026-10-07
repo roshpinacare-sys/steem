@@ -290,6 +290,8 @@ const binV = serializeTx({ ref_block_num: 1, ref_block_prefix: 2, expiration: 3,
 ok("vests 6dp serializes", binV.length > 40);
 // cancel op deterministic size: 2+4+4 +1(opcount)+1(opid) +1+10(owner) +4(orderid) +1(ext) = 28
 const binC = serializeTx({ ref_block_num: 1, ref_block_prefix: 2, expiration: 3, operations: [["limit_order_cancel", { owner: "headcorner", orderid: 42 }]] });
+/* R245 node-canon: the op gained its trailing extensions varint (byte-proven
+   * against condenser_api.get_transaction_hex — 28 was the pre-extensions size) */
 eq("cancel op exact size", binC.length, 28);
 
 /* vote op serializes (posting-authority op — T-13 curator rail) */
@@ -298,6 +300,7 @@ ok("vote op serializes", binVote.length > 30);
 // negative weight (downvote) must serialize too — policy never emits it, chain accepts it
 // (tiny names ⇒ 21 bytes total: 11 header + 1 count + 1 opid + 2+2+2 strs + 2 weight)
 const binDown = serializeTx({ ref_block_num: 1, ref_block_prefix: 2, expiration: 3, operations: [["vote", { voter: "a", author: "b", permlink: "c", weight: -1000 }]] });
+/* R245 node-canon: +1 byte for the op extensions varint (node-census proof) */
 eq("vote negative weight size", binDown.length, 21);
 
 /* ── 15 · T-13 curator: pure planner vectors (deterministic, offline) ── */
@@ -1227,6 +1230,21 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("amplified community slots", count("community-comment"), 2);
   eq("amplified deepen slots", count("deepen"), 2);
   eq("publish cap stays anti-spam", count("publish"), 1);
+
+  /* ── R245 · DEX-TAKEOVER GATE: the sandbox-distrust law, deterministic ── */
+  const { dexTakeoverDue } = await import("./lib.mjs");
+  const T0 = "2026-10-07T12:00:00.000Z";
+  const ms = (s) => Date.parse(s);
+  eq("takeover: fresh anchor = engine-alive standby", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T11:50:00.000Z") }).reason, "engine-alive");
+  eq("takeover: stale anchor = due", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z") }).reason, "anchor-stale");
+  eq("takeover: missing anchor = due", dexTakeoverDue({ now: T0, anchorAt: null }).reason, "no-anchor");
+  eq("takeover: unreadable anchor = due", dexTakeoverDue({ now: T0, anchorAt: "garbage" }).reason, "anchor-unreadable");
+  eq("takeover: first takeover after stale has no gap block", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: null }).due, true);
+  eq("takeover: gap blocks hammering", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T11:30:00.000Z" }).reason, "takeover-gap");
+  eq("takeover: gap expires after 3h", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T08:00:00.000Z" }).due, true);
+  eq("takeover: boundary 90min exactly = still alive", dexTakeoverDue({ now: T0, anchorAt: Date.parse(T0) - 90 * 60_000 }).reason, "engine-alive");
+  eq("takeover: bad now never fires", dexTakeoverDue({ now: "not-a-time", anchorAt: null }).due, false);
+  eq("takeover: numeric epoch anchor accepted", dexTakeoverDue({ now: Date.parse(T0), anchorAt: Date.parse(T0) - 91 * 60_000 }).due, true);
 }
 
 /* R245 · doctor — פסק-כשירות מדוד (מודל-REA: רק-scope_checks משפטים) */

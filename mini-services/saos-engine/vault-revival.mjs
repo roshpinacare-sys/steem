@@ -39,8 +39,17 @@ const TMP = path.join(SECRETS, "vault-tmp");
 const CACHE_FILE = path.join(SECRETS, "army-keys.json");
 const CUSTODY_FILE = path.join(STATE, "army-custody.json");
 
-const ARMY = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq"];
-const VAULT_ZIP = "agent/vault/KEYS-ZIP-2026-09-10.zip.enc";
+/* R245 · EMPIRE-EXPANSION (operator order 2026-10-07): the replacement
+ * generation hcsoldier4/5/6 — minted on-chain 2026-10-04 (commit 1c9f00d0)
+ * with FULL 4-role keys sealed in the vault and live-chain-verified 4/4 —
+ * joins the roster. OPERATOR ACCESS-LAW (verbatim intent): "אם זה רק posting
+ * זה בעיה כי אם הוא רווחי אין לנו איך לגשת לכסף — לא חייב להשתמש במה שלא
+ * נוכל לגשת אליו" — every account admitted to the fleet MUST hold full
+ * money-access authority (active WIF in the vault), not posting-only.
+ * @ynet (posting-anchor only, keyless active) stays OUT by this law. */
+const ARMY = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq",
+  "hcsoldier4", "hcsoldier5", "hcsoldier6"];
+const VAULT_ZIP = "agent/vault/KEYS-ZIP-2026-10-07.zip.enc"; /* R245-ROT2: the GEN-2 vault (previous archive kept in history — its keys are DEAD) */
 const META_REF = "agent/recovery-meta.json";
 const GIT_REF = "origin/main";
 

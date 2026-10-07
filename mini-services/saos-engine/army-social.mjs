@@ -75,8 +75,11 @@ const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "
 const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); };
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
 
-/* the standing roster: master + the 10 old-army accounts (T-80 custody list) */
-export const ARMY_ROSTER = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq"];
+/* R245 · the standing roster: master + the 10 old-army accounts (T-80 custody
+ * list) + the replacement generation hcsoldier4/5/6 (full-access custody,
+ * operator access-law: money authority required — see vault-revival.mjs) */
+export const ARMY_ROSTER = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq",
+  "hcsoldier4", "hcsoldier5", "hcsoldier6"];
 
 export function socialPolicy() {
   const conf = armedConf();
