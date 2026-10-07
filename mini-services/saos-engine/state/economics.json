@@ -16,7 +16,7 @@
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.515985,
+      "estUsdPerDay": 0.515721,
       "confidence": "estimated",
       "note": "~8.8 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
@@ -24,7 +24,7 @@
       "id": "fuel",
       "label": "דלק-רשת · author+curation ops",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.0054,
+      "estUsdPerDay": 0.1143,
       "confidence": "estimated",
       "note": "observe fuel meter (estimated — window-labeled)"
     },
@@ -32,9 +32,9 @@
       "id": "convert-arb",
       "label": "ארביטרז'-המרה · SBD print path",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 4.190144,
+      "estUsdPerDay": 4.03877,
       "confidence": "estimated",
-      "note": "edge 7761bps on 9.589 SBD"
+      "note": "edge 6991bps on 9.816 SBD"
     },
     {
       "id": "promo",
@@ -50,20 +50,20 @@
       "measuredUsdPerDay": null,
       "estUsdPerDay": null,
       "confidence": "measured",
-      "note": "10288 ops/day measured — presence + optionality, deliberately NOT priced as profit",
+      "note": "10290 ops/day measured — presence + optionality, deliberately NOT priced as profit",
       "meta": {
-        "opsPerDay": 10288
+        "opsPerDay": 10290
       }
     }
   ],
   "totalMeasuredUsdPerDay": 0,
-  "totalEstUsdPerDay": 4.711529,
+  "totalEstUsdPerDay": 4.668791,
   "measuredCount": 1,
   "estimatedCount": 3,
   "blockedCount": 2,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.10409594275707354,
-  "asof": "2026-10-07T16:19:24.369Z",
+  "parity": 0.09953461028071206,
+  "asof": "2026-10-07T16:29:09.777Z",
   "context": {
     "venueFillsPerDay": 456,
     "venueVolSteem24h": 3620.165,
@@ -85,43 +85,79 @@
     "any": false
   },
   "x2": {
-    "currentUsdPerDay": 4.7115,
+    "currentUsdPerDay": 4.6688,
     "targetUsdPerDay": 1000,
     "currentSp": 975,
-    "factor": 212.3,
+    "factor": 214.2,
     "rows": [
       {
         "mult": 1,
         "sp": 975,
-        "usdPerDay": 4.71,
+        "usdPerDay": 4.67,
         "reachesTarget": false
       },
       {
         "mult": 10,
         "sp": 9753,
-        "usdPerDay": 47.12,
+        "usdPerDay": 46.69,
         "reachesTarget": false
       },
       {
         "mult": 40,
-        "sp": 39010,
-        "usdPerDay": 188.46,
+        "sp": 39011,
+        "usdPerDay": 186.75,
         "reachesTarget": false
       },
       {
         "mult": 100,
-        "sp": 97525,
-        "usdPerDay": 471.15,
+        "sp": 97528,
+        "usdPerDay": 466.88,
         "reachesTarget": false
       },
       {
-        "mult": 213,
-        "sp": 207729,
-        "usdPerDay": 1003.56,
+        "mult": 215,
+        "sp": 209684,
+        "usdPerDay": 1003.79,
         "reachesTarget": true
       }
     ],
     "law": "הקיורציה גדלה ∝ חלק-ה-SP מבריכת-התגמולים; תקרת-העסקאות ∝ RC ∝ SP — ההון מכפיל את המדידה, הקוד נשאר"
   },
-  "pid": 1318
+  "redeployDoctrine": {
+    "ratios": {
+      "buyBookPct": 0.5,
+      "powerUpPct": 0.3,
+      "reservePct": 0.2
+    },
+    "floors": {
+      "liquidSteemFloor": 5,
+      "liquidSbdFloor": 0.5
+    },
+    "minPowerUpSteem": 5,
+    "minIntervalSec": 3600,
+    "maxPerDay": 12,
+    "executionArmed": false,
+    "plan": {
+      "verdict": "REDEPLOY-HOLD",
+      "reason": "below-min-powerup",
+      "powerUpSteem": 1.892,
+      "excessSteem": 6.307,
+      "pacing": {
+        "minIntervalSec": 3600,
+        "maxPerDay": 12,
+        "powerUpsToday": 5,
+        "lastPowerUpAt": "2026-10-07T03:45:02.247Z",
+        "sinceLastSec": 45853,
+        "verdict": null
+      },
+      "at": "2026-10-07T16:29:09.777Z"
+    },
+    "state": {
+      "day": "2026-10-07",
+      "powerUpsToday": 5,
+      "lastPowerUpAt": "2026-10-07T03:45:02.247Z"
+    },
+    "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
+  },
+  "pid": 2477
 }
