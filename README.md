@@ -9,8 +9,9 @@
 - **מוח (engine)** — `mini-services/saos-engine/` — מחזורים יומיים (21 שלבים): תצפית, מועצה (council), גריד, מלחמת-תוכן, חיילים, עוגני-אמת, התאמה-למידה. Node/bun טהור, תלות-רשת מינימלית (@noble).
 - **קוקפיט (UI)** — Next.js 16 + Prisma/SQLite — תצוגה-חיה של כל-המדדים ב-`:3000`.
 - **שרשרת-חוק (git-sovereignty)** — כל-קומיט-גוף חתום-GPG, דחיפה-רק-FF דרך שער (`scripts/sovereign-push.sh`), וכל-tip נעוגן-על-השרשרת הציבורית (`saos-git-custody-v1` ע"י `headcorner`) — כך קו-האמת ניתן-לאימות ע"י-כל-צד-שלישי לנצח.
-- **ביקורת-פנימית** — `selftest.mjs` (587 וקטורים, fail-closed) + ביקורות-adversarial ב-`audit/`.
-- **שער-MCP** — `mini-services/saos-engine/mcp.mjs` — כל-סוכן בעולם (Claude Code, Cursor, Codex, ...) מדבר עם-הריבונות בשפת-ה-MCP האוניברסלית (השראה: דפוס-ה-"One MCP" של REA).
+- **ביקורת-פנימית** — `selftest.mjs` (632 וקטורים, fail-closed) + ביקורות-adversarial ב-`audit/`.
+- **שער-MCP** — `mini-services/saos-engine/mcp.mjs` — 6-כלים (`saos_law/status/doctor/anchors/pnl/join`) — כל-סוכן בעולם (Claude Code, Cursor, Codex, ...) מדבר עם-הריבונות בשפת-ה-MCP האוניברסלית (השראה: דפוס-ה-"One MCP" של REA).
+- **מדידה-ציבורית** — `pnl-public.mjs` → `docs/measured/` — מדוד-מול-מוערך מופרדים-בברזל (דפוס-Alpha-Arena).
 
 ## התחלה-מהירה (מגיט-בלבד — שום-תלות בסנדבוקס קודם)
 ```bash
@@ -35,12 +36,21 @@ node scripts/chain-anchor-probe.mjs                   # מאמת עוגן-tip מ
 - אימות-רציף-חיצוני: GitHub Actions `.github/workflows/sovereign-cycle.yml` (כל-30 דק: clone→install→selftest→עוגן-שרשרת) — פעיל גם-כשהסנדבוקס מת.
 
 ## חיבור-סוכן-חיצוני דרך-MCP (השער-האוניברסלי)
-כל-סוכן שתומך ב-MCP (Claude Code, Cursor, Codex, Windsurf...) מוסיף:
+**אוטומטי (דפוס-`npx rea-agents setup`)** — מזהה 8 סוכנים, תוכנית-קודם, גיבוי, idempotent:
+```bash
+node scripts/saos-setup.mjs            # dry-run: מציג-תוכנית-מדויקת
+node scripts/saos-setup.mjs --yes      # מבצע-עם-גיבויים
+node scripts/saos-setup.mjs --uninstall # מסיר-רק-את-שלו
+```
+**ידני** — כל-סוכן שתומך ב-MCP מוסיף:
 ```json
 { "mcpServers": { "saos": { "command": "node", "args": ["mini-services/saos-engine/mcp.mjs"], "cwd": "<repo-root>" } } }
 ```
-כלים-זמינים: `saos_law` (חוקי-הפתיחה) · `saos_status` (מצב-המנוע-החי) · `saos_doctor` (פסק-כשירות מדוד) · `saos_anchors` (עוגני-שרשרת) · `saos_join` (איך-להצטרף).
+כלים-זמינים: `saos_law` (חוקי-הפתיחה) · `saos_status` (מצב-המנוע-החי) · `saos_doctor` (פסק-כשירות מדוד) · `saos_anchors` (עוגני-שרשרת) · `saos_pnl` (מדידת-תשואה-ציבורית) · `saos_join` (איך-להצטרף).
 אפס-סודות-בפלט (scrub מובנה של WIF/PAT/token) · fail-closed (כל-שגיאה כנה עם-remedy). רקע: [docs/COMPETITIVE-INTELLIGENCE.md](./docs/COMPETITIVE-INTELLIGENCE.md).
+
+## SKILL לסוכנים
+`skills/saos-sovereignty/SKILL.md` — מיומנות-מתקינה שמלמדת כל-סוכן: חוק-קודם-לפעולה, התחברות-MCP, doctor-מדוד, הצטרפות-דרך-שער-הדחיפה, וחוקי-הברזל (אפס-סודות · ראיות-קודם · כנות- fail-closed · מדוד-מול-מוערך).
 
 ## מבנה
 ```

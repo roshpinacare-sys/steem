@@ -62,6 +62,11 @@ export function toolCatalog() {
       description: "איך סוכן-חדש מצטרף לגוף-הריבוני: bootstrap מהגיט, ענף-האמת, שער-הדחיפה, חוקי-החתימה.",
       inputSchema: { type: "object", properties: {}, additionalProperties: false },
     },
+    {
+      name: "saos_pnl",
+      description: "מדידת-תשואה-ציבורית (דפוס-Alpha-Arena): מדוד-מול-מוערך מופרדים-בברזל, תיוג-אמון לכל-מסילה; stale/blocked = כנות fail-closed, אין-המצאת-מספרים.",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    },
   ];
 }
 
@@ -142,6 +147,14 @@ export function makeTools({ readFile_ = readFile, http_ = null, engineRoot = pat
       const cust = await readFile_(path.join(engineRoot, "state", "custodian.json"), "utf8").then(JSON.parse).catch(() => null);
       if (!cust) return { ok: false, reason: "no-custody-state", remedy: "העוגן-מתוחזק על-ידי ה-custodian; ריצה-חיה: node scripts/chain-anchor-probe.mjs" };
       return { ok: true, head: cust.head, at: cust.at, divergenceExit: cust.divergenceExit, probe: "node scripts/chain-anchor-probe.mjs — אמת-מצומת-ציבורי" };
+    },
+    saos_pnl: async () => {
+      const { buildPublicPnl } = await import("./pnl-public.mjs");
+      const readJson = (p) => readFile_(p, "utf8").then(JSON.parse).catch(() => null);
+      const observe = await readJson(path.join(engineRoot, "state", "observe.json"));
+      const economics = await readJson(path.join(engineRoot, "state", "economics.json"));
+      const custodian = await readJson(path.join(engineRoot, "state", "custodian.json"));
+      return buildPublicPnl({ observe, economics, custodian });
     },
     saos_join: async () => ({
       truth: "הגיט הוא האמת. הסנדבוקס הוא מטמון-נמחק.",
