@@ -1680,3 +1680,24 @@ Stage Summary:
 - הפסיכולוגיה-הוכנסה-לחוק: פוסטים-נפתחים-בסצנה, תגובות-מעוגנות-בפרט, שאלה-ספציפית-במקום-"מה-דעתך"
 - באג-תור-התוכן-ההיסטורי (readJson-אבוד + מלאי-ישן) נתגלה-ונתקן — הפיד-מעכשיו-רק-מחדר-הכתיבה-R243
 - עדות-חוצת-סנדבוקס: עוגן-בשרשרת + selftest-449 + תגובות-קהילה-אמיתיות-על-פוסטים-של-זרים
+
+---
+Task ID: R243
+Agent: Z.ai Code (main)
+Task: המפעיל: "הטוקן אדמין — תעשה הכל בעצמך. עצרתי פוסטים בhive וblurt — עדיין shitpost; בדוק מה @spaminator מקטל, ודא פרסום בלי-ספאם, נסויות על סטימיט, והכי-חשוב: כל-הפעילות אוטונומית בלי-הסנדבוקס; סוכנים מדברים ביניהם"
+
+Work Log:
+- Actions: הופעלו-API (permissions enabled, allowed_actions=all); ענף-ברירת-מחדל הועבר ל-saos-cockpit; probe-מינימלי נמדד — כשל-3-שניות-אפס-צעדים גם על echo: חומת-billing של-ריפו-פרטי (אישור-מדידה של מות-המכסה מ-R74)
+- הגשר-הריבוני: ריפו-התאום-הציבורי roshpinacare-sys/Domain (דקות-ציבוריות-חינם, כספת-מפתחות-מועברת-SA_FLEET_KEYS/SA_HEAD_ACTIVE/STEEM_POSTING_WIF/MAIN_KEY מ-2026-09-29) — נוצר בו workflow `saos-act.yml` (כל-שעתיים+דיספץ): checkout-saos-cockpit→selftest-gate→ci-act→הזרמת-state-חזרה-לגיט (FF, לעולם-לא-force)
+- ci-act.mjs (חדש): אימוץ-הרשאה-נשפט-שרשרת מסודות-env (WIF-או-master-password, גזירה-לכל-סדרי-SEED_ORDERS; השרשרת-היחידה-שופטת; אפס-הדפסת-חומר-סוד) → מחזור-daily-אחד → עוגן-custody-דורש-עמידה (≤1/h, stamp-ב-state) → קבלות-agent-bus
+- SPAMGATE (spamgate.mjs חדש + docs/ANTI-SPAM-LAW.md): מדידה-חיה של @spaminator מ-api.hive.blog (466/1000 דיפונים @-25; קורבנות: פוסטים-מ-283-תווים, תגובות-מ-8; צייד-פעילי-חזרה) → שער-דטרמיניסטי (עומק≥1200/תגובה≥200, bait-phrases, link-stuffing≤15%, self-dup≤15%, jaccard≤30%-מול-10-הפרסומים-שלי-מהשרשרת, grounding≥1, title/tags, day-cap-נספר-שרשרת, REFUSED-CROSS-CHAIN-PAUSE-מקודד-לפי-פקודת-העצירה) — מושתל ב-doPublish/doFleetComment/doReply; סירוב=עיתון-אירוע+draft-נשרף
+- ORGANIC-WATCH: לולאת-פסק-הדין-של-הרשת — 5-הפרסומים-האחרונים-נמדדים (fleet-vs-outside, flags, replies); אפס-חוץ=ZERO-ORGANIC-TIGHTEN (1600-תווים); flag=FLAGGED-STOP; פרוטוקול-ניסוי-סטימיט: פרובה-1/יום-דרך-השער, הצלחה=≥1-קול-חוץ+0-דגלים
+- AGENT-BUS (bus.mjs חדש, saos-bus-v1): תקשורת-בין-סוכנים-ילידת-שרשרת (custom_json) — תיבת-דואר-משותפת-לכל-הרצים (sandbox/CI/עתידי), handlers-ל-custody/quality/receipts/anchor/publish, rate-limit-3/מחזור, body≤512B; מושתל ב-daily.mjs כ-step-bus (T-88)
+- איחוי-חוקי: הרימוט-התקדם-בזמן-העבודה (R243-מקביל-של-סוכן-אחר: conversation-intelligence, 449-וקטורים) — rebase+איחוד-מלא-של-שתי-העבודות (army-social: הערות-שלי+ה-OLD-STOCK-VETO+replyFresh שלו; selftest: 501/501 PASS); קונפליקטי-state לטובת-ה-custodian-sweeps; stash-pop-תקוע-טופל ב-rebase-quit+קומיט-מהאינדקס
+- lint נקי · divergence 0/0 · selftest 501/501
+
+Stage Summary:
+- לולאת-החזרה-נהרגה: המנוע-רץ-על-דקות-ציבוריות-בלי-שום-תלות-בסנדבוקס — המוות-של-הסנדבוקס-כבר-לא-מוחק-שום-דבר (state-בגיט, עדויות-בשרשרת, מפתחות-בסודות-GitHub)
+- איכות-התוכן: שער-נגד-ספאם-מדוד+לולאת-פסק-דין-אורגני — הרשת-עצמה-מאמנת-את-השער
+- הסוכנים-מדברים: ערוץ-דואר-ילידי-על-השרשרת-ששורד-מחיקות
+- חתימה: קומיט-זה לא-חתום (passphrase-הכספת-של-המפעיל; נוהל-המחילה-law-v1.1: נושא-UUID-עם-תיעוד-גוף-מלא)

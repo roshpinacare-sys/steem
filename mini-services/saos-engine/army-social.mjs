@@ -59,6 +59,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
+import { spamVerdict, organicVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
 import { PUBLISH_ELIGIBLE_SINCE } from "./content.mjs";
 import { reviveArmyCustody } from "./vault-revival.mjs";
@@ -292,6 +293,15 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
   };
   if (!p.enabled) return { ...base, verdict: "DISABLED" };
 
+  /* R243 CROSS-CHAIN PAUSE (operator stop order, in code): the rail speaks
+   * STEEM only. Any other chain value = honest refusal before any work. */
+  const railChain = String(process.env.SAOS_SOCIAL_CHAIN || "steem").toLowerCase();
+  const railGate = crossChainVerdict(railChain);
+  if (!railGate.ok) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-refused", at: now, chain: railChain, reasons: railGate.reasons });
+    return { ...base, verdict: "REFUSED-CROSS-CHAIN-PAUSE", chain: railChain };
+  }
+
   const accounts = {};
   let executed = 0, refused = 0, dueCount = 0;
 
@@ -363,6 +373,8 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
   const doc = { ...base, custodyVerdict: custody?.verdict ?? null, custodyVerified: custody?.after?.verified ?? null, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
   writeJson(SOCIAL_FILE, doc);
   appendLine(path.join(STATE, "events.jsonl"), { type: "social.run", at: now, day, executed, refused });
+  /* R243 ORGANIC-WATCH: the network judges the output after the run */
+  try { await runOrganicWatch({ now }); } catch { /* fail-soft */ }
   return { verdict: executed > 0 ? "SOCIAL-EXECUTED" : refused ? "PART-GATED" : "SOCIAL-IDLE", executed, refused, due: dueCount };
 }
 
@@ -379,6 +391,63 @@ const capOf = (kind, p) =>
  * R243: OLD-STOCK VETO — drafts drafted before PUBLISH_ELIGIBLE_SINCE are
  * retired, never broadcast (the queue was choked by pre-R240 SEO stock; the
  * chain showed a 2026-10-01 draft shipping on 10-07). */
+/* R243 SPAMGATE · the author's own recent chain bodies (the repetition law
+ * spaminator hunts). Chain-truth only; on read failure the check degrades to
+ * an empty history — every OTHER gate check still applies (fail-soft here,
+ * fail-closed in the gate itself). */
+async function ownRecentBodies(account) {
+  try {
+    const r = await rpcCall("condenser_api.get_discussions_by_author_before_date", [account, "", "", 10]);
+    return (r?.ok && Array.isArray(r.result)) ? r.result.map((x) => String(x.body ?? "").slice(0, 4000)) : [];
+  } catch { return []; }
+}
+
+/* R243 SPAMGATE · tightened minimums from the organic-verdict loop */
+function gateGlobals() {
+  const tw = spamwatchState()?.tightened;
+  return tw?.minPostChars ? { ...GATE_DEFAULTS, minPostChars: Number(tw.minPostChars) } : GATE_DEFAULTS;
+}
+
+function journalRefusal(now, account, kind, verdict) {
+  appendLine(path.join(STATE, "events.jsonl"), { type: "spamgate.refused", at: now, account, kind, reasons: (verdict.reasons ?? []).slice(0, 6) });
+}
+
+/* R243 ORGANIC-WATCH · the network's own verdict on our last posts: outside
+ * votes vs fleet echo, flags, replies — chain truth, verdict-only. This is
+ * the learning loop: zero organic reach = the network calling us spam = the
+ * gate tightens and the rail pauses before deeper damage. */
+export async function runOrganicWatch({ now = new Date().toISOString(), window = 5 } = {}) {
+  const master = masterAccount();
+  const c = readJson(CONTENT_FILE, null);
+  const published = (Array.isArray(c?.queue) ? c.queue : [])
+    .filter((d) => d.status === "published" && d.permlink)
+    .slice(0, window);
+  const rows = [];
+  for (const d of published) {
+    try {
+      const [author, permlink] = String(d.permlink).split("/");
+      const r = await rpcCall("condenser_api.get_content", [author, permlink]);
+      if (!r?.ok || !r.result) continue;
+      const votes = Array.isArray(r.result.active_votes) ? r.result.active_votes : [];
+      const rosterSet = new Set([master, ...ARMY_ROSTER]);
+      let fleet = 0, outside = 0, flags = 0;
+      for (const v of votes) {
+        if (Number(v.weight) < 0) flags++;
+        else if (rosterSet.has(v.voter)) fleet++;
+        else outside++;
+      }
+      rows.push({ author, permlink, at: d.publishedAt ?? null, fleet, outside, flags, replies: Number(r.result.children ?? 0), pendingSbd: r.result.pending_payout_value ?? null });
+    } catch { /* fail-soft per row */ }
+  }
+  const organic = organicVerdict(rows);
+  const prev = spamwatchState() ?? {};
+  const doc = { at: now, posts: rows, organic, tightened: organic.tighten ? (prev.tightened && prev.tightened.since ? { minPostChars: organic.minPostChars ?? 1600, since: prev.tightened.since } : { minPostChars: organic.minPostChars ?? 1600, since: now }) : null };
+  saveSpamwatch(doc);
+  appendLine(path.join(STATE, "events.jsonl"), { type: "organic.verdict", at: now, verdict: organic.verdict, tighten: !!organic.tighten, rows: rows.length });
+  return doc;
+}
+
+/* publish one sanitized draft (content-ops queue) — never invented here */
 async function doPublish(account, st, p, now, day) {
   if (st.done.publish >= p.maxPostsPerDay) return false;
   const c = readJson(CONTENT_FILE, null);
@@ -390,6 +459,18 @@ async function doPublish(account, st, p, now, day) {
   }
   const draft = queue.find((d) => d.status === "drafted" && !st.published?.includes(d.id));
   if (!draft) { if (retired) writeJson(CONTENT_FILE, c); return false; }
+  if (!draft) return false;
+  /* R243 SPAMGATE: nothing publishes without clearing the measured spam law
+   * (thin-body / bait-phrases / link-stuffing / self-repetition / ungrounded
+   * / cross-chain — the @spaminator profile, measured 2026-10-07). */
+  const gate = spamVerdict(draft, { isComment: false, chain: "steem", ownRecentBodies: await ownRecentBodies(account), postsToday: st.done.publish ?? 0, dayCap: p.maxPostsPerDay, g: gateGlobals() });
+  if (!gate.ok) {
+    draft.status = "refused-spam";
+    draft.spamgate = { at: now, reasons: gate.reasons.slice(0, 6) };
+    writeJson(CONTENT_FILE, c);
+    journalRefusal(now, account, `publish:${draft.id}`, gate);
+    return false;
+  }
   const permlink = permlinkStem(draft.title, day, st.done.publish ?? 0);
   const meta = JSON.stringify({ tags: draft.tags, app: "saos-social-rail" });
   const ops = [[
@@ -448,6 +529,10 @@ async function doFleetComment({ account, master, st, p, nowMs, now }) {
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R243 SPAMGATE (comment law): the measured prime spaminator target —
+   * thin engagement-farm comments. ≥200 substantive chars, no bait, no echo. */
+  const cgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
+  if (!cgate.ok) { journalRefusal(now, account, `fleet-comment:${pick.author}/${pick.permlink}`, cgate); return false; }
   const permlink = `re-${pick.author}-${pick.permlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",
@@ -471,6 +556,9 @@ async function doReply({ account, st, p, now }) {
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R243 SPAMGATE (comment law) — same measured bar as fleet comments */
+  const rgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
+  if (!rgate.ok) { journalRefusal(now, account, `reply:${target.comment}`, rgate); return false; }
   const permlink = `re-${target.parentAuthor}-${target.parentPermlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",
