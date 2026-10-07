@@ -1,46 +1,45 @@
 {
-  "runCount": 4,
+  "runCount": 5,
   "simFills": 0,
   "simFeesMu": 0,
   "sim": {
     "retired": true,
     "note": "R237: sim fills retired — real fills measured from chain; counters frozen"
   },
-  "asof": "2026-10-07T16:09:24.369Z",
+  "asof": "2026-10-07T16:16:39.763Z",
   "market": {
-    "refPrice": 0.09955151778323586,
+    "refPrice": 0.09924061096684471,
     "source": "engine",
     "stale": false
   },
   "grids": [
     {
-      "id": "mm-grid",
-      "strategy": "mm-grid",
-      "active": true,
-      "inventoryMu": 0,
-      "pnlSimMu": 0
+      "id": "value-ladder",
+      "real": true,
+      "active": false,
+      "levels": 0,
+      "evidence": "our-orders.json tranches"
     },
     {
-      "id": "micro-arb",
-      "strategy": "micro-arb",
-      "active": true,
-      "inventoryMu": 0,
-      "pnlSimMu": 0
+      "id": "flow-tranche",
+      "real": true,
+      "active": false,
+      "levels": 0,
+      "evidence": "our-orders.json tranches"
     },
     {
-      "id": "sweep",
-      "strategy": "sweep",
+      "id": "hyper-tranche",
+      "real": true,
       "active": true,
-      "inventoryMu": 0,
-      "pnlSimMu": 0
+      "levels": 430,
+      "evidence": "hyper-grid.json ops"
     },
     {
-      "id": "anchor-quote",
-      "strategy": "anchor-quote",
-      "active": true,
-      "inventoryMu": 0,
-      "pnlSimMu": 0
+      "id": "soldier-grids",
+      "real": true,
+      "active": false,
+      "levels": 0,
+      "evidence": "custody-verified accounts"
     }
-  ],
-  "at": "2026-10-07T16:09:24.369Z"
+  ]
 }
