@@ -73,23 +73,27 @@ eq("dust verdict", plan3.verdict, "OFFER-EMPTY");
 const plan4 = planLadder({ parity: P, askBudgetSteem: 1.4, bidBudgetSbd: 0, now: "2026-01-01T00:00:00Z" });
 eq("partial levels", plan4.asks.length, 2);
 
-/* 8 · PSM hysteresis: enter at 3000, stay armed down to 2000, exit below */
-const mk = (edge) => ({ liquidSbd: 5, parity: P, marketSbdUsd: 1 / (1 + edge), previouslyArmed: false });
-eq("psm below-enter", planConvert(mk(0.29)).verdict, "CONVERT-HOLD");
-eq("psm enter", planConvert(mk(0.30)).verdict, "CONVERT-PLAN");
-const armedHold = planConvert({ liquidSbd: 5, parity: P, marketSbdUsd: 1 / 1.22, previouslyArmed: true });
+/* 8 · R245-b feed-vs-parity doctrine: SBD conversion pays at the witness feed
+ * rate (1 SBD → 1/feed STEEM), NOT face-$1 (HBD model mis-ported in D-023).
+ * True edge = marketParity/feed − 1. enter ≥ 150bps, hysteresis to 100bps. */
+const mk = (edge) => ({ liquidSbd: 5, feedSbdPerSteem: P, marketSbdPerSteem: P * (1 + edge), previouslyArmed: false });
+eq("psm below-enter", planConvert(mk(0.014)).verdict, "CONVERT-HOLD");
+eq("psm enter", planConvert(mk(0.015)).verdict, "CONVERT-PLAN");
+const armedHold = planConvert({ liquidSbd: 5, feedSbdPerSteem: P, marketSbdPerSteem: P * 1.011, previouslyArmed: true });
 eq("psm hysteresis-hold", armedHold.verdict, "CONVERT-PLAN");
-const armedExit = planConvert({ liquidSbd: 5, parity: P, marketSbdUsd: 1 / 1.19, previouslyArmed: true });
+const armedExit = planConvert({ liquidSbd: 5, feedSbdPerSteem: P, marketSbdPerSteem: P * 1.009, previouslyArmed: true });
 eq("psm hysteresis-exit", armedExit.verdict, "CONVERT-HOLD");
-eq("psm dust", planConvert({ liquidSbd: 0.2, parity: P, marketSbdUsd: 0.6, previouslyArmed: false }).verdict, "CONVERT-HOLD");
-const psmCap = planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0.6, pendingSbd: 9.8, previouslyArmed: false });
+eq("psm dust", planConvert({ liquidSbd: 0.2, feedSbdPerSteem: P, marketSbdPerSteem: P * 1.02, previouslyArmed: false }).verdict, "CONVERT-HOLD");
+const psmCap = planConvert({ liquidSbd: 50, feedSbdPerSteem: P, marketSbdPerSteem: P * 1.02, pendingSbd: 9.8, previouslyArmed: false });
 eq("psm cap honest-hold (0.2<min dust)", psmCap.verdict, "CONVERT-HOLD");
 eq("psm cap amount", psmCap.amountSbd, 0);
-const psmCap2 = planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0.6, pendingSbd: 8.5, previouslyArmed: false });
+const psmCap2 = planConvert({ liquidSbd: 50, feedSbdPerSteem: P, marketSbdPerSteem: P * 1.02, pendingSbd: 8.5, previouslyArmed: false });
 eq("psm cap partial", psmCap2.amountSbd, 1.5);
 
-/* 8b · T-9 structural truth: no external SBD market ⇒ honest HOLD (never arm on proxy) */
-eq("psm no-market honest-hold", planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0, previouslyArmed: false }).verdict, "CONVERT-HOLD");
+/* 8b · T-9 structural truth (R245-b extended): no external parity or no feed ⇒ honest HOLD */
+eq("psm no-market honest-hold", planConvert({ liquidSbd: 50, feedSbdPerSteem: P, marketSbdPerSteem: null, previouslyArmed: false }).verdict, "CONVERT-HOLD");
+eq("psm no-feed honest-hold", planConvert({ liquidSbd: 50, feedSbdPerSteem: 0, marketSbdPerSteem: P, previouslyArmed: false }).verdict, "CONVERT-HOLD");
+eq("psm edge-neutral-hold", planConvert({ liquidSbd: 50, feedSbdPerSteem: P, marketSbdPerSteem: P, previouslyArmed: false }).verdict, "CONVERT-HOLD");
 
 /* T-91 · redeployment doctrine — cashing out never stops the autonomy */
 const rdFloor = planRedeploy({ liquidSteem: 4.9, liquidSbd: 1, now: "x" });
@@ -214,7 +218,7 @@ eq("thinkgate outbound-transfer-refused", tgOut.verdict, "REFUSED");
 ok("thinkgate outbound-reason", (tgOut.reasons[0] ?? "").includes("FORBIDDEN"));
 /* 8 · policy class 2: allowlisted recipient → ALLOW */
 eq("thinkgate allowlisted-transfer-allow", thinkGate(TG_ACC, [["transfer", { from: TG_ACC, to: "hcs1", amount: "1.000 STEEM" }]], { ...tgVerified, conf: { policy: { transferAllowlist: ["hcs1"] } } }).verdict, "ALLOW");
-eq("psm no-market reason", planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0, previouslyArmed: true }).reason, "no-market-price");
+eq("psm no-market reason", planConvert({ liquidSbd: 50, feedSbdPerSteem: P, marketSbdPerSteem: null, previouslyArmed: true }).reason, "no-market-parity");
 
 /* 9 · stale classification: asks below floor / bids above ceiling (10bps tol) */
 const orders = [

@@ -223,19 +223,25 @@ export function planLadder({
   return { verdict, asks, bids, flowAsks, flowBids, flow, blocker: block.length ? block : null, dragK: k, floor, ceiling: ceil };
 }
 
-/* ── D-023 convert planner with MakerDAO-PSM hysteresis (T-9 adoption) ─────
- * Enter when SBD face-value edge ≥ enterBps AND liquid ≥ min; stay armed
- * (hysteresis) until edge < exitBps (< enter) — prevents flapping. */
+/* ── D-023 convert planner — R245-b REPAIR (measured, get_feed_history + internal book)
+ * OLD (WRONG): "converting 1 SBD yields face-$1 of STEEM" — that is HIVE's HBD
+ * stabilization model, mis-ported to SBD. Steem SBD conversion pays at the
+ * WITNESS FEED RATE: 1 SBD → 1/feed STEEM after the 3.5d window (measured:
+ * current_median 58,296,320.145 SBD / 560,026,239.516 STEEM = 0.104096 SBD/STEEM
+ * ⇒ 9.6064 STEEM per SBD ≈ $0.564 at market — NOT $1). True realized edge =
+ * marketSbdPerSteem/feedSbdPerSteem − 1. When the feed equals the market
+ * parity the convert is edge-neutral ⇒ HOLD is the honest verdict.
+ * Enter when the feed is ≥ enterBps BELOW the market parity (prints more STEEM
+ * than market parity); stay armed (hysteresis) until edge < exitBps. */
 export function planConvert({
-  liquidSbd, parity, marketSbdUsd,
-  enterBps = 3000, exitBps = 2000, previouslyArmed = false,
+  liquidSbd, feedSbdPerSteem, marketSbdPerSteem = null,
+  enterBps = 150, exitBps = 100, previouslyArmed = false,
   pendingSbd = 0, minSbd = CONVERT_MIN_SBD,
   reserveSbd = CONVERT_RESERVE_SBD, pendingCap = CONVERT_PENDING_CAP,
 }) {
-  if (!(marketSbdUsd > 0)) return { verdict: "CONVERT-HOLD", reason: "no-market-price", amountSbd: 0 };
-  // converting 1 SBD yields face-$1 of STEEM at the 3.5d window; selling on
-  // book yields marketSbdUsd now. Edge = face over market, in bps.
-  const edgeBps = Math.round(((1 - marketSbdUsd) / marketSbdUsd) * 10000);
+  if (!(feedSbdPerSteem > 0)) return { verdict: "CONVERT-HOLD", reason: "no-feed-price", amountSbd: 0 };
+  if (!(marketSbdPerSteem > 0)) return { verdict: "CONVERT-HOLD", reason: "no-market-parity", amountSbd: 0 };
+  const edgeBps = Math.round(((marketSbdPerSteem / feedSbdPerSteem) - 1) * 10000);
   const armed = previouslyArmed ? edgeBps >= exitBps : edgeBps >= enterBps;
   if (!armed) return { verdict: "CONVERT-HOLD", reason: previouslyArmed ? "hysteresis-exit" : "below-enter-band", edgeBps, amountSbd: 0 };
   const budget = r6(Math.min(
@@ -243,8 +249,8 @@ export function planConvert({
     Math.max(0, pendingCap - pendingSbd)
   ));
   if (budget < minSbd) return { verdict: "CONVERT-HOLD", reason: "dust-or-capped", edgeBps, amountSbd: 0 };
-  const expectedSteem = r6(budget * 1 / parity); // face-$1 ⇒ $1 of STEEM at parity
-  return { verdict: "CONVERT-PLAN", reason: "psm-hysteresis-armed", edgeBps, amountSbd: budget, expectedSteem, windowDays: 3.5 };
+  const expectedSteem = r6(budget * 1 / feedSbdPerSteem); // feed-rate payout (measured: get_feed_history)
+  return { verdict: "CONVERT-PLAN", reason: "feed-vs-parity-armed", edgeBps, amountSbd: budget, expectedSteem, windowDays: 3.5 };
 }
 
 /* ── T-91 redeployment doctrine (round-3 operator order, 2026-10-06) ───────

@@ -211,9 +211,14 @@ function serOp(name, v, w) {
       w.str(v.owner).u32(v.orderid);
       break;
     case "convert":
-      /* R245 node-canon: current protocol order = owner, requestid, amount, extensions
-       * (byte-proven — the pre-R245 order owner,amount,requestid mismatched the node). */
-      w.str(v.owner).asset(v.amount).u32(v.requestid);
+      /* R245-b node-canon REPAIR (2026-10-07T19:5xZ, get_transaction_hex probe,
+       * api.steemit.com — THE NODE IS THE ONLY TRUTH): canonical body =
+       * owner, requestid(u32), amount(asset), extensions — the R245 session
+       * fixed the comment but the implementation kept the pre-R245 order
+       * owner, amount, requestid ⇒ every broadcast returned
+       * "missing required active authority" (invalid sig over wrong digest).
+       * Probe bytes: 08 0a<headcorner> ddd7c378(2026100701) 1027...03"SBD" 00 */
+      w.str(v.owner).u32(v.requestid).asset(v.amount);
       break;
     case "transfer":
       w.str(v.from).str(v.to).asset(v.amount).str(v.memo ?? "");
