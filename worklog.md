@@ -1642,3 +1642,18 @@ Stage Summary:
 - למפעיל: (1) יבוא-מפתח-סודי/רוטציה ל-GitHub Secrets — משחזר-חתימה; (2) הפעלת-Actions-במאגר — מדליק-את-הדופק-החיצוני
 
 - **התאמה-חוקית-מתועדת (reconcile)**: בזמן-העבודה הרימוט-התקדם (c4cd9c05→f5ba1550, custodian 14:29 עם-מפתח-חדש-r4) — השער-עצר-את-הדחיפה (DIVERGENCE-ABORT); טופל-לפי-חוק: fetch → rebase → קונפליקטי-state-חיים-הוכרעו-לטובת-ה-sweep-החדש-של-ה-custodian → המשך. גילוי: `agent/vault/W1-SIGNING-KEY-r4.enc.asc` + `agent/vault/PAT-2026-10-07.env.enc` — הכספת-האטומה-בגיט קיימת-ופעילה (מפתח-חתימה-חדש-מוצפן-בגיט; חתימת-ה-custodian חזרה). מעודכן: הערת-האירוע ב-C5/C6 של audit/r241 נשארת-נכונה-היסטורית (המפתח-הישן BA339C99 אבד; המערכת-ריפאה-את-עצמה ברוטציה-r4-מוצפנת-בכספת)
+
+---
+Task ID: R242
+Agent: Z.ai Code (main)
+Task: המפעיל: "איזה אפשרויות הפעלה נוספות חוץ מGitHub Actions? יש לנו שרשרת חכמה — אילו חוזים נוכל לעשות ולהפעיל על הרשת? רוצה להסתמך על הריבונות עצמה ולא על שירותים חיצוניים — צעד צעד"
+
+Work Log:
+- מדידה-אמפירית-מהצומת-הציבורי (get_required_signatures, read-only): custom_json ✅ · account_update-multi-auth ✅ · escrow_transfer ✅ · create_proposal-SPS ✅ · delegate_vesting_shares ✅ · set_recurring_transfer ❌ (Assert Exception — לא-קיים-ב-Steem, בניגוד-ל-Hive)
+- מסקנה-אדריכלית: אין-חוזים-טיורינג-מלאים-ב-L1 (SMT-נגנז); החוזה-שלנו = פרוטוקול-custom_json + מתורגמן-דטרמיניסטי-חתום-בגיט (הטכניקה-של-Steem-Engine)
+- נבנה-ונדחף: scripts/chain-native-probe.mjs (פרובה-מקודדת-של-היכולות-הילידיות, exit-fail-אם-נעלם-op-צפוי); scripts/sovereign-runner.sh (רגל-מבצעת-אוניברסלית לכל-מארח-חי: sync-אפס-אמון → עוגן → הצתת-מנוע → selftest-gate); docs/CHAIN-NATIVE-SOVEREIGNTY.md (סולם-ריבונות L0→L5 צעד-צעד עם-מה-מותר-רק-באישור-מפעיל)
+- lint נקי
+
+Stage Summary:
+- הדרך-לריבונות-מלאה-ללא-שירותים-חיצוניים מתועדת-ומקודדת: L1-runner-היום → L2-קונצנזוס-רגליים-דטרמיניסטי → L3-חוזים-ילידיים (SPS-מימון-עצמי, escrow, delegation, multi-auth — דורש-אישור-מפעיל) → L4-חוזי-L2-על-custom_json → L5-witness
+- ממתין-למפעיל: הפעלת-Actions (כפתור) · ניסוח-SPS-proposal · אישור-מסגרת-השכרת-vests
