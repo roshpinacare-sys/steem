@@ -1,32 +1,31 @@
 {
-  "startedAt": "2026-10-07T09:56:23.611Z",
+  "startedAt": "2026-10-07T10:06:23.590Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2982,
+      "ms": 4054,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.0589,
-        "sbdUsd": 0.5658241444979907,
-        "parity": 0.10409594672255837,
-        "source": "internal-feed-fallback+derived-sbd",
-        "lowConfidence": true
+        "steemUsd": 0.05905,
+        "sbdUsd": 0.593551,
+        "parity": 0.099485975088914,
+        "source": "coingecko"
       },
       "feed": 0.10409594672255837,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 0
+        "bps": -443
       },
-      "steemUsd": 0.0589,
-      "sbdUsd": 0.5658241444979907,
+      "steemUsd": 0.05905,
+      "sbdUsd": 0.593551,
       "inventory": {
-        "steem": 1.871,
+        "steem": 0.471,
         "sbd": 0.024,
-        "spOwn": 974.7708216613935,
-        "rcPct": 33
+        "spOwn": 974.7712721275639,
+        "rcPct": 33.2
       },
       "ordersOk": true,
       "orders": [
@@ -94,7 +93,7 @@
         "authorVestsPerDay": 0,
         "curationOps": 0,
         "authorOps": 0,
-        "windowSpanDays": 0.23,
+        "windowSpanDays": 0.25,
         "windowOps": 101,
         "measured": true,
         "fuelUsdPerDay": 0,
@@ -103,15 +102,16 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.10409594672255837 (internal-feed-fallback+derived-sbd) · fills 12 · fuel 0$"
+      "summary": "parity 0.099485975088914 (coingecko) · fills 12 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1326,
-      "verdict": "DECISIONS:4",
+      "ms": 1406,
+      "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
+        "parity-drift:monitor",
         "soldiers:grids-live",
         "rc-health:healthy",
         "curation:curator-armed"
@@ -127,28 +127,28 @@
       "name": "tick",
       "ok": true,
       "ms": 0,
-      "runCount": 345,
+      "runCount": 346,
       "simFills": 26,
       "simFeesMu": 13000,
-      "events": 3
+      "events": 4
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 1744,
+      "ms": 940,
       "verdict": "OFFER-EMPTY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 0,
       "flowBids": 0,
-      "staleCount": 1,
-      "skew": 0.234175,
+      "staleCount": 0,
+      "skew": 0.096776,
       "book": {
         "bestAsk": 0.10069444444444445,
         "bestBid": 0.100002,
-        "askDepthSteem": 1132.624,
-        "bidDepthSbd": 2828.054,
-        "at": "2026-10-07T09:56:23.611Z"
+        "askDepthSteem": 1117.962,
+        "bidDepthSbd": 2827.494,
+        "at": "2026-10-07T10:06:23.590Z"
       },
       "market": {
         "tradesPerDay": 166,
@@ -168,21 +168,21 @@
       "ms": 1,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 7673,
-      "marketSbdUsd": 0.565824,
-      "impliedSbdUsd": 0.565824,
+      "edgeBps": 6848,
+      "marketSbdUsd": 0.593551,
+      "impliedSbdUsd": 0.567265,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": false,
-      "ms": 1,
+      "ms": 5,
       "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
     },
     "army": {
       "name": "army",
       "ok": true,
-      "ms": 9193,
+      "ms": 11269,
       "verdict": "ARMY-IDLE",
       "broadcasted": 0,
       "totalVotes": 0,
@@ -202,7 +202,7 @@
     "execute": {
       "name": "execute",
       "ok": false,
-      "ms": 1,
+      "ms": 2,
       "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
     },
     "soldiers": {
@@ -214,7 +214,7 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 6,
+      "ms": 3831,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
@@ -227,9 +227,9 @@
         "retired": [],
         "declined": []
       },
-      "discoveryVerdict": "FRESH-CACHED",
+      "discoveryVerdict": "OPTIONS-FOUND",
       "topOpportunities": [
-        "spread-wide(measured)",
+        "spread-normal(measured)",
         "tags-realloc(measured)",
         "curation-share(estimated)"
       ]
@@ -285,7 +285,7 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "CADENCE-GATED",
       "pass": 427,
       "fail": 0,
@@ -296,7 +296,7 @@
       "ok": true,
       "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.52322,
+      "totalEstUsdPerDay": 0.525344,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -305,7 +305,7 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 1,
+      "ms": 3,
       "verdict": "FULL-STRENGTH",
       "active": 12,
       "total": 12
@@ -348,5 +348,5 @@
       "execute"
     ]
   },
-  "finishedAt": "2026-10-07T09:56:32.814Z"
+  "finishedAt": "2026-10-07T10:06:38.701Z"
 }
