@@ -241,6 +241,9 @@ export async function GET() {
       : null,
     webintel: s.webintel ?? null,
     content: s.content ?? null,
+    /* R246: הקהילה-הריבונית + מסילת-ההמרות-באוויר (passthrough — המנוע מחשב, השכבה מציגה) */
+    community: s.community ?? null,
+    conversions: s.conversions ?? null,
     rcTank: s.rcTank ?? null,
     payouts: s.payouts ?? null,
     weave: s.weave ?? null,
