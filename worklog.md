@@ -1447,3 +1447,26 @@ Stage Summary:
 - הדוקטרינה כעת אכיפה-מלאה: יחסים שולטים גם ב-BID (לא רק power-up), קצב כנוע (≤1/שעה, ≤12/יום), תקרות מכובדות, תקציב-באצ' שמור
 - נקודה-כנה: הסקירה תפסה שה-engine הראשון-אחרי-R231 עשה 3 power-ups בקצב לא-מרוסן לפני התיקון — האמת נרשמה ב-seed וב-worklog, הקצב שולט מ-כאן-והלאה
 - הקוקפיט מציג את הדוקטרינה במלואה למפעיל
+
+---
+Task ID: R233 (T-91c)
+Agent: Z.ai Code (main)
+Task: המפעיל: "בחנו שוב לעומק תוך שלילת הטענות שלכם — איך בודקים בחברות גדולות?" — סקירה אדוורסרית (falsification) מלאה של דוקטרינת ה-redeploy
+
+Work Log:
+- מתודולוגיה: אפס אמון ב-worklog/בזיכרון — הכל מראיות ראשוניות (דיסק + שרשרת + שירותים חיים); ניסיון-הפרה פעיל של כל טענה (battery) במקום אישור-עצמי
+- אמת-שרשרת: 3 power-ups של R231/R232 אומתו טקס-אחר-טקס (52be9256/d14e90b0/3c221982 — כמויות, מקור=יעד, בלוקים); power-up #4 (fc88e85b, בלוק 110218729, 7.724 STEEM) שידור חי תחת הקוד המקובע כולו — פגיעה מדויקת בגבול ה-3600s של ה-pacing (בדיוק הסמנטיקה שאומתה בווקטור)
+- שתי טעויות-probe שלי נתפסו בדרך (get_account_history params; block_num) — הסוללה בדקה גם את עצמה: 3dp-check שלי שיקר (float dust) תוקן לסובלני-float
+- באטריה אדוורסרית (download/adversarial-battery.mjs): 9 טענות-פרה על planRedeploy/redeployBidCapSbd — גילתה 12 ממצאים, בהם: 7+3 קריסות (Symbol), דליפות NaN/Infinity ב-cap, PLAN-עם-כמות-0 (שקר), דליפת-גלישה 1e308→Infinity PLAN
+- lib.mjs: numStrict (מספרים-finite בלבד, תקרת-גודל 1e12 — דצימלים-שרשרת ≤3dp) → fail-closed בכל הקלטות; PLAN רק לכמות-שניתנת-לשידור (≥max(min,0.001)); רצועת-היחסים ±0.001 מתועדת-כחוק (היחסים-החיים סוכמו === 1 בדיוק — נבדק); liquidBasis נחתם על כל תוכנית (יתרה-חופשית; ה-jitter ±פקודות-פתוחות שבלבל אותי בפתיחה — מתועד)
+- daily.mjs: ה-pacing הפך טהור (redeployPacing) — מחלקות-שחיתות (NaN/שלילי/עתיד) מטופלות בתכנון; הדילוגים-השקטים מתומכלים (redeploy.skipped-funds / skipped-probe)
+- signer.mjs: פער-אמיתי נסגר — thinkGate לא דחה master-unverified (מפתח-קיים-שלא-אומת היה עובר!); נתגלה בכתיבת-הווקטורים עצמה; אין-deadlock (verifyRoles לא עובר בשער); הזרקת conf/journal/custodyOverride לבדיקות-אופליין
+- selftest 333→376 (+43: hostile no-crash/no-leak, רצועות, pacing boundaries+corruption, convergence no-breach, think-gate כל-מחלקות-הסירוב); lint נקי
+- CHAIN TRUTH probe חוזר: MATCH בייט-מול-בייט (op-id 3, סדר-שדות)
+- החלפה-חוקית ×2 (24064→26471→26951) — custody 11/11 מיד בכל-אחת (השער-המתוקן לא שובר אתחול); FLEET-OK 12/3/0/0
+- גילוי-תהליכי: ה-custodian ביצע sweep לקבצים-המדורגים שלי לתוך commits שלו (0131c0a7 lib/daily/selftest/battery + 52874767 signer, כולם חתומים-GPG) ודחף — origin/saos-cockpit @8331ae53 מסונכרן; התוכן חתום-ודחוף, התווית היא של ה-custodian (נרשם בכנות)
+
+Stage Summary:
+- הטענות-ששרדו: 3 ה-power-ups (שרשרת), op-id 3 (probe), VESTS/מסלול pacing, דוקטרינה ב-/status→cockpit, חוק-הרצפות (convergence: 5 power-ups מ-82.144 → HOLD @17.967, אפס-פריצות-רצפה)
+- הטענות-שנפלו: "liquid 30.749" (jitter-יתרה-חופשית — מוסבר ומתועד-כעת), "sum≠1 → BLOCKED" מילולית (רצועה ±0.001), "השער דוחה הכל-שלא-מאומת" (master-unverified דלף — תוקן), "3dp מדויק" (דורש סובלנות-float בבדיקה)
+- מתודולוגיית-החברות-הגדולות הוחלפה בפועל: falsification battery → vectors → fix → re-battery → live differential (power-up #4 בגבול-הקצב) → chain-truth
