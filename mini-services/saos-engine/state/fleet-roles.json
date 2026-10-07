@@ -1,6 +1,6 @@
 {
-  "verdict": "RECRUITED",
-  "active": 10,
+  "verdict": "FULL-STRENGTH",
+  "active": 11,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 497 trades/24h measured (vol 4611.836 STEEM)",
+      "evidence": "state/market.json: 511 trades/24h measured (vol 4867.071 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -25,7 +25,7 @@
       "cadence": "3s tick",
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/hyper-grid.json: equilibrium 10290 ops/day measured (RC governor live)",
+      "evidence": "state/hyper-grid.json: equilibrium 10214 ops/day measured (RC governor live)",
       "priorStatus": "active"
     },
     {
@@ -37,7 +37,7 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/observe.json: 2 chain-truth fills counted (last 2026-10-07T18:32:15.000Z)",
+      "evidence": "state/observe.json: 1 chain-truth fills counted (last 2026-10-07T19:02:39.000Z)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-PLAN (edge 7682bps)",
+      "evidence": "state/convert-plan.json: CONVERT-PLAN (edge 7155bps)",
       "priorStatus": "active"
     },
     {
@@ -81,12 +81,12 @@
       "role": "מבקר-שלמות",
       "lane": "truth",
       "capability": "offline deterministic selftest core (the honesty contract itself, run daily by the machine)",
-      "status": "planned",
+      "status": "active",
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": null,
-      "priorStatus": "active"
+      "evidence": "state/selftest-last-run.json: 666/666 PASS at 2026-10-07T19:23:59.723Z",
+      "priorStatus": "planned"
     },
     {
       "id": "fleet-recruiter",
@@ -109,7 +109,7 @@
       "cadence": "6h",
       "truthContract": "findings carry url+date from real search results; no finding without a source",
       "recruitedAt": "2026-10-01T22:23:08.223Z",
-      "evidence": "state/webintel.json: 20 sourced findings, age 3h — external recon live",
+      "evidence": "state/webintel.json: 20 sourced findings, age 4h — external recon live",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-07T18:59:24.370Z",
-  "pid": 1318
+  "at": "2026-10-07T19:23:59.785Z",
+  "pid": 2042
 }
