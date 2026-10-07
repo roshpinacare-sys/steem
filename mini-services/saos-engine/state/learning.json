@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-07T16:16:39.763Z",
+  "at": "2026-10-07T16:19:24.369Z",
   "enabled": true,
   "runsTotal": 329,
   "verdict": "LEARNED",
@@ -30,37 +30,39 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 4,
+      "window": 5,
       "fails": 3,
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2294,
+      "checks": 2304,
       "downs": 104,
       "heals": 37,
       "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-07T16:09:24.445Z",
+      "lastCheckAt": "2026-10-07T16:19:24.449Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T13:39:29.573Z",
-      "lastUpAt": "2026-10-07T16:09:24.446Z",
+      "lastUpAt": "2026-10-07T16:19:24.451Z",
       "blips": 1
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×5/107 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×5/107 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "broadcast-fails",
-      "severity": "high",
-      "evidence": "3/4 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
-      "lesson": "broadcast failures burn RC and delay rails",
-      "action": "fail-closed stop already holds; vote-interval retry added T-14"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "3/5 broadcasts failed in the window (last: missing required active authority:Missing Active Authority h) · last fail 2026-10-07T16:09:34.463Z < last OK broadcast 2026-10-07T16:19:32.020Z (live posting-role ops succeed)",
+      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
+      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},

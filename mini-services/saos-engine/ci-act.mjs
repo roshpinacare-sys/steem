@@ -34,6 +34,7 @@ const REPO = path.join(DIR, "..", "..");
 const RPC = process.env.SAOS_RPC || "https://api.steemit.com";
 const ACCOUNT = process.env.SAOS_ACCOUNT || "headcorner";
 const UPLOAD_KEY = path.join(REPO, "upload", "headcorner.txt");
+const SECRETS = path.join(REPO, ".secrets");
 
 const CANDIDATE_ENVS = [
   "CI_HEADCORNER_CRED", "CI_MAIN_KEY", "CI_STEEM_POSTING_WIF", "CI_SA_HEAD_ACTIVE", "CI_WEAVE_STEEM_WIF",
@@ -111,8 +112,14 @@ async function adopt() {
 }
 
 async function runCycle() {
-  /* the engine natively adopts upload/headcorner.txt on cycle start (0600) */
-  const sp = spawnSync("bun", ["daily.mjs"], { cwd: DIR, encoding: "utf8", timeout: 15 * 60 * 1000, env: process.env });
+  /* the child adopts the SAME chain-judged WIFs in its own process (the
+   * engine's lawful runner-adoption path) — parents and children never
+   * share memory */
+  const sp = spawnSync("bun", ["daily.mjs"], { cwd: DIR, encoding: "utf8", timeout: 15 * 60 * 1000, env: {
+    ...process.env,
+    CI_ADOPT_WIF_POSTING: (process.env.CI_STEEM_POSTING_WIF ?? "").trim(),
+    CI_ADOPT_WIF_ACTIVE: (process.env.CI_STEEM_ACTIVE_WIF ?? "").trim(),
+  } });
   const out = `${sp.stdout ?? ""}\n${sp.stderr ?? ""}`;
   const tail = out.slice(-3500);
   /* the engine's OWN durable marker is the truth — not log parsing */
@@ -127,16 +134,37 @@ async function runCycle() {
  * The lawful path is the DIRECT WIF adoption (chain-judged, signer.mjs). */
 let INPROC_FP = null; /* the adopted WIF's fingerprint (from the adoption result — never re-derived) */
 
-async function adoptInProcess(sourceEnvName) {
-  const raw = (process.env[sourceEnvName] ?? "").trim();
-  if (!raw) return { ok: false, verdict: "no-candidate-for-inprocess" };
-  const bare = raw.startsWith("P") && raw.length >= 51 ? raw.slice(1) : raw;
-  const { adoptVerifiedWifIdentity } = await import("./signer.mjs");
-  const r = await adoptVerifiedWifIdentity(ACCOUNT, bare, { role: "posting" });
-  /* the WIF's fingerprint comes back from the adoption itself — never
-   * re-derived through the key file (which the child creates later) */
-  if (r?.ok) INPROC_FP = r.fingerprint ?? null;
-  return { ok: !!r?.ok, verdict: String(r?.ok ? `wif-verified-fp=${r.fingerprint}` : (r?.reason ?? "adoption-refused")).slice(0, 120) };
+/* in-process credential adoption — BOTH signing roles (posting + active),
+ * each chain-judged via the lawful direct-WIF path. Then the staged upload
+ * key is consumed INTO .secrets by THIS process (no child race) and the
+ * child gets the same WIFs via CI_ADOPT_WIF_* env (engine-side adoption). */
+async function adoptInProcess() {
+  const out = {};
+  for (const [role, envName] of [["posting", "CI_STEEM_POSTING_WIF"], ["active", "CI_STEEM_ACTIVE_WIF"]]) {
+    const raw = (process.env[envName] ?? "").trim();
+    if (!raw) { out[role] = { ok: false, verdict: "absent" }; continue; }
+    try {
+      const bare = raw.startsWith("P") && raw.length >= 51 ? raw.slice(1) : raw;
+      const { adoptVerifiedWifIdentity } = await import("./signer.mjs");
+      const r = await adoptVerifiedWifIdentity(ACCOUNT, bare, { role });
+      if (r?.ok) INPROC_FP = r.fingerprint ?? INPROC_FP;
+      out[role] = { ok: !!r?.ok, verdict: String(r?.ok ? `wif-verified-fp=${r.fingerprint}` : (r?.reason ?? "adoption-refused")).slice(0, 120) };
+    } catch (e) {
+      out[role] = { ok: false, verdict: `error:${String(e).slice(0, 80)}` };
+    }
+  }
+  /* stable key file for the whole process tree — consume the staged upload
+   * key HERE (the child then adopts from .secrets; no upload race) */
+  try {
+    if (fs.existsSync(UPLOAD_KEY)) {
+      const text = fs.readFileSync(UPLOAD_KEY, "utf8").trim();
+      fs.mkdirSync(SECRETS, { recursive: true });
+      fs.writeFileSync(path.join(SECRETS, "headcorner.key"), `${text}\n`, { mode: 0o600 });
+      fs.rmSync(UPLOAD_KEY, { force: true });
+      console.log("[keyfile] .secrets/headcorner.key staged (0600; upload copy consumed)");
+    }
+  } catch { /* fail-soft — the child's own syncCredential still covers it */ }
+  return out;
 }
 
 /* durable ≤1/h law — same state stamp the custodian commits */
@@ -189,8 +217,8 @@ if (!summary.adoption.ok) {
   console.log(JSON.stringify({ ...summary, verdict: "REFUSED-NO-CUSTODY", note: "fail-closed: no env candidate chain-verified — the loop honestly does not run" }, null, 1));
   process.exit(1);
 }
-summary.inProcess = await adoptInProcess(summary.adoption.source);
-console.log(`[in-process] ${summary.inProcess.verdict}`);
+summary.inProcess = await adoptInProcess();
+console.log(`[in-process] ${JSON.stringify(summary.inProcess)}`);
 
 if (!flags.has("--cycle-only")) {
   summary.anchor = await custodyAnchor();

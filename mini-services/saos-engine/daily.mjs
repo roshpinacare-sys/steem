@@ -102,6 +102,24 @@ export function cycleRunning() { return cycleInFlight; }
 export function cycleMarker() { return readJson(path.join(STATE, "cycle-run.json"), null); }
 
 export async function runCycle({ now = new Date().toISOString(), persist = true } = {}) {
+  /* R243 · RUNNER WIF ADOPTION (chain-judged, in-process): an external
+   * runner (public-minutes CI, any future host) delivers the master's WIFs
+   * via env; the engine adopts them through the SAME lawful path as the
+   * git-vault revival — the chain is the only judge, key material never
+   * printed. This revives the master's signing roles (posting + active)
+   * on hosts that hold no master password. Absent env = zero change. */
+  for (const [role, envName] of [["posting", "CI_ADOPT_WIF_POSTING"], ["active", "CI_ADOPT_WIF_ACTIVE"]]) {
+    const raw = (process.env[envName] ?? "").trim();
+    if (!raw) continue;
+    try {
+      const bare = raw.startsWith("P") && raw.length >= 51 ? raw.slice(1) : raw;
+      const { adoptVerifiedWifIdentity } = await import("./signer.mjs");
+      const r = await adoptVerifiedWifIdentity(masterAccount(), bare, { role });
+      appendLine(path.join(STATE, "events.jsonl"), { type: "runner-wif.adopted", at: now, role, ok: !!r?.ok, verdict: r?.ok ? "VERIFIED-VS-CHAIN" : String(r?.reason ?? "refused").slice(0, 80) });
+    } catch (e) {
+      appendLine(path.join(STATE, "events.jsonl"), { type: "runner-wif.error", at: now, role, error: String(e).slice(0, 100) });
+    }
+  }
   if (cycleInFlight) {
     /* typed, pollable, and honest — the sovereign journals this as a skip,
      * never as a fail: nothing malfunctioned, a cycle is already running. */
