@@ -26,6 +26,13 @@ REMOTE_TIP=$(git rev-parse origin/"$TARGET")
 LOCAL_HEAD=$(git rev-parse HEAD)
 [[ "$BEFORE" != "none" && "$BEFORE" != "$REMOTE_TIP" ]] && echo "NOTICE: remote moved during run $BEFORE -> $REMOTE_TIP (re-checked below)"
 
+# --- LAW CLAUSE 3.6 (R253): conflict forecast — ADVISORY ONLY (never blocks) ---
+# agentcraft-distillation: know WHERE the parallel collision will hurt before the
+# stash/rebase dance. Read-only prediction via merge-tree dry-run (wave-3 graft).
+if [[ "$REMOTE_TIP" != "$LOCAL_HEAD" ]] && ! git merge-base --is-ancestor "$REMOTE_TIP" "$LOCAL_HEAD" 2>/dev/null; then
+  bash scripts/conflict-forecast.sh || true
+fi
+
 # --- LAW CLAUSE 2: FF-only gate ---
 if git merge-base --is-ancestor "$REMOTE_TIP" "$LOCAL_HEAD"; then
   : # fast-forward possible (or already synced)
