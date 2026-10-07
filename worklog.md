@@ -1426,3 +1426,24 @@ Stage Summary:
 - החוק כתוב בקוד, בדוקטרינה וב-economics.json: מימוש אף-פעם לא עוצר את האוטונומיה — הערך זורם חזרה לפי היחסים, מעל הרצפות בלבד
 - עמידות-איפוס (כנה): הכספת משחזרת חתימות-מפתח בלבד; אחרי reset ה-execution חוזר ל-safe-default (allowPowerUp:false) והתוכנית ממשיכה לרוץ מ-defaults — רי-חימוש דורש הזמנת-מפעיל (תכנון-בטוח, לא תקלה)
 - שלושת הסבבים הושלמו. נותר: צפייה ב-VP הראשי (חזרה לצפיפות-הצבעות), ומילויי-אסק ראשונים שיזריעו BIDs דו-כיווניים
+
+---
+Task ID: R232 (T-91b)
+Agent: Z.ai Code (main)
+Task: סקירה-עצמית של R231 בפועל + שיפורים — אכיפת buyBookPct, חוק-קצב, שמירת-תקרה ותקציב-באצ', כרטיס-קוקפיט
+
+Work Log:
+- אמת-מדודה מאז-R231: 2 power-ups נוספים שידורו לפני התיקונים (16.283 d14e90b0 @00:14:54 + 11.455 3c221982 @00:24:54) — סה"כ היום 50.881 STEEM → SP; VESTS אומתו בשרשרת 6,449,230 (התאמה מדויקת ל-3 ה-power-ups); נזילות 30.749
+- תופסת-באג בסקירה: שגיאת-אתחול "null as string | null" (TS-ism בקובץ .mjs!) — ה-engine קרס ב-boot אחרי ה-swap, ה-watchdog לא הצליח (heals 36→43); תוקן מיד, בדיקת-import לפני-כל-swap עתידי נרשמת-כנוהל
+- ליקוי-חוק שנמצא: (d2) דחף power-up מעל maxOpsPerCycle בלי בדיקה → תוקן (defer + יומן redeployDeferredForOpsCap)
+- ליקוי-בטיחות שנמצא: אין שמירת-תקציב בבאצ' (סולם-אסקים + power-up בעסקה-אחת) → תוקן: createdIds נושא סכומים (amountSteem/amountSbd) + ה-power-up מוקטן ב-liquid − floor − steemLockedThisBatch
+- buyBookPct הפך מתיעוד לחוק: redeployBidCapSbd טהור ב-lib.mjs (וקטורים: 40.822 / dust / below-floor / full-share / junk) — ה-peg step מקפל את התקרה ב-bidBudget + חשיפה ב-offer.liquidity.buyBookCapSbd
+- חוק-קצב: minIntervalSec=3600 + maxPerDay=12 (בדוקטרינה וב-defaults) — שלב 5.5 מחשב pacing ומדווח REDEPLOY-COOLDOWN; ה-seed תוקן לאמת המלאה (3 power-ups, האחרון 00:24:54) אחרי שהתגלה השלישי
+- אומת חי: מחזור 00:34:52 → REDEPLOY-COOLDOWN (1194s < 3600s) → ה-execute דילג כחוק; /redeploy מציג pacing
+- economics.json: redeployDoctrine מרחיב (minIntervalSec/maxPerDay/plan.pacing/state) → status route מעביר → כרטיס RedeployDoctrine ב-EconomicsRailsCard (פס-יחסים 50/30/20, פסק, קצב, חוק) — נבדק בדפדפן דסקטופ+מובייל, 0 שגיאות-קונסולה
+- selftest 333/333 PASS; eslint נקי
+
+Stage Summary:
+- הדוקטרינה כעת אכיפה-מלאה: יחסים שולטים גם ב-BID (לא רק power-up), קצב כנוע (≤1/שעה, ≤12/יום), תקרות מכובדות, תקציב-באצ' שמור
+- נקודה-כנה: הסקירה תפסה שה-engine הראשון-אחרי-R231 עשה 3 power-ups בקצב לא-מרוסן לפני התיקון — האמת נרשמה ב-seed וב-worklog, הקצב שולט מ-כאן-והלאה
+- הקוקפיט מציג את הדוקטרינה במלואה למפעיל
