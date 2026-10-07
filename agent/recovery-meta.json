@@ -1,18 +1,23 @@
 {
-  "format": "SAOS-RECOVERY-META-1",
-  "doctrine": "operator directive 2026-09-10: \"\u05d6\u05d4 \u05d0\u05e6\u05dc\u05da \u05d1\u05e7\u05d1\u05e6\u05d9\u05dd \u05dc\u05d0 \u05d0\u05e6\u05dc\u05d9\" \u2014 system custody, private repo. Supersedes chat-only passwords (the chat-only era stranded KEYS-ZIP-2026-09-09 forever).",
-  "keysZipPass": "TGhK8UaH2fN/Lm+fP0LnoLJY0jCjySCx",
-  "keysZipFile": "agent/vault/KEYS-ZIP-2026-09-10.zip.enc",
-  "keysZipSha256": "24ef22b8a5965c7b188f6a4e6ab92cf6a11d036cddef8b0964041a628ce976e8",
-  "keysZipInnerSha256": "642bf7d289ba4e80ec95f4593722a365031336ad286efb32d1d5e87a099f9a1b",
+  "format": "recovery-meta-2",
+  "doctrine": "operator directive 2026-09-10: \"זה אצלך בקבצים לא אצלי\" — system custody, private repo. Supersedes chat-only passwords (the chat-only era stranded KEYS-ZIP-2026-09-09 forever).",
+  "keysZipPass": "AtENOeO9oxSWmwtUgzIoCc14eisLkG7b",
+  "keysZipFile": "agent/vault/KEYS-ZIP-2026-10-07.zip.enc",
+  "keysZipSha256": "d77f721f12fdf21a18fa545ae0142139cfc9a4773813e68829f3d55b090cb166",
+  "keysZipInnerSha256": "72217875e9eed04cc9159b1cdd8a3a44eb05158a5abcda3e090c0a81a2e11c85",
   "keysBackupPass": "ww6TjNAL75hqc+6VXuSQloh8swKhiXiM",
   "keysBackupFile": "agent/vault/KEYS-BACKUP-2026-09-09.tar.enc",
   "keysBackupSha256": "5753a90cdad893b2008e6a6abb4407d2a354ec89ac6be39adf6ea1d526fa8ac4",
-  "replacedArchive": "agent/vault/KEYS-ZIP-2026-09-10.zip.enc",
-  "sealedAt": "2026-10-04T19:37:39.728Z",
+  "replacedArchive": "agent/vault/KEYS-ZIP-2026-09-10.zip.enc (kept in history; keys ROTATED 2026-10-07 — dead)",
+  "sealedAt": "2026-10-07T19:08:01.854Z",
   "seedVaultFile": "agent/vault/KEYS-SEED-2026-10-04.zip.enc",
   "seedVaultSha256": "c0ac281b307aac5b2b40a92d0f57f8469771c724e4c86640dafe5ffa6ec486d5",
   "seedVaultInnerSha256": "2580eaded17d1d858176fb328412905ca0e0cb4db4bf4b24a7cc8052a11e6d1b",
   "seedVaultSealedAt": "2026-10-04 (re-sealed R20c-deep)",
-  "seedVaultNote": "sovereign master seed (SAOS-ROT1 root) rescued from chat archive 2026-10-04 \u2014 re-sealed with keysZipPass in R20c-deep after bad-decrypt found; roundtrip verified"
+  "seedVaultNote": "sovereign master seed (SAOS-ROT1 root) rescued from chat archive 2026-10-04 — re-sealed with keysZipPass in R20c-deep after bad-decrypt found; roundtrip verified",
+  "rotation": {
+    "id": "R245-ROT2",
+    "masterPasswordRef": ".secrets/headcorner.key (0600) — 64-hex, mirrored ONLY inside this vault",
+    "note": "constant-k incident response — see worklog R245"
+  }
 }
