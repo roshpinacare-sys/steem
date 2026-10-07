@@ -1885,3 +1885,26 @@ Stage Summary:
 - האימפריה נבנתה על החיילים: דור-החלופי (4/5/6) פעיל עם גישת-כסף מלאה (active בכספת), ynet נשלל לפי-חוק-הגישה, hcsoldier1/2/3 מתועדים כנפלים עם-יתרה-תקועה
 - החתירה-לשקר-הצילה: "unknown key" = הרשאה-עוברת (get_limit_order), get_transaction_hex = לא-הקונסנזוס, ה-txid-oracle = האמת — והחשיפה-הקטסטרופלית שמתחת-להכל נמצאה-בזכות-זה
 - הכלכלה חיה: הסולם סוחר במפתחות-GEN-2, הכספת-החיה בגיט מספיקה להחיות-הכל אחרי-מחיקת-סנדבוקס, וה-DEX מוכן-להשתלטות-CI מלאה
+
+---
+Task ID: R247
+Agent: Z.ai Code (main)
+Task: המפעיל: "תמשיך, בחן מה שעשית, וודא הכל — ריבונות/אוטונומיה/תקשורת/רווחיות/פעילות, מה קורה בגיט, כמה סוכנים במקביל, הארנק החדש מה-DEX, מקורות לגיטימיים חדשים, תקן מה שצריך, בצע ודחוף הכל"
+
+Work Log:
+- שחזור-ריבוני: divergence 0/2 (שני-קומיטים-מקבילים-על-ה-remote) → stash+reset --hard origin/saos-cockpit → HEAD 6ac7b76, divergence 0/0
+- וולידציה-חיה-מלאה: selftest **666/666 PASS** @19:42:22Z · doctor healthy=true 5/5-scope (git-SYNCED/engine-ok/chain-reachable) · MCP tools/list=6-כלים · PnL MEASURED
+- שרשרת-חיה (condenser_api 19:42:21Z): headcorner **SP_live=4,023.503** + 14.027-SBD + 13.494-STEEM (הכל-DEX-open-orders) · delegated_out=4,930,285.677-vests · hcsoldier4/5/6 recv=4,838.364331-vests כ"א — **ה-3SP-נחתם-בשרשרת** · אפס-פרסים-ממתינים (curator-תובע) · last_vote 19:20:03Z
+- מציאות-הגיט: 2-קומיטים-מקבילים (a5c7e76 saos-r245-empire @19:21:52Z + 6ac7b76 runtime-ci-heartbeat @19:25:42Z) → **3-סוכנים-פעילים-מאומתים**; steem-Actions מת-billing (run-אחרון 18:03Z failure ברמת-job, על d0c56ee-ישן) אבל **saos-runtime-repo חדש-ומצליח: sovereign-runtime SUCCESS @19:23:34Z** (ההשתלטות-DEX-CI-חיה); Domain 14,420-runs, arb-mesh-SUCCESS @19:31Z, pages-build-SUCCESS (https://roshpinacare-sys.github.io/Domain/ built+https)
+- מקורות-נוספים-מדודים-חי (בקשת-המפעיל): **12-ריפואים** (AutoGPT 187,684★ חי · browser-use 117,375★ חי · OpenHands 90,195★ חי-דקות · MetaGPT 70,767★ **מת-9-חוד'** · cline 69,985★ חי · crewAI 59,423★ חי · goose 55,038★ חי · autogen 61,281★ **מת-6-חוד'** · aider 49,410★ **מת-5-חוד'** · langgraph 42,838★ חי · SillyTavern 34,185★ · SWE-agent 20,496★) → **חוק-הקונסולידציה (השביעי)** ב§9.1: ★-היסטוריות-לא-מגנות-מהתיישנות, קצב=חיים
+- npm-מדוד (api.npmjs.org): claude-code **14,786,283**/שבוע · langgraph 4,552,953 · @openai/agents 2,504,358 · gemini-cli 453,215 → חוק-שכבת-התשתית-מאומת-שוב (§9.2)
+- PAT: אבחון-כנה — הקובץ **טוקן-גולמי-93B ללא-KEY=** (ה-regex-הישן-טעה) → תוקן-פרסינג; אומת user=roshpinacare-sys, fine-grained, rate-4,950
+- הפצה-ריבונית: GitHub-Packages probe-read=404 (**אותנטיקציה-מוכחת**) → publish=**E403 כנה** `packages:write-חסר-ב-PAT-fine-grained` (לא-ניתן-להנפקה-עצמית) → **נתיב-חי-בוצע: GitHub-Release `saos-agents-v0.1.0` (id 406106235, על saos-cockpit) + asset tarball 17,199B state=uploaded** — ההפצה-המגורסת-הראשונה-בהיסטוריה; PUBLISH.md עודכן-דואלי (gh-packages-מוכן/.npmrc-env-only; npmjs-ממתין-טוקן)
+- תיקונים-שבוצעו: npm-downloads-URL %2F-encoding (404→מדידות-אמת) · tarball-לא-נכנס-לגיט · package.json→@roshpinacare-sys/saos-agents+publishConfig · .npmrc-${NODE_AUTH_TOKEN}-בלבד-בגיט (אפס-סודות)
+- docs/COMPETITIVE-INTELLIGENCE.md §9 חדש (9.1–9.6): 12-מקורות+קונסולידציה · npm-תשתית · Actions-מציאות · ארנק-אימפריה-נמדד · הפצה-ראשונה · שורה-תחתונה
+- דחיפה: bash scripts/sovereign-push.sh → saos-cockpit
+
+Stage Summary:
+- התשובה-המדודה-לשאלות-המפעיל: 3-סוכנים-במקביל (קומיטים+CI); הארנק-מה-DEX נמדד-מול-השרשרת — SP-צמח-975→4,023.5 (מאומת, לא-הוכרז); ה-3SP-לחיילים-נחתם-בשרשרת
+- ההפצה-המגורסת-הראשונה חיה (release+asset); הפער-היחיד-שנשאר: packages:write-על-ה-PAT — פעולת-מפעיל-אחת
+- שני-חוקים-חדשים-נחשפו-ממדידה: קונסולידציה (§9.1) + תשתית-מאומתת (§9.2); כל-הקודם-נבחן-וירוק (666/666)

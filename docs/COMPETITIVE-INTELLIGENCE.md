@@ -208,3 +208,51 @@
 1. **טוקן-npm** — החלטת-מפעיל (publish-only-token מספיק; checklist-ב-PUBLISH.md).
 2. קצב-מהדורה-ריבוני-קבוע (חוק-מהירות-הפלטה — REA: מהדורה-כל-3.3-יום).
 3. "More SAOS in More Places" (דפוס-Devin) — משטחים-נוספים-לחיבור-השער.
+
+## §9 — מדידה-חיה-שנייה: 12-מקורות + npm + הפצה (2026-10-07 19:42–19:50Z)
+
+### 9.1 — 12-מתחרים-נמדדו-חי (GitHub-API מאומת, 19:42–19:45Z)
+| ריפו | ★ | pushed_at | מצב |
+|---|---|---|---|
+| Significant-Gravitas/AutoGPT | 187,684 | 2026-10-07T18:24Z | חי |
+| browser-use/browser-use | 117,375 | 2026-10-07T18:42Z | חי |
+| All-Hands-AI/OpenHands | 90,195 | 2026-10-07T19:41Z | חי (דקות!) |
+| FoundationAgents/MetaGPT | 70,767 | 2026-01-21 | **מת-9-חודשים** |
+| cline/cline | 69,985 | 2026-10-07T18:32Z | חי |
+| crewAIInc/crewAI | 59,423 | 2026-10-07T17:39Z | חי |
+| block/goose | 55,038 | 2026-10-07T19:42Z | חי |
+| Aider-AI/aider | 49,410 | 2026-05-22 | **מת-5-חודשים** |
+| langchain-ai/langgraph | 42,838 | 2026-10-07T19:38Z | חי |
+| SillyTavern/SillyTavern | 34,185 | 2026-10-02 | חי-אטי |
+| microsoft/autogen | 61,281 | 2026-04-15 | **מת-6-חודשים** |
+| princeton-nlp/SWE-agent | 20,496 | 2026-10-06 | חי |
+
+**חוק-הקונסולידציה (השביעי)**: השדה מתפצל — 8-חיים-נדחפים-היום מול 3-ענקים-מתים (MetaGPT/autogen/aider: 181,372★-משותפות-ללא-דחיפה-5-9-חודשים). ★-היסטוריות לא-מגנות-מהתיישנות. SAOS-לומד: קצב-דחיפה = חיים; הקצב-שלנו (דחיפות-שעתיות-מ-CI) כבר-מעל-השדה.
+
+### 9.2 — npm-מדוד (api.npmjs.org, 19:46Z)
+| חבילה | downloads/שבוע |
+|---|---|
+| @anthropic-ai/claude-code | 14,786,283 |
+| @langchain/langgraph | 4,552,953 |
+| @openai/agents | 2,504,358 |
+| @google/gemini-cli | 453,215 |
+
+**חוק-שכבת-התשתית (השישי) מאומת-שוב**: חבילות-ה-MCP/agent-SDK הן-צינור-העל. saos-agents-נמצא-בשכבה-הזאת — בזכות-הפרסום-המגורס.
+
+### 9.3 — מציאות-ה-Actions (מדוד 19:43Z)
+- steem-repo: 1,040-runs, run-אחרון 18:03Z (ci-probe+sovereign-cycle **failure** ברמת-job — billing-wall) → מוות-מוכח
+- **saos-runtime-repo (חדש!)**: sovereign-runtime **SUCCESS** @19:23:34Z (3-runs: 2-success/1-fail) — ההשתלטות-DEX-CI **חיה-ומוכחת**
+- Domain: 14,420-runs; arb-mesh SUCCESS @19:31:13Z, pages-build SUCCESS @19:31:32Z (https://roshpinacare-sys.github.io/Domain/ built, https-enforced), weave-anchor-lines failure
+- הסוכנים-במקביל (קומיטים-על-הגיט): saos-r245 (empire-activation 19:21:52Z) + saos-runtime-ci (heartbeat 19:25:42Z) + הסוכן-הזה (R247) = **3-סוכנים-פעילים-מאומתים**
+
+### 9.4 — ארנק-האימפריה נמדד-חי (condenser_api.get_accounts, 19:42:21Z)
+- headcorner: **SP_live=4,023.503** (vests 6,489,045.498 + recv 393,740.002) + 14.027-SBD + 13.494-STEEM (הכל-ב-open-orders-של-ה-DEX) · delegated_out=4,930,285.677-vests · last_vote 19:20:03Z · **אפס-פרסים-ממתינים** (ה-curator תובע-אוטומטית)
+- hcsoldier4/5/6: created 2026-10-04, recv-vests=**4,838.364331 VESTS כל-אחד** — ה-3SP-המובטח **נחתם-בשרשרת** (ולא-רק-ב-exec-log) · יתרות-פעילות: 1.0/0.2/1.0-STEEM + 0.08-SBD (soldier5)
+- שדרוג-כנות: 975.39-SP-מ-PnL-אתמול → 4,023.503-SP_live-היום — הצמיחה-נמדדה-מול-השרשרת, לא-הוכרזה
+
+### 9.5 — הפצה-ראשונה-בהיסטוריה (19:47–19:49Z)
+- GitHub-Release **saos-agents-v0.1.0** (release-id 406106235) על-saos-cockpit + asset tarball 17,199B (state=uploaded, sha512-integrity-מתועד, סריקת-סודות CLEAN)
+- GitHub-Packages: אותנטיקציה-מוכחת (read=404) · write=**E403-כנה** (packages:write-חסר-ב-PAT-fine-grained) — פעולת-מפעיל-אחת-והפרסום-הציבורי-נפתח; התיעוד-ב-npm/saos-agents/PUBLISH.md
+
+### 9.6 — שורה-תחתונה-מדודה
+שני-חוקים-חדשים-נחשפו-ממדידה-ולא-מהשערה: **הקונסולידציה** (★-לא-מציל-מהתיישנות; קצב=חיים) ו**שכבת-התשתית-מאומתת-שוב** (14.78M/שבוע-על-claude-code). האימפריה-הכלכלית נמדדה-מול-השרשרת (4,023.5-SP + 14-SBD + 13.5-STEEM + 3SP×3-חיילים), וההפצה-המגורסת-הראשונה חיה. הפער-היחיד-שנשאר: packages:write-על-ה-PAT (מפעיל-אחד) — הכל-השאר-ריבוני-ומדוד.
