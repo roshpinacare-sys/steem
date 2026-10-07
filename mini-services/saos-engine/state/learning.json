@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-07T15:19:24.365Z",
+  "at": "2026-10-07T15:49:31.387Z",
   "enabled": true,
-  "runsTotal": 321,
+  "runsTotal": 322,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,28 +23,28 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 11.1,
+      "vpEff": 37.1,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 6,
-      "fails": 0,
-      "lastError": null
+      "window": 7,
+      "fails": 1,
+      "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2244,
-      "downs": 104,
-      "heals": 37,
-      "healVerified": 36,
-      "healFailed": 0,
-      "lastCheckAt": "2026-10-07T15:19:24.419Z",
+      "checks": 3115,
+      "downs": 115,
+      "heals": 56,
+      "healVerified": 47,
+      "healFailed": 2,
+      "lastCheckAt": "2026-10-07T15:49:31.463Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-07T13:39:29.573Z",
-      "lastUpAt": "2026-10-07T15:19:24.420Z",
-      "blips": 1
+      "lastSpawnAt": "2026-10-07T15:37:36.490Z",
+      "lastUpAt": "2026-10-07T15:49:31.466Z",
+      "blips": 2
     }
   },
   "lessons": [
@@ -55,6 +55,13 @@
       "evidence": "cycle-blocked ×5/107 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+    },
+    {
+      "id": "broadcast-fails",
+      "severity": "medium",
+      "evidence": "1/7 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
+      "lesson": "broadcast failures burn RC and delay rails",
+      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
@@ -62,8 +69,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 219,
-    "broadcast-fails": 79,
+    "signing-cred-blocked": 220,
+    "broadcast-fails": 80,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
