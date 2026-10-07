@@ -60,3 +60,10 @@ tool-results/
 
 # SAOS R220: pid/log files are runtime state, not source — no more sweep churn
 *.pid
+
+# R241 hygiene: local env + live database are runtime state, not source
+.env
+db/*.db
+
+# exception: example env is source, not secret
+!.env.example

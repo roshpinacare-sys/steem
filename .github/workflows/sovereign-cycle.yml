@@ -1,0 +1,51 @@
+# SOVEREIGN CYCLE — external sovereignty heartbeat (R241, SANDBOX-DISTRUST-LAW §4.2)
+# Runs on GitHub infrastructure — survives sandbox wipes BY DESIGN.
+# Every 30 min: fresh clone -> install -> full selftest -> chain-anchor probe vs HEAD.
+# No keys here, ever (law §3): observe-only. Chain-signing stays machine-local.
+name: sovereign-cycle
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sovereign-cycle
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: saos-cockpit
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install engine deps
+        working-directory: mini-services/saos-engine
+        run: bun install --frozen-lockfile || npm i --no-save @noble/hashes @noble/secp256k1
+
+      - name: Selftest gate (must PASS, fail-closed)
+        working-directory: mini-services/saos-engine
+        run: node selftest.mjs
+
+      - name: Chain anchor probe (tip of saos-git-custody-v1 must be in HEAD lineage)
+        run: node scripts/chain-anchor-probe.mjs
+
+      - name: Divergence visibility
+        run: |
+          git fetch origin saos-cockpit
+          echo "behind/ahead vs origin: $(git rev-list --left-right --count origin/saos-cockpit...HEAD)"
+
+      - name: Summary
+        if: always()
+        run: echo "sovereign heartbeat done — any failed step above = public alarm (law §6.2)"
