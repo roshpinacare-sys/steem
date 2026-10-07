@@ -99,7 +99,8 @@ for (const node of NODES) {
 }
 if (accts[NODES[0].name] && accts[NODES[1].name]) {
   const s = JSON.stringify(accts[NODES[0].name]) === JSON.stringify(accts[NODES[1].name]);
-  s ? ok("account state agrees across nodes") : bad("account state disagreement", JSON.stringify(accts));
+  if (s) ok("account state agrees across nodes");
+  else bad("account state disagreement", JSON.stringify(accts));
 }
 
 console.log("\n=== 5. On-chain count vs engine claim ===");

@@ -859,6 +859,43 @@ ok("roster weave-ambassador-active", roster23.roster.find((r) => r.id === "weave
 const roster23NoEvidence = recruitRoles({ evidence: { recruiter: "self" }, now: "2026-10-02T00:00:00Z" });
 ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.filter((r) => ["payout-auditor", "weave-ambassador"].includes(r.id)).every((r) => r.status === "planned"));
 
+/* ── R234: property-based fuzz (seeded, deterministic) ─────────────────────
+ * 100 random vectors × invariant classes, mulberry32 fixed seed — reproducible.
+ * P1 verdict domain · P2 exact doctrine math · P3 never-above-share · P4 no-lying-PLAN
+ * P5 3dp broadcastable · P6 at-floor ⇒ HOLD/0 · P7 hostile-in no-crash/no-leak · P8 determinism */
+{
+  let s = 0x5a05;
+  const rnd = () => { s |= 0; s = (s + 0x6d2b79f5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const f3 = (x) => Math.floor((x + 1e-9) * 1000) / 1000;
+  const fin = (x) => typeof x === "number" && isFinite(x);
+  const DOM = ["REDEPLOY-PLAN", "REDEPLOY-HOLD", "REDEPLOY-BLOCKED"];
+  let p1 = true, p2 = true, p3 = true, p4 = true, p5 = true, p6 = true, p7 = true, p8 = true;
+  for (let i = 0; i < 100; i++) {
+    const v = { liquidSteem: +(rnd() * 200 - 10).toFixed(3), liquidSbd: +(rnd() * 50).toFixed(3), buyBookPct: 0.5, powerUpPct: 0.3, reservePct: 0.2, liquidSteemFloor: 5, liquidSbdFloor: 0.5, minPowerUpSteem: 5, now: "2026-10-07T00:00:00.000Z" };
+    const a = planRedeploy(v), b = planRedeploy(v);
+    const excess = Math.max(0, v.liquidSteem - 5), want = f3(excess * 0.3), thr = Math.max(5, 0.001);
+    p1 &&= DOM.includes(a.verdict);
+    p2 &&= Math.abs(a.powerUpSteem - want) <= 1e-9;
+    p3 &&= a.powerUpSteem <= excess * 0.3 + 1e-6;
+    p4 &&= (a.verdict === "REDEPLOY-PLAN") === (a.powerUpSteem >= thr);
+    p5 &&= Math.abs(a.powerUpSteem - Math.round(a.powerUpSteem * 1000) / 1000) <= 1e-9;
+    p6 &&= (v.liquidSteem <= 5 ? a.verdict === "REDEPLOY-HOLD" && a.powerUpSteem === 0 : true);
+    p8 &&= JSON.stringify(a) === JSON.stringify(b);
+    for (const h of [NaN, Infinity, -Infinity, "x", {}, [], -1]) {
+      const r = planRedeploy({ ...v, liquidSteem: h });
+      p7 &&= DOM.includes(r.verdict) && fin(r.powerUpSteem) && fin(r.excessSteem);
+    }
+  }
+  ok("fuzz P1 verdict-domain (100 vectors)", p1);
+  ok("fuzz P2 exact-doctrine-math", p2);
+  ok("fuzz P3 never-above-share", p3);
+  ok("fuzz P4 no-lying-PLAN", p4);
+  ok("fuzz P5 3dp-broadcastable", p5);
+  ok("fuzz P6 at-floor-holds-zero", p6);
+  ok("fuzz P7 hostile-no-crash-no-leak (700 inputs)", p7);
+  ok("fuzz P8 deterministic", p8);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
