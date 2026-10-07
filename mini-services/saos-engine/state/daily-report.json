@@ -1,30 +1,30 @@
 {
-  "startedAt": "2026-10-07T10:06:23.590Z",
+  "startedAt": "2026-10-07T10:16:23.591Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 4054,
+      "ms": 2172,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.05905,
-        "sbdUsd": 0.593551,
-        "parity": 0.099485975088914,
+        "steemUsd": 0.05917,
+        "sbdUsd": 0.586164,
+        "parity": 0.10094444558178257,
         "source": "coingecko"
       },
       "feed": 0.10409594672255837,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": -443
+        "bps": -303
       },
-      "steemUsd": 0.05905,
-      "sbdUsd": 0.593551,
+      "steemUsd": 0.05917,
+      "sbdUsd": 0.586164,
       "inventory": {
         "steem": 0.471,
         "sbd": 0.024,
-        "spOwn": 974.7712721275639,
+        "spOwn": 974.7717275476973,
         "rcPct": 33.2
       },
       "ordersOk": true,
@@ -102,12 +102,12 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.099485975088914 (coingecko) · fills 12 · fuel 0$"
+      "summary": "parity 0.10094444558178257 (coingecko) · fills 12 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1406,
+      "ms": 2173,
       "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
@@ -116,18 +116,18 @@
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 69,
+      "spreadBpsRec": 236,
       "book": {
-        "bestAsk": 0.10069444444444445,
-        "bestBid": 0.100002,
-        "spreadBps": 69
+        "bestAsk": 0.10361620557455185,
+        "bestBid": 0.10120023478454471,
+        "spreadBps": 236
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 0,
-      "runCount": 346,
+      "runCount": 347,
       "simFills": 26,
       "simFeesMu": 13000,
       "events": 4
@@ -135,20 +135,20 @@
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 940,
+      "ms": 701,
       "verdict": "OFFER-EMPTY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 0,
       "flowBids": 0,
       "staleCount": 0,
-      "skew": 0.096776,
+      "skew": 0.098728,
       "book": {
-        "bestAsk": 0.10069444444444445,
-        "bestBid": 0.100002,
-        "askDepthSteem": 1117.962,
-        "bidDepthSbd": 2827.494,
-        "at": "2026-10-07T10:06:23.590Z"
+        "bestAsk": 0.10361620557455185,
+        "bestBid": 0.10120023478454471,
+        "askDepthSteem": 1132.342,
+        "bidDepthSbd": 2837.349,
+        "at": "2026-10-07T10:16:23.591Z"
       },
       "market": {
         "tradesPerDay": 166,
@@ -165,24 +165,24 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 6848,
-      "marketSbdUsd": 0.593551,
-      "impliedSbdUsd": 0.567265,
+      "edgeBps": 7060,
+      "marketSbdUsd": 0.586164,
+      "impliedSbdUsd": 0.568418,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": false,
-      "ms": 5,
+      "ms": 1,
       "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
     },
     "army": {
       "name": "army",
       "ok": true,
-      "ms": 11269,
+      "ms": 9222,
       "verdict": "ARMY-IDLE",
       "broadcasted": 0,
       "totalVotes": 0,
@@ -202,7 +202,7 @@
     "execute": {
       "name": "execute",
       "ok": false,
-      "ms": 2,
+      "ms": 1,
       "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
     },
     "soldiers": {
@@ -214,7 +214,7 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 3831,
+      "ms": 8,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
@@ -227,7 +227,7 @@
         "retired": [],
         "declined": []
       },
-      "discoveryVerdict": "OPTIONS-FOUND",
+      "discoveryVerdict": "FRESH-CACHED",
       "topOpportunities": [
         "spread-normal(measured)",
         "tags-realloc(measured)",
@@ -285,7 +285,7 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "CADENCE-GATED",
       "pass": 427,
       "fail": 0,
@@ -296,7 +296,7 @@
       "ok": true,
       "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.525344,
+      "totalEstUsdPerDay": 0.526412,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -305,7 +305,7 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 3,
+      "ms": 1,
       "verdict": "FULL-STRENGTH",
       "active": 12,
       "total": 12
@@ -348,5 +348,5 @@
       "execute"
     ]
   },
-  "finishedAt": "2026-10-07T10:06:38.701Z"
+  "finishedAt": "2026-10-07T10:16:32.825Z"
 }
