@@ -89,6 +89,28 @@ export function runEconomics(now = new Date().toISOString()) {
       targetUsdPerDay: 1000,
       currentSp: observe?.inventory?.spOwn ?? null,
     }),
+    /* T-91 · the redeployment doctrine, surfaced for the cockpit: the FIXED
+     * SBD/STEEM allocation ratios (buy-book / power-up / reserve), the
+     * protective floors, and the live plan verdict. The law is part of the
+     * data: cashing out NEVER stops the autonomy. */
+    redeployDoctrine: conf?.redeploy ? {
+      ratios: {
+        buyBookPct: conf.redeploy.buyBookPct ?? 0.5,
+        powerUpPct: conf.redeploy.powerUpPct ?? 0.3,
+        reservePct: conf.redeploy.reservePct ?? 0.2,
+      },
+      floors: {
+        liquidSteemFloor: conf.redeploy.liquidSteemFloor ?? 5,
+        liquidSbdFloor: conf.redeploy.liquidSbdFloor ?? 0.5,
+      },
+      minPowerUpSteem: conf.redeploy.minPowerUpSteem ?? 5,
+      executionArmed: conf?.operator?.allowPowerUp === true,
+      plan: (() => {
+        const p = readJson(path.join(STATE, "redeploy-plan.json"), null);
+        return p ? { verdict: p.verdict, reason: p.reason ?? null, powerUpSteem: p.powerUpSteem ?? null, excessSteem: p.excessSteem ?? null, at: p.at ?? null } : null;
+      })(),
+      law: "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד",
+    } : null,
     pid: process.pid,
   };
   writeJson(ECON_FILE, doc);

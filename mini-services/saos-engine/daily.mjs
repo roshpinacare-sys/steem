@@ -6,7 +6,7 @@
  * cycle, derives evidence-backed lessons, and applies hard-clamped tunings —
  * plus a cadence-gated network scan for growth options (discovery).
  *
- * observe → intel → tick → peg(intel-fed) → convert → execute(SIGN) → soldiers → learn(T-14) → report
+ * observe → intel → tick → peg(intel-fed) → convert → redeploy(T-91) → execute(SIGN) → soldiers → learn(T-14) → report
  *
  * Fail-isolated steps; every signing op doctrine-capped (signer.mjs);
  * pause button = operator kill-switch (state/exec-pause.json); everything
@@ -15,7 +15,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import {
-  planLadder, planConvert, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
+  planLadder, planConvert, planRedeploy, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
   cycleHealth, cycleFailureBreakdown,
 } from "./lib.mjs";
 import {
@@ -262,6 +262,27 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     return { verdict: plan.verdict, amountSbd: plan.amountSbd, edgeBps: plan.edgeBps, marketSbdUsd: out.marketSbdUsd, impliedSbdUsd: out.impliedSbdUsd, marketSourceNote: out.marketSourceNote };
   });
 
+  /* 5.5 · redeploy: T-91 doctrine — realized value flows back by fixed ratios.
+   * THE LAW: cashing out NEVER stops the autonomy. The plan is pure doctrine
+   * math; the EXECUTION (power-up op) happens in the execute step, gated by
+   * operator.allowPowerUp + the signer's think-gate (self-directed only). */
+  report.steps.redeploy = await stepWrap("redeploy", async () => {
+    const rd = armedConf().redeploy ?? {};
+    const inv = obs.ok ? (obs.inventory ?? { steem: 0, sbd: 0 }) : { steem: 0, sbd: 0 };
+    const plan = planRedeploy({
+      now,
+      liquidSteem: inv.steem ?? 0, liquidSbd: inv.sbd ?? 0,
+      buyBookPct: rd.buyBookPct ?? 0.5, powerUpPct: rd.powerUpPct ?? 0.3, reservePct: rd.reservePct ?? 0.2,
+      liquidSteemFloor: rd.liquidSteemFloor ?? 5, liquidSbdFloor: rd.liquidSbdFloor ?? 0.5,
+      minPowerUpSteem: rd.minPowerUpSteem ?? 5,
+    });
+    if (persist) {
+      writeJson(path.join(STATE, "redeploy-plan.json"), plan);
+      appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.planned", at: now, verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios });
+    }
+    return { verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios };
+  });
+
   /* join the parallel curate branch here (it never gates the front chain) */
   report.steps.curate = await curateP;
 
@@ -404,6 +425,29 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       } else {
       const c = report.steps.convert;
       ops.push(["convert", { owner: ACCOUNT, amount: `${c.amountSbd.toFixed(3)} SBD`, requestid: (Math.floor(Date.now() / 1000) & 0x7fffffff) }]);
+      }
+    }
+    // (d2) T-91 redeploy execution — power-up the doctrine share of excess
+    // STEEM (transfer_to_vesting, self-directed, op-id 3 chain-verified).
+    // Gates: operator.allowPowerUp + REDEPLOY-PLAN + active-only batch (a
+    // claim in the batch means posting-authority mix → defer like convert)
+    // + chain-truth liquid cap (never trust the plan's stale inventory over
+    // the account's real balance) + the think-gate's independent refusal.
+    const rdExec = report.steps.redeploy;
+    if (conf.operator?.allowPowerUp === true && rdExec?.verdict === "REDEPLOY-PLAN" && (rdExec.powerUpSteem ?? 0) >= 0.001) {
+      if (ops.some(([n]) => n === "claim_reward_balance")) {
+        report.steps.redeployDeferredForClaim = true;
+      } else {
+        try {
+          const accRd = await accountState(ACCOUNT);
+          const floorSteem = conf.redeploy?.liquidSteemFloor ?? 5;
+          const amt = Math.min(rdExec.powerUpSteem, Math.max(0, (accRd.ok ? accRd.steem ?? 0 : 0) - floorSteem));
+          const amt3 = Math.floor(amt * 1000) / 1000;
+          if (amt3 >= 0.001) {
+            ops.push(["transfer_to_vesting", { from: ACCOUNT, to: ACCOUNT, amount: `${amt3.toFixed(3)} STEEM` }]);
+            if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.powerup-op", at: now, amountSteem: amt3 });
+          }
+        } catch { /* honest skip — next cycle retries on fresh plan */ }
       }
     }
     /* T-19: the ops DAY-CAP is a LAW — past it the machine journals honestly
