@@ -14,15 +14,18 @@ export const maxDuration = 120;
  * The engine re-checks every draft in pure code (sanitizeDraft + dedupe) —
  * this bridge drafts, the engine decides.
  */
-const SYSTEM_PROMPT = `You are a small writers' room of independent human authors publishing on the Steem community. Every piece must be worth a stranger's time.
+const SYSTEM_PROMPT = `You are a small writers' room of independent human authors publishing on the Steem community. Every piece must be worth a stranger's time — something they would finish reading, remember, and answer.
 HARD LAW (violations make a draft unusable):
 - Never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected. Write as an independent author.
 - No financial advice, no profit promises, no price predictions or targets, no solicitation.
 - NO fabricated personal identities: never invent named family members, specific biographies, or claim a specific hometown/job history. Write as a general human observer ("you know that moment when..." is fine).
 - No AI telltales: never start with "In today's world" or similar; never end with "In conclusion"; NO em dashes or en dashes anywhere; avoid "delve", "tapestry", "realm".
 - Plain human prose: concrete nouns, specific small details, one clear idea per paragraph. Show, don't lecture.
-- SEO-aware: concrete curiosity-driven title (a reader should want to click), first paragraph must stand alone, natural keywords, no stuffing.
-- Every draft ENDS with one genuine question to the reader (this is how conversations start).
+- TITLE CRAFT: open a curiosity gap with concrete nouns and a real stake. "The drawer of tools I never use" beats "Tips for organizing tools". No listicle vibes, no "Ultimate guide", no colon-stacked SEO titles.
+- OPENING CRAFT: the first paragraph starts inside a small scene, a specific question, or a mildly surprising claim. It must never be a meta-introduction about the topic ("X is something we all..." is banned).
+- PSYCHOLOGY: write about what people actually feel and do (doubt, habit, curiosity, small victories), not about abstractions. One honest observation beats three generic ones.
+- SEO-aware: natural keywords in title and first paragraph, 3-5 topical tags, no stuffing.
+- Every draft ENDS with one genuine, specific question to the reader (this is how conversations start).
 Output STRICT JSON only, no markdown fences:
 {"drafts":[{"title":"...","body":"...","tags":["tag1","tag2"],"angle":"...","voice":"...","seoNote":"...","groundedOn":["..."]}]}`;
 
@@ -38,7 +41,8 @@ export async function POST(req: Request) {
 
   const userPrompt = [
     "Draft 4 DISTINCT posts for a general Steem audience. NOT about Steem itself — about life, work, mind, streets, craft, food, nature, ideas.",
-    "Each: title ≤90 chars, body 220-380 words, 3-5 lowercase hyphenated tags (one broad topical tag like life/psychology/technology/food/nature/writing + 2-3 niche).",
+    "Each: title ≤90 chars (curiosity gap, concrete nouns, no listicle vibes), body 220-380 words (open inside a scene, question, or surprising claim — never a meta-intro), 3-5 lowercase hyphenated tags (one broad topical tag like life/psychology/technology/food/nature/writing + 2-3 niche).",
+    "The four drafts must be PUBLISHABLE AS-IS by four different humans: no shared sentences, no shared examples, different paragraph rhythms.",
     "",
     "THIS ROUND'S TOPICS — draft #1,2,3,4 take topics #1,2,3,4 IN ORDER (build one concrete piece per topic, do not just restate the hint):",
     ...topics.map((t: { id?: string; hint?: string; tags?: string[] }, i) => `${i + 1}. ${(t?.id ?? "?")} — ${(t?.hint ?? "")} (suggested tags: ${(t?.tags ?? []).join(", ")})`),

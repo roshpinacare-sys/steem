@@ -10,7 +10,8 @@ import {
   payoutWindow, rewardHistoryRollup, vpNow, x2Spectrum, weaveArbitration, weaveFresh, opTypeName,
   signalDigest, measuredLayers, redeployIntel, blockageLedger, organVerdict, meshVerdict,
 } from "./lib.mjs";
-import { sanitizeDraft } from "./content.mjs";
+import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE } from "./content.mjs";
+import { sanitizeReply, replyFresh, textSimilarity, pickColdPost, buildDaySchedule } from "./army-social.mjs";
 import { thinkGate } from "./signer.mjs";
 import { tick, fold } from "./grid.mjs";
 import { classifyAgent } from "./fleet.mjs";
@@ -775,6 +776,38 @@ ok("content exposure-headcorner-blocked", sanitizeDraft({ title: "How headcorner
 ok("content exposure-army-blocked", sanitizeDraft({ title: "Our multi-account coordination story", body: "x".repeat(200), tags: ["a", "b"] }) === null);
 ok("content exposure-profit-blocked", sanitizeDraft({ title: "Guaranteed profit method inside", body: "x".repeat(200), tags: ["a", "b"] }) === null);
 ok("content null-input", sanitizeDraft(null) === null);
+
+/* ═════ R243 · CONVERSATION INTELLIGENCE: no template praise, no echoes,
+ * no self-monologues, no closed loops, no old stock — all in pure code ═════ */
+ok("r243 template-opener-blocked", sanitizeReply("That's a great point about delegation economics! I really enjoyed how you explained the reward curve.") === null);
+ok("r243 template-agree-blocked", sanitizeReply("I completely agree with what you said here, it mirrors my own experience with scheduling tools.") === null);
+ok("r243 thanks-opener-blocked", sanitizeReply("Thanks for sharing this perspective on patience; it changed how I see slow work.") === null);
+ok("r243 substantive-passes", sanitizeReply("The reward curve detail caught me off guard when I first tracked my own payouts. Did the timing shift change how you schedule?") !== null);
+ok("r243 roster-name-blocked", sanitizeReply("When wog writes about tools the examples always land well for me.") === null);
+ok("r243 too-short-blocked", sanitizeReply("nice one") === null);
+ok("r243 similarity-identical", textSimilarity("the reward curve changed how I schedule posts", "the reward curve changed how I schedule posts") === 1);
+ok("r243 similarity-unrelated", textSimilarity("the reward curve changed how I schedule posts", "cold morning air makes the walk feel shorter") < 0.05);
+const saidToday = ["The reward curve detail caught me off guard when I first tracked my own payouts this month."];
+ok("r243 repeat-fresh-veto", replyFresh("The reward curve detail caught me off guard when I first tracked my payouts last week.", saidToday) === false);
+ok("r243 new-idea-passes", replyFresh("Cold mornings make my walking route feel half as long as it really is.", saidToday) === true);
+ok("r243 freshness-empty-safe", replyFresh("", saidToday) === false);
+const coldCandidates = [
+  { key: "a/1", author: "a", permlink: "1", title: "t1", excerpt: "e", children: 12 },
+  { key: "b/2", author: "b", permlink: "2", title: "t2", excerpt: "e", children: 3 },
+  { key: "c/3", author: "c", permlink: "3", title: "t3", excerpt: "e", children: 3 },
+];
+ok("r243 cold-pick-least-commented", pickColdPost(coldCandidates, { seedNum: 0, index: 0 })?.key === "b/2");
+ok("r243 cold-pick-rotates-in-tier", pickColdPost(coldCandidates, { seedNum: 0, index: 1 })?.key === "c/3");
+ok("r243 cold-pick-excludes-seen", pickColdPost(coldCandidates, { seedNum: 0, index: 0, excludeKeys: ["b/2"] })?.key === "c/3");
+ok("r243 cold-pick-empty-null", pickColdPost(coldCandidates, { seedNum: 0, excludeKeys: ["a/1", "b/2", "c/3"] }) === null);
+ok("r243 old-stock-ineligible", eligibleDrafts([{ status: "drafted", draftedAt: "2026-10-01T22:20:24.431Z", id: "old" }]).length === 0);
+ok("r243 eligible-since-anchored", PUBLISH_ELIGIBLE_SINCE === "2026-10-07T10:00:00.000Z");
+ok("r243 new-stock-eligible", eligibleDrafts([{ status: "drafted", draftedAt: "2026-10-07T10:36:23.592Z", id: "new" }]).length === 1);
+ok("r243 published-never-eligible", eligibleDrafts([{ status: "published", draftedAt: "2026-10-07T11:00:00.000Z", id: "spent" }]).length === 0);
+const r243sched = buildDaySchedule(12345);
+ok("r243 schedule-has-community-lane", r243sched.some((s) => s.kind === "community-comment"));
+ok("r243 schedule-has-deepen-lane", r243sched.some((s) => s.kind === "deepen"));
+ok("r243 schedule-deterministic", JSON.stringify(buildDaySchedule(12345)) === JSON.stringify(r243sched));
 
 /* ═════ T-21 · MULTI-RAIL ECONOMICS: totals never merge across classes ═════ */
 const econRails = aggregateRails({
