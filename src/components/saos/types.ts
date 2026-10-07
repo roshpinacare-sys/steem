@@ -6,7 +6,7 @@ export type Status = {
   ok?: boolean
   asof?: string
   engine?: { up?: boolean; info?: { account?: string; keyless?: boolean } | null }
-  grid?: { runCount?: number; simFills?: number; simFeesMu?: number; grids?: { id?: string; strategy?: string; active?: boolean }[] }
+  grid?: { runCount?: number; simFills?: number; simFeesMu?: number; sim?: { retired?: boolean; note?: string }; grids?: { id?: string; strategy?: string; active?: boolean; real?: boolean; levels?: number | null; evidence?: string }[] }
   observe?: {
     parity?: { parity?: number; source?: string; lowConfidence?: boolean; steemUsd?: number; sbdUsd?: number }
     feed?: number
@@ -45,7 +45,8 @@ export type Status = {
     autonomy?: { ok?: boolean; lastCycle?: string | null; steps?: Record<string, string> } | null
     note?: string
   }
-  daily?: { ok?: boolean; health?: 'ok' | 'blocked' | 'fail'; failures?: { failedSteps?: string[]; blockedSteps?: string[] }; finishedAt?: string; rollup?: { realizedSbd?: number | null; deployedSteem?: number | null; measuredTotalUsdPerDay?: number | null; honesty?: string } }
+  daily?: { ok?: boolean; health?: 'ok' | 'blocked' | 'fail'; failures?: { failedSteps?: string[]; blockedSteps?: string[] }; finishedAt?: string; rollup?: { realizedSbd?: number | null; deployedSteem?: number | null; measuredTotalUsdPerDay?: number | null; honesty?: string }; blockages?: { source?: string; owner?: string; lawful?: boolean; reason?: string }[] | null; steps?: Record<string, { verdict?: string; intel?: { verdict?: string; scale?: number; reason?: string; urgency?: string | null; factors?: { planned?: number; askNeed?: number; rcPct?: number | null } } | null } | undefined> }
+  council?: import('./CouncilCard').CouncilData
   measuredPerDay?: number | null
   spoilage?: { daysBlocked?: number; votesForegone?: number; estSteemForegone?: number; class?: string; note?: string } | null
   hyper?: {

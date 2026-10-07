@@ -44,13 +44,17 @@ async function readOrgan(organ, now) {
     if (!r.ok) { out.verdict = "DOWN"; out.error = `health HTTP ${r.status}`; return out; }
     const j = await r.json();
     out.ok = j?.ok === true;
-    out.bootedAt = j?.bootedAt ?? j?.at ?? null;
-    if (out.bootedAt) {
-      const b = Date.parse(out.bootedAt);
-      if (Number.isFinite(b)) out.ageMs = Math.max(0, Date.now() - b);
+    /* R237 liveness law: age = time since the organ's last ACTIVITY
+     * (custodian last tick, metrics last snapshot) — never since boot
+     * (a long-lived healthy organ is not stale). An organ with no
+     * activity field is judged by the fetch itself → age=null → ALIVE. */
+    const lastAct = j?.last?.at ?? j?.lastAt ?? null;
+    out.evidence.health = { ticks: j?.ticks ?? null, last: lastAct ?? j?.bootedAt ?? j?.at ?? null, tickMs: j?.tickMs ?? null };
+    if (lastAct) {
+      const a = Date.parse(lastAct);
+      if (Number.isFinite(a)) out.ageMs = Math.max(0, Date.now() - a);
     }
     out.verdict = organVerdict({ ok: out.ok, ageMs: out.ageMs });
-    out.evidence.health = { ticks: j?.ticks ?? null, last: j?.last?.at ?? j?.lastAt ?? null, tickMs: j?.tickMs ?? null };
     for (const route of organ.routes.slice(1)) {
       try {
         const r2 = await fetch(`${base}${route}`, { signal: AbortSignal.timeout(FETCH_MS) });
@@ -88,7 +92,10 @@ export async function runCouncil({ now = new Date().toISOString(), persist = tru
   const organs = [];
   for (const organ of ORGANS) organs.push(await readOrgan(organ, now));
   const mesh = meshVerdict(organs);
-  const out = { at: now, mesh, organs, builderTask: null };
+  /* R237 cadence law: the LAST work-order stays on record (the 1/day gate in
+   * daily.mjs reads it) — a quiet session never erases the previous one. */
+  const prev = persist ? councilState() : null;
+  const out = { at: now, mesh, organs, builderTask: builderTask ? null : (prev?.builderTask ?? null) };
 
   if (builderTask && builderTask.file && builderTask.task) {
     const bt = {

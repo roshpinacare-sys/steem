@@ -1138,8 +1138,10 @@ export function signalDigest(events = []) {
  * tranches (our-orders.json), the hyper layer's own state, and custody-
  * verified soldier grids. A layer with zero evidence is INACTIVE — measured,
  * not promised. Pure. */
-export function measuredLayers({ ourOrders = [], hyper = null, soldiersVerified = null } = {}) {
-  const orders = Array.isArray(ourOrders) ? ourOrders : [];
+export function measuredLayers(opts = {}) {
+  const orders = Array.isArray(opts?.ourOrders) ? opts.ourOrders : [];
+  const hyper = opts?.hyper ?? null;
+  const soldiersVerified = opts?.soldiersVerified ?? null;
   const norm = orders.map((o) => (typeof o === "object" && o !== null ? o : { id: o, tranche: "value" }));
   const value = norm.filter((o) => (o.tranche ?? "value") === "value").length;
   const flow = norm.filter((o) => o.tranche === "flow").length;

@@ -31,6 +31,7 @@ import { RcTankCard } from '@/components/saos/RcTankCard'
 import { EconomicsRailsCard } from '@/components/saos/EconomicsRailsCard'
 import { PayoutsCard } from '@/components/saos/PayoutsCard'
 import { WeaveCard } from '@/components/saos/WeaveCard'
+import { CouncilCard } from '@/components/saos/CouncilCard'
 import { X2Card } from '@/components/saos/X2Card'
 import type { Status, Sovereign } from '@/components/saos/types'
 
@@ -587,6 +588,13 @@ export default function Home() {
                 {/* הצי · אמת-אחת לכל-הסוכנים (T-15) */}
                 <FleetCard s={s} />
 
+                {/* R237 · מועצת-האיברים — רשת-התקשורת החיה + רישום-החסימות + אינטליגנציית-ה-power-up */}
+                <CouncilCard
+                  council={s.council}
+                  blockages={s.daily?.blockages ?? null}
+                  intel={s.daily?.steps?.redeploy?.intel ?? null}
+                />
+
                 {/* T-21d · גיוס-תפקידים — אופציונלי, נטען רק כשהמנוע מדווח */}
                 <RolesCard roles={s.roles} />
 
@@ -962,15 +970,28 @@ export default function Home() {
                   )}
                 </SectionCard>
 
-                {/* רשת-טריגרים */}
-                <SectionCard icon={GitBranch} tone="slate" title="רשת-הטריגרים · דבר-גורר-דבר">
+                {/* רשת-טריגרים · R237: שכבת-הסימולציה פרשה — אותות בלבד + שכבות-נוכחות ממודדות */}
+                <SectionCard icon={GitBranch} tone="slate" title="סריקת-אותות · שכבות-נוכחות ממודדות">
                   <div className="grid grid-cols-2 gap-2">
                     <Stat label="טיקים" value={s?.grid?.runCount ?? '—'} />
-                    <Stat label="מילויי-סימולציה" value={s?.grid?.simFills ?? '—'} />
-                    <Stat label="עמלות-סימולציה (µ)" value={f2(s?.grid?.simFeesMu)} ltr />
-                    <Stat label="גרידים-פעילים" value={`${s?.grid?.grids?.filter((g) => g.active).length ?? 0}/${s?.grid?.grids?.length ?? 0}`} tone="emerald" />
+                    <Stat label="אותות-מחזור" value="ממודדים" />
+                    <Stat label="מילויי-סימולציה (מוקפאים)" value={s?.grid?.simFills ?? 0} />
+                    <Stat label="עמלות-סימולציה (מוקפאות, µ)" value={f2(s?.grid?.simFeesMu)} ltr />
                   </div>
-                  <p className="mt-2 text-[11px] text-slate-500">טיק מזריק אירועים ל-bus → peg ומוביל ניזונים ממנו — השרשרת הפנימית חיה.</p>
+                  {s?.grid?.sim?.retired && (
+                    <p className="mt-2 rounded-lg border border-emerald-900/60 bg-emerald-950/30 p-2 text-[11px] leading-relaxed text-emerald-300/90">
+                      R237: שכבת-הסימולציה פרשה — אפס מילויי-סימולציה במחזורים חיים. מילויים אמיתיים נמדדים מהשרשרת; המונים ההיסטוריים מוקפאים-כמורשת.
+                    </p>
+                  )}
+                  <div className="mt-2 grid grid-cols-2 gap-1.5">
+                    {(s?.grid?.grids ?? []).map((g) => (
+                      <div key={g.id} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/60 px-2 py-1.5 text-[11px]">
+                        <span className="text-slate-300">{g.id}</span>
+                        <StatusBadge tone={g.active ? 'emerald' : 'slate'}>{g.active ? `פעיל (${g.levels ?? 0})` : 'לא-פעיל'}</StatusBadge>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-[11px] text-slate-500">נוכחות נמדדת מראיות-אמת: סדרות-ההזמנות שלנו · שכבת-ההיפר · חיילים-מאומתים. אין “גריד-פעיל” בלי ראיה.</p>
                 </SectionCard>
 
                 {/* יומן-אירועים מקומי */}

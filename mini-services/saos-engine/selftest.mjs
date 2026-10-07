@@ -8,6 +8,7 @@ import {
   doctrineAccount, credentialGate, rcAnomaly, recruitRoles, aggregateRails,
   normalizeWebIntel, webIntelFresh,
   payoutWindow, rewardHistoryRollup, vpNow, x2Spectrum, weaveArbitration, weaveFresh, opTypeName,
+  signalDigest, measuredLayers, redeployIntel, blockageLedger, organVerdict, meshVerdict,
 } from "./lib.mjs";
 import { sanitizeDraft } from "./content.mjs";
 import { thinkGate } from "./signer.mjs";
@@ -914,6 +915,108 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   const healed = rebuildPacingFromEvents([pu(new Date(Date.now() - 60_000).toISOString())], new Date().toISOString().slice(0, 10));
   const healedSince = Math.round((Date.now() - Date.parse(healed.lastPowerUpAt)) / 1000);
   ok("rs-rebuild healed-state-blocks-interval", healed.powerUpsToday === 1 && redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: healedSince, powerUpsToday: healed.powerUpsToday, minIntervalSec: 3600, maxPerDay: 12 }).verdict === "interval");
+}
+
+/* ═══════════ R237 · ARCHITECTURE ROUND ═══════════ */
+
+/* R237-A · signalDigest: sim artifacts NEVER reach the live bus */
+{
+  const ev = [
+    { type: "grid.tick", at: "t" },
+    { type: "grid.fill", real: false, at: "t" },
+    { type: "arb.signal", gapBps: 190, dir: "sell-external", at: "t" },
+    { type: "fee.spawn", mu: 500, at: "t" },
+    { type: "sweep.scan", at: "t" },
+    { type: "anchor.quote", at: "t" },
+  ];
+  const d = signalDigest(ev);
+  ok("signalDigest drops sim fills+fees", d.signals.length === 4 && d.retiredFills === 2);
+  ok("signalDigest kinds counted", d.kinds["grid.tick"] === 1 && d.kinds["anchor.quote"] === 1);
+  eq("signalDigest arb extracted", d.arbSignal, { gapBps: 190, dir: "sell-external" });
+  const dEmpty = signalDigest(null);
+  ok("signalDigest hostile-null safe", dEmpty.signals.length === 0 && dEmpty.retiredFills === 0 && dEmpty.arbSignal === null);
+  const d2 = signalDigest(ev);
+  eq("signalDigest deterministic", JSON.stringify(d), JSON.stringify(d2));
+}
+
+/* R237-A · measuredLayers: presence from REAL artifacts only, never a constant */
+{
+  const layers = measuredLayers({
+    ourOrders: [{ id: 1, tranche: "value" }, { id: 2, tranche: "flow" }, { id: 3, tranche: "hyper" }, 4],
+    hyper: { enabled: true, opsToday: 7 },
+    soldiersVerified: 2,
+  });
+  eq("layers value+plain-id counted", layers[0].levels, 2);
+  eq("layers flow", layers[1].levels, 1);
+  ok("layers hyper measured", layers[2].active === true && layers[2].levels === 7);
+  ok("layers soldiers measured", layers[3].active === true && layers[3].levels === 2);
+  ok("layers all carry evidence", layers.every((l) => l.real === true && typeof l.evidence === "string"));
+  const dark = measuredLayers({ ourOrders: [], hyper: { enabled: false, opsToday: 0 }, soldiersVerified: 0 });
+  ok("layers dark → zero active", dark.every((l) => l.active === false));
+  const hostile = measuredLayers(null);
+  ok("layers hostile-null safe", hostile.length === 4 && hostile.every((l) => l.active === false));
+}
+
+/* R237-C · redeployIntel: doctrine share NEVER exceeded, protective scaling exact */
+{
+  /* full doctrine: liquid after power-up covers the ladder's ask need */
+  const full = redeployIntel({ planned: 9, liquidSteem: 35.129, floorSteem: 5, askNeed: 10, rcPct: 61.5 });
+  ok("intel full-doctrine", full.scale === 1 && full.verdict === "FULL-DOCTRINE");
+  /* protective: liquid 50.9 → 25.9 above (floor+ask) → planned 30 → scale floor3dp(25.9/30)=0.863 */
+  const scaled = redeployIntel({ planned: 30, liquidSteem: 50.9, floorSteem: 5, askNeed: 20, rcPct: 50 });
+  ok("intel scaled exact floor3dp", scaled.scale === 0.863 && scaled.verdict === "GRID-PROTECT-SCALED");
+  ok("intel executed ≤ doctrine", Math.floor(30 * scaled.scale * 1000) / 1000 <= 30);
+  /* nothing can be spared → honest defer, scale 0 */
+  const defer = redeployIntel({ planned: 10, liquidSteem: 20, floorSteem: 5, askNeed: 15 });
+  ok("intel defer scale-0", defer.scale === 0 && defer.verdict === "GRID-PROTECT-DEFER");
+  /* no ask need measured → nothing to starve */
+  const noAsk = redeployIntel({ planned: 9, liquidSteem: 35, floorSteem: 5, askNeed: 0 });
+  ok("intel no-ask full", noAsk.scale === 1 && noAsk.verdict === "FULL-DOCTRINE");
+  /* planned ≤ 0 → nothing to scale */
+  const nothing = redeployIntel({ planned: 0, liquidSteem: 100, floorSteem: 5, askNeed: 1 });
+  ok("intel nothing-to-scale", nothing.scale === 0 && nothing.verdict === "NOTHING-TO-SCALE");
+  /* hostile inputs fail closed (never crash, never fabricate) */
+  const hostile = redeployIntel({ planned: NaN, liquidSteem: Infinity, floorSteem: -5, askNeed: "x" });
+  ok("intel hostile fail-closed", hostile.verdict === "NOTHING-TO-SCALE" && hostile.scale === 0);
+  /* rc urgency documented — but pacing law owns timing (scale untouched) */
+  const urgent = redeployIntel({ planned: 9, liquidSteem: 90, floorSteem: 5, askNeed: 1, rcPct: 12.34 });
+  ok("intel rc urgency noted", urgent.urgency != null && urgent.scale === 1);
+  ok("intel rc normalized 1dp", urgent.factors.rcPct === 12.3);
+  eq("intel deterministic", JSON.stringify(full), JSON.stringify(redeployIntel({ planned: 9, liquidSteem: 35.129, floorSteem: 5, askNeed: 10, rcPct: 61.5 })));
+}
+
+/* R237-D · blockageLedger: every block named + owned + lawful */
+{
+  const led = blockageLedger({
+    steps: {
+      soldiers: { verdict: "DISABLED-T80-OPERATOR-STOP", ok: true },
+      redeploy: { verdict: "REDEPLOY-COOLDOWN", reason: "interval 1200/3600s" },
+      execute: { verdict: "NO-OPS", ok: true },
+      redeployDeferredForClaim: true,
+    },
+    conf: {},
+  });
+  ok("ledger soldiers owned by operator", led.some((b) => b.source === "soldiers" && b.owner === "operator" && b.lawful === true));
+  ok("ledger pacing owned by law", led.some((b) => b.source === "redeploy" && b.owner === "law R231" && b.reason.includes("3600") || b.reason.includes("interval")));
+  ok("ledger claim-defer structural", led.some((b) => b.source === "redeploy" && b.owner === "structural"));
+  const clean = blockageLedger({ steps: { observe: { ok: true }, execute: { verdict: "BROADCAST", ok: true } }, conf: { soldiers: { enabled: false } } });
+  ok("ledger no false positives when running", !clean.some((b) => b.source === "execute" || b.source === "redeploy"));
+  const hostileLed = blockageLedger({ steps: null, conf: null });
+  ok("ledger hostile-null safe", hostileLed.length === 0);
+}
+
+/* R237-B · council classification: measured verdicts, never assumed */
+{
+  eq("organ alive", organVerdict({ ok: true, ageMs: 1000 }), "ALIVE");
+  eq("organ stale", organVerdict({ ok: true, ageMs: 40 * 60_000 }), "STALE");
+  eq("organ down", organVerdict({ ok: false, ageMs: 0 }), "DOWN");
+  eq("organ hostile", organVerdict({ ok: true, ageMs: NaN }), "ALIVE");
+  eq("mesh all alive", meshVerdict([{ verdict: "ALIVE" }, { verdict: "ALIVE" }, { verdict: "ALIVE" }]), "MESH-ALIVE");
+  eq("mesh partial", meshVerdict([{ verdict: "ALIVE" }, { verdict: "DOWN" }]), "MESH-PARTIAL");
+  eq("mesh partial-stale", meshVerdict([{ verdict: "ALIVE" }, { verdict: "STALE" }]), "MESH-PARTIAL");
+  eq("mesh dark", meshVerdict([{ verdict: "DOWN" }, { verdict: "DOWN" }]), "MESH-DARK");
+  eq("mesh empty", meshVerdict([]), "MESH-DARK");
+  eq("mesh hostile", meshVerdict(null), "MESH-DARK");
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

@@ -1,18 +1,18 @@
 {
-  "at": "2026-10-07T02:34:54.694Z",
+  "at": "2026-10-07T02:53:08.930Z",
   "enabled": true,
-  "runsTotal": 293,
-  "verdict": "NO-NEW-LESSONS",
+  "runsTotal": 295,
+  "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 124,
-      "oks": 124,
+      "window": 125,
+      "oks": 125,
       "fails": 0,
       "blocked": 0,
       "okRate": 100,
       "blockedRate": 0,
       "failReasons": {},
-      "msP50": 13400,
+      "msP50": 13777,
       "msP90": 38874
     },
     "curator": {
@@ -30,31 +30,40 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 0,
-      "fails": 0,
-      "lastError": null
+      "window": 2,
+      "fails": 2,
+      "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2784,
-      "downs": 109,
-      "heals": 49,
-      "healVerified": 40,
+      "checks": 2802,
+      "downs": 110,
+      "heals": 50,
+      "healVerified": 41,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-07T02:34:55.501Z",
+      "lastCheckAt": "2026-10-07T02:52:55.505Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-07T02:16:00.563Z",
-      "lastUpAt": "2026-10-07T02:34:55.503Z",
+      "lastSpawnAt": "2026-10-07T02:53:00.606Z",
+      "lastUpAt": "2026-10-07T02:51:55.508Z",
       "blips": 2
     }
   },
-  "lessons": [],
+  "lessons": [
+    {
+      "id": "broadcast-fails",
+      "severity": "low",
+      "resolved": true,
+      "evidence": "2/2 broadcasts failed in the window (last: missing required active authority:Missing Active Authority h) · last fail 2026-10-07T02:53:32.037Z < last OK broadcast 2026-10-07T02:53:33.769Z (live posting-role ops succeed)",
+      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
+      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
+    }
+  ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
     "signing-cred-blocked": 199,
-    "broadcast-fails": 65,
+    "broadcast-fails": 67,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
