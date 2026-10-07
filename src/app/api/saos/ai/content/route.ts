@@ -30,7 +30,7 @@ Output STRICT JSON only, no markdown fences:
 {"drafts":[{"title":"...","body":"...","tags":["tag1","tag2"],"angle":"...","voice":"...","seoNote":"...","groundedOn":["..."]}]}`;
 
 export async function POST(req: Request) {
-  let body: { topics?: unknown; voices?: unknown; recentTitles?: unknown; findings?: unknown; exposureLaw?: unknown } = {};
+  let body: { topics?: unknown; voices?: unknown; recentTitles?: unknown; findings?: unknown; exposureLaw?: unknown; styleLaw?: unknown } = {};
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: "json-body required" }, { status: 400 }); }
 
   const topics = (Array.isArray(body.topics) ? body.topics : []).slice(0, 6);
@@ -38,6 +38,9 @@ export async function POST(req: Request) {
   const recentTitles = (Array.isArray(body.recentTitles) ? body.recentTitles : []).slice(0, 12);
   const findings = Array.isArray(body.findings) ? body.findings.slice(0, 8) : [];
   const law = Array.isArray(body.exposureLaw) ? body.exposureLaw : [];
+  /* R254 · THE STYLE LAW (operator: nobody writes with "—", dev slang is
+   * welcome): obeyed at the SOURCE so drafts never even arrive with dashes. */
+  const style = (body.styleLaw && typeof body.styleLaw === "object" ? body.styleLaw : null) as { dashes?: string; slang?: string[]; slangGuidance?: string } | null;
 
   const userPrompt = [
     "Draft 4 DISTINCT posts for a general Steem audience. NOT about Steem itself — about life, work, mind, streets, craft, food, nature, ideas.",
@@ -58,6 +61,10 @@ export async function POST(req: Request) {
     "",
     "EXPOSURE LAW (hard):",
     ...(law.length ? law.map((l) => `- ${l}`) : []),
+    "",
+    "STYLE LAW (R254):",
+    ...(style?.dashes ? [`- ${style.dashes}`] : []),
+    ...(style?.slang?.length ? [`- professional developer slang, used naturally: ${style.slang.slice(0, 12).join(", ")}`, `- ${style.slangGuidance ?? "at most one or two per post, only where a real developer would say them"}`] : []),
     "",
     "Return STRICT JSON only.",
   ].join("\n");
