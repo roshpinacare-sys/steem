@@ -1,19 +1,19 @@
 {
-  "at": "2026-10-07T19:23:59.785Z",
+  "at": "2026-10-07T19:29:31.401Z",
   "enabled": true,
-  "runsTotal": 343,
+  "runsTotal": 345,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 109,
-      "oks": 104,
+      "window": 105,
+      "oks": 100,
       "fails": 0,
       "blocked": 5,
-      "okRate": 95.4,
-      "blockedRate": 4.6,
+      "okRate": 95.2,
+      "blockedRate": 4.8,
       "failReasons": {},
-      "msP50": 16514,
-      "msP90": 43884
+      "msP50": 19234,
+      "msP90": 57018
     },
     "curator": {
       "present": true,
@@ -23,45 +23,45 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 11.9,
+      "vpEff": 39.5,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 5,
-      "fails": 3,
+      "window": 2,
+      "fails": 2,
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2469,
-      "downs": 104,
-      "heals": 37,
-      "healVerified": 36,
-      "healFailed": 0,
-      "lastCheckAt": "2026-10-07T19:04:24.524Z",
+      "checks": 3335,
+      "downs": 117,
+      "heals": 58,
+      "healVerified": 49,
+      "healFailed": 2,
+      "lastCheckAt": "2026-10-07T19:29:31.609Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-07T13:39:29.573Z",
-      "lastUpAt": "2026-10-07T19:04:24.527Z",
-      "blips": 1
+      "lastSpawnAt": "2026-10-07T19:16:36.647Z",
+      "lastUpAt": "2026-10-07T19:29:31.611Z",
+      "blips": 2
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×5/109 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×5/105 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "broadcast-fails",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "3/5 broadcasts failed in the window (last: missing required active authority:Missing Active Authority h) · last fail 2026-10-07T19:01:24.675Z < last OK broadcast 2026-10-07T19:03:59.116Z (live posting-role ops succeed)",
-      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
-      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
+      "severity": "medium",
+      "evidence": "2/2 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
+      "lesson": "broadcast failures burn RC and delay rails",
+      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
@@ -69,8 +69,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 241,
-    "broadcast-fails": 101,
+    "signing-cred-blocked": 243,
+    "broadcast-fails": 103,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
