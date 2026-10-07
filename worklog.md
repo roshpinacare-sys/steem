@@ -1762,3 +1762,25 @@ Work Log:
 Stage Summary:
 - האורגניזם-חי-על-GitHub-תשתית: מחיקת-הסנדבוקס-כבר-לא-מוחקת-שום-דבר (selftest-gate+דופק+state-חוזר, כל-30-דקות)
 - איכות+אינטליגנציה+אנטי-ספאם מקודדים-בשערים: 300-מילים-floor, מונוקולטורה-אסורה, pair-guard-על-אמת-השרשרת, pacing-אנושי, spamgate+organic-watch
+---
+Task ID: R244
+Agent: Z.ai Code (main)
+Task: המפעיל: "תבדוק בתיקיות האחרות — המפתח בכל-מקום, תתחבר; בגיט תפעיל הכל; חשש-מכפילויות-מוצרים-שעושים-אותו-תפקיד; לעקוב/לתקן/לשפר; אחדות-הריבונות גוף-אחד; נתח עמוק ודחוף"
+
+Work Log:
+- חיבור: PAT-אדמין אומת מול-API (roshpinacare-sys, admin על steem+Domain) · 58-workflows-Domain + 2-steem: הכל-active, אפס-מושבת · חיפוש-מפתח-בכל-התיקיות (upload/, agent/vault/, transcripts): אפס-חומר-גלוי; pat.env-מוגן-.gitignore (מדוד: check-ignore OK) · הכספת-המוצפנת-שלמה
+- saos-act ריצה-5 (37651838253): SUCCESS מלא — adoption CHAIN-VERIFIED → cycle exit=0 ok=true health=ok → bus receipts BUS-SENT (anchor/cycle/adoption) → STATE-PERSISTED. הלולאה-הריבונית-בלי-סנדבוקס סגורה-ומדודה
+- DEDUP-AUDIT (scripts/dedup-audit.mjs חדש): מבקר-האחדות-החוזר — שולף-58-workflows + סטטיסטיקות-ריצות, ממיין-ל-9-אשכולות-תפקיד (market:12 heartbeat:10 content:9 anchor:6 audit:6 mirror:4 engine:3 web:3), מסווג LIVE:46/TOOLS:11/FAILING/NEVER, וחוקר-צעד-נכשל-לכל-אדום (אזעקה-ניתנת-פעולה) · ממפה-גם-פנימית-את-הריפו-החוק (36-engine-modules, probe-family-מתועד) · פלט: audit/r244/dedup-inventory.json + dedup-report.md — מפת-הגוף-העקובה
+- אזעקה-ראשונה-של-המבקר: org-gitleaks אדום (2-ריצות) → טריאז'ה-עמוקה: רגליים-אדומות steem/Domain/foundry · Domain-HEAD: 2-ממצאים-חיים על receipts (בדיקה-ידנית: תוויות-פרוטוקול+idempotency-sha256, לא-אישורים) → .gitleaksignore דו-צורתי · steem-28-היסטוריים (ledger.json-מעטפות-חתומות, HEAD-נקי, rotation-owner-blocked-לפי-13-d2) → .gitleaksignore
+- שורש-ריצה-org-gitleaks-עמוק-יותר: הסורק-בודק `ref: main`-בכל-ריפו ו-gitleaks-רץ `git log --all` — ענפי-צד-ישנים (steem@main-יתום! 6447874c) הכתימו-פסק-דין-על-קו-חי-נקי → DOCTRINE 13-e: matrix-include-עם-ref-פר-ריפו (steem→saos-cockpit) + --log-opts="HEAD" (פסק-דין-על-הקו-החי-בלבד)
+- רעש-ספרים: worklog.md:409/623 ("no-credential: hcsoldier1/2/3" — סיפור-אובדן-המפתחות, לא-מפתח!) נדלק-בכל-ריצה → .gitleaks.toml-מאושר-ספרים (worklog/branch-worklog/TODO/tool-results+build-artifacts) · נמדד: v8.24.3 מכבד-[allowlist]-יחיד ומתעלם-בשקט-מ-[[allowlists]]-רבים (מתועד-בקובץ) · upload/pat.env-נשאר-אדום-מקומי-כנה (חי-על-דיסק, לא-עקוב, לא-ב-runner)
+- תיקון-weave-anchor-ping: שורש-6-האדומים-של-10-06 = `date -d "3.5 hours ago"`-נכשל-ובash--e-הרג-את-הצעד (לא-API!) → המרה-לדקות-שלמות+שמירה; גם-שאילתת-הטריות-חוזקה (gh-api-מאומת, API-ERROR-נבדל-מ-STALE) · ריצה-#70: SUCCESS
+- איחוד-עם-הסוכן-המקביל (R244-b/custodian): הרימוט-התקדם-3-פעמים-במהלך-העבודה (e7026ac/fe543c1a) · קומיט-cb1ef85-נסחב-עם-state-staged-של-המנוע → ננטש, והטריאז'ה-הועברה-כירורגית-על-fe543c1a (3e1b58f, .gitleaks.toml-בלבד) · FF-חוק-נשמר-בכל-דחיפה, אפס-force
+- GitHub-תקלת-כתיבה-זמנית (500-על-push+dispatch-בשני-הריפו, ~17:00Z): לולאת-ריטרי-סבלנית — שניהם-נדחפו-אחרי-~2-דק
+- סופי: org-gitleaks-#33 SUCCESS 17/17-רגליים · saos-act-#5-success · ping-#70-success · lint-לא-נדרש (אפס-שינוי-src) · divergence-0/0
+
+Stage Summary:
+- מפת-הגוף-החיה: dedup-audit.mjs — כל-מוצר-בגיט-נמדד-בכל-ריצה (תפקיד/קצב/בריאות/אשכול) — החשש-של-המפעיל-מכפילויות הפך-למדידה-קבועה; 11-כלי-dispatch-כוונתיים תועדו-כחיים-בכוונה (לא-מתים)
+- אבטחה-כנה: 3-רגלי-סריקה-אדומות-נסגרו-בשורש — לא-ע"י-הסתרה אלא-ע"י-תיקון-הסורק (13-e: הקו-החי-הוא-הנשפט) + טריאז'ה-מתועדת-קובץ-פר-ריפו; אפס-חומר-סוד-חי-בשום-ריפו (מדוד)
+- השופט-הטרי-חזר: ping-#70-ירוק אחרי-גילוי-באג-התאריך-העשרוני — עוד-מוצר-שהחזיר-פסק-דין-אמיתי
+- הגוף-מדבר-עם-עצמו: איחוד-מלא-עם-סוכן-מקביל-בזמן-אמת-בלי-איבוד-עבודה (take-theirs-ל-state, קומיט-כירורגי-לטריאז'ה)
