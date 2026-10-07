@@ -3,7 +3,7 @@
  * Zero network, zero clock, zero randomness. RUN: bun selftest.mjs
  */
 import {
-  dragK, inventorySkew, planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, classifyStale, pnlFromFills, guardDepth, parityVerdict,
+  dragK, inventorySkew, planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, rebuildPacingFromEvents, classifyStale, pnlFromFills, guardDepth, parityVerdict,
   MIN_LEVEL, ASK_FLOOR_BPS,
   doctrineAccount, credentialGate, rcAnomaly, recruitRoles, aggregateRails,
   normalizeWebIntel, webIntelFresh,
@@ -894,6 +894,26 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("fuzz P6 at-floor-holds-zero", p6);
   ok("fuzz P7 hostile-no-crash-no-leak (700 inputs)", p7);
   ok("fuzz P8 deterministic", p8);
+}
+
+/* ── R235: pacing-state rebuild from the events journal (torn-write healing) */
+{
+  const T = "2026-10-07";
+  const pu = (at) => ({ type: "redeploy.powerup-op", at, amountSteem: 5 });
+  const empty = rebuildPacingFromEvents([], T);
+  ok("rs-rebuild empty-journal", empty.powerUpsToday === 0 && empty.lastPowerUpAt === null && empty.rebuilt === "journal");
+  const mixed = rebuildPacingFromEvents([pu("2026-10-07T00:13:06Z"), pu("2026-10-06T23:59:59Z"), { type: "redeploy.planned", at: "2026-10-07T01:00:00Z" }, null, "junk", pu("2026-10-07T01:25:00Z"), pu("2026-10-05T10:00:00Z"), { type: "redeploy.powerup-op", at: "not-a-date" }], T);
+  ok("rs-rebuild mixed-journal", mixed.powerUpsToday === 2 && mixed.lastPowerUpAt === "2026-10-07T01:25:00Z");
+  const unordered = rebuildPacingFromEvents([pu("2026-10-07T05:00:00Z"), pu("2026-10-07T01:00:00Z"), pu("2026-10-07T03:00:00Z")], T);
+  ok("rs-rebuild order-independent", unordered.lastPowerUpAt === "2026-10-07T05:00:00Z" && unordered.powerUpsToday === 3);
+  const hostile = rebuildPacingFromEvents(null, T);
+  ok("rs-rebuild non-array-fail-closed", hostile.rebuilt === "fail-closed" && hostile.powerUpsToday === 0);
+  const allYesterday = rebuildPacingFromEvents([pu("2026-10-06T10:00:00Z"), pu("2026-10-06T20:00:00Z")], T);
+  ok("rs-rebuild yesterday-not-counted", allYesterday.powerUpsToday === 0 && allYesterday.lastPowerUpAt === null);
+  /* the healed state must actually BLOCK the interval law right after a power-up */
+  const healed = rebuildPacingFromEvents([pu(new Date(Date.now() - 60_000).toISOString())], new Date().toISOString().slice(0, 10));
+  const healedSince = Math.round((Date.now() - Date.parse(healed.lastPowerUpAt)) / 1000);
+  ok("rs-rebuild healed-state-blocks-interval", healed.powerUpsToday === 1 && redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: healedSince, powerUpsToday: healed.powerUpsToday, minIntervalSec: 3600, maxPerDay: 12 }).verdict === "interval");
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

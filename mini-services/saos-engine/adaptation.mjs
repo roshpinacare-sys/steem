@@ -36,7 +36,7 @@ export const ADAPTATION_ID = "ADAPT-claim-role-posting-R209";
 const RULE_VERSION = 1;
 
 function readJson(f, dflt) { try { return JSON.parse(fs.readFileSync(f, "utf8")); } catch { return dflt; } }
-function writeJson(f, o) { try { fs.mkdirSync(STATE, { recursive: true }); fs.writeFileSync(f, JSON.stringify(o, null, 2)); } catch { /* best-effort */ } }
+function writeJson(f, o) { try { fs.mkdirSync(STATE, { recursive: true }); const t = `${f}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(o, null, 2)); fs.renameSync(t, f); } catch { /* best-effort */ } } /* R235: atomic */
 function appendLine(f, o) { try { fs.mkdirSync(STATE, { recursive: true }); fs.appendFileSync(f, JSON.stringify(o) + "\n"); } catch { /* best-effort */ } }
 const now = () => new Date().toISOString();
 

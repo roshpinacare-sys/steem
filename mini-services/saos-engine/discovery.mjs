@@ -24,7 +24,7 @@ const STATE = path.join(DIR, "state");
 const DISC_FILE = path.join(STATE, "discovery.json");
 
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
-const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, JSON.stringify(v, null, 2)); };
+const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); }; /* R235: atomic — rename is the commit point */
 const num = (s) => Number(String(s ?? "0").split(" ")[0]) || 0;
 
 /* ── pure core ─────────────────────────────────────────────────────────── */
