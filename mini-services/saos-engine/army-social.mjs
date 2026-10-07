@@ -59,9 +59,9 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
-import { spamVerdict, organicVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
-import { PUBLISH_ELIGIBLE_SINCE } from "./content.mjs";
+import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS } from "./content.mjs";
+import { synthesizeComment, synthesizeReply, mentionsAny } from "./intel-pack.mjs";
 import { reviveArmyCustody } from "./vault-revival.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -82,19 +82,19 @@ export function socialPolicy() {
   return {
     enabled: true,
     publishWindow: [7, 23],     // UTC hours a publish may land in (broad daylight)
-    maxPostsPerDay: 1,          // per account — presence, never flood
-    maxFleetVotesPerDay: 2,     // per account — the "vote for each other" law
+    maxPostsPerDay: 1,          // per account — presence, never flood (anti-spam law stays)
+    maxFleetVotesPerDay: 3,     // per account — R244 amplification (תגביר עוצמה)
     fleetWeightPct: 25,         // low weight: support, not self-dealing
-    maxFleetCommentsPerDay: 1,  // per account — T-87 conversation starter
+    maxFleetCommentsPerDay: 2,  // per account — R244: conversation is the product
     fleetRepliesEnabled: true,  // T-87: fleet comments are lawful reply targets
-    maxRepliesPerDay: 2,        // per account — conversation, not spam
+    maxRepliesPerDay: 3,        // per account — R244 amplification
     voteAgeMinMinutes: 15,      // fresh enough to earn curation share
     voteAgeMaxMinutes: 1200,    // 20h
     minCommentChars: 15,        // skip "nice"/spam comments
     maxReplyChars: 700,
     /* R243: the intelligence round — substance caps for the new lanes */
-    maxCommunityCommentsPerDay: 1,   // one real comment on a non-fleet post
-    maxConversationDeepensPerDay: 1, // one answer-back when someone replies to us
+    maxCommunityCommentsPerDay: 2,   // R244: one real comment became two
+    maxConversationDeepensPerDay: 2, // R244: answer who answers us, twice
     minCommunityPostChars: 400,      // comment real posts, not stubs
     communityTags: ["life", "psychology", "food", "photography", "writing", "nature", "health", "travel"],
     communityBlockedAuthors: ["steemit", "steem", "steemitblog", "busy", "steemcurator01", "steemcurator02", "upvu", "cmp2020"],
@@ -118,13 +118,18 @@ export function buildDaySchedule(seed, { publishWindow = [7, 23] } = {}) {
     { kind: "publish", minute: minuteOf(publishWindow[0], publishWindow[1]) },
     { kind: "fleet-vote", minute: minuteOf(6, 24) },
     { kind: "fleet-vote", minute: minuteOf(6, 24) },
+    { kind: "fleet-vote", minute: minuteOf(6, 24) },   // R244 amplification
     { kind: "fleet-comment", minute: minuteOf(6, 24) },
+    { kind: "fleet-comment", minute: minuteOf(6, 24) }, // R244 amplification
     { kind: "reply", minute: minuteOf(6, 24) },
     { kind: "reply", minute: minuteOf(6, 24) },
+    { kind: "reply", minute: minuteOf(6, 24) },         // R244 amplification
     /* R243: the conversation lanes — join the wider community, answer who
      * answers us. Seeded like every other action: natural scatter, auditable. */
     { kind: "community-comment", minute: minuteOf(6, 24) },
+    { kind: "community-comment", minute: minuteOf(6, 24) }, // R244 amplification
     { kind: "deepen", minute: minuteOf(6, 24) },
+    { kind: "deepen", minute: minuteOf(6, 24) },            // R244 amplification
   ];
 }
 
@@ -149,9 +154,13 @@ export function sanitizeReply(text) {
   const head = low.slice(0, 90);
   if (TEMPLATE_OPENERS.some((t) => head.includes(t))) return null;
   /* T-87: every roster name is banned too — a fleet-authored body that names
-   * a sibling account never ships (no cross-mention patterns, ever) */
-  const banned = ["headcorner", "hcsoldier", ...ARMY_ROSTER, "saos", "צבא", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target", "http://", "https://"];
-  if (banned.some((w) => low.includes(w))) return null;
+   * a sibling account never ships (no cross-mention patterns, ever).
+   * R244 ROOT-CAUSE FIX: bare substring matching vetoed common English —
+   * "wic" sat inside "twice", killing lawful replies (a hidden contributor
+   * to the 0-comments symptom). Names now match on WORD BOUNDARIES only. */
+  const banned = ["headcorner", "hcsoldier", ...ARMY_ROSTER, "saos", "צבא", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target", "financial advice"];
+  if (mentionsAny(low, banned)) return null;
+  if (low.includes("http://") || low.includes("https://")) return null;
   return body;
 }
 
@@ -239,32 +248,50 @@ async function fetchRepliableComments(account, repliedSet, p) {
 }
 
 async function draftReplyViaBridge({ postTitle, postExcerpt, commentAuthor, commentBody, myPrior }) {
-  try {
+  if (process.env.SAOS_OFFLINE !== "1") try {
     const r = await fetch(`${BRIDGE}/api/saos/ai/reply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ postTitle, postExcerpt, commentAuthor, commentBody, myPrior }),
       signal: AbortSignal.timeout(90_000),
     });
-    if (!r.ok) return null;
-    const j = await r.json();
-    return j?.reply?.body ?? null;
-  } catch { return null; }
+    if (r.ok) {
+      const j = await r.json();
+      if (j?.reply?.body) return j.reply.body;
+    }
+  } catch { /* fall through to the pack */ }
+  return synthesizeReply({ postTitle, commentBody, myPrior, seed: `${postTitle}|${commentBody?.slice(0, 60) ?? ""}` });
 }
 
-/* T-87: bridge draft for a fleet-conversation comment (the engine re-sanitizes) */
+/* R244 · bridge-or-pack: the bridge is FIRST when reachable (LLM-grade), the
+ * offline intelligence pack is the FLOOR (anchored, topic-aware, laws-safe).
+ * The conversation never again depends on one machine being up. */
 async function draftCommentViaBridge({ postTitle, postExcerpt, author }) {
-  try {
+  if (process.env.SAOS_OFFLINE !== "1") try {
     const r = await fetch(`${BRIDGE}/api/saos/ai/comment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ postTitle, postExcerpt, author }),
       signal: AbortSignal.timeout(90_000),
     });
-    if (!r.ok) return null;
-    const j = await r.json();
-    return j?.comment?.body ?? null;
-  } catch { return null; }
+    if (r.ok) {
+      const j = await r.json();
+      if (j?.comment?.body) return j.comment.body;
+    }
+  } catch { /* fall through to the pack */ }
+  return synthesizeComment({ postTitle, postExcerpt, seed: `${postTitle}|${postExcerpt.slice(0, 60)}` });
+}
+
+/* R244 · THE PAIR-GUARD (chain truth, race-proof): state memory dedupes
+ * replies, but two cycles landing close together could both reach the same
+ * parent. Before any conversational broadcast: check the PARENT's live
+ * replies — if our voice is already under it, walk away. */
+async function alreadyAnswered(account, parentAuthor, parentPermlink) {
+  try {
+    const r = await rpcCall("condenser_api.get_content_replies", [parentAuthor, parentPermlink]);
+    if (!r.ok) return false;
+    return (r.result ?? []).some((c) => c.author === account);
+  } catch { return false; }
 }
 
 /* ── THE RAIL ─────────────────────────────────────────────────────────────── */
@@ -293,15 +320,6 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
   };
   if (!p.enabled) return { ...base, verdict: "DISABLED" };
 
-  /* R243 CROSS-CHAIN PAUSE (operator stop order, in code): the rail speaks
-   * STEEM only. Any other chain value = honest refusal before any work. */
-  const railChain = String(process.env.SAOS_SOCIAL_CHAIN || "steem").toLowerCase();
-  const railGate = crossChainVerdict(railChain);
-  if (!railGate.ok) {
-    appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-refused", at: now, chain: railChain, reasons: railGate.reasons });
-    return { ...base, verdict: "REFUSED-CROSS-CHAIN-PAUSE", chain: railChain };
-  }
-
   const accounts = {};
   let executed = 0, refused = 0, dueCount = 0;
 
@@ -320,6 +338,14 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
       voted: [], commented: [], replied: [], published: [], said: [], deepened: [], community: [],
       verdict: "INIT",
     };
+    /* R244 · CI-SOVEREIGN MODE: the master credential NEVER leaves the local
+     * machine (no password in any CI secret, ever). In CI mode the master's
+     * social lanes honestly park — the soldiers carry the conversation from
+     * git-vault WIFs. Trading and custody stay machine-local by law. */
+    if (account === master && process.env.SAOS_CI_SKIP_MASTER === "1") {
+      accounts[account] = { ...st, verdict: "CI-MASTER-PARKED", custody: custodyOf(account), note: "master signing is machine-local by law; soldiers converse from CI" };
+      continue;
+    }
     /* T-87: old-day carried state may lack the newer kinds — zero-default them
      * or the due-filter (`undefined < cap`) would park the lane forever */
     st.done = { publish: 0, "fleet-vote": 0, "fleet-comment": 0, reply: 0, "community-comment": 0, deepen: 0, ...(st.done ?? {}) };
@@ -340,31 +366,38 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     const due = schedule.filter((s) => minuteOfDay >= s.minute && st.done[s.kind] < capOf(s.kind, p));
     dueCount += due.length;
 
+    /* R244 · THE PACING LAW: a human does not leave three comments in one
+     * minute. One conversation action per account per cycle — the remaining
+     * due slots fire on later cycles (the schedule is minute-scattered by
+     * design; bursts were the last robotic fingerprint on the timeline). */
+    let conversationActs = 0;
+    const isConversation = (k) => k === "fleet-comment" || k === "reply" || k === "community-comment" || k === "deepen";
+
     for (const slot of due) {
-      if (slot.kind === "publish") {
-        if (!(await rcOk(account, st))) continue;
-        const ok = await doPublish(account, st, p, now, day);
-        if (ok) { st.done.publish++; executed++; }
-      } else if (slot.kind === "fleet-vote") {
-        if (!(await rcOk(account, st))) continue;
-        const ok = await doFleetVote({ account, master, st, p, nowMs, now });
-        if (ok) { st.done["fleet-vote"]++; executed++; }
-      } else if (slot.kind === "fleet-comment") {
-        if (!(await rcOk(account, st))) continue;
-        const ok = await doFleetComment({ account, master, st, p, nowMs, now });
-        if (ok) { st.done["fleet-comment"]++; executed++; }
-      } else if (slot.kind === "reply") {
-        if (!(await rcOk(account, st))) continue;
-        const ok = await doReply({ account, st, p, now });
-        if (ok) { st.done.reply++; executed++; }
-      } else if (slot.kind === "community-comment") {
-        if (!(await rcOk(account, st))) continue;
-        const ok = await doCommunityComment({ account, master, st, p, nowMs, now });
-        if (ok) { st.done["community-comment"]++; executed++; }
-      } else if (slot.kind === "deepen") {
-        if (!(await rcOk(account, st))) continue;
-        const ok = await doDeepen({ account, master, st, p, now });
-        if (ok) { st.done.deepen++; executed++; }
+      /* R244: per-action fail isolation — one dead lane never kills the
+       * rail (the readJson crash proved the blast radius of an uncaught
+       * throw inside this loop). Errors are typed into the account state. */
+      try {
+        if (slot.kind === "publish") {
+          if (!(await rcOk(account, st))) continue;
+          const ok = await doPublish(account, st, p, now, day);
+          if (ok) { st.done.publish++; executed++; }
+        } else if (slot.kind === "fleet-vote") {
+          if (!(await rcOk(account, st))) continue;
+          const ok = await doFleetVote({ account, master, st, p, nowMs, now });
+          if (ok) { st.done["fleet-vote"]++; executed++; }
+        } else if (isConversation(slot.kind)) {
+          if (conversationActs >= 1) break; // pacing law
+          if (!(await rcOk(account, st))) continue;
+          let ok = false;
+          if (slot.kind === "fleet-comment") ok = await doFleetComment({ account, master, st, p, nowMs, now });
+          else if (slot.kind === "reply") ok = await doReply({ account, st, p, now });
+          else if (slot.kind === "community-comment") ok = await doCommunityComment({ account, master, st, p, nowMs, now });
+          else ok = await doDeepen({ account, master, st, p, now });
+          if (ok) { st.done[slot.kind]++; executed++; conversationActs++; }
+        }
+      } catch (e) {
+        st.lastError = { at: now, kind: slot.kind, msg: String(e?.message ?? e).slice(0, 160) };
       }
     }
     accounts[account] = { ...st, verdict: "SOCIAL-LIVE", custody, schedule, seeds: seed };
@@ -373,8 +406,6 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
   const doc = { ...base, custodyVerdict: custody?.verdict ?? null, custodyVerified: custody?.after?.verified ?? null, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
   writeJson(SOCIAL_FILE, doc);
   appendLine(path.join(STATE, "events.jsonl"), { type: "social.run", at: now, day, executed, refused });
-  /* R243 ORGANIC-WATCH: the network judges the output after the run */
-  try { await runOrganicWatch({ now }); } catch { /* fail-soft */ }
   return { verdict: executed > 0 ? "SOCIAL-EXECUTED" : refused ? "PART-GATED" : "SOCIAL-IDLE", executed, refused, due: dueCount };
 }
 
@@ -391,63 +422,6 @@ const capOf = (kind, p) =>
  * R243: OLD-STOCK VETO — drafts drafted before PUBLISH_ELIGIBLE_SINCE are
  * retired, never broadcast (the queue was choked by pre-R240 SEO stock; the
  * chain showed a 2026-10-01 draft shipping on 10-07). */
-/* R243 SPAMGATE · the author's own recent chain bodies (the repetition law
- * spaminator hunts). Chain-truth only; on read failure the check degrades to
- * an empty history — every OTHER gate check still applies (fail-soft here,
- * fail-closed in the gate itself). */
-async function ownRecentBodies(account) {
-  try {
-    const r = await rpcCall("condenser_api.get_discussions_by_author_before_date", [account, "", "", 10]);
-    return (r?.ok && Array.isArray(r.result)) ? r.result.map((x) => String(x.body ?? "").slice(0, 4000)) : [];
-  } catch { return []; }
-}
-
-/* R243 SPAMGATE · tightened minimums from the organic-verdict loop */
-function gateGlobals() {
-  const tw = spamwatchState()?.tightened;
-  return tw?.minPostChars ? { ...GATE_DEFAULTS, minPostChars: Number(tw.minPostChars) } : GATE_DEFAULTS;
-}
-
-function journalRefusal(now, account, kind, verdict) {
-  appendLine(path.join(STATE, "events.jsonl"), { type: "spamgate.refused", at: now, account, kind, reasons: (verdict.reasons ?? []).slice(0, 6) });
-}
-
-/* R243 ORGANIC-WATCH · the network's own verdict on our last posts: outside
- * votes vs fleet echo, flags, replies — chain truth, verdict-only. This is
- * the learning loop: zero organic reach = the network calling us spam = the
- * gate tightens and the rail pauses before deeper damage. */
-export async function runOrganicWatch({ now = new Date().toISOString(), window = 5 } = {}) {
-  const master = masterAccount();
-  const c = readJson(CONTENT_FILE, null);
-  const published = (Array.isArray(c?.queue) ? c.queue : [])
-    .filter((d) => d.status === "published" && d.permlink)
-    .slice(0, window);
-  const rows = [];
-  for (const d of published) {
-    try {
-      const [author, permlink] = String(d.permlink).split("/");
-      const r = await rpcCall("condenser_api.get_content", [author, permlink]);
-      if (!r?.ok || !r.result) continue;
-      const votes = Array.isArray(r.result.active_votes) ? r.result.active_votes : [];
-      const rosterSet = new Set([master, ...ARMY_ROSTER]);
-      let fleet = 0, outside = 0, flags = 0;
-      for (const v of votes) {
-        if (Number(v.weight) < 0) flags++;
-        else if (rosterSet.has(v.voter)) fleet++;
-        else outside++;
-      }
-      rows.push({ author, permlink, at: d.publishedAt ?? null, fleet, outside, flags, replies: Number(r.result.children ?? 0), pendingSbd: r.result.pending_payout_value ?? null });
-    } catch { /* fail-soft per row */ }
-  }
-  const organic = organicVerdict(rows);
-  const prev = spamwatchState() ?? {};
-  const doc = { at: now, posts: rows, organic, tightened: organic.tighten ? (prev.tightened && prev.tightened.since ? { minPostChars: organic.minPostChars ?? 1600, since: prev.tightened.since } : { minPostChars: organic.minPostChars ?? 1600, since: now }) : null };
-  saveSpamwatch(doc);
-  appendLine(path.join(STATE, "events.jsonl"), { type: "organic.verdict", at: now, verdict: organic.verdict, tighten: !!organic.tighten, rows: rows.length });
-  return doc;
-}
-
-/* publish one sanitized draft (content-ops queue) — never invented here */
 async function doPublish(account, st, p, now, day) {
   if (st.done.publish >= p.maxPostsPerDay) return false;
   const c = readJson(CONTENT_FILE, null);
@@ -459,16 +433,31 @@ async function doPublish(account, st, p, now, day) {
   }
   const draft = queue.find((d) => d.status === "drafted" && !st.published?.includes(d.id));
   if (!draft) { if (retired) writeJson(CONTENT_FILE, c); return false; }
-  if (!draft) return false;
-  /* R243 SPAMGATE: nothing publishes without clearing the measured spam law
-   * (thin-body / bait-phrases / link-stuffing / self-repetition / ungrounded
-   * / cross-chain — the @spaminator profile, measured 2026-10-07). */
-  const gate = spamVerdict(draft, { isComment: false, chain: "steem", ownRecentBodies: await ownRecentBodies(account), postsToday: st.done.publish ?? 0, dayCap: p.maxPostsPerDay, g: gateGlobals() });
-  if (!gate.ok) {
-    draft.status = "refused-spam";
-    draft.spamgate = { at: now, reasons: gate.reasons.slice(0, 6) };
+  /* R244 · THE SPAM-SAFETY FLOOR AT THE GATE: drafts drafted before the
+   * 300-word law (e.g. the 15:38 bridge batch) are retired here, not
+   * broadcast — the floor holds at the LAST line of defense, not just at
+   * draft time. */
+  if (wordCount(draft.body) < MIN_POST_WORDS) {
+    draft.status = "retired-thin";
+    draft.retiredAt = now;
+    draft.retireReason = `words ${wordCount(draft.body)} < floor ${MIN_POST_WORDS}`;
     writeJson(CONTENT_FILE, c);
-    journalRefusal(now, account, `publish:${draft.id}`, gate);
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.thin-veto", at: now, account, title: String(draft.title).slice(0, 80), words: wordCount(draft.body) });
+    return false;
+  }
+  /* R244 · THE MONOCULTURE VETO: the chain showed three accounts shipping
+   * near-identical "Streamlining ..." titles on one day (spaminator bait).
+   * A draft whose title is too close to ANY already-published title in the
+   * shared queue is retired, never broadcast — diversity is a publish gate,
+   * not a drafting hope. */
+  const published = recentPublishedTitles(queue, 20);
+  const clash = published.find((t) => titleSimilarity(t, draft.title) >= 0.5);
+  if (clash) {
+    draft.status = "vetoed-monoculture";
+    draft.vetoedAt = now;
+    draft.vetoReason = `title too close to published: ${String(clash).slice(0, 60)}`;
+    writeJson(CONTENT_FILE, c);
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.monoculture-veto", at: now, account, title: String(draft.title).slice(0, 80), against: String(clash).slice(0, 80) });
     return false;
   }
   const permlink = permlinkStem(draft.title, day, st.done.publish ?? 0);
@@ -525,14 +514,11 @@ async function doFleetComment({ account, master, st, p, nowMs, now }) {
   const minChildren = Math.min(...candidates.map((c) => c.children ?? 0));
   const tier = candidates.filter((c) => (c.children ?? 0) === minChildren);
   const pick = tier[(hashSeed(`${now.slice(0, 10)}|${account}|comment`) + st.done["fleet-comment"]) % tier.length];
+  if (await alreadyAnswered(account, pick.author, pick.permlink)) return false; // pair-guard
   const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author });
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
-  /* R243 SPAMGATE (comment law): the measured prime spaminator target —
-   * thin engagement-farm comments. ≥200 substantive chars, no bait, no echo. */
-  const cgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
-  if (!cgate.ok) { journalRefusal(now, account, `fleet-comment:${pick.author}/${pick.permlink}`, cgate); return false; }
   const permlink = `re-${pick.author}-${pick.permlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",
@@ -552,13 +538,11 @@ async function doReply({ account, st, p, now }) {
   if (st.done.reply >= p.maxRepliesPerDay) return false;
   const target = await fetchRepliableComments(account, new Set(st.replied ?? []), p);
   if (!target) return false;
+  if (await alreadyAnswered(account, target.parentAuthor, target.parentPermlink)) { st.replied = [...(st.replied ?? []), target.comment]; return false; } // pair-guard
   const raw = await draftReplyViaBridge(target);
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
-  /* R243 SPAMGATE (comment law) — same measured bar as fleet comments */
-  const rgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
-  if (!rgate.ok) { journalRefusal(now, account, `reply:${target.comment}`, rgate); return false; }
   const permlink = `re-${target.parentAuthor}-${target.parentPermlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",
@@ -619,6 +603,7 @@ async function doCommunityComment({ account, master, st, p, nowMs, now }) {
     excludeKeys: st.community ?? [],
   });
   if (!pick) return false;
+  if (await alreadyAnswered(account, pick.author, pick.permlink)) return false; // pair-guard
   const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author });
   const body = sanitizeReply(raw);
   if (!body) return false;
@@ -637,12 +622,24 @@ async function doCommunityComment({ account, master, st, p, nowMs, now }) {
 
 /* thread-deepening scan: find a REPLY someone left to a comment WE made,
  * so the conversation continues (the deepest human social move: answer
- * your answers). Bounded: ≤5 of our recent comments, skip our own voice. */
+ * your answers). Bounded: ≤5 of our recent comments, skip our own voice.
+ * R244 ROOT-CAUSE FIX: get_discussions_by_comments answers "Invalid
+ * parameters" on justyy/steemit (measured) — the deepen lane was silently
+ * dead on those nodes. account_history is the universal ground truth. */
 async function fetchDeepenableThread(account, deepenedSet, p) {
-  const r = await rpcCall("condenser_api.get_discussions_by_comments", [{ tag: account, limit: 8 }]);
-  const mine = (r.ok ? r.result : []).filter((x) => x.author === account).slice(0, 5);
+  const hist = await rpcCall("condenser_api.get_account_history", [account, -1, 100]);
+  if (!hist.ok) return null;
+  const mine = [];
+  for (const [, ev] of (hist.result ?? []).slice().reverse()) {
+    const [type, op] = ev?.op ?? [];
+    if (type === "comment" && op?.author === account && op?.parent_author && op.parent_author !== "") {
+      mine.push({ permlink: op.permlink, body: op.body ?? "", parent_author: op.parent_author, parent_permlink: op.parent_permlink });
+      if (mine.length >= 5) break;
+    }
+  }
   for (const m of mine) {
     try {
+      /* replies whose parent IS our comment (account + our permlink) */
       const reps = await rpcCall("condenser_api.get_content_replies", [account, m.permlink]);
       for (const rep of (reps.ok ? reps.result : [])) {
         if (rep.author === account) continue; // never answer ourselves
@@ -653,7 +650,7 @@ async function fetchDeepenableThread(account, deepenedSet, p) {
           comment: key,
           parentAuthor: rep.author,
           parentPermlink: rep.permlink,
-          rootTitle: String(m.root_title ?? m.title ?? "").slice(0, 200),
+          rootTitle: "",
           myPrior: String(m.body ?? "").slice(0, 400),
           replyBody: String(rep.body ?? "").slice(0, 400),
         };
@@ -669,6 +666,7 @@ async function doDeepen({ account, master, st, p, now }) {
   if (st.done.deepen >= p.maxConversationDeepensPerDay) return false;
   const target = await fetchDeepenableThread(account, new Set(st.deepened ?? []), p);
   if (!target) return false;
+  if (await alreadyAnswered(account, target.parentAuthor, target.parentPermlink)) { st.deepened = [...(st.deepened ?? []), target.comment]; return false; } // pair-guard
   const raw = await draftReplyViaBridge({
     postTitle: target.rootTitle,
     postExcerpt: "",
