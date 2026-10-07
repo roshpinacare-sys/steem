@@ -1,29 +1,28 @@
 {
-  "at": "2026-10-07T11:46:23.595Z",
+  "at": "2026-10-07T14:19:31.380Z",
   "enabled": true,
-  "runsTotal": 313,
+  "runsTotal": 1,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 107,
-      "oks": 103,
-      "fails": 0,
+      "window": 98,
+      "oks": 91,
+      "fails": 3,
       "blocked": 4,
-      "okRate": 96.3,
-      "blockedRate": 3.7,
-      "failReasons": {},
-      "msP50": 16298,
-      "msP90": 43390
+      "okRate": 92.9,
+      "blockedRate": 4.1,
+      "failReasons": {
+        "none": 3
+      },
+      "msP50": 18624,
+      "msP90": 48057
     },
     "curator": {
       "present": true,
-      "totalVotes": 39,
-      "window": 26,
-      "verdicts": {
-        "BROADCAST-FAIL": 3,
-        "VOTED": 23
-      },
-      "vpEff": 33.8,
+      "totalVotes": 0,
+      "window": 0,
+      "verdicts": {},
+      "vpEff": 36.4,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -31,19 +30,19 @@
     },
     "exec": {
       "window": 1,
-      "fails": 0,
-      "lastError": null
+      "fails": 1,
+      "lastError": "Assert Exception:op.reward_vests <= acnt.reward_vesting_balance: Cannot claim that much VESTS. Claim: {\"amount\":\"350092493\",\"precision\":6,\"nai\":\"@@000000037\"} Actual: {\"amount\":\"0\",\"precision\":6,\"nai\""
     },
     "watchdog": {
-      "checks": 2969,
-      "downs": 113,
-      "heals": 54,
-      "healVerified": 45,
+      "checks": 3025,
+      "downs": 114,
+      "heals": 55,
+      "healVerified": 46,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-07T11:46:23.670Z",
+      "lastCheckAt": "2026-10-07T14:19:31.400Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-07T10:29:28.649Z",
-      "lastUpAt": "2026-10-07T11:46:23.671Z",
+      "lastSpawnAt": "2026-10-07T13:39:36.427Z",
+      "lastUpAt": "2026-10-07T14:19:31.402Z",
       "blips": 2
     }
   },
@@ -52,19 +51,32 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×4/107 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×4/98 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+    },
+    {
+      "id": "unclassified-fail-legacy",
+      "severity": "medium",
+      "evidence": "3 fails journaled without a reason class (pre-T-17 era — the sovereign recorded \"fail\" without engine-measured health)",
+      "lesson": "unclassified fails poison the failure histogram — a lesson machine that cannot classify cannot fully learn",
+      "action": "STRUCTURAL T-17: the marker flow journals engine-measured health+reason for every new fail; legacy history stays as evidence, never back-filled with invented causes"
+    },
+    {
+      "id": "broadcast-fails",
+      "severity": "low",
+      "resolved": true,
+      "evidence": "1/1 broadcasts failed in the window (last: Assert Exception:op.reward_vests <= acnt.reward_vesting_bala) · last fail 2026-10-07T14:09:41.911Z < last OK broadcast 2026-10-07T14:10:43.665Z (live posting-role ops succeed)",
+      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
+      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "cycle-conn-fails": 132,
-    "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 211,
-    "broadcast-fails": 79,
-    "cycle-latency-tail": 19
+    "signing-cred-blocked": 1,
+    "unclassified-fail-legacy": 1,
+    "broadcast-fails": 1
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }

@@ -5,51 +5,55 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 /**
- * T-22 · CONTENT-OPS BRIDGE (engine-called, backend-only law).
- * The engine's content team calls this route every 12h with its own measured
- * telemetry + the web-intel findings; the LLM drafts discussion topics under
- * an EXPOSURE LAW (no coordinated-account revelation, no financial advice,
- * supportive community tone, SEO-aware). The engine re-checks every draft in
- * pure code (content.sanitizeDraft) — this bridge drafts, the engine decides.
+ * R240 · CONTENT-INTELLIGENCE BRIDGE (engine-called, backend-only law).
+ * Rewritten after the operator's verdict on the feed: "זה ממש לא מעניין מה
+ * שאנחנו שולחים" — the chain showed every post was Steem-about-Steem meta,
+ * eleven near-duplicate voices. This writers' room now drafts HUMAN pieces
+ * from a rotating topic pool, one distinct voice per draft, ending with a
+ * reader question (questions earn comments; comments earn a feed).
+ * The engine re-checks every draft in pure code (sanitizeDraft + dedupe) —
+ * this bridge drafts, the engine decides.
  */
-const SYSTEM_PROMPT = `You are a careful content strategist for a blockchain-technology research initiative that publishes on the Steem community.
+const SYSTEM_PROMPT = `You are a small writers' room of independent human authors publishing on the Steem community. Every piece must be worth a stranger's time.
 HARD LAW (violations make a draft unusable):
-- Never reveal, hint at, or enable inference of coordinated multi-account activity, automation collectives, internal codenames, or that any accounts are connected. Write as an independent author.
+- Never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected. Write as an independent author.
 - No financial advice, no profit promises, no price predictions or targets, no solicitation.
-- Supportive public-knowledge tone: teach, ask, answer. Welcome newcomers.
-- SEO-aware: concrete self-standing title, first paragraph must stand alone, natural topical keywords, no keyword stuffing.
-- Grounded: build ONLY on the telemetry/findings provided; when citing facts, keep them general and verifiable — never invent numbers.
+- NO fabricated personal identities: never invent named family members, specific biographies, or claim a specific hometown/job history. Write as a general human observer ("you know that moment when..." is fine).
+- No AI telltales: never start with "In today's world" or similar; never end with "In conclusion"; NO em dashes or en dashes anywhere; avoid "delve", "tapestry", "realm".
+- Plain human prose: concrete nouns, specific small details, one clear idea per paragraph. Show, don't lecture.
+- SEO-aware: concrete curiosity-driven title (a reader should want to click), first paragraph must stand alone, natural keywords, no stuffing.
+- Every draft ENDS with one genuine question to the reader (this is how conversations start).
 Output STRICT JSON only, no markdown fences:
-{"drafts":[{"title":"...","body":"...","tags":["tag1","tag2"],"angle":"...","seoNote":"...","groundedOn":["..."]}]}`;
+{"drafts":[{"title":"...","body":"...","tags":["tag1","tag2"],"angle":"...","voice":"...","seoNote":"...","groundedOn":["..."]}]}`;
 
 export async function POST(req: Request) {
-  let body: { findings?: unknown; telemetry?: unknown; exposureLaw?: unknown } = {};
+  let body: { topics?: unknown; voices?: unknown; recentTitles?: unknown; findings?: unknown; exposureLaw?: unknown } = {};
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: "json-body required" }, { status: 400 }); }
 
+  const topics = (Array.isArray(body.topics) ? body.topics : []).slice(0, 6);
+  const voices = (Array.isArray(body.voices) ? body.voices : []).slice(0, 12);
+  const recentTitles = (Array.isArray(body.recentTitles) ? body.recentTitles : []).slice(0, 12);
   const findings = Array.isArray(body.findings) ? body.findings.slice(0, 8) : [];
-  const telemetry = body.telemetry && typeof body.telemetry === "object" ? body.telemetry : {};
   const law = Array.isArray(body.exposureLaw) ? body.exposureLaw : [];
-  /* T-87: day-seeded angle rotation from the engine — each draft takes one */
-  const angles = Array.isArray(body.angles)
-    ? body.angles.map((a) => String(a).slice(0, 60)).filter(Boolean).slice(0, 3)
-    : [];
 
   const userPrompt = [
-    "Draft 3 distinct discussion-post ideas for a blockchain community (Steem).",
-    "Each: engaging title (≤100 chars), body 180-350 words, 3-5 lowercase hyphenated tags.",
-    "Angle must differ across drafts (e.g. educational explainer / open question / tooling-or-workflow tip).",
-    ...(angles.length
-      ? ["THIS ROUND'S ANGLE ROTATION (draft #1, #2, #3 take these angles IN ORDER):", ...angles.map((a, i) => `${i + 1}. ${a}`), ""]
-      : []),
+    "Draft 4 DISTINCT posts for a general Steem audience. NOT about Steem itself — about life, work, mind, streets, craft, food, nature, ideas.",
+    "Each: title ≤90 chars, body 220-380 words, 3-5 lowercase hyphenated tags (one broad topical tag like life/psychology/technology/food/nature/writing + 2-3 niche).",
+    "",
+    "THIS ROUND'S TOPICS — draft #1,2,3,4 take topics #1,2,3,4 IN ORDER (build one concrete piece per topic, do not just restate the hint):",
+    ...topics.map((t: { id?: string; hint?: string; tags?: string[] }, i) => `${i + 1}. ${(t?.id ?? "?")} — ${(t?.hint ?? "")} (suggested tags: ${(t?.tags ?? []).join(", ")})`),
+    "",
+    "THIS ROUND'S VOICES — draft #i is written in voice #i (a DIFFERENT voice per draft; the feed must not sound like one bot):",
+    ...voices.slice(0, 4).map((v: { account?: string; voice?: string }, i) => `${i + 1}. ${v?.voice ?? "clear and concrete"}`),
+    "",
+    "DO NOT come close to these already-published titles (different topic AND different words):",
+    ...(recentTitles.length ? recentTitles.map((t: unknown) => `- ${String(t).slice(0, 90)}`) : ["- (none)"]),
+    "",
+    "EXTERNAL FINDINGS (optional general context, never machine metrics):",
+    findings.map((f) => `- ${(f as { title?: string })?.title ?? "?"} (${(f as { host?: string })?.host ?? "?"})`).join("\n") || "- none this round",
     "",
     "EXPOSURE LAW (hard):",
     ...(law.length ? law.map((l) => `- ${l}`) : []),
-    "",
-    "EXTERNAL FINDINGS (sourced context you may reference generally):",
-    findings.map((f) => `- ${(f as { title?: string })?.title ?? "?"} (${(f as { host?: string })?.host ?? "?"})`).join("\n") || "- none this round",
-    "",
-    "MACHINE TELEMETRY (measured, general facts you may discuss WITHOUT internal details):",
-    JSON.stringify(telemetry).slice(0, 800),
     "",
     "Return STRICT JSON only.",
   ].join("\n");
