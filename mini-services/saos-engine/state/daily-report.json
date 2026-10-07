@@ -1,30 +1,30 @@
 {
-  "startedAt": "2026-10-07T21:09:24.405Z",
+  "startedAt": "2026-10-07T21:19:24.409Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2080,
+      "ms": 2770,
       "account": "headcorner",
       "parity": {
         "steemUsd": 0.05883,
-        "sbdUsd": 0.58098,
-        "parity": 0.1012599401012083,
+        "sbdUsd": 0.579397,
+        "parity": 0.10153659753157161,
         "source": "coingecko"
       },
       "feed": 0.10409569325729169,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": -272
+        "bps": -246
       },
       "steemUsd": 0.05883,
-      "sbdUsd": 0.58098,
+      "sbdUsd": 0.579397,
       "inventory": {
         "steem": 13.494,
         "sbd": 0.5,
-        "spOwn": 966.5059442892014,
+        "spOwn": 966.5064004647833,
         "rcPct": 30.3
       },
       "ordersOk": true,
@@ -86,12 +86,12 @@
           "created": "2026-10-07T17:46:30"
         },
         {
-          "orderid": 2100000227,
+          "orderid": 2100000232,
           "side": "ask",
           "base": "0.500 STEEM",
           "quote": "0.053 SBD",
           "unit": 0.106,
-          "created": "2026-10-07T21:08:54"
+          "created": "2026-10-07T21:18:30"
         }
       ],
       "fills": 0,
@@ -126,12 +126,12 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.1012599401012083 (coingecko) · fills 0 · fuel 0$"
+      "summary": "parity 0.10153659753157161 (coingecko) · fills 0 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1523,
+      "ms": 1472,
       "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
@@ -140,39 +140,39 @@
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 165,
+      "spreadBpsRec": 285,
       "book": {
-        "bestAsk": 0.1016793893129771,
+        "bestAsk": 0.1029082774049217,
         "bestBid": 0.10001328197635809,
-        "spreadBps": 165
+        "spreadBps": 285
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 1,
-      "runCount": 32,
-      "simFills": 1,
-      "simFeesMu": 500,
+      "runCount": 33,
+      "simFills": 2,
+      "simFeesMu": 1000,
       "events": 6
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 1849,
+      "ms": 751,
       "verdict": "OFFER-READY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 1,
       "flowBids": 0,
       "staleCount": 5,
-      "skew": 0.139263,
+      "skew": 0.139584,
       "book": {
-        "bestAsk": 0.1016793893129771,
+        "bestAsk": 0.1029082774049217,
         "bestBid": 0.10001328197635809,
-        "askDepthSteem": 162.951,
+        "askDepthSteem": 162.96,
         "bidDepthSbd": 2942.603,
-        "at": "2026-10-07T21:09:24.405Z"
+        "at": "2026-10-07T21:19:24.409Z"
       },
       "market": {
         "tradesPerDay": 524,
@@ -189,18 +189,18 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 7212,
-      "marketSbdUsd": 0.58098,
+      "edgeBps": 7259,
+      "marketSbdUsd": 0.579397,
       "impliedSbdUsd": 0.565153,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 679,
+      "ms": 675,
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
@@ -211,7 +211,7 @@
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 725,
+      "ms": 741,
       "verdict": "NO-OPS",
       "ops": 0,
       "opsToday": 14,
@@ -226,14 +226,14 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 1191,
+      "ms": 7,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
         "cycle-latency-tail"
       ],
       "tunings": [],
-      "discoveryVerdict": "OPTIONS-FOUND",
+      "discoveryVerdict": "FRESH-CACHED",
       "topOpportunities": [
         "spread-wide(measured)",
         "tags-realloc(measured)",
@@ -348,5 +348,5 @@
     "failedSteps": [],
     "blockedSteps": []
   },
-  "finishedAt": "2026-10-07T21:09:31.781Z"
+  "finishedAt": "2026-10-07T21:19:30.157Z"
 }
