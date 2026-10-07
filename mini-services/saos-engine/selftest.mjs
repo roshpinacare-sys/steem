@@ -1294,11 +1294,12 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("scrub PAT", scrubText("token " + PAT_LIKE), "token [REDACTED-PAT]");
   eq("scrub ghp", scrubText(GHP_LIKE), "[REDACTED-TOKEN]");
   eq("scrub clean text untouched", scrubText("parity 0.0999 band-ok"), "parity 0.0999 band-ok");
-  // קטלוג: 5-כלים עם-inputSchema-מלא
+  // קטלוג: 6-כלים עם-inputSchema-מלא
   const cat = toolCatalog();
-  eq("catalog size", cat.length, 5);
+  eq("catalog size", cat.length, 6);
   ok("catalog schemas are objects", cat.every((t) => t.inputSchema && t.inputSchema.type === "object"));
-  ok("catalog names unique", new Set(cat.map((t) => t.name)).size === 5);
+  ok("catalog names unique", new Set(cat.map((t) => t.name)).size === 6);
+  ok("catalog has saos_pnl", cat.some((t) => t.name === "saos_pnl"));
   // handler עם-כלים-מזויפים (אופליין)
   const fakeTools = cat.map((t) => ({ ...t, run: async (args) => ({ tool: t.name, args: args ?? null, secret: "5J8xYzDemoBase58Stringzzzzzzzzzzzzzzzzzzzzzzzzzzzz" }) }));
   const handle = makeHandler(fakeTools);
@@ -1308,7 +1309,7 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("init id preserved", init.id, 1);
   eq("notification returns null", await handle({ method: "notifications/initialized" }), null);
   const list = await handle({ id: 2, method: "tools/list" });
-  eq("tools/list count", list.result.tools.length, 5);
+  eq("tools/list count", list.result.tools.length, 6);
   ok("tools/list no run leaked", list.result.tools.every((t) => !("run" in t)));
   const call = await handle({ id: 3, method: "tools/call", params: { name: "saos_status", arguments: {} } });
   ok("tools/call returns text content", call.result.content[0].type === "text");
@@ -1332,6 +1333,98 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("join truth law", join.truth.includes("הגיט הוא האמת"), true);
   eq("join dead-soldier law", join.dead_soldiers.includes("T-80"), true);
   ok("join commands are runnable", join.session_open.every((c) => typeof c === "string" && c.length > 5));
+}
+
+/* R245-b · pnl-public — מדידת-תשואה-ציבורית (דפוס-Alpha-Arena: מדוד-מול-מוערך-ברזל) */
+{
+  const { buildPublicPnl, publicPnlMarkdown, anchorEvidence, STALE_MS } = await import("./pnl-public.mjs");
+  eq("STALE_MS is 24h", STALE_MS, 24 * 60 * 60 * 1000);
+  // fail-closed: state-חסר/שבור = אין-מספרים
+  eq("no observe → honest", buildPublicPnl({}).measured, false);
+  eq("no observe reason", buildPublicPnl({}).reason, "no-observe-state");
+  eq("unreadable at → honest", buildPublicPnl({ observe: { at: "not-a-date" } }).reason, "observe-at-unreadable");
+  eq("future at → honest", buildPublicPnl({ observe: { at: new Date(9e12).toISOString() }, now: 1e12 }).reason, "observe-at-in-future");
+  const NOW = Date.parse("2026-10-07T18:00:00Z");
+  const FRESH_AT = "2026-10-07T17:30:00Z";
+  const STALE_AT = "2026-10-06T12:00:00Z";
+  const staleRes = buildPublicPnl({ observe: { at: STALE_AT }, now: NOW });
+  ok("stale 30h → honest reason", staleRes.reason.startsWith("observe-stale-") && staleRes.measured === false);
+  // allowlist: שדה-לא-מוכר-לא-עובר-לעולם (אפס-דליפה)
+  const obs = { at: FRESH_AT, account: "headcorner", pnl: { realizedSbd: 1.5, realizedUsd: 0.16 }, inventory: { steem: 19.069, sbd: 10.138, spOwn: 975.4, rcPct: 31 }, band: { ok: true, bps: -471 }, steemUsd: 0.05848, sbdUsd: 0.589584, secretField: "5J8xYzDemoBase58Stringzzzzzzzzzzzzzzzzzzzzzzzzzzzz", orders: [{ x: 1 }] };
+  const econ = { rails: [
+    { id: "a", label: "מדוד", confidence: "measured", measuredUsdPerDay: 2.0, note: "real fills" },
+    { id: "b", label: "מוערך", confidence: "estimated", estUsdPerDay: 3.9, measuredUsdPerDay: 999, note: "est" },
+    { id: "c", label: "חסום", confidence: "blocked", note: "no fills" },
+  ] };
+  const m = buildPublicPnl({ observe: obs, economics: econ, custodian: { head: { txid: "a955b5d7abcdef1234", block: 110230068, at: FRESH_AT } }, now: NOW });
+  eq("fresh measured", m.measured, true);
+  eq("allowlist drops secretField", "secretField" in m, false);
+  eq("allowlist drops orders", "orders" in m, false);
+  eq("pnl passthrough", m.pnl, { realizedSbd: 1.5, realizedUsd: 0.16 });
+  eq("inventory passthrough", m.inventory.spOwn, 975.4);
+  eq("band bps passthrough", m.parity.bps, -471);
+  // מדוד-מול-מוערך: אף-ערבוב
+  eq("totals measured only measured", m.totals.measuredUsdPerDay, 2.0);
+  eq("totals estimated only estimated", m.totals.estimatedUsdPerDay, 3.9);
+  eq("estimated rail measured forced null", m.rails[1].measuredUsdPerDay, null);
+  eq("blocked rail both null", m.rails[2].measuredUsdPerDay === null && m.rails[2].estimatedUsdPerDay === null, true);
+  eq("rail confidence enum", m.rails[2].confidence, "blocked");
+  eq("anchor evidence", m.evidence, { txid: "a955b5d7abcdef12", block: 110230068, at: FRESH_AT });
+  eq("anchorEvidence none", anchorEvidence(null), null);
+  eq("anchorEvidence empty head", anchorEvidence({ head: {} }), null);
+  // markdown: כנות בשני-המצבים
+  ok("md no-measure honest", publicPnlMarkdown(buildPublicPnl({ now: NOW })).includes("אין-מדידה-פעילה"));
+  ok("md no-measure no invented numbers", publicPnlMarkdown(buildPublicPnl({ now: NOW })).includes("fail-closed"));
+  const md = publicPnlMarkdown(m);
+  ok("md has account", md.includes("headcorner"));
+  ok("md separates totals", md.includes("לא-מצטרף-למדוד"));
+  ok("md table header", md.includes("| מסילה | תיוג-אמון |"));
+  ok("md anchor txid", md.includes("a955b5d7abcdef12"));
+}
+
+/* R245-b · saos-setup — התקנה-חוצת-סוכנים (תוכנית-קודם · idempotent · רק-שלנו) */
+{
+  const { agentTargets, buildPlan, planTarget, applyTarget, removeTarget, ENTRY_NAME } = await import("../../scripts/saos-setup.mjs");
+  const HOME = "/h", ROOT2 = "/r";
+  const targets = agentTargets(HOME, ROOT2);
+  eq("targets count 8 agents", targets.length, 8);
+  ok("codex is manual (TOML)", targets.find((t) => t.agent === "codex").entry === null);
+  ok("target files distinct", new Set(targets.map((t) => t.file)).size === 8);
+  const cmd = { command: "node", args: ["/r/mini-services/saos-engine/mcp.mjs"] };
+  const read = (s) => () => s;
+  // חסר → add
+  eq("missing file → add", planTarget(targets[0], () => { throw new Error("no"); }).action, "add");
+  // אחר-אחר קיים → add (רק-שלנו נוסף, של-אחרים-לא-נוגעים)
+  eq("other server → add", planTarget(targets[0], read(JSON.stringify({ mcpServers: { other: { command: "x" } } }))).action, "add");
+  // שלנו-זהה → none (idempotent)
+  const same = JSON.stringify({ mcpServers: { other: { command: "x" }, [ENTRY_NAME]: cmd } });
+  eq("identical → none", planTarget(targets[0], read(same)).action, "none");
+  // שלנו-שונה → update
+  eq("different → update", planTarget(targets[0], read(JSON.stringify({ mcpServers: { [ENTRY_NAME]: { command: "old" } } }))).action, "update");
+  // JSON שבור → unreadable (לא-נוגעים)
+  eq("broken json → unreadable", planTarget(targets[0], read("{oops")).action, "unreadable");
+  // apply add: כותב-רק-שלנו, שומר-של-אחרים
+  const writes = [];
+  const ioAdd = { readFile: () => JSON.stringify({ mcpServers: { other: { command: "x" } } }), writeFile: (p, s) => writes.push(s) };
+  const applied = applyTarget(targets[0], { action: "add" }, ioAdd);
+  eq("apply add done", applied.done, true);
+  const after = JSON.parse(writes[0]);
+  eq("apply keeps other", after.mcpServers.other, { command: "x" });
+  eq("apply writes ours", after.mcpServers[ENTRY_NAME], cmd);
+  // apply none: לא-כותב (idempotent)
+  const ioNone = { readFile: () => same, writeFile: () => { throw new Error("must-not-write"); } };
+  eq("apply none no-write", applyTarget(targets[0], { action: "none" }, ioNone).done, false);
+  // remove: מסיר-רק-שלנו
+  const remWrites = [];
+  const removed = removeTarget(targets[0], { readFile: () => same, writeFile: (p, s) => remWrites.push(s) });
+  eq("remove done", removed.done, true);
+  eq("remove keeps other", JSON.parse(remWrites[0]).mcpServers.other, { command: "x" });
+  eq("remove drops ours", JSON.parse(remWrites[0]).mcpServers[ENTRY_NAME], undefined);
+  eq("remove not-ours honest", removeTarget(targets[0], { readFile: () => JSON.stringify({ mcpServers: {} }), writeFile: () => {} }).note, "not-ours");
+  // buildPlan מלא: תוכנית לכל-הסוכנים
+  const plan = buildPlan(targets, () => { throw new Error("missing"); });
+  eq("plan all add on empty host (non-codex)", plan.filter((p) => p.agent !== "codex").every((p) => p.action === "add"), true);
+  eq("plan codex manual even empty", plan.find((p) => p.agent === "codex").action, "manual");
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

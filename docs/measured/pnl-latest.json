@@ -1,0 +1,80 @@
+{
+  "measured": true,
+  "reason": null,
+  "generatedAt": "2026-10-07T18:13:53.605Z",
+  "account": "headcorner",
+  "pnl": {
+    "realizedSbd": 0,
+    "realizedUsd": null
+  },
+  "inventory": {
+    "steem": 19.069,
+    "sbd": 12.006,
+    "spOwn": 975.393670818235,
+    "rcPct": 31.1
+  },
+  "parity": {
+    "steemUsd": 0.05881,
+    "sbdUsd": 0.58658,
+    "bps": -369,
+    "bandOk": true
+  },
+  "rails": [
+    {
+      "id": "market-making",
+      "label": "מעשה-שוק · ספר-STEEM/SBD",
+      "confidence": "blocked",
+      "measuredUsdPerDay": null,
+      "estimatedUsdPerDay": null,
+      "note": "no fill window yet — measured once real fills accumulate"
+    },
+    {
+      "id": "curation",
+      "label": "קיורציה · מסילת-דלק",
+      "confidence": "estimated",
+      "measuredUsdPerDay": null,
+      "estimatedUsdPerDay": 0.516999,
+      "note": "~8.79 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+    },
+    {
+      "id": "fuel",
+      "label": "דלק-רשת · author+curation ops",
+      "confidence": "estimated",
+      "measuredUsdPerDay": null,
+      "estimatedUsdPerDay": 0.3054,
+      "note": "observe fuel meter (estimated — window-labeled)"
+    },
+    {
+      "id": "convert-arb",
+      "label": "ארביטרז'-המרה · SBD print path",
+      "confidence": "estimated",
+      "measuredUsdPerDay": null,
+      "estimatedUsdPerDay": 4.134216,
+      "note": "edge 7048bps on 10 SBD"
+    },
+    {
+      "id": "promo",
+      "label": "קידום-רשת · תוכן SEO-חכם",
+      "confidence": "blocked",
+      "measuredUsdPerDay": null,
+      "estimatedUsdPerDay": null,
+      "note": "payouts estimated from account reward history; post txids journaled"
+    },
+    {
+      "id": "hyper-presence",
+      "label": "היפר-גריד · נוכחות-ספר",
+      "confidence": "measured",
+      "measuredUsdPerDay": null,
+      "estimatedUsdPerDay": null,
+      "note": "10290 ops/day measured — presence + optionality, deliberately NOT priced as profit"
+    }
+  ],
+  "totals": {
+    "measuredUsdPerDay": null,
+    "estimatedUsdPerDay": 4.9566
+  },
+  "evidence": null,
+  "source": "engine-state via pnl-public.mjs",
+  "observedAt": "2026-10-07T18:09:24.372Z",
+  "ageHours": 0.1
+}
