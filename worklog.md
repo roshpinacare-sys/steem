@@ -1985,3 +1985,38 @@ Stage Summary:
 - הפער-היחיד-מ-R247-נסגר: **יש חבילה אמיתית על רגיסטרי-npm** — המפעיל-ביצע-צעד-אחד-מדויק-שהוסבר-לו-לחיצה-לחיצה, והמערכת-השלימה-את-השאר-בעסקה-אחת
 - הפצה-דואלית-חיה: GitHub-Release-`v0.1.0` (ציבורי, tarball-17,199B) + GitHub-Packages-`0.1.0` (private-עד-היפוך) — שני-ערוצי-הפצה-עצמאיים
 - אבטחת-הטוקן-מתועדת: לטוקן-הקלאסי-יש-גם-repo-scope (רחב-מהנדרש-במקור) — המלצה: רוטציה-ל-write:packages-בלבד-אחרי-המהדורות-הקרובות; הטוקן-חי-רק-ב-upload/ (gitignored, מנוטר-ע"י-guard-G2) והערך-מעולם-לא-נסרק-לעץ-החתום (pat-audit-leak-scan=clean)
+
+---
+Task ID: R252-a
+Agent: agentcraft-research (parallel)
+Task: Intelligence analysis of github.com/blendi-remade/agentcraft for sovereignty-ops improvements (research-only, clone to /tmp/agentcraft-analysis)
+
+Work Log:
+- Cloned blendi-remade/agentcraft (depth 1, 46MB) — Minecraft studio + "Foreman" Node/TS orchestrator (~11.2K LOC, 487 vitest tests) for Claude-Agent-SDK teams
+- Deep-read foreman/src: protocol.ts (zod wire schema, snapshot+upsert+ack), taskgraph.ts (deps/cycle/progress 0.4-0.75-1.0, done-only-via-merge), decisions.ts (question/permission/merge queue, settle/reopen), store.ts (atomic state.json, corrupt-quarantine, JSONL logs rotated 8MB), repos.ts (worktrees, merge-tree conflict predict, ff-only apply, per-repo locks), gitsafety.ts+policy.ts (3-layer push-block env+parser), claude/index.ts (session resume, recover/reconcile on restart, costUsd ledger), activity.ts+stream.ts (tool→state telemetry), sim backend (seeded deterministic fire-drill)
+- Extracted data schemas: StateData, Task, Decision, Worktree {ahead,files,additions,deletions}, SessionRecord {sessionId,costUsd,lastResult}, FeedKind taxonomy (goal/plan/task/message/decision/merge/ci/memory/system/error/user)
+- Mapped 15 transferable patterns onto SAOS stack (bun scripts + worklog + saos-cockpit + guard); distilled top-5 build list with S/M effort
+
+Stage Summary:
+- Snapshot+upsert state protocol (state.json + zod single-source-of-truth + generated docs) is the backbone the cockpit console is missing
+- DecisionQueue (options recommended-first, reopen-on-refusal, settle-after-side-effect) + TaskGraph with done-only-via-verified-push = safe parallel-agent coordination (directly answers custodian-sweep regressions R248)
+- Live telemetry from tool calls (state/activity/log JSONL with rotation + isStale dimming) + deterministic sim fire-drill = cockpit live feed + zero-cost rehearsals
+---
+Task ID: R252
+Agent: Z.ai Code (main)
+Task: המפעיל: "תבדוק עוד מה אפשר לייעל, מה שעשית אם צריך לתקן/לשפר, אם יש חורים, אם הכל רץ אוטונומיה/ריבונות, איך התקדמו שאר הסוכנים; עזוב את המשחק — מה אפשר להסיק מ-agentcraft לאינטליגנציה של הריבונות והסוכנים כקבוצה, איך משלבים אם ראוי — ודחוף"
+
+Work Log:
+- שחזור-קאנון: divergence 0/0 על HEAD 4783c1c (אחרי-R251-publish-ההיסטורי 9776383 + שני-קומיטי-custodian-state R249)
+- אימות-הכל-ששרד: selftest 692/692 (הקנון-החדש) · doctor 5/5 healthy · MCP-חי · חבילת-ה-npm אומתה-חיה-מול-API (saos-agents 0.1.0, private, created 21:00:47Z)
+- סקירת-הצי החיה (מדוד, לא-טענה): engine-3040 ok (headcorner, capped-autonomy) · custodian-3041 ok (7-ticks, head=4783c1c-מסונכרן) · metrics-3042 ok (451-snapshots) · builder-3043 ok (proposal-only) · cockpit-3000 HTTP-200 · saos-runtime-CI SUCCESS×2 · Domain-pages+agent-verify SUCCESS@20:55Z · 15-קבצי-state-חיים-מוגדרים-בעבודה-של-המנוע-עצמו (לא-נגעתי — מסילת-ה-custodian)
+- אינטליגנציה-מ-agentcraft (blendi-remade/agentcraft, clone-shallow HEAD 35da4f5, ~50-קבצים-נקראו): תחפושת-משחק-Minecraft-מעל **Foreman** — orchestrator ~11,200-LOC + 487-בדיקות (state.json-אטומי+הסגר-קורום · snapshot/upsert+ack · TaskGraph-עם-done-only-via-merge · DecisionQueue-עם-reopen-on-refusal · merge-tree-dry-run · gitsafety-תלת-שכבתי · טלמטריה-per-tool+JSONL-מסתובב+isStale · sim-fire-drill-מוזרע) — **חוק-שכבת-התשתית-מאומת-פעם-שלישית** ממקור-עצמאי
+- 🔴 **זיקוק-מומש-בעץ** (גל-1-מתוך-מפת-4-גלים): `mini-services/saos-engine/worklog-intel.mjs` (מודול-טהור: parseWorklog/computeStats/detectAnomalies — בלוקים/סוכנים/כפילויות/חוסרי-סיכום/**התכווצות-append-only** BY-CONSTRUCTION) + `scripts/worklog-analytics.mjs` (CLI: --json/--out/--min-lines/--previous-lines/--selftest; קריאה-בלבד) + **18-וקטורים-חדשים-ב-selftest** (692/692) — הערוץ-המכונתי-הראשון-של-הקונסול-החי
+- ריצה-חיה-על-האמת: worklog 2004-שורות/98-בלוקים/16-זהויות-סוכנים/avg-8.12-תבליטים — **9-כפילויות-union גלויות-בכנות** (R218-a..d, R243, R244, R245, R245-b, T-78 — טביעת-אצבע-שחזורי-ה-lineage) + 5-חוסרי-סיכום — האינטגריטי-של-ה-ledger נמדד-לראשונה-מכונתית
+- docs/AGENTCRAFT-INTEL.md (עשרה-דפוסים-מועברים ממופים-לכאבים-המדודים-שלנו c60ebae/95e90d2/666→551 · מפת-דרכים: גל-2-TaskGraph+DecisionQueue · גל-3-sim-drill+merge-tree-dry-run · גל-4-gitsafety+docs-מהסכמה · **הפרדת-מסילות: תצוגה=הסוכן-השני, מנוע/פרוטוקולים=מסילה-זו**) + §10-ב-COMPETITIVE-INTELLIGENCE
+- תיקון-עצמי-בשיא-השקיפות: וקטור-await-ב-IIFE-סינכרוני-שבר-את-selftest-בריצה-הראשונה → תוקן-ל-top-level-await → 692/692 (הכלי-החדש-מדד-את-השגיאה-שלו-לפני-שהיא-הגיעה-לדחיפה)
+
+Stage Summary:
+- התשובה-המדודה-למפעיל: הכל-רץ (5-שירותים-חיים-מדוד, CI-ירוק, חבילה-על-הענן) · אין-חורים-חדשים-שנמצאו — שני-החורים-ההיסטוריים (דריסת-worklog, השתקת-selftest) קיבלו-עכשיו-גלאי-מכונתי-קבוע ב-selftest
+- agentcraft-מוכיח-שלישית: הערך-בשכבת-התזמון-המודדת-את-עצמה — קיבלנו-5-רעיונות-מוכחים-ב-487-בדיקות, מימשנו-מיד-את-הזול-והבטוח (טלמטריה-על-ה-worklog), והשאר-מתויג-לגלים-2–4-בהפרדת-מסילות
+- הקונסול-החי-קיבל-חוזה: `bun scripts/worklog-analytics.mjs --json` = פלט-מכונתי-יציב לצד-ה-state-החי-של-המנוע

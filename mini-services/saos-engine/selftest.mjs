@@ -1510,6 +1510,73 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("lineage: vector-call floor (>=600)", lineageCalls >= 600);
 }
 
+/* R252 · WORKLOG-INTEL: טלמטריה-על-המצע-שלנו — ההשתלה-הראשונה-מזיקוק-agentcraft.
+ * ה-worklog הוא-ה-ledger-האפנד-אונלי; מפרק-מדוד-שלו (בלוקים/סוכנים/כפילויות/
+ * התכווצות) הוא-הערוץ-המכונתי-הראשון-של-הקונסול-החי. משפחת-ה-regressions
+ * c60ebae/95e90d2 (דריסת-worklog, השתקת-selftest) היא-האויב-הנמדד:
+ * detectAnomalies תופס-התכווצות BY CONSTRUCTION. מודול-טהור — אין-fs/רשת. */
+{
+  const wi = await import("./worklog-intel.mjs");
+  const FIX = [
+    "# WORKLOG",
+    "",
+    "---",
+    "Task ID: T-1",
+    "Agent: alpha",
+    "Task: ראשון",
+    "",
+    "Work Log:",
+    "- אחד",
+    "- שניים",
+    "פרוזה שאינה תבליט",
+    "",
+    "Stage Summary:",
+    "- סיכום-א",
+    "",
+    "Task ID: T-1",
+    "Agent: beta",
+    "Task: כפול",
+    "",
+    "Work Log:",
+    "- שלישי",
+    "",
+    "---",
+    "Task ID: T-2",
+    "Agent: alpha",
+    "Task: שני",
+    "",
+  ].join("\n");
+  const FIX2 = "---\nTask ID: OK-1\nAgent: alpha\nTask: נקי\n\nWork Log:\n- א\n\nStage Summary:\n- ב\n";
+  const parsed = wi.parseWorklog(FIX);
+  eq("worklog-intel: block count", parsed.blocks.length, 3);
+  eq("worklog-intel: first taskId", parsed.blocks[0].taskId, "T-1");
+  eq("worklog-intel: glued block parsed (no --- sep)", parsed.blocks[1].agent, "beta");
+  eq("worklog-intel: bullets skip prose", parsed.blocks[0].workBullets.length, 2);
+  eq("worklog-intel: summary bullets", parsed.blocks[0].summaryBullets.length, 1);
+  eq("worklog-intel: hebrew intact", parsed.blocks[0].task, "ראשון");
+  eq("worklog-intel: lineCount measured", parsed.lineCount, 27);
+  const wiStats = wi.computeStats(parsed);
+  eq("worklog-intel: perAgent alpha", wiStats.perAgent["alpha"], 2);
+  eq("worklog-intel: perAgent beta", wiStats.perAgent["beta"], 1);
+  eq("worklog-intel: duplicate flagged", (wiStats.duplicates[0] ?? {}).count, 2);
+  eq("worklog-intel: missing summary count", wiStats.blocksMissingSummary, 2);
+  eq("worklog-intel: topAgents sorted", wiStats.topAgents[0], { agent: "alpha", blocks: 2 });
+  eq("worklog-intel: shrink violation caught", wi.detectAnomalies(wiStats, { text: FIX, previousLineCount: 999 }).some((a) => a.kind === "append-only-shrink"), true);
+  eq("worklog-intel: floor violation caught", wi.detectAnomalies(wiStats, { text: FIX, minLines: 500 }).some((a) => a.kind === "below-floor"), true);
+  eq("worklog-intel: trailing-newline caught", wi.detectAnomalies(wiStats, { text: FIX + "x" }).some((a) => a.kind === "no-trailing-newline"), true);
+  eq("worklog-intel: empty worklog flagged", wi.detectAnomalies(wi.computeStats(wi.parseWorklog("")), { text: "" }).some((a) => a.kind === "no-blocks"), true);
+  eq("worklog-intel: clean fixture zero anomalies", wi.detectAnomalies(wi.computeStats(wi.parseWorklog(FIX2)), { text: FIX2, previousLineCount: null }).length, 0);
+  const cliSrc = await (async () => {
+    try {
+      const fsx = await import("node:fs");
+      return fsx.readFileSync(new URL("../../scripts/worklog-analytics.mjs", import.meta.url), "utf8");
+    } catch {
+      return "";
+    }
+  })();
+  ok("worklog-intel: CLI module exists (scripts/worklog-analytics.mjs)", cliSrc.includes("--selftest") && cliSrc.includes("detectAnomalies"));
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
