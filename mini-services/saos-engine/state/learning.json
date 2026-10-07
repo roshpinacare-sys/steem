@@ -1,19 +1,19 @@
 {
-  "at": "2026-10-07T10:46:23.593Z",
+  "at": "2026-10-07T10:56:23.594Z",
   "enabled": true,
-  "runsTotal": 307,
+  "runsTotal": 308,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 111,
-      "oks": 107,
+      "window": 107,
+      "oks": 103,
       "fails": 0,
       "blocked": 4,
-      "okRate": 96.4,
-      "blockedRate": 3.6,
+      "okRate": 96.3,
+      "blockedRate": 3.7,
       "failReasons": {},
-      "msP50": 15110,
-      "msP90": 39171
+      "msP50": 15649,
+      "msP90": 43390
     },
     "curator": {
       "present": true,
@@ -30,20 +30,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 2,
-      "fails": 1,
-      "lastError": "missing required active authority:Missing Active Authority headcorner"
+      "window": 1,
+      "fails": 0,
+      "lastError": null
     },
     "watchdog": {
-      "checks": 2909,
+      "checks": 2919,
       "downs": 113,
       "heals": 54,
       "healVerified": 45,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-07T10:46:23.630Z",
+      "lastCheckAt": "2026-10-07T10:56:23.636Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T10:29:28.649Z",
-      "lastUpAt": "2026-10-07T10:46:23.631Z",
+      "lastUpAt": "2026-10-07T10:56:23.638Z",
       "blips": 2
     }
   },
@@ -52,17 +52,9 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×4/111 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×4/107 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "broadcast-fails",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "1/2 broadcasts failed in the window (last: missing required active authority:Missing Active Authority h) · last fail 2026-10-07T03:45:25.665Z < last OK broadcast 2026-10-07T10:39:02.374Z (live posting-role ops succeed)",
-      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
-      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},
@@ -70,7 +62,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 205,
+    "signing-cred-blocked": 206,
     "broadcast-fails": 79,
     "cycle-latency-tail": 19
   },
