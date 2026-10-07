@@ -62,6 +62,7 @@ import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
 import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS } from "./content.mjs";
 import { synthesizeComment, synthesizeReply, mentionsAny } from "./intel-pack.mjs";
+import { spamVerdict, organicVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
 import { reviveArmyCustody } from "./vault-revival.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -294,6 +295,65 @@ async function alreadyAnswered(account, parentAuthor, parentPermlink) {
   } catch { return false; }
 }
 
+/* R243 SPAMGATE · the author's own recent chain bodies (the repetition law
+ * spaminator hunts). Chain-truth only; on read failure the check degrades to
+ * an empty history — every OTHER gate check still applies (fail-soft here,
+ * fail-closed in the gate itself). GRAFTED from the parallel-agent round:
+ * the merge union of R244-main and the saos-ci round. */
+async function ownRecentBodies(account) {
+  try {
+    const r = await rpcCall("condenser_api.get_discussions_by_author_before_date", [account, "", "", 10]);
+    return (r?.ok && Array.isArray(r.result)) ? r.result.map((x) => String(x.body ?? "").slice(0, 4000)) : [];
+  } catch { return []; }
+}
+
+/* R243 SPAMGATE · tightened minimums from the organic-verdict loop */
+function gateGlobals() {
+  const tw = spamwatchState()?.tightened;
+  return tw?.minPostChars ? { ...GATE_DEFAULTS, minPostChars: Number(tw.minPostChars) } : GATE_DEFAULTS;
+}
+
+function journalRefusal(now, account, kind, verdict) {
+  appendLine(path.join(STATE, "events.jsonl"), { type: "spamgate.refused", at: now, account, kind, reasons: (verdict.reasons ?? []).slice(0, 6) });
+}
+
+/* R243 ORGANIC-WATCH · the network's own verdict on our last posts: outside
+ * votes vs fleet echo, flags, replies — chain truth, verdict-only. This is
+ * the learning loop: zero organic reach = the network calling us spam = the
+ * gate tightens and the rail pauses before deeper damage.
+ * R244-MERGE FIX: the grafted source shipped `new Set(aster, ...])` — a
+ * syntax error that would kill the whole module on import. Fixed here. */
+export async function runOrganicWatch({ now = new Date().toISOString(), window = 5 } = {}) {
+  const master = masterAccount();
+  const c = readJson(CONTENT_FILE, null);
+  const published = (Array.isArray(c?.queue) ? c.queue : [])
+    .filter((d) => d.status === "published" && d.permlink)
+    .slice(0, window);
+  const rows = [];
+  for (const d of published) {
+    try {
+      const [author, permlink] = String(d.permlink).split("/");
+      const r = await rpcCall("condenser_api.get_content", [author, permlink]);
+      if (!r?.ok || !r.result) continue;
+      const votes = Array.isArray(r.result.active_votes) ? r.result.active_votes : [];
+      const rosterSet = new Set([master, ...ARMY_ROSTER]);
+      let fleet = 0, outside = 0, flags = 0;
+      for (const v of votes) {
+        if (Number(v.weight) < 0) flags++;
+        else if (rosterSet.has(v.voter)) fleet++;
+        else outside++;
+      }
+      rows.push({ author, permlink, at: d.publishedAt ?? null, fleet, outside, flags, replies: Number(r.result.children ?? 0), pendingSbd: r.result.pending_payout_value ?? null });
+    } catch { /* fail-soft per row */ }
+  }
+  const organic = organicVerdict(rows);
+  const prev = spamwatchState() ?? {};
+  const doc = { at: now, posts: rows, organic, tightened: organic.tighten ? (prev.tightened && prev.tightened.since ? { minPostChars: organic.minPostChars ?? 1600, since: prev.tightened.since } : { minPostChars: organic.minPostChars ?? 1600, since: now }) : null };
+  saveSpamwatch(doc);
+  appendLine(path.join(STATE, "events.jsonl"), { type: "organic.verdict", at: now, verdict: organic.verdict, tighten: !!organic.tighten, rows: rows.length });
+  return doc;
+}
+
 /* ── THE RAIL ─────────────────────────────────────────────────────────────── */
 export async function runSocial({ now = new Date().toISOString() } = {}) {
   const t0 = Date.now();
@@ -460,6 +520,17 @@ async function doPublish(account, st, p, now, day) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "social.monoculture-veto", at: now, account, title: String(draft.title).slice(0, 80), against: String(clash).slice(0, 80) });
     return false;
   }
+  /* R243 SPAMGATE (grafted, union merge): nothing publishes without clearing
+   * the measured spam law (thin-body / bait-phrases / link-stuffing /
+   * self-repetition / ungrounded / cross-chain — the @spaminator profile). */
+  const gate = spamVerdict(draft, { isComment: false, chain: "steem", ownRecentBodies: await ownRecentBodies(account), postsToday: st.done.publish ?? 0, dayCap: p.maxPostsPerDay, g: gateGlobals() });
+  if (!gate.ok) {
+    draft.status = "refused-spam";
+    draft.spamgate = { at: now, reasons: gate.reasons.slice(0, 6) };
+    writeJson(CONTENT_FILE, c);
+    journalRefusal(now, account, `publish:${draft.id}`, gate);
+    return false;
+  }
   const permlink = permlinkStem(draft.title, day, st.done.publish ?? 0);
   const meta = JSON.stringify({ tags: draft.tags, app: "saos-social-rail" });
   const ops = [[
@@ -519,6 +590,10 @@ async function doFleetComment({ account, master, st, p, nowMs, now }) {
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R243 SPAMGATE (grafted): the comment gate — measured depth + repetition +
+   * bait-phrases, tight on comments where spaminator is the most suspicious */
+  const cgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
+  if (!cgate.ok) { journalRefusal(now, account, `fleet-comment:${pick.author}/${pick.permlink}`, cgate); return false; }
   const permlink = `re-${pick.author}-${pick.permlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",
@@ -543,6 +618,9 @@ async function doReply({ account, st, p, now }) {
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R243 SPAMGATE (grafted): reply gate — same law as fleet comments */
+  const rgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
+  if (!rgate.ok) { journalRefusal(now, account, `reply:${target.comment}`, rgate); return false; }
   const permlink = `re-${target.parentAuthor}-${target.parentPermlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",

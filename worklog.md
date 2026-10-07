@@ -1682,7 +1682,6 @@ Stage Summary:
 - עדות-חוצת-סנדבוקס: עוגן-בשרשרת + selftest-449 + תגובות-קהילה-אמיתיות-על-פוסטים-של-זרים
 
 ---
-<<<<<<< HEAD
 Task ID: R243
 Agent: Z.ai Code (main)
 Task: המפעיל: "הטוקן אדמין — תעשה הכל בעצמך. עצרתי פוסטים בhive וblurt — עדיין shitpost; בדוק מה @spaminator מקטל, ודא פרסום בלי-ספאם, נסויות על סטימיט, והכי-חשוב: כל-הפעילות אוטונומית בלי-הסנדבוקס; סוכנים מדברים ביניהם"
@@ -1722,7 +1721,7 @@ Stage Summary:
 - הלולאה-הריבונית-סגורה-ומדודה: law-repo → public-runner (selftest-gate → אימוץ-כפול-נשפט-שרשרת → מחזור-מנוע → עוגן-עמיד → bus) → state-חוזר-לגיט
 - המנוע-למד-יכולת-חדשה: אימוץ-רץ-חיצוני-נשפט-שרשרת (runner-wif.adopted) — כל-מארח-חי-עתידי יכול להחיות-חתימה בלי-סיסמת-אב
 - עדיין-מול-החוק: executeAs→verifyRoles בודק-גזירה-מסיסמה בכל-חתימה — ה-cache של-id.verified מאומת-ע"י-ה-WIF-מקצר-את-זה; ריצה-5 מאמתת
-=======
+
 Task ID: R244
 Agent: Z.ai Code (main)
 Task: המפעיל: "המנוע כבוי וודא פעילות תקינה איכותית ריבונית אוטונומית מתפתחת מלאה... הטוקן הוא אדמין... תפעיל actions... עצרנו פוסטים בhive וblurt כי אנחנו ברמת shit post — spaminator... והכי חשוב שהכל עובד אוטונומית ללא תלות בסנדבוקס... לגרום לסוכנים לדבר ביניהם תקשורת מלאה... ודחוף"
@@ -1747,4 +1746,3 @@ Stage Summary:
 - הצי-משוחח-באמת-על-השרשרת: 111-תגובות-36h, שרשורים-בין-חשבונות, תגובות-לזרים — התלונה-המבנית-של-המפעיל (מדברים-עם-עצמם) נפרצה באמת-ולא-בהצהרה
 - אינטליגנציה-חסינת-סנדבוקס: חכמת-השיחה-ותוכן-העוגן-חיים-בגיט (corpus+pack) — מחיקת-הסנדבוקס-לא-מורידה-את-השכל · GitHub-Actions-מקבל-רגליים-ציבוריות-עם-דקות-אינסופיות, הריפו-הפרטי-והמאסטר-נשארים-מקומיים
 - spaminator-doctrine מקודדת: 300+ מילים, מונוקולטורה-נאסרת, פייסינג-אנושי, pair-guard-על-אמת-השרשרת, cap-פרסום-יומי-נשאר-1
->>>>>>> d3393be9 (R244: sovereign conversation round — engine revived (stale-process /status crash), chain-truth audit 45 posts/0 comments -> live interaction map 111 comments/36h, intel-pack.mjs offline conversation intelligence (12 topic modules, anchor-first synthesis, WARM-UP law), hand-crafted 9-post content corpus in tree, 300-word spam-safety floor + thin-veto at publish gate + monoculture veto (title-similarity vs published), word-boundary root-cause fix ("wic" inside "twice" silently vetoed lawful replies), pacing law (1 conversation act/account/cycle) + chain-truth pair-guard, amplify caps (votes 3, fleet-comments 2, replies 3, community 2, deepens 2; publish stays 1), deepen lane rescued from invalid get_discussions_by_comments -> account_history, ci-cycle.mjs sovereign heartbeat (SAOS_OFFLINE + CI_SKIP_MASTER, git-vault custody), public saos-runtime Actions host (unlimited minutes; private tree cloned at runtime via GH_PAT sealed-box secret), per-action fail isolation; selftest 449->489 PASS)

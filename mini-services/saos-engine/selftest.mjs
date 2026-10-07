@@ -1054,7 +1054,6 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("mesh hostile", meshVerdict(null), "MESH-DARK");
 }
 
-<<<<<<< HEAD
 /* ── R243 · SPAMGATE (the measured @spaminator law) ───────────────────────── */
 {
   eq("normalize strips links", normalizeText("see [x](https://a.b/c) now"), "see x now");
@@ -1150,7 +1149,8 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("deliver handled", out.handled === 1 && seen.length === 1);
   ok("deliver unknown soft", out.unknown.length === 1);
   ok("deliver handler-error soft", deliverInbox([msg], { [BUS_TYPES.CYCLE_RECEIPT]: () => { throw new Error("boom"); } }).delivered[0].note.startsWith("handler-error"));
-=======
+}
+
 /* R244 · THE INTELLIGENCE ROUND: offline conversation pack, corpus floors,
  * monoculture veto. Chain truth that motivated these: 45 posts / 0 comments
  * in 72h; 100–220-word posts; three near-identical "Streamlining" titles. */
@@ -1227,7 +1227,6 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("amplified community slots", count("community-comment"), 2);
   eq("amplified deepen slots", count("deepen"), 2);
   eq("publish cap stays anti-spam", count("publish"), 1);
->>>>>>> d3393be9 (R244: sovereign conversation round — engine revived (stale-process /status crash), chain-truth audit 45 posts/0 comments -> live interaction map 111 comments/36h, intel-pack.mjs offline conversation intelligence (12 topic modules, anchor-first synthesis, WARM-UP law), hand-crafted 9-post content corpus in tree, 300-word spam-safety floor + thin-veto at publish gate + monoculture veto (title-similarity vs published), word-boundary root-cause fix ("wic" inside "twice" silently vetoed lawful replies), pacing law (1 conversation act/account/cycle) + chain-truth pair-guard, amplify caps (votes 3, fleet-comments 2, replies 3, community 2, deepens 2; publish stays 1), deepen lane rescued from invalid get_discussions_by_comments -> account_history, ci-cycle.mjs sovereign heartbeat (SAOS_OFFLINE + CI_SKIP_MASTER, git-vault custody), public saos-runtime Actions host (unlimited minutes; private tree cloned at runtime via GH_PAT sealed-box secret), per-action fail isolation; selftest 449->489 PASS)
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
