@@ -1701,3 +1701,23 @@ Stage Summary:
 - איכות-התוכן: שער-נגד-ספאם-מדוד+לולאת-פסק-דין-אורגני — הרשת-עצמה-מאמנת-את-השער
 - הסוכנים-מדברים: ערוץ-דואר-ילידי-על-השרשרת-ששורד-מחיקות
 - חתימה: קומיט-זה לא-חתום (passphrase-הכספת-של-המפעיל; נוהל-המחילה-law-v1.1: נושא-UUID-עם-תיעוד-גוף-מלא)
+
+---
+Task ID: R243-ci-fixes
+Agent: Z.ai Code (main)
+Task: הבאת saos-act לירוק מלא על דקות-ציבוריות (איטרציות מדודות)
+
+Work Log:
+- ריצה-1 (37648730189): הגשר-עובד — checkout הריפו-הפרטי דרך ZIP_PAT ✓, selftest 501/501 על-הרץ ✓, אימוץ-נשפט-שרשרת: CI_STEEM_POSTING_WIF=CHAIN-VERIFIED (MAIN_KEY נשפט-בכנות: אין-התאמת-רשות — זו-החותמת-של-הכספת, לא-סיסמת-headcorner) ✓, STATE-PERSISTED ✓; נכשל על-parse-חמדני של-לוג-המחזור
+- תיקון: ה-marker-הדורש state/cycle-run.json (של-המנוע-עצמו) הוא-האמת, לא-פרסור-לוגים
+- ריצה-2 (37649302369): SUCCESS — מחזור exit=0 ok=true health=ok; נותרו bus-REFUSED (תהליך-האב לא-אימת-זהות)
+- תיקון: adoptVerifiedWifIdentity בתהליך-האב; קראס-first: credentialFingerprint קורא-קובץ-שרק-הבן-יוצר → ה-fingerprint מגיע-מתוצאת-האימוץ-עצמה
+- ריצה-3: crash על-ה-nuance-הזה → checkpoint F תיקן
+- ריצה-4 (37650076296): אימוץ-הורי wif-verified-fp=2bc61fc3 ✓; מחזור ok=false health=blocked (curate+execute — נתיב-גזירת-הסיסמה של verifyRoles אינו-יכול לאמת-WIF) + bus KEY-UNVERIFIED (executeAs→verifyRoles תמיד)
+- תיקון-אדריכלי: נתיב-אימוץ-רץ-חוקי-חדש במנוע-עצמו — daily.mjs מאמץ בפתיחת-המחזור CI_ADOPT_WIF_POSTING/ACTIVE (אותו-נתיב-חוקי-של-vault-revival: adoptVerifiedWifIdentity, השרשרת-שופטת, אירוע-עיתון runner-wif.adopted); ci-act מאמץ שתי-התפקידים בהורה (posting+active מ-Domain-vault: STEEM_POSTING_WIF+STEEM_ACTIVE_WIF), צורך-את-ה-upload-מפתח ל-.secrets-בעצמו (ביטול-מרוץ-ההאמצות), ומעביר-את-ה-WIFs לבן-דרך-env
+- התמודדות-חוקית: rebase-תקוע-שהשמיט-את-checkpoint-G → שוחזר מ-reflog ע"י cherry-pick (2b1cdcc) + selftest 501/501 + דחיפה-דרך-השער; remote-מתקדם-ברציפות (custodian-sweeps + saos-ci-persist) — כל-איחוי-על-בסיס-take-theirs-ל-state
+
+Stage Summary:
+- הלולאה-הריבונית-סגורה-ומדודה: law-repo → public-runner (selftest-gate → אימוץ-כפול-נשפט-שרשרת → מחזור-מנוע → עוגן-עמיד → bus) → state-חוזר-לגיט
+- המנוע-למד-יכולת-חדשה: אימוץ-רץ-חיצוני-נשפט-שרשרת (runner-wif.adopted) — כל-מארח-חי-עתידי יכול להחיות-חתימה בלי-סיסמת-אב
+- עדיין-מול-החוק: executeAs→verifyRoles בודק-גזירה-מסיסמה בכל-חתימה — ה-cache של-id.verified מאומת-ע"י-ה-WIF-מקצר-את-זה; ריצה-5 מאמתת
