@@ -757,6 +757,46 @@ export default function Home() {
                   )}
                 </SectionCard>
 
+                {/* R254 · איבר-hive · הבחינה-הריבונית על-הרשת-התאומה */}
+                <SectionCard icon={Radio} tone="amber" title={<>איבר-hive · הבחינה-המבוקרת <span dir="ltr" className="text-slate-500">(R254)</span></>}>
+                  {(() => {
+                    const hv = s?.hive
+                    const cust = hv?.custody
+                    const ops = hv?.ops
+                    const verified = cust?.verified ?? 0
+                    const total = cust?.total ?? 9
+                    return (
+                      <>
+                        <RailRow
+                          label="החזקה-על-hive (מפתחות-הכספת-הראשונה · חי-מול-השרשרת)"
+                          value={
+                            <span className="flex flex-wrap items-center gap-2">
+                              <StatusBadge tone={verified === total ? 'emerald' : verified > 0 ? 'amber' : 'slate'}>
+                                {cust?.verdict === 'HIVE-CUSTODY-ALIVE' ? 'אימות-מלא 9/9' : verified > 0 ? `חלקי ${verified}/${total}` : 'נעול'}
+                              </StatusBadge>
+                            </span>
+                          }
+                        />
+                        <RailRow label="פוסטים-hive היום (תקרה: מבחן-1-לחשבון)" value={ops?.at ? `${Object.values(ops.accounts ?? {}).reduce((a: number, b: any) => a + (b ?? 0), 0) as number} · סבב-אחרון: ${ops.verdict ?? '—'}` : 'ממתין-סבב'} ltr className="mt-1" />
+                        <RailRow
+                          label="וטו-downvote (עוצרים-ברגע-שיש-דירוג-שלילי)"
+                          value={
+                            <StatusBadge tone={Object.values(hv?.flagPauses?.accounts ?? {}).some((p: any) => p?.active) ? 'amber' : 'emerald'}>
+                              {Object.values(hv?.flagPauses?.accounts ?? {}).filter((p: any) => p?.active).length > 0
+                                ? `${Object.values(hv?.flagPauses?.accounts ?? {}).filter((p: any) => p?.active).length} מושהה-לניתוח`
+                                : 'ריבוני · זורם'}
+                            </StatusBadge>
+                          }
+                          className="mt-1"
+                        />
+                        <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                          החוק: שערים-מחמירים-מהסטים (1600 תווים · דמיון-עצמי 25%) · RC-שער · תמונות-חוקיות-מוויקימדיה-עם-קרדיט · Blurt מושהה-לפי-הוראת-המפעיל.
+                        </p>
+                      </>
+                    )
+                  })()}
+                </SectionCard>
+
                 {/* מה-יש-לנו · פוטנציאל-ריבוני (T-10) */}
                 {(() => {
                   const steemLiquid = parseFloat(String(s?.live?.balances?.steem ?? '').replace(/[^0-9.]/g, '')) || 0

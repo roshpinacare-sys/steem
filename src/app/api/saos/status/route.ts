@@ -244,6 +244,8 @@ export async function GET() {
     /* R246: הקהילה-הריבונית + מסילת-ההמרות-באוויר (passthrough — המנוע מחשב, השכבה מציגה) */
     community: s.community ?? null,
     conversions: s.conversions ?? null,
+    /* R254: איבר-hive (הבחינה-המבוקרת — passthrough של-verdicts בלבד) */
+    hive: s.hive ?? null,
     rcTank: s.rcTank ?? null,
     payouts: s.payouts ?? null,
     weave: s.weave ?? null,

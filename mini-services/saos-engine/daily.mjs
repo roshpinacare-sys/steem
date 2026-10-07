@@ -35,7 +35,8 @@ import { runRecruiter } from "./recruiter.mjs";
 import { runEconomics } from "./economics.mjs";
 import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
-import { runSocial } from "./army-social.mjs";
+import { runSocial, runOrganicWatch } from "./army-social.mjs";
+import { runHiveRail } from "./hive.mjs";
 import { syncCommunityMembership, readCommunityState } from "./community.mjs";
 import { runBus } from "./bus.mjs";
 import { runRcTank, rcTankState } from "./rctank.mjs";
@@ -788,6 +789,23 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.social = await stepWrap("social", async () => {
     const out = await runSocial({ now });
     return { verdict: out.verdict, executed: out.executed ?? 0, refused: out.refused ?? 0, due: out.due ?? 0, ms: out.ms ?? null };
+  });
+
+  /* R254 · THE ORGANIC WATCH (wired at last — it existed since R243 but no
+   * caller): the network's verdict on our last posts + THE DOWNVOTE VETO —
+   * any flag pauses the author's rail (analysis-first resumption). */
+  report.steps.organic = await stepWrap("organic", async () => {
+    const out = await runOrganicWatch({ now });
+    return { verdict: out.organic?.verdict ?? null, activePauses: Object.keys(out.pauses ?? {}).length, flags: out.posts?.reduce((n, p2) => n + (p2.flags ?? 0), 0) ?? 0, ms: null };
+  });
+
+  /* R254 · THE HIVE ORGAN (operator-approved trial, verbatim: "אני מאשר
+   * ניסיון ובחינה פתיחה בhive"): probe-sized sovereign rounds on the sister
+   * chain from the GEN-1 vault keys, stricter gates, RC-gated, veto-armed.
+   * BLURT STAYS PAUSED (operator: "לגבי blurt תמתין"). Fail-isolated. */
+  report.steps.hive = await stepWrap("hive", async () => {
+    const out = await runHiveRail({ now, limit: 2 });
+    return { verdict: out.verdict, executed: out.executed ?? 0, custody: out.custody ?? null, reason: out.reason ?? null, ms: out.ms ?? null };
   });
 
   /* T-88 · AGENT-BUS (R243): the agents talk THROUGH the chain — the engine
