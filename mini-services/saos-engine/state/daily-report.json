@@ -1,31 +1,32 @@
 {
-  "startedAt": "2026-10-07T02:53:08.930Z",
+  "startedAt": "2026-10-07T02:55:17.037Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2681,
+      "ms": 2722,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.05924,
-        "sbdUsd": 0.567281,
-        "parity": 0.10442796427167488,
-        "source": "coingecko"
+        "steemUsd": 0.05922,
+        "sbdUsd": 0.5688955214625386,
+        "parity": 0.10409644260822257,
+        "source": "internal-feed-fallback+derived-sbd",
+        "lowConfidence": true
       },
       "feed": 0.10409644260822257,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 32
+        "bps": 0
       },
-      "steemUsd": 0.05924,
-      "sbdUsd": 0.567281,
+      "steemUsd": 0.05922,
+      "sbdUsd": 0.5688955214625386,
       "inventory": {
         "steem": 0.002,
-        "sbd": 9.742,
-        "spOwn": 958.493392658621,
-        "rcPct": 31
+        "sbd": 8.942,
+        "spOwn": 958.4934881151784,
+        "rcPct": 30.9
       },
       "ordersOk": true,
       "orders": [
@@ -86,20 +87,20 @@
           "created": "2026-10-07T02:29:03"
         },
         {
-          "orderid": 2100002845,
+          "orderid": 2100002701,
           "side": "bid",
-          "base": "1.155 SBD",
-          "quote": "11.487 STEEM",
-          "unit": 9.945455,
-          "created": "2026-10-07T02:52:45"
+          "base": "1.055 SBD",
+          "quote": "10.492 STEEM",
+          "unit": 9.945024,
+          "created": "2026-10-07T02:54:21"
         },
         {
-          "orderid": 2100002846,
+          "orderid": 2100002702,
           "side": "bid",
-          "base": "1.155 SBD",
-          "quote": "11.504 STEEM",
-          "unit": 9.960173,
-          "created": "2026-10-07T02:52:45"
+          "base": "1.055 SBD",
+          "quote": "10.508 STEEM",
+          "unit": 9.96019,
+          "created": "2026-10-07T02:54:21"
         }
       ],
       "fills": 2,
@@ -134,12 +135,12 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.10442796427167488 (coingecko) · fills 2 · fuel 0$"
+      "summary": "parity 0.10409644260822257 (internal-feed-fallback+derived-sbd) · fills 2 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1367,
+      "ms": 1773,
       "verdict": "DECISIONS:4",
       "decisions": [
         "book-depth:hold-shape",
@@ -147,52 +148,52 @@
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 55,
+      "spreadBpsRec": 54,
       "book": {
         "bestAsk": 0.10110201193003741,
-        "bestBid": 0.10054844606946983,
-        "spreadBps": 55
+        "bestBid": 0.10055359838953196,
+        "spreadBps": 54
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
-      "ms": 3,
-      "runCount": 337,
+      "ms": 2,
+      "runCount": 339,
       "signals": 3,
-      "retiredFills": 2,
+      "retiredFills": 0,
       "arbSignal": null,
       "layers": "measured (see state.json.grids)"
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 667,
+      "ms": 1844,
       "verdict": "OFFER-READY",
       "asks": 0,
       "bids": 4,
       "flowAsks": 0,
       "flowBids": 2,
-      "staleCount": 8,
-      "skew": -0.299987,
+      "staleCount": 7,
+      "skew": -0.299986,
       "book": {
         "bestAsk": 0.10110201193003741,
-        "bestBid": 0.10054844606946983,
-        "askDepthSteem": 890.688,
-        "bidDepthSbd": 2873.792,
-        "at": "2026-10-07T02:53:08.930Z"
+        "bestBid": 0.10055359838953196,
+        "askDepthSteem": 890.591,
+        "bidDepthSbd": 2873.592,
+        "at": "2026-10-07T02:55:17.037Z"
       },
       "market": {
-        "tradesPerDay": 563,
-        "spreadBps": 359.62
+        "tradesPerDay": 566,
+        "spreadBps": 54.54
       },
       "liquidity": {
         "deployedAsks": 1009.395,
-        "deployedBids": 2.458,
+        "deployedBids": 2.258,
         "askBudget": 0,
-        "bidBudget": 4.621,
-        "bidBudgetUncapped": 4.862,
-        "buyBookCapSbd": 4.621,
+        "bidBudget": 4.221,
+        "bidBudgetUncapped": 4.462,
+        "buyBookCapSbd": 4.221,
         "deployCap": 0.6,
         "bidBudgetCapped": true
       }
@@ -200,18 +201,18 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "CONVERT-PLAN",
-      "amountSbd": 9.242,
-      "edgeBps": 7628,
-      "marketSbdUsd": 0.567281,
-      "impliedSbdUsd": 0.569088,
+      "amountSbd": 8.442,
+      "edgeBps": 7578,
+      "marketSbdUsd": 0.568896,
+      "impliedSbdUsd": 0.568896,
       "marketSourceNote": "external-measured"
     },
     "redeploy": {
       "name": "redeploy",
       "ok": true,
-      "ms": 2,
+      "ms": 1,
       "verdict": "REDEPLOY-HOLD",
       "reason": "at-or-below-floor",
       "powerUpSteem": 0,
@@ -227,7 +228,7 @@
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 1104,
+      "ms": 1152,
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
@@ -238,15 +239,15 @@
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 5763,
-      "verdict": "BROADCAST-FAIL",
-      "txid": "8caf9c58f5e1e162a8d1d31c40173919b6058499",
+      "ms": 1588,
+      "verdict": "THINK-GATE-REFUSED",
+      "txid": null,
       "ops": 1,
       "opNames": [
         "convert"
       ],
       "node": null,
-      "error": "missing required active authority:Missing Active Authority headcorner",
+      "error": null,
       "promo": {
         "verdict": "ALREADY-POSTED",
         "permlink": "saos-transparency-20261007"
@@ -260,15 +261,15 @@
     "soldiers": {
       "name": "soldiers",
       "ok": true,
-      "ms": 14352,
+      "ms": 15324,
       "verdict": "SOLDIER-GRID-DONE",
       "deploy": null,
       "topups": [
         {
-          "name": "hcs2",
+          "name": "hcs3",
           "kind": "sbd",
           "verdict": "BROADCAST",
-          "txid": "2c5b2a163f19cf47a8333fe86d8b9fa07d966a95",
+          "txid": "e956f446f2ea1232607bf87aed7175be55e15598",
           "error": null
         }
       ],
@@ -276,42 +277,42 @@
         {
           "name": "hcs1",
           "verdict": "BROADCAST-FAIL",
-          "txid": "365a17ef1cbaf556324ab84eb0bb36c3df928eda",
-          "ops": 12,
-          "stale": 4,
+          "txid": "0a413a68d368065c5165dfa403b6bdefcad39784",
+          "ops": 10,
+          "stale": 1,
           "live": 10,
           "steem": 9.48,
           "sbd": 1,
-          "error": "plugin exception:Account: hcs1 has 771905752 RC, needs 1782348056 RC. Please wait to transact, or power up STEEM.rethrow"
+          "error": "plugin exception:Account: hcs1 has 773317028 RC, needs 1723622455 RC. Please wait to transact, or power up STEEM.rethrow"
         },
         {
           "name": "hcs2",
           "verdict": "BROADCAST-FAIL",
-          "txid": "afaa8fbb458f692f47f938d9a28e0472382692f1",
-          "ops": 8,
-          "stale": 1,
+          "txid": "cb81a0ec9cee5c9d26a8721c4bd07bfe75c08e67",
+          "ops": 7,
+          "stale": 0,
           "live": 9,
           "steem": 1.124,
           "sbd": 1,
-          "error": "plugin exception:Account: hcs2 has 412770881 RC, needs 1380184274 RC. Please wait to transact, or power up STEEM.rethrow"
+          "error": "plugin exception:Account: hcs2 has 414182156 RC, needs 1350821408 RC. Please wait to transact, or power up STEEM.rethrow"
         },
         {
           "name": "hcs3",
-          "verdict": "BROADCAST",
-          "txid": "e5ada1f29c513655c239a5693828ba91f0aa2b02",
-          "ops": 1,
-          "stale": 1,
-          "live": 10,
-          "steem": 0.08,
-          "sbd": 0,
-          "error": null
+          "verdict": "BROADCAST-FAIL",
+          "txid": "dd9b4c9d3e27c779cb691081c49e2bbd08aa5050",
+          "ops": 4,
+          "stale": 0,
+          "live": 9,
+          "steem": 0.377,
+          "sbd": 1,
+          "error": "plugin exception:Account: hcs3 has 52828939 RC, needs 835663371 RC. Please wait to transact, or power up STEEM.rethrow"
         }
       ]
     },
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 15,
+      "ms": 11,
       "verdict": "LEARNED",
       "lessons": [
         "broadcast-fails"
@@ -374,7 +375,7 @@
     "weave": {
       "name": "weave",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "PUBLISHED",
       "day": "2026-10-07",
       "theirVotesToday": 0,
@@ -384,7 +385,7 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 2,
+      "ms": 1,
       "verdict": "CADENCE-GATED",
       "pass": 427,
       "fail": 0,
@@ -395,7 +396,7 @@
       "ok": true,
       "ms": 2,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 4.517821,
+      "totalEstUsdPerDay": 4.157852,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 3,
@@ -404,7 +405,7 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 6,
+      "ms": 2,
       "verdict": "FULL-STRENGTH",
       "active": 11,
       "total": 11
@@ -412,12 +413,12 @@
     "council": {
       "name": "council",
       "ok": true,
-      "ms": 23,
-      "verdict": "MESH-PARTIAL",
+      "ms": 8,
+      "verdict": "MESH-ALIVE",
       "organs": [
         "custodian:ALIVE",
-        "metrics:STALE",
-        "builder:STALE"
+        "metrics:ALIVE",
+        "builder:ALIVE"
       ],
       "builderTask": {
         "verdict": "QUEUED",
@@ -466,5 +467,5 @@
       "reason": "at-or-below-floor"
     }
   ],
-  "finishedAt": "2026-10-07T02:53:33.829Z"
+  "finishedAt": "2026-10-07T02:55:40.324Z"
 }
