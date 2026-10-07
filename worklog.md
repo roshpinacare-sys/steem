@@ -1906,3 +1906,65 @@ Stage Summary:
 - הגוף נבדק קצה-לקצה באמת: כל-איבר-חי, custody 14/14 מוכח-קריפטוגרפית מול-השרשרת, ROT2 מוכח, הרץ-הריבוני לוקח-השתלטות-DEX-כשהסנדבוקס-שקט
 - מסילת-ההמרה חודרה-מהבאג-הסריאלי-ומהתורה-השגויה-בבת-אחת: מהיום היא מבצעת-אמת ומחליטה-אמת — הקצה-האמיתי נמדד, לא מדומיין
 - העקרון שהמפעיל-דרש נאכף: מרוויח-ולא-מפסיד-סתם — כל-ריל עם-קצה-שלילי עומד-ב-HOLD-כנה עד-שהשוק-משלם
+---
+Task ID: R247
+Agent: Z.ai Code (main)
+Task: המפעיל: "תמשיך, בחן מה שעשית, וודא הכל — ריבונות/אוטונומיה/תקשורת/רווחיות/פעילות, מה קורה בגיט, כמה סוכנים במקביל, הארנק החדש מה-DEX, מקורות לגיטימיים חדשים, תקן מה שצריך, בצע ודחוף הכל"
+
+Work Log:
+- שחזור-ריבוני: divergence 0/2 (שני-קומיטים-מקבילים-על-ה-remote) → stash+reset --hard origin/saos-cockpit → HEAD 6ac7b76, divergence 0/0
+- וולידציה-חיה-מלאה: selftest **666/666 PASS** @19:42:22Z · doctor healthy=true 5/5-scope (git-SYNCED/engine-ok/chain-reachable) · MCP tools/list=6-כלים · PnL MEASURED
+- שרשרת-חיה (condenser_api 19:42:21Z): headcorner **SP_live=4,023.503** + 14.027-SBD + 13.494-STEEM (הכל-DEX-open-orders) · delegated_out=4,930,285.677-vests · hcsoldier4/5/6 recv=4,838.364331-vests כ"א — **ה-3SP-נחתם-בשרשרת** · אפס-פרסים-ממתינים (curator-תובע) · last_vote 19:20:03Z
+- מציאות-הגיט: 2-קומיטים-מקבילים (a5c7e76 saos-r245-empire @19:21:52Z + 6ac7b76 runtime-ci-heartbeat @19:25:42Z) → **3-סוכנים-פעילים-מאומתים**; steem-Actions מת-billing (run-אחרון 18:03Z failure ברמת-job, על d0c56ee-ישן) אבל **saos-runtime-repo חדש-ומצליח: sovereign-runtime SUCCESS @19:23:34Z** (ההשתלטות-DEX-CI-חיה); Domain 14,420-runs, arb-mesh-SUCCESS @19:31Z, pages-build-SUCCESS (https://roshpinacare-sys.github.io/Domain/ built+https)
+- מקורות-נוספים-מדודים-חי (בקשת-המפעיל): **12-ריפואים** (AutoGPT 187,684★ חי · browser-use 117,375★ חי · OpenHands 90,195★ חי-דקות · MetaGPT 70,767★ **מת-9-חוד'** · cline 69,985★ חי · crewAI 59,423★ חי · goose 55,038★ חי · autogen 61,281★ **מת-6-חוד'** · aider 49,410★ **מת-5-חוד'** · langgraph 42,838★ חי · SillyTavern 34,185★ · SWE-agent 20,496★) → **חוק-הקונסולידציה (השביעי)** ב§9.1: ★-היסטוריות-לא-מגנות-מהתיישנות, קצב=חיים
+- npm-מדוד (api.npmjs.org): claude-code **14,786,283**/שבוע · langgraph 4,552,953 · @openai/agents 2,504,358 · gemini-cli 453,215 → חוק-שכבת-התשתית-מאומת-שוב (§9.2)
+- PAT: אבחון-כנה — הקובץ **טוקן-גולמי-93B ללא-KEY=** (ה-regex-הישן-טעה) → תוקן-פרסינג; אומת user=roshpinacare-sys, fine-grained, rate-4,950
+- הפצה-ריבונית: GitHub-Packages probe-read=404 (**אותנטיקציה-מוכחת**) → publish=**E403 כנה** `packages:write-חסר-ב-PAT-fine-grained` (לא-ניתן-להנפקה-עצמית) → **נתיב-חי-בוצע: GitHub-Release `saos-agents-v0.1.0` (id 406106235, על saos-cockpit) + asset tarball 17,199B state=uploaded** — ההפצה-המגורסת-הראשונה-בהיסטוריה; PUBLISH.md עודכן-דואלי (gh-packages-מוכן/.npmrc-env-only; npmjs-ממתין-טוקן)
+- תיקונים-שבוצעו: npm-downloads-URL %2F-encoding (404→מדידות-אמת) · tarball-לא-נכנס-לגיט · package.json→@roshpinacare-sys/saos-agents+publishConfig · .npmrc-${NODE_AUTH_TOKEN}-בלבד-בגיט (אפס-סודות)
+- docs/COMPETITIVE-INTELLIGENCE.md §9 חדש (9.1–9.6): 12-מקורות+קונסולידציה · npm-תשתית · Actions-מציאות · ארנק-אימפריה-נמדד · הפצה-ראשונה · שורה-תחתונה
+- דחיפה: bash scripts/sovereign-push.sh → saos-cockpit
+
+Stage Summary:
+- התשובה-המדודה-לשאלות-המפעיל: 3-סוכנים-במקביל (קומיטים+CI); הארנק-מה-DEX נמדד-מול-השרשרת — SP-צמח-975→4,023.5 (מאומת, לא-הוכרז); ה-3SP-לחיילים-נחתם-בשרשרת
+- ההפצה-המגורסת-הראשונה חיה (release+asset); הפער-היחיד-שנשאר: packages:write-על-ה-PAT — פעולת-מפעיל-אחת
+- שני-חוקים-חדשים-נחשפו-ממדידה: קונסולידציה (§9.1) + תשתית-מאומתת (§9.2); כל-הקודם-נבחן-וירוק (666/666)
+
+---
+Task ID: R248
+Agent: Z.ai Code (main)
+Task: המפעיל: "בצע ובחן מה שעשית, תקן מה שצריך שהכל יעבוד פיקס, וודא ריבונות/אוטונומיה/חיזוק/אינטליגנציה/דחיפה"
+
+Work Log:
+- פתיחה: HEAD 5532358==origin 0/0 — הדחיפה של-R247 שרדה, אין-קומיטים-מקבילים-חדשים
+- 🔴 פורנזיה-מלאה של-פער-ה-selftest (666-מול-551) — נפתר: **95e90d2 (SAOS-custodian "bounded-staleness persistence" @19:49:41Z) החזיר-לאחור את selftest.mjs** מ-1501-שורות/666-וקטורים (כולל-115-וקטורי-ה-evidence/doctor/MCP/setup של-R245-d) ל-1260-שורות/551 — ה-sweep-הזהה-לזה-ש-R245-b תיקן ("wipe had been swept by custodian; lineage law: restoration over deletion"); comm-על-שמות-הוקטורים הוכיח: 115-וקטורים-אבדו (STALE_MS/anchorEvidence/apply/catalog/doctor...), וה-diff-כולל: selftest.mjs-בלבד-הרגרסיה (npm-שלי-שרד-ב-rebase)
+- אנטומיה-זמנית: a5c7e76/6ac7b76/add718ee=1501-שורות → 95e90d2=1260; ה-666-שלי-נמדד-על-עץ-מקומי-נכון, וה-rebase-שלי-נשא-את-גרסת-ה-custodian → ה-551-קנוני-היה-רגרסיה-ולא-כיוון
+- **התיקון**: `git checkout add718ee -- selftest.mjs` (restoration-over-deletion) → ריצה-חיה: **666/666 PASS** @20:05:01Z, doctor healthy=true עם selftest-666-בקנון — הפער-הסביבתי-שדווח-ב-R247 נפתר-כרגרסיית-custodian-ולא-כתלות-סביבה
+- stash-פורנזיה: stash@{0} (שלי-מה-rebase) מכיל-4-קבצי-state-בלבד — **אף-עבודת-מודול-של-סוכן-מקביל-לא-נבלעה** (stash@{1}=1483-שורות/648-קריאות — גרסת-ביניים-היסטורית)
+- re-probe-PAT: user=roshpinacare-sys, token updated 2026-09-07 (לא-שונה) → publish=**E403 כנה-שנית** (`packages:write`-חסר); read-probe 404 (אותנטיקציה-תקינה); release saos-agents-v0.1.0 קיים (0 downloads) — פעולת-מפעיל-אחת-נשארת
+- selftest-last-run.json=666-קנוני + state-ריצה-חיה נכללים בקומיט
+
+Stage Summary:
+- החוק-אומת-שוב-מהפורנזיה: custodian-sweep מוחק-קוד-חדש — לכן קיים שער-sovereign-push + חוק-השושלת; השחזור-בוצע, 666/666-הקנון-החדש-האמיתי
+- שתי-מסקנות-מערכתיות: (1) custodian-חייב-לא-לגעת-ב-.mjs (state-only) — מתועד-כהמלצה-למפעיל; (2) כל-דחיפה-חייבת-לוודא ש-selftest-מריץ-על-העץ-שנדחף
+- הפער-היחיד-הפתוח: packages:write-על-ה-PAT (מפעיל); הכל-השאר ירוק-ומדוד
+
+---
+Task ID: R250
+Agent: Z.ai Code (main)
+Task: המפעיל: "לא מצאתי הרשאה כזו packages... פתחתי קצת יותר את ה-PAT... שיזהרו מאוד שלא יחסמו לנו את החשבון — צריך להבין את התקנון של גיטהאב... תסביר לי מפורט... ודחוף" — PAT-reprobe-מלא + מודול-ציות-GitHub-נגד-חסימת-חשבון + וריפיקציה-חוזרת-של-הכל + דחיפה
+
+Work Log:
+- שחזור-קאנון: origin קידם-ל-7b6eeb1 (הקומיטים-המקומיים שלנו כבר-שם, divergence 0/2-לטובת-origin) → stash+reset → 0/0
+- PAT-reprobe-חי-בשלוש-שיטות-עצמאיות: (1) סיווג-טוקן: עדיין-fine-grained (github_pat_, 93B, אין-X-OAuth-Scopes) · (2) GET /user: roshpinacare-sys **type=User** · (3) npm-publish-אמיתי-שלישי: **E403** @2026-10-07T20:27:53Z `permission_denied: The token provided does not match expected scopes` — **פסק-דין**: ל-fine-grained-על-חשבון-אישי **אין** הרשאת-Packages-בממשק-כלל (קיימת-רק-תחת-Organization-permissions) ⇒ מה-שהמפעיל-לא-מצא — אכן-לא-קיים, לא-חסרה-לחיצה · הנתיב-היחיד: **classic-`write:packages`**
+- 🔴 **מודול-ציות-GitHub (הבקשה-המרכזית-של-המפעיל)**: `scripts/github-guard.sh` v1.1 — G1-סריקת-סודות-בעץ-העקוב (ghp_/github_pat_/gho_/ghs_/ghu_/AKIA/xox/sk_live_/glpat/PEM) · G2-היגיינת-כספת-upload/ · G3-סריקת-כל-ה-diff-היוצא-מול-origin (כולל-לא-מקומת) · G4-headroom-rate-limit-<200=חסימה — **משולב-ב-sovereign-push.sh-כסעיף-3.5-לפני-כל-דחיפה, fail-closed**
+- בקרות-שלילה-חיות-על-השער: טוקן-מדומה-נשתל→**rc=1, נתפס-ב-G1+G3** · עץ-נקי→rc=0-PASS-@20:41:07Z · באג-ביניים-נמצא-ותוקן: mawk-1.3.4-לא-תומך-{n,}-ונכשל-שקט→false-CLEAN; הוחלף-ל-grep-נייד + סינון-קווי-base64-blob (false-positives-מתבניות-עיצוב-20MB)
+- `docs/GITHUB-COMPLIANCE.md` (מסמך-אם-בעברית): 10-חוקים — אפס-סודות-גם-בהיסטוריה · טוקנים-רק-upload/ · **איסור-התחמקות-מ-rate-limit-בטוקנים-מרובים (=ToS-evasion→חסימה)** · איסור-ספאם/מכרה-Actions · מגבלות-Pages · **איסור-חשבון-שני-אחרי-חסימה (ban-evasion=חסימה-קבועה) — ערעור-בלבד** · נוהל-אם-סימנו-אותנו
+- חוק-24-נוסף-ל-AGENTS.md (כל-סוכן-עתידי-קורא-אותו-לפני-כל-פעולה) · `scripts/pat-audit.mjs` חי: verdict **NEED_CLASSIC_PAT_WRITE_PACKAGES** + leak-scan-של-ערך-הטוקן-מול-העץ=clean + rate-5000 · `scripts/publish-github-packages.sh` (מסרב-fine-grained-על-User, sanity-חבילה, publish+verify) · `docs/OPERATOR-PAT-STEPS.md` (הוראות-לחיצה-בלחיצה-למפעיל-בעברית: Tokens-(classic)-→-רק-write:packages-→-upload/pat-classic.env)
+- וריפיקציה-חיה-מחדש-של-הקודם: selftest **674/674 PASS** @20:27:55Z (הרגרסיה-לא-חזרה — הסוכן-המקביל-בנה-על-הבסיס-המשוחזר-שלי-והוסיף-וקטורים) · doctor-healthy-5/5 · MCP-6-כלים · Domain-Pages-HTTP/2-200+HSTS · Actions: saos-runtime-SUCCESS×2 (17:04+19:23Z) · Domain-agent-verify+pages-SUCCESS-@20:13Z · steem-ci-probe-failure (billing-wall-ידוע) · release-saos-agents-v0.1.0-על-הענן (asset-17199B-uploaded) · שרשרת: SBD-14.027→**0.500** (13.527-הומרו-בפועל-ע"י-הסוכן-המקביל-@20:02-20:09Z — עקבי-עם-worklog-R245-b), STEEM-13.494, pending-0.000
+- 🔴 **הפרת-append-only-נוספת-נחשפה-ותוקנה**: קומיט-R245-b-המקביל (c60ebae) דרס-את-בלוקי-worklog-R247+R248 (worklog: 1929-שורות-ב-5458292→1909-ב-HEAD) — שוחזרו-מההיסטוריה-לפי-חוק-ה-lineage (union-מעל-סדר-כרונולוגי)
+- דחיפה: דרך-השער-הכפול (divergence-FF + guard-G1–G4) — הקומיט-הזה-עצמו-עובר-את-השער-שהוא-מכניס
+
+Stage Summary:
+- שאלת-ה-PAT-נסגרת-מדודה-ולא-משערת: הסיבה-שהמפעיל-לא-מצא-"Packages" — ההרשאה-לא-קיימת-בממשק-לחשבון-אישי; E403×3-חותמות-זמן-מוכיחות-שגם-הרחבת-הרשאות-אחרות-לא-תעזור; צעד-מפעיל-אחד-בדוק-מראש-חסר-לנצחון-mint
+- לגוף-שכבת-הגנה-חדשה-ומוכחת: כל-דחיפה-עתידית-עוברת-שער-ציות-fail-closed-עם-בקרות-שלילה-חיות — הסוג-של-דליפה-שחסמה-את-החשבון-פעם-לא-עובר-שוב-אף-סוכן
+- העץ-הקנוני-ירוק-בכל-המדדים (674/674 · doctor-5/5 · MCP-6 · Pages-HTTPS · runtime-CI-SUCCESS) וה-worklog-מאוחד-שוב-ללא-אובדן-היסטוריה

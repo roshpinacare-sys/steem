@@ -35,6 +35,11 @@ else
   exit 2
 fi
 
+# --- LAW CLAUSE 3.5 (R250): GitHub compliance gate — secrets + ToS, fail-closed ---
+# docs/GITHUB-COMPLIANCE.md: a leaked token once got this account suspended;
+# no push may ever carry secret material or abuse API limits.
+bash scripts/github-guard.sh
+
 # --- LAW CLAUSE 2.5 (R220): body-prefixed commits MUST be GPG-signed ---
 # Unsigned commits with a body prefix (R2xx / SAOS-custodian) are a writer-law
 # violation (identity clause 7) — the gate now REFUSES to publish them.

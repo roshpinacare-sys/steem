@@ -42,3 +42,12 @@ node mini-services/saos-engine/selftest.mjs                             # חיי
 ### הגדרת-ההצלחה של כל סשן
 העבודה **מתפרסמת בגיט** (divergence 0/0, push מאושר-שער) — לא "בוצע בסנדבוקס".
 מה שלא נדחף — לא קרה.
+
+### חוק 24 — ציות GitHub / מניעת-חסימת-חשבון (R250)
+- **כל דחיפה עוברת אוטומטית את `scripts/github-guard.sh`** (סעיף 3.5 בשער) — fail-closed:
+  G1 סריקת-סודות בעץ · G2 היגיינת-כספת `upload/` · G3 סריקת-ה-patch-היוצא · G4 headroom-של-rate-limit. שער-נכשל = **עוצרים ומתעדים, לא עוקפים לעולם**.
+- **אפס סודות בגיט, גם בהיסטוריה** — דליפת-טוקן אחת כבר חסמה לנו חשבון פעם. טוקנים רק ב-`upload/` (gitignored) או environment-secrets.
+- **אסורה התחמקות-ממגבלות**: טוקנים-מרובים לעקיפת rate-limit = ToS-evasion → חסימה. back-off מדוד בלבד.
+- **אסור ספאם / תוכן-אוטומטי-חסר-ערך / מכרה ב-Actions** — Acceptable Use של GitHub הוא גבול-הריבונות, לא אויב שלה.
+- **אם החשבון נחסם — אין חשבון-שני** (ban-evasion = חסימה-קבועה). ערעור בלבד, מתועד.
+- דף-האם: **`docs/GITHUB-COMPLIANCE.md`** · הוראות-מפעיל לטוקן-פרסום: `docs/OPERATOR-PAT-STEPS.md` · פרסום-חבילות: `scripts/publish-github-packages.sh` (מסרב טוקן-fine-grained על חשבון-User — מוכח E403×3).
