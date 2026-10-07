@@ -1229,6 +1229,111 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("publish cap stays anti-spam", count("publish"), 1);
 }
 
+/* R245 · doctor — פסק-כשירות מדוד (מודל-REA: רק-scope_checks משפטים) */
+{
+  const { filterScope, verdictScope, runDoctor } = await import("./doctor.mjs");
+  const checks = [
+    { id: "git-divergence", scope: "git", ok: true, detail: "SYNCED 0 0" },
+    { id: "selftest-last-run", scope: "selftest", ok: false, detail: "STALE", remedy: "run selftest" },
+    { id: "engine-status", scope: "engine", ok: false, informational: true, detail: "offline" },
+    { id: "actions-heartbeat", scope: "actions", ok: true, informational: true, detail: "no-token" },
+  ];
+  eq("filterScope all keeps everything", filterScope(checks, "all").checks.length, 4);
+  eq("filterScope explicit narrows", filterScope(checks, "git").checks.map((c) => c.id), ["git-divergence"]);
+  eq("filterScope unknown rejected", filterScope(checks, "nonsense").error, "unknown-scope");
+  eq("verdictScope unknown-scope exit=2", verdictScope(checks, "nonsense").exit, 2);
+  const allMode = verdictScope(checks, "all");
+  eq("verdict all-mode unhealthy on real fail", allMode.healthy, false);
+  eq("verdict all-mode exit=1 on real fail", allMode.exit, 1);
+  eq("verdict all-mode failing ids", allMode.failing, ["selftest-last-run"]);
+  const explicitGit = verdictScope(checks, "git");
+  eq("explicit healthy scope ok", explicitGit.healthy, true);
+  eq("explicit exit=0 scope ok", explicitGit.exit, 0);
+  const explicitSelftest = verdictScope(checks, "selftest");
+  eq("explicit unhealthy scope fail", explicitSelftest.healthy, false);
+  eq("informational-only scope never blocks", verdictScope([{ id: "e", scope: "engine", ok: false, informational: true }], "engine").healthy, true);
+  // ריצת-doctor אופליין-טהורה עם-פרובות-מזויפות (אפס-רשת, אפס-שעון-אמת)
+  const now = "2026-10-07T18:00:00.000Z";
+  const freshSelftest = JSON.stringify({ pass: 41, fail: 0, at: "2026-10-07T17:00:00.000Z" });
+  const good = await runDoctor({ scope: "all", now, env: {}, probes: {
+    git: async (args) => args.includes("--left-right") ? { code: 0, stdout: "0  0", stderr: "" } : { code: 0, stdout: "", stderr: "" },
+    readFile: async () => freshSelftest,
+    http: async (url) => { if (String(url).includes("3040")) return { ok: true, body: { ok: true, at: now } }; throw new Error("net"); },
+  } });
+  eq("doctor all-mode healthy (engine offline=informational)", good.healthy, true);
+  eq("doctor all-mode exit=0", good.exit, 0);
+  eq("doctor scope mode all", good.scope.mode, "all");
+  const badGit = await runDoctor({ scope: "git", now, env: {}, probes: {
+    git: async (args) => args.includes("--left-right") ? { code: 0, stdout: "131  0", stderr: "" } : { code: 0, stdout: "", stderr: "" },
+    readFile: async () => freshSelftest,
+    http: async () => { throw new Error("net"); },
+  } });
+  eq("doctor git-scope catches divergence", badGit.healthy, false);
+  eq("doctor git-scope failing id", badGit.failing, ["git-divergence"]);
+  eq("doctor git-scope carries remedy", badGit.checks[0].remedy.includes("reset --hard"), true);
+  const staleRun = await runDoctor({ scope: "selftest", now, env: {}, probes: {
+    readFile: async () => JSON.stringify({ pass: 41, fail: 0, at: "2026-10-05T00:00:00.000Z" }),
+    git: async () => ({ code: 0, stdout: "", stderr: "" }),
+    http: async () => { throw new Error("net"); },
+  } });
+  eq("doctor stale selftest dies", staleRun.healthy, false);
+  eq("doctor stale detail honest", staleRun.checks.find((c) => c.id === "selftest-last-run").detail.startsWith("STALE"), true);
+  const noToken = await runDoctor({ scope: "actions", now, env: {}, probes: { http: async () => { throw new Error("net"); }, git: async () => ({ code: 0, stdout: "", stderr: "" }), readFile: async () => freshSelftest } });
+  eq("actions no-token = informational pass", noToken.healthy, true);
+  eq("actions no-token honest detail", noToken.checks.find((c) => c.id === "actions-heartbeat").detail.includes("no-token"), true);
+}
+
+/* R245 · mcp — שער-הסוכנים (JSON-RPC, scrub, fail-closed) */
+{
+  const { makeHandler, makeTools, toolCatalog, scrubText, PROTOCOL_VERSION } = await import("./mcp.mjs");
+  // scrub: כל-פורמט-מפתח-חי מת
+  const WIF_LIKE = "5J8xYzDemoBase58Stringzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+  const PAT_LIKE = ["github_", "pat_11ABCDEFG0abcdefGHIJKL_tokenvalue123"].join("");
+  const GHP_LIKE = ["gh", "p_0123456789abcdefghij0123"].join("");
+  eq("scrub WIF", scrubText("keep " + WIF_LIKE + " safe"), "keep [REDACTED-WIF] safe");
+  eq("scrub PAT", scrubText("token " + PAT_LIKE), "token [REDACTED-PAT]");
+  eq("scrub ghp", scrubText(GHP_LIKE), "[REDACTED-TOKEN]");
+  eq("scrub clean text untouched", scrubText("parity 0.0999 band-ok"), "parity 0.0999 band-ok");
+  // קטלוג: 5-כלים עם-inputSchema-מלא
+  const cat = toolCatalog();
+  eq("catalog size", cat.length, 5);
+  ok("catalog schemas are objects", cat.every((t) => t.inputSchema && t.inputSchema.type === "object"));
+  ok("catalog names unique", new Set(cat.map((t) => t.name)).size === 5);
+  // handler עם-כלים-מזויפים (אופליין)
+  const fakeTools = cat.map((t) => ({ ...t, run: async (args) => ({ tool: t.name, args: args ?? null, secret: "5J8xYzDemoBase58Stringzzzzzzzzzzzzzzzzzzzzzzzzzzzz" }) }));
+  const handle = makeHandler(fakeTools);
+  const init = await handle({ jsonrpc: "2.0", id: 1, method: "initialize" });
+  eq("init protocol version", init.result.protocolVersion, PROTOCOL_VERSION);
+  eq("init server name", init.result.serverInfo.name, "saos-mcp");
+  eq("init id preserved", init.id, 1);
+  eq("notification returns null", await handle({ method: "notifications/initialized" }), null);
+  const list = await handle({ id: 2, method: "tools/list" });
+  eq("tools/list count", list.result.tools.length, 5);
+  ok("tools/list no run leaked", list.result.tools.every((t) => !("run" in t)));
+  const call = await handle({ id: 3, method: "tools/call", params: { name: "saos_status", arguments: {} } });
+  ok("tools/call returns text content", call.result.content[0].type === "text");
+  ok("tools/call output scrubbed", call.result.content[0].text.includes("[REDACTED-WIF]"));
+  ok("tools/call output has no raw WIF", !call.result.content[0].text.includes("5J8xYzExampleBase58String"));
+  const unknownTool = await handle({ id: 4, method: "tools/call", params: { name: "nope" } });
+  eq("unknown tool -32601", unknownTool.error.code, -32601);
+  const unknownMethod = await handle({ id: 5, method: "roots/list" });
+  eq("unknown method -32601", unknownMethod.error.code, -32601);
+  const malformed = await handle(null);
+  eq("malformed request -32600", malformed.error.code, -32600);
+  // כלי-אמיתי: fail-closed-כנה (engine-offline + remedy) ואימוץ-scrub בשגיאה
+  const realTools = makeTools({ http_: async () => { throw new Error("timeout"); }, readFile_: async () => { throw new Error("missing"); } });
+  const st = await realTools.saos_status({});
+  eq("status offline honest ok:false", st.ok, false);
+  ok("status offline carries remedy", String(st.remedy || "").length > 5);
+  const realHandle = makeHandler(cat.map((t) => ({ ...t, run: realTools[t.name] })));
+  const realCall = await realHandle({ id: 6, method: "tools/call", params: { name: "saos_status", arguments: {} } });
+  eq("real tools/call not error", realCall.result.isError, undefined);
+  const join = await realTools.saos_join({});
+  eq("join truth law", join.truth.includes("הגיט הוא האמת"), true);
+  eq("join dead-soldier law", join.dead_soldiers.includes("T-80"), true);
+  ok("join commands are runnable", join.session_open.every((c) => typeof c === "string" && c.length > 5));
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
