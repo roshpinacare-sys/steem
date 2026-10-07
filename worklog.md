@@ -1847,3 +1847,22 @@ Stage Summary:
 - הפעם-לא-תוכנית אלא הוכחה: 9-בדיקות-חיות-ירוקות + מדידות-מתחרים-מאותה-שעה — 3-יתרונות-אמת (עוגן-שרשרת-ציבורי, כנות-מדוד/מוערך, עברית-ריבונית), 3-פערים-כנים-עם-תוכנית (קהילה→npm-publish, קצב-מהדורה, evidence-per-output)
 - המסקנה-המדודה-מ-5.0.0: השוק מפרגן למי-שמרחיב-ראיות; ההזרקה-הבאה כבר-מתועדת ב§7.4
 - דחיפה: bash scripts/sovereign-push.sh → saos-cockpit (FF-only, custody-נרשם) · divergence-0/0-אחרי-דחיפה
+
+---
+Task ID: R245-d
+Agent: Z.ai Code (main)
+Task: המפעיל: "עוד הרבה בבקשה, מקורות נוספים אחרים, וכן בצע את הצעד הבא — מאשר"
+
+Work Log:
+- git-פתיחה: 3657d1c==origin/saos-cockpit, divergence 0/0 — נקי
+- מקורות-נוספים (web-search-חי ×6 + GitHub-API-מאומת): Composio 30,460★/$29M · AutoGen 61,281★ (האטה-מאז-15.4.26) · Manufact $6.3M · Runlayer $8M · All-Hands-$5M · Alpha-Arena-Sequel-מתמסד → **חוק-שכבת-התשתית (השישי)** נחשף-ונרשם ב§8.3
+- הזרקה-§7.4 (evidence-per-output): pnl-public.mjs — railEvidence (allowlist-יומן-סגור) + buildEvidence (chain/commit/push — איחוד-שלושה-מקורות; תיקון-באג-מקורי: custodian.head-string מעולם-לא-נתפס-כראיה → evidence=null) + עמודת-ראיה-ב-PNL.md ("—"=כנות) + תאימות-לאחור-מאומתת
+- selftest: 632→656 (+24-וקטורים: allowlist-דליפה ×2, תאימות-לאחור ×2, כנות ×4, markdown ×6, allowlist-מטא ×4, buildEvidence ×6) · וקטור-ישן-חשף-פער-מד-markdown-הישן — תוקן-בשתי-הצורות
+- npm-publish-הכנה (אושר): npm/saos-agents/ — bin(setup/mcp-config/doctor)+mcp+doctor+pnl+setup+SKILL+README+PUBLISH · מאומת-חי: doctor healthy=true · setup-dry-run 7+1 · **6-כלים-חיים-מהחבילה** · npm-pack 9-קבצים/~19kB · סריקת-סודות-נקייה · SAOS_REPO_ROOT/SAOS_ENGINE_ROOT env-override-ב-mcp.mjs (תאימות-מלאה, selftest-ירוק)
+- אבחון-כנה: שם-פנוי (404) · אין-טוקן-npm (ENEEDAUTH) → הפרסום-עצמו ממתין-טוקן-מפעיל (PUBLISH.md-מלא)
+- docs/COMPETITIVE-INTELLIGENCE.md §8 חדש: 8.1-בוצע-עם-ראיות · 8.2-חבילה-מאומתת · 8.3-מקורות+חוק-שישי · 8.4-פתוחים-כנים
+
+Stage Summary:
+- שני-הצעדים-המאושרים בוצעו-בקוד-חתום-ומדוד: הראיה-מוצמדת-עכשיו לכל-פלט-ציבורי (עקרון-5.0.0), והחבילה-הציבורית-הראשונה מוכנה-לעולם (פרסום=טוקן-אחד-מהמפעיל)
+- חוק-שכבת-התשתית: הערך-הוא-בלהיות-השפה/התשתית (Composio-$29M), לא-עוד-יישום — השער-שלנו-כבר-שם; npm-מסמן-את-המעבר
+- selftest 656/656 · divergence-0/0-לפני-דחיפה · דחיפה: bash scripts/sovereign-push.sh → saos-cockpit

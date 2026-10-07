@@ -1,32 +1,32 @@
 {
-  "startedAt": "2026-10-07T18:29:24.370Z",
+  "startedAt": "2026-10-07T18:59:24.370Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 5852,
+      "ms": 2980,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.05899,
-        "sbdUsd": 0.5666901147505721,
-        "parity": 0.10409569262729133,
+        "steemUsd": 0.05887,
+        "sbdUsd": 0.5655373105729182,
+        "parity": 0.10409569607416648,
         "source": "internal-feed-fallback+derived-sbd",
         "lowConfidence": true
       },
-      "feed": 0.10409569262729133,
+      "feed": 0.10409569607416648,
       "band": {
         "ok": true,
         "reason": "band-ok",
         "bps": 0
       },
-      "steemUsd": 0.05899,
-      "sbdUsd": 0.5666901147505721,
+      "steemUsd": 0.05887,
+      "sbdUsd": 0.5655373105729182,
       "inventory": {
-        "steem": 0.427,
-        "sbd": 11.51,
-        "spOwn": 975.4105984645588,
-        "rcPct": 30.7
+        "steem": 13.494,
+        "sbd": 12.886,
+        "spOwn": 975.4119814584288,
+        "rcPct": 30.4
       },
       "ordersOk": true,
       "orders": [
@@ -95,41 +95,33 @@
           "created": "2026-10-07T17:46:30"
         },
         {
-          "orderid": 2100000168,
-          "side": "bid",
-          "base": "1.376 SBD",
-          "quote": "13.567 STEEM",
-          "unit": 9.859738,
-          "created": "2026-10-07T18:29:09"
-        },
-        {
-          "orderid": 2100000169,
-          "side": "bid",
-          "base": "1.376 SBD",
-          "quote": "13.588 STEEM",
-          "unit": 9.875,
-          "created": "2026-10-07T18:29:09"
+          "orderid": 2100000190,
+          "side": "ask",
+          "base": "0.500 STEEM",
+          "quote": "0.054 SBD",
+          "unit": 0.108,
+          "created": "2026-10-07T18:58:39"
         }
       ],
       "fills": 2,
-      "lastFillAt": "2026-10-07T18:20:15.000Z",
+      "lastFillAt": "2026-10-07T18:32:15.000Z",
       "pnl": {
         "fills": 2,
-        "buys": 0,
-        "sells": 2,
-        "boughtSteem": 0,
-        "spentSbd": 0,
-        "soldSteem": 29.83,
-        "proceedsSbd": 2.994,
+        "buys": 1,
+        "sells": 1,
+        "boughtSteem": 13.567,
+        "spentSbd": 1.376,
+        "soldSteem": 11.186,
+        "proceedsSbd": 1.13,
         "realizedSbd": 0,
-        "unbasedSteem": 29.83,
-        "unbasedSbd": 2.994,
-        "positionSteem": 0,
-        "positionCostSbd": 0,
-        "positionAvgCost": null
+        "unbasedSteem": 11.186,
+        "unbasedSbd": 1.13,
+        "positionSteem": 13.567,
+        "positionCostSbd": 1.376,
+        "positionAvgCost": 0.101423
       },
       "fuel": {
-        "curationVestsPerDay": 1181.895,
+        "curationVestsPerDay": 2880.863,
         "authorSbdPerDay": 0,
         "authorVestsPerDay": 0,
         "curationOps": 1,
@@ -137,65 +129,66 @@
         "windowSpanDays": 0.02,
         "windowOps": 101,
         "measured": true,
-        "fuelUsdPerDay": 0.0432,
+        "fuelUsdPerDay": 0.1052,
         "authorUsdPerDay": 0,
         "histLen": 101,
         "node": "https://api.justyy.com"
       },
-      "summary": "parity 0.10409569262729133 (internal-feed-fallback+derived-sbd) · fills 2 · fuel 0.0432$"
+      "summary": "parity 0.10409569607416648 (internal-feed-fallback+derived-sbd) · fills 2 · fuel 0.1052$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1389,
-      "verdict": "DECISIONS:4",
+      "ms": 1493,
+      "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
         "soldiers:grids-live",
+        "rewards:claim",
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 50,
+      "spreadBpsRec": 21,
       "book": {
-        "bestAsk": 0.10192327470945181,
-        "bestBid": 0.10141576406636647,
-        "spreadBps": 50
+        "bestAsk": 0.10161733292645712,
+        "bestBid": 0.10140753660812071,
+        "spreadBps": 21
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 0,
-      "runCount": 16,
-      "simFills": 4,
-      "simFeesMu": 2000,
+      "runCount": 19,
+      "simFills": 5,
+      "simFeesMu": 2500,
       "events": 3
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 673,
+      "ms": 763,
       "verdict": "OFFER-READY",
       "asks": 0,
       "bids": 0,
-      "flowAsks": 0,
+      "flowAsks": 1,
       "flowBids": 2,
-      "staleCount": 10,
-      "skew": -0.297692,
+      "staleCount": 8,
+      "skew": -0.241024,
       "book": {
-        "bestAsk": 0.10192327470945181,
-        "bestBid": 0.10141576406636647,
-        "askDepthSteem": 250.545,
-        "bidDepthSbd": 2806.579,
-        "at": "2026-10-07T18:29:24.370Z"
+        "bestAsk": 0.10161733292645712,
+        "bestBid": 0.10140753660812071,
+        "askDepthSteem": 375.895,
+        "bidDepthSbd": 2808.087,
+        "at": "2026-10-07T18:59:24.370Z"
       },
       "market": {
-        "tradesPerDay": 490,
-        "spreadBps": 29.36
+        "tradesPerDay": 497,
+        "spreadBps": 18.79
       },
       "liquidity": {
-        "deployedAsks": 33.558,
-        "deployedBids": 93.947,
+        "deployedAsks": 34.058,
+        "deployedBids": 91.195,
         "askBudget": 0,
         "bidBudget": 0,
         "deployCap": 0.6
@@ -207,15 +200,15 @@
       "ms": 0,
       "verdict": "CONVERT-PLAN",
       "amountSbd": 10,
-      "edgeBps": 7646,
-      "marketSbdUsd": 0.56669,
-      "impliedSbdUsd": 0.56669,
+      "edgeBps": 7682,
+      "marketSbdUsd": 0.565537,
+      "impliedSbdUsd": 0.565537,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 1263,
+      "ms": 1236,
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
@@ -223,18 +216,19 @@
       "votesToday": 0,
       "error": null
     },
+    "convertDeferredForClaim": true,
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 3643,
-      "verdict": "BROADCAST-FAIL",
-      "txid": "aafc30345e168f8d89d52f6d3e71a9f907827af8",
+      "ms": 4055,
+      "verdict": "BROADCAST",
+      "txid": "0022de3183f4d0484bc2610ce94902ca212f252d",
       "ops": 1,
       "opNames": [
-        "convert"
+        "claim_reward_balance"
       ],
-      "node": null,
-      "error": "missing required active authority:Missing Active Authority headcorner",
+      "node": "https://api.justyy.com",
+      "error": null,
       "promo": {
         "verdict": "ALREADY-POSTED",
         "permlink": "saos-transparency-20261007"
@@ -254,14 +248,14 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 807,
+      "ms": 7,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
         "broadcast-fails"
       ],
       "tunings": [],
-      "discoveryVerdict": "OPTIONS-FOUND",
+      "discoveryVerdict": "FRESH-CACHED",
       "topOpportunities": [
         "spread-normal(measured)",
         "tags-realloc(measured)",
@@ -319,18 +313,18 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 0,
-      "verdict": "CADENCE-GATED",
-      "pass": 632,
-      "fail": 0,
-      "at": "2026-10-07T18:26:26.528Z"
+      "ms": 178,
+      "verdict": "SELFTEST-FAIL",
+      "pass": 655,
+      "fail": 1,
+      "exitCode": 1
     },
     "economics": {
       "name": "economics",
       "ok": true,
       "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 4.895408,
+      "totalEstUsdPerDay": 4.968426,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 3,
@@ -340,8 +334,8 @@
       "name": "recruit",
       "ok": true,
       "ms": 1,
-      "verdict": "FULL-STRENGTH",
-      "active": 11,
+      "verdict": "RECRUITED",
+      "active": 10,
       "total": 11
     },
     "report": {
@@ -349,25 +343,25 @@
       "ok": true,
       "ms": 0,
       "realizedSbd": 0,
-      "positionSteem": 0,
-      "positionAvgCost": null,
-      "unbasedSteem": 29.83,
-      "deployedSteem": 33.558,
-      "fuelUsdPerDay": 0.0432,
+      "positionSteem": 13.567,
+      "positionAvgCost": 0.101423,
+      "unbasedSteem": 11.186,
+      "deployedSteem": 34.058,
+      "fuelUsdPerDay": 0.1052,
       "authorUsdPerDay": 0,
-      "measuredTotalUsdPerDay": 0.0432,
+      "measuredTotalUsdPerDay": 0.1052,
       "honesty": "unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"
     }
   },
   "rollup": {
     "realizedSbd": 0,
-    "positionSteem": 0,
-    "positionAvgCost": null,
-    "unbasedSteem": 29.83,
-    "deployedSteem": 33.558,
-    "fuelUsdPerDay": 0.0432,
+    "positionSteem": 13.567,
+    "positionAvgCost": 0.101423,
+    "unbasedSteem": 11.186,
+    "deployedSteem": 34.058,
+    "fuelUsdPerDay": 0.1052,
     "authorUsdPerDay": 0,
-    "measuredTotalUsdPerDay": 0.0432,
+    "measuredTotalUsdPerDay": 0.1052,
     "honesty": "unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"
   },
   "ok": true,
@@ -376,5 +370,5 @@
     "failedSteps": [],
     "blockedSteps": []
   },
-  "finishedAt": "2026-10-07T18:29:36.739Z"
+  "finishedAt": "2026-10-07T18:59:33.851Z"
 }
