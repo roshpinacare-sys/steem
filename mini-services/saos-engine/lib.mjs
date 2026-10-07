@@ -270,7 +270,7 @@ export function planConvert({
  * (d) liquidBasis is stamped on every plan: the liquid input is FREE BALANCE
  *     (open-order locks excluded) and jitters by ±open-asks between reads —
  *     the execute step re-reads the chain, which is the binding clamp. */
-const numStrict = (x, d = 0) => (typeof x === "number" && isFinite(x) ? x : d);
+const numStrict = (x, d = 0, max = 1e12) => (typeof x === "number" && isFinite(x) && x >= -max && x <= max ? x : d); /* max: chain decimals are ≤3dp on supplies < 1e9 — anything beyond is hostile and overflows the 3dp pipeline (battery-caught: 1e308 → Infinity PLAN) */
 export function planRedeploy({
   now = new Date().toISOString(),
   liquidSteem = 0, liquidSbd = 0,
@@ -318,9 +318,9 @@ export function redeployBidCapSbd(sbdLiquid = 0, floorSbd = 0.5, buyBookPct = 0.
   /* R233 hardening: strict finite-number gate on ALL three inputs — the old
    * guard checked only pct/floor, so NaN/Infinity/{}/Symbol in sbdLiquid
    * leaked NaN/Infinity caps downstream (battery-caught, fail closed now) */
-  if (!(typeof sbdLiquid === "number" && isFinite(sbdLiquid) && sbdLiquid >= 0)) return 0;
-  if (!(typeof floorSbd === "number" && isFinite(floorSbd) && floorSbd >= 0)) return 0;
-  if (!(typeof buyBookPct === "number" && isFinite(buyBookPct) && buyBookPct >= 0)) return 0;
+  if (!(typeof sbdLiquid === "number" && isFinite(sbdLiquid) && sbdLiquid >= 0 && sbdLiquid <= 1e12)) return 0;
+  if (!(typeof floorSbd === "number" && isFinite(floorSbd) && floorSbd >= 0 && floorSbd <= 1e12)) return 0;
+  if (!(typeof buyBookPct === "number" && isFinite(buyBookPct) && buyBookPct >= 0 && buyBookPct <= 1e12)) return 0;
   return r6(Math.max(0, sbdLiquid - floorSbd) * buyBookPct);
 }
 
