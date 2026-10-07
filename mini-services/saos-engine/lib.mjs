@@ -1111,3 +1111,128 @@ export function opTypeName(op) {
   const t = Array.isArray(op) ? op[0] : (op?.type ?? op ?? "");
   return String(t).replace(/_operation$/, "");
 }
+
+/* ════════════════════════════════════════════════════════════════════
+ * R237 · ARCHITECTURE ROUND — the operator's verdict: "simulations instead
+ * of real runs, no communication between agents, no intelligence in the
+ * automatic actions, blockages" are architecture failures. This section is
+ * the calculated response. All functions PURE (selftest-covered).
+ * ════════════════════════════════════════════════════════════════════ */
+
+/* R237-A · SIGNAL DIGEST: the live cycle keeps the deterministic trigger-grid
+ * ONLY as a signal generator. Simulated fills (`grid.fill`, `fee.spawn`) are
+ * RETIRED from the live bus — real fills are measured from the chain
+ * (measure.mjs), never invented locally. Pure. */
+export function signalDigest(events = []) {
+  const list = Array.isArray(events) ? events : [];
+  const signals = list.filter((e) => e && e.type !== "grid.fill" && e.type !== "fee.spawn");
+  const retiredFills = list.length - signals.length;
+  const kinds = {};
+  for (const e of signals) kinds[e.type] = (kinds[e.type] ?? 0) + 1;
+  const arb = signals.find((e) => e.type === "arb.signal") ?? null;
+  return { signals, retiredFills, kinds, arbSignal: arb ? { gapBps: arb.gapBps ?? null, dir: arb.dir ?? null } : null };
+}
+
+/* R237-A · MEASURED LAYERS: the cockpit must never again be told "4/4 grids
+ * active" by a constant. Presence is counted from REAL artifacts: our order
+ * tranches (our-orders.json), the hyper layer's own state, and custody-
+ * verified soldier grids. A layer with zero evidence is INACTIVE — measured,
+ * not promised. Pure. */
+export function measuredLayers({ ourOrders = [], hyper = null, soldiersVerified = null } = {}) {
+  const orders = Array.isArray(ourOrders) ? ourOrders : [];
+  const norm = orders.map((o) => (typeof o === "object" && o !== null ? o : { id: o, tranche: "value" }));
+  const value = norm.filter((o) => (o.tranche ?? "value") === "value").length;
+  const flow = norm.filter((o) => o.tranche === "flow").length;
+  const hyperOps = hyper && typeof hyper === "object" ? (hyper.opsToday ?? hyper.ops?.today ?? null) : null;
+  const hyperOn = hyper?.enabled === true || (typeof hyperOps === "number" && hyperOps > 0);
+  const soldiers = typeof soldiersVerified === "number" && soldiersVerified > 0 ? soldiersVerified : 0;
+  return [
+    { id: "value-ladder", real: true, active: value > 0, levels: value, evidence: "our-orders.json tranches" },
+    { id: "flow-tranche", real: true, active: flow > 0, levels: flow, evidence: "our-orders.json tranches" },
+    { id: "hyper-tranche", real: true, active: !!hyperOn, levels: hyperOps, evidence: "hyper-grid.json ops" },
+    { id: "soldier-grids", real: true, active: soldiers > 0, levels: soldiers, evidence: "custody-verified accounts" },
+  ];
+}
+
+/* R237-C · POWER-UP INTELLIGENCE — calculated, deterministic, doctrine-capped.
+ * The doctrine share (planRedeploy) is NEVER exceeded: intelligence (a)
+ * EXPLAINS the decision with measured factors and (b) scales DOWN only to
+ * protect the grid's ask-side liquidity (a power-up must never starve the
+ * ladder that feeds the machine). rcPct is documentation only — pacing law
+ * owns the timing, this layer never rushes it. Pure. */
+export function redeployIntel({ planned = 0, liquidSteem = 0, floorSteem = 5, askNeed = 0, rcPct = null } = {}) {
+  planned = numStrict(planned); liquidSteem = numStrict(liquidSteem);
+  floorSteem = numStrict(floorSteem); askNeed = numStrict(askNeed);
+  const rc = typeof rcPct === "number" && Number.isFinite(rcPct) ? Math.round(rcPct * 10) / 10 : null;
+  const factors = { planned, liquidSteem, floorSteem, askNeed, rcPct: rc };
+  if (!(planned > 0)) {
+    return { scale: 0, verdict: "NOTHING-TO-SCALE", factors, reason: "no planned power-up this cycle", urgency: null };
+  }
+  /* RC note: low RC = power-up is EXTRA valuable (SP raises the RC ceiling) —
+   * documented urgency, the pacing law still owns every timing decision. */
+  const urgency = rc != null && rc < 30 ? "high (rc low — vesting raises the RC ceiling)" : null;
+  if (!(askNeed > 0)) {
+    return { scale: 1, verdict: "FULL-DOCTRINE", factors, reason: "no ask-side ladder need measured — nothing to starve", urgency };
+  }
+  const maxAllowed = Math.max(0, liquidSteem - floorSteem - askNeed);
+  if (maxAllowed >= planned) {
+    return { scale: 1, verdict: "FULL-DOCTRINE", factors, reason: "grid not starved: liquid after power-up covers the ladder's ask need", urgency };
+  }
+  /* protect the ladder: shrink to what the grid can spare (floor3dp — every
+   * executed amount must stay broadcastable); may reach 0 = honest defer */
+  const raw = planned > 0 ? maxAllowed / planned : 0;
+  const scale = Math.max(0, Math.min(1, Math.floor(raw * 1000 + 1e-9) / 1000));
+  return {
+    scale,
+    verdict: scale > 0 ? "GRID-PROTECT-SCALED" : "GRID-PROTECT-DEFER",
+    factors,
+    reason: scale > 0
+      ? `scaled ×${scale.toFixed(3)} — protecting ${askNeed} STEEM of ladder ask-need above the floor`
+      : `deferred — ladder ask-need (${askNeed} STEEM) consumes everything above the floor`,
+    urgency,
+  };
+}
+
+/* R237-D · BLOCKAGE LEDGER: every non-execution is named, owned and classified
+ * LAWFUL (operator stop-orders, doctrine floors, pacing, structural authority
+ * mixes) — a blockage without an owner is the only kind this machine no
+ * longer tolerates. Pure. */
+export function blockageLedger({ steps = {}, conf = {} } = {}) {
+  const s = steps && typeof steps === "object" ? steps : {};
+  const items = [];
+  const add = (source, owner, reason) => items.push({ source, owner, lawful: true, reason: String(reason).slice(0, 160) });
+  if (s.soldiers?.verdict === "DISABLED-T80-OPERATOR-STOP") add("soldiers", "operator", "T-80 stop-order (2026-10-04) — soldiers frozen until re-authorization");
+  if (s.execute?.verdict === "OPERATOR-PAUSED") add("execute", "operator", "kill-switch exec-pause.json is set");
+  if (s.execute?.verdict === "DISARMED") add("execute", "operator", "standing-order-off (armed=false)");
+  if (s.execute?.verdict === "OPS-DAY-CAP") add("execute", "law T-19", `ops day-cap ${s.execute?.opsDayCap ?? "?"} — RC is a shared budget`);
+  if (s.redeploy?.verdict === "REDEPLOY-COOLDOWN") add("redeploy", "law R231", s.redeploy?.reason ?? "pacing minInterval/maxPerDay");
+  if (s.redeploy?.verdict === "REDEPLOY-HOLD") add("redeploy", "doctrine floor", s.redeploy?.reason ?? "excess below the minimum power-up");
+  if (s.redeploy?.verdict === "REDEPLOY-BLOCKED") add("redeploy", "law R233", s.redeploy?.reason ?? "ratios-invalid fail-closed");
+  if (s.redeployDeferredForClaim) add("redeploy", "structural", "claim in batch → posting/active authority mix is un-signable — deferred one cycle");
+  if (s.convertDeferredForClaim) add("convert", "structural", "claim in batch → convert deferred one cycle (R210 authority-mix law)");
+  if (s.redeploySkippedForFunds) add("redeploy", "batch-funds guard", "chain liquid above floor could not fund plan + ladder locks");
+  if (conf?.soldiers?.enabled !== true && s.soldiers && s.soldiers.verdict !== "DISABLED-T80-OPERATOR-STOP" && s.soldiers.ok === true) {
+    add("soldiers", "config", "soldiers.enabled=false in doctrine config");
+  }
+  return items;
+}
+
+/* R237-B · COUNCIL CLASSIFICATION: how the engine reads its fellow organs.
+ * ok=true + fresh → ALIVE, ok=true but old → STALE, else DOWN. Pure. */
+export function organVerdict({ ok, ageMs, staleMs = 30 * 60_000 } = {}) {
+  if (ok !== true) return "DOWN";
+  const age = typeof ageMs === "number" && Number.isFinite(ageMs) && ageMs >= 0 ? ageMs : null;
+  if (age == null) return "ALIVE";
+  return age <= staleMs ? "ALIVE" : "STALE";
+}
+
+/* R237-B · MESH VERDICT: the one-word truth of the organ council. Pure. */
+export function meshVerdict(organs = []) {
+  const list = Array.isArray(organs) ? organs : [];
+  if (!list.length) return "MESH-DARK";
+  const downs = list.filter((o) => o?.verdict === "DOWN").length;
+  const stales = list.filter((o) => o?.verdict === "STALE").length;
+  if (downs === list.length) return "MESH-DARK";
+  if (downs > 0 || stales > 0) return "MESH-PARTIAL";
+  return "MESH-ALIVE";
+}
