@@ -5,7 +5,7 @@
 //   divergence-check (read-only) -> jq validation -> git commit -> scripts/sovereign-push.sh (FF-only gate)
 // NEVER: force, merge autonomy, non-canonical branches, commits of invalid (torn) JSON.
 import { spawnSync } from "node:child_process";
-import { thinkGate, executeAs, masterAccount, credentialFingerprint } from "../saos-engine/signer.mjs";
+import { thinkGate, executeAs, masterAccount, credentialFingerprint, verifyRoles } from "../saos-engine/signer.mjs";
 import { appendFileSync, writeFileSync, readFileSync, readdirSync } from "node:fs";
 
 const REPO = "/home/z/my-project";
@@ -51,6 +51,16 @@ async function anchorWitness(): Promise<void> {
     const last = Math.max(lastAnchorMs(), lastAnchorAt);
     if (Date.now() - last < 3600000) { appendAlert("anchor-skip", `rate-limited durably (last ${new Date(last).toISOString()})`); return; }
     const acct: string = masterAccount() as any;
+    /* R239 FIX (deadlock caught live): the gate refuses keyed-but-unverified
+     * "until verifyRoles passes" — but no custodian path ever CALLED
+     * verifyRoles, so after any cold credential adoption the custody anchor
+     * stayed refused forever (engine verifies in its own process; the
+     * custodian's memory cache stays empty). verifyRoles is read-only
+     * (derive + chain read) and process-local cached — run it here, once,
+     * before the gate. Fail-closed preserved: a bad credential still
+     * refuses (verifyRoles.ok=false → alert, no broadcast). */
+    const ver: any = await verifyRoles(acct);
+    if (!ver?.ok) { appendAlert("anchor-refused", `verifyRoles: ${String(ver?.reason ?? ver?.verdict ?? "unverified").slice(0, 180)}`); return; }
     const tip = sh("git", ["rev-parse", "HEAD"]).out;
     const ops: any = [["custom_json", { required_auths: [], required_posting_auths: [acct], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "R216-custodian", fp: credentialFingerprint(acct) }) }]];
     const gate: any = thinkGate(acct, ops, { source: "custody-witness" });
