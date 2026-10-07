@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-07T22:29:24.415Z",
+  "at": "2026-10-07T22:39:24.416Z",
   "enabled": true,
-  "runsTotal": 362,
+  "runsTotal": 363,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -32,20 +32,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 0,
-      "fails": 0,
-      "lastError": null
+      "window": 1,
+      "fails": 1,
+      "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2674,
+      "checks": 2684,
       "downs": 104,
       "heals": 37,
       "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-07T22:29:24.644Z",
+      "lastCheckAt": "2026-10-07T22:39:24.657Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T13:39:29.573Z",
-      "lastUpAt": "2026-10-07T22:29:24.648Z",
+      "lastUpAt": "2026-10-07T22:39:24.659Z",
       "blips": 1
     }
   },
@@ -64,6 +64,13 @@
       "evidence": "p50 22064ms vs p90 73444ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
+    },
+    {
+      "id": "broadcast-fails",
+      "severity": "medium",
+      "evidence": "1/1 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
+      "lesson": "broadcast failures burn RC and delay rails",
+      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
@@ -71,9 +78,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 260,
-    "broadcast-fails": 107,
-    "cycle-latency-tail": 34
+    "signing-cred-blocked": 261,
+    "broadcast-fails": 108,
+    "cycle-latency-tail": 35
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
