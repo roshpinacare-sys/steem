@@ -320,14 +320,16 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     return { verdict: plan.verdict, asks: plan.asks.length, bids: plan.bids.length, flowAsks: plan.flowAsks?.length ?? 0, flowBids: plan.flowBids?.length ?? 0, staleCount: staleCls.stale.length, skew: skew.skew, book, market: pulse ? { tradesPerDay: pulse.tradesPerDay, spreadBps: pulse.book?.spreadBps ?? null } : null, liquidity: { ...offer.liquidity, bidBudgetCapped: true } };
   });
 
-  /* 5 · convert-plan: D-023 PSM hysteresis (SBD face-$1 edge) */
+  /* 5 · convert-plan: R245-b feed-vs-parity doctrine (D-023 face-gap was the
+   * HBD model mis-ported — SBD conversion pays at the witness feed rate) */
   report.steps.convert = await stepWrap("convert", async () => {
     const prev = readJson(path.join(STATE, "convert-state.json"), { armed: false, pendingSbd: 0 });
     const inv = obs.ok ? (obs.inventory ?? { sbd: 0 }) : { sbd: 0 };
     const marketSbdUsd = obs.ok ? (obs.sbdUsd ?? 0) : 0;
     const plan = planConvert({
-      liquidSbd: inv.sbd ?? 0, parity: obs.ok ? obs.parity.parity : 0,
-      marketSbdUsd, previouslyArmed: !!prev.armed, pendingSbd: prev.pendingSbd ?? 0,
+      liquidSbd: inv.sbd ?? 0, feedSbdPerSteem: obs.ok ? obs.feed : 0,
+      marketSbdPerSteem: obs.ok ? (obs.parity?.parity ?? null) : null,
+      previouslyArmed: !!prev.armed, pendingSbd: prev.pendingSbd ?? 0,
     });
     const impliedSbdUsd = obs.ok && (obs.steemUsd ?? 0) > 0 && obs.feed > 0
       ? Math.round((obs.steemUsd / obs.feed) * 1e6) / 1e6 : null;
