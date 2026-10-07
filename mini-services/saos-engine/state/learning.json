@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-07T03:30:28.870Z",
+  "at": "2026-10-07T03:35:02.246Z",
   "enabled": true,
-  "runsTotal": 298,
+  "runsTotal": 299,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -30,28 +30,28 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 3,
-      "fails": 3,
+      "window": 2,
+      "fails": 2,
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2824,
+      "checks": 2829,
       "downs": 111,
       "heals": 52,
       "healVerified": 43,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-07T03:30:02.244Z",
+      "lastCheckAt": "2026-10-07T03:35:02.246Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T03:30:07.272Z",
-      "lastUpAt": "2026-10-07T03:29:02.246Z",
+      "lastUpAt": "2026-10-07T03:35:02.249Z",
       "blips": 2
     }
   },
   "lessons": [
     {
       "id": "broadcast-fails",
-      "severity": "high",
-      "evidence": "3/3 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
+      "severity": "medium",
+      "evidence": "2/2 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
       "lesson": "broadcast failures burn RC and delay rails",
       "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
@@ -62,7 +62,7 @@
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
     "signing-cred-blocked": 199,
-    "broadcast-fails": 70,
+    "broadcast-fails": 71,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
