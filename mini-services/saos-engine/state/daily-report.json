@@ -1,31 +1,32 @@
 {
-  "startedAt": "2026-10-07T10:16:23.591Z",
+  "startedAt": "2026-10-07T10:26:23.590Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2172,
+      "ms": 2027,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.05917,
-        "sbdUsd": 0.586164,
-        "parity": 0.10094444558178257,
-        "source": "coingecko"
+        "steemUsd": 0.05925,
+        "sbdUsd": 0.5691864271902537,
+        "parity": 0.10409594672255837,
+        "source": "internal-feed-fallback+derived-sbd",
+        "lowConfidence": true
       },
       "feed": 0.10409594672255837,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": -303
+        "bps": 0
       },
-      "steemUsd": 0.05917,
-      "sbdUsd": 0.586164,
+      "steemUsd": 0.05925,
+      "sbdUsd": 0.5691864271902537,
       "inventory": {
         "steem": 0.471,
         "sbd": 0.024,
-        "spOwn": 974.7717275476973,
-        "rcPct": 33.2
+        "spOwn": 974.7721895266776,
+        "rcPct": 33.4
       },
       "ordersOk": true,
       "orders": [
@@ -102,16 +103,15 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.10094444558178257 (coingecko) · fills 12 · fuel 0$"
+      "summary": "parity 0.10409594672255837 (internal-feed-fallback+derived-sbd) · fills 12 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 2173,
-      "verdict": "DECISIONS:5",
+      "ms": 1550,
+      "verdict": "DECISIONS:4",
       "decisions": [
         "book-depth:hold-shape",
-        "parity-drift:monitor",
         "soldiers:grids-live",
         "rc-health:healthy",
         "curation:curator-armed"
@@ -126,33 +126,33 @@
     "tick": {
       "name": "tick",
       "ok": true,
-      "ms": 0,
-      "runCount": 347,
+      "ms": 1,
+      "runCount": 348,
       "simFills": 26,
       "simFeesMu": 13000,
-      "events": 4
+      "events": 3
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 701,
+      "ms": 2392,
       "verdict": "OFFER-EMPTY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 0,
       "flowBids": 0,
-      "staleCount": 0,
-      "skew": 0.098728,
+      "staleCount": 1,
+      "skew": 0.102819,
       "book": {
         "bestAsk": 0.10361620557455185,
         "bestBid": 0.10120023478454471,
         "askDepthSteem": 1132.342,
-        "bidDepthSbd": 2837.349,
-        "at": "2026-10-07T10:16:23.591Z"
+        "bidDepthSbd": 2839.978,
+        "at": "2026-10-07T10:26:23.590Z"
       },
       "market": {
-        "tradesPerDay": 166,
-        "spreadBps": 363.56
+        "tradesPerDay": 179,
+        "spreadBps": 238.73
       },
       "liquidity": {
         "deployedAsks": 952.74,
@@ -168,21 +168,26 @@
       "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 7060,
-      "marketSbdUsd": 0.586164,
-      "impliedSbdUsd": 0.568418,
+      "edgeBps": 7569,
+      "marketSbdUsd": 0.569186,
+      "impliedSbdUsd": 0.569186,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
-      "ok": false,
-      "ms": 1,
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
+      "ok": true,
+      "ms": 728,
+      "verdict": "VP-FLOOR",
+      "votes": 0,
+      "txid": null,
+      "vpEff": 8.6,
+      "votesToday": 0,
+      "error": null
     },
     "army": {
       "name": "army",
       "ok": true,
-      "ms": 9222,
+      "ms": 16023,
       "verdict": "ARMY-IDLE",
       "broadcasted": 0,
       "totalVotes": 0,
@@ -201,9 +206,12 @@
     },
     "execute": {
       "name": "execute",
-      "ok": false,
-      "ms": 1,
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
+      "ok": true,
+      "ms": 758,
+      "verdict": "NO-OPS",
+      "ops": 0,
+      "opsToday": 5,
+      "opsDayCap": 1500
     },
     "soldiers": {
       "name": "soldiers",
@@ -214,7 +222,7 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 8,
+      "ms": 1839,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
@@ -227,9 +235,9 @@
         "retired": [],
         "declined": []
       },
-      "discoveryVerdict": "FRESH-CACHED",
+      "discoveryVerdict": "OPTIONS-FOUND",
       "topOpportunities": [
-        "spread-normal(measured)",
+        "spread-wide(measured)",
         "tags-realloc(measured)",
         "curation-share(estimated)"
       ]
@@ -265,7 +273,7 @@
     "payouts": {
       "name": "payouts",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "MEASURED",
       "day": "2026-10-07",
       "pendingVests": 0,
@@ -294,9 +302,9 @@
     "economics": {
       "name": "economics",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.526412,
+      "totalEstUsdPerDay": 0.527669,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -313,7 +321,7 @@
     "report": {
       "name": "report",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "realizedSbd": 0,
       "positionSteem": 26.192,
       "positionAvgCost": 0.101596,
@@ -336,17 +344,11 @@
     "measuredTotalUsdPerDay": 0,
     "honesty": "unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"
   },
-  "ok": false,
-  "health": "blocked",
+  "ok": true,
+  "health": "ok",
   "failures": {
-    "failedSteps": [
-      "curate",
-      "execute"
-    ],
-    "blockedSteps": [
-      "curate",
-      "execute"
-    ]
+    "failedSteps": [],
+    "blockedSteps": []
   },
-  "finishedAt": "2026-10-07T10:16:32.825Z"
+  "finishedAt": "2026-10-07T10:26:42.214Z"
 }
