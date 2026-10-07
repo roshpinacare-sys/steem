@@ -42,3 +42,14 @@
 - **גל-3-הנשאר**: sim-fire-drill-מלא-על-branch-גריטה (worktrees-אמיתיים, אפס-LLM) · שדרוג-ה-forecast-מ-advisory-ל-blocking-אחרי-תקופת-התבוננות
 - **גל-4-הנשאר**: docs/STATE.md-מהחוזה-בקוד (generated+CI-check) · gitsafety-env-מושתל-בהרצת-סוכנים-חיצוניים
 - **שכבת-התצוגה** (מסילת-הסוכן-השני): קונסול-החי — כל-הערוצים-כאן-מוכנים-לגרייה
+
+## 6 · המראה-הציבורית (R254 · מבוקרת-R256+R257)
+
+הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=39a368e) —
+src/ המודולים-הטהורים (taskgraph/decisionqueue/worklog-intel) · cli/ · test/ (61-וקטורים) ·
+docs/PATTERNS.md+STATE-CONTRACT.md · tools/ (טריו-git-safety-מדוד) · docs/ci.example.yml (ממתין-לטוקן-עם-workflow-scope) · SECURITY.md · .gitattributes.
+ביקורות-חוסר-אמון (R256+R257): באג-fresh-clone-תוקן (mkdir-ב-atomicWrite) · **באג-CRLF-תוקן** (נרמול-\r\n?→\n — Windows-נמדד-ולא-רק-מזעיק; תוקן-קודם-בעץ-הפרטי-וסונכרן-byte-identical) ·
+חוזה-קודי-יציאה-מדויק · דטרמיניזם-bun↔node-בחמישה-seeds · סריקת-סודות-על-כל-ההיסטוריה-אפס-פגיעות · ירוק-בשתי-הריצות.
+הסנכרון-ידני-מדוד: cp-whitelist-מהעץ-הפרטי → סריקות-סודות (דפוסים+PAT-מילולי) → staging-מחוץ-לעץ
+→ דחיפה. כספות/מפתחות/state/מודולי-עסקים/התיקייה-הרצינית — לעולם-לא. שינוי-ב-src/cli/test-הפרטיים
+מחייב-השוואה-מול-הציבורי-ודחיפה-חוזרת.

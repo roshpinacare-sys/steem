@@ -114,20 +114,170 @@
     {
       "id": "T-OPS1",
       "title": "היפוך visibility לחבילה saos-agents — ממתין להחלטת המפעיל D-VIS",
-      "status": "todo",
+      "status": "blocked",
       "priority": 4,
       "deps": [],
       "assignee": null,
       "commit": null,
       "createdAt": "2026-10-07T21:37:17.645Z",
-      "updatedAt": "2026-10-07T21:37:17.645Z",
-      "startedAt": null,
+      "updatedAt": "2026-10-07T22:14:07.555Z",
+      "startedAt": "2026-10-07T22:14:07.525Z",
       "doneAt": null,
       "statusHistory": [
         {
           "from": null,
           "to": "todo",
           "at": "2026-10-07T21:37:17.645Z"
+        },
+        {
+          "from": "todo",
+          "to": "doing",
+          "at": "2026-10-07T22:14:07.525Z"
+        },
+        {
+          "from": "doing",
+          "to": "blocked",
+          "at": "2026-10-07T22:14:07.555Z",
+          "reason": "D-VIS settled: effect delivered as public repo; npm-package visibility flip has no API — awaiting per-file audit / workflow-scoped token / 0.2.0"
+        }
+      ]
+    },
+    {
+      "id": "T-R254",
+      "title": "R254: public open-core repo saos-agents (created+pushed+flipped-public)",
+      "status": "done",
+      "priority": 5,
+      "deps": [],
+      "assignee": null,
+      "commit": "77e0902d4e4f4d4f9ec0e80e7cb9317e8778f6b4",
+      "createdAt": "2026-10-07T22:08:22.069Z",
+      "updatedAt": "2026-10-07T22:13:25.452Z",
+      "startedAt": "2026-10-07T22:08:22.096Z",
+      "doneAt": "2026-10-07T22:13:25.452Z",
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "todo",
+          "at": "2026-10-07T22:08:22.069Z"
+        },
+        {
+          "from": "todo",
+          "to": "doing",
+          "at": "2026-10-07T22:08:22.096Z"
+        },
+        {
+          "from": "doing",
+          "to": "review",
+          "at": "2026-10-07T22:08:22.153Z",
+          "reason": "public repo pushed 7db9200; awaiting private-rail push to pass the done-gate"
+        },
+        {
+          "from": "review",
+          "to": "done",
+          "at": "2026-10-07T22:13:25.452Z"
+        }
+      ]
+    },
+    {
+      "id": "T-MUYOQ0RP",
+      "title": "R256: senior review of public repo — fresh-clone bug fix + quarantine consistency + node verified; pushed 0334d94",
+      "status": "done",
+      "priority": 5,
+      "deps": [],
+      "assignee": null,
+      "commit": "f94af598d1438e975425d17b7fbdcc24800b02ee",
+      "createdAt": "2026-10-07T22:34:15.014Z",
+      "updatedAt": "2026-10-07T22:36:09.950Z",
+      "startedAt": "2026-10-07T22:34:15.075Z",
+      "doneAt": "2026-10-07T22:36:09.950Z",
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "todo",
+          "at": "2026-10-07T22:34:15.014Z"
+        },
+        {
+          "from": "todo",
+          "to": "doing",
+          "at": "2026-10-07T22:34:15.075Z"
+        },
+        {
+          "from": "doing",
+          "to": "review",
+          "at": "2026-10-07T22:34:15.102Z",
+          "reason": "review+fix complete on public rail (0334d94); awaiting private-rail push to pass the done-gate"
+        },
+        {
+          "from": "review",
+          "to": "done",
+          "at": "2026-10-07T22:36:09.950Z"
+        }
+      ]
+    },
+    {
+      "id": "T-MUYPFGDP",
+      "title": "R257: distrust-mode re-verification — CRLF zero-blocks bug found+fixed (private-first sync), .gitattributes+SECURITY.md, pushed 94c610e",
+      "status": "done",
+      "priority": 5,
+      "deps": [],
+      "assignee": null,
+      "commit": "0c5006d175b39b281f429a7f0c354cc398f0c38c",
+      "createdAt": "2026-10-07T22:54:01.645Z",
+      "updatedAt": "2026-10-07T22:54:47.603Z",
+      "startedAt": "2026-10-07T22:54:01.702Z",
+      "doneAt": "2026-10-07T22:54:47.603Z",
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "todo",
+          "at": "2026-10-07T22:54:01.645Z"
+        },
+        {
+          "from": "todo",
+          "to": "doing",
+          "at": "2026-10-07T22:54:01.702Z"
+        },
+        {
+          "from": "doing",
+          "to": "review",
+          "at": "2026-10-07T22:54:01.728Z",
+          "reason": "public head 94c610e verified from fresh GitHub clone; awaiting private-rail push for the done-gate"
+        },
+        {
+          "from": "review",
+          "to": "done",
+          "at": "2026-10-07T22:54:47.603Z"
+        }
+      ]
+    },
+    {
+      "id": "T-MUYQ2ACLK8R1",
+      "title": "R258: round-3 deep verification — parallel-race lock + BOM fix + fuzz-clean, pushed 39a368e",
+      "status": "review",
+      "priority": 5,
+      "deps": [],
+      "assignee": null,
+      "commit": null,
+      "createdAt": "2026-10-07T23:11:46.917Z",
+      "updatedAt": "2026-10-07T23:11:47.030Z",
+      "startedAt": "2026-10-07T23:11:46.971Z",
+      "doneAt": null,
+      "statusHistory": [
+        {
+          "from": null,
+          "to": "todo",
+          "at": "2026-10-07T23:11:46.917Z"
+        },
+        {
+          "from": "todo",
+          "to": "doing",
+          "at": "2026-10-07T23:11:46.971Z"
+        },
+        {
+          "from": "doing",
+          "to": "review",
+          "at": "2026-10-07T23:11:47.030Z",
+          "reason": "public 39a368e + private lock hardening verified; awaiting private push for done-gate"
         }
       ]
     }
