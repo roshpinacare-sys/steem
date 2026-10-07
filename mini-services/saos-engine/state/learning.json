@@ -1,20 +1,20 @@
 {
-  "at": "2026-10-07T23:44:26.665Z",
+  "at": "2026-10-07T23:54:26.667Z",
   "enabled": true,
-  "runsTotal": 371,
+  "runsTotal": 372,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 79,
-      "oks": 72,
+      "window": 80,
+      "oks": 73,
       "fails": 2,
       "blocked": 5,
-      "okRate": 91.1,
+      "okRate": 91.3,
       "blockedRate": 6.3,
       "failReasons": {
         "unknown": 2
       },
-      "msP50": 20768,
+      "msP50": 20996,
       "msP90": 191673
     },
     "curator": {
@@ -37,15 +37,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 2740,
+      "checks": 2750,
       "downs": 106,
       "heals": 40,
       "healVerified": 39,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-07T23:44:26.775Z",
+      "lastCheckAt": "2026-10-07T23:54:26.783Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T22:54:26.719Z",
-      "lastUpAt": "2026-10-07T23:44:26.777Z",
+      "lastUpAt": "2026-10-07T23:54:26.786Z",
       "blips": 2
     }
   },
@@ -54,14 +54,14 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×5/79 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×5/80 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "cycle-latency-tail",
       "severity": "medium",
-      "evidence": "p50 20768ms vs p90 191673ms",
+      "evidence": "p50 20996ms vs p90 191673ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     }
@@ -71,9 +71,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 269,
+    "signing-cred-blocked": 270,
     "broadcast-fails": 107,
-    "cycle-latency-tail": 43
+    "cycle-latency-tail": 44
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
