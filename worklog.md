@@ -1490,3 +1490,23 @@ Stage Summary:
 - הטענות-ששרדו את-כל-השיטות: ארבעת ה-power-ups, מתמטיקת-הדוקטרינה, חוק-הקצב (מ-#3 ואילך), הרצפות, ה-liquidBasis המתועד, ה-selftest (שיניים אמיתיות — 5/5 מוטציות)
 - הטענות-שלי-שנפלו-החלון: "היפוך נזילות" שגוי-סמנטית (תוקן דרך הוכחת-אינווריאנטה), harness-מוטציות פגום (תוקן), דדופ-יומן אגרסיבי מדי בסקריפט הראשון
 - מערכת-הסקר: audit-powerups / semantic-proof / mutation-test / fuzz-invariants ב-download/ + fuzz ב-selftest — כלים-חוזרים לביקורת-עתידית
+
+---
+Task ID: R235 (T-91e)
+Agent: Z.ai Code (main)
+Task: המפעיל: "לבדוק עוד יותר עמוק בדרכים נוספות יעילות יותר — תנסה ודחוף" — הנדסת-כאוס + עקביות-התרסקות + ניתוח-חלונות-תחרות על ה-engine כולו
+
+Work Log:
+- ניתוח-סדר-פעולות ב-execute (d2): RS_FILE (pacing) נכתב לפני-השידור — "conservative counter" — חלון-ההתרסקות המסוכן (שידור בלי רישום → power-up כפול) לא קיים; הכיוון-ההפוך (רישום בלי שידור) בטוח — עיכוב של עד-שעה
+- פגיעה אמיתית שנמצאה: writeJson לא-אטומי (writeFileSync ישיר) ב-9 מודולים — קריעת-קובץ (torn write) של redeploy-state.json → readJson שקט מחזיר ברירת-מחדל → lastPowerUpAt=null → חוק-הקצב מתאפס (חלון-כפל-power-up); באותה משפחה: torn ops-day → איפוס תקרת-ops; army-social/content/economics וכ-8 נוספים כבר היו אטומיים — התיקון יושם רק לחצי הקודבייס בסבבים קודמים
+- תיקון 1 — כתיבה אטומית (tmp+rename, נקודת-commit יחידה) ב-9 המודולים הנותרים: daily/signer/soldiers/adaptation/curator/discovery/intel/learning + vault-revival (עם שימור mode 0600)
+- תיקון 2 — self-healing מהיומן: rebuildPacingFromEvents טהור ב-lib.mjs (events.jsonl = מקור-אמת; RS = מטמון) + readPacingState תלת-מצבית ב-daily.mjs: ok→כמות-שהיא · missing→בנייה-מחדש מהיומן · corrupt→בנייה-מחדש+ריפוי-הקובץ+דגל · יומן-מת-גם-הוא→fail-closed (lastPowerUpAt=now חוסם-מחזור); יומן אירוע redeploy.pacing-corrupt
+- וקטורים: 6 חדשים (rs-rebuild: empty/mixed-junk/order-independent/non-array/yesterday/ healed-state-blocks-interval) → selftest 390/390 PASS
+- הוכחת-כאוס B (download/chaos-atomicity.mjs): ארבעת ענפי ה-glue מול הקוד האמיתי-המשולח (readPacingState מיובא מ-daily.mjs): missing→count=2 ✓ · torn→corrupt+count=3+הקובץ נרפא על-הדיסק ✓ · יומן-מת→fail-closed חוסם ✓ · נקי→passthrough ✓
+- הוכחת-כאוס A: SIGKILL × 20 ניסיונות (2-32MB payloads) — לא שוחזרה קריעה באף-סגנון על ה-box הזה (page-cache בולע SIGKILL; רישום-כנות) — אז דרך דטרמיניסטית: ulimit -f 1 (אנלוג-ENOSPC, download/chaos-enospc.mjs): OLD=direct-write נקרע דטרמיניסטית, NEW=tmp+rename — היעד לעולם לא נקרע ✓; גילוי-תהליכי: המדידה הראשונה שלי conflate "absent" עם "torn" — תוקן למדידה תלת-מצבית לפני-המסקנה
+- import-smoke לכל-9 המודולים → החלפה-חוקית: kill 26951 → watchdog demand-heal → pid 30519, custody 11/11 מיד; /redeploy חי על הקוד-החדש: REDEPLOY-COOLDOWN, powerUp 5.928=(24.762−5)×0.3, powerUpsToday=4 נשמר דרך ה-glue; eslint נקי
+
+Stage Summary:
+- מעמד-החוקים שודרג מ"תלוי-בקובץ-לא-קרוע" ל"בנוי-מחדש-מהיומן": עכשיו אפילו state הרוס לגמרי לא מאפס את חוק-הקצב — היומן (append-only) הוא מקור-האמת
+- מה שהכאוס הראה בכנות: SIGKILL לבדו לא מקרע קבצים כאן; ENOSPC (ודמיו) כן — והתיקון מכסה את-שתי-המשפחות + הריפוי-העצמי מהיומן כשכבה-אחרונה
+- סדר-הפעולות ב-execute אומת כבטוח-כיוונית (אין חלון כפל-שידור; הכיוון היחיד הוא עיכוב-שמרני)
