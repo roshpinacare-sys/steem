@@ -1,16 +1,16 @@
 {
-  "at": "2026-10-07T09:56:23.611Z",
+  "at": "2026-10-07T10:06:23.590Z",
   "enabled": true,
-  "runsTotal": 302,
+  "runsTotal": 303,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
       "window": 116,
-      "oks": 115,
+      "oks": 114,
       "fails": 0,
-      "blocked": 1,
-      "okRate": 99.1,
-      "blockedRate": 0.9,
+      "blocked": 2,
+      "okRate": 98.3,
+      "blockedRate": 1.7,
       "failReasons": {},
       "msP50": 14217,
       "msP90": 38977
@@ -35,15 +35,15 @@
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2859,
-      "downs": 111,
-      "heals": 52,
-      "healVerified": 43,
+      "checks": 2869,
+      "downs": 112,
+      "heals": 53,
+      "healVerified": 44,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-07T09:56:23.592Z",
+      "lastCheckAt": "2026-10-07T10:06:23.602Z",
       "engineUp": true,
-      "lastSpawnAt": null,
-      "lastUpAt": "2026-10-07T09:56:23.609Z",
+      "lastSpawnAt": "2026-10-07T09:59:28.634Z",
+      "lastUpAt": "2026-10-07T10:06:23.604Z",
       "blips": 2
     }
   },
@@ -51,7 +51,7 @@
     {
       "id": "signing-cred-blocked",
       "severity": "high",
-      "evidence": "cycle-blocked ×1/116 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "evidence": "cycle-blocked ×2/116 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
       "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
       "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
     },
@@ -74,8 +74,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 200,
-    "broadcast-fails": 74,
+    "signing-cred-blocked": 201,
+    "broadcast-fails": 75,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
