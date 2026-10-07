@@ -2068,3 +2068,22 @@ Stage Summary:
 - הקהילה נפתחה-בעלות-אמת של **3 STEEM** (לא 100 — מיתוס שנחשף בשני-חיתוכי-שרשרת), עם כל-הכוח בפנים (14/14), פוסט-מייסד 703-מילים שעבר את-השער-האישי שלנו, וממשק-עברי בקוקפיט
 - דוקטרינת-הספאמינטור הפכה-מסמך-עבודה חי: מה שדפוסי-השרשרת מלמדים + השערים-המקודדים + התרגול — הרשת לא תדרג-אותנו נמוך; היא תמצא עבודה-מקורית-מדודה
 - הגוף למד-עוד-פעם את-אותו-שיעור-יקר-ערך: השרשרת-חיה היא השופט-היחיד — גם-כשכלי-הצומת טוענים-אחרת (בייט-פנטום #2)
+---
+Task ID: R254
+Agent: Z.ai Code (main)
+Task: המפעיל: "כן — אתה יכול לעשות ריפו ציבורי, אבל חשוב שהכספות וכו' לעולם לא יהיו ציבוריות ומפתחות וכאלה; מה שלא צריך להיות ציבורי שלא יהיה ומה שכן אז בטח שיהיה; וודא שלא מעלה את התיקייה-הרצינית שלנו; תעשה מקצועי-הנדסי שלא יהיו בעיות מול GitHub והתקנון שלהם; ודחוף בסוף את הריפו — אני רק מוודא שלא נאבד כלום כשימחק הסנדבוקס"
+
+Work Log:
+- הכרעת-D-VIS-בפועל: החלטת-המפעיל נרשמה-דרך-ה-CLI-עצמו (decision-answer → settle-אחרי-אפקט-בפועל) — תור-ההחלטות-מ-R253 כריע-לראשונה-החלטה-אמיתית-במקום-בצ'אט
+- whitelist-הנדסי: 13-קבצים בלבד ב-staging-מחוץ-לעץ-הפרטי (/home/z/public-mirror/saos-agents): src/ (taskgraph/decisionqueue/worklog-intel — byte-identical-לקוד-שנבדק) · cli/ (task-console+worklog-analytics — התאמות-נתיב בלבד + tasks-קריאה-graceful + pushRecorder-גנרי בלי-שם-הסניף-הפרטי) · test/selftest.mjs (חילוץ-מדויק 153-שורות-מקור-של-בלוקי-הוקטורים + header/footer/lineage-חדשים) · docs/ (PATTERNS+STATE-CONTRACT-מוכללים) · README-דו-לשוני · LICENSE-MIT · package.json · .gitignore · docs/ci.example.yml
+- סריקות-מכניות-לפני-כל-דחיפה: דפוסי-סודות (ghp_/github_pat_/AKIA/PRIVATE-KEY/sk-/xox/npm_) = CLEAN · **PAT-מילולי-מהכספת מול-העץ = CLEAN** · org/חשבונות/hive-/pat-classic//home/z/.secrets ב-src+cli+test+docs+ci = CLEAN · שם-הארגון רק ב-LICENSE+package.json (ראוי — הריפו-עצמו-תחת-החשבון)
+- אימות-מלא-ב-staging: SELFTEST-55/55 · ANALYTICS-SELFTEST-12/12 · DRILL-PASS(seed-252) · smoke-אנד-טו-אנד (task-add→doing · decision-add→answered · progress-מדוד)
+- 🔴 GitHub-לימד-חי: דחיפה-ראשונה-נדחתה — PAT-classic-בלי-workflow-scope מסורב-קבצי-.github/workflows ("refusing to allow a PAT to create or update workflow") → תיקון-מיידי: ci.yml→docs/ci.example.yml-מוכן-להפעלה + סעיף-CI-ב-README → דחיפה-שנייה-עברה-מיד
+- 🟢 נולד-ציבורי: **roshpinacare-sys/saos-agents** — נפתח-private → דחיפה → PATCH-public → מדוד-מה-API: private=False · license=MIT-מזוהה · topics=8 · pushed 22:06:52Z · main=7db9200 (13-קבצים, 1351-שורות)
+- הפרדת-מסילות-נאכפת-BY-CONSTRUCTION: ה-staging-נבנה-cp-whitelist-בלבד — upload/ (כספת-PAT-ה-classic), .secrets/, state/, worklog.md, מודולי-עסקים (signer/steemtx/vault/keymine/pnl), docs-רגישים (OPERATOR-PAT-STEPS/ESTATE-INVENTORY/measured/COMPETITIVE-INTEL) — לא-נגעו-בשכפול-מהשורה-הראשונה
+
+Stage Summary:
+- הליבה-הפתוחה חיה-מחוץ-לסנדבוקס לעולם: גרף-משימות-שלא-ניתן-לרמות, תור-החלטות-שלא-משתיק, טלמטריית-ledger-עם-גלאי-התכווצות — MIT, אפס-תלויות, 55-וקטורים, README-דו-לשוני
+- אפס-דליפה-מדוד: שתי-סריקות-עצמאיות (דפוסים+מילולי) נקיות; התיקייה-הרצינית מחוץ-לגבול מרגע-אפס; המידע-הארגוני-היחיד = קרדיט-רישיון ו-URL-הריפו-עצמו
+- D-VIS-נסגרה-דרך-המסילה-שבנינו (answer→settle-אחרי-אפקט) — הריבונות-מתנהלת-על-המסילות-שלה-עצמה, כולל-ההחלטות-של-המפעיל
+- פתוח-כנה: (1) החבילה-ב-GH-Packages-נשארת-private-עד-ביקורת-פר-קובץ (אין-visibility-change-ב-API-ל-npm) (2) docs/ci.example.yml-ממתין-לטוקן-עם-workflow-scope להפעלת-Actions-ציבורי (3) סנכרון-עתידי-בין-src-הפרטי-לציבורי = השוואה-ידנית-מדודה-בכל-שינוי
