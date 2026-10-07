@@ -3,7 +3,7 @@
  * Zero network, zero clock, zero randomness. RUN: bun selftest.mjs
  */
 import {
-  dragK, inventorySkew, planLadder, planConvert, planRedeploy, redeployBidCapSbd, classifyStale, pnlFromFills, guardDepth, parityVerdict,
+  dragK, inventorySkew, planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, classifyStale, pnlFromFills, guardDepth, parityVerdict,
   MIN_LEVEL, ASK_FLOOR_BPS,
   doctrineAccount, credentialGate, rcAnomaly, recruitRoles, aggregateRails,
   normalizeWebIntel, webIntelFresh,
@@ -116,6 +116,61 @@ eq("redeploy bidcap dust", redeployBidCapSbd(0.015, 0.5, 0.5), 0);
 eq("redeploy bidcap below-floor", redeployBidCapSbd(0.4, 0.5, 0.5), 0);
 eq("redeploy bidcap full-share", redeployBidCapSbd(10, 2, 1), 8);
 eq("redeploy bidcap junk-pct", redeployBidCapSbd(10, 0.5, -1), 0);
+
+/* T-91 R233 adversarial-review vectors — every battery finding became a law:
+ * hostile inputs fail CLOSED (never crash, never leak NaN/Infinity) */
+const HOSTILE = [NaN, Infinity, -Infinity, "30.749", "", null, {}, [], () => 5, Symbol("x")];
+let hostileCrashes = 0, hostileLeak = 0;
+for (const h of HOSTILE) {
+  for (const field of ["liquidSteem", "liquidSbd", "buyBookPct", "powerUpPct", "reservePct", "liquidSteemFloor", "liquidSbdFloor", "minPowerUpSteem"]) {
+    try {
+      const r = planRedeploy({ liquidSteem: 30.749, liquidSbd: 0.015, [field]: h });
+      if (!["REDEPLOY-PLAN", "REDEPLOY-HOLD", "REDEPLOY-BLOCKED"].includes(r?.verdict)) hostileLeak++;
+    } catch { hostileCrashes++; }
+  }
+  try { if (!isFinite(redeployBidCapSbd(h, 0.5, 0.5)) || !isFinite(redeployBidCapSbd(10, h, 0.5)) || !isFinite(redeployBidCapSbd(10, 0.5, h))) hostileLeak++; } catch { hostileCrashes++; }
+}
+eq("redeploy hostile-zero-crashes", hostileCrashes, 0);
+eq("redeploy hostile-zero-leaks", hostileLeak, 0);
+eq("redeploy hostile-nan-liquid-holds", planRedeploy({ liquidSteem: NaN }).verdict, "REDEPLOY-HOLD");
+eq("redeploy hostile-inf-liquid-holds", planRedeploy({ liquidSteem: Infinity }).verdict, "REDEPLOY-HOLD");
+eq("redeploy hostile-symbol-pct-blocked", planRedeploy({ liquidSteem: 30, buyBookPct: Symbol("x") }).verdict, "REDEPLOY-BLOCKED");
+eq("redeploy hostile-nan-cap-zero", redeployBidCapSbd(NaN, 0.5, 0.5), 0);
+eq("redeploy hostile-inf-cap-zero", redeployBidCapSbd(Infinity, 0.5, 0.5), 0);
+eq("redeploy hostile-obj-cap-zero", redeployBidCapSbd({}, 0.5, 0.5), 0);
+eq("redeploy hostile-inf-pct-cap-zero", redeployBidCapSbd(10, 0.5, Infinity), 0);
+/* R233: PLAN must mean a broadcastable amount — min=0 + excess=0 was a lying PLAN/0 */
+const rdZeroPlan = planRedeploy({ liquidSteem: 5, minPowerUpSteem: 0, now: "x" });
+eq("redeploy no-plan-with-zero-amount", [rdZeroPlan.verdict, rdZeroPlan.powerUpSteem], ["REDEPLOY-HOLD", 0]);
+/* R233: the ratio-sum law is a ±0.001 band (float-safe), stated and tested */
+eq("redeploy band-0.9995-plans", planRedeploy({ liquidSteem: 30, buyBookPct: 0.4995, now: "x" }).verdict, "REDEPLOY-PLAN");
+eq("redeploy band-1.0005-plans", planRedeploy({ liquidSteem: 30, buyBookPct: 0.5005, now: "x" }).verdict, "REDEPLOY-PLAN");
+eq("redeploy band-0.9-blocked", planRedeploy({ liquidSteem: 30, buyBookPct: 0.4, powerUpPct: 0.3, reservePct: 0.2, now: "x" }).verdict, "REDEPLOY-BLOCKED");
+eq("redeploy live-ratios-sum-exact", [0.5, 0.3, 0.2].reduce((a, b) => a + b, 0), 1); // IEEE754 truth: the live ratios sum EXACTLY to 1; the ±0.001 band is insurance for arbitrary operator decimals
+ok("redeploy liquidBasis-stamped", typeof rdPlan.liquidBasis === "string" && rdPlan.liquidBasis.includes("free-balance"));
+/* R233: pacing law as pure fn — boundary + corruption classes by design */
+eq("redeploy pacing interval-blocks", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: 300 }).verdict, "interval");
+eq("redeploy pacing exact-interval-allows", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: 3600 }).verdict, null);
+eq("redeploy pacing day-cap-blocks", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: 7200, powerUpsToday: 12 }).verdict, "day-cap");
+eq("redeploy pacing exact-day-cap-blocks", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: 7200, powerUpsToday: 12 }).verdict, "day-cap");
+eq("redeploy pacing nan-since-open", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: NaN }).verdict, null);
+eq("redeploy pacing negative-since-open", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: -500 }).verdict, null);
+eq("redeploy pacing future-since-open", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: -99999 }).verdict, null);
+eq("redeploy pacing non-plan-passthrough", redeployPacing({ verdict: "REDEPLOY-HOLD", sinceLastSec: 10 }).verdict, null);
+eq("redeploy pacing day-cap-reason", redeployPacing({ verdict: "REDEPLOY-PLAN", sinceLastSec: 7200, powerUpsToday: 13, maxPerDay: 12 }).reason, "powerup-day-cap (13 >= 12 today)");
+/* R233: convergence property — doctrine decays geometrically, never breaches floor */
+{
+  let liq = 82.144, n = 0, breach = false, endVerdict = "";
+  while (n < 40) {
+    const r = planRedeploy({ liquidSteem: liq, now: "x" });
+    if (r.verdict !== "REDEPLOY-PLAN") { endVerdict = r.verdict; break; }
+    liq -= r.powerUpSteem; n++;
+    if (liq < 5 - 1e-9) { breach = true; break; }
+  }
+  eq("redeploy convergence-hold", endVerdict, "REDEPLOY-HOLD");
+  eq("redeploy convergence-no-breach", breach, false);
+  ok("redeploy convergence-bounded", n > 0 && n < 40);
+}
 eq("psm no-market reason", planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0, previouslyArmed: true }).reason, "no-market-price");
 
 /* 9 · stale classification: asks below floor / bids above ceiling (10bps tol) */
