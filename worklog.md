@@ -2020,6 +2020,27 @@ Stage Summary:
 - התשובה-המדודה-למפעיל: הכל-רץ (5-שירותים-חיים-מדוד, CI-ירוק, חבילה-על-הענן) · אין-חורים-חדשים-שנמצאו — שני-החורים-ההיסטוריים (דריסת-worklog, השתקת-selftest) קיבלו-עכשיו-גלאי-מכונתי-קבוע ב-selftest
 - agentcraft-מוכיח-שלישית: הערך-בשכבת-התזמון-המודדת-את-עצמה — קיבלנו-5-רעיונות-מוכחים-ב-487-בדיקות, מימשנו-מיד-את-הזול-והבטוח (טלמטריה-על-ה-worklog), והשאר-מתויג-לגלים-2–4-בהפרדת-מסילות
 - הקונסול-החי-קיבל-חוזה: `bun scripts/worklog-analytics.mjs --json` = פלט-מכונתי-יציב לצד-ה-state-החי-של-המנוע
+---
+Task ID: R253
+Agent: Z.ai Code (main)
+Task: המפעיל: "תמשיך" — אישור-מעבר-לגלים-2–4 של זיקוק-agentcraft (TaskGraph+DecisionQueue+forecast+gitsafety) + דחיפה
+
+Work Log:
+- גל-2-מומש: mini-services/saos-engine/taskgraph.mjs (טבלת-מעברים · ready-queue-עדיפות+ותק · progress-משוקלל · validateGraph-נגד-מחזוריות · **done-only-via-verified-push** — checkDoneEvidence) + decisionqueue.mjs (options-מומלץ-ראשון · matching-מזהה/טקסט/קידומת-ייחודית עם-AMBIGUOUS-כנה · settle-רק-אחרי-אפקט · reopen-עם-סיבה-בהיסטוריה · cancel) — שניהם-מודולים-טהורים
+- scripts/task-console.mjs — המסוף: tasks/task-add/task-set/progress/decisions/decision-*/drill(+--json לקונסול) · persist-אטומי temp+rename · **הסגר-לקובץ-קורום** (corrupt-<ts>, לא-crash-loop · דפוס-המקור §1-דפוס-1)
+- 🔴 **השער-הוקשח-מהחיים**: בקרה-שלילית-חיה חשפה-שדחיפה-טרייה-של-סוכן-אחר (9f67fae של-ה-custodian) נספרה-כראיה-למשימה-שהעבודה-שלה-מעולם-לא-נדחפה → תוקן: done דורש --commit-מקושר + git-cat-file-קיום + merge-base--is-ancestor-מול-push-custody — "דחיפה-של-אחר-על-תוכן-אחר לא סותרת-עבודה-שלא-יצאה-מהעץ" · בקרות-שליליות-חוזרות: בלי-commit=REFUSED · commit-לא-דחוף=REFUSED (rc=1-כנה)
+- 🔴 באג-דליפת-flags נתפס: ערך---id דלף-כאפשרות-שלישית ב-D-VIS → helper-positional (מדלג-על --flag+ערכו) — תוקן-בכל-ה-commands
+- גל-3-חי: scripts/conflict-forecast.sh (merge-tree --write-tree dry-run — מנבא-קבצי-קונפליקט לפני-stash/rebase) **משולב-כ-LAW-CLAUSE-3.6-advisory ב-sovereign-push.sh** (מדפיס, לעולם-לא-חוסם-לבדו) · ריצה-חיה: FORECAST-clean-FF
+- גל-4-חי: scripts/gitsafety-env.sh — שכבה-רביעית-מתחת-ל-guard: GIT_ALLOW_PROTOCOL=agentcraft-none + protocol.allow=never-דרך-env-config (אפס-מוטציה-לריפו) + ניתוק-GIT_DIR-שרשראות · **בקרת-שלילה-חיה**: ls-remote-חיצוני → `fatal: transport 'https' not allowed` (git-עצמו-מסרב) · בקרה-חיובית: rev-parse-מקומי-תקין
+- docs/STATE.md — חוזה-ה-state-לקונסול-החי: 6-ערוצים-מכונתיים (selftest-last-run/push-custody/tasks/decisions/analytics-json/engine-health) · מי-כותב-לאן · טריות · שער-ה-done-במדויק · DecisionQueue
+- seed-מציאותי-דרך-ה-CLI-עצמו (dogfood): tasks.json — T-G2-ב-review (ממתין-לדחיפה-כדי-לעבור-את-השער — כנות-מלאה) + T-G3A/T-G3B/T-G4A/T-G4B/T-OPS1-todo (progress=0.125) · decisions.json — **D-VIS פתוחה-למפעיל**: היפוך-החבילה-ל-public (מומלץ-ראשון) מול-הישארות-private
+- selftest: 692→**727/727** (+35-וקטורים: taskgraph-17 · decisionqueue-18) — שני-הבאגים-שהוא-תפס במקור: progress-ציפייה-שגויה-שלי + optionIndex-1-based-בטעות-שתוקן-ל-0-based-מתוכנת (ה-API-האנושי-1-based-נשאר-ב-matchOption)
+- פורנזיית-הצי-המקביל: custodian-דחף-שני-קומיטי-state-מתחת-לרגליי-בזמן-העבודה (87abbc2, 9f67fae) + saos-ci-דחף-98d08ff (selftest-marker) — העבודה-נבנתה-על-שרשרת-זזה-ודובאה-ב-rebase-לפני-הדחיפה
+
+Stage Summary:
+- גל-2–4 של זיקוק-agentcraft חיים בעץ: גרף-משימות-שלא-ניתן-לרמות-אותו (done-רק-עם-ראיית-דחיפה-קשורה), תור-החלטות-שמפעיל-עונה-בו, ניבוי-קונפליקטים-לפני-כל-דחיפה, ושכבת-git-שמסרבת-רשת-BY-CONSTRUCTION
+- הקונסול-החי-קיבל-חוזה-מלא (docs/STATE.md) + שתי-אבני-יסוד חיות: tasks.json (6-משימות) ו-decisions.json (D-VIS-פתוחה — החלטה-אמיתית-ראשונה-שממתינה-למפעיל)
+- ה-727/727-החדש-כולל-35-וקטורים-שנולדו-מהשוואת-המצב-המדוד-של-הצי-לעצמו — שני-באגים-אמיתיים-נתפסו-לפני-הדחיפה
 
 ---
 Task ID: R246

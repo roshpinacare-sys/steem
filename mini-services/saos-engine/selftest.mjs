@@ -1613,6 +1613,103 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("worklog-intel: CLI module exists (scripts/worklog-analytics.mjs)", cliSrc.includes("--selftest") && cliSrc.includes("detectAnomalies"));
 }
 
+/* R253 · TASKGRAPH + DECISIONQUEUE: גל-2 של זיקוק-agentcraft — תיאום-סוכנים-מבני.
+ * done-only-via-verified-push = התרופה-המבנית ל-custodian-sweeps (95e90d2); DecisionQueue =
+ * פעולות-מפעיל יוצאות-כהחלטות-גלויות ולא-עוצרות-בשקט (הפטול של PAT-E403×3).
+ * מודולים-טהורים — אין-fs/רשת; הראיות-האמיתיות מחושבות-רק-ב-CLI. */
+{
+  const tg = await import("./taskgraph.mjs");
+  const dq = await import("./decisionqueue.mjs");
+
+  const G = () => ({
+    tasks: [
+      tg.createTask({ id: "A", title: "ראשונה", priority: 5, createdAt: "2026-01-01T00:00:00Z" }),
+      tg.createTask({ id: "B", title: "תלויה", priority: 3, deps: ["A"], createdAt: "2026-01-01T00:01:00Z" }),
+      tg.createTask({ id: "C", title: "מקבילה", priority: 1, createdAt: "2026-01-01T00:02:00Z" }),
+    ],
+  });
+
+  eq("taskgraph: legal transition", tg.canTransition("todo", "doing"), true);
+  eq("taskgraph: terminal blocks all", tg.canTransition("done", "doing"), false);
+  eq("taskgraph: review can done (gated)", tg.canTransition("review", "done"), true);
+  eq("taskgraph: createTask defaults", [G().tasks[0].status, G().tasks[0].statusHistory.length], ["todo", 1]);
+  eq("taskgraph: deps gate holds B", tg.ready(G()).map((t) => t.id), ["A", "C"]);
+  eq("taskgraph: ready priority order", tg.ready(G()).map((t) => t.id)[0], "A");
+  const g1 = G();
+  tg.setStatus(g1, "A", "doing"); tg.setStatus(g1, "A", "review");
+  eq("taskgraph: history trail", g1.tasks[0].statusHistory.map((h) => h.to), ["todo", "doing", "review"]);
+  let caught = null;
+  try { tg.setStatus(g1, "A", "done", { evidence: null }); } catch (e) { caught = e.code; }
+  eq("taskgraph: done-gate refuses null evidence", caught, "DONE-GATE-REFUSED");
+  caught = null;
+  try { tg.setStatus(g1, "A", "done", { evidence: { selftestGreen: true, selftestFresh: false, pushRecorded: true, pushShas: [] } }); } catch (e) { caught = e.code; }
+  eq("taskgraph: done-gate refuses stale selftest", caught, "DONE-GATE-REFUSED");
+  const g2 = G();
+  tg.setStatus(g2, "A", "doing"); tg.setStatus(g2, "A", "review");
+  const sha = "sha-abc123";
+  tg.setStatus(g2, "A", "done", { evidence: { selftestGreen: true, selftestFresh: true, pushRecorded: true, pushShas: [sha] }, commit: sha });
+  eq("taskgraph: done passes via gate", g2.tasks[0].status, "done");
+  eq("taskgraph: deps released after done", tg.ready(g2).map((t) => t.id), ["B", "C"]);
+  const g3 = G();
+  tg.setStatus(g3, "A", "doing");
+  eq("taskgraph: progress mixed", tg.progress(g3), 0.133);
+  const cyc = { tasks: [tg.createTask({ id: "X", title: "x", deps: ["Y"] }), tg.createTask({ id: "Y", title: "y", deps: ["X"] })] };
+  eq("taskgraph: cycle detected", tg.validateGraph(cyc).ok, false);
+  eq("taskgraph: unknown status caught", tg.validateGraph({ tasks: [{ id: "Z", status: "zap", deps: [] }] }).ok, false);
+  eq("taskgraph: serialize roundtrip", tg.serialize(tg.deserialize(tg.serialize(g2))), tg.serialize(g2));
+  const d1 = tg.runDrill(7);
+  const d2 = tg.runDrill(7);
+  eq("taskgraph: drill deterministic", [d1.ok, d1.steps.length === d2.steps.length], [true, true]);
+  eq("taskgraph: drill exercises the gate", d1.steps.some((s) => s.includes("DONE-GATE-REFUSED")), true);
+
+  const mk = () => ({ decisions: [dq.createDecision({ id: "D1", kind: "question", question: "לאיזה-כיוון?", options: ["כן", "לא"], createdAt: "2026-01-01T00:00:00Z" })] });
+  const q1 = mk();
+  eq("decisionqueue: recommended-first", q1.decisions[0].options.map((o) => o.recommended), [true, false]);
+  eq("decisionqueue: match by index", dq.matchOption(q1.decisions[0].options, "2"), 1);
+  eq("decisionqueue: match exact caseless", dq.matchOption(q1.decisions[0].options, "  לא "), 1);
+  eq("decisionqueue: match unique prefix", dq.matchOption([{ label: "public" }, { label: "private" }], "pub"), 0);
+  caught = null;
+  try { dq.matchOption([{ label: "כן-עכשיו" }, { label: "כן-מחר" }], "כן"); } catch (e) { caught = e.code; }
+  eq("decisionqueue: ambiguous prefix caught", caught, "AMBIGUOUS");
+  caught = null;
+  try { dq.matchOption(q1.decisions[0].options, "אולי"); } catch (e) { caught = e.code; }
+  eq("decisionqueue: no-match caught", caught, "NO-MATCH");
+  const q2 = mk();
+  dq.answerDecision(q2, "D1", { by: "operator", optionIndex: 1 });
+  eq("decisionqueue: answer recorded", [q2.decisions[0].status, q2.decisions[0].answer.option], ["answered", "לא"]);
+  caught = null;
+  try { dq.answerDecision(q2, "D1", { optionIndex: 1 }); } catch (e) { caught = e.code; }
+  eq("decisionqueue: double-answer refused", caught, "NOT-OPEN");
+  caught = null;
+  try { dq.settleDecision(q2, "NOPE"); } catch (e) { caught = e.code; }
+  eq("decisionqueue: settle unknown caught", caught, "NO-DECISION");
+  const q3 = mk();
+  caught = null;
+  try { dq.settleDecision(q3, "D1"); } catch (e) { caught = e.code; }
+  eq("decisionqueue: settle before answer refused", caught, "NOT-ANSWERED");
+  dq.answerDecision(q3, "D1", { optionIndex: 1 });
+  dq.settleDecision(q3, "D1");
+  eq("decisionqueue: settle after answer", q3.decisions[0].status, "settled");
+  dq.reopenDecision(q3, "D1", "Merge refused: סיבה-מתועדת");
+  eq("decisionqueue: reopen restores open", [q3.decisions[0].status, q3.decisions[0].answer], ["open", null]);
+  eq("decisionqueue: reopen reason in history", q3.decisions[0].statusHistory.at(-1).reason, "Merge refused: סיבה-מתועדת");
+  const q4 = mk();
+  dq.cancelDecision(q4, "D1", "מיותרת");
+  eq("decisionqueue: cancel", q4.decisions[0].status, "cancelled");
+  caught = null;
+  try { dq.reopenDecision(q4, "D1", "x"); } catch (e) { caught = e.code; }
+  eq("decisionqueue: no reopen after cancel", caught, "CANCELLED");
+  const q5 = {
+    decisions: [
+      dq.createDecision({ id: "LATE", kind: "question", question: "שנייה", options: ["a"], createdAt: "2026-01-02T00:00:00Z" }),
+      dq.createDecision({ id: "EARLY", kind: "merge", question: "ראשונה", options: ["b"], createdAt: "2026-01-01T00:00:00Z" }),
+    ],
+  };
+  eq("decisionqueue: listOpen oldest-first", dq.listOpen(q5).map((d) => d.id), ["EARLY", "LATE"]);
+  eq("decisionqueue: validate catches ghost answer", dq.validateDQ({ decisions: [{ ...dq.createDecision({ id: "G", kind: "question", question: "x", options: ["a"] }), status: "answered", answer: null }] }).ok, false);
+  eq("decisionqueue: dq roundtrip", dq.serializeDQ(dq.deserializeDQ(dq.serializeDQ(q2))), dq.serializeDQ(q2));
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
