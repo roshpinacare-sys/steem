@@ -43,11 +43,13 @@
 - **גל-4-הנשאר**: docs/STATE.md-מהחוזה-בקוד (generated+CI-check) · gitsafety-env-מושתל-בהרצת-סוכנים-חיצוניים
 - **שכבת-התצוגה** (מסילת-הסוכן-השני): קונסול-החי — כל-הערוצים-כאן-מוכנים-לגרייה
 
-## 6 · המראה-הציבורית (R254)
+## 6 · המראה-הציבורית (R254 · מבוקרת-R256)
 
-הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=71eeafa) —
+הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=0334d94) —
 src/ המודולים-הטהורים (taskgraph/decisionqueue/worklog-intel) · cli/ · test/ (55-וקטורים) ·
 docs/PATTERNS.md+STATE-CONTRACT.md · tools/ (טריו-git-safety-מדוד) · docs/ci.example.yml (ממתין-לטוקן-עם-workflow-scope).
+ביקורת-מהנדס-בכיר (R256): באג-fresh-clone-תוקן (mkdir-ב-atomicWrite) · הסגר-נאכף-על-כל-הפקודות ·
+ירוק-ב-bun-וגם-node-≥18 · README-מדויק · description+topics-10.
 הסנכרון-ידני-מדוד: cp-whitelist-מהעץ-הפרטי → סריקות-סודות (דפוסים+PAT-מילולי) → staging-מחוץ-לעץ
 → דחיפה. כספות/מפתחות/state/מודולי-עסקים/התיקייה-הרצינית — לעולם-לא. שינוי-ב-src/cli/test-הפרטיים
 מחייב-השוואה-מול-הציבורי-ודחיפה-חוזרת.
