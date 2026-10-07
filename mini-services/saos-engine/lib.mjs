@@ -342,6 +342,25 @@ export function redeployPacing({ verdict, sinceLastSec, powerUpsToday = 0, minIn
   return { verdict: null, sinceLastSec: since };
 }
 
+/* ── R235: pacing state = CACHE; the append-only events journal = TRUTH ────
+ * A torn redeploy-state.json (pre-atomic-write era, disk-full, SIGKILL mid-
+ * write) silently RESET the pacing law: readJson → default → lastPowerUpAt
+ * null → interval check skipped → immediate re-power-up. Now the state is
+ * REBUILT from the journal: count today's powerup-op events + newest at.
+ * Pure + testable; junk lines/objects are skipped, order-independent. */
+export function rebuildPacingFromEvents(events, today) {
+  if (!Array.isArray(events)) return { day: today, powerUpsToday: 0, lastPowerUpAt: null, rebuilt: "fail-closed" };
+  let count = 0, lastAt = null;
+  for (const e of events) {
+    if (!e || typeof e !== "object" || e.type !== "redeploy.powerup-op") continue;
+    const at = typeof e.at === "string" && !Number.isNaN(Date.parse(e.at)) ? e.at : null;
+    if (!at || at.slice(0, 10) !== today) continue;
+    count += 1;
+    if (lastAt === null || at > lastAt) lastAt = at;
+  }
+  return { day: today, powerUpsToday: count, lastPowerUpAt: lastAt, rebuilt: "journal" };
+}
+
 /* ── stale classification (T-8b, lane-scoped per D-021) ────────────────────
  * An open order is stale when its unit drifted beyond NOISE_BPS from the
  * lawful bound for its side (asks below floor / bids above ceiling). */

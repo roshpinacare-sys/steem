@@ -31,7 +31,7 @@ const LOG_FILE = path.join(STATE, "exec-log.jsonl");
 
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
-const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, JSON.stringify(v, null, 2)); };
+const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); }; /* R235: atomic — rename is the commit point */
 const SOLDIERS_SECRET = path.join(SECRETS, "soldiers.json");
 const UPLOAD_KEY = path.join(DIR, "..", "..", "upload", "headcorner.txt");
 const THINK_LOG = path.join(STATE, "think-log.jsonl");

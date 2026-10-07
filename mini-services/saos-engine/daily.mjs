@@ -15,7 +15,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import {
-  planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
+  planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, rebuildPacingFromEvents, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
   cycleHealth, cycleFailureBreakdown,
 } from "./lib.mjs";
 import {
@@ -44,8 +44,36 @@ const STATE = path.join(DIR, "state");
 const ACCOUNT = process.env.SAOS_ACCOUNT || "headcorner";
 
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
-const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, JSON.stringify(v, null, 2)); };
+const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); }; /* R235: ATOMIC — torn-write of redeploy-state/ops files reset the pacing & ops-cap laws; rename is the atomic commit point */
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
+
+/* ── R235: pacing-state read — tri-state with journal self-healing ─────────
+ * ok → as-is · missing → rebuild from the events journal (crash-lost file,
+ * same numbers as the old default when the journal has nothing today) ·
+ * corrupt (torn JSON) → rebuild from the journal, HEAL the file, flag it.
+ * Dead journal too → fail-closed (lastPowerUpAt = now blocks this cycle). */
+const readPacingState = (rsFile, today, nowIso, eventsFile = path.join(STATE, "events.jsonl")) => {
+  const journal = () => {
+    try {
+      const lines = fs.readFileSync(eventsFile, "utf8").split("\n");
+      const events = [];
+      for (const l of lines) { if (!l.trim()) continue; try { events.push(JSON.parse(l)); } catch { /* torn last line — skipped */ } }
+      return rebuildPacingFromEvents(events, today);
+    } catch { return null; }
+  };
+  let raw = null;
+  try { raw = fs.readFileSync(rsFile, "utf8"); } catch {
+    return { rs: journal() ?? { day: today, powerUpsToday: 0, lastPowerUpAt: nowIso, rebuilt: "fail-closed" }, corrupt: false };
+  }
+  try { return { rs: JSON.parse(raw), corrupt: false }; }
+  catch {
+    const built = journal();
+    if (built) { try { writeJson(rsFile, built); } catch { /* heal best-effort */ } return { rs: built, corrupt: true }; }
+    return { rs: { day: today, powerUpsToday: 0, lastPowerUpAt: nowIso, rebuilt: "fail-closed" }, corrupt: true };
+  }
+};
+
+export { readPacingState };
 
 const stepWrap = async (name, fn) => {
   const t0 = Date.now();
@@ -291,8 +319,9 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
      * classes (NaN/negative/future lastPowerUpAt) are guarded by design and
      * unit-tested, not by accident. */
     const RS_FILE = path.join(STATE, "redeploy-state.json");
-    const rs = readJson(RS_FILE, { day: null, powerUpsToday: 0, lastPowerUpAt: null });
     const today = now.slice(0, 10);
+    const { rs, corrupt: rsCorrupt } = readPacingState(RS_FILE, today, now);
+    if (rsCorrupt && persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.pacing-corrupt", at: now, healed: true, day: today, powerUpsToday: rs.powerUpsToday ?? 0, lastPowerUpAt: rs.lastPowerUpAt ?? null });
     if (rs.day !== today) { rs.day = today; rs.powerUpsToday = 0; }
     const minIntervalSec = rd.minIntervalSec ?? 3600;
     const maxPerDay = rd.maxPerDay ?? 12;
@@ -484,10 +513,11 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
             ops.push(["transfer_to_vesting", { from: ACCOUNT, to: ACCOUNT, amount: `${amt3.toFixed(3)} STEEM` }]);
             /* pacing state bumped at PUSH time — honest conservative counter */
             const RS_FILE = path.join(STATE, "redeploy-state.json");
-            const rs = readJson(RS_FILE, { day: null, powerUpsToday: 0, lastPowerUpAt: null });
             const rdDay = now.slice(0, 10);
-            if (rs.day !== rdDay) { rs.day = rdDay; rs.powerUpsToday = 0; }
-            writeJson(RS_FILE, { day: rdDay, powerUpsToday: (rs.powerUpsToday ?? 0) + 1, lastPowerUpAt: now });
+            const { rs: rsExec, corrupt: rsCorruptExec } = readPacingState(RS_FILE, rdDay, now);
+            if (rsCorruptExec && persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.pacing-corrupt", at: now, healed: true, day: rdDay, powerUpsToday: rsExec.powerUpsToday ?? 0, lastPowerUpAt: rsExec.lastPowerUpAt ?? null });
+            if (rsExec.day !== rdDay) { rsExec.day = rdDay; rsExec.powerUpsToday = 0; }
+            writeJson(RS_FILE, { day: rdDay, powerUpsToday: (rsExec.powerUpsToday ?? 0) + 1, lastPowerUpAt: now });
             if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.powerup-op", at: now, amountSteem: amt3 });
           } else {
             /* R233: the funds-bound skip is JOURNALED, never silent — the
