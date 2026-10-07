@@ -170,6 +170,26 @@ export function thinkGate(account, ops, { source = "execute", conf = null, journ
         reasons.push(`transfer_to_vesting (${op?.amount ?? "?"}): power-up ${!selfDirected ? "must be self-directed (from=to=account)" : "FORBIDDEN by standing policy (operator.allowPowerUp=false — T-91 doctrine not armed)"}`);
       }
     }
+    // 5 · R246 account_create policy: the creation fee is REAL value leaving
+    // the treasury to the chain. It is allowed ONLY under a live, single-use,
+    // fee-capped, name-bound operator order recorded in
+    // policy.operatorOrders.account_create. Absent/consumed order ⇒ REFUSED
+    // (fail-closed). The operator's R246 order ("pay what's needed to open a
+    // community") travels with the order record itself — provenance, not vibes.
+    if (opName === "account_create") {
+      const ord = c.policy?.operatorOrders?.account_create ?? null;
+      if (!ord || typeof ord !== "object" || ord.used) {
+        reasons.push(`account_create (${op?.new_account_name ?? "?"}): FORBIDDEN — ${!ord ? "no operator order on record (policy.operatorOrders.account_create required)" : "operator order already used (single-use law; consumed orders never re-arm)"}`);
+      } else {
+        const feeSteem = Number(String(op?.fee ?? "0 STEEM").split(" ")[0]) || 0;
+        if (!(feeSteem <= Number(ord.maxFeeSteem ?? 0))) {
+          reasons.push(`account_create (${op?.new_account_name ?? "?"}): fee ${op?.fee} exceeds the operator-order cap ${ord.maxFeeSteem} STEEM`);
+        }
+        if (ord.account !== op?.new_account_name) {
+          reasons.push(`account_create: target ${op?.new_account_name ?? "?"} does not match the operator-order account ${ord.account ?? "?"}`);
+        }
+      }
+    }
   }
   const verdict = reasons.length ? "REFUSED" : "ALLOW";
   return finishThink({ account, source, verdict, reasons, shown, custody }, journal);

@@ -228,23 +228,31 @@ function serOp(name, v, w) {
       w.str(v.from).str(v.to).asset(v.amount);
       break;
     case "claim_account":
-      /* R245 node-canon: creator, fee, extensions, PLUS the trailing empty
-       * vector/json field the node requires (byte-proven: one `00` short). */
-      w.str(v.creator).asset(v.fee ?? "0.000 STEEM").varint(0);
+      /* R246 REPAIR (txid-oracle class, same ruling as convert/vote/comment):
+       * the trailing varint(0) came from get_transaction_hex probes — the SAME
+       * tool R245-b proved ADDS phantom extension bytes that live consensus
+       * does not serialize. Every live-proven op (vote/comment/claim/delegate/
+       * convert/account_update) serializes with NO trailing extensions byte.
+       * Unused op kept doctrine-consistent — no phantom bytes, ever. */
+      w.str(v.creator).asset(v.fee ?? "0.000 STEEM");
       break;
     case "create_claimed_account":
-      // NOTE: current steem protocol appends an extensions vector to this op —
-      // byte-proven against node serialization (missing `00` = authority error)
+      /* R246: phantom extensions byte removed (txid-oracle doctrine —
+       * the R245 get_transaction_hex "byte-proven" claim bit us again). */
       w.str(v.creator).str(v.new_account_name)
         .authority(v.owner).authority(v.active).authority(v.posting)
-        .pubkey(v.memo_key).str(v.json_metadata ?? "{}").varint(0);
+        .pubkey(v.memo_key).str(v.json_metadata ?? "{}");
       break;
     case "account_create":
       /* direct paid creation — bypasses the RC claim wall entirely (3.000 STEEM)
-       * R245 node-canon: + trailing extensions varint (byte-proven). */
+       * R246 CHAIN TRUTH (measured live 2026-10-07T21:26Z): WITH the R245
+       * trailing varint(0) the broadcast died "Missing Active Authority
+       * headcorner" — the phantom byte corrupts the digest exactly like the
+       * vote/cancel/comment case R245-b ruled on. Body = fee,creator,name,
+       * owner,active,posting,memo_key,json_metadata — NO extensions byte. */
       w.asset(v.fee).str(v.creator).str(v.new_account_name)
         .authority(v.owner).authority(v.active).authority(v.posting)
-        .pubkey(v.memo_key).str(v.json_metadata ?? "{}").varint(0);
+        .pubkey(v.memo_key).str(v.json_metadata ?? "{}");
       break;
     case "account_update":
       /* R245 EMERGENCY KEY ROTATION: {account, owner?, active?, posting?,

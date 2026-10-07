@@ -710,6 +710,53 @@ export default function Home() {
                   )}
                 </SectionCard>
 
+                {/* R246 · קהילה-ריבונית + מסילת-ההמרות באוויר */}
+                <SectionCard icon={Users} tone="emerald" title="קהילה-ריבונית · והמרות-באוויר">
+                  {s?.community?.name ? (
+                    <>
+                      <RailRow
+                        label="הקהילה שלנו (Steem)"
+                        value={
+                          <span className="flex flex-wrap items-center gap-2">
+                            <StatusBadge tone={s.community.phase === 'live' ? 'emerald' : s.community.phase === 'fleet-joined' ? 'amber' : 'slate'}>
+                              {s.community.phase === 'live' ? 'חיה-ומדודה' : s.community.phase === 'fleet-joined' ? 'צי-בפנים · ממתין-אינדוקס' : s.community.phase}
+                            </StatusBadge>
+                            <span className="tnum text-[11px] font-normal text-slate-400" dir="ltr">{s.community.name}</span>
+                          </span>
+                        }
+                      />
+                      <RailRow label="חברים מהצי (מתוך-הכוח-כולו)" value={`${s.community.fleetSubscribed?.length ?? 0} חשבונות`} tone={(s.community.fleetSubscribed?.length ?? 0) > 0 ? 'emerald' : 'amber'} ltr className="mt-1" />
+                      {s.community.title && <RailRow label="שם-מדוד" value={s.community.title} ltr className="mt-1" />}
+                      {s.community.txids?.account_create && (
+                        <p className="mt-1 text-[11px] leading-relaxed text-slate-500" dir="ltr">fee-tx: {String(s.community.txids.account_create).slice(0, 18)}… · עלות-אמת: 3.000 STEEM (מדוד, לא-100)</p>
+                      )}
+                      {s.community.foundingPermlink && (
+                        <p className="mt-1 text-[11px] leading-relaxed text-slate-500" dir="ltr">founding: {s.community.foundingPermlink}</p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-xs text-slate-500">אין-קהילה-עדיין — הפעלת-קהילה ממתינה-להרצה.</p>
+                  )}
+                  <Separator className="my-3 bg-slate-800" />
+                  {Array.isArray(s?.conversions) && s.conversions.length > 0 ? (
+                    <>
+                      {s.conversions.map((c: { requestid?: number; amount?: string; hoursRemaining?: number | null; expectedSteemAtCurrentFeed?: number | null }) => (
+                        <RailRow
+                          key={String(c.requestid)}
+                          label={`המרה ${c.amount ?? '—'} · מסתיים בעוד ${typeof c.hoursRemaining === 'number' ? c.hoursRemaining.toFixed(1) : '—'} שעות`}
+                          value={`≈ ${typeof c.expectedSteemAtCurrentFeed === 'number' ? c.expectedSteemAtCurrentFeed.toFixed(1) : '—'} STEEM @ feed-עכשיו`}
+                          ltr
+                        />
+                      ))}
+                      <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                        חוק-D-023: פירעון = סכום ÷ feed-במועד-הפרעון (לא פניית-$1) · תקרת-באוויר 10 SBD + רזרבה 0.5 מקודדים — ההמרה לא שואבת-את-הכמון.
+                      </p>
+                    </>
+                  ) : (
+                    <RailRow label="המרות-באוויר" value="אין" ltr />
+                  )}
+                </SectionCard>
+
                 {/* מה-יש-לנו · פוטנציאל-ריבוני (T-10) */}
                 {(() => {
                   const steemLiquid = parseFloat(String(s?.live?.balances?.steem ?? '').replace(/[^0-9.]/g, '')) || 0

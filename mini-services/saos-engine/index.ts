@@ -5,7 +5,7 @@
  * every broadcast is journaled with txids (never keys).
  */
 import { runCycle, cycleRunning, cycleMarker } from "./daily.mjs";
-import { externalParity, internalFeed, accountState, openOrders, measureAll } from "./measure.mjs";
+import { externalParity, internalFeed, accountState, openOrders, measureAll, rpcCall } from "./measure.mjs";
 import { execStatus, credentialState, armedConf, adoptCredentialText, verifyRoles, spoilagePublic, armyCustodyState } from "./signer.mjs";
 import { reviveArmyCustody, ARMY_ROSTER_VAULT } from "./vault-revival.mjs";
 import { soldiersPublic } from "./soldiers.mjs";
@@ -22,6 +22,7 @@ import { contentState } from "./content.mjs";
 import { rcTankState } from "./rctank.mjs";
 import { payoutsState } from "./payouts.mjs";
 import { weaveState } from "./weave.mjs";
+import { communityStatus } from "./community.mjs";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -54,9 +55,28 @@ async function handle(req) {
     try { exec = await execStatus(); } catch (e) { exec = { ok: false, reason: String(e?.message ?? e).slice(0, 80) }; }
     /* T-22 ONE-BODY LAW: the live chain layer is computed HERE — the Next
      * proxy became a thin renderer; domain logic exists exactly once. */
-    const [oo, acc] = await Promise.all([openOrders(ACCOUNT).catch(() => ({ ok: false, orders: [] })), accountState(ACCOUNT).catch(() => ({ ok: false }))]);
+    const [oo, acc, convR] = await Promise.all([openOrders(ACCOUNT).catch(() => ({ ok: false, orders: [] })), accountState(ACCOUNT).catch(() => ({ ok: false })), rpcCall("condenser_api.get_conversion_requests", [ACCOUNT]).catch(() => ({ ok: false }))]);
     const observe = readJson(path.join(STATE, "observe.json"));
     const offer = readJson(path.join(STATE, "offer.json"));
+    /* R246 · the 3.5-day SBD→STEEM convert rail — live chain truth: every
+     * in-flight request with its REAL maturity (the chain's own date), hours
+     * remaining, and the payout projected at the CURRENT feed (payout =
+     * amount/feed at maturity — D-023 measured doctrine). */
+    const feedSbdPerSteem = (observe as any)?.feed ?? null;
+    const conversions = convR?.ok && Array.isArray((convR as any).result)
+      ? (convR as any).result.map((c: any) => {
+          const maturesMs = Date.parse(String(c.conversion_date).replace(/Z$/, "") + "Z");
+          const amount = Number(String(c.amount ?? "0").split(" ")[0]) || 0;
+          return {
+            requestid: c.requestid,
+            amount: c.amount,
+            maturesAt: c.conversion_date,
+            hoursRemaining: Number.isFinite(maturesMs) ? Math.round(((maturesMs - Date.now()) / 360000)) / 10 : null,
+            expectedSteemAtCurrentFeed: feedSbdPerSteem > 0 ? Math.round((amount / feedSbdPerSteem) * 1000) / 1000 : null,
+          };
+        })
+      : null;
+    const community = communityStatus();
     const parityRef = offer?.marks?.paritySbdPerSteem ?? null;
     const pnl = observe?.pnl ?? null;
     const profit = pnl ? {
@@ -74,7 +94,8 @@ async function handle(req) {
       state: readJson(path.join(STATE, "state.json")),
       offer,
       convertPlan: readJson(path.join(STATE, "convert-plan.json")),
-      daily: readJson(path.join(STATE, "daily-report.json")),
+      conversions,
+      community,
       intel: intelState(),
       curator: curatorState(),
       learning: learningState(),

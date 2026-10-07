@@ -218,6 +218,42 @@ eq("thinkgate outbound-transfer-refused", tgOut.verdict, "REFUSED");
 ok("thinkgate outbound-reason", (tgOut.reasons[0] ?? "").includes("FORBIDDEN"));
 /* 8 · policy class 2: allowlisted recipient → ALLOW */
 eq("thinkgate allowlisted-transfer-allow", thinkGate(TG_ACC, [["transfer", { from: TG_ACC, to: "hcs1", amount: "1.000 STEEM" }]], { ...tgVerified, conf: { policy: { transferAllowlist: ["hcs1"] } } }).verdict, "ALLOW");
+
+/* R246 · clause 5 law: account_create is a value move — ONLY a live,
+ * single-use, fee-capped, name-bound operator order arms it. */
+const acctCreateOp = (fee, name) => [["account_create", { fee, creator: TG_ACC, new_account_name: name, owner: { weight_threshold: 1, account_auths: [], key_auths: [["STM7jA4xpCcN6Uwt6SmzK1MhTcmg7nmXrMEpiLok45GvqYLFQSSnX", 1]] }, active: { weight_threshold: 1, account_auths: [], key_auths: [["STM62FpckaXAdMmdD8abrFGhN8uE5wYm6tkUajmruJumrHNRNKfZL", 1]] }, posting: { weight_threshold: 1, account_auths: [], key_auths: [["STM8ZiWEgUYoYeQ3rWut6GKamgFsYccMCQ68QAR5WYQgvV9Aaihxb", 1]] }, memo_key: "STM5ncpsbHiHHhFJRZpmpQx8u5JwEjGUXmL45HRh6caC1NCZBTvwe", json_metadata: "" }]];
+const goodOrder = { account: "hive-210001", maxFeeSteem: 5, used: false };
+/* a · no order at all → REFUSED (fail-closed default) */
+const tgNoOrder = thinkGate(TG_ACC, acctCreateOp("3.000 STEEM", "hive-210001"), { ...tgVerified, conf: {} });
+eq("r246 accountcreate-no-order-refused", tgNoOrder.verdict, "REFUSED");
+ok("r246 accountcreate-no-order-reason", (tgNoOrder.reasons[0] ?? "").includes("no operator order"));
+/* b · live order + fee within cap + matching name → ALLOW */
+eq("r246 accountcreate-ordered-allow", thinkGate(TG_ACC, acctCreateOp("3.000 STEEM", "hive-210001"), { ...tgVerified, conf: { policy: { operatorOrders: { account_create: goodOrder } } } }).verdict, "ALLOW");
+/* c · fee above the order cap → REFUSED */
+const tgFee = thinkGate(TG_ACC, acctCreateOp("7.000 STEEM", "hive-210001"), { ...tgVerified, conf: { policy: { operatorOrders: { account_create: goodOrder } } } });
+eq("r246 accountcreate-fee-cap-refused", tgFee.verdict, "REFUSED");
+ok("r246 accountcreate-fee-cap-reason", (tgFee.reasons[0] ?? "").includes("exceeds the operator-order cap"));
+/* d · name mismatch → REFUSED (the order is bound to ONE account) */
+const tgName = thinkGate(TG_ACC, acctCreateOp("3.000 STEEM", "hive-999999"), { ...tgVerified, conf: { policy: { operatorOrders: { account_create: goodOrder } } } });
+eq("r246 accountcreate-name-mismatch-refused", tgName.verdict, "REFUSED");
+ok("r246 accountcreate-name-mismatch-reason", (tgName.reasons[0] ?? "").includes("does not match"));
+/* e · consumed order → REFUSED (single-use law; no re-arm) */
+const tgUsed = thinkGate(TG_ACC, acctCreateOp("3.000 STEEM", "hive-210001"), { ...tgVerified, conf: { policy: { operatorOrders: { account_create: { ...goodOrder, used: true } } } } });
+eq("r246 accountcreate-used-order-refused", tgUsed.verdict, "REFUSED");
+ok("r246 accountcreate-used-order-reason", (tgUsed.reasons[0] ?? "").includes("already used"));
+
+/* R246 · community op builders — the measured 3-community wire format */
+import { accountCreateOp, setRoleOp, updatePropsOp, subscribeOp, communityPostMeta, generateAccountKeys } from "./community.mjs";
+eq("r246 subscribeOp-wire", subscribeOp("hive-210001", "haran"), ["custom_json", { required_auths: [], required_posting_auths: ["haran"], id: "community", json: JSON.stringify(["subscribe", { community: "hive-210001" }]) }]);
+eq("r246 setRoleOp-wire", setRoleOp("hive-210001", "headcorner", "admin"), ["custom_json", { required_auths: [], required_posting_auths: ["hive-210001"], id: "community", json: JSON.stringify(["setRole", { community: "hive-210001", account: "headcorner", role: "admin" }]) }]);
+eq("r246 updatePropsOp-wire", updatePropsOp("hive-210001", { title: "T" }), ["custom_json", { required_auths: [], required_posting_auths: ["hive-210001"], id: "community", json: JSON.stringify(["updateProps", { community: "hive-210001", props: { title: "T" } }]) }]);
+const acOp = accountCreateOp({ fee: "3.000 STEEM", creator: "headcorner", name: "hive-210001", keys: { owner: { pub: "STM7jA4xpCcN6Uwt6SmzK1MhTcmg7nmXrMEpiLok45GvqYLFQSSnX" }, active: { pub: "STM62FpckaXAdMmdD8abrFGhN8uE5wYm6tkUajmruJumrHNRNKfZL" }, posting: { pub: "STM8ZiWEgUYoYeQ3rWut6GKamgFsYccMCQ68QAR5WYQgvV9Aaihxb" }, memo: { pub: "STM5ncpsbHiHHhFJRZpmpQx8u5JwEjGUXmL45HRh6caC1NCZBTvwe" } } });
+eq("r246 accountCreateOp-fee", acOp[1].fee, "3.000 STEEM");
+eq("r246 accountCreateOp-name", acOp[1].new_account_name, "hive-210001");
+ok("r246 accountCreateOp-authorities", acOp[1].owner.key_auths[0][0].startsWith("STM") && acOp[1].memo_key.startsWith("STM"));
+eq("r246 communityPostMeta-contract", JSON.parse(communityPostMeta("hive-210001", ["ai", "life"])), { community: "hive-210001", tags: ["hive-210001", "ai", "life"], app: "saos-community-rail" });
+const genKeys = generateAccountKeys();
+ok("r246 genkeys-shape", genKeys.owner?.wif?.length >= 51 && genKeys.owner?.pub?.startsWith("STM") && genKeys.memo?.pub?.startsWith("STM") && genKeys.owner.wif !== genKeys.posting.wif && genKeys.active.wif !== genKeys.memo.wif);
 eq("psm no-market reason", planConvert({ liquidSbd: 50, feedSbdPerSteem: P, marketSbdPerSteem: null, previouslyArmed: true }).reason, "no-market-parity");
 
 /* 9 · stale classification: asks below floor / bids above ceiling (10bps tol) */

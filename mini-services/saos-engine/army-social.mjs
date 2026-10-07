@@ -64,6 +64,7 @@ import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCou
 import { synthesizeComment, synthesizeReply, mentionsAny } from "./intel-pack.mjs";
 import { spamVerdict, organicVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
 import { reviveArmyCustody } from "./vault-revival.mjs";
+import { readCommunityState, communityPostMeta } from "./community.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -535,10 +536,22 @@ async function doPublish(account, st, p, now, day) {
     return false;
   }
   const permlink = permlinkStem(draft.title, day, st.done.publish ?? 0);
-  const meta = JSON.stringify({ tags: draft.tags, app: "saos-social-rail" });
+  /* R246 COMMUNITY-RAIL (measured flow, 3-community forensics): every THIRD
+   * lifetime post of each account lands INSIDE our community (metadata.community
+   * + tags[0] = community — the hivemind contract), the rest stays in the open
+   * tags. A fleet that posts only into its own compound is a walled garden and
+   * a voting-ring smell; a fleet that never posts home abandons its own organ.
+   * The 1:2 ratio keeps both honest. */
+  const cst = readCommunityState();
+  const communityArmed = cst?.name && ["fleet-joined", "live"].includes(cst.phase);
+  const thirdPost = (st.published?.length ?? 0) % 3 === 2;
+  const inCommunity = communityArmed && thirdPost;
+  const meta = inCommunity
+    ? communityPostMeta(cst.name, draft.tags)
+    : JSON.stringify({ tags: draft.tags, app: "saos-social-rail" });
   const ops = [[
     "comment",
-    { parent_author: "", parent_permlink: "steem", author: account, permlink, title: draft.title, body: draft.body, json_metadata: meta },
+    { parent_author: "", parent_permlink: inCommunity ? cst.name : "steem", author: account, permlink, title: draft.title, body: draft.body, json_metadata: meta },
   ]];
   const res = await executeAs(account, ops, { tag: "social-post", role: "posting" });
   if (!res.ok) return false;

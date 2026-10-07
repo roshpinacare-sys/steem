@@ -36,6 +36,7 @@ import { runEconomics } from "./economics.mjs";
 import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
 import { runSocial } from "./army-social.mjs";
+import { syncCommunityMembership, readCommunityState } from "./community.mjs";
 import { runBus } from "./bus.mjs";
 import { runRcTank, rcTankState } from "./rctank.mjs";
 import { runPayouts, payoutsState } from "./payouts.mjs";
@@ -734,6 +735,17 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       verdict, deploy: deploy ? { verdict: deploy.verdict, txid: deploy.txid ?? null, error: deploy.error ?? null } : null,
       topups, grids: grids.soldiers ?? [],
     };
+  });
+
+  /* 8.5 · community (R246): the sovereign community organ — steady-state
+   * membership sync only (custody-verified accounts, ≤2 joins/cycle, idempotent).
+   * Creation itself is a one-shot operator-ordered action (community-launch.mjs)
+   * that never runs inside the cycle. Fail-isolated like every step. */
+  report.steps.community = await stepWrap("community", async () => {
+    const cst = readCommunityState();
+    if (!cst?.name) return { verdict: "NO-COMMUNITY" };
+    const sync = await syncCommunityMembership({ now, persist });
+    return { verdict: sync.verdict, name: cst.name, phase: cst.phase, members: (cst.fleet?.subscribed ?? []).length, joined: sync.joined ?? 0, missing: sync.missing ?? 0 };
   });
 
   /* 9 · learn (T-14): ingest recorded history → lessons → bounded tunings.
