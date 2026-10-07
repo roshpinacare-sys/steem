@@ -1,13 +1,21 @@
 /**
- * content.mjs — T-22 · THE CONTENT TEAM (דיונים-חכמים ברשת, בלי-חשיפה).
- * Operator order: "לדון בזה גם ברשת להעלות דברים וכו ולדון בהם עם כל
- * החשבונות בצורה חכמה ולא חושפנית שגם תקדם אותו seo וגם לא תחשוף שאנחנו
- * צבא אחד... וגם תומך בציבור הנרחב". The team DRAFTS (never broadcasts):
- * an LLM generates grounded discussion topics from the machine's own
- * measured telemetry + the web-intel findings, with an exposure law baked
- * into the system prompt. Drafts queue in state/content-ops.json; the promo
- * rail broadcasts ONLY after the credential verifies (signing gate) — the
- * pipeline is armed, the trigger is doctrine.
+ * content.mjs — R240 · THE CONTENT INTELLIGENCE (מהפכת-התוכן: מטא→אנושי).
+ *
+ * Operator order 2026-10-07 (verbatim intent): "זה ממש לא מעניין מה שאנחנו
+ * שולחים. צריך שיהיה עניין רב לפוסטים ולא סתם... להרים אינטליגנציה משמעותית".
+ *
+ * WHAT CHANGED (measured root causes of the boring feed):
+ *  · the old pool fed ONLY meta-angles about Steem itself → every fleet post
+ *    was "how effective is steem's curation system" (the chain proves it);
+ *  · eleven accounts drew from the same telemetry grounding → near-duplicate
+ *    titles on the same day (dual-token ×2, workflow ×2 on 2026-10-06/07);
+ *  · no voice separation → one bot in eleven hats.
+ *
+ * NOW: an 18-domain HUMAN topic pool (day-rotated), an 11-voice persona
+ * matrix, and a Jaccard title-dedupe against everything already published.
+ * Drafting stays bridge-gated (LLM behind the cockpit) and the exposure law
+ * still blocks in pure code. No draft is ever broadcast here — the rail
+ * decides, doctrine caps own the volume.
  */
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -16,42 +24,98 @@ const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const FILE = path.join(STATE, "content-ops.json");
 const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
-/* T-86: the fleet grew from 1 publisher to 11 — the drafts queue must feed
- * ≤11 posts/day, so the drafting cadence tightened from 12h to 4h
- * (3 drafts/round × 6 rounds = up to 18/day, caps still enforced downstream). */
-const CADENCE_MS = Number(process.env.SAOS_CONTENT_CADENCE_MS) || 4 * 3600_000;
+/* R240: 4h → 2h — 11 publishers × ≤1 post/day need a deeper queue, and the
+ * dedupe gate now makes a bigger queue SAFE (junk can no longer slip in as
+ * "the only option"). */
+const CADENCE_MS = Number(process.env.SAOS_CONTENT_CADENCE_MS) || 2 * 3600_000;
 
-/* T-87 · ANGLE ROTATION (pure): the drafting LLM gets a day-seeded trio from
- * a six-family pool — eleven publisher voices stop sounding like one bot,
- * and open-question drafts feed the reply rail with real community comments. */
-const ANGLE_POOL = [
-  "educational explainer",
-  "open question to the community",
-  "tooling or workflow tip",
-  "beginner pitfall and how to avoid it",
-  "myth vs fact",
-  "practical checklist",
+/* ── R240 · THE HUMAN TOPIC POOL (pure) ──────────────────────────────────────
+ * Universal, human-interest domains. Zero "Steem about Steem". Each entry is
+ * a seed for the bridge writer's room, not a template — the LLM builds the
+ * concrete piece, the engine only owns ROTATION and DIVERSITY. */
+export const TOPIC_POOL = [
+  { id: "attention", hint: "where attention actually goes in a normal day, and the small cost of that", tags: ["life", "psychology"] },
+  { id: "habits", hint: "one tiny habit that quietly compounds (no productivity-guru tone)", tags: ["life", "health"] },
+  { id: "slow-learning", hint: "learning something the slow way and what fast tutorials skip", tags: ["education", "life"] },
+  { id: "street", hint: "a street, a corner, a market: what an attentive eye notices there", tags: ["life", "photography"] },
+  { id: "waiting", hint: "the psychology of waiting rooms, queues, and delays", tags: ["psychology", "life"] },
+  { id: "tools", hint: "the three tools actually used vs the drawer of hoarded ones", tags: ["tools", "life"] },
+  { id: "food-memory", hint: "a dish that carries a memory; the smell before the story", tags: ["food", "life"] },
+  { id: "walking", hint: "walking as thinking: routes, loops, and the ideas that arrive mid-step", tags: ["life", "health"] },
+  { id: "ideas", hint: "one book or idea that changed one small concrete thing", tags: ["writing", "philosophy"] },
+  { id: "repair", hint: "repair culture: fixing instead of replacing, and what the object teaches", tags: ["diy", "life"] },
+  { id: "everyday-money", hint: "the psychology of everyday spending choices (observational, never advice)", tags: ["psychology", "life"] },
+  { id: "urban-nature", hint: "nature inside the city: the pigeon, the fig tree in the crack, the weather", tags: ["nature", "life"] },
+  { id: "craft", hint: "craft and patience: what making something by hand does to time", tags: ["craft", "life"] },
+  { id: "digital-minimal", hint: "what one week with fewer screens actually feels like (honest, not preachy)", tags: ["life", "technology"] },
+  { id: "questions", hint: "questions worth asking a stranger; the answers people remember", tags: ["life", "psychology"] },
+  { id: "seasons", hint: "seasons and routines: how light and weather reshape a working day", tags: ["life", "nature"] },
+  { id: "language", hint: "language quirks, translation slips, and the words that refuse to migrate", tags: ["writing", "life"] },
+  { id: "objects", hint: "memory and objects: why one old tool beats a shelf of new ones", tags: ["life", "story"] },
 ];
-export function angleRotationFor(dayIso) {
+
+/** pure: day-seeded rotation of n distinct topics from the pool */
+export function topicRotationFor(dayIso, n = 4) {
   const dayMs = Date.parse(dayIso);
   const dayIdx = Number.isFinite(dayMs) ? Math.floor(dayMs / 86400000) : 0;
-  return [0, 1, 2].map((i) => ANGLE_POOL[((dayIdx % ANGLE_POOL.length) + i) % ANGLE_POOL.length]);
+  const start = ((dayIdx % TOPIC_POOL.length) + TOPIC_POOL.length) % TOPIC_POOL.length;
+  const out = [];
+  for (let i = 0; i < Math.min(n, TOPIC_POOL.length); i++) out.push(TOPIC_POOL[(start + i * 5) % TOPIC_POOL.length]);
+  return out;
 }
 
-const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
-const writeJson = (p, v) => {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  const tmp = `${p}.tmp.${process.pid}`;
-  fs.writeFileSync(tmp, JSON.stringify(v, null, 2));
-  fs.renameSync(tmp, p);
+/* ── R240 · THE VOICE MATRIX (pure) — one author, one voice ──────────────────
+ * The chain showed one bot in eleven hats; the bridge now gets an explicit
+ * voice per draft so the feed reads like people, not a syndicate. */
+export const VOICES = {
+  headcorner: "steady and precise; likes honest arithmetic, plain checklists, and the calm satisfaction of a thing measured right",
+  cashmachine: "plain talker about how money actually moves; concrete examples, zero advice, a little dry humor",
+  haran: "patient tool explainer; breaks a how-to into small steps and warns about the one mistake everyone makes",
+  israelnews: "newsroom brevity; what happened, why it matters, one detail that sticks",
+  lsa: "story-first; small human details, a scene before a point, warmth without sugar",
+  macrame: "hands-on crafter; cord, knots, materials and their real prices; respects patience",
+  siq: "quiet observer; sensory detail, curious questions, notices what others walk past",
+  tov: "warm community voice; small wins, mutual help, the good of doing things together",
+  wic: "slow philosopher; short calm sentences, one idea given room, asks the deep question gently",
+  wog: "curious skeptic; tests claims, enjoys busting a myth with an everyday proof",
+  woq: "aphoristic questioner; one sharp question, a compact answer, an open door at the end",
 };
+export function voiceOf(account) { return VOICES[account] ?? "clear, friendly, concrete"; }
+
+/* ── R240 · TITLE DEDUPE (pure) — kill the duplicate-topic bug ─────────────── */
+const STOP = new Set(["a", "an", "the", "of", "on", "in", "to", "for", "and", "or", "is", "are", "your", "you", "how", "what", "why", "with", "that", "this", "it", "its", "at", "from", "my", "we", "our"]);
+export function titleTokens(t) {
+  return new Set(String(t ?? "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w)));
+}
+export function titleSimilarity(a, b) {
+  const A = titleTokens(a), B = titleTokens(b);
+  if (!A.size || !B.size) return 0;
+  let inter = 0;
+  for (const w of A) if (B.has(w)) inter++;
+  return inter / Math.min(A.size, B.size);
+}
+/** pure: keep drafts whose titles are NOT near-duplicates of recent published ones (or of each other) */
+export function dedupeTitles(drafts, recentTitles, { threshold = 0.55 } = {}) {
+  const kept = [], dropped = [];
+  const seen = [];
+  for (const d of (drafts ?? [])) {
+    const t = String(d?.title ?? "");
+    const clash = seen.some((s) => titleSimilarity(t, s) >= threshold)
+      || (recentTitles ?? []).some((s) => titleSimilarity(t, s) >= threshold);
+    if (clash) dropped.push(t.slice(0, 80));
+    else { kept.push(d); seen.push(t); }
+  }
+  return { kept, dropped };
+}
 
 /** exposure law — every draft is checked AGAINST it in the pure normalizer */
 const EXPOSURE_LAW = [
-  "never reveal coordinated multi-account operations, internal codenames, or that accounts are connected",
+  "never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected",
   "no financial advice, no profit promises, no price targets",
+  "no fabricated personal identities: no invented family members, no named real places as personal history; write as a general human observer",
+  "no AI telltales: never open with 'In today's world', never close with 'In conclusion', no em/en dashes",
   "supportive community tone — teach, ask, answer; public knowledge only",
-  "SEO: concrete title, 3-5 topical tags, first paragraph must stand alone",
+  "SEO: concrete curiosity title, 3-5 topical tags, first paragraph must stand alone",
 ];
 
 export function contentState() { return readJson(FILE, null); }
@@ -67,14 +131,23 @@ export function sanitizeDraft(d) {
     .filter(Boolean).slice(0, 5);
   if (tags.length < 2) return null;
   const blob = `${title}\n${body}`.toLowerCase();
-  const banned = ["headcorner", "saos", "צבא", "army of accounts", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target"];
+  const banned = ["headcorner", "saos", "צבא", "army of accounts", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target", "in today's world", "in conclusion", "—", "–"];
   if (banned.some((w) => blob.includes(w))) return null; // EXPOSURE-BLOCKED
   return {
     title: title.slice(0, 160), body: body.slice(0, 8000), tags,
     angle: String(d.angle ?? "").slice(0, 300) || null,
+    voice: String(d.voice ?? "").slice(0, 300) || null,
     seoNote: String(d.seoNote ?? "").slice(0, 300) || null,
     groundedOn: Array.isArray(d.groundedOn) ? d.groundedOn.slice(0, 4).map((g) => String(g).slice(0, 160)) : [],
   };
+}
+
+/** pure: the already-published titles from the queue (dedupe memory) */
+export function recentPublishedTitles(queue, n = 12) {
+  return (Array.isArray(queue) ? queue : [])
+    .filter((d) => d?.status === "published" && d?.title)
+    .map((d) => String(d.title))
+    .slice(0, n);
 }
 
 export async function runContent({ now = new Date().toISOString(), force = false } = {}) {
@@ -83,25 +156,22 @@ export async function runContent({ now = new Date().toISOString(), force = false
   if (!force && Number.isFinite(lastMs) && Date.now() - lastMs < CADENCE_MS) {
     return { verdict: "CADENCE-GATED", lastAt: prev.draftedAt, draftsQueued: (prev.queue ?? []).filter((d) => d.status === "drafted").length };
   }
-  /* grounding: the drafts must stand on MEASURED state + sourced intel */
+  /* grounding (R240: light now — topics+voices own the diversity; telemetry
+   * stays available for the bridge but can no longer drag every post back to
+   * machine metrics) */
   const intel = readJson(path.join(STATE, "webintel.json"), null);
-  const observe = readJson(path.join(STATE, "observe.json"), null);
-  const economics = readJson(path.join(STATE, "economics.json"), null);
   const findings = (intel?.scans ?? []).flatMap((s) => (s.findings ?? []).slice(0, 2)).slice(0, 6)
     .map((f) => ({ title: f.title, host: f.host, url: f.url }));
-  const telemetry = {
-    parity: observe?.parity?.parity ?? null,
-    venueFillsPerDay: economics?.context?.venueFillsPerDay ?? null,
-    hyperOpsPerDay: (economics?.rails ?? []).find((r) => r.id === "hyper-presence")?.meta?.opsPerDay ?? null,
-    curationEstUsdPerDay: (economics?.rails ?? []).find((r) => r.id === "curation")?.estUsdPerDay ?? null,
-  };
+  const topics = topicRotationFor(now, 6);
+  const voices = Object.entries(VOICES).map(([account, voice]) => ({ account, voice }));
+  const recentTitles = recentPublishedTitles(prev?.queue, 12);
   const t0 = Date.now();
   let raw = null, bridgeError = null;
   try {
     const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ findings, telemetry, angles: angleRotationFor(now), exposureLaw: EXPOSURE_LAW }),
+      body: JSON.stringify({ topics, voices, recentTitles, findings, exposureLaw: EXPOSURE_LAW }),
       signal: AbortSignal.timeout(120_000),
     });
     if (!r.ok) throw new Error(`bridge ${r.status}`);
@@ -110,22 +180,23 @@ export async function runContent({ now = new Date().toISOString(), force = false
 
   const sanitized = (raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean);
   const exposureBlocked = (raw?.drafts ?? []).length - sanitized.length;
+  const { kept, dropped } = dedupeTitles(sanitized, recentTitles);
   const queue = [
-    ...sanitized.map((d, i) => ({ ...d, id: `d${Date.parse(now)}-${i}`, status: "drafted", draftedAt: now })),
+    ...kept.map((d, i) => ({ ...d, id: `d${Date.parse(now)}-${i}`, status: "drafted", draftedAt: now })),
     ...(Array.isArray(prev?.queue) ? prev.queue : []),
   ].slice(0, 30); // bounded queue — the rail posts per doctrine caps, never floods
 
   const doc = {
     draftedAt: now,
-    verdict: sanitized.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
-    draftsQueued: sanitized.length, exposureBlocked,
+    verdict: kept.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
+    draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped,
     queue,
-    law: "טיוטה נכתבת רק מקרקעין-מדודות + ממצאים-ממוקדים; חשיפה = נחסמת בטהרת-הנוסח; שידור רק אחרי אימות-חתימה (דוקטרינת-שער)",
+    law: "R240: נושאים-אנושיים מסבב-יום + קול-אחד-לחשבון + הסרת-כפילויות; חשיפה = נחסמת בטהרת-הנוסח; שידור רק אחרי אימות-חתימה (דוקטרינת-שער)",
     bridgeError,
     ms: Date.now() - t0,
   };
   writeJson(FILE, doc);
-  return { verdict: doc.verdict, draftsQueued: sanitized.length, exposureBlocked, bridgeError };
+  return { verdict: doc.verdict, draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped, bridgeError };
 }
 
 /** recruiter evidence: fresh drafts queued = the content team is really running */
