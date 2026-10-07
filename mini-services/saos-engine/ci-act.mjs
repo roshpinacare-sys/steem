@@ -115,10 +115,20 @@ async function runCycle() {
   const sp = spawnSync("bun", ["daily.mjs"], { cwd: DIR, encoding: "utf8", timeout: 15 * 60 * 1000, env: process.env });
   const out = `${sp.stdout ?? ""}\n${sp.stderr ?? ""}`;
   const tail = out.slice(-3500);
-  let summary = null;
-  const m = out.match(/\{[\s\S]*"ok"[\s\S]*\}\s*$/);
-  if (m) { try { summary = JSON.parse(m[0]); } catch {} }
-  return { exitCode: sp.status, tail, summary, timedOut: sp.error?.code === "ETIMEDOUT" };
+  /* the engine's OWN durable marker is the truth — not log parsing */
+  let marker = null;
+  try { marker = JSON.parse(fs.readFileSync(path.join(DIR, "state", "cycle-run.json"), "utf8")); } catch {}
+  return { exitCode: sp.status, tail, marker, timedOut: sp.error?.code === "ETIMEDOUT" };
+}
+
+/* in-process credential adoption — the parent process needs its own verified
+ * identity for the custody anchor + bus ops (the child adopts independently;
+ * thinkGate trusts ONLY process-local verified memory — measured refusal). */
+async function adoptInProcess() {
+  const { syncCredential, verifyRoles, credentialFingerprint } = await import("./signer.mjs");
+  syncCredential();
+  const ver = await verifyRoles(ACCOUNT);
+  return { ok: !!ver?.ok, verdict: String(ver?.ok ? `verified-fp=${credentialFingerprint(ACCOUNT)}` : (ver?.reason ?? ver?.verdict ?? "unverified")).slice(0, 120) };
 }
 
 /* durable ≤1/h law — same state stamp the custodian commits */
@@ -169,6 +179,8 @@ if (!summary.adoption.ok) {
   console.log(JSON.stringify({ ...summary, verdict: "REFUSED-NO-CUSTODY", note: "fail-closed: no env candidate chain-verified — the loop honestly does not run" }, null, 1));
   process.exit(1);
 }
+summary.inProcess = await adoptInProcess();
+console.log(`[in-process] ${summary.inProcess.verdict}`);
 
 if (!flags.has("--cycle-only")) {
   summary.anchor = await custodyAnchor();
@@ -176,12 +188,12 @@ if (!flags.has("--cycle-only")) {
 }
 
 const cycle = await runCycle();
-summary.cycle = { exitCode: cycle.exitCode, timedOut: !!cycle.timedOut, ok: !!cycle.summary?.ok, health: cycle.summary?.health ?? null, steps: cycle.summary?.steps ?? null };
-console.log(`[cycle] exit=${cycle.exitCode} ok=${summary.cycle.ok}${cycle.timedOut ? " TIMED-OUT" : ""}`);
+summary.cycle = { exitCode: cycle.exitCode, timedOut: !!cycle.timedOut, ok: !!cycle.marker?.ok, health: cycle.marker?.health ?? null, finishedAt: cycle.marker?.finishedAt ?? null };
+console.log(`[cycle] exit=${cycle.exitCode} ok=${summary.cycle.ok}${cycle.timedOut ? " TIMED-OUT" : ""}${cycle.marker?.health ? ` health=${cycle.marker.health}` : ""}`);
 if (cycle.tail) console.log(`[cycle-tail] ${cycle.tail.split("\n").slice(-12).join("\n[cycle-tail] ")}`);
 
 if (!flags.has("--no-bus")) {
-  summary.bus = await busReceipts(cycle.summary, summary.anchor);
+  summary.bus = await busReceipts(cycle.marker, summary.anchor);
   for (const b of summary.bus ?? []) console.log(`[bus] ${b.kind}: ${b.verdict ?? b.error ?? b.ok}`);
 }
 
