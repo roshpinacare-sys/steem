@@ -42,3 +42,12 @@
 - **גל-3-הנשאר**: sim-fire-drill-מלא-על-branch-גריטה (worktrees-אמיתיים, אפס-LLM) · שדרוג-ה-forecast-מ-advisory-ל-blocking-אחרי-תקופת-התבוננות
 - **גל-4-הנשאר**: docs/STATE.md-מהחוזה-בקוד (generated+CI-check) · gitsafety-env-מושתל-בהרצת-סוכנים-חיצוניים
 - **שכבת-התצוגה** (מסילת-הסוכן-השני): קונסול-החי — כל-הערוצים-כאן-מוכנים-לגרייה
+
+## 6 · המראה-הציבורית (R254)
+
+הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=7db9200) —
+src/ המודולים-הטהורים (taskgraph/decisionqueue/worklog-intel) · cli/ · test/ (55-וקטורים) ·
+docs/PATTERNS.md+STATE-CONTRACT.md · docs/ci.example.yml (ממתין-לטוקן-עם-workflow-scope).
+הסנכרון-ידני-מדוד: cp-whitelist-מהעץ-הפרטי → סריקות-סודות (דפוסים+PAT-מילולי) → staging-מחוץ-לעץ
+→ דחיפה. כספות/מפתחות/state/מודולי-עסקים/התיקייה-הרצינית — לעולם-לא. שינוי-ב-src/cli/test-הפרטיים
+מחייב-השוואה-מול-הציבורי-ודחיפה-חוזרת.

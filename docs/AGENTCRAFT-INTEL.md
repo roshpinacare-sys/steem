@@ -51,6 +51,7 @@ AgentCraft נראה כמו "קבוצת סוכני-Claude עובדת-על-הקו�
 - **גל-2 (M)** — #3-TaskGraph (done-only-via-verified-push) + #4-DecisionQueue בתוך-חוזה-ה-state; ה-guard מפיק-decisions במקום-עצירה-שקטה.
 - **גל-3 (M)** — #9-sim-fire-drill מוזרע (חזרה-מלאה-על-branch-גריטה) + #5-`merge-tree`-dry-run-לפני-sovereign-push.
 - **גל-4 (S)** — #6-gitsafety-env לכל-process-שסוכן-מריץ (שכבה-רביעית-מתחת-ל-guard) + #10-`docs/STATE.md`-מהחוזה-עם-בדיקת-טריות-ב-guard.
+- **מצב-ריצה (R254)** — גל-2: חי (taskgraph/decisionqueue+CLI, selftest) · גל-3: חי-חלקית (merge-tree-forecast=advisory-ב-sovereign-push · drill-מוזרע-בתוך-taskgraph) · גל-4: חי-חלקית (gitsafety-env + STATE.md-מהחוזה) · **חדש: המראה-הציבורית** github.com/roshpinacare-sys/saos-agents (MIT, main=7db9200) — whitelist-13-קבצים, סריקות-סודות-נקיות, D-VIS-נסגרה-דרך-המסילה
 - **אינטגרציה-עם-הקונסול**: `worklog-analytics --json` נכנס-לסקרייפ-הקונסול-לצד-ה-state-החי-של-המנוע (state.json/events.jsonl — קיימים-ב-saos-engine).
 
 ## 5 · מה-לא-להעתיק (כנות)
