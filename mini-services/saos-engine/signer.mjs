@@ -115,24 +115,39 @@ export function armyCustodyState(roster) {
   return { verified, total: roster.length, accounts };
 }
 
-export function thinkGate(account, ops, { source = "execute" } = {}) {
-  const conf = armedConf();
+export function thinkGate(account, ops, { source = "execute", conf = null, journal = true, custodyOverride = null } = {}) {
+  /* R233: conf/journal/custody injection — the gate's LAW is unit-testable
+   * offline now (selftest vectors cover every refusal class; the battery
+   * proved untested law decays). Default behavior is unchanged for all
+   * production callers: they pass none of the overrides. */
+  const c = conf ?? armedConf();
   const pol = {
-    allowTransfersOut: conf.policy?.allowTransfersOut === true,
-    allowDelegation: conf.policy?.allowDelegation === true,
-    transferAllowlist: Array.isArray(conf.policy?.transferAllowlist) ? conf.policy.transferAllowlist : [],
+    allowTransfersOut: c.policy?.allowTransfersOut === true,
+    allowDelegation: c.policy?.allowDelegation === true,
+    transferAllowlist: Array.isArray(c.policy?.transferAllowlist) ? c.policy.transferAllowlist : [],
   };
-  const custody = custodyOf(account);
+  const custody = custodyOverride ?? custodyOf(account);
   const reasons = [];
   const shown = ops.map(([n, o]) => ({ op: n, to: o?.to ?? o?.delegatee ?? null, amount: o?.amount ?? o?.vesting_shares ?? null }));
   // 1 · custody first — a keyless account can never be a signing subject
   if (custody === "no-custody") {
     reasons.push(`custody:${account}=none — no credential on this machine; signing, funding and grid use are frozen (T-80)`);
-    return journalThink({ account, source, verdict: "REFUSED", reasons, shown });
+    return finishThink({ account, source, verdict: "REFUSED", reasons, shown }, journal);
   }
   if (custody === "keyed-unverified") {
     reasons.push(`custody:${account}=keyed-but-unverified — credential present but never chain-proven this run; refusing until verifyRoles passes`);
-    return journalThink({ account, source, verdict: "REFUSED", reasons, shown });
+    return finishThink({ account, source, verdict: "REFUSED", reasons, shown }, journal);
+  }
+  if (custody === "master-unverified") {
+    /* R233 GAP (caught by writing the gate's own test vectors): the master
+     * branch of custodyOf returns "master-unverified" in a fresh process —
+     * the old gate only refused no-custody / keyed-unverified, so a present-
+     * but-unverified MASTER credential slipped THROUGH every policy check.
+     * Unreachable in the healthy engine (boot verification precedes cycles)
+     * but the gate must stand alone — fail closed, zero deadlock risk
+     * (verifyRoles derives + reads chain only, never routes through here). */
+    reasons.push(`custody:${account}=keyed-but-unverified — master credential present but never chain-proven this run; refusing until verifyRoles passes`);
+    return finishThink({ account, source, verdict: "REFUSED", reasons, shown }, journal);
   }
   // 2 · outbound funds policy
   for (const [opName, op] of ops) {
@@ -150,14 +165,20 @@ export function thinkGate(account, ops, { source = "execute" } = {}) {
     // like every other value-moving op — safe-by-default holds.
     if (opName === "transfer_to_vesting") {
       const selfDirected = op?.from === account && op?.to === account;
-      const armed = conf.operator?.allowPowerUp === true;
+      const armed = c.operator?.allowPowerUp === true;
       if (!selfDirected || !armed) {
         reasons.push(`transfer_to_vesting (${op?.amount ?? "?"}): power-up ${!selfDirected ? "must be self-directed (from=to=account)" : "FORBIDDEN by standing policy (operator.allowPowerUp=false — T-91 doctrine not armed)"}`);
       }
     }
   }
   const verdict = reasons.length ? "REFUSED" : "ALLOW";
-  return journalThink({ account, source, verdict, reasons, shown, custody });
+  return finishThink({ account, source, verdict, reasons, shown, custody }, journal);
+}
+
+/* R233: journal or dry-return — selftest uses journal:false (zero state writes) */
+function finishThink(entry, journal) {
+  if (!journal) return { verdict: entry.verdict, reasons: entry.reasons, custody: entry.custody ?? null };
+  return journalThink(entry);
 }
 
 function journalThink(entry) {

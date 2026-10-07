@@ -10,6 +10,7 @@ import {
   payoutWindow, rewardHistoryRollup, vpNow, x2Spectrum, weaveArbitration, weaveFresh, opTypeName,
 } from "./lib.mjs";
 import { sanitizeDraft } from "./content.mjs";
+import { thinkGate } from "./signer.mjs";
 import { tick, fold } from "./grid.mjs";
 import { classifyAgent } from "./fleet.mjs";
 
@@ -139,6 +140,10 @@ eq("redeploy hostile-nan-cap-zero", redeployBidCapSbd(NaN, 0.5, 0.5), 0);
 eq("redeploy hostile-inf-cap-zero", redeployBidCapSbd(Infinity, 0.5, 0.5), 0);
 eq("redeploy hostile-obj-cap-zero", redeployBidCapSbd({}, 0.5, 0.5), 0);
 eq("redeploy hostile-inf-pct-cap-zero", redeployBidCapSbd(10, 0.5, Infinity), 0);
+/* R233: finite-but-huge inputs overflow the 3dp pipeline (1e308 × 1e6 → Infinity) — magnitude-clamped fail-closed */
+eq("redeploy huge-liquid-holds", planRedeploy({ liquidSteem: 1e308 }).verdict, "REDEPLOY-HOLD");
+eq("redeploy huge-sbd-cap-zero", redeployBidCapSbd(1e308, 0.5, 0.5), 0);
+eq("redeploy huge-pct-cap-zero", redeployBidCapSbd(10, 0.5, 1e308), 0);
 /* R233: PLAN must mean a broadcastable amount — min=0 + excess=0 was a lying PLAN/0 */
 const rdZeroPlan = planRedeploy({ liquidSteem: 5, minPowerUpSteem: 0, now: "x" });
 eq("redeploy no-plan-with-zero-amount", [rdZeroPlan.verdict, rdZeroPlan.powerUpSteem], ["REDEPLOY-HOLD", 0]);
@@ -171,6 +176,40 @@ eq("redeploy pacing day-cap-reason", redeployPacing({ verdict: "REDEPLOY-PLAN", 
   eq("redeploy convergence-no-breach", breach, false);
   ok("redeploy convergence-bounded", n > 0 && n < 40);
 }
+
+/* T-91 R233 · think-gate law as unit vectors — R231 shipped clause 4 with
+ * ZERO regression coverage (production evidence only). Every refusal class
+ * of the gate is now a permanent vector (journal:false = zero state writes). */
+const TG_ACC = "headcorner";
+const tgVerified = { custodyOverride: "verified", journal: false };
+const tgSelf = [["transfer_to_vesting", { from: TG_ACC, to: TG_ACC, amount: "7.724 STEEM" }]];
+const tgPilfer = [["transfer_to_vesting", { from: TG_ACC, to: "hcs1", amount: "7.724 STEEM" }]];
+/* 1 · custody-first: an unknown account is refused before any policy logic */
+const tgNoCustody = thinkGate("no-such-acct-xyz", tgSelf, { journal: false, conf: { operator: { allowPowerUp: true } } });
+eq("thinkgate custody-first-refused", tgNoCustody.verdict, "REFUSED");
+ok("thinkgate custody-first-reason", (tgNoCustody.reasons[0] ?? "").includes("no credential"));
+/* 2 · fresh-process master = keyed-but-unverified (deterministic offline) */
+const tgFresh = thinkGate(TG_ACC, tgSelf, { journal: false, conf: { operator: { allowPowerUp: true } } });
+eq("thinkgate unverified-master-refused", tgFresh.verdict, "REFUSED");
+ok("thinkgate unverified-reason", (tgFresh.reasons[0] ?? "").includes("keyed-but-unverified"));
+/* 3 · clause 4 armed + self-directed → ALLOW */
+eq("thinkgate powerup-self-armed-allow", thinkGate(TG_ACC, tgSelf, { ...tgVerified, conf: { operator: { allowPowerUp: true } } }).verdict, "ALLOW");
+/* 4 · clause 4: from≠to is REFUSED even when armed — value never leaves */
+const tgPilferR = thinkGate(TG_ACC, tgPilfer, { ...tgVerified, conf: { operator: { allowPowerUp: true } } });
+eq("thinkgate powerup-pilfer-refused", tgPilferR.verdict, "REFUSED");
+ok("thinkgate pilfer-reason", (tgPilferR.reasons[0] ?? "").includes("self-directed"));
+/* 5 · clause 4: unarmed (operator.allowPowerUp=false) → REFUSED */
+const tgUnarmed = thinkGate(TG_ACC, tgSelf, { ...tgVerified, conf: { operator: { allowPowerUp: false } } });
+eq("thinkgate powerup-unarmed-refused", tgUnarmed.verdict, "REFUSED");
+ok("thinkgate unarmed-reason", (tgUnarmed.reasons[0] ?? "").includes("FORBIDDEN"));
+/* 6 · clause 4: missing operator block entirely → REFUSED (safe-by-default) */
+eq("thinkgate powerup-no-policy-refused", thinkGate(TG_ACC, tgSelf, { ...tgVerified, conf: {} }).verdict, "REFUSED");
+/* 7 · policy class 2: outbound transfer outside allowlist → REFUSED */
+const tgOut = thinkGate(TG_ACC, [["transfer", { from: TG_ACC, to: "random-stranger", amount: "1.000 STEEM" }]], { ...tgVerified, conf: { policy: { transferAllowlist: ["hcs1", "hcs2"] } } });
+eq("thinkgate outbound-transfer-refused", tgOut.verdict, "REFUSED");
+ok("thinkgate outbound-reason", (tgOut.reasons[0] ?? "").includes("FORBIDDEN"));
+/* 8 · policy class 2: allowlisted recipient → ALLOW */
+eq("thinkgate allowlisted-transfer-allow", thinkGate(TG_ACC, [["transfer", { from: TG_ACC, to: "hcs1", amount: "1.000 STEEM" }]], { ...tgVerified, conf: { policy: { transferAllowlist: ["hcs1"] } } }).verdict, "ALLOW");
 eq("psm no-market reason", planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0, previouslyArmed: true }).reason, "no-market-price");
 
 /* 9 · stale classification: asks below floor / bids above ceiling (10bps tol) */
