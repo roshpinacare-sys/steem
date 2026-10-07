@@ -140,6 +140,18 @@ export type Status = {
       rows?: { mult?: number; sp?: number; usdPerDay?: number; reachesTarget?: boolean }[]
       law?: string | null
     } | null
+    /* T-91 · the redeployment doctrine (engine-computed, cockpit renders) */
+    redeployDoctrine?: {
+      ratios?: { buyBookPct?: number; powerUpPct?: number; reservePct?: number } | null
+      floors?: { liquidSteemFloor?: number; liquidSbdFloor?: number } | null
+      minPowerUpSteem?: number | null
+      minIntervalSec?: number | null
+      maxPerDay?: number | null
+      executionArmed?: boolean
+      plan?: { verdict?: string | null; reason?: string | null; powerUpSteem?: number | null; excessSteem?: number | null; pacing?: { verdict?: string | null; powerUpsToday?: number; sinceLastSec?: number | null } | null; at?: string | null } | null
+      state?: { day?: string | null; powerUpsToday?: number; lastPowerUpAt?: string | null } | null
+      law?: string | null
+    } | null
   } | null
   /* T-22f · the standing teams (T-22) — engine-computed (one-body law), cockpit only renders.
    * Loose but honest: nullable exactly where the engine emits null. */

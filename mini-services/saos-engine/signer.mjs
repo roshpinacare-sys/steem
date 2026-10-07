@@ -353,8 +353,9 @@ export function defaultArmedConf() {
      * orders it — value NEVER leaves, but even self-vesting is a signing
      * behavior that only an explicit doctrine may arm. */
     operator: { allowSoldierDeploy: false, allowPowerUp: false },
-    /* T-91 redeployment doctrine defaults (ratios sum to 1; floors = reserve): */
-    redeploy: { buyBookPct: 0.5, powerUpPct: 0.3, reservePct: 0.2, liquidSteemFloor: 5, liquidSbdFloor: 0.5, minPowerUpSteem: 5 },
+    /* T-91 redeployment doctrine defaults (ratios sum to 1; floors = reserve;
+     * R231 review: pacing law — ≤1 power-up/hour, ≤12/day, bounded churn): */
+    redeploy: { buyBookPct: 0.5, powerUpPct: 0.3, reservePct: 0.2, liquidSteemFloor: 5, liquidSbdFloor: 0.5, minPowerUpSteem: 5, minIntervalSec: 3600, maxPerDay: 12 },
     soldiers: { enabled: false, count: 3, prefix: "hcsoldier", steemEach: 10, sbdEach: 2, minLevel: 0.2 },
     promo: { armed: true, perDay: 1, tags: ["steem", "defi", "marketmaking", "saos"] },
     // T-13: the measured fuel rail — VP put to work (posting key only, vote op

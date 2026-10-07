@@ -15,7 +15,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import {
-  planLadder, planConvert, planRedeploy, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
+  planLadder, planConvert, planRedeploy, redeployBidCapSbd, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
   cycleHealth, cycleFailureBreakdown,
 } from "./lib.mjs";
 import {
@@ -197,10 +197,16 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     } catch { /* book read failed → flow tranche simply inactive this run */ }
     const confPeg = armedConf();
     const flowCfg = confPeg.flow ?? {};
+    /* T-91 enforcement (was documentation): the doctrine's buy-book share now
+     * CAPS the bid budget — only buyBookPct of SBD above the reserve floor
+     * may flow into bids; the rest is reserve by law, not by note. */
+    const rdPeg = confPeg.redeploy ?? {};
+    const buyBookCapSbd = redeployBidCapSbd(inv.sbd ?? 0, rdPeg.liquidSbdFloor ?? 0.5, rdPeg.buyBookPct ?? 0.5);
+    const bidBudgetCapped = Math.min(bidBudget, buyBookCapSbd);
     const plan = planLadder({
       parity: obs.parity.parity,
       askBudgetSteem: askBudget,
-      bidBudgetSbd: bidBudget,
+      bidBudgetSbd: bidBudgetCapped,
       spreadBps, skew, now,
       bestBid: book?.bestBid ?? null, bestAsk: book?.bestAsk ?? null,
       feedAnchor: obs.feed > 0 ? obs.feed : null,
@@ -232,14 +238,14 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       market: pulse,
       marks: { paritySbdPerSteem: Math.round(obs.parity.parity * 1e6) / 1e6, source: obs.parity.source, lowConfidence: !!obs.parity.lowConfidence, internalFeed: Math.round(obs.feed * 1e6) / 1e6, dragK: plan.dragK, floor: plan.floor, ceiling: plan.ceiling, spreadBpsFed: spreadBps },
       skew, stale: { count: staleCls.stale.length, orderids: staleCls.stale.map((o) => o.orderid) },
-      liquidity: { deployedAsks: Math.round(deployedAsks * 1e3) / 1e3, deployedBids: Math.round(deployedBids * 1e3) / 1e3, askBudget: Math.round(askBudget * 1e3) / 1e3, bidBudget: Math.round(bidBudget * 1e3) / 1e3, deployCap: 0.6 },
+      liquidity: { deployedAsks: Math.round(deployedAsks * 1e3) / 1e3, deployedBids: Math.round(deployedBids * 1e3) / 1e3, askBudget: Math.round(askBudget * 1e3) / 1e3, bidBudget: Math.round(bidBudgetCapped * 1e3) / 1e3, bidBudgetUncapped: Math.round(bidBudget * 1e3) / 1e3, buyBookCapSbd, deployCap: 0.6 },
       publishedAt: now,
     };
     if (persist) {
       writeJson(path.join(STATE, "offer.json"), offer);
       appendLine(path.join(STATE, "events.jsonl"), { type: "offer.published", at: now, verdict: plan.verdict, asks: plan.asks.length, bids: plan.bids.length, flowAsks: plan.flowAsks?.length ?? 0, flowBids: plan.flowBids?.length ?? 0, bestAsk: book?.bestAsk ?? null, bestBid: book?.bestBid ?? null });
     }
-    return { verdict: plan.verdict, asks: plan.asks.length, bids: plan.bids.length, flowAsks: plan.flowAsks?.length ?? 0, flowBids: plan.flowBids?.length ?? 0, staleCount: staleCls.stale.length, skew: skew.skew, book, market: pulse ? { tradesPerDay: pulse.tradesPerDay, spreadBps: pulse.book?.spreadBps ?? null } : null, liquidity: offer.liquidity };
+    return { verdict: plan.verdict, asks: plan.asks.length, bids: plan.bids.length, flowAsks: plan.flowAsks?.length ?? 0, flowBids: plan.flowBids?.length ?? 0, staleCount: staleCls.stale.length, skew: skew.skew, book, market: pulse ? { tradesPerDay: pulse.tradesPerDay, spreadBps: pulse.book?.spreadBps ?? null } : null, liquidity: { ...offer.liquidity, bidBudgetCapped: true } };
   });
 
   /* 5 · convert-plan: D-023 PSM hysteresis (SBD face-$1 edge) */
@@ -265,7 +271,11 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   /* 5.5 · redeploy: T-91 doctrine — realized value flows back by fixed ratios.
    * THE LAW: cashing out NEVER stops the autonomy. The plan is pure doctrine
    * math; the EXECUTION (power-up op) happens in the execute step, gated by
-   * operator.allowPowerUp + the signer's think-gate (self-directed only). */
+   * operator.allowPowerUp + the signer's think-gate (self-directed only).
+   * PACING LAW (R231 review): convergence must not churn — at most ONE
+   * power-up per minIntervalSec, at most maxPerDay per day. A paced-out
+   * plan reads REDEPLOY-COOLDOWN here (the pure plan stays in the file,
+   * transparent), and the execute step naturally skips it. */
   report.steps.redeploy = await stepWrap("redeploy", async () => {
     const rd = armedConf().redeploy ?? {};
     const inv = obs.ok ? (obs.inventory ?? { steem: 0, sbd: 0 }) : { steem: 0, sbd: 0 };
@@ -276,11 +286,30 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       liquidSteemFloor: rd.liquidSteemFloor ?? 5, liquidSbdFloor: rd.liquidSbdFloor ?? 0.5,
       minPowerUpSteem: rd.minPowerUpSteem ?? 5,
     });
+    /* pacing state — honest counter, seeded by the operator or the machine */
+    const RS_FILE = path.join(STATE, "redeploy-state.json");
+    const rs = readJson(RS_FILE, { day: null, powerUpsToday: 0, lastPowerUpAt: null });
+    const today = now.slice(0, 10);
+    if (rs.day !== today) { rs.day = today; rs.powerUpsToday = 0; }
+    const minIntervalSec = rd.minIntervalSec ?? 3600;
+    const maxPerDay = rd.maxPerDay ?? 12;
+    const sinceLastSec = rs.lastPowerUpAt ? Math.round((Date.now() - Date.parse(rs.lastPowerUpAt)) / 1000) : null;
+    const pacing = { minIntervalSec, maxPerDay, powerUpsToday: rs.powerUpsToday, lastPowerUpAt: rs.lastPowerUpAt, sinceLastSec, verdict: null };
+    if (plan.verdict === "REDEPLOY-PLAN" && sinceLastSec != null && sinceLastSec < minIntervalSec) {
+      pacing.verdict = "interval";
+      plan.verdict = "REDEPLOY-COOLDOWN";
+      plan.reason = `powerup-pacing (${sinceLastSec}s < ${minIntervalSec}s since last)`;
+    } else if (plan.verdict === "REDEPLOY-PLAN" && rs.powerUpsToday >= maxPerDay) {
+      pacing.verdict = "day-cap";
+      plan.verdict = "REDEPLOY-COOLDOWN";
+      plan.reason = `powerup-day-cap (${rs.powerUpsToday} >= ${maxPerDay} today)`;
+    }
+    plan.pacing = pacing;
     if (persist) {
       writeJson(path.join(STATE, "redeploy-plan.json"), plan);
-      appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.planned", at: now, verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios });
+      appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.planned", at: now, verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict });
     }
-    return { verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios };
+    return { verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict ?? null };
   });
 
   /* join the parallel curate branch here (it never gates the front chain) */
@@ -391,7 +420,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
              * at plan time; value levels fall back to multiply-and-round. */
             const sOut = lvl.sbdOut3 != null ? lvl.sbdOut3 : amt * lvl.unit;
             ops.push(["limit_order_create", { owner: ACCOUNT, orderid: id, amount_to_sell: `${amt.toFixed(3)} STEEM`, min_to_receive: `${sOut.toFixed(3)} SBD`, fill_or_kill: false, expiration: tSec + 86400 }]);
-            createdIds.push({ id, side: "ask", unit: lvl.unit, tranche: lvl.tranche ?? "value", at: now });
+            createdIds.push({ id, side: "ask", unit: lvl.unit, tranche: lvl.tranche ?? "value", amountSteem: amt, at: now });
             askSum = Math.round((askSum + amt) * 1e6) / 1e6;
           } else {
             const amt = Math.min(lvl.amountSbd, Math.max(0, bidCap - bidSum), Math.max(0, (conf.maxBidSbdPerCycle ?? 20) - bidSum));
@@ -399,7 +428,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
             const id = (tSec + ops.length) >>> 0;
             const stOut = lvl.steemOut3 != null ? lvl.steemOut3 : amt / lvl.unit;
             ops.push(["limit_order_create", { owner: ACCOUNT, orderid: id, amount_to_sell: `${amt.toFixed(3)} SBD`, min_to_receive: `${stOut.toFixed(3)} STEEM`, fill_or_kill: false, expiration: tSec + 86400 }]);
-            createdIds.push({ id, side: "bid", unit: lvl.unit, tranche: lvl.tranche ?? "value", at: now });
+            createdIds.push({ id, side: "bid", unit: lvl.unit, tranche: lvl.tranche ?? "value", amountSbd: amt, at: now });
             bidSum = Math.round((bidSum + amt) * 1e6) / 1e6;
           }
         }
@@ -429,22 +458,38 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     }
     // (d2) T-91 redeploy execution — power-up the doctrine share of excess
     // STEEM (transfer_to_vesting, self-directed, op-id 3 chain-verified).
-    // Gates: operator.allowPowerUp + REDEPLOY-PLAN + active-only batch (a
-    // claim in the batch means posting-authority mix → defer like convert)
-    // + chain-truth liquid cap (never trust the plan's stale inventory over
-    // the account's real balance) + the think-gate's independent refusal.
+    // Gates: operator.allowPowerUp + REDEPLOY-PLAN (pacing already applied
+    // in the redeploy step) + active-only batch (a claim in the batch means
+    // posting-authority mix → defer like convert) + OPS-CAP compliance (the
+    // power-up never busts maxOpsPerCycle) + BATCH-FUNDS GUARD (the ladder's
+    // fresh ask locks + the vest amount can never exceed chain liquid above
+    // the floor — one tx must always be fundable end-to-end).
     const rdExec = report.steps.redeploy;
     if (conf.operator?.allowPowerUp === true && rdExec?.verdict === "REDEPLOY-PLAN" && (rdExec.powerUpSteem ?? 0) >= 0.001) {
       if (ops.some(([n]) => n === "claim_reward_balance")) {
         report.steps.redeployDeferredForClaim = true;
+      } else if (ops.length >= maxOpsPerCycle) {
+        report.steps.redeployDeferredForOpsCap = { ops: ops.length, cap: maxOpsPerCycle };
       } else {
         try {
           const accRd = await accountState(ACCOUNT);
           const floorSteem = conf.redeploy?.liquidSteemFloor ?? 5;
-          const amt = Math.min(rdExec.powerUpSteem, Math.max(0, (accRd.ok ? accRd.steem ?? 0 : 0) - floorSteem));
+          const steemLockedThisBatch = createdIds
+            .filter((c) => c.side === "ask")
+            .reduce((s, c) => s + (c.amountSteem ?? 0), 0);
+          const amt = Math.min(
+            rdExec.powerUpSteem,
+            Math.max(0, (accRd.ok ? accRd.steem ?? 0 : 0) - floorSteem - steemLockedThisBatch),
+          );
           const amt3 = Math.floor(amt * 1000) / 1000;
           if (amt3 >= 0.001) {
             ops.push(["transfer_to_vesting", { from: ACCOUNT, to: ACCOUNT, amount: `${amt3.toFixed(3)} STEEM` }]);
+            /* pacing state bumped at PUSH time — honest conservative counter */
+            const RS_FILE = path.join(STATE, "redeploy-state.json");
+            const rs = readJson(RS_FILE, { day: null, powerUpsToday: 0, lastPowerUpAt: null });
+            const rdDay = now.slice(0, 10);
+            if (rs.day !== rdDay) { rs.day = rdDay; rs.powerUpsToday = 0; }
+            writeJson(RS_FILE, { day: rdDay, powerUpsToday: (rs.powerUpsToday ?? 0) + 1, lastPowerUpAt: now });
             if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.powerup-op", at: now, amountSteem: amt3 });
           }
         } catch { /* honest skip — next cycle retries on fresh plan */ }
