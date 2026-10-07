@@ -123,12 +123,15 @@ async function runCycle() {
 
 /* in-process credential adoption — the parent process needs its own verified
  * identity for the custody anchor + bus ops (the child adopts independently;
- * thinkGate trusts ONLY process-local verified memory — measured refusal). */
-async function adoptInProcess() {
-  const { syncCredential, verifyRoles, credentialFingerprint } = await import("./signer.mjs");
-  syncCredential();
-  const ver = await verifyRoles(ACCOUNT);
-  return { ok: !!ver?.ok, verdict: String(ver?.ok ? `verified-fp=${credentialFingerprint(ACCOUNT)}` : (ver?.reason ?? ver?.verdict ?? "unverified")).slice(0, 120) };
+ * thinkGate trusts ONLY process-local verified memory — measured refusal).
+ * The lawful path is the DIRECT WIF adoption (chain-judged, signer.mjs). */
+async function adoptInProcess(sourceEnvName) {
+  const raw = (process.env[sourceEnvName] ?? "").trim();
+  if (!raw) return { ok: false, verdict: "no-candidate-for-inprocess" };
+  const bare = raw.startsWith("P") && raw.length >= 51 ? raw.slice(1) : raw;
+  const { adoptVerifiedWifIdentity, credentialFingerprint } = await import("./signer.mjs");
+  const r = await adoptVerifiedWifIdentity(ACCOUNT, bare, { role: "posting" });
+  return { ok: !!r?.ok, verdict: String(r?.ok ? `wif-verified-fp=${credentialFingerprint(ACCOUNT)}` : (r?.reason ?? "adoption-refused")).slice(0, 120) };
 }
 
 /* durable ≤1/h law — same state stamp the custodian commits */
@@ -137,16 +140,18 @@ function lastAnchorMs() {
 }
 
 async function custodyAnchor() {
-  const { thinkGate, executeAs, verifyRoles, credentialFingerprint } = await import("./signer.mjs");
+  const { thinkGate, executeAs, custodyOf, credentialFingerprint } = await import("./signer.mjs");
   const last = lastAnchorMs();
   if (Date.now() - last < 3600000) return { ok: true, verdict: "RATE-LIMITED-DURABLE", last };
-  const ver = await verifyRoles(ACCOUNT);
-  if (!ver?.ok) return { ok: false, verdict: `VERIFY-REFUSED:${String(ver?.reason ?? ver?.verdict ?? "unverified").slice(0, 80)}` };
+  /* custody check uses the process-local VERIFIED identity (adopted via the
+   * chain-judged direct-WIF path) — never a password re-derivation */
+  const co = custodyOf(ACCOUNT);
+  if (co !== "master-verified") return { ok: false, verdict: `CUSTODY-REFUSED:${co}` };
   const tip = sh("git", ["rev-parse", "HEAD"]).out;
   const ops = [["custom_json", { required_auths: [], required_posting_auths: [ACCOUNT], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "ci-act", fp: credentialFingerprint(ACCOUNT) }) }]];
   const gate = thinkGate(ACCOUNT, ops, { source: "ci-custody-witness" });
   if (gate?.verdict !== "ALLOW") return { ok: false, verdict: `GATE:${(gate?.reasons ?? []).join(";").slice(0, 120)}` };
-  const r = await executeAs(ACCOUNT, ops, { tag: "ci-custody-witness", role: "posting" });
+    const r = await executeAs(ACCOUNT, ops, { tag: "ci-custody-witness", role: "posting" });
   if (r?.ok) {
     try { fs.mkdirSync(path.join(DIR, "state"), { recursive: true }); fs.writeFileSync(path.join(DIR, "state", "custody-anchor.json"), JSON.stringify({ at: Date.now(), txid: r.txid ?? null, tip })); } catch {}
     return { ok: true, verdict: "ANCHORED", txid: r.txid ?? null, tip };
@@ -179,7 +184,7 @@ if (!summary.adoption.ok) {
   console.log(JSON.stringify({ ...summary, verdict: "REFUSED-NO-CUSTODY", note: "fail-closed: no env candidate chain-verified — the loop honestly does not run" }, null, 1));
   process.exit(1);
 }
-summary.inProcess = await adoptInProcess();
+summary.inProcess = await adoptInProcess(summary.adoption.source);
 console.log(`[in-process] ${summary.inProcess.verdict}`);
 
 if (!flags.has("--cycle-only")) {
