@@ -206,7 +206,8 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       const soldiersVerified = Array.isArray(soldiers?.accounts) ? soldiers.accounts.filter((r) => r?.custody === "verified").length : 0;
       const layers = measuredLayers({ ourOrders, hyper, soldiersVerified });
       writeJson(path.join(STATE, "state.json"), { ...st, grids: layers });
-      if (prev.simFills > 0 || prev.simFeesMu > 0) {
+      if ((prev.simFills > 0 || prev.simFeesMu > 0) && !prev.sim?.retired) {
+        /* the tombstone fires ONCE — the first new-law cycle that saw the heritage */
         appendLine(path.join(STATE, "events.jsonl"), { type: "grid.sim-retired", at: now, frozenFills: prev.simFills ?? 0, frozenFeesMu: prev.simFeesMu ?? 0, law: "R237 — real fills are chain-measured, never simulated" });
       }
       for (const e of digest.signals) appendLine(path.join(STATE, "events.jsonl"), e);
