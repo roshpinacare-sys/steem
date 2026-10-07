@@ -204,6 +204,8 @@ export async function GET() {
     adaptation: s.adaptation ?? null, /* R210: learned-rule state (verdicts only) */
     discovery: discoveryPublic,
     fleet: s.fleet ?? null,
+    /* R237-B: המועצה — רשת-התקשורת החיה בין-האיברים (verdicts ממודדים) */
+    council: s.council ?? null,
     credential: s.credential ?? null,
     spoilage: s.spoilage ?? null,
     hyper,

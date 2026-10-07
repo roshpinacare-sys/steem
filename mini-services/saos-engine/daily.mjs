@@ -22,7 +22,7 @@ import { runCouncil } from "./council.mjs";
 import {
   externalParity, internalFeed, accountState, openOrders, measureAll, fuelToUsdPerDay, marketPulse, rpcCall,
 } from "./measure.mjs";
-import { tick as gridTick, fold, activeGrids } from "./grid.mjs";
+import { tick as gridTick } from "./grid.mjs";
 import { runIntel } from "./intel.mjs";
 import { executeOps, executeAs, armedConf, execPaused, masterAccount, loadCredential, custodyOf } from "./signer.mjs";
 import { writePrediction, evaluateAndJournal, updateBelief, triggerWatch, resolveClaimRole, journalClaimRefusal, claimChainTruth, reconcileOrphans } from "./adaptation.mjs";
@@ -848,12 +848,11 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
    * the top measured lesson (memory/ is inside the builder's path law).
    * Fail-isolated: a dark organ journals DOWN — it never blocks the cycle. */
   report.steps.council = await stepWrap("council", async () => {
-    const prevCouncil = readJson(path.join(STATE, "council.json"), null);
+    const prevCouncil = readJson(path.join(STATE, "council.json"), null) ?? {};
     const today = now.slice(0, 10);
     const taskDay = prevCouncil?.builderTask?.at ? String(prevCouncil.builderTask.at).slice(0, 10) : null;
     let builderTask = null;
-    const councilPrev = await Promise.resolve(readJson(path.join(STATE, "council.json"), null));
-    const builderOrgan = (councilPrev?.organs ?? []).find((o) => o?.id === "builder");
+    const builderOrgan = (prevCouncil?.organs ?? []).find((o) => o?.id === "builder");
     const queueEmpty = (builderOrgan?.evidence?.builder?.queue ?? 0) === 0;
     if (taskDay !== today && queueEmpty) {
       const lessons = readJson(path.join(STATE, "learning.json"), null)?.lessons ?? [];
