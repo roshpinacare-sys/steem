@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-07T22:49:24.418Z",
+  "at": "2026-10-07T22:59:24.419Z",
   "enabled": true,
-  "runsTotal": 364,
+  "runsTotal": 365,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -14,7 +14,7 @@
       "failReasons": {
         "unknown": 1
       },
-      "msP50": 22064,
+      "msP50": 21997,
       "msP90": 73444
     },
     "curator": {
@@ -32,20 +32,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 2,
-      "fails": 2,
+      "window": 3,
+      "fails": 3,
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2694,
+      "checks": 2704,
       "downs": 104,
       "heals": 37,
       "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-07T22:49:24.666Z",
+      "lastCheckAt": "2026-10-07T22:59:24.675Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T13:39:29.573Z",
-      "lastUpAt": "2026-10-07T22:49:24.668Z",
+      "lastUpAt": "2026-10-07T22:59:24.677Z",
       "blips": 1
     }
   },
@@ -61,14 +61,14 @@
     {
       "id": "cycle-latency-tail",
       "severity": "medium",
-      "evidence": "p50 22064ms vs p90 73444ms",
+      "evidence": "p50 21997ms vs p90 73444ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     },
     {
       "id": "broadcast-fails",
-      "severity": "medium",
-      "evidence": "2/2 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
+      "severity": "high",
+      "evidence": "3/3 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
       "lesson": "broadcast failures burn RC and delay rails",
       "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
@@ -78,9 +78,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 262,
-    "broadcast-fails": 109,
-    "cycle-latency-tail": 36
+    "signing-cred-blocked": 263,
+    "broadcast-fails": 110,
+    "cycle-latency-tail": 37
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
