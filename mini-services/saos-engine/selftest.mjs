@@ -1488,6 +1488,24 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("plan codex manual even empty", plan.find((p) => p.agent === "codex").action, "manual");
 }
 
+/* R249 · THE LINEAGE TRIPWIRE: selftest reads its own source and refuses to
+ * pass if a custodian-style sweep downgrades it. The 95e90d2 regression
+ * (1501→1260 lines, 115 vectors silently lost while still printing "PASS")
+ * is the measured enemy: a smaller selftest that passes is a lie, not a
+ * success. BY CONSTRUCTION: these vectors fail loud if any block is swept. */
+{
+  const fs = await import("node:fs");
+  const src = fs.readFileSync(new URL(import.meta.url), "utf8");
+  const has = (m) => src.includes(m);
+  ok("lineage: evidence block present", has("railEvidence") && has("buildEvidence") && has("anchorEvidence"));
+  ok("lineage: intelligence round present", has("INTELLIGENCE ROUND"));
+  ok("lineage: dex-takeover gate present", has("DEX-TAKEOVER"));
+  ok("lineage: spamgate graft present", has("spamVerdict"));
+  ok("lineage: size floor (>=1450 lines)", src.split("\n").length >= 1450);
+  const lineageCalls = (src.match(/^[ \t]*(?:eq|ok)\(/gm) ?? []).length;
+  ok("lineage: vector-call floor (>=600)", lineageCalls >= 600);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
