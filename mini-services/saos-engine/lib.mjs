@@ -283,11 +283,19 @@ export function planRedeploy({
     floors: { liquidSteemFloor, liquidSbdFloor },
     liquidSteem: r6(liquidSteem ?? 0), liquidSbd: r6(liquidSbd ?? 0),
     excessSteem, powerUpSteem, minPowerUpSteem,
-    buyBookNote: "the BID rail is the buy-book share made real — peg's deploy law (≤60%) governs it; no extra op",
+    buyBookNote: "the BID rail is the buy-book share made real — capped by buyBookPct of SBD above the floor (R231: enforced, not documented), under peg's 60% deploy law",
     reserveNote: "the floors ARE the reserve — never deployed, always protecting ops",
     law: "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים, מעל רצפות-ההפעלה בלבד",
     at: now,
   };
+}
+
+/* ── T-91 buy-book enforcement (R231 review): the doctrine's buyBookPct is
+ * LAW, not documentation — the peg step's bid budget may never exceed this
+ * share of SBD above the reserve floor. Pure helper so the cap is testable. */
+export function redeployBidCapSbd(sbdLiquid = 0, floorSbd = 0.5, buyBookPct = 0.5) {
+  if (!(buyBookPct >= 0) || !(floorSbd >= 0)) return 0;
+  return r6(Math.max(0, (sbdLiquid ?? 0) - (floorSbd ?? 0)) * (buyBookPct ?? 0));
 }
 
 /* ── stale classification (T-8b, lane-scoped per D-021) ────────────────────

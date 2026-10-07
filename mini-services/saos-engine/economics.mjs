@@ -104,11 +104,14 @@ export function runEconomics(now = new Date().toISOString()) {
         liquidSbdFloor: conf.redeploy.liquidSbdFloor ?? 0.5,
       },
       minPowerUpSteem: conf.redeploy.minPowerUpSteem ?? 5,
+      minIntervalSec: conf.redeploy.minIntervalSec ?? 3600,
+      maxPerDay: conf.redeploy.maxPerDay ?? 12,
       executionArmed: conf?.operator?.allowPowerUp === true,
       plan: (() => {
         const p = readJson(path.join(STATE, "redeploy-plan.json"), null);
-        return p ? { verdict: p.verdict, reason: p.reason ?? null, powerUpSteem: p.powerUpSteem ?? null, excessSteem: p.excessSteem ?? null, at: p.at ?? null } : null;
+        return p ? { verdict: p.verdict, reason: p.reason ?? null, powerUpSteem: p.powerUpSteem ?? null, excessSteem: p.excessSteem ?? null, pacing: p.pacing ?? null, at: p.at ?? null } : null;
       })(),
+      state: readJson(path.join(STATE, "redeploy-state.json"), null),
       law: "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד",
     } : null,
     pid: process.pid,

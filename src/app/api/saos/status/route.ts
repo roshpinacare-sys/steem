@@ -233,6 +233,8 @@ export async function GET() {
           payoutClock: econRaw.payoutClock ?? null,
           pendingRewards: econRaw.pendingRewards ?? null,
           x2: econRaw.x2 ?? null,
+          /* T-91 · the redeployment doctrine — passthrough, engine-computed */
+          redeployDoctrine: econRaw.redeployDoctrine ?? null,
         }
       : null,
     webintel: s.webintel ?? null,

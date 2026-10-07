@@ -3,7 +3,7 @@
  * Zero network, zero clock, zero randomness. RUN: bun selftest.mjs
  */
 import {
-  dragK, inventorySkew, planLadder, planConvert, planRedeploy, classifyStale, pnlFromFills, guardDepth, parityVerdict,
+  dragK, inventorySkew, planLadder, planConvert, planRedeploy, redeployBidCapSbd, classifyStale, pnlFromFills, guardDepth, parityVerdict,
   MIN_LEVEL, ASK_FLOOR_BPS,
   doctrineAccount, credentialGate, rcAnomaly, recruitRoles, aggregateRails,
   normalizeWebIntel, webIntelFresh,
@@ -109,6 +109,13 @@ eq("redeploy ratios-invalid-blocked", rdBad.verdict, "REDEPLOY-BLOCKED");
 eq("redeploy ratios-invalid-reason", rdBad.reason, "ratios-invalid");
 const rdCustom = planRedeploy({ liquidSteem: 10, buyBookPct: 1, powerUpPct: 0, reservePct: 0, minPowerUpSteem: 1, now: "x" });
 eq("redeploy zero-powerup-share-holds", rdCustom.verdict, "REDEPLOY-HOLD");
+
+/* T-91 R231 review · buy-book cap is law — the peg bid budget can never exceed it */
+eq("redeploy bidcap basic", redeployBidCapSbd(82.144, 0.5, 0.5), 40.822);
+eq("redeploy bidcap dust", redeployBidCapSbd(0.015, 0.5, 0.5), 0);
+eq("redeploy bidcap below-floor", redeployBidCapSbd(0.4, 0.5, 0.5), 0);
+eq("redeploy bidcap full-share", redeployBidCapSbd(10, 2, 1), 8);
+eq("redeploy bidcap junk-pct", redeployBidCapSbd(10, 0.5, -1), 0);
 eq("psm no-market reason", planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0, previouslyArmed: true }).reason, "no-market-price");
 
 /* 9 · stale classification: asks below floor / bids above ceiling (10bps tol) */
