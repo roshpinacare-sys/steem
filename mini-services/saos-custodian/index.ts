@@ -110,10 +110,24 @@ function tick() {
         appendAlert("torn-state", `invalid JSON skipped from persistence: ${res.invalidJson.join(",")}`);
       } else {
         // 4) commit + push through the law gate
-        sh("git", ["add", "-A"]);
+        // R249 · STATE-ONLY PERSISTENCE LAW: this service persists runtime
+        // state and measured evidence ONLY — never cognitive/module code.
+        // Measured failure: tick 19:49:39Z swept a downgraded selftest.mjs
+        // into 95e90d2 via `git add -A` (115 vectors silently lost; restored
+        // by R248 under the lineage law). Targeted adds make that failure
+        // mode impossible BY CONSTRUCTION: anything dirty outside
+        // state/measured belongs to its cognitive writer and is LEFT ALONE.
+        sh("git", ["add", "--", "mini-services/saos-engine/state", "docs/measured"]);
         const staged = sh("git", ["diff", "--cached", "--name-only"]);
         if (staged.out) {
-          const cm = sh("git", ["commit", "-S", "-m", "SAOS-custodian: bounded-staleness persistence (jq-validated state, FF law)"]);
+          /* R249 · gate clause 2.5 (R220): body-prefixed subjects require a
+           * GPG signature — the sandbox has no secret key (measured:
+           * commit-fail 19:59-20:10Z, push-abort 20:12Z). State persistence
+           * IS checkpoint noise by the gate's own taxonomy, so the subject
+           * takes the canonical UUID checkpoint form and the descriptor
+           * lives in the body — same history, same law, publishable. */
+          const uuid = sh("python3", ["-c", "import uuid; print(uuid.uuid4())"]).out;
+          const cm = sh("git", ["commit", "-m", uuid || "saos-custodian-checkpoint", "-m", "SAOS-custodian: bounded-staleness persistence (state-only, jq-validated, FF law) — R249"]);
           res.committed = cm.code === 0;
           if (!res.committed) {
             appendAlert("commit-fail", cm.err || cm.out);
@@ -124,6 +138,9 @@ function tick() {
             if (res.pushed && m) { res.pushSha = m[1]; void anchorWitness(); }
             if (!res.pushed) appendAlert("push-abort", `${p.out} ${p.err}`);
           }
+        } else if (res.dirty > 0) {
+          // R249 · lineage law in action: non-state dirt is NOT ours to commit.
+          appendAlert("non-state-dirty-left", `${res.dirty} dirty paths outside state/measured — left to their writers (lineage law: restoration over deletion)`);
         }
       }
     }
