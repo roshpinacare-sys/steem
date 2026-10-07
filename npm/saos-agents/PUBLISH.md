@@ -33,3 +33,19 @@
   (הסקריפט מסרב טוקן-fine-grained, בודק-תקינות-חבילה, מפרסם, ומאמת-חי).
 - pat-audit חי: `bun scripts/pat-audit.mjs` — verdict JSON (סוג-טוקן, identity, rate,
   leak-scan של ערך-הטוקן מול העץ, ו-capability).
+
+## 🎉 עדכון R251 — **פורסם בפעם-הראשונה** (2026-10-07T21:00:47Z)
+- המפעיל ביצע את ההוראות (classic-PAT + `write:packages`) והעלה את הטוקן כ-`upload/ttttpacake.txt`
+  → נורמל-ל-`upload/pat-classic.env` (bare, gitignored-מוכח, אפס-סודות-בגיט).
+- X-OAuth-Scopes: **repo, write:packages** · login=roshpinacare-sys (User).
+- `bash scripts/publish-github-packages.sh` → **`+ @roshpinacare-sys/saos-agents@0.1.0`** —
+  החבילה-הראשונה-בהיסטוריה-על-npm.pkg.github.com. אחרי-E403×3-על-fine-grained — טוקן-קלאסי-אחד-סגר-את-הפער.
+- **אימות-חי-עצמאי**: `npm view` (עם-auth) = version **0.1.0**, dist.shasum **7ad06a0d902963aa9fa1ecbb3c114448457018d4** (זהה-לדיווח-ה-publish) ·
+  API-packages: package_type=npm, created 21:00:47Z, **visibility=private** (ברירת-מחדל-GH).
+- **visibility=private** — כל-התקנה/view-דורשת-טוקן (GH-registry-דורש-auth-גם-לחבילות-public).
+  להפצה-פתוחה: (א) היפוך-בממשק: Package-Settings → Danger-Zone → Change-visibility → Public, או
+  (ב) מהדורה-באה-0.1.1-עם-`--access-public` (הסקריפט-כבר-מעודכן-כך).
+- תיקוני-היגיינה-אחרי-הפרסום: שורת-verify-בסקריפט-רצה-כעת-עם-NODE_AUTH_TOKEN (ה-E401-היה-רק-באימות,
+  לא-בפרסום) · `.npmrc`-נוקה-מ-`always-auth` (npm-warning-מיושן).
+- מצב-הפצה-דואלי-חי: GitHub-Release `saos-agents-v0.1.0` (ציבורי, tarball 17,199B) +
+  GitHub-Packages `0.1.0` (private-עד-היפוך) — שני-ערוצים-עצמאיים.

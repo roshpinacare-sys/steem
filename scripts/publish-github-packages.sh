@@ -36,6 +36,7 @@ print("package sanity OK:", d["name"], d["version"])
 EOF
 
 cd npm/saos-agents
-NODE_AUTH_TOKEN="$TOK" npm publish
-echo "PUBLISHED — live verify:"
-npm view "@roshpinacare-sys/saos-agents" version --registry https://npm.pkg.github.com && echo "VERIFY OK"
+# --access public: GH-npm packages default to private; open distribution needs explicit access.
+NODE_AUTH_TOKEN="$TOK" npm publish --access public
+echo "PUBLISHED — live verify (authed; GH registry requires token even to view):"
+NODE_AUTH_TOKEN="$TOK" npm view "@roshpinacare-sys/saos-agents" version --registry https://npm.pkg.github.com && echo "VERIFY OK"

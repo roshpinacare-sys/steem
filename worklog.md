@@ -1968,3 +1968,20 @@ Stage Summary:
 - שאלת-ה-PAT-נסגרת-מדודה-ולא-משערת: הסיבה-שהמפעיל-לא-מצא-"Packages" — ההרשאה-לא-קיימת-בממשק-לחשבון-אישי; E403×3-חותמות-זמן-מוכיחות-שגם-הרחבת-הרשאות-אחרות-לא-תעזור; צעד-מפעיל-אחד-בדוק-מראש-חסר-לנצחון-mint
 - לגוף-שכבת-הגנה-חדשה-ומוכחת: כל-דחיפה-עתידית-עוברת-שער-ציות-fail-closed-עם-בקרות-שלילה-חיות — הסוג-של-דליפה-שחסמה-את-החשבון-פעם-לא-עובר-שוב-אף-סוכן
 - העץ-הקנוני-ירוק-בכל-המדדים (674/674 · doctor-5/5 · MCP-6 · Pages-HTTPS · runtime-CI-SUCCESS) וה-worklog-מאוחד-שוב-ללא-אובדן-היסטוריה
+---
+Task ID: R251
+Agent: Z.ai Code (main)
+Task: המפעיל ביצע-במדויק-את-ההוראות-מ-R250 (classic-PAT-עם-write:packages) והעלה-את-הטוקן-כ-upload/ttttpacake.txt: "עשיתי מה שביקשת... תמשיך ודחוף" — פרסום-ה-npm-הראשון-בהיסטוריה + דחיפה
+
+Work Log:
+- קליטה-מאובטחת-של-הטוקן: סיווג-קלט 40B/ghp_ = **classic** ✓ · נורמל-ל-upload/pat-classic.env (bare, check-ignore-מוכח, git-ls-files-upload/=0) · X-OAuth-Scopes: **repo, write:packages** · login=roshpinacare-sys (User) · הטוקן-לא-הודפס-מעולם (רק-prefix-ואורך)
+- 🔴 **ה-mint-הראשון-בהיסטוריה**: bash scripts/publish-github-packages.sh → **`+ @roshpinacare-sys/saos-agents@0.1.0`** @2026-10-07T21:00:47Z על-npm.pkg.github.com — אחרי-E403×3-על-הטוקן-ה-fine-grained, טוקן-קלאסי-אחד-סגר-את-הפער-בעסקה-אחת
+- אימות-חי-עצמאי: npm-view-עם-auth = **version 0.1.0 + dist.shasum 7ad06a0d902963aa9fa1ecbb3c114448457018d4** (זהה-לדיווח-ה-publish) · API-packages: package_type=npm, **visibility=private** (ברירת-מחדל-GH), created 21:00:47Z
+- תיקוני-היגיינה-אחרי-הפרסום: שורת-verify-בסקריפט-רצה-כעת-עם-NODE_AUTH_TOKEN (ה-E401-שנראה-היה-רק-באימות-שאחרי-הפרסום — לא-פגע-בו) · publish-עתידי-מוסיף-`--access-public` · `.npmrc`-נוקה-מ-`always-auth` (npm-warning-מיושן)
+- PUBLISH.md-עודכן-ברשומת-ההצלחה + שני-נתיבי-היפוך-visibility (ממשק-מפעיל: Package-Settings→Change-visibility→Public, או-0.1.1-עם---access-public)
+- דחיפה-דרך-השער-הכפול: guard-G1–G4-רץ-על-הקומיט-הזה-עצמו (העץ-כולל-רשומות-על-הטוקן-בלי-הטוקן-עצמו — נקי) → FF-בלבד
+
+Stage Summary:
+- הפער-היחיד-מ-R247-נסגר: **יש חבילה אמיתית על רגיסטרי-npm** — המפעיל-ביצע-צעד-אחד-מדויק-שהוסבר-לו-לחיצה-לחיצה, והמערכת-השלימה-את-השאר-בעסקה-אחת
+- הפצה-דואלית-חיה: GitHub-Release-`v0.1.0` (ציבורי, tarball-17,199B) + GitHub-Packages-`0.1.0` (private-עד-היפוך) — שני-ערוצי-הפצה-עצמאיים
+- אבטחת-הטוקן-מתועדת: לטוקן-הקלאסי-יש-גם-repo-scope (רחב-מהנדרש-במקור) — המלצה: רוטציה-ל-write:packages-בלבד-אחרי-המהדורות-הקרובות; הטוקן-חי-רק-ב-upload/ (gitignored, מנוטר-ע"י-guard-G2) והערך-מעולם-לא-נסרק-לעץ-החתום (pat-audit-leak-scan=clean)
