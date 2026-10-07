@@ -45,9 +45,9 @@
 
 ## 6 · המראה-הציבורית (R254)
 
-הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=7db9200) —
+הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=71eeafa) —
 src/ המודולים-הטהורים (taskgraph/decisionqueue/worklog-intel) · cli/ · test/ (55-וקטורים) ·
-docs/PATTERNS.md+STATE-CONTRACT.md · docs/ci.example.yml (ממתין-לטוקן-עם-workflow-scope).
+docs/PATTERNS.md+STATE-CONTRACT.md · tools/ (טריו-git-safety-מדוד) · docs/ci.example.yml (ממתין-לטוקן-עם-workflow-scope).
 הסנכרון-ידני-מדוד: cp-whitelist-מהעץ-הפרטי → סריקות-סודות (דפוסים+PAT-מילולי) → staging-מחוץ-לעץ
 → דחיפה. כספות/מפתחות/state/מודולי-עסקים/התיקייה-הרצינית — לעולם-לא. שינוי-ב-src/cli/test-הפרטיים
 מחייב-השוואה-מול-הציבורי-ודחיפה-חוזרת.
