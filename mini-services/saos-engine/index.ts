@@ -128,6 +128,17 @@ async function handle(req) {
   if (p === "/social") {
     return json({ ok: true, at: new Date().toISOString(), account: ACCOUNT, social: readJson(path.join(STATE, "social.json")), content: contentState() });
   }
+  // T-91: the redeployment doctrine — ratios, floors, live plan verdict, law
+  if (p === "/redeploy") {
+    const conf = armedConf();
+    return json({
+      ok: true, at: new Date().toISOString(), account: ACCOUNT,
+      plan: readJson(path.join(STATE, "redeploy-plan.json")),
+      doctrine: conf.redeploy ?? null,
+      executionArmed: conf.operator?.allowPowerUp === true,
+      law: "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים, מעל רצפות-ההפעלה בלבד",
+    });
+  }
   if (p === "/cycle") {
     if (req.method !== "POST") return json({ ok: false, error: "POST required" }, 405);
     /* T-17: START-ACK. The POST returns immediately; the cycle runs detached.
@@ -193,7 +204,7 @@ async function handle(req) {
                      : "credential secured but not matching this account's authorities — install the proposedPubkeys on steemit.com, or paste the CURRENT password instead",
     });
   }
-  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential"] }, 404);
+  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential"] }, 404);
 }
 
 // T-15 SINGLE-INSTANCE LAW (measured live: 3 duplicate engine processes were

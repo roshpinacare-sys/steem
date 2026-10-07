@@ -16,9 +16,9 @@
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.530886,
+      "estUsdPerDay": 0.528295,
       "confidence": "estimated",
-      "note": "~8.59 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+      "note": "~8.58 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
     {
       "id": "fuel",
@@ -34,7 +34,7 @@
       "measuredUsdPerDay": null,
       "estUsdPerDay": 0,
       "confidence": "blocked",
-      "note": "HOLD honest (6841bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "note": "HOLD honest (7010bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
     },
     {
       "id": "promo",
@@ -57,13 +57,13 @@
     }
   ],
   "totalMeasuredUsdPerDay": 0,
-  "totalEstUsdPerDay": 0.530886,
+  "totalEstUsdPerDay": 0.528295,
   "measuredCount": 1,
   "estimatedCount": 2,
   "blockedCount": 3,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.10409646328884205,
-  "asof": "2026-10-06T23:54:54.679Z",
+  "parity": 0.10474463604725925,
+  "asof": "2026-10-07T00:12:56.745Z",
   "context": {
     "venueFillsPerDay": 559,
     "venueVolSteem24h": 711.923,
@@ -71,11 +71,11 @@
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": {
-    "payoutDay": "2026-10-06",
-    "msRemaining": 0,
-    "hoursRemaining": 0,
-    "daysRemaining": 0,
-    "phase": "paid-window",
+    "payoutDay": "2026-10-10",
+    "msRemaining": 258905320,
+    "hoursRemaining": 71.9,
+    "daysRemaining": 3,
+    "phase": "pre-payout",
     "law": "פאייאוט-קיורציה מתיישב ~7 ימים אחרי-ההצבעה — השעון מדוד, לא מונח"
   },
   "pendingRewards": {
@@ -85,10 +85,10 @@
     "any": false
   },
   "x2": {
-    "currentUsdPerDay": 0.5309,
+    "currentUsdPerDay": 0.5283,
     "targetUsdPerDay": 1000,
     "currentSp": 900,
-    "factor": 1883.7,
+    "factor": 1892.9,
     "rows": [
       {
         "mult": 1,
@@ -99,29 +99,50 @@
       {
         "mult": 10,
         "sp": 8999,
-        "usdPerDay": 5.31,
+        "usdPerDay": 5.28,
         "reachesTarget": false
       },
       {
         "mult": 40,
         "sp": 35995,
-        "usdPerDay": 21.24,
+        "usdPerDay": 21.13,
         "reachesTarget": false
       },
       {
         "mult": 100,
         "sp": 89988,
-        "usdPerDay": 53.09,
+        "usdPerDay": 52.83,
         "reachesTarget": false
       },
       {
-        "mult": 1884,
-        "sp": 1695375,
-        "usdPerDay": 1000.19,
+        "mult": 1893,
+        "sp": 1703475,
+        "usdPerDay": 1000.06,
         "reachesTarget": true
       }
     ],
     "law": "הקיורציה גדלה ∝ חלק-ה-SP מבריכת-התגמולים; תקרת-העסקאות ∝ RC ∝ SP — ההון מכפיל את המדידה, הקוד נשאר"
   },
-  "pid": 18310
+  "redeployDoctrine": {
+    "ratios": {
+      "buyBookPct": 0.5,
+      "powerUpPct": 0.3,
+      "reservePct": 0.2
+    },
+    "floors": {
+      "liquidSteemFloor": 5,
+      "liquidSbdFloor": 0.5
+    },
+    "minPowerUpSteem": 5,
+    "executionArmed": true,
+    "plan": {
+      "verdict": "REDEPLOY-PLAN",
+      "reason": "doctrine-ratios",
+      "powerUpSteem": 23.143,
+      "excessSteem": 77.144,
+      "at": "2026-10-07T00:12:56.745Z"
+    },
+    "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
+  },
+  "pid": 22709
 }

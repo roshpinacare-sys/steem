@@ -247,6 +247,49 @@ export function planConvert({
   return { verdict: "CONVERT-PLAN", reason: "psm-hysteresis-armed", edgeBps, amountSbd: budget, expectedSteem, windowDays: 3.5 };
 }
 
+/* ── T-91 redeployment doctrine (round-3 operator order, 2026-10-06) ───────
+ * THE LAW: cashing out NEVER stops the autonomy. Realized value flows back
+ * into the machine by FIXED RATIOS — buy-book (bid-rail fuel), power-up
+ * (STEEM→SP: SP grows RC, RC grows ops/day — the X-2 ladder made physical),
+ * reserve (never deployed). The floors ARE the reserve made executable:
+ * at-or-below them the machine holds, always protecting operations.
+ * Ratio mapping (honest): the buy-book share is ALREADY executable — the peg
+ * step's BID rail spends SBD into STEEM under the 60% deploy law; the
+ * power-up share vests the EXCESS STEEM above the liquid floor (which
+ * includes what the bids acquire). No op is invented for the reserve —
+ * its absence of action is the action. */
+export function planRedeploy({
+  now = new Date().toISOString(),
+  liquidSteem = 0, liquidSbd = 0,
+  buyBookPct = 0.5, powerUpPct = 0.3, reservePct = 0.2,
+  liquidSteemFloor = 5, liquidSbdFloor = 0.5,
+  minPowerUpSteem = 5,
+} = {}) {
+  const sum = (buyBookPct ?? 0) + (powerUpPct ?? 0) + (reservePct ?? 0);
+  const ratiosValid = sum > 0.999 && sum < 1.001
+    && buyBookPct >= 0 && powerUpPct >= 0 && reservePct >= 0;
+  if (!ratiosValid) {
+    return { verdict: "REDEPLOY-BLOCKED", reason: "ratios-invalid", ratios: { buyBookPct, powerUpPct, reservePct }, at: now };
+  }
+  const excessSteem = r6(Math.max(0, (liquidSteem ?? 0) - (liquidSteemFloor ?? 0)));
+  /* chain asset precision = 3dp; +1e-9 absorbs the float dust of x*0.3 */
+  const powerUpSteem = r6(Math.floor((excessSteem * (powerUpPct ?? 0) + 1e-9) * 1000) / 1000);
+  const verdict = powerUpSteem >= (minPowerUpSteem ?? 0) ? "REDEPLOY-PLAN" : "REDEPLOY-HOLD";
+  return {
+    verdict,
+    reason: verdict === "REDEPLOY-PLAN" ? "doctrine-ratios"
+      : (excessSteem <= 0 ? "at-or-below-floor" : "below-min-powerup"),
+    ratios: { buyBookPct, powerUpPct, reservePct },
+    floors: { liquidSteemFloor, liquidSbdFloor },
+    liquidSteem: r6(liquidSteem ?? 0), liquidSbd: r6(liquidSbd ?? 0),
+    excessSteem, powerUpSteem, minPowerUpSteem,
+    buyBookNote: "the BID rail is the buy-book share made real — peg's deploy law (≤60%) governs it; no extra op",
+    reserveNote: "the floors ARE the reserve — never deployed, always protecting ops",
+    law: "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים, מעל רצפות-ההפעלה בלבד",
+    at: now,
+  };
+}
+
 /* ── stale classification (T-8b, lane-scoped per D-021) ────────────────────
  * An open order is stale when its unit drifted beyond NOISE_BPS from the
  * lawful bound for its side (asks below floor / bids above ceiling). */

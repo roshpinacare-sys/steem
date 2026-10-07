@@ -3,7 +3,7 @@
  * Zero network, zero clock, zero randomness. RUN: bun selftest.mjs
  */
 import {
-  dragK, inventorySkew, planLadder, planConvert, classifyStale, pnlFromFills, guardDepth, parityVerdict,
+  dragK, inventorySkew, planLadder, planConvert, planRedeploy, classifyStale, pnlFromFills, guardDepth, parityVerdict,
   MIN_LEVEL, ASK_FLOOR_BPS,
   doctrineAccount, credentialGate, rcAnomaly, recruitRoles, aggregateRails,
   normalizeWebIntel, webIntelFresh,
@@ -85,6 +85,30 @@ eq("psm cap partial", psmCap2.amountSbd, 1.5);
 
 /* 8b · T-9 structural truth: no external SBD market ⇒ honest HOLD (never arm on proxy) */
 eq("psm no-market honest-hold", planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0, previouslyArmed: false }).verdict, "CONVERT-HOLD");
+
+/* T-91 · redeployment doctrine — cashing out never stops the autonomy */
+const rdFloor = planRedeploy({ liquidSteem: 4.9, liquidSbd: 1, now: "x" });
+eq("redeploy at-floor-holds", rdFloor.verdict, "REDEPLOY-HOLD");
+eq("redeploy at-floor-reason", rdFloor.reason, "at-or-below-floor");
+eq("redeploy at-floor-zero", rdFloor.powerUpSteem, 0);
+const rdBelow = planRedeploy({ liquidSteem: 8, liquidSbd: 1, now: "x" }); // excess 3 × 0.3 = 0.9 < min 5
+eq("redeploy below-min-holds", rdBelow.verdict, "REDEPLOY-HOLD");
+eq("redeploy below-min-reason", rdBelow.reason, "below-min-powerup");
+eq("redeploy below-min-amount", rdBelow.powerUpSteem, 0.9);
+const rdPlan = planRedeploy({ liquidSteem: 25.7, liquidSbd: 2, now: "x" }); // excess 20.7 × 0.3 = 6.21
+eq("redeploy plan-verdict", rdPlan.verdict, "REDEPLOY-PLAN");
+eq("redeploy plan-reason", rdPlan.reason, "doctrine-ratios");
+eq("redeploy plan-3dp", rdPlan.powerUpSteem, 6.21);
+eq("redeploy plan-excess", rdPlan.excessSteem, 20.7);
+eq("redeploy ratios-echo", [rdPlan.ratios.buyBookPct, rdPlan.ratios.powerUpPct, rdPlan.ratios.reservePct], [0.5, 0.3, 0.2]);
+eq("redeploy floors-echo", [rdPlan.floors.liquidSteemFloor, rdPlan.floors.liquidSbdFloor], [5, 0.5]);
+ok("redeploy law-present", typeof rdPlan.law === "string" && rdPlan.law.includes("מימוש"));
+ok("redeploy notes-present", typeof rdPlan.buyBookNote === "string" && typeof rdPlan.reserveNote === "string");
+const rdBad = planRedeploy({ liquidSteem: 100, buyBookPct: 0.5, powerUpPct: 0.3, reservePct: 0.1, now: "x" });
+eq("redeploy ratios-invalid-blocked", rdBad.verdict, "REDEPLOY-BLOCKED");
+eq("redeploy ratios-invalid-reason", rdBad.reason, "ratios-invalid");
+const rdCustom = planRedeploy({ liquidSteem: 10, buyBookPct: 1, powerUpPct: 0, reservePct: 0, minPowerUpSteem: 1, now: "x" });
+eq("redeploy zero-powerup-share-holds", rdCustom.verdict, "REDEPLOY-HOLD");
 eq("psm no-market reason", planConvert({ liquidSbd: 50, parity: P, marketSbdUsd: 0, previouslyArmed: true }).reason, "no-market-price");
 
 /* 9 · stale classification: asks below floor / bids above ceiling (10bps tol) */

@@ -144,6 +144,17 @@ export function thinkGate(account, ops, { source = "execute" } = {}) {
     if (opName === "delegate_vesting_shares" && !pol.allowDelegation) {
       reasons.push(`delegate_vesting_shares→${op?.delegatee ?? "?"} (${op?.vesting_shares ?? "?"}): delegation FORBIDDEN by standing policy (allowDelegation=false)`);
     }
+    // 4 · T-91 power-up policy: transfer_to_vesting must be SELF-directed
+    // (from=to=account — value never leaves) AND explicitly armed by the
+    // operator's doctrine (operator.allowPowerUp). Un-armed, it is refused
+    // like every other value-moving op — safe-by-default holds.
+    if (opName === "transfer_to_vesting") {
+      const selfDirected = op?.from === account && op?.to === account;
+      const armed = conf.operator?.allowPowerUp === true;
+      if (!selfDirected || !armed) {
+        reasons.push(`transfer_to_vesting (${op?.amount ?? "?"}): power-up ${!selfDirected ? "must be self-directed (from=to=account)" : "FORBIDDEN by standing policy (operator.allowPowerUp=false — T-91 doctrine not armed)"}`);
+      }
+    }
   }
   const verdict = reasons.length ? "REFUSED" : "ALLOW";
   return journalThink({ account, source, verdict, reasons, shown, custody });
@@ -338,7 +349,12 @@ export function defaultArmedConf() {
      * forbidden, soldier deployment is operator-gated (T-76 law). The
      * operator's exec-armed.json can only LOOSEN these explicitly. */
     policy: { allowTransfersOut: false, allowDelegation: false, transferAllowlist: [] },
-    operator: { allowSoldierDeploy: false },
+    /* T-91: power-up (self vesting) is OFF until the operator explicitly
+     * orders it — value NEVER leaves, but even self-vesting is a signing
+     * behavior that only an explicit doctrine may arm. */
+    operator: { allowSoldierDeploy: false, allowPowerUp: false },
+    /* T-91 redeployment doctrine defaults (ratios sum to 1; floors = reserve): */
+    redeploy: { buyBookPct: 0.5, powerUpPct: 0.3, reservePct: 0.2, liquidSteemFloor: 5, liquidSbdFloor: 0.5, minPowerUpSteem: 5 },
     soldiers: { enabled: false, count: 3, prefix: "hcsoldier", steemEach: 10, sbdEach: 2, minLevel: 0.2 },
     promo: { armed: true, perDay: 1, tags: ["steem", "defi", "marketmaking", "saos"] },
     // T-13: the measured fuel rail — VP put to work (posting key only, vote op

@@ -158,7 +158,7 @@ class Writer {
 }
 
 /* ── operation serializers (field order = chain registry order) ─────────── */
-export const OP_IDS = { vote: 0, comment: 1, transfer: 2, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18 };
+export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18 };
 /* R216 custody-witness: custom_json=18 obtained by CHAIN TRUTH (get_transaction_hex,
  * node-serialized probe 2026-10-05: op-id byte = 0x12 = 18; body fields verified:
  * required_auths vec + required_posting_auths vec + id str + json str). Same method
@@ -168,6 +168,11 @@ export const OP_IDS = { vote: 0, comment: 1, transfer: 2, limit_order_create: 5,
  * CHAIN TRUTH (condenser_api.get_transaction_hex, OBSERVED): claim=39,
  * delegate_vesting_shares=40, vote=0 (control). Single serialization source:
  * this table + serializeOps below. No other byte-builder may exist. */
+/* T-91 (2026-10-06): transfer_to_vesting=3 — CHAIN TRUTH probe (get_transaction_hex,
+ * unsigned probe tx, byte-for-byte vs serializeTx + empty-signatures vector:
+ * op-id byte 0x03 — the FIRST guess of 4 was WRONG (4=withdraw_vesting; the
+ * probe caught it, same class as the R209 claim=33→39 fix) — field order
+ * from=str,to=str,amount=asset, no memo). Round-3 redeploy rail. */
 
 function serOp(name, v, w) {
   switch (name) {
@@ -185,6 +190,10 @@ function serOp(name, v, w) {
       break;
     case "transfer":
       w.str(v.from).str(v.to).asset(v.amount).str(v.memo ?? "");
+      break;
+    case "transfer_to_vesting":
+      // T-91 redeploy power-up: from→to (self), amount; NO memo field (chain registry)
+      w.str(v.from).str(v.to).asset(v.amount);
       break;
     case "claim_account":
       w.str(v.creator).asset(v.fee ?? "0.000 STEEM").varint(0);
