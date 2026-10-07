@@ -1866,3 +1866,22 @@ Stage Summary:
 - שני-הצעדים-המאושרים בוצעו-בקוד-חתום-ומדוד: הראיה-מוצמדת-עכשיו לכל-פלט-ציבורי (עקרון-5.0.0), והחבילה-הציבורית-הראשונה מוכנה-לעולם (פרסום=טוקן-אחד-מהמפעיל)
 - חוק-שכבת-התשתית: הערך-הוא-בלהיות-השפה/התשתית (Composio-$29M), לא-עוד-יישום — השער-שלנו-כבר-שם; npm-מסמן-את-המעבר
 - selftest 656/656 · divergence-0/0-לפני-דחיפה · דחיפה: bash scripts/sovereign-push.sh → saos-cockpit
+Task ID: R245
+Agent: Z.ai Code (main)
+Task: המפעיל: "סכם את השיחה, תבדוק ותתקן קצה-לקצה, החיילים-המתים, הכספות-בגיט, הדקס כמרכז-ביצוע ריבוני, כל-הרשתות וסחר, ודחוף" + ההבהרה: "אם זה רק posting זה בעיה — לא חייב להשתמש במה שאי-אפשר לגשת אליו"
+
+Work Log:
+- פורנזיקת-החיילים-האבודים (מהגיט-ומהשרשרת): hcsoldier1/2/3 = LOST-NO-CUSTODY (כבר-נחקר 768-נגזרות ב-1c9f00d0) עם ~56 STEEM תקועים; hcsoldier4/5/6 = דור-חלופי שנטבע 2026-10-04 עם 4-תפקידים-מלאים בכספת וowner-anchor של headcorner — מפקד-הכספת: 15 חשבונות, 120 כתובות-HD (EVM×7+TRON+SOL+BTC), זרע-ROT1 אטום
+- אמת-מול-השרשרת: hcsoldier4/5/6 owner+active+posting מתואמים 4/4; ynet = posting-anchor בלבד (אין-גישת-כסף) → מושהה לפי חוק-הגישה-של-המפעיל; הצי-הקיים 10/10 חי-ומשוחח (lastPost/lastVote 2026-10-07)
+- פעילות: hcsoldier4/5/6 נכנסו ל-roster (vault-revival + army-social) + הקצאת 3SP לכל-אחד (delegate_vesting_shares — op-40 נוסף לסריאליזר, כולל הרחבת-קיום-נדרשת, txid ב-exec-log); טיפול-ה-ynet מושהה לפי-חוק-המפעיל
+- תיקון-ה-get_transaction_hex-שקרן: ה-census-הראשוני (phantom op-extensions) הטעה — ה-txid-oracle (sha256 של טרנזקציות-שנחתמו) הוכיח שהקונסנזוס = ללא op-extensions ל-vote/cancel/comment; הסריאליזר הוחזר לקאנון-האמיתי + delegate/account_update נוספו
+- 🔴 אירוע-אבטחה קטסטרופלי שנמצא-ותוקן: @noble/hashes v2 (שודרג 13:39Z) שינה hmac() להודעה-יחידה; ה-patch secp.etc.hmacSha256Sync העביר rest-args שהושתקו ⇒ nonce-k קבוע (bf169e19…) לכל-החתימות מאז-13:39Z ⇒ מפתחות-posting/active ששודרו בחלון = ניתנים-לחילוץ-מהשרשרת-הפומבית; התיקון: concatBytes לפני-hmac — k משתנה-פר-חתימה (נמדד)
+- 🔴 סיבוב-מפתחות-חירום R245-ROT2: 14/14 חשבונות סובבו (owner-signed — מפתחות-owner מעולם-לא-שודרו ⇒ לא-נחשפו); headcorner = סיסמה-חדשה (64-hex, ב-.secrets/headcorner.key 0600 + בכספת); חיילים = ROT2 דטרמיניסטי (sha256(acct:role:SAOS-ROT2:seed)); כספת-GEN-2 נאטמה (KEYS-ZIP-2026-10-07.zip.enc + recovery-meta, FF ל-main: fe8aaf2f→a8df2e43)
+- אימות-לאחר-הסיבוב: verifyRoles (סיסמה-חדשה) 4/4 chain-judged; 13/13 חיילים VERIFIED-VS-CHAIN; סודות-CI (CI_ADOPT_WIF_ACTIVE/POSTING) עודכנו ל-ROT2; המנוע הוחזר → custody 14/14 FLEET-CUSTODY-ALIVE; hyper-grid סוחר (19:17:54 ok) ו-social משוחח — הכל-על-מפתחות-GEN-2
+- ריבונות-ה-DEX: ci-cycle.mjs קיבל שלב dex-takeover — שער-דטרמיניסטי dexTakeoverDue (lib.mjs): anchor-ה-custodian ישן>90 דקות ⇒ ה-runner מאמץ ACTIVE (סוד-שרשרת-נשפט) ומריץ מחזור-מנוע-מלא (מסחר+converts) עד-שיבת-הסנדבוקס; anchor-טרי = STANDBY; ה-workflow-ב-saos-runtime עודכן (env secrets + סיכום-dex); workflows-מתים-בריפו-הפרטי (billing-wall) הושבתו
+- selftest: 551/551 PASS (+10 וקטורי-שער-ההשתלטות; וקטורי-הגודל-הותאמו לקאנון-שאומת-מול-השרשרת)
+
+Stage Summary:
+- האימפריה נבנתה על החיילים: דור-החלופי (4/5/6) פעיל עם גישת-כסף מלאה (active בכספת), ynet נשלל לפי-חוק-הגישה, hcsoldier1/2/3 מתועדים כנפלים עם-יתרה-תקועה
+- החתירה-לשקר-הצילה: "unknown key" = הרשאה-עוברת (get_limit_order), get_transaction_hex = לא-הקונסנזוס, ה-txid-oracle = האמת — והחשיפה-הקטסטרופלית שמתחת-להכל נמצאה-בזכות-זה
+- הכלכלה חיה: הסולם סוחר במפתחות-GEN-2, הכספת-החיה בגיט מספיקה להחיות-הכל אחרי-מחיקת-סנדבוקס, וה-DEX מוכן-להשתלטות-CI מלאה
