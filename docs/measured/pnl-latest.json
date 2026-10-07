@@ -1,21 +1,21 @@
 {
   "measured": true,
   "reason": null,
-  "generatedAt": "2026-10-07T18:26:32.840Z",
+  "generatedAt": "2026-10-07T18:59:55.549Z",
   "account": "headcorner",
   "pnl": {
     "realizedSbd": 0,
     "realizedUsd": null
   },
   "inventory": {
-    "steem": 18.069,
-    "sbd": 12.006,
-    "spOwn": 975.3941306738486,
-    "rcPct": 30.9
+    "steem": 13.494,
+    "sbd": 12.886,
+    "spOwn": 975.4119814584288,
+    "rcPct": 30.4
   },
   "parity": {
-    "steemUsd": 0.05875,
-    "sbdUsd": 0.5643845438480438,
+    "steemUsd": 0.05887,
+    "sbdUsd": 0.5655373105729182,
     "bps": 0,
     "bandOk": true
   },
@@ -26,31 +26,41 @@
       "confidence": "blocked",
       "measuredUsdPerDay": null,
       "estimatedUsdPerDay": null,
-      "note": "no fill window yet — measured once real fills accumulate"
+      "note": "no fill window yet — measured once real fills accumulate",
+      "evidence": {
+        "source": "engine-journal",
+        "journal": {
+          "fillsToday": 2,
+          "realizedSbdTotal": 0
+        }
+      }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "confidence": "estimated",
       "measuredUsdPerDay": null,
-      "estimatedUsdPerDay": 0.516471,
-      "note": "~8.79 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+      "estimatedUsdPerDay": 0.518768,
+      "note": "~8.81 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)",
+      "evidence": null
     },
     {
       "id": "fuel",
       "label": "דלק-רשת · author+curation ops",
       "confidence": "estimated",
       "measuredUsdPerDay": null,
-      "estimatedUsdPerDay": 0.0454,
-      "note": "observe fuel meter (estimated — window-labeled)"
+      "estimatedUsdPerDay": 0.1052,
+      "note": "observe fuel meter (estimated — window-labeled)",
+      "evidence": null
     },
     {
       "id": "convert-arb",
       "label": "ארביטרז'-המרה · SBD print path",
       "confidence": "estimated",
       "measuredUsdPerDay": null,
-      "estimatedUsdPerDay": 4.35592,
-      "note": "edge 7718bps on 10 SBD"
+      "estimatedUsdPerDay": 4.344458,
+      "note": "edge 7682bps on 10 SBD",
+      "evidence": null
     },
     {
       "id": "promo",
@@ -58,7 +68,8 @@
       "confidence": "blocked",
       "measuredUsdPerDay": null,
       "estimatedUsdPerDay": null,
-      "note": "payouts estimated from account reward history; post txids journaled"
+      "note": "payouts estimated from account reward history; post txids journaled",
+      "evidence": null
     },
     {
       "id": "hyper-presence",
@@ -66,15 +77,36 @@
       "confidence": "measured",
       "measuredUsdPerDay": null,
       "estimatedUsdPerDay": null,
-      "note": "10290 ops/day measured — presence + optionality, deliberately NOT priced as profit"
+      "note": "10290 ops/day measured — presence + optionality, deliberately NOT priced as profit",
+      "evidence": {
+        "source": "engine-journal",
+        "journal": {
+          "opsPerDay": 10290
+        }
+      }
     }
   ],
   "totals": {
     "measuredUsdPerDay": null,
-    "estimatedUsdPerDay": 4.9178
+    "estimatedUsdPerDay": 4.9684
   },
-  "evidence": null,
+  "evidence": {
+    "chain": {
+      "txid": "9f507adbbc423461",
+      "block": null,
+      "at": "2026-10-07T17:09:46.790Z"
+    },
+    "commit": {
+      "sha": "3657d1c51abb",
+      "at": "2026-10-07T18:59:39.128Z"
+    },
+    "push": {
+      "sha": "3657d1c51abb",
+      "branch": "saos-cockpit",
+      "pushedAt": "2026-10-07T18:31:59Z"
+    }
+  },
   "source": "engine-state via pnl-public.mjs",
-  "observedAt": "2026-10-07T18:19:24.372Z",
-  "ageHours": 0.1
+  "observedAt": "2026-10-07T18:59:24.370Z",
+  "ageHours": 0
 }

@@ -1382,6 +1382,49 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("md anchor txid", md.includes("a955b5d7abcdef12"));
 }
 
+/* R245-d · pnl evidence-per-output — עקרון-5.0.0 (REA): ראיה-מוצמדת לכל-פלט */
+{
+  const { buildPublicPnl, publicPnlMarkdown, buildEvidence, railEvidence, railEvidenceText } = await import("./pnl-public.mjs");
+  const NOW = Date.parse("2026-10-07T19:00:00Z");
+  const AT = "2026-10-07T18:30:00Z";
+  // buildEvidence: chain מקובץ-עוגן (at-ms→ISO), commit מראש-string, push מ-push-custody
+  const ev = buildEvidence({ custodian: { head: "3657d1c51abb8a58ea602ed7c3046b9fc2cd2817", at: AT }, custodyAnchor: { at: 1791392986790, txid: "9f507adbbc42346196659a4b96de67e123577b9e" }, pushCustody: { lastPushedSha: "3657d1c51abb8a58ea602ed7c3046b9fc2cd2817", pushedAt: "2026-10-07T18:31:59Z", branch: "saos-cockpit" } });
+  ok("ev chain txid sliced+block-null", ev.chain.txid === "9f507adbbc423461" && ev.chain.block === null);
+  ok("ev chain at ISO", ev.chain.at === new Date(1791392986790).toISOString());
+  ok("ev commit sha12", ev.commit.sha === "3657d1c51abb" && ev.commit.at === AT);
+  ok("ev push honest", ev.push.sha === "3657d1c51abb" && ev.push.branch === "saos-cockpit" && ev.push.pushedAt === "2026-10-07T18:31:59Z");
+  // כשלים-כנים: משהו-שבור = null, אף-המצאה
+  eq("ev all-missing → null", buildEvidence({}), null);
+  eq("ev short txid dropped", buildEvidence({ custodyAnchor: { txid: "short" } }), null);
+  eq("ev short sha dropped", buildEvidence({ pushCustody: { lastPushedSha: "abc" } }), null);
+  // תאימות-לאחור: בלי-קבצי-עוגן → צורת-העוגן-הישנה-נשמרת
+  const oldShape = buildPublicPnl({ observe: { at: AT }, custodian: { head: { txid: "a955b5d7abcdef1234", block: 110230068, at: AT } }, now: NOW });
+  eq("backward-compat anchor shape", oldShape.evidence, { txid: "a955b5d7abcdef12", block: 110230068, at: AT });
+  // קריאה-חדשה → עדות-מאגרת-עשירה
+  const newShape = buildPublicPnl({ observe: { at: AT }, custodyAnchor: { txid: "9f507adbbc42346196659a4b96de67e123577b9e", at: 1791392986790 }, pushCustody: { lastPushedSha: "3657d1c51abb8a58ea602ed7c3046b9fc2cd2817", pushedAt: "2026-10-07T18:31:59Z", branch: "saos-cockpit" }, now: NOW });
+  ok("new evidence rich", newShape.evidence.chain.txid === "9f507adbbc423461" && newShape.evidence.push.branch === "saos-cockpit");
+  // railEvidence: meta→journal (allowlist-סגור) · בלי-meta→null · מפתח-זר/לא-מספרי נזרק
+  eq("rail ev from meta", railEvidence({ meta: { fillsToday: 3, realizedSbdTotal: 0 } }), { source: "engine-journal", journal: { fillsToday: 3, realizedSbdTotal: 0 } });
+  eq("rail ev ops", railEvidence({ meta: { opsPerDay: 10290 } }).journal.opsPerDay, 10290);
+  eq("rail ev no-meta null", railEvidence({}), null);
+  eq("rail ev empty-meta null", railEvidence({ meta: {} }), null);
+  eq("rail ev foreign key dropped", railEvidence({ meta: { wif: "5JsecretDemoNotReal", fillsToday: 1 } }).journal.wif, undefined);
+  eq("rail ev non-numeric dropped", railEvidence({ meta: { fillsToday: "three" } }), null);
+  // טקסט-ראיה: "—" כנה כשאין-ראיה
+  eq("evidence text honest dash", railEvidenceText(null), "—");
+  ok("evidence text fills", railEvidenceText(railEvidence({ meta: { fillsToday: 3 } })).includes("fills=3"));
+  ok("evidence text ops", railEvidenceText(railEvidence({ meta: { opsPerDay: 10290 } })).includes("ops=10290"));
+  // markdown: עמודת-ראיה + שורות-עוגן + כנות
+  const econ = { rails: [ { id: "mm", label: "mm", confidence: "blocked", note: "x", meta: { fillsToday: 3 } }, { id: "cu", label: "cu", confidence: "estimated", estUsdPerDay: 1, note: "y" } ] };
+  const md2 = publicPnlMarkdown(buildPublicPnl({ observe: { at: AT }, economics: econ, custodyAnchor: { txid: "9f507adbbc42346196659a4b96de67e123577b9e", at: 1791392986790 }, pushCustody: { lastPushedSha: "3657d1c51abb8a58ea602ed7c3046b9fc2cd2817", pushedAt: "2026-10-07T18:31:59Z", branch: "saos-cockpit" }, now: NOW }));
+  ok("md evidence column", md2.includes("| ראיה |"));
+  ok("md rail with evidence", md2.includes("journal:fills=3"));
+  ok("md rail honest dash", md2.split("\n").some((l) => l.includes("| cu ") && l.includes(" — ")));
+  ok("md chain anchor", md2.includes("9f507adbbc423461"));
+  ok("md push line", md2.includes("saos-cockpit @ 2026-10-07T18:31:59Z"));
+  ok("md honesty footer", md2.includes("אין-ראיה-כנה"));
+}
+
 /* R245-b · saos-setup — התקנה-חוצת-סוכנים (תוכנית-קודם · idempotent · רק-שלנו) */
 {
   const { agentTargets, buildPlan, planTarget, applyTarget, removeTarget, ENTRY_NAME } = await import("../../scripts/saos-setup.mjs");

@@ -114,7 +114,7 @@ export function makeHandler(tools) {
 }
 
 /* ── מימושי-הכלים (עם-פרובות-מוזרקות ל-selftest) */
-export function makeTools({ readFile_ = readFile, http_ = null, engineRoot = path.dirname(new URL(import.meta.url).pathname), repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..") } = {}) {
+export function makeTools({ readFile_ = readFile, http_ = null, engineRoot = process.env.SAOS_ENGINE_ROOT ?? path.dirname(new URL(import.meta.url).pathname), repoRoot = process.env.SAOS_REPO_ROOT ?? path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..") } = {}) {
   const http = http_ || (async (url, ms = 2500) => {
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), ms);
