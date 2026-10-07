@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-07T19:49:31.429Z",
+  "at": "2026-10-07T19:59:24.399Z",
   "enabled": true,
-  "runsTotal": 347,
+  "runsTotal": 348,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,28 +23,28 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 39.5,
+      "vpEff": 11.9,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 3,
-      "fails": 3,
+      "window": 4,
+      "fails": 4,
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 3355,
-      "downs": 117,
-      "heals": 58,
-      "healVerified": 49,
-      "healFailed": 2,
-      "lastCheckAt": "2026-10-07T19:49:31.626Z",
+      "checks": 2524,
+      "downs": 104,
+      "heals": 37,
+      "healVerified": 36,
+      "healFailed": 0,
+      "lastCheckAt": "2026-10-07T19:59:24.548Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-07T19:16:36.647Z",
-      "lastUpAt": "2026-10-07T19:49:31.627Z",
-      "blips": 2
+      "lastSpawnAt": "2026-10-07T13:39:29.573Z",
+      "lastUpAt": "2026-10-07T19:59:24.550Z",
+      "blips": 1
     }
   },
   "lessons": [
@@ -59,7 +59,7 @@
     {
       "id": "broadcast-fails",
       "severity": "high",
-      "evidence": "3/3 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
+      "evidence": "4/4 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
       "lesson": "broadcast failures burn RC and delay rails",
       "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
@@ -69,8 +69,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 245,
-    "broadcast-fails": 105,
+    "signing-cred-blocked": 246,
+    "broadcast-fails": 106,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
