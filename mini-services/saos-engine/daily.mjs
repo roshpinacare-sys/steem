@@ -15,7 +15,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import {
-  planLadder, planConvert, planRedeploy, redeployBidCapSbd, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
+  planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
   cycleHealth, cycleFailureBreakdown,
 } from "./lib.mjs";
 import {
@@ -286,7 +286,10 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       liquidSteemFloor: rd.liquidSteemFloor ?? 5, liquidSbdFloor: rd.liquidSbdFloor ?? 0.5,
       minPowerUpSteem: rd.minPowerUpSteem ?? 5,
     });
-    /* pacing state — honest counter, seeded by the operator or the machine */
+    /* pacing state — honest counter, seeded by the operator or the machine.
+     * R233: the decision itself is the PURE redeployPacing() — corruption
+     * classes (NaN/negative/future lastPowerUpAt) are guarded by design and
+     * unit-tested, not by accident. */
     const RS_FILE = path.join(STATE, "redeploy-state.json");
     const rs = readJson(RS_FILE, { day: null, powerUpsToday: 0, lastPowerUpAt: null });
     const today = now.slice(0, 10);
@@ -294,17 +297,12 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     const minIntervalSec = rd.minIntervalSec ?? 3600;
     const maxPerDay = rd.maxPerDay ?? 12;
     const sinceLastSec = rs.lastPowerUpAt ? Math.round((Date.now() - Date.parse(rs.lastPowerUpAt)) / 1000) : null;
-    const pacing = { minIntervalSec, maxPerDay, powerUpsToday: rs.powerUpsToday, lastPowerUpAt: rs.lastPowerUpAt, sinceLastSec, verdict: null };
-    if (plan.verdict === "REDEPLOY-PLAN" && sinceLastSec != null && sinceLastSec < minIntervalSec) {
-      pacing.verdict = "interval";
+    const pacing = redeployPacing({ verdict: plan.verdict, sinceLastSec, powerUpsToday: rs.powerUpsToday ?? 0, minIntervalSec, maxPerDay });
+    if (pacing.verdict) {
       plan.verdict = "REDEPLOY-COOLDOWN";
-      plan.reason = `powerup-pacing (${sinceLastSec}s < ${minIntervalSec}s since last)`;
-    } else if (plan.verdict === "REDEPLOY-PLAN" && rs.powerUpsToday >= maxPerDay) {
-      pacing.verdict = "day-cap";
-      plan.verdict = "REDEPLOY-COOLDOWN";
-      plan.reason = `powerup-day-cap (${rs.powerUpsToday} >= ${maxPerDay} today)`;
+      plan.reason = pacing.reason;
     }
-    plan.pacing = pacing;
+    plan.pacing = { minIntervalSec, maxPerDay, powerUpsToday: rs.powerUpsToday ?? 0, lastPowerUpAt: rs.lastPowerUpAt, sinceLastSec, verdict: pacing.verdict };
     if (persist) {
       writeJson(path.join(STATE, "redeploy-plan.json"), plan);
       appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.planned", at: now, verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict });
@@ -491,8 +489,18 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
             if (rs.day !== rdDay) { rs.day = rdDay; rs.powerUpsToday = 0; }
             writeJson(RS_FILE, { day: rdDay, powerUpsToday: (rs.powerUpsToday ?? 0) + 1, lastPowerUpAt: now });
             if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.powerup-op", at: now, amountSteem: amt3 });
+          } else {
+            /* R233: the funds-bound skip is JOURNALED, never silent — the
+             * battery found the old path vanished without a trace */
+            report.steps.redeploySkippedForFunds = { planned: rdExec.powerUpSteem, chainSteem: accRd.ok ? accRd.steem ?? null : null, floorSteem, steemLockedThisBatch };
+            if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.skipped-funds", at: now, ...report.steps.redeploySkippedForFunds });
           }
-        } catch { /* honest skip — next cycle retries on fresh plan */ }
+        } catch (e) {
+          /* honest skip — next cycle retries on fresh plan; the skip itself
+           * is journaled (R233: silent catch was an observability gap) */
+          report.steps.redeploySkippedForProbe = String(e?.message ?? e).slice(0, 200);
+          if (persist) appendLine(path.join(STATE, "events.jsonl"), { type: "redeploy.skipped-probe", at: now, error: report.steps.redeploySkippedForProbe });
+        }
       }
     }
     /* T-19: the ops DAY-CAP is a LAW — past it the machine journals honestly

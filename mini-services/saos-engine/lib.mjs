@@ -257,7 +257,20 @@ export function planConvert({
  * step's BID rail spends SBD into STEEM under the 60% deploy law; the
  * power-up share vests the EXCESS STEEM above the liquid floor (which
  * includes what the bids acquire). No op is invented for the reserve —
- * its absence of action is the action. */
+ * its absence of action is the action.
+ * R233 adversarial-review hardening (measured, battery-driven):
+ * (a) ratio-sum validity is a ±0.001 BAND around 1 (float-safe), stated here
+ *     so the law text and the code can never diverge again;
+ * (b) every numeric input is STRICTLY normalized — only finite JS numbers
+ *     pass; strings/NaN/Infinity/Symbols fail CLOSED (→ HOLD/BLOCKED/0),
+ *     never crash, never leak NaN into plans;
+ * (c) PLAN is only issued for an amount the machine would actually broadcast
+ *     (>= max(minPowerUpSteem, 0.001)) — a PLAN with amount 0 was a lie the
+ *     battery caught;
+ * (d) liquidBasis is stamped on every plan: the liquid input is FREE BALANCE
+ *     (open-order locks excluded) and jitters by ±open-asks between reads —
+ *     the execute step re-reads the chain, which is the binding clamp. */
+const numStrict = (x, d = 0) => (typeof x === "number" && isFinite(x) ? x : d);
 export function planRedeploy({
   now = new Date().toISOString(),
   liquidSteem = 0, liquidSbd = 0,
@@ -265,24 +278,32 @@ export function planRedeploy({
   liquidSteemFloor = 5, liquidSbdFloor = 0.5,
   minPowerUpSteem = 5,
 } = {}) {
-  const sum = (buyBookPct ?? 0) + (powerUpPct ?? 0) + (reservePct ?? 0);
+  /* strict normalization FIRST (R233): hostile config inputs fail closed */
+  buyBookPct = numStrict(buyBookPct); powerUpPct = numStrict(powerUpPct); reservePct = numStrict(reservePct);
+  liquidSteem = numStrict(liquidSteem); liquidSbd = numStrict(liquidSbd);
+  liquidSteemFloor = numStrict(liquidSteemFloor); liquidSbdFloor = numStrict(liquidSbdFloor);
+  minPowerUpSteem = numStrict(minPowerUpSteem);
+  const sum = buyBookPct + powerUpPct + reservePct;
   const ratiosValid = sum > 0.999 && sum < 1.001
     && buyBookPct >= 0 && powerUpPct >= 0 && reservePct >= 0;
   if (!ratiosValid) {
     return { verdict: "REDEPLOY-BLOCKED", reason: "ratios-invalid", ratios: { buyBookPct, powerUpPct, reservePct }, at: now };
   }
-  const excessSteem = r6(Math.max(0, (liquidSteem ?? 0) - (liquidSteemFloor ?? 0)));
+  const excessSteem = r6(Math.max(0, liquidSteem - liquidSteemFloor));
   /* chain asset precision = 3dp; +1e-9 absorbs the float dust of x*0.3 */
-  const powerUpSteem = r6(Math.floor((excessSteem * (powerUpPct ?? 0) + 1e-9) * 1000) / 1000);
-  const verdict = powerUpSteem >= (minPowerUpSteem ?? 0) ? "REDEPLOY-PLAN" : "REDEPLOY-HOLD";
+  const powerUpSteem = r6(Math.floor((excessSteem * powerUpPct + 1e-9) * 1000) / 1000);
+  /* PLAN must mean a broadcastable amount (R233: 0 >= min==0 was a lying PLAN) */
+  const planThreshold = Math.max(minPowerUpSteem, 0.001);
+  const verdict = powerUpSteem >= planThreshold ? "REDEPLOY-PLAN" : "REDEPLOY-HOLD";
   return {
     verdict,
     reason: verdict === "REDEPLOY-PLAN" ? "doctrine-ratios"
       : (excessSteem <= 0 ? "at-or-below-floor" : "below-min-powerup"),
     ratios: { buyBookPct, powerUpPct, reservePct },
     floors: { liquidSteemFloor, liquidSbdFloor },
-    liquidSteem: r6(liquidSteem ?? 0), liquidSbd: r6(liquidSbd ?? 0),
+    liquidSteem: r6(liquidSteem), liquidSbd: r6(liquidSbd),
     excessSteem, powerUpSteem, minPowerUpSteem,
+    liquidBasis: "free-balance — open-order locks excluded; jitters by ±open-asks between reads, execute re-reads the chain (binding clamp)",
     buyBookNote: "the BID rail is the buy-book share made real — capped by buyBookPct of SBD above the floor (R231: enforced, not documented), under peg's 60% deploy law",
     reserveNote: "the floors ARE the reserve — never deployed, always protecting ops",
     law: "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים, מעל רצפות-ההפעלה בלבד",
@@ -294,8 +315,31 @@ export function planRedeploy({
  * LAW, not documentation — the peg step's bid budget may never exceed this
  * share of SBD above the reserve floor. Pure helper so the cap is testable. */
 export function redeployBidCapSbd(sbdLiquid = 0, floorSbd = 0.5, buyBookPct = 0.5) {
-  if (!(buyBookPct >= 0) || !(floorSbd >= 0)) return 0;
-  return r6(Math.max(0, (sbdLiquid ?? 0) - (floorSbd ?? 0)) * (buyBookPct ?? 0));
+  /* R233 hardening: strict finite-number gate on ALL three inputs — the old
+   * guard checked only pct/floor, so NaN/Infinity/{}/Symbol in sbdLiquid
+   * leaked NaN/Infinity caps downstream (battery-caught, fail closed now) */
+  if (!(typeof sbdLiquid === "number" && isFinite(sbdLiquid) && sbdLiquid >= 0)) return 0;
+  if (!(typeof floorSbd === "number" && isFinite(floorSbd) && floorSbd >= 0)) return 0;
+  if (!(typeof buyBookPct === "number" && isFinite(buyBookPct) && buyBookPct >= 0)) return 0;
+  return r6(Math.max(0, sbdLiquid - floorSbd) * buyBookPct);
+}
+
+/* ── T-91 pacing law as a PURE function (R233: extracted from daily.mjs so
+ * the rate-limit is unit-testable — the battery proved corruption classes
+ * (NaN/negative/future timestamps) behaved by accident, not by design).
+ * Semantics preserved: exactly-at-interval is allowed, exactly-at-day-cap
+ * is blocked, interval checked before day-cap; a corrupted sinceLastSec
+ * (NaN/negative/future) is treated as absent — the day-cap still guards. */
+export function redeployPacing({ verdict, sinceLastSec, powerUpsToday = 0, minIntervalSec = 3600, maxPerDay = 12 }) {
+  if (verdict !== "REDEPLOY-PLAN") return { verdict: null, sinceLastSec: numStrict(sinceLastSec, null) ?? null };
+  const since = typeof sinceLastSec === "number" && isFinite(sinceLastSec) && sinceLastSec > 0 ? sinceLastSec : null;
+  if (since != null && since < minIntervalSec) {
+    return { verdict: "interval", reason: `powerup-pacing (${since}s < ${minIntervalSec}s since last)`, sinceLastSec: since };
+  }
+  if (powerUpsToday >= maxPerDay) {
+    return { verdict: "day-cap", reason: `powerup-day-cap (${powerUpsToday} >= ${maxPerDay} today)`, sinceLastSec: since };
+  }
+  return { verdict: null, sinceLastSec: since };
 }
 
 /* ── stale classification (T-8b, lane-scoped per D-021) ────────────────────
