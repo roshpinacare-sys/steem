@@ -125,13 +125,18 @@ async function runCycle() {
  * identity for the custody anchor + bus ops (the child adopts independently;
  * thinkGate trusts ONLY process-local verified memory — measured refusal).
  * The lawful path is the DIRECT WIF adoption (chain-judged, signer.mjs). */
+let INPROC_FP = null; /* the adopted WIF's fingerprint (from the adoption result — never re-derived) */
+
 async function adoptInProcess(sourceEnvName) {
   const raw = (process.env[sourceEnvName] ?? "").trim();
   if (!raw) return { ok: false, verdict: "no-candidate-for-inprocess" };
   const bare = raw.startsWith("P") && raw.length >= 51 ? raw.slice(1) : raw;
-  const { adoptVerifiedWifIdentity, credentialFingerprint } = await import("./signer.mjs");
+  const { adoptVerifiedWifIdentity } = await import("./signer.mjs");
   const r = await adoptVerifiedWifIdentity(ACCOUNT, bare, { role: "posting" });
-  return { ok: !!r?.ok, verdict: String(r?.ok ? `wif-verified-fp=${credentialFingerprint(ACCOUNT)}` : (r?.reason ?? "adoption-refused")).slice(0, 120) };
+  /* the WIF's fingerprint comes back from the adoption itself — never
+   * re-derived through the key file (which the child creates later) */
+  if (r?.ok) INPROC_FP = r.fingerprint ?? null;
+  return { ok: !!r?.ok, verdict: String(r?.ok ? `wif-verified-fp=${r.fingerprint}` : (r?.reason ?? "adoption-refused")).slice(0, 120) };
 }
 
 /* durable ≤1/h law — same state stamp the custodian commits */
@@ -140,7 +145,7 @@ function lastAnchorMs() {
 }
 
 async function custodyAnchor() {
-  const { thinkGate, executeAs, custodyOf, credentialFingerprint } = await import("./signer.mjs");
+  const { thinkGate, executeAs, custodyOf } = await import("./signer.mjs");
   const last = lastAnchorMs();
   if (Date.now() - last < 3600000) return { ok: true, verdict: "RATE-LIMITED-DURABLE", last };
   /* custody check uses the process-local VERIFIED identity (adopted via the
@@ -148,7 +153,7 @@ async function custodyAnchor() {
   const co = custodyOf(ACCOUNT);
   if (co !== "master-verified") return { ok: false, verdict: `CUSTODY-REFUSED:${co}` };
   const tip = sh("git", ["rev-parse", "HEAD"]).out;
-  const ops = [["custom_json", { required_auths: [], required_posting_auths: [ACCOUNT], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "ci-act", fp: credentialFingerprint(ACCOUNT) }) }]];
+  const ops = [["custom_json", { required_auths: [], required_posting_auths: [ACCOUNT], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "ci-act", fp: INPROC_FP }) }]];
   const gate = thinkGate(ACCOUNT, ops, { source: "ci-custody-witness" });
   if (gate?.verdict !== "ALLOW") return { ok: false, verdict: `GATE:${(gate?.reasons ?? []).join(";").slice(0, 120)}` };
     const r = await executeAs(ACCOUNT, ops, { tag: "ci-custody-witness", role: "posting" });

@@ -1,31 +1,31 @@
 {
-  "startedAt": "2026-10-07T16:06:06.196Z",
+  "startedAt": "2026-10-07T16:09:24.369Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2362,
+      "ms": 3973,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.05857,
-        "sbdUsd": 0.590028,
-        "parity": 0.0992664754892988,
+        "steemUsd": 0.05869,
+        "sbdUsd": 0.589544,
+        "parity": 0.09955151778323586,
         "source": "coingecko"
       },
       "feed": 0.10409594275707354,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": -464
+        "bps": -437
       },
-      "steemUsd": 0.05857,
-      "sbdUsd": 0.590028,
+      "steemUsd": 0.05869,
+      "sbdUsd": 0.589544,
       "inventory": {
         "steem": 0.426,
-        "sbd": 10.089,
-        "spOwn": 975.2529520293709,
-        "rcPct": 34.4
+        "sbd": 12.485,
+        "spOwn": 975.2531024078728,
+        "rcPct": 34.3
       },
       "ordersOk": true,
       "orders": [
@@ -100,22 +100,6 @@
           "quote": "122.888 STEEM",
           "unit": 10.339756,
           "created": "2026-10-07T16:01:54"
-        },
-        {
-          "orderid": 2100000046,
-          "side": "bid",
-          "base": "1.198 SBD",
-          "quote": "12.007 STEEM",
-          "unit": 10.022538,
-          "created": "2026-10-07T16:05:51"
-        },
-        {
-          "orderid": 2100000047,
-          "side": "bid",
-          "base": "1.198 SBD",
-          "quote": "12.024 STEEM",
-          "unit": 10.036728,
-          "created": "2026-10-07T16:05:51"
         }
       ],
       "fills": 1,
@@ -150,12 +134,12 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.0992664754892988 (coingecko) · fills 1 · fuel 0$"
+      "summary": "parity 0.09955151778323586 (coingecko) · fills 1 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1053,
+      "ms": 1351,
       "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
@@ -164,43 +148,39 @@
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 39,
+      "spreadBpsRec": 41,
       "book": {
         "bestAsk": 0.1013273887931908,
-        "bestBid": 0.10092854259184497,
-        "spreadBps": 39
+        "bestBid": 0.10091632018730069,
+        "spreadBps": 41
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
-      "ms": 1,
-      "runCount": 3,
-      "signals": 4,
-      "retiredFills": 0,
-      "arbSignal": {
-        "gapBps": 464,
-        "dir": "buy-external"
-      },
-      "layers": "measured (see state.json.grids)"
+      "ms": 0,
+      "runCount": 4,
+      "simFills": 0,
+      "simFeesMu": 0,
+      "events": 4
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 761,
+      "ms": 1696,
       "verdict": "OFFER-READY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 0,
       "flowBids": 2,
-      "staleCount": 7,
-      "skew": -0.297496,
+      "staleCount": 5,
+      "skew": -0.297969,
       "book": {
         "bestAsk": 0.1013273887931908,
-        "bestBid": 0.10092854259184497,
+        "bestBid": 0.10091632018730069,
         "askDepthSteem": 413.084,
-        "bidDepthSbd": 2800.483,
-        "at": "2026-10-07T16:06:06.196Z"
+        "bidDepthSbd": 2798.087,
+        "at": "2026-10-07T16:09:24.369Z"
       },
       "market": {
         "tradesPerDay": 456,
@@ -208,65 +188,46 @@
       },
       "liquidity": {
         "deployedAsks": 234.156,
-        "deployedBids": 61.821,
+        "deployedBids": 59.425,
         "askBudget": 0,
         "bidBudget": 0,
-        "bidBudgetUncapped": 0,
-        "buyBookCapSbd": 4.7945,
-        "deployCap": 0.6,
-        "bidBudgetCapped": true
+        "deployCap": 0.6
       }
     },
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
-      "verdict": "CONVERT-PLAN",
-      "amountSbd": 9.589,
-      "edgeBps": 6948,
-      "marketSbdUsd": 0.590028,
-      "impliedSbdUsd": 0.562654,
-      "marketSourceNote": "external-measured"
-    },
-    "redeploy": {
-      "name": "redeploy",
-      "ok": true,
       "ms": 0,
-      "verdict": "REDEPLOY-HOLD",
-      "reason": "at-or-below-floor",
-      "powerUpSteem": 0,
-      "excessSteem": 0,
-      "ratios": {
-        "buyBookPct": 0.5,
-        "powerUpPct": 0.3,
-        "reservePct": 0.2
-      },
-      "pacing": null,
-      "intel": null
+      "verdict": "CONVERT-PLAN",
+      "amountSbd": 10,
+      "edgeBps": 6962,
+      "marketSbdUsd": 0.589544,
+      "impliedSbdUsd": 0.563807,
+      "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 1369,
+      "ms": 705,
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
-      "vpEff": 37.1,
+      "vpEff": 11.2,
       "votesToday": 0,
       "error": null
     },
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 1012,
-      "verdict": "THINK-GATE-REFUSED",
-      "txid": null,
+      "ms": 3754,
+      "verdict": "BROADCAST-FAIL",
+      "txid": "f48823603a13b61c66857ecee6e72a37c407f80d",
       "ops": 1,
       "opNames": [
         "convert"
       ],
       "node": null,
-      "error": null,
+      "error": "missing required active authority:Missing Active Authority headcorner",
       "promo": {
         "verdict": "ALREADY-POSTED",
         "permlink": "saos-transparency-20261007"
@@ -280,13 +241,13 @@
     "soldiers": {
       "name": "soldiers",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "DISABLED-T80-OPERATOR-STOP"
     },
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 8,
+      "ms": 6,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
@@ -318,27 +279,10 @@
       "exposureBlocked": 0,
       "lastAt": "2026-10-07T15:38:33.740Z"
     },
-    "social": {
-      "name": "social",
-      "ok": true,
-      "ms": null,
-      "verdict": "PART-GATED",
-      "executed": 0,
-      "refused": 1,
-      "due": 12
-    },
-    "bus": {
-      "name": "bus",
-      "ok": true,
-      "ms": 1856,
-      "verdict": "BUS-GATED:REFUSED",
-      "delivered": 0,
-      "published": 0
-    },
     "rctank": {
       "name": "rctank",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "MEASURED",
       "maxRc": 1847155626959,
       "opsPerDayEquilibrium": 9654,
@@ -372,43 +316,26 @@
       "verdict": "CADENCE-GATED",
       "pass": 501,
       "fail": 0,
-      "at": "2026-10-07T16:06:04.605Z"
+      "at": "2026-10-07T16:09:02.624Z"
     },
     "economics": {
       "name": "economics",
       "ok": true,
-      "ms": 2,
+      "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 4.448156,
+      "totalEstUsdPerDay": 4.622597,
       "rails": 6,
-      "measuredCount": 0,
+      "measuredCount": 1,
       "estimatedCount": 3,
-      "blockedCount": 3
+      "blockedCount": 2
     },
     "recruit": {
       "name": "recruit",
       "ok": true,
       "ms": 1,
-      "verdict": "RECRUITED",
-      "active": 10,
+      "verdict": "FULL-STRENGTH",
+      "active": 11,
       "total": 11
-    },
-    "council": {
-      "name": "council",
-      "ok": true,
-      "ms": 2,
-      "verdict": "MESH-DARK",
-      "organs": [
-        "custodian:DOWN",
-        "metrics:DOWN",
-        "builder:DOWN"
-      ],
-      "builderTask": {
-        "verdict": "QUEUED",
-        "file": "memory/lessons.md",
-        "error": null
-      },
-      "error": null
     },
     "report": {
       "name": "report",
@@ -442,19 +369,5 @@
     "failedSteps": [],
     "blockedSteps": []
   },
-  "blockages": [
-    {
-      "source": "soldiers",
-      "owner": "operator",
-      "lawful": true,
-      "reason": "T-80 stop-order (2026-10-04) — soldiers frozen until re-authorization"
-    },
-    {
-      "source": "redeploy",
-      "owner": "doctrine floor",
-      "lawful": true,
-      "reason": "at-or-below-floor"
-    }
-  ],
-  "finishedAt": "2026-10-07T16:06:41.981Z"
+  "finishedAt": "2026-10-07T16:09:35.153Z"
 }

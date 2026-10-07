@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-07T16:06:06.196Z",
+  "at": "2026-10-07T16:09:24.369Z",
   "enabled": true,
-  "runsTotal": 327,
+  "runsTotal": 328,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,27 +23,27 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 37.1,
+      "vpEff": 11.2,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 4,
-      "fails": 3,
+      "window": 5,
+      "fails": 4,
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2284,
+      "checks": 2294,
       "downs": 104,
       "heals": 37,
       "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-07T15:59:24.440Z",
+      "lastCheckAt": "2026-10-07T16:09:24.445Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T13:39:29.573Z",
-      "lastUpAt": "2026-10-07T15:59:24.446Z",
+      "lastUpAt": "2026-10-07T16:09:24.446Z",
       "blips": 1
     }
   },
@@ -59,7 +59,7 @@
     {
       "id": "broadcast-fails",
       "severity": "high",
-      "evidence": "3/4 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
+      "evidence": "4/5 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
       "lesson": "broadcast failures burn RC and delay rails",
       "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
@@ -69,8 +69,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 225,
-    "broadcast-fails": 85,
+    "signing-cred-blocked": 226,
+    "broadcast-fails": 86,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
