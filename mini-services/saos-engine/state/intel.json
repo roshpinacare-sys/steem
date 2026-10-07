@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-07T18:59:24.370Z",
+  "at": "2026-10-07T19:23:59.785Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 21bps → dragK 1.0105",
+      "reason": "spread 42bps → dragK 1.021",
       "action": {
-        "spreadBpsRec": 21,
-        "bestAsk": 0.10161733292645712,
-        "bestBid": 0.10140753660812071
+        "spreadBpsRec": 42,
+        "bestAsk": 0.10092,
+        "bestBid": 0.10049369884370533
       },
-      "at": "2026-10-07T18:59:24.370Z"
+      "at": "2026-10-07T19:23:59.785Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -351bps from external parity",
+      "action": {
+        "bps": -351
+      },
+      "at": "2026-10-07T19:23:59.785Z"
     },
     {
       "kind": "soldiers",
@@ -19,29 +28,16 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-07T18:59:24.370Z"
-    },
-    {
-      "kind": "rewards",
-      "decision": "claim",
-      "reason": "unclaimed: 0 STEEM + 0 SBD + 62.918847 VESTS — free fuel, claim now",
-      "action": {
-        "ok": true,
-        "steem": 0,
-        "sbd": 0,
-        "vests": 62.918847,
-        "any": true
-      },
-      "at": "2026-10-07T18:59:24.370Z"
+      "at": "2026-10-07T19:23:59.785Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 30.4%",
+      "reason": "RC at 30.5%",
       "action": {
-        "rcPct": 30.4
+        "rcPct": 30.5
       },
-      "at": "2026-10-07T18:59:24.370Z"
+      "at": "2026-10-07T19:23:59.785Z"
     },
     {
       "kind": "curation",
@@ -52,13 +48,13 @@
         "vpEff": 11.9,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-07T18:59:24.370Z"
+      "at": "2026-10-07T19:23:59.785Z"
     }
   ],
-  "spreadBpsRec": 21,
+  "spreadBpsRec": 42,
   "book": {
-    "bestAsk": 0.10161733292645712,
-    "bestBid": 0.10140753660812071,
-    "spreadBps": 21
+    "bestAsk": 0.10092,
+    "bestBid": 0.10049369884370533,
+    "spreadBps": 42
   }
 }
