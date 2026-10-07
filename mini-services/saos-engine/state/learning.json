@@ -1,19 +1,19 @@
 {
-  "at": "2026-10-07T10:26:23.590Z",
+  "at": "2026-10-07T10:46:23.593Z",
   "enabled": true,
-  "runsTotal": 305,
+  "runsTotal": 307,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 115,
-      "oks": 111,
+      "window": 111,
+      "oks": 107,
       "fails": 0,
       "blocked": 4,
-      "okRate": 96.5,
-      "blockedRate": 3.5,
+      "okRate": 96.4,
+      "blockedRate": 3.6,
       "failReasons": {},
-      "msP50": 14471,
-      "msP90": 38977
+      "msP50": 15110,
+      "msP90": 39171
     },
     "curator": {
       "present": true,
@@ -23,59 +23,55 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 8.6,
+      "vpEff": 33.9,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 3,
-      "fails": 2,
+      "window": 2,
+      "fails": 1,
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2889,
-      "downs": 112,
-      "heals": 53,
-      "healVerified": 44,
+      "checks": 2909,
+      "downs": 113,
+      "heals": 54,
+      "healVerified": 45,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-07T10:26:23.614Z",
+      "lastCheckAt": "2026-10-07T10:46:23.630Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-07T09:59:28.634Z",
-      "lastUpAt": "2026-10-07T10:26:23.615Z",
+      "lastSpawnAt": "2026-10-07T10:29:28.649Z",
+      "lastUpAt": "2026-10-07T10:46:23.631Z",
       "blips": 2
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×4/115 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×4/111 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "broadcast-fails",
-      "severity": "medium",
-      "evidence": "2/3 broadcasts failed · last: missing required active authority:Missing Active Authority headcorner",
-      "lesson": "broadcast failures burn RC and delay rails",
-      "action": "fail-closed stop already holds; vote-interval retry added T-14"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "1/2 broadcasts failed in the window (last: missing required active authority:Missing Active Authority h) · last fail 2026-10-07T03:45:25.665Z < last OK broadcast 2026-10-07T10:39:02.374Z (live posting-role ops succeed)",
+      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
+      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
-  "adaptations": {
-    "active": [],
-    "verified": [],
-    "retired": [],
-    "declined": []
-  },
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 203,
-    "broadcast-fails": 77,
+    "signing-cred-blocked": 205,
+    "broadcast-fails": 79,
     "cycle-latency-tail": 19
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
