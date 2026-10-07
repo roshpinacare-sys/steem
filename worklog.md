@@ -1401,3 +1401,28 @@ Stage Summary:
 - המאסטר: מסילת-BID כבר-בקוד (peg step: bidBudgetSbd → planLadder) — מתחממת אוטומטית כש-SBD > 0.5; זריעת-החיילים תיבער עם תוצרי-המילוי-הראשונים (1 SBD כשהמאסטר ≥3 SBD)
 - מצב דו-כיווני כנה: 4 סוחרים עם אסקים חיים (מאסטר + 3 חיילים); BIDs מתחילים במילוי-האסק-הראשון
 - נותר: סבב 3 — דוקטרינת-הצבה-מחדש (SBD ממומש → ספר-קנייה / power-up / עתודה)
+
+---
+Task ID: R231 (T-91)
+Agent: Z.ai Code (main)
+Task: סבב 3 — דוקטרינת הצבה-מחדש: יחסי-SBD קבועים (ספר-קנייה / power-up / עתודה) + החוק "מימוש אף-פעם לא עוצר את האוטונומיה"
+
+Work Log:
+- תיקון-סנדבוקס אומת: כל הקבצים קיימים, engine+custodian חיים, FLEET-OK 15 (12/3/0/0), custody 11/11, push-custody מסונכרן ל-origin/saos-cockpit (9184103d) — ה-push הקודם תקין, ההשוואה מול origin/main הטעתה (ענף אחר)
+- CHAIN TRUTH probe ל-op-id (download/probe-t4.mjs): transfer_to_vesting — הניחוש הראשון 4 היה שגוי (4=withdraw_vesting); הצומת החזיר 0x03 — תוקן ל-3, סדר-שדות from,to,amount (בלי memo) אומת byte-for-byte (אותה מחלקת-תפיסה כמו R209 claim 33→39)
+- steemtx.mjs: transfer_to_vesting=3 + serializer (מקור-סריאליזציה יחיד)
+- lib.mjs: planRedeploy טהור — יחסים buyBook 0.5 / powerUp 0.3 / reserve 0.2 (סכום≠1 → REDEPLOY-BLOCKED), רצפות נזילות (5 STEEM / 0.5 SBD) = העתודה-המבצעית, 3dp מדויק, החוק בגוף-התוכנית
+- signer.mjs: שער-חשיבה סעיף 4 — transfer_to_vesting חייב from=to (עצמי) + operator.allowPowerUp=true; ברירת-מחדל safe-by-default: allowPowerUp:false + חסימת redeploy ב-defaultArmedConf
+- daily.mjs: שלב 5.5 redeploy (תכנון + יומן events) + הוק (d2) ב-execute: דחייה כש-claim בבאצ' (מנגנון R210 mixed-authority), תקרת נזילות-שרשרת חיה (accountState, לא מלאי-מדומה), אירוע redeploy.powerup-op
+- economics.mjs: redeployDoctrine ב-economics.json — היחסים + הרצפות + executionArmed + תוצאת-התוכנית + החוק (נגזרת 3a)
+- index.ts: ראוט /redeploy (תוכנית + דוקטרינה + חוק) + רשימת-ראוטים
+- selftest: 311→328 PASS (+17 וקטורים: רצפות, below-min, plan 3dp, ratios-invalid, law-present); eslint נקי
+- .secrets/exec-armed.json: חסימת redeploy (יחסים+רצפות+חוק) + operator.allowPowerUp=true (הזמנת-סבב-3 שאושרה בדף)
+- החלפת-קוד לפי-החוק: kill 18310 → watchdog demand-heal → custody 11/11 מיד
+- מחזור ראשון עם השלב: REDEPLOY-PLAN (נזילות 82.144, עודף 77.144, power-up 23.143) → שער-חשיבה ALLOW → שידור ok
+
+Stage Summary:
+- חי ומאומת בשרשרת: txid 52be9256d2121cb9bf87d414486bfdac177f3fb3, בלוק 110217297 — transfer_to_vesting headcorner→headcorner 23.143 STEEM; VESTS 6.37M→6.40M; יתרת-נזילות 59.279 (מעל רצפה 5)
+- החוק כתוב בקוד, בדוקטרינה וב-economics.json: מימוש אף-פעם לא עוצר את האוטונומיה — הערך זורם חזרה לפי היחסים, מעל הרצפות בלבד
+- עמידות-איפוס (כנה): הכספת משחזרת חתימות-מפתח בלבד; אחרי reset ה-execution חוזר ל-safe-default (allowPowerUp:false) והתוכנית ממשיכה לרוץ מ-defaults — רי-חימוש דורש הזמנת-מפעיל (תכנון-בטוח, לא תקלה)
+- שלושת הסבבים הושלמו. נותר: צפייה ב-VP הראשי (חזרה לצפיפות-הצבעות), ומילויי-אסק ראשונים שיזריעו BIDs דו-כיווניים
