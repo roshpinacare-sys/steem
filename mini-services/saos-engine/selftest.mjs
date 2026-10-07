@@ -12,6 +12,8 @@ import {
 } from "./lib.mjs";
 import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE } from "./content.mjs";
 import { sanitizeReply, replyFresh, textSimilarity, pickColdPost, buildDaySchedule } from "./army-social.mjs";
+import { spamVerdict, organicVerdict, crossChainVerdict, titleVerdict, tagVerdict, bodyVerdict, selfSimVerdict, groundingVerdict, frequencyVerdict, spamPhraseHits, dupSentenceRatio, jaccard, shingles, normalizeText, GATE_DEFAULTS } from "./spamgate.mjs";
+import { buildBusMessage, busOp, parseBusEntry, filterInbox, busRateLimit, deliverInbox, BUS_TYPES, BUS_ID } from "./bus.mjs";
 import { thinkGate } from "./signer.mjs";
 import { tick, fold } from "./grid.mjs";
 import { classifyAgent } from "./fleet.mjs";
@@ -1050,6 +1052,103 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("mesh dark", meshVerdict([{ verdict: "DOWN" }, { verdict: "DOWN" }]), "MESH-DARK");
   eq("mesh empty", meshVerdict([]), "MESH-DARK");
   eq("mesh hostile", meshVerdict(null), "MESH-DARK");
+}
+
+/* ── R243 · SPAMGATE (the measured @spaminator law) ───────────────────────── */
+{
+  eq("normalize strips links", normalizeText("see [x](https://a.b/c) now"), "see x now");
+  ok("jaccard identical=1", jaccard(shingles("alpha beta gamma delta"), shingles("alpha beta gamma delta")) === 1);
+  ok("jaccard disjoint=0", jaccard(shingles("alpha beta gamma"), shingles("delta epsilon zeta")) === 0);
+  ok("dupSentences>0", dupSentenceRatio("This is a real sentence here. This is a real sentence here.") > 0);
+  eq("dupSentences unique=0", dupSentenceRatio("one fine morning walk\nthen a quiet river bends"), 0);
+  eq("bait hits", spamPhraseHits("Upvote me and follow me and get free crypto"), ["upvote me", "follow me and", "free crypto"]);
+  eq("bait clean", spamPhraseHits("a careful measured analysis of market microstructure"), []);
+
+  const tAllCaps = titleVerdict("MAKING FREE MONEY FAST HERE NOW");
+  ok("title all-caps refused", !tAllCaps.ok && tAllCaps.reasons.includes("title-all-caps"));
+  ok("title clickbait refused", !titleVerdict("You won't believe this trick").ok);
+  ok("title ok", titleVerdict("A measured look at Steem market depth").ok);
+
+  ok("tags too-many", !tagVerdict(["a", "b", "c", "d", "e", "f"]).ok);
+  ok("tags banned", !tagVerdict(["crypto", "airdrop"]).ok);
+  ok("tags dup", !tagVerdict(["life", "life"]).ok);
+  ok("tags ok", tagVerdict(["steem", "markets"]).ok);
+
+  ok("body thin post refused", !bodyVerdict("x ".repeat(150), { isComment: false }).ok); // 300 < 1200
+  ok("body thin comment refused", !bodyVerdict("nice post!", { isComment: true }).ok);
+  ok("comment ok at 220", bodyVerdict("I measured the order book depth before replying: the spread stayed wide all day and the fill quality changed after the parity shift.".padEnd(220, " "), { isComment: true }).ok);
+  const linky = bodyVerdict("read https://a.very-long-domain.example/path/here and https://another-long-domain.example/x ".repeat(6), { isComment: false });
+  ok("link-stuffing refused", !linky.ok && linky.reasons.some((r) => r.includes("link-stuffing")));
+  ok("bait refused", !bodyVerdict("Claim your free airdrop now ".repeat(20), { isComment: true }).ok);
+
+  const simSame = selfSimVerdict("one body about market depth measurements repeated", ["one body about market depth measurements repeated"], { isComment: false });
+  ok("selfSim identical refused", !simSame.ok);
+  const simDiff = selfSimVerdict("an entirely different topic about rivers and mountains and valleys", ["order books spreads parity fills and depth"], { isComment: false });
+  ok("selfSim different ok", simDiff.ok);
+
+  ok("grounding refused", !groundingVerdict({ groundedOn: [] }, { isComment: false }).ok);
+  ok("grounding ok", groundingVerdict({ groundedOn: ["parity 0.0996 measured"] }, { isComment: false }).ok);
+  ok("grounding n/a for comments", groundingVerdict({}, { isComment: true }).ok);
+
+  ok("frequency cap", !frequencyVerdict(3, 3).ok);
+  ok("frequency ok", frequencyVerdict(0, 3).ok);
+
+  ok("cross-chain hive refused", !crossChainVerdict("hive").ok);
+  ok("cross-chain empty refused", !crossChainVerdict("").ok);
+  ok("cross-chain steem ok", crossChainVerdict("steem").ok);
+
+  const sentences = ["The order book stayed thin today.", "I measured the spread band across the whole window.", "Fill quality changed after the parity shift.", "Inventory skew law explains the ask pressure.", "The bid side stayed passive until the close.", "Depth snapshots came from the public node.", "The parity band held inside four basis points.", "Order placement followed the tranche partition.", "RC headroom bounded the operation count.", "The day cap kept churn inside doctrine.", "Every verdict was journaled with a timestamp.", "The summary stands on measured telemetry."];
+  const fullBody = sentences.concat(sentences.map((s, i) => `${s} revisited in a second pass with fresh measurements (pass2-${i + 1})`)).join(" ");
+  const goodDraft = { title: "A measured look at Steem market depth", body: fullBody, tags: ["steem", "markets"], groundedOn: ["parity 0.0996 measured 2026-10-07"] };
+  const g1 = spamVerdict(goodDraft, { chain: "steem", ownRecentBodies: [], postsToday: 0, dayCap: 3 });
+  ok("full gate good draft passes", g1.ok);
+  const g2 = spamVerdict({ ...goodDraft, body: "thin", title: "hi" }, { chain: "steem" });
+  ok("full gate thin refused", !g2.ok && g2.reasons.some((r) => r.includes("body-too-thin")));
+  const g3 = spamVerdict(goodDraft, { chain: "hive" });
+  ok("full gate cross-chain refused", !g3.ok && g3.reasons[0].includes("REFUSED-CROSS-CHAIN-PAUSE"));
+  ok("gate tightened min applies", spamVerdict({ ...goodDraft, body: "x".repeat(1300) }, { chain: "steem", g: { ...GATE_DEFAULTS, minPostChars: 1600 } }).ok === false);
+
+  const ov1 = organicVerdict(Array.from({ length: 5 }, () => ({ outside: 0, flags: 0 })));
+  ok("organic zero→tighten", ov1.tighten === true && ov1.verdict === "ZERO-ORGANIC-TIGHTEN");
+  const ov2 = organicVerdict([{ outside: 0, flags: 1 }, { outside: 0, flags: 0 }, { outside: 0, flags: 0 }, { outside: 0, flags: 0 }, { outside: 0, flags: 0 }]);
+  ok("organic flag→stop", ov2.ok === false && ov2.verdict === "FLAGGED-STOP");
+  ok("organic no-signal", organicVerdict([{ outside: 0 }]).verdict === "NO-SIGNAL-YET");
+  const ov3 = organicVerdict([{ outside: 2, flags: 0 }, { outside: 1, flags: 0 }, { outside: 0, flags: 0 }, { outside: 3, flags: 0 }, { outside: 1, flags: 0 }]);
+  ok("organic ok", ov3.verdict === "ORGANIC-OK" && ov3.tighten === false);
+}
+
+/* ── R243 · AGENT-BUS (chain-native mail) ─────────────────────────────────── */
+{
+  const msg = buildBusMessage({ from: "headcorner", type: BUS_TYPES.CYCLE_RECEIPT, body: { ok: true } });
+  eq("bus msg shape", [msg.v, msg.from, msg.to, msg.type], [1, "headcorner", "*", BUS_TYPES.CYCLE_RECEIPT]);
+  let threw = false;
+  try { buildBusMessage({ from: "x", type: "nope" }); } catch { threw = true; }
+  ok("bus invalid type throws", threw);
+  threw = false;
+  try { buildBusMessage({ from: "x", type: BUS_TYPES.DIRECTIVE, body: { big: "y".repeat(600) } }); } catch { threw = true; }
+  ok("bus body cap throws", threw);
+
+  const op = busOp("headcorner", msg);
+  eq("bus op id", op[0][1].id, BUS_ID);
+  eq("bus op posting-auth", op[0][1].required_posting_auths, ["headcorner"]);
+
+  const entry = parseBusEntry([7, { block: 100, op: ["custom_json", { id: BUS_ID, json: JSON.stringify(msg) } ] }]);
+  ok("parse ok", entry && entry.from === "headcorner" && entry.block === 100);
+  eq("parse foreign id", parseBusEntry([7, { op: ["custom_json", { id: "other", json: "{}" } ] }]), null);
+  eq("parse garbage", parseBusEntry([7, { op: ["custom_json", { id: BUS_ID, json: "not-json" } ] }]), null);
+
+  const inbox = filterInbox([msg, { ...msg, from: "hcs1" }, { ...msg, to: "hcs1", from: "hcs1" }], "headcorner");
+  eq("inbox filter", inbox.length, 1); // own self-message excluded; to=hcs1 excluded
+
+  ok("ratelimit first ok", busRateLimit({ sentAt: [] }, 1000000).allow);
+  ok("ratelimit min-gap", !busRateLimit({ sentAt: [999990] }, 1000000).allow);
+  ok("ratelimit hour-cap", !busRateLimit({ sentAt: [999100, 999200, 999300, 999400, 999500, 999600, 999700] }, 1000000).allow);
+
+  const seen = [];
+  const out = deliverInbox([msg, { ...msg, type: "mystery" }], { [BUS_TYPES.CYCLE_RECEIPT]: (m) => { seen.push(m.from); return { handled: true, note: "ok" }; } });
+  ok("deliver handled", out.handled === 1 && seen.length === 1);
+  ok("deliver unknown soft", out.unknown.length === 1);
+  ok("deliver handler-error soft", deliverInbox([msg], { [BUS_TYPES.CYCLE_RECEIPT]: () => { throw new Error("boom"); } }).delivered[0].note.startsWith("handler-error"));
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

@@ -36,6 +36,7 @@ import { runEconomics } from "./economics.mjs";
 import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
 import { runSocial } from "./army-social.mjs";
+import { runBus } from "./bus.mjs";
 import { runRcTank, rcTankState } from "./rctank.mjs";
 import { runPayouts, payoutsState } from "./payouts.mjs";
 import { runWeave, weaveState } from "./weave.mjs";
@@ -755,6 +756,15 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.social = await stepWrap("social", async () => {
     const out = await runSocial({ now });
     return { verdict: out.verdict, executed: out.executed ?? 0, refused: out.refused ?? 0, due: out.due ?? 0, ms: out.ms ?? null };
+  });
+
+  /* T-88 · AGENT-BUS (R243): the agents talk THROUGH the chain — the engine
+   * serves its inbox (receipts/thresholds/custody notes from other runners:
+   * sandbox, CI, future hosts all read+write the same sovereign mail) and
+   * publishes one custody-gated cycle receipt. Rate-limited, fail-soft. */
+  report.steps.bus = await stepWrap("bus", async () => {
+    const out = await runBus({ now, cycleReport: report });
+    return { verdict: out.verdict, delivered: out.delivered ?? 0, published: out.published ?? 0, ms: out.ms ?? null };
   });
 
   /* T-22 · RC-TANK: the daily measured curve of the 100,000× law
