@@ -1602,6 +1602,14 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("worklog-intel: trailing-newline caught", wi.detectAnomalies(wiStats, { text: FIX + "x" }).some((a) => a.kind === "no-trailing-newline"), true);
   eq("worklog-intel: empty worklog flagged", wi.detectAnomalies(wi.computeStats(wi.parseWorklog("")), { text: "" }).some((a) => a.kind === "no-blocks"), true);
   eq("worklog-intel: clean fixture zero anomalies", wi.detectAnomalies(wi.computeStats(wi.parseWorklog(FIX2)), { text: FIX2, previousLineCount: null }).length, 0);
+  /* R257 · CRLF/CR-NORMALIZATION: קבצי-Windows (autocrlf) חייבים-להימדד, לא-רק-להזעיק —
+   * ב-JS `$` לא-נחה-לפני-`\r` ו-`.` לא-צורך-אותו, אז-`^Task ID:` לא-היה-נפתח-אף-פעם (0-בלוקים-שקטים). */
+  const FIXCRLF = "---\r\nTask ID: W-1\r\nAgent: alpha\r\nTask: win\r\n\r\nWork Log:\r\n- one\r\n\r\nStage Summary:\r\n- s\r\n";
+  const pc = wi.parseWorklog(FIXCRLF);
+  eq("worklog-intel: CRLF parses (windows autocrlf)", [pc.blocks.length, pc.blocks[0].taskId, pc.blocks[0].workBullets.length], [1, "W-1", 1]);
+  eq("worklog-intel: CRLF clean file zero anomalies", wi.detectAnomalies(wi.computeStats(pc), { text: FIXCRLF, previousLineCount: null }).length, 0);
+  eq("worklog-intel: CRLF lineCount measured", pc.lineCount, 11);
+  eq("worklog-intel: bare CR parses (classic mac)", wi.parseWorklog("Task ID: M-1\rAgent: beta\rTask: mac\r\rWork Log:\r- x\r\rStage Summary:\r- y\r").blocks[0].taskId, "M-1");
   const cliSrc = await (async () => {
     try {
       const fsx = await import("node:fs");
