@@ -21,9 +21,9 @@ VIOLATION() { echo "[guard] VIOLATION: $*"; FAIL=1; }
 PAT='ghp_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{60,}|gho_[A-Za-z0-9]{36,}|ghs_[A-Za-z0-9]{36,}|ghu_[A-Za-z0-9]{36,}|AKIA[0-9A-Z]{16}|xox[abprs]-[A-Za-z0-9-]{10,}|sk_live_[A-Za-z0-9]{16,}|glpat-[A-Za-z0-9_-]{20,}|BEGIN [A-Z ]*PRIVATE KEY'
 B64='[A-Za-z0-9+/]{100,}'
 EXCL=':(exclude)scripts/github-guard.sh:(exclude)skills/design'
-G1_HITS=$(timeout 60 git grep -InE "$PAT" -- $EXCL 2>/dev/null \
+G1_HITS=$( (timeout 60 git grep -InE "$PAT" -- $EXCL 2>/dev/null || true) \
   | grep -vE "$B64" \
-  | wc -l || echo 0)
+  | wc -l)
 if [[ "${G1_HITS:-0}" -gt 0 ]]; then
   VIOLATION "$G1_HITS secret-like line(s) in tracked files:"
   timeout 60 git grep -InE "$PAT" -- $EXCL 2>/dev/null \
