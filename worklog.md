@@ -1603,3 +1603,40 @@ Stage Summary:
 - "לתקן הכל" הושלם: המוח-העתיק-הוחלף-חוקית, ה-credential-חי-ומאומת, עגינת-ה-custody-ניצלה-ממבוי-סתום-מבני-ומוכחת-על-השרשרת
 - "עומק ורוחב": שני-גילויי-עומק (מוח-ישן-בהרצה; עגינה-תקועה-מבנית) + פורנזיקה-כפולה (1.4-STEEM-מוסבר-מקצה-לקצה; SP-נגזר-מדד-מול-dynamic-globals) + מבחן-כאוס-חי + אודיט-חתימות-וסודות
 - שקיפות-כנה: שלוש-טעויות-שלי-נרשמו (חישוב-SP-נאיבי /1e6; שם-צומת-שגוי api.stem.fans מול api.steem.fans; אזעקת-השווא-מהכלי-המוקפא)
+
+---
+Task ID: R240-recovery
+Agent: Z.ai Code (main)
+Task: המפעיל: "תראה שהסנבוקס לא נמחק לך שוב ותעדכן מהגיט" — בדיקת-חזרה-אחורה + עדכון-מגיט
+
+Work Log:
+- נמצא: הסנדבוקס אכן נמחק שוב — HEAD מקומי 110b038 (06/10 08:33, עתיק), 131 קומיטים מאחורי origin/saos-cockpit, ו-commit d1f0f5a7 (עידן-cockpit-zai שבסיכום-ההקשר) לא-קיים בליניאגה-זו; worklog-מקומי היה-חסר את רשומות R234–R239
+- ענף-אמת: cockpit-zai היה ענף-זר-תועה (עוגן-ביניים-מ-10:21-נח עליו — תוקן-כבר-ב-R239); הענף-הקנוני הוא saos-cockpit (ls-remote: main 6447874 / saos-cockpit c4cd9c05 / security-audit c26c3c5)
+- התאוששות: stash-גיבוי "pre-recovery-rollback-20261007-135703" (שינויים-מקומיים-מהעץ-העתיק בלבד — לא-משוחזרים-מכוון, מוחזקים-כראיה) → git reset --hard origin/saos-cockpit → HEAD c4cd9c05 (07/10 11:54 UTC, custodian bounded-staleness)
+- אימות-מלא: divergence 0/0 (SYNCED) · selftest 427/427 PASS (state/selftest-last-run.json at 13:59 UTC) · PREVIEW :3000 HTTP 200 · engine :3040 ok (headcorner, parity 0.0996 band-ok bps -433) · dev.log נקי-מ-Turbopack (רק-422- benign-של-חיפוש-SBD-חסר-תוצאות)
+- שלמות-מצב: state/-מלא (army/soldiers/custodian/sovereign/...) שרד כ-untracked; db/custom.db קיים; army-keys אומץ-מחדש 10/11 0600 (על-פי-R239)
+
+Stage Summary:
+- הסנדבוקס שוחזר-מלא מהגיט: R234–R239 כולם-חזרו (מוח-937-שורות, custody-anchor a955b5d7, 427-וקטורים)
+- שני-השירותים-חיים-ללא-שגיאות; אין-צורך-בהתערבות-קוד
+- עתודה: stash@{0} מוחזק-כגיבוי-העץ-העתיק
+
+---
+Task ID: R241
+Agent: Z.ai Code (main)
+Task: המפעיל: "תזהר לממן או לעשות משהו עם החיילים המתים... בוא נתעסק בחיים... מה עוד חסר להשלמת החזון bullet-proof... הפרויקט עדיין שקרן — כל הטענות נבדקות מאפס מהקוד בגיט ולא בסנדבוקס... וודא שהגיט מבהיר לסוכנים תמיד שאין להסתמך על פעילות אוטונומית מסנדבוקס"
+
+Work Log:
+- חיילים: פקודה-מקובלת — אפס-פעולה עם המתים. אימות-מהקוד-בגיט: חוק-T-80 מבני (daily.mjs:637-700 — keyless = never funded/never grid-run/never signed); אירוע-חי custody-frozen hcsoldier1/2/3 @2026-10-06; אפס-topup-למתים ב-events/exec-log. המיקוד: החיים (hcs1-hcs3, custody-verified)
+- ביקורת-אמת מאפס (audit/r241/CLAIM-TRUTH-AUDIT.md — 11 טענות): 7 TRUE · 2 FALSE→תוקן · 1 PARTIAL→אירוע · 1 TRUE-מתוקן. אמת-שרשרת מצומת-ציבורי-עצמאי: anchor a955b5d7 בבלוק 110230068; probe חדש מוכיח tip==HEAD @110231259
+- שקר-חמור-שנחשף (C6): "ריבונות-אוטונומית" הייתה-תלוית-סנדבוקס — ה-custodian מת-עם-המחיקה (שתיקת-קומיטים 11:54→14:13 UTC) והמפתח-הסודי BA339C99 אבד-עם-הכרינג; נרשם-כאירוע-ריבונות
+- שקר-שני (C8): בגיט-לא-היה-שום-README/AGENTS — סוכן-חדש-לא-היה-יודע-את-החוקים. נוצרו: AGENTS.md (חוק-פתיחה-חובה: אפס-אמון-בסנדבוקס, חובות-פתיחת-סשן, חוק-חתימה, T-80), README.md, docs/SANDBOX-DISTRUST-LAW.md (6 סעיפים)
+- תיקון-הריבונות: scripts/sovereign-bootstrap.sh — הוכחה-חיה: clone-טרי-מ-origin → bun install → SELFTEST 427/427 PASS (BOOTSTRAP-OK); scripts/chain-anchor-probe.mjs — מאמת-עוגן-מול-HEAD מצומת-ציבורי (anchored:true drift:false; pagination 100/עמוד); .github/workflows/sovereign-cycle.yml — דופק-ריבונות-חיצוני כל-30 דק על-תשתית-GitHub (clone→install→selftest→probe) ששורד-מחיקות-סנדבוקס ללא-מפתחות-כלל (observe-only, fail-closed)
+- היגיינת-סודות: .env (הכיל-רק-DSN-SQLite-מקומי — לא-סוד) ו-db/custom.db הוצאו-ממעקב; .env.example נוסף; אומת signing/*.asc = PUBLIC-KEY-בלבד (אין-דליפה-בגיט)
+- custodian מוחזק-כבוי-ע"פ-חוק-עד-שבת-יכולת-החתימה (קומיטי-גוף-לא-חתומים-יידחו-בשער 2.5); קומיט-זה עצמו לא-חתום מהסיבה-המתועדת-הזאת (checkpoint-ניטרלי, סעיף-חוק v1.1)
+- lint נקי · divergence 0/0 · :3000 200 · :3040 ok
+
+Stage Summary:
+- מה-ששרד-מחיקה-באמת: גיט + שרשרת + selftest + T-80. מה-ששיקר: ריבונות-הפועלת (מתה-עם-התהליך) — מתוקן-מבנית
+- הגיט-עצמו מלמד-עכשיו-כל-סוכן: AGENTS.md + README + חוק-SANDBOX-DISTRUST — "סנדבוקס=מטמון-נמחק, גיט=אמת, בצע-מהגיט"
+- למפעיל: (1) יבוא-מפתח-סודי/רוטציה ל-GitHub Secrets — משחזר-חתימה; (2) הפעלת-Actions-במאגר — מדליק-את-הדופק-החיצוני
