@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-08T15:29:26.260Z",
+  "at": "2026-10-08T15:39:26.263Z",
   "enabled": true,
-  "runsTotal": 436,
+  "runsTotal": 437,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -32,20 +32,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 1,
+      "window": 2,
       "fails": 1,
       "lastError": "Assert Exception:available >= -delta: Account headcorner does not have sufficient funds for balance adjustment. Required: {\"amount\":\"-1216\",\"precision\":3,\"nai\":\"@@000000013\"}, Available: {\"amount\":\"71"
     },
     "watchdog": {
-      "checks": 3160,
+      "checks": 3170,
       "downs": 118,
       "heals": 59,
       "healVerified": 50,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-08T15:29:26.331Z",
+      "lastCheckAt": "2026-10-08T15:39:26.336Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-08T14:27:31.325Z",
-      "lastUpAt": "2026-10-08T15:29:26.332Z",
+      "lastUpAt": "2026-10-08T15:39:26.338Z",
       "blips": 2
     }
   },
@@ -69,7 +69,7 @@
       "id": "broadcast-fails",
       "severity": "low",
       "resolved": true,
-      "evidence": "1/1 broadcasts failed in the window (last: Assert Exception:available >= -delta: Account headcorner doe) · last fail 2026-10-08T14:59:39.793Z < last OK broadcast 2026-10-08T15:24:37.087Z (live posting-role ops succeed)",
+      "evidence": "1/2 broadcasts failed in the window (last: Assert Exception:available >= -delta: Account headcorner doe) · last fail 2026-10-08T14:59:39.793Z < last OK broadcast 2026-10-08T15:39:33.998Z (live posting-role ops succeed)",
       "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
       "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
@@ -79,9 +79,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 334,
-    "broadcast-fails": 129,
-    "cycle-latency-tail": 102
+    "signing-cred-blocked": 335,
+    "broadcast-fails": 130,
+    "cycle-latency-tail": 103
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
