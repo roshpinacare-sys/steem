@@ -1,6 +1,6 @@
 {
-  "verdict": "RECRUITED",
-  "active": 10,
+  "verdict": "FULL-STRENGTH",
+  "active": 11,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/market.json: 211 trades/24h measured (vol 2058.754 STEEM)",
+      "evidence": "state/market.json: 207 trades/24h measured (vol 1871.632 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -26,18 +26,18 @@
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
       "evidence": "state/hyper-grid.json: equilibrium 10216 ops/day measured (RC governor live)",
-      "priorStatus": "planned"
+      "priorStatus": "active"
     },
     {
       "id": "fill-auditor",
       "role": "מבקר-עסקאות",
       "lane": "truth",
       "capability": "chain-truth fill/op counters over account history (max(state, chain-truth))",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-08T06:49:08.934Z",
-      "evidence": null,
+      "evidence": "state/observe.json: 6 chain-truth fills counted (last 2026-10-08T19:14:09.000Z)",
       "priorStatus": "planned"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/selftest-last-run.json: 1024/1024 PASS at 2026-10-08T18:44:04.097Z",
+      "evidence": "state/selftest-last-run.json: 1035/1035 PASS at 2026-10-08T19:13:13.413Z",
       "priorStatus": "active"
     },
     {
@@ -109,7 +109,7 @@
       "cadence": "6h",
       "truthContract": "findings carry url+date from real search results; no finding without a source",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/webintel.json: 15 sourced findings, age 6h — external recon live",
+      "evidence": "state/webintel.json: 15 sourced findings, age 0h — external recon live",
       "priorStatus": "active"
     },
     {
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/payouts.json: MEASURED-PENDING at 2026-10-08T15:09:26.259Z — pending(vests 35.490645), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: MEASURED at 2026-10-08T18:31:26.047Z — pending(vests 0), payout clock 5d remaining — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-08T18:54:03.833Z",
-  "pid": 26170
+  "at": "2026-10-08T19:19:10.704Z",
+  "pid": 32570
 }
