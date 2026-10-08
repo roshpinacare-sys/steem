@@ -2426,6 +2426,82 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("watchdog breaker: slow witness (>2500ms) quarantines itself", br.verdict === "QUARANTINED" && br.reason.includes("latency"));
 }
 
+/* ═══ R288 · FINANCE DIGEST + YIELD DISTRIBUTOR (pure layer) ═══════════════ */
+{
+  const F = await import("./finance-digest.mjs");
+  const Y = await import("./yield-distributor.mjs");
+  const { validatePackage, scrubBody } = await import("./content-compiler.mjs");
+  const { titleSimilarity } = await import("./content.mjs");
+
+  /* yield: the policy laws */
+  ok("yield policy: canonical defaults validate", Y.validatePolicy(Y.POLICY_DEFAULTS).ok);
+  ok("yield policy: split must total 100", !Y.validatePolicy({ ...Y.POLICY_DEFAULTS, reservePct: 70, fleetPct: 20 }).ok);
+  ok("yield policy: negative dust refused", !Y.validatePolicy({ ...Y.POLICY_DEFAULTS, dustSteem: -1 }).ok);
+
+  /* yield: the fuel-is-sacred floor */
+  const np = Y.netPool({ liquidSteem: 142.5, liquidSbd: 12.3, policy: Y.POLICY_DEFAULTS });
+  eq("yield netPool: floor subtracted", { steem: np.steem, sbd: np.sbd }, { steem: 92.5, sbd: 7.3 });
+  eq("yield netPool: liquid under floor clamps to zero", Y.netPool({ liquidSteem: 3, liquidSbd: 0, policy: Y.POLICY_DEFAULTS }).steem, 0);
+
+  const R10 = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq"];
+  const GREEN = { verdict: "FLEET-CUSTODY-ALIVE", after: { verified: 14, total: 14 } };
+
+  /* yield: custody gate first — nothing moves without 14/14 */
+  const frozen = Y.planDistribution({ liquidSteem: 200, liquidSbd: 0, custody: null, roster: R10, policy: Y.POLICY_DEFAULTS });
+  ok("yield: custody not green freezes the plan", frozen.verdict === "CUSTODY-FROZEN" && frozen.transfers.length === 0);
+  const frozenPartial = Y.planDistribution({ liquidSteem: 200, liquidSbd: 0, custody: { verdict: "FLEET-CUSTODY-ALIVE", after: { verified: 13, total: 14 } }, roster: R10, policy: Y.POLICY_DEFAULTS });
+  ok("yield: 13/14 is still frozen (T-15 law)", frozenPartial.verdict === "CUSTODY-FROZEN");
+
+  /* yield: the split math — reserve, per-share, run cap, invariant */
+  const plan = Y.planDistribution({ liquidSteem: 200, liquidSbd: 0, custody: GREEN, roster: R10, policy: Y.POLICY_DEFAULTS });
+  /* pool = 200 − 50 floor = 150 → reserve 60% = 90 → distributable 60 → 6/wallet */
+  eq("yield: per share is floored to 0.001 (pool 150, fleet 40%, 10 wallets)", plan.perShare, 6);
+  eq("yield: run cap trims transfers to maxTransfersPerRun", plan.transfers.length, 4);
+  eq("yield: the deferred tail is counted honestly", plan.deferred, 6);
+  ok("yield: invariant reserve+planned <= pool", plan.reserveSteem + plan.plannedTotal <= 150 + 1e-9 && plan.invariantOk === true);
+  ok("yield: transfers target the roster, not the treasury", plan.transfers.every((t) => R10.includes(t.to) && t.asset === "STEEM"));
+
+  /* yield: dust rollback — a share below the floor never touches the chain */
+  const dust = Y.planDistribution({ liquidSteem: 62, liquidSbd: 0, custody: GREEN, roster: R10, policy: Y.POLICY_DEFAULTS });
+  ok("yield: sub-dust share rolls back to reserve (no dust spam)", dust.verdict === "BELOW-DUST" && dust.transfers.length === 0 && dust.reserveSteem === 12);
+
+  /* yield: caps + cadence */
+  eq("yield: daily cap verdict", Y.planDistribution({ liquidSteem: 200, liquidSbd: 0, custody: GREEN, roster: R10, policy: Y.POLICY_DEFAULTS, executedToday: 6 }).verdict, "DAILY-CAP");
+  eq("yield: cooldown between executed runs", Y.planDistribution({ liquidSteem: 200, liquidSbd: 0, custody: GREEN, roster: R10, policy: Y.POLICY_DEFAULTS, lastExecutedAt: new Date(Date.now() - 1000).toISOString() }).verdict, "COOLDOWN");
+  eq("yield: no roster is a named verdict", Y.planDistribution({ liquidSteem: 200, liquidSbd: 0, custody: GREEN, roster: [], policy: Y.POLICY_DEFAULTS }).verdict, "NO-ROSTER");
+  eq("yield: invalid policy verdicts closed", Y.planDistribution({ liquidSteem: 200, liquidSbd: 0, custody: GREEN, roster: R10, policy: { ...Y.POLICY_DEFAULTS, reservePct: 90, fleetPct: 5 } }).verdict, "POLICY-INVALID");
+
+  /* digest: slot accounting + cooldown */
+  eq("digest: slot counts only same-date rows", F.nextSlot([{ id: "finance-digest-2026-10-08-0" }, { id: "finance-digest-2026-10-08-1" }, { id: "finance-digest-2026-10-07-0" }], "2026-10-08"), 2);
+  eq("digest: cooldown verdict at cap", F.cooldownVerdict(2), "COOLDOWN");
+  eq("digest: ready under cap", F.cooldownVerdict(1), "READY");
+
+  /* digest: the document — measured text that survives the compiler's gates */
+  const snap = {
+    serial: 7,
+    payouts: { pending: { steem: 0.11, sbd: 0.02, vests: 359.77 }, payout: { phase: "pre-payout", payoutDay: "2026-10-13", daysRemaining: 5 }, rollup: { opsCount: 49, curationVests: 1227.729979, windowDays: 2, curationSteemPerDay: 0.380649 } },
+    economics: { rails: [{ id: "market-making", measuredUsdPerDay: null, estUsdPerDay: null, confidence: "blocked" }, { id: "curation", measuredUsdPerDay: 0.022751, estUsdPerDay: null, confidence: "measured" }] },
+    custody: { verdict: "FLEET-CUSTODY-ALIVE", after: { verified: 14, total: 14 } },
+    nodeHealth: { alive: 6, quarantined: 0 },
+    watchdog: { coverage: { measured: 7, total: 7 }, flagged: [{ h: 1 }, { h: 2 }] },
+    staging: { stats: { staged: 10 }, headCid: "sha256-120eb58ad6e" },
+    yieldRail: null,
+  };
+  const NOW = "2026-10-08T21:00:00.000Z";
+  const d0 = F.buildDigest(snap, { now: NOW, slot: 0 });
+  const d1 = F.buildDigest(snap, { now: NOW, slot: 1 });
+  ok("digest: body meets the 300 word floor", d0.words >= 300);
+  ok("digest: symbol law passes on title and body", d0.symbolLawOk === true);
+  ok("digest: schema-valid for the compiler", validatePackage({ title: d0.title, body: d0.body, tags: d0.tags }).ok === true);
+  ok("digest: scrub-clean by construction (no localhost/paths/secret shapes)", scrubBody(d0.body).scrubbed === 0);
+  ok("digest: titles rotate apart (near-dup gate survives consecutive slots)", titleSimilarity(d0.title, d1.title) < 0.55);
+  ok("digest: determinism — same snapshot builds the same body", d0.body === F.buildDigest(snap, { now: NOW, slot: 0 }).body);
+  ok("digest: measured values appear, gaps stay named", d0.body.includes("0.380649") && d0.body.includes("blocked"));
+  ok("digest: chain and tags rotate with the slot", d0.chain === "steem" && d1.chain === "hive" && d1.tags[0] === "hive");
+  eq("digest: id carries date and slot", d0.id, "finance-digest-2026-10-08-0");
+  ok("digest: body names the honest-gap doctrine", d0.body.includes("not yet measured") === false || snap.economics.rails.some((r) => r.measuredUsdPerDay == null));
+}
+
 /* ═══ R285 · THE RESILIENCE PLANE (llm-chain): the five laws as vectors.
  * Hermetic: candidates are injected, the ledger is a tmp file, the fast path
  * is flushed between vectors. The real drill (live 1-token provider) runs via

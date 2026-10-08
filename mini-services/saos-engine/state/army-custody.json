@@ -1,19 +1,31 @@
 {
-  "at": "2026-10-08T21:54:03.854Z",
+  "at": "2026-10-08T21:54:47.463Z",
   "verdict": "FLEET-CUSTODY-ALIVE",
   "master": {
-    "roles": [],
-    "before": "master-verified",
+    "roles": [
+      {
+        "role": "posting",
+        "gen": "GEN-2"
+      },
+      {
+        "role": "active",
+        "gen": "GEN-2"
+      }
+    ],
+    "before": "master-unverified",
     "law": "chain-judged wif-direct, GEN-2 first"
   },
   "before": {
-    "verified": 14
+    "verified": 0
   },
   "after": {
     "verified": 14,
     "total": 14
   },
-  "pulled": null,
+  "pulled": {
+    "extracted": 13,
+    "missing": []
+  },
   "adopted": [
     {
       "account": "cashmachine",
@@ -174,5 +186,5 @@
     }
   ],
   "law": "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
-  "ms": 15810
+  "ms": 68499
 }
