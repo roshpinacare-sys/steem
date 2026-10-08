@@ -253,6 +253,8 @@ export async function GET() {
     bridgeGuard: s.bridgeGuard ?? null,
     rcTank: s.rcTank ?? null,
     payouts: s.payouts ?? null,
+    /* R282 · soldier reward claims (income capture) — passthrough verdicts */
+    soldierClaims: (s.soldierClaims ?? null) as Record<string, any> | null,
     weave: s.weave ?? null,
     sources: { kind: "thin-proxy-one-body", engineHttp: ENGINE_HTTP, doctrineAccount: s.account ?? null },
     notes: [

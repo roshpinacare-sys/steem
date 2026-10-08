@@ -12,6 +12,7 @@ import { wifDecode, buildTx, signDigest } from "./steemtx.mjs";
 import { createHash } from "node:crypto";
 import * as secp from "@noble/secp256k1";
 import { readFileSync } from "fs";
+import { createHash } from "crypto";
 
 const RPC = "https://blurt-rpc.saboin.com";
 const CHAIN_ID = Buffer.from("cd8d90f29ae273abec3eaa7731e25934c63eb654d55080caff2ebb7f5df6381f", "hex");

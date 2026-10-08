@@ -1,68 +1,73 @@
 {
   "day": "2026-10-08",
-  "at": "2026-10-08T15:09:26.259Z",
+  "at": "2026-10-08T18:31:26.047Z",
   "account": "headcorner",
-  "verdict": "MEASURED-PENDING",
+  "verdict": "MEASURED",
   "pending": {
     "steem": 0,
     "sbd": 0,
-    "vests": 35.490645,
-    "any": true
+    "vests": 0,
+    "any": false
   },
   "vp": {
-    "pct": 11.9,
-    "hrsToFull": 105.7,
-    "regenPerSec": 15020939,
-    "vests": 6489045.497704,
-    "basis": "voting_manabar at 2026-10-08T15:09:26.259Z"
+    "pct": 17.4,
+    "hrsToFull": 99.2,
+    "regenPerSec": 15021152,
+    "vests": 6489137.450674,
+    "basis": "voting_manabar at 2026-10-08T18:31:26.047Z"
   },
-  "payout": null,
+  "payout": {
+    "payoutDay": "2026-10-13",
+    "msRemaining": 365313953,
+    "hoursRemaining": 101.5,
+    "daysRemaining": 5,
+    "phase": "pre-payout",
+    "law": "פאייאוט-קיורציה מתיישב ~7 ימים אחרי-ההצבעה — השעון מדוד, לא מונח"
+  },
   "rollup": {
-    "opsCount": 0,
-    "claims": 0,
-    "curationVests": 0,
+    "opsCount": 49,
+    "claims": 16,
+    "curationVests": 1227.729979,
     "authorSbd": 0,
     "authorSteem": 0,
     "authorVests": 0,
-    "windowDays": null,
-    "oldestTs": null,
-    "newestTs": null,
+    "windowDays": 2,
+    "oldestTs": "2026-10-07T12:20:24.000Z",
+    "newestTs": "2026-10-08T15:46:30.000Z",
+    "curationSteemPerDay": 0.380649,
+    "authorSbdPerDay": null,
     "curationUsdPerDay": null,
     "authorUsdPerDay": null,
-    "confidence": "blocked",
-    "note": "no settled reward ops in the scanned window yet — the payout clock decides when this flips to measured"
+    "confidence": "measured",
+    "note": "settled chain rewards MEASURED (0.380649 STEEM/day) — unpriced here, economics prices"
   },
   "scan": {
-    "rewardOps": 0,
-    "rewardApi": null,
-    "voteOps": 0,
-    "votesScanned": 0,
-    "firstVoteDay": null,
-    "unpaidTranches": 0,
-    "unpaidCutoff": "2026-10-01T15:09:26.259Z",
+    "rewardOps": 49,
+    "rewardApi": "condenser-walk",
+    "rewardCoverage": {
+      "verdict": "SCAN-PARTIAL",
+      "reason": "time-budget",
+      "rows": 4747,
+      "windows": 47,
+      "oldestTsRead": "2026-10-06T21:34:51.000Z",
+      "maxAgeMs": 1209600000
+    },
+    "voteOps": 56,
+    "votesScanned": 56,
+    "voteCoverage": {
+      "verdict": "SCAN-PARTIAL",
+      "reason": "time-budget",
+      "rows": 4747,
+      "windows": 47,
+      "oldestTsRead": "2026-10-06T21:34:51.000Z",
+      "maxAgeMs": 1209600000
+    },
+    "firstVoteDay": "2026-10-06",
+    "unpaidTranches": 56,
+    "unpaidCutoff": "2026-10-01T18:31:26.047Z",
     "node": "https://api.justyy.com"
   },
   "law": "מסילת-הקיורציה נשארת מוערכת עד-שהשרשרת משלמת — השעון עוקב אחרי הטרנס-הבלתי-משולם-הבא, לא אחרי הצבעות-עבר שכבר התיישבו",
-  "history": [
-    {
-      "day": "2026-10-06",
-      "pendingVests": 0,
-      "phase": "paid-window"
-    },
-    {
-      "day": "2026-10-05",
-      "pendingVests": 0,
-      "phase": "pre-payout"
-    },
-    {
-      "day": "2026-10-04",
-      "pendingVests": 0,
-      "phase": "paid-window"
-    },
-    {
-      "day": "2026-10-02",
-      "pendingVests": 0,
-      "phase": "pre-payout"
-    }
-  ]
+  "scanLaw": "R282: אפס-תגמולים עם כיסוי-כושל הוא SCAN-FAILED — לעולם לא 'אין-תגמולים' (האפס-השקרי נמדד חי 2026-10-08)",
+  "history": []
 }

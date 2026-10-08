@@ -861,7 +861,7 @@ export default function Home() {
                 <RcTankCard rcTank={s.rcTank} />
 
                 {/* T-23f · שעון-הפאייאוט + ספקטרום-ההון X-2; אופציונליים, נטענים רק כשהמנוע מדווח */}
-                <PayoutsCard payouts={s.payouts} />
+                <PayoutsCard payouts={s.payouts} soldierClaims={s.soldierClaims} />
                 <X2Card x2={s.economics?.x2} />
               </>
             ))}

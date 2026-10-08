@@ -23,6 +23,7 @@ import { personasPublic } from "./personas.mjs";
 import { bridgeGuardState } from "./bridge-guard.mjs";
 import { rcTankState } from "./rctank.mjs";
 import { payoutsState } from "./payouts.mjs";
+import { soldierClaimsState } from "./soldier-claims.mjs";
 import { weaveState } from "./weave.mjs";
 import { communityStatus } from "./community.mjs";
 import * as fs from "node:fs";
@@ -129,6 +130,8 @@ async function handle(req) {
        * weave handshake with the second signer (the one-body contract) */
       payouts: payoutsState(),
       weave: weaveState(),
+      /* R282 · soldier reward claims (income capture) — verdicts + txids */
+      soldierClaims: soldierClaimsState(),
       /* T-21 evidence files the cockpit renders (single source: the engine) */
       roles: readJson(path.join(STATE, "fleet-roles.json")),
       economics: readJson(path.join(STATE, "economics.json")),
