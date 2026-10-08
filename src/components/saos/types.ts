@@ -262,14 +262,31 @@ export type Status = {
     scan?: {
       rewardOps?: number | null
       rewardApi?: string | null
+      rewardCoverage?: { verdict?: string | null; reason?: string | null; rows?: number | null; windows?: number | null; oldestTsRead?: string | null; maxAgeMs?: number | null } | null
       voteOps?: number | null
       votesScanned?: number | null
+      voteCoverage?: { verdict?: string | null; reason?: string | null; rows?: number | null; windows?: number | null; oldestTsRead?: string | null; maxAgeMs?: number | null } | null
       firstVoteDay?: string | null
       unpaidTranches?: number | null
       unpaidCutoff?: string | null
       node?: string | null
     } | null
+    scanLaw?: string | null
     history?: unknown[]
+    law?: string | null
+  } | null
+  /* R282 · soldier reward claims (income capture) — engine-computed verdicts */
+  soldierClaims?: {
+    day?: string | null
+    at?: string | null
+    verdict?: string | null
+    rosterSize?: number | null
+    scanned?: number | null
+    executed?: boolean
+    custody?: { verdict?: string | null; verified?: number | null; of?: number | null } | null
+    pendingAccounts?: { account: string; steem?: number; sbd?: number; vests?: number }[] | null
+    claimed?: { account: string; verdict?: string | null; ok?: boolean; txid?: string | null; at?: string | null; pending?: { steem?: number; sbd?: number; vests?: number } }[] | null
+    failed?: { account: string; verdict?: string | null; error?: string | null }[] | null
     law?: string | null
   } | null
   /* T-23f · the second-signer weave contract (engine-computed), cockpit only renders. */
