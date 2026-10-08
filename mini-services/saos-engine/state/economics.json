@@ -8,23 +8,23 @@
       "confidence": "blocked",
       "note": "no fill window yet — measured once real fills accumulate",
       "meta": {
-        "realizedSbdTotal": 0.003608,
-        "fillsToday": 9
+        "realizedSbdTotal": 0,
+        "fillsToday": 5
       }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.509906,
+      "estUsdPerDay": 0.501489,
       "confidence": "estimated",
-      "note": "~8.77 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+      "note": "~8.7 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
     {
       "id": "fuel",
       "label": "דלק-רשת · author+curation ops",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.0381,
+      "estUsdPerDay": 0.033,
       "confidence": "estimated",
       "note": "observe fuel meter (estimated — window-labeled)"
     },
@@ -34,7 +34,7 @@
       "measuredUsdPerDay": null,
       "estUsdPerDay": null,
       "confidence": "blocked",
-      "note": "HOLD honest (0bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "note": "HOLD honest (-179bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
     },
     {
       "id": "promo",
@@ -57,17 +57,17 @@
     }
   ],
   "totalMeasuredUsdPerDay": 0,
-  "totalEstUsdPerDay": 0.548006,
+  "totalEstUsdPerDay": 0.534489,
   "measuredCount": 1,
   "estimatedCount": 2,
   "blockedCount": 3,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.10409546760987216,
-  "asof": "2026-10-08T15:56:20.761Z",
+  "parity": 0.1022371134386524,
+  "asof": "2026-10-08T16:15:28.134Z",
   "context": {
     "venueFillsPerDay": 252,
     "venueVolSteem24h": 3088.046,
-    "ourFillsObservable": 9,
+    "ourFillsObservable": 5,
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": null,
@@ -78,44 +78,79 @@
     "any": true
   },
   "x2": {
-    "currentUsdPerDay": 0.548,
+    "currentUsdPerDay": 0.5345,
     "targetUsdPerDay": 1000,
     "currentSp": 967,
-    "factor": 1824.8,
+    "factor": 1871,
     "rows": [
       {
         "mult": 1,
         "sp": 967,
-        "usdPerDay": 0.55,
+        "usdPerDay": 0.53,
         "reachesTarget": false
       },
       {
         "mult": 10,
         "sp": 9666,
-        "usdPerDay": 5.48,
+        "usdPerDay": 5.34,
         "reachesTarget": false
       },
       {
         "mult": 40,
         "sp": 38665,
-        "usdPerDay": 21.92,
+        "usdPerDay": 21.38,
         "reachesTarget": false
       },
       {
         "mult": 100,
         "sp": 96661,
-        "usdPerDay": 54.8,
+        "usdPerDay": 53.45,
         "reachesTarget": false
       },
       {
-        "mult": 1825,
-        "sp": 1764071,
-        "usdPerDay": 1000.11,
+        "mult": 1871,
+        "sp": 1808536,
+        "usdPerDay": 1000.03,
         "reachesTarget": true
       }
     ],
     "law": "הקיורציה גדלה ∝ חלק-ה-SP מבריכת-התגמולים; תקרת-העסקאות ∝ RC ∝ SP — ההון מכפיל את המדידה, הקוד נשאר"
   },
-  "redeployDoctrine": null,
-  "pid": 11340
+  "redeployDoctrine": {
+    "ratios": {
+      "buyBookPct": 0.5,
+      "powerUpPct": 0.3,
+      "reservePct": 0.2
+    },
+    "floors": {
+      "liquidSteemFloor": 5,
+      "liquidSbdFloor": 0.5
+    },
+    "minPowerUpSteem": 5,
+    "minIntervalSec": 3600,
+    "maxPerDay": 12,
+    "executionArmed": false,
+    "plan": {
+      "verdict": "REDEPLOY-HOLD",
+      "reason": "at-or-below-floor",
+      "powerUpSteem": 0,
+      "excessSteem": 0,
+      "pacing": {
+        "minIntervalSec": 3600,
+        "maxPerDay": 12,
+        "powerUpsToday": 0,
+        "lastPowerUpAt": "2026-10-07T03:45:02.247Z",
+        "sinceLastSec": 131432,
+        "verdict": null
+      },
+      "at": "2026-10-08T16:15:28.134Z"
+    },
+    "state": {
+      "day": "2026-10-07",
+      "powerUpsToday": 5,
+      "lastPowerUpAt": "2026-10-07T03:45:02.247Z"
+    },
+    "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
+  },
+  "pid": 14566
 }
