@@ -1,21 +1,21 @@
 {
-  "at": "2026-10-08T15:39:26.263Z",
+  "at": "2026-10-08T15:49:26.262Z",
   "enabled": true,
-  "runsTotal": 437,
+  "runsTotal": 438,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 132,
+      "window": 133,
       "oks": 124,
-      "fails": 2,
+      "fails": 3,
       "blocked": 6,
-      "okRate": 93.9,
+      "okRate": 93.2,
       "blockedRate": 4.5,
       "failReasons": {
-        "unknown": 2
+        "unknown": 3
       },
       "msP50": 54647,
-      "msP90": 197290
+      "msP90": 228181
     },
     "curator": {
       "present": true,
@@ -25,27 +25,27 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 56.1,
+      "vpEff": 56.5,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 2,
-      "fails": 1,
-      "lastError": "Assert Exception:available >= -delta: Account headcorner does not have sufficient funds for balance adjustment. Required: {\"amount\":\"-1216\",\"precision\":3,\"nai\":\"@@000000013\"}, Available: {\"amount\":\"71"
+      "window": 1,
+      "fails": 0,
+      "lastError": null
     },
     "watchdog": {
-      "checks": 3170,
+      "checks": 3180,
       "downs": 118,
       "heals": 59,
       "healVerified": 50,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-08T15:39:26.336Z",
+      "lastCheckAt": "2026-10-08T15:49:26.344Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-08T14:27:31.325Z",
-      "lastUpAt": "2026-10-08T15:39:26.338Z",
+      "lastUpAt": "2026-10-08T15:49:26.346Z",
       "blips": 2
     }
   },
@@ -54,24 +54,16 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×6/132 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×6/133 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "cycle-latency-tail",
       "severity": "medium",
-      "evidence": "p50 54647ms vs p90 197290ms",
+      "evidence": "p50 54647ms vs p90 228181ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
-    },
-    {
-      "id": "broadcast-fails",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "1/2 broadcasts failed in the window (last: Assert Exception:available >= -delta: Account headcorner doe) · last fail 2026-10-08T14:59:39.793Z < last OK broadcast 2026-10-08T15:39:33.998Z (live posting-role ops succeed)",
-      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
-      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},
@@ -79,9 +71,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 335,
+    "signing-cred-blocked": 336,
     "broadcast-fails": 130,
-    "cycle-latency-tail": 103
+    "cycle-latency-tail": 104
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
