@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-08T14:19:26.258Z",
+  "at": "2026-10-08T14:29:26.259Z",
   "enabled": true,
-  "runsTotal": 429,
+  "runsTotal": 430,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -14,8 +14,8 @@
       "failReasons": {
         "unknown": 2
       },
-      "msP50": 51994,
-      "msP90": 176159
+      "msP50": 52026,
+      "msP90": 178452
     },
     "curator": {
       "present": true,
@@ -32,20 +32,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 1,
+      "window": 0,
       "fails": 0,
       "lastError": null
     },
     "watchdog": {
-      "checks": 3090,
-      "downs": 117,
-      "heals": 58,
-      "healVerified": 49,
+      "checks": 3100,
+      "downs": 118,
+      "heals": 59,
+      "healVerified": 50,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-08T14:19:26.286Z",
+      "lastCheckAt": "2026-10-08T14:29:26.294Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-08T13:45:31.303Z",
-      "lastUpAt": "2026-10-08T14:19:26.288Z",
+      "lastSpawnAt": "2026-10-08T14:27:31.325Z",
+      "lastUpAt": "2026-10-08T14:29:26.295Z",
       "blips": 2
     }
   },
@@ -61,7 +61,7 @@
     {
       "id": "cycle-latency-tail",
       "severity": "medium",
-      "evidence": "p50 51994ms vs p90 176159ms",
+      "evidence": "p50 52026ms vs p90 178452ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     }
@@ -71,9 +71,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 327,
+    "signing-cred-blocked": 328,
     "broadcast-fails": 125,
-    "cycle-latency-tail": 95
+    "cycle-latency-tail": 96
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
