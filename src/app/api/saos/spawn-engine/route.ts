@@ -24,7 +24,7 @@ async function healthy() {
 
 export async function POST() {
   if (await healthy()) {
-    return NextResponse.json({ ok: true, verdict: "ALREADY-ALIVE", note: "engine healthy on :3040 — no spawn (single-instance law)" });
+    return NextResponse.json({ ok: true, verdict: "ALREADY-ALIVE", note: "engine healthy on :3040, no spawn (single-instance law)" });
   }
   if (!fs.existsSync(`${ENGINE_DIR}/package.json`)) {
     return NextResponse.json({ ok: false, verdict: "ENGINE-DIR-MISSING" }, { status: 500 });

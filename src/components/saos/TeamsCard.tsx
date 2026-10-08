@@ -9,20 +9,20 @@ import type { Status } from './types'
 import type { Tone } from './tones'
 
 /**
- * T-22f · צוותים-עומדים — ONE card, TWO standing teams (from status.webintel + status.content).
+ * T-22f · צוותים-עומדים: ONE card, TWO standing teams (from status.webintel + status.content).
  * The engine computes everything (one-body law); this card only renders the truth.
  * Tone law: verdicts map to emerald/amber/rose/slate ONLY (zero blue/indigo).
  * Long lists are scrollable: max-h-60 + a thin local scrollbar (no project-wide class existed).
  */
 
-/* thin scrollbar utility — local law reused by both scroll lists */
+/* thin scrollbar utility: local law reused by both scroll lists */
 const THIN_SCROLLBAR =
   '[scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-700/70'
 
 const relTime = (iso?: string | null): string => {
-  if (!iso) return '—'
+  if (!iso) return '-'
   const t = new Date(iso).getTime()
-  if (!Number.isFinite(t)) return '—'
+  if (!Number.isFinite(t)) return '-'
   const min = Math.max(0, Math.floor((Date.now() - t) / 60000))
   if (min < 1) return 'עכשיו'
   if (min < 60) return `לפני ${min} דק`
@@ -61,7 +61,7 @@ type Draft = NonNullable<NonNullable<Status['content']>['queue']>[number]
 
 /**
  * up to `n` findings with breadth-first coverage: one per scan first, then fill (honest spread, not a single-scan dump).
- * Same URL surfaced by several scans = one truth shown once (dedup by url) — no duplicate rows, no duplicate React keys.
+ * Same URL surfaced by several scans = one truth shown once (dedup by url), no duplicate rows, no duplicate React keys.
  */
 function roundRobinPick(lists: Finding[][], n: number): NonNullable<Finding>[] {
   const out: NonNullable<Finding>[] = []
@@ -87,10 +87,10 @@ function FindingRow({ f }: { f: NonNullable<Finding> }) {
   const body = (
     <>
       <span className="min-w-0 flex-1 truncate text-xs text-slate-200" title={f.title ?? f.snippet ?? undefined}>
-        {f.title ?? f.host ?? '—'}
+        {f.title ?? f.host ?? '-'}
       </span>
-      <span className="shrink-0 font-mono text-[10px] text-slate-500">{f.host ?? '—'}</span>
-      <span className="tnum w-[72px] shrink-0 text-end text-[10px] text-slate-600">{f.date ? f.date.slice(0, 10) : '—'}</span>
+      <span className="shrink-0 font-mono text-[10px] text-slate-500">{f.host ?? '-'}</span>
+      <span className="tnum w-[72px] shrink-0 text-end text-[10px] text-slate-600">{f.date ? f.date.slice(0, 10) : '-'}</span>
     </>
   )
   if (!f.url) {
@@ -133,7 +133,7 @@ export function TeamsCard({ webintel, content }: { webintel: Status['webintel'];
             <Globe className="h-3.5 w-3.5 shrink-0 text-emerald-400" aria-hidden />
             <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-300">מודיעין-רשת · סריקות-ממוקדות</h3>
             <StatusBadge tone={intelVerdictTone(webintel.verdict)} solid title={webintel.verdict ?? undefined}>
-              {webintel.verdict ?? '—'}
+              {webintel.verdict ?? '-'}
             </StatusBadge>
             <span className="tnum ms-auto text-[10px] text-slate-500" dir="ltr">
               {relTime(webintel.fetchedAt)}
@@ -149,7 +149,7 @@ export function TeamsCard({ webintel, content }: { webintel: Status['webintel'];
 
           <div className={`mt-2 max-h-60 overflow-y-auto rounded-lg border border-slate-800 bg-slate-950/40 divide-y divide-slate-800/60 ${THIN_SCROLLBAR}`}>
             {findings.length === 0 ? (
-              <p className="px-3 py-3 text-xs text-slate-500">אין ממצאים בסבב-הסריקה הנוכחי — הסבב-הבא ידווח כאן.</p>
+              <p className="px-3 py-3 text-xs text-slate-500">אין ממצאים בסבב-הסריקה הנוכחי, הסבב-הבא ידווח כאן.</p>
             ) : (
               findings.map((f, i) => <FindingRow key={`${f.url ?? 'row'}-${i}`} f={f} />)
             )}
@@ -168,7 +168,7 @@ export function TeamsCard({ webintel, content }: { webintel: Status['webintel'];
             <PenLine className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden />
             <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-slate-300">תוכן · טיוטות-מקורקעות</h3>
             <StatusBadge tone={contentVerdictTone(content.verdict, content.bridgeError)} solid title={content.verdict ?? undefined}>
-              {content.verdict ?? '—'}
+              {content.verdict ?? '-'}
             </StatusBadge>
             <span className="tnum ms-auto text-[10px] text-slate-500" dir="ltr">{relTime(content.draftedAt)}</span>
           </div>
@@ -179,21 +179,21 @@ export function TeamsCard({ webintel, content }: { webintel: Status['webintel'];
               label="חשיפה-חסומה"
               value={exposureBlocked}
               tone={exposureBlocked > 0 ? 'amber' : 'slate'}
-              hint={exposureBlocked > 0 ? 'לא תקלה — החוק עובד' : undefined}
+              hint={exposureBlocked > 0 ? 'לא תקלה: החוק עובד' : undefined}
               ltr
             />
           </div>
 
           <div className={`mt-2 max-h-60 overflow-y-auto space-y-1.5 ${THIN_SCROLLBAR}`}>
             {drafts.length === 0 ? (
-              <p className="rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-3 text-xs text-slate-500">אין טיוטות-בתור — התור ייכתב מהמחזור-הבא.</p>
+              <p className="rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-3 text-xs text-slate-500">אין טיוטות-בתור, התור ייכתב מהמחזור-הבא.</p>
             ) : (
               drafts.map((d, i) => <DraftRow key={`${d.id ?? 'draft'}-${i}`} d={d} />)
             )}
           </div>
 
           <p className="mt-2 text-[10px] leading-relaxed text-slate-500">
-            שידור-הטיוטות נעול בשער-אימות-האישורי — שער-חוקי, לא תקלה: הטיוטות ממתינות לאימות-החתימה (קונסול-הארנק), ואז נשדרות בטהרת-הנוסח.
+            שידור-הטיוטות נעול בשער-אימות-האישורי, שער-חוקי, לא תקלה: הטיוטות ממתינות לאימות-החתימה (קונסול-הארנק), ואז נשדרות בטהרת-הנוסח.
           </p>
           {content.law && <p className="mt-1 text-[10px] leading-relaxed text-slate-600">{content.law}</p>}
         </section>
@@ -207,9 +207,9 @@ function DraftRow({ d }: { d: NonNullable<Draft> }) {
     <div className="rounded-lg border border-slate-800 bg-slate-950/40 px-2.5 py-2">
       <div className="flex items-center gap-2">
         <span className="min-w-0 flex-1 truncate text-xs font-bold text-slate-200" dir="ltr" title={d.title ?? undefined}>
-          {d.title ?? '—'}
+          {d.title ?? '-'}
         </span>
-        <StatusBadge tone={draftStatusTone(d.status)}>{d.status ?? '—'}</StatusBadge>
+        <StatusBadge tone={draftStatusTone(d.status)}>{d.status ?? '-'}</StatusBadge>
       </div>
       <div className="mt-1.5 flex flex-wrap gap-1">
         {(d.tags ?? []).slice(0, 4).map((t, ti) => (

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { badgeTone, badgeSolidTone, type Tone } from './tones'
 
 /**
- * T-21d · unified status pill — one place for the tone law.
+ * T-21d · unified status pill: one place for the tone law.
  * Replaces the dozens of inline tone ternaries the old page repeated per card.
  */
 export function StatusBadge({

@@ -18,7 +18,7 @@ export async function GET() {
     return NextResponse.json(j, { status: r.status });
   } catch (e) {
     return NextResponse.json(
-      { ok: false, engine: "down", hint: "mini-services/saos-engine not running — start with `bun run dev` in that folder", error: String((e as Error)?.message ?? e).slice(0, 200) },
+      { ok: false, engine: "down", hint: "mini-services/saos-engine not running: start with `bun run dev` in that folder", error: String((e as Error)?.message ?? e).slice(0, 200) },
       { status: 502 }
     );
   }

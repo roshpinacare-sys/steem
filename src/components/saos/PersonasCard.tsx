@@ -7,7 +7,7 @@ import type { Tone } from './tones'
 import type { Status } from './types'
 
 /**
- * R255 · פרסונות-הצי — the operator's visibility order made visible:
+ * R255 · פרסונות-הצי: the operator's visibility order made visible:
  * "לשפר את הנראות שלנו שנראה טוב שיתארגנו על פרופילים ואישיות וסלנג אישי
  * מאותו רקע פחות יותר בין מקצועי לשכונה". Every fleet account gets a
  * one-card soul sheet: display name, about-line, lens, traits, personal

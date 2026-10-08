@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
- * T-16 · paste-revival proxy — the cockpit's fastest path back to a living
+ * T-16 · paste-revival proxy: the cockpit's fastest path back to a living
  * signing fleet. The secret travels only: browser → this route → engine
  * (127.0.0.1:3040) → 0600 file in .secrets/. It is NEVER logged, cached, or
  * echoed by this layer. The engine validates the shape, secures the file,

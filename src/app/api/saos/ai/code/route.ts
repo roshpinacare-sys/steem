@@ -11,14 +11,14 @@ export const maxDuration = 120;
  * One body, one language: this route only speaks "chat".
  *
  * R220 hardening (operator order "תתקן הכל בכל זאת"): the route is reachable
- * from the operator preview, so it now carries its own honest bounds —
+ * from the operator preview, so it now carries its own honest bounds,
  * a sliding-window rate limit + an in-flight cap. In-memory (resets on
  * process restart) is deliberate: this is abuse dampening, not accounting.
  * Rejected callers get 429 with a truthful reason, never a fake success.
  */
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 12; /* the builder drains 1 task/~5min; 12/min is generous headroom */
-const MAX_INFLIGHT = 2; /* LLM round-trips are heavy — cap concurrent calls */
+const MAX_INFLIGHT = 2; /* LLM round-trips are heavy: cap concurrent calls */
 
 let windowStart = 0;
 let windowCount = 0;
@@ -30,8 +30,8 @@ function rateLimited(): { limited: boolean; reason: string } {
     windowStart = now;
     windowCount = 0;
   }
-  if (inflight >= MAX_INFLIGHT) return { limited: true, reason: "busy — קריאת-LLM בעיצומה, נסו שוב בעוד רגע" };
-  if (windowCount >= MAX_PER_WINDOW) return { limited: true, reason: `rate-limit — מקסימום ${MAX_PER_WINDOW} קריאות/דק` };
+  if (inflight >= MAX_INFLIGHT) return { limited: true, reason: "busy: קריאת-LLM בעיצומה, נסו שוב בעוד רגע" };
+  if (windowCount >= MAX_PER_WINDOW) return { limited: true, reason: `rate-limit: מקסימום ${MAX_PER_WINDOW} קריאות/דק` };
   return { limited: false, reason: "" };
 }
 

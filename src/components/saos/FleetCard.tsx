@@ -13,7 +13,7 @@ const agentStatusLabel = (status: string) =>
   status === 'ALIVE' ? 'חי' : status === 'IDLE' ? 'המתנה' : status === 'BLOCKED' ? 'חסום' : 'מת'
 
 /**
- * T-21d · הצי · רישום-סוכנים מאוחד (T-15) — extracted verbatim-in-spirit from the old page.
+ * T-21d · הצי · רישום-סוכנים מאוחד (T-15): extracted verbatim-in-spirit from the old page.
  * One truth for every agent: measured liveness from logged output, never claimed counts.
  */
 export function FleetCard({ s }: { s: Status | null }) {
@@ -27,15 +27,15 @@ export function FleetCard({ s }: { s: Status | null }) {
       tone="orange"
       className="md:col-span-2 lg:col-span-3"
       title={<>הצי · רישום-סוכנים מאוחד <span dir="ltr" className="text-slate-500">(T-15)</span></>}
-      actions={<StatusBadge tone={verdictTone} solid>{fleet?.verdict ?? '—'}</StatusBadge>}
-      meta={'התשובה המבנית ל"60+ סוכנים, רובם מתים" — חיות-נמדדת מהפלט-המוקלט של כל סוכן (לא ספירות-יומרה)'}
+      actions={<StatusBadge tone={verdictTone} solid>{fleet?.verdict ?? '-'}</StatusBadge>}
+      meta={'התשובה המבנית ל"60+ סוכנים, רובם מתים": חיות-נמדדת מהפלט-המוקלט של כל סוכן (לא ספירות-יומרה)'}
     >
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <StatusBadge tone="emerald">חיים {counts?.alive ?? '—'}</StatusBadge>
-        <StatusBadge tone="slate">בהמתנה-חוקית {counts?.idle ?? '—'}</StatusBadge>
-        <StatusBadge tone="amber">חסומים {counts?.blocked ?? '—'}</StatusBadge>
-        <StatusBadge tone={(counts?.dead ?? 0) > 0 ? 'rose' : 'slate'}>מתים {counts?.dead ?? '—'}</StatusBadge>
-        <span className="text-slate-500">· סה"כ {counts?.total ?? '—'} סוכנים</span>
+        <StatusBadge tone="emerald">חיים {counts?.alive ?? '-'}</StatusBadge>
+        <StatusBadge tone="slate">בהמתנה-חוקית {counts?.idle ?? '-'}</StatusBadge>
+        <StatusBadge tone="amber">חסומים {counts?.blocked ?? '-'}</StatusBadge>
+        <StatusBadge tone={(counts?.dead ?? 0) > 0 ? 'rose' : 'slate'}>מתים {counts?.dead ?? '-'}</StatusBadge>
+        <span className="text-slate-500">· סה"כ {counts?.total ?? '-'} סוכנים</span>
       </div>
 
       <div className="mt-3 grid max-h-80 gap-2 overflow-y-auto pe-1 sm:grid-cols-2 lg:grid-cols-3">

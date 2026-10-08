@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { valueTone, type Tone } from './tones'
 
 /**
- * T-21d · compact stat tile — label (small, muted) over value (bold, tabular-nums).
+ * T-21d · compact stat tile: label (small, muted) over value (bold, tabular-nums).
  * The single pattern behind every "grid of numbers" in the cockpit.
  */
 export function Stat({

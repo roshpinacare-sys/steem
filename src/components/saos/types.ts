@@ -112,14 +112,14 @@ export type Status = {
     missingSince?: string | null; alerts?: number
     agentsAffected?: string[]; revival?: string | null
     /* T-21 · identity-integrity transparency (doctrine account can never be
-     * hijacked by a pasted credential — the proven-live failure class) */
+     * hijacked by a pasted credential, the proven-live failure class) */
     doctrineAccount?: string | null
     credentialAccount?: string | null
     foreignCredential?: boolean
     foreignSince?: string | null
   } | null
   events?: { type?: string; at?: string; [k: string]: unknown }[]
-  /* T-21d · new optional engine sections — render only when present, never crash */
+  /* T-21d · new optional engine sections: render only when present, never crash */
   roles?: {
     verdict?: string
     roster?: { id?: string; role?: string; lane?: string; capability?: string; status?: string; recruitedAt?: string; evidence?: string }[]
@@ -130,7 +130,7 @@ export type Status = {
     rails?: { id?: string; label?: string; measuredUsdPerDay?: number | null; estUsdPerDay?: number | null; confidence?: 'measured' | 'estimated' | 'blocked'; note?: string }[]
     totalMeasuredUsdPerDay?: number | null
     totalEstUsdPerDay?: number | null
-    /* T-23 · passthrough fields (engine-computed) — X2Card wires x2; the others are mirrors of status.payouts */
+    /* T-23 · passthrough fields (engine-computed): X2Card wires x2; the others are mirrors of status.payouts */
     payoutClock?: { payoutDay?: string | null; msRemaining?: number | null; hoursRemaining?: number | null; daysRemaining?: number | null; phase?: string | null; law?: string | null } | null
     pendingRewards?: { steem?: number; sbd?: number; vests?: number; any?: boolean } | null
     x2?: {
@@ -154,7 +154,7 @@ export type Status = {
       law?: string | null
     } | null
   } | null
-  /* T-22f · the standing teams (T-22) — engine-computed (one-body law), cockpit only renders.
+  /* T-22f · the standing teams (T-22), engine-computed (one-body law), cockpit only renders.
    * Loose but honest: nullable exactly where the engine emits null. */
   webintel?: {
     verdict?: string | null
@@ -234,7 +234,7 @@ export type Status = {
     history?: { day?: string; maxRc?: number | null; opsPerDay?: number | null }[]
     scalingLaw?: string | null
   } | null
-  /* T-23f · the payout clock + rewards scan (engine-computed, one-body law) — cockpit only renders.
+  /* T-23f · the payout clock + rewards scan (engine-computed, one-body law), cockpit only renders.
    * Loose but honest: nullable exactly where the engine emits null. */
   payouts?: {
     day?: string | null
@@ -272,7 +272,7 @@ export type Status = {
     history?: unknown[]
     law?: string | null
   } | null
-  /* T-23f · the second-signer weave contract (engine-computed) — cockpit only renders. */
+  /* T-23f · the second-signer weave contract (engine-computed), cockpit only renders. */
   weave?: {
     protocol?: string | null
     observedAt?: string | null

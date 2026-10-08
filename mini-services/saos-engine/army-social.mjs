@@ -182,6 +182,13 @@ export const TEMPLATE_OPENERS = [
   "i completely agree", "couldn't agree more", "i couldn't agree more", "well said",
   "this resonates", "i love how", "i really love how", "thanks for sharing", "thank you for sharing",
   "wonderful perspective", "fascinating post", "amazing post", "beautiful post",
+  /* R270 (operator order: "התגובות שלנו הן די דומות מאוד... תשפר תבונה ואיכות"):
+   * the second generation of AI-stock openers the bridge kept drifting to. */
+  "couldn't have said it better", "this is such a", "such an insightful", "absolutely fascinating",
+  "this made my day", "following for more", "great share", "valuable insight", "spot on",
+  "this hits home", "so true", "very true", "totally agree", "100% agree", "keep it up",
+  "keep up the great", "loved this", "enjoyed this read", "mind blown", "what a thoughtful",
+  "this deserves more", "underrated post", "totally agree with this",
 ];
 export function sanitizeReply(text) {
   /* R262: the style law finally covers REPLIES too — the synthesizer frames

@@ -8,7 +8,7 @@ import type { AdoptState } from './useAdoptCredential'
 
 /**
  * T-21d · the paste-revival flow as a reusable control.
- * Rendered inside the fleet alarm (top of page) AND inside the unified ארנק-וקונסול card —
+ * Rendered inside the fleet alarm (top of page) AND inside the unified ארנק-וקונסול card,
  * one shared state (the hook lives in the page), so both entry points are always in sync.
  * Explicit step states: שולח… → מאמת מול-השרשרת… → תוצאה/שגיאה. Never a stuck "ממתין".
  */
@@ -29,7 +29,7 @@ export function AdoptCredentialFlow({ adopt, compact = false }: { adopt: AdoptSt
           value={adopt.text}
           onChange={(e) => adopt.setText(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="הדבק כאן: <שם-חשבון> <סיסמה-ראשית> — נשלח ישירות למנוע (0600), לעולם לא נרשם"
+          placeholder="הדבק כאן: <שם-חשבון> <סיסמה-ראשית>, נשלח ישירות למנוע (0600), לעולם לא נרשם"
           aria-label="הדבקת אישורי-חשבון להקמה"
           className="min-h-11 w-full flex-1 rounded-md border border-slate-700 bg-slate-950/70 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
           dir="ltr"

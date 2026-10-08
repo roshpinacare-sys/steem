@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Activity, RefreshCw } from 'lucide-react'
 
 /* R218-a · Step 1 of the approved plan: metrics TIME-SERIES in the cockpit.
- * Self-contained client component — one fetch loop, own polling, zero coupling
+ * Self-contained client component: one fetch loop, own polling, zero coupling
  * to the page's status/sov data flow (collision-safe for the multi-agent round).
  * Truth law (R217): freshness stamps everywhere; never fake data. */
 
@@ -80,7 +80,7 @@ function Spark({
         className="mt-2 h-8 w-full"
         preserveAspectRatio="none"
         role="img"
-        aria-label={`${label} — מגמה, ${points.length} דגימות`}
+        aria-label={`${label}: מגמה, ${points.length} דגימות`}
       >
         {d ? (
           <>
@@ -97,7 +97,7 @@ function Spark({
 }
 
 function fmtTime(iso: string | null): string {
-  if (!iso) return '—'
+  if (!iso) return '-'
   const d = new Date(iso)
   const p = (n: number) => String(n).padStart(2, '0')
   return `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}Z`
@@ -140,7 +140,7 @@ export default function MetricsTrends() {
   const latest = data?.latest
   const age = data?.freshness?.ageSec
   const fresh = age !== null && age !== undefined && age < 180
-  const n = (v: number | null | undefined, digits = 1) => (v === null || v === undefined ? '—' : v.toFixed(digits))
+  const n = (v: number | null | undefined, digits = 1) => (v === null || v === undefined ? '-' : v.toFixed(digits))
 
   return (
     <div className="mt-3 rounded-xl border border-slate-800 bg-slate-900/40 p-4">
@@ -171,7 +171,7 @@ export default function MetricsTrends() {
       </div>
 
       {state === 'down' ? (
-        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'איבר-המדדים אינו זמין — אין להציג נתונים שלא נמדדו.'}</p>
+        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'איבר-המדדים אינו זמין, אין להציג נתונים שלא נמדדו.'}</p>
       ) : !s ? (
         <p className="mt-3 animate-pulse text-xs text-slate-500">דוגם את טבלת-הזמן…</p>
       ) : (
@@ -193,22 +193,22 @@ export default function MetricsTrends() {
             />
             <Spark
               label="מילויים-היום"
-              value={latest?.fillsToday === null || latest?.fillsToday === undefined ? '—' : String(latest.fillsToday)}
+              value={latest?.fillsToday === null || latest?.fillsToday === undefined ? '-' : String(latest.fillsToday)}
               points={s.fills}
               tone="emerald"
               sub={`מצטבר-SBD ${n(latest?.realizedSbdTotal, 3)} · מדוד, לא מובטח`}
             />
             <Spark
               label="קצה-המרה bps"
-              value={latest?.edgeBps === null || latest?.edgeBps === undefined ? '—' : String(latest.edgeBps)}
+              value={latest?.edgeBps === null || latest?.edgeBps === undefined ? '-' : String(latest.edgeBps)}
               points={s.edge}
               tone="slate"
-              sub={`פעולות-רשת-היום ${latest?.opsToday ?? '—'}`}
+              sub={`פעולות-רשת-היום ${latest?.opsToday ?? '-'}`}
             />
           </div>
           <p className="mt-2 text-[10px] text-slate-500">
             מקור: איבר-מדדים בן-כותב-יחיד (‎:3042, SQLite WAL, שמירה 7 ימים) · דגימות {data?.snapshotCount ?? 0} · ריפוי-ביקוש דרך מסלול-הקריאה · כל החותמות UTC.
-            {s.vp.length < 2 && ' אין עדיין מספיק דגימות לקו-מגמה — הקו יופיע אחרי שתי דגימות לפחות.'}
+            {s.vp.length < 2 && ' אין עדיין מספיק דגימות לקו-מגמה, הקו יופיע אחרי שתי דגימות לפחות.'}
           </p>
         </>
       )}

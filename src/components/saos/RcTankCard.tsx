@@ -8,15 +8,15 @@ import type { Status } from './types'
 import type { Tone } from './tones'
 
 /**
- * T-22f · מיכל-ה-RC — the measured 100,000× scaling curve (from status.rcTank).
+ * T-22f · מיכל-ה-RC: the measured 100,000× scaling curve (from status.rcTank).
  * The engine measures maxRc/ops-day on-chain (one-body law); this card only renders.
- * Sparkline = pure CSS bars, heights ∝ opsPerDay — NO chart library, honest pixels.
+ * Sparkline = pure CSS bars, heights ∝ opsPerDay: NO chart library, honest pixels.
  * Tone law: emerald card; growth green>0 / rose<0; zero blue/indigo.
  */
 
-/** compact measured units — 6,138,717,856,759 → 6.14T */
+/** compact measured units: 6,138,717,856,759 → 6.14T */
 const compact = (v?: number | null): string => {
-  if (typeof v !== 'number' || !Number.isFinite(v)) return '—'
+  if (typeof v !== 'number' || !Number.isFinite(v)) return '-'
   const a = Math.abs(v)
   if (a >= 1e12) return `${(v / 1e12).toFixed(2)}T`
   if (a >= 1e9) return `${(v / 1e9).toFixed(2)}B`
@@ -26,7 +26,7 @@ const compact = (v?: number | null): string => {
 }
 
 const full = (v?: number | null): string =>
-  typeof v === 'number' && Number.isFinite(v) ? v.toLocaleString('en-US') : '—'
+  typeof v === 'number' && Number.isFinite(v) ? v.toLocaleString('en-US') : '-'
 
 const verdictTone = (v?: string | null): Tone => {
   const s = v ?? ''
@@ -59,7 +59,7 @@ export function RcTankCard({ rcTank }: { rcTank: Status['rcTank'] }) {
           {rcTank.day && <span className="tnum text-[10px] text-slate-500" dir="ltr">{rcTank.day}</span>}
         </>
       }
-      meta="רייאקט-קרדיט הוא ריאות-המכונה: נמדד מול-השרשרת יום-יום — העקומה מדודה, לא מובטחת."
+      meta="רייאקט-קרדיט הוא ריאות-המכונה: נמדד מול-השרשרת יום-יום, העקומה מדודה, לא מובטחת."
     >
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Stat
@@ -72,18 +72,18 @@ export function RcTankCard({ rcTank }: { rcTank: Status['rcTank'] }) {
         <Stat label="שווי-משקל ops/יום" value={full(rcTank.opsPerDayEquilibrium)} tone="emerald" ltr hint="תקורת-הנשימה השוטפת" />
         <Stat
           label="צמיחה יומית"
-          value={growth == null ? '—' : `${growth > 0 ? '+' : ''}${growth.toFixed(2)}%`}
+          value={growth == null ? '-' : `${growth > 0 ? '+' : ''}${growth.toFixed(2)}%`}
           tone={growth == null ? 'slate' : growth > 0 ? 'emerald' : 'rose'}
           ltr
           hint={
             growth == null
-              ? 'יום-מדידה ראשון — אין בסיס-השוואה'
+              ? 'יום-מדידה ראשון, אין בסיס-השוואה'
               : rcTank.prevDayMaxRc != null
                 ? `בסיס: ${compact(rcTank.prevDayMaxRc)}`
                 : undefined
           }
         />
-        <Stat label="RC זמין" value={rcTank.rcPct != null ? `${rcTank.rcPct}%` : '—'} tone="emerald" ltr />
+        <Stat label="RC זמין" value={rcTank.rcPct != null ? `${rcTank.rcPct}%` : '-'} tone="emerald" ltr />
       </div>
 
       {hist.length > 0 && (
@@ -95,7 +95,7 @@ export function RcTankCard({ rcTank }: { rcTank: Status['rcTank'] }) {
           <div
             dir="ltr"
             role="img"
-            aria-label={`היסטוריית ops/יום — ${hist.length} ימי-מדידה, שיא ${full(maxOps)}`}
+            aria-label={`היסטוריית ops/יום: ${hist.length} ימי-מדידה, שיא ${full(maxOps)}`}
             className="mt-2 flex h-16 items-end gap-1"
           >
             {hist.map((p, i) => {
@@ -104,7 +104,7 @@ export function RcTankCard({ rcTank }: { rcTank: Status['rcTank'] }) {
                 <div
                   key={`${p.day ?? 'day'}-${i}`}
                   className="flex h-full min-w-[3px] flex-1 items-end"
-                  title={`${p.day ?? '—'} · maxRC ${compact(p.maxRc)} · ${full(p.opsPerDay)} ops/יום`}
+                  title={`${p.day ?? '-'} · maxRC ${compact(p.maxRc)} · ${full(p.opsPerDay)} ops/יום`}
                 >
                   <div
                     className="w-full rounded-t-sm bg-gradient-to-t from-emerald-500/40 to-emerald-400/90 transition-colors hover:to-emerald-300"

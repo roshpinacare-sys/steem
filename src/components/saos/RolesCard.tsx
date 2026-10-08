@@ -7,7 +7,7 @@ import type { Status } from './types'
 import type { Tone } from './tones'
 
 /**
- * T-21d · גיוס-תפקידים — NEW optional card from status.roles.
+ * T-21d · גיוס-תפקידים: NEW optional card from status.roles.
  * Renders ONLY when the engine provides the section (defensive ?. everywhere).
  * Roster status law: active=emerald · planned=amber · blocked=rose.
  */
@@ -51,12 +51,12 @@ export function RolesCard({ roles }: { roles: Status['roles'] }) {
             <tbody>
               {roster.map((r, i) => (
                 <tr key={`${r.id ?? 'role'}-${i}`} className="border-t border-slate-800/70 transition-colors hover:bg-slate-800/40">
-                  <td className="px-3 py-2 font-mono text-xs text-slate-300" dir="ltr">{r.id ?? '—'}</td>
-                  <td className="px-3 py-2 text-xs font-bold text-slate-100">{r.role ?? '—'}</td>
-                  <td className="px-3 py-2 text-xs text-slate-400">{r.lane ?? '—'}</td>
-                  <td className="px-3 py-2 text-xs text-slate-400">{r.capability ?? '—'}</td>
-                  <td className="px-3 py-2"><StatusBadge tone={statusTone(r.status)}>{r.status ?? '—'}</StatusBadge></td>
-                  <td className="tnum px-3 py-2 text-[11px] text-slate-500" dir="ltr">{r.recruitedAt?.slice(0, 16).replace('T', ' ') ?? '—'}</td>
+                  <td className="px-3 py-2 font-mono text-xs text-slate-300" dir="ltr">{r.id ?? '-'}</td>
+                  <td className="px-3 py-2 text-xs font-bold text-slate-100">{r.role ?? '-'}</td>
+                  <td className="px-3 py-2 text-xs text-slate-400">{r.lane ?? '-'}</td>
+                  <td className="px-3 py-2 text-xs text-slate-400">{r.capability ?? '-'}</td>
+                  <td className="px-3 py-2"><StatusBadge tone={statusTone(r.status)}>{r.status ?? '-'}</StatusBadge></td>
+                  <td className="tnum px-3 py-2 text-[11px] text-slate-500" dir="ltr">{r.recruitedAt?.slice(0, 16).replace('T', ' ') ?? '-'}</td>
                   <td className="px-3 py-2 text-[10px] text-slate-600" dir="ltr">{r.evidence ?? ''}</td>
                 </tr>
               ))}

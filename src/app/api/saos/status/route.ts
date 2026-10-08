@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
+import { deDashDeep } from "@/lib/clean-dashes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
- * T-22 · THIN PROXY — THE ONE-BODY LAW (שכבות-שמדברות-שפה-אחת).
+ * T-22 · THIN PROXY: THE ONE-BODY LAW (שכבות-שמדברות-שפה-אחת).
  * History: this route re-implemented engine domain logic (a second
  * pnlFromFills, second chain readers, FOUR hardcoded "headcorner" account
- * strings) — exactly the "layers killing each other in different languages"
+ * strings), exactly the "layers killing each other in different languages"
  * the operator ordered killed. Now: every domain fact is computed ONCE by
- * the engine (/status on :3040 — its own doctrine account, its own laws);
+ * the engine (/status on :3040, its own doctrine account, its own laws);
  * this route only RENDERS the engine's truth into the cockpit's contract
  * (field-picking + display strings). If the engine is down, the last-good
- * response is served STALE-marked — never silently re-measured here.
+ * response is served STALE-marked, never silently re-measured here.
  */
 const ENGINE_HTTP = "http://127.0.0.1:3040";
 const CACHE_TTL_MS = 45_000;
@@ -30,22 +31,22 @@ async function engineStatus(): Promise<{ up: boolean; data: Record<string, unkno
 
 export async function GET() {
   if (cache && cache.good && Date.now() - cache.at < CACHE_TTL_MS) {
-    return NextResponse.json(cache.data);
+    return NextResponse.json(deDashDeep(cache.data));
   }
   const { up, data: s } = await engineStatus();
   if (!up || !s) {
     /* honest degradation: last-good stale-marked, engine marked DOWN (we just
-     * measured it down — the cached body's old engine.up=true must never
+     * measured it down: the cached body's old engine.up=true must never
      * survive as a lie), or a hard down answer */
     if (cache?.good) {
       const prev = (cache.data as Record<string, unknown>).engine as Record<string, unknown> | null;
-      const stale = { ...(cache.data as Record<string, unknown>), stale: true, engine: { ...(prev ?? {}), up: false, note: "המנוע כבוי כרגע — נתוני-האחרון-הטוב מוצגים stale" }, asof: new Date().toISOString() };
-      return NextResponse.json(stale);
+      const stale = { ...(cache.data as Record<string, unknown>), stale: true, engine: { ...(prev ?? {}), up: false, note: "המנוע כבוי כרגע, נתוני-האחרון-הטוב מוצגים stale" }, asof: new Date().toISOString() };
+      return NextResponse.json(deDashDeep(stale));
     }
     return NextResponse.json({
       ok: false, asof: new Date().toISOString(), engine: { up: false },
       sources: { kind: "thin-proxy", engineHttp: ENGINE_HTTP },
-      notes: ["המנוע אינו זמין — אין מדידה-עוקפת-מנוע (חוק-הגוף-האחד)"],
+      notes: ["המנוע אינו זמין, אין מדידה-עוקפת-מנוע (חוק-הגוף-האחד)"],
     }, { status: 503 });
   }
 
@@ -65,7 +66,7 @@ export async function GET() {
     { askedSteem: 0, bidSbd: 0 }
   );
 
-  /* display composition (presentation only — the numbers are the engine's) */
+  /* display composition (presentation only, the numbers are the engine's) */
   const fuelUsdPerDay = observe?.fuel?.fuelUsdPerDay ?? null;
   const authorUsdPerDay = observe?.fuel?.authorUsdPerDay ?? null;
   const rails = {
@@ -74,12 +75,12 @@ export async function GET() {
     fuelWindowNote: observe?.fuel?.windowNote ?? null,
     fuelHistory:
       (observe?.fuel?.curationOps ?? 0) > 0
-        ? `מסילת-הדלק חיה — ${observe.fuel.curationOps} פעולות-קיורציה בחלון-המדידה (${observe.fuel.windowSpanDays}d)`
-        : "המסילה חמושה; חתימה-חסומה עד אימות-אישורי (שער-הדוקטרינה) — ההקמה: הדבקת סיסמת-master עדכנית בקונסול הארנק",
+        ? `מסילת-הדלק חיה: ${observe.fuel.curationOps} פעולות-קיורציה בחלון-המדידה (${observe.fuel.windowSpanDays}d)`
+        : "המסילה חמושה; חתימה-חסומה עד אימות-אישורי (שער-הדוקטרינה), ההקמה: הדבקת סיסמת-master עדכנית בקונסול הארנק",
     deployedSteem: orderTotals.askedSteem,
     bidSbd: orderTotals.bidSbd,
     bookEmpty: orders.length === 0,
-    bookNote: orders.length === 0 ? "הספר ריק — הנזילים ממתינים לאימות-חתימה; התוכנית OFFER-READY מוכנה במחזור" : null,
+    bookNote: orders.length === 0 ? "הספר ריק, הנזילים ממתינים לאימות-חתימה; התוכנית OFFER-READY מוכנה במחזור" : null,
     convert: convertPlan
       ? {
           verdict: convertPlan.verdict ?? null,
@@ -100,7 +101,7 @@ export async function GET() {
           ),
         }
       : null,
-    note: "כל המספרים מחושבים פעם-אחת במנוע :3040 — שכבת-התצוגה מציגה, לא מודדת",
+    note: "כל המספרים מחושבים פעם-אחת במנוע :3040, שכבת-התצוגה מציגה, לא מודדת",
   };
   const measuredPerDay =
     (daily?.rollup?.measuredTotalUsdPerDay as number | undefined) ?? null;
@@ -163,7 +164,7 @@ export async function GET() {
     ? {
         deployed: !!soldiersRaw.deployed,
         at: soldiersRaw.at ?? null,
-        /* T-80: per-account custody + the freeze verdict pass through — the
+        /* T-80: per-account custody + the freeze verdict pass through, the
          * cockpit must show keyless soldiers as FROZEN, never as deployed */
         accounts: (soldiersRaw.accounts ?? []).map((a: any) => ({ name: a.name, fingerprint: a.fingerprint, custody: a.custody ?? null })),
         frozen: soldiersRaw.frozen ?? (soldiersRaw.accounts ?? []).every((a: any) => a.custody !== "verified"),
@@ -204,7 +205,7 @@ export async function GET() {
     adaptation: s.adaptation ?? null, /* R210: learned-rule state (verdicts only) */
     discovery: discoveryPublic,
     fleet: s.fleet ?? null,
-    /* R237-B: המועצה — רשת-התקשורת החיה בין-האיברים (verdicts ממודדים) */
+    /* R237-B: המועצה, רשת-התקשורת החיה בין-האיברים (verdicts ממודדים) */
     council: s.council ?? null,
     credential: s.credential ?? null,
     spoilage: s.spoilage ?? null,
@@ -235,30 +236,30 @@ export async function GET() {
           payoutClock: econRaw.payoutClock ?? null,
           pendingRewards: econRaw.pendingRewards ?? null,
           x2: econRaw.x2 ?? null,
-          /* T-91 · the redeployment doctrine — passthrough, engine-computed */
+          /* T-91 · the redeployment doctrine: passthrough, engine-computed */
           redeployDoctrine: econRaw.redeployDoctrine ?? null,
         }
       : null,
     webintel: s.webintel ?? null,
     content: s.content ?? null,
-    /* R246: הקהילה-הריבונית + מסילת-ההמרות-באוויר (passthrough — המנוע מחשב, השכבה מציגה) */
+    /* R246: הקהילה-הריבונית + מסילת-ההמרות-באוויר (passthrough, המנוע מחשב, השכבה מציגה) */
     community: s.community ?? null,
     conversions: s.conversions ?? null,
-    /* R254: איבר-hive (הבחינה-המבוקרת — passthrough של-verdicts בלבד) */
+    /* R254: איבר-hive (הבחינה-המבוקרת, passthrough של-verdicts בלבד) */
     hive: s.hive ?? null,
-    /* R255: מנוע-הפרסונות (פרופילים + אישיות + סלנג — passthrough של-verdicts) */
+    /* R255: מנוע-הפרסונות (פרופילים + אישיות + סלנג, passthrough של-verdicts) */
     personas: s.personas ?? null,
-    /* R263: מפסק-הקשר של-הגשר (חוק-סערת-ה-429 — passthrough של-verdicts) */
+    /* R263: מפסק-הקשר של-הגשר (חוק-סערת-ה-429, passthrough של-verdicts) */
     bridgeGuard: s.bridgeGuard ?? null,
     rcTank: s.rcTank ?? null,
     payouts: s.payouts ?? null,
     weave: s.weave ?? null,
     sources: { kind: "thin-proxy-one-body", engineHttp: ENGINE_HTTP, doctrineAccount: s.account ?? null },
     notes: [
-      "חוק-הגוף-האחד (T-22): כל עובדת-דומיין מחושבת פעם-אחת במנוע — שכבה-זו מציגה בלבד",
+      "חוק-הגוף-האחד (T-22): כל עובדת-דומיין מחושבת פעם-אחת במנוע, שכבה-זו מציגה בלבד",
       "אמת-שרשרת בלבד; אישורי-חתימה מוחזקים-מנוע, מוגבלים-דוקטרינה, לעולם לא נרשמים",
     ],
   };
   cache = { at: Date.now(), data, good: true };
-  return NextResponse.json(data);
+  return NextResponse.json(deDashDeep(data));
 }

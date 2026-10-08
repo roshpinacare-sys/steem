@@ -1,5 +1,5 @@
 /**
- * _llmRetry.ts — R263 · THE LLM RETRY (shared by the saos/ai bridge routes).
+ * _llmRetry.ts: R263 · THE LLM RETRY (shared by the saos/ai bridge routes).
  *
  * THE MEASURED ROOT CAUSE (live, 2026-10-08 01:09Z): the LLM provider
  * returned `429 Too many requests` mid-round; the content bridge answered
@@ -9,7 +9,7 @@
  *
  * THE LAW: retry a provider call on 429 / 5xx / network weather with
  * escalating backoff (2.5s → 6s → 12s, +≤0.8s jitter). This helper NEVER
- * fabricates output — on final failure the caller answers 502 and the
+ * fabricates output, on final failure the caller answers 502 and the
  * engine falls to its lawful persona seed floor (the conversation never
  * depends on one machine being up). Engine-side pure laws are unaffected:
  * sanitizeDraft / sanitizeReply / dedupe still own the gate.

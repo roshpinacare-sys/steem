@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readFile } from "node:fs/promises";
+import { deDashDeep } from "@/lib/clean-dashes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -9,7 +10,7 @@ export const runtime = "nodejs";
  *
  * The engine acks POST /cycle immediately and runs the cycle detached
  * (single-flight, cycle-run.json marker, try/finally always closes). The
- * cockpit polls THIS route until the marker closes — no UI wait can outlive
+ * cockpit polls THIS route until the marker closes, no UI wait can outlive
  * a healthy signing cycle anymore, and the truth message is built from the
  * ENGINE's own classification (ok | blocked | fail + engine-measured ms).
  * The fresh rollup rides along from daily-report.json so the cockpit can
@@ -26,8 +27,8 @@ export async function GET() {
     try {
       const report = JSON.parse(await readFile(DAILY_REPORT, "utf8")) as { rollup?: { measuredTotalUsdPerDay?: number | null; realizedSbd?: number | null } | null };
       rollup = report.rollup ?? null;
-    } catch { /* no report yet — rollup stays null */ }
-    return NextResponse.json({ ...j, rollup });
+    } catch { /* no report yet: rollup stays null */ }
+    return NextResponse.json(deDashDeep({ ...j, rollup }));
   } catch (e) {
     return NextResponse.json(
       { ok: false, running: false, marker: null, engine: "down", error: String((e as Error)?.message ?? e).slice(0, 200) },

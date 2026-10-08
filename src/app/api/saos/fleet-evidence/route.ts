@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { deDashDeep } from "@/lib/clean-dashes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
- * R269 · fleet-evidence — the operator SEES the connection instead of being
+ * R269 · fleet-evidence: the operator SEES the connection instead of being
  * told. Zero keys, zero writes: this route only READS measured state files
  * (the R269 fleet-matrix probe output, the engine's own per-cycle custody
  * verdicts, and the R268 forensics timeline) and composes one honest JSON.
@@ -31,7 +32,7 @@ export async function GET() {
   const armyCustody = readJson("army-custody.json") as ArmyCustodyRaw | null;
   const posts = readJson("r268-hive-posts.json") as { blog?: Blog } | null;
 
-  /* measured post timeline on Hive (connection era onward) — straight from the
+  /* measured post timeline on Hive (connection era onward), straight from the
    * re-runnable R268 forensics probe output, not from anyone's memory */
   const timeline: { day: string; count: number; authors: string[]; sample: string }[] = [];
   const blog = posts?.blog;
@@ -53,16 +54,16 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({
+  return NextResponse.json(deDashDeep({
     ok: true,
     at: new Date().toISOString(),
     connection: {
       verdict: "CONNECTED · 9/9",
-      who: "הבית-המקביל של האורגניזם עצמו — economy-engine[bot] (גל-הכנסות Task 17, מצב real-votes). לא המפעיל, לא זר.",
-      keys: "מפתחות-הדור-הראשון (GEN-1) מהכספת-ב-git · sha-pinned · זיכרון-בלבד — אמת-המפעיל \"המפתח-הראשון-שלי-זהה-לסטים\" מאומתת 9/9 posting+active בכל-מחזור",
+      who: "הבית-המקביל של האורגניזם עצמו: economy-engine[bot] (גל-הכנסות Task 17, מצב real-votes). לא המפעיל, לא זר.",
+      keys: "מפתחות-הדור-הראשון (GEN-1) מהכספת-ב-git · sha-pinned · זיכרון-בלבד, אמת-המפעיל \"המפתח-הראשון-שלי-זהה-לסטים\" מאומתת 9/9 posting+active בכל-מחזור",
       receiptCommits: ["8906af68 · 02.10 · receipts r5", "f9f54a72 · 04.10 · r3 (7 txid)", "868378fe · 04.10 · r4 (2 txid)"],
       probes: ["probe-r268-hive-forensics.mjs", "probe-r268-hive-posts.mjs", "probe-r269-fleet-matrix.mjs"],
-      whaleBoundary: "headcorner-על-Hive נשאר רוטציה (תחום-מפעיל · פסק-R267/R268) — בקבלות אפס שידורי-headcorner",
+      whaleBoundary: "headcorner-על-Hive נשאר רוטציה (תחום-מפעיל · פסק-R267/R268), בקבלות אפס שידורי-headcorner",
     },
     custody: {
       steem: {
@@ -80,7 +81,7 @@ export async function GET() {
     },
     timeline,
     matrix,
-  });
+  }));
 }
 
 interface FleetMatrixRaw {

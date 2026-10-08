@@ -9,12 +9,12 @@ export const maxDuration = 120;
  * T-87 · FLEET-CONVERSATION BRIDGE (engine-called, backend-only law).
  * The smart-social rail calls this to draft ONE substantive comment on a
  * community post under the EXPOSURE LAW. The engine re-sanitizes in pure
- * code (sanitizeReply + replyFresh) — this bridge drafts, the engine
+ * code (sanitizeReply + replyFresh): this bridge drafts, the engine
  * decides. One post → one comment, capped per day upstream; this route
  * never broadcasts anything.
  *
  * R243 INTELLIGENCE ROUND: the chain audit found the old prompt's output
- * was interchangeable applause ("I completely agree...") — the same
+ * was interchangeable applause ("I completely agree..."), the same
  * sentence shipped to different posts on the same day. The new law: react
  * to the post's SPECIFIC point with a specific thought of our own.
  */
@@ -24,7 +24,7 @@ HARD LAW (violations make a comment unusable):
 - Never address anyone by @username and never mention any account names.
 - No financial advice, no profit promises, no price predictions, no links, no solicitation.
 - BANNED OPENERS (never in the first sentence): "That's a great post", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates", "Wonderful post". Open with SUBSTANCE instead.
-- React to the post's SPECIFIC point: pick the single sharpest idea, detail, or example in the post and say something real about it — what it explains, what it misses, what it reminded you of, where it leads.
+- React to the post's SPECIFIC point: pick the single sharpest idea, detail, or example in the post and say something real about it: what it explains, what it misses, what it reminded you of, where it leads.
 - Add ONE thing the post did not already say (a concrete example, an honest counterpoint, a related question from your own reading or life). Never just praise, never summarize the post back at its author.
 - Optionally end with ONE specific question that opens the conversation (never "What do you think?").
 - Length: 2-4 sentences, plain text, no markdown headers, no lists. Vary sentence rhythm; never sound like a template.
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   const postTitle = String(body.postTitle ?? "").slice(0, 200);
   const postExcerpt = String(body.postExcerpt ?? "").slice(0, 400);
   /* R263 · THE PERSONA BRIEF: the engine sends the writer's full soul sheet
-   * (lens, traits, personal slang, register dial) — the comment is drafted
+   * (lens, traits, personal slang, register dial), the comment is drafted
    * IN that voice, not in a generic one. */
   const personaBrief = typeof body.personaBrief === "string" ? body.personaBrief : null;
   if (!postTitle.trim()) return NextResponse.json({ ok: false, error: "postTitle required" }, { status: 400 });
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       const parsed = JSON.parse(jsonText);
       commentBody = String(parsed?.comment?.body ?? "");
     } catch {
-      /* lenient fallback: some models return bare text — still engine-sanitized */
+      /* lenient fallback: some models return bare text, still engine-sanitized */
       commentBody = raw.trim();
     }
     if (!commentBody) return NextResponse.json({ ok: false, error: "empty comment" }, { status: 502 });

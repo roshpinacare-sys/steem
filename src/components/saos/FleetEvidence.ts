@@ -1,7 +1,7 @@
 /**
- * R269 · fleet-evidence — the shared type contract between the cockpit and
+ * R269 · fleet-evidence: the shared type contract between the cockpit and
  * /api/saos/fleet-evidence. Every field here is MEASURED (probe JSON, engine
- * custody state, git receipts) — the UI renders truth, never prose.
+ * custody state, git receipts): the UI renders truth, never prose.
  */
 export type PublishVerdict = 'LIVE-PROVEN' | 'READY' | 'RC-LOW' | 'NO-CUSTODY' | 'NOT-EXISTS' | string
 

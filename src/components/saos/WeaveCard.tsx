@@ -8,9 +8,9 @@ import type { Status } from './types'
 import type { Tone } from './tones'
 
 /**
- * T-23f · אריגה · חוזה-הגוף-האחד — the second-signer weave contract (from status.weave).
+ * T-23f · אריגה · חוזה-הגוף-האחד: the second-signer weave contract (from status.weave).
  * Two writers, one chain: lanes observed chain-side (votes/orders), the shared day-cap
- * counted chain-truth over BOTH writers. This card only renders — the engine arbitrates.
+ * counted chain-truth over BOTH writers. This card only renders, the engine arbitrates.
  * Tone law: handshake PUBLISHED → emerald; cap breached → rose accent + amber warning;
  * every law (partition/collision/weight) renders as a small slate footnote. Zero blue/indigo.
  */
@@ -24,9 +24,9 @@ const handshakeTone = (s?: string | null): Tone => {
 }
 
 const relTime = (iso?: string | null): string => {
-  if (!iso) return '—'
+  if (!iso) return '-'
   const t = new Date(iso).getTime()
-  if (!Number.isFinite(t)) return '—'
+  if (!Number.isFinite(t)) return '-'
   const min = Math.max(0, Math.floor((Date.now() - t) / 60000))
   if (min < 1) return 'עכשיו'
   if (min < 60) return `לפני ${min} דק`
@@ -64,7 +64,7 @@ export function WeaveCard({ weave }: { weave: Status['weave'] }) {
       tone="orange"
       className="md:col-span-2 lg:col-span-3"
       title={<>אריגה · חוזה-הגוף-האחד <span dir="ltr" className="text-slate-500">(T-23)</span></>}
-      meta="חוזה-הגוף-האחד עם החותם-השני — השרשרת היא הפנקס-המשותף: שתי-המסילות נספרות chain-truth, ההתנגשות מונעת ב-contract, לא במזל."
+      meta="חוזה-הגוף-האחד עם החותם-השני: השרשרת היא הפנקס-המשותף: שתי-המסילות נספרות chain-truth, ההתנגשות מונעת ב-contract, לא במזל."
       actions={
         <>
           {handshake?.status && (
@@ -98,20 +98,20 @@ export function WeaveCard({ weave }: { weave: Status['weave'] }) {
       <div className="grid grid-cols-3 gap-2">
         <Stat
           label="משולב / תקרה"
-          value={combined != null ? `${combined} / ${cap ?? '—'}` : '—'}
+          value={combined != null ? `${combined} / ${cap ?? '-'}` : '-'}
           tone={capBreached ? 'rose' : 'emerald'}
           ltr
           hint={arb?.capBasis ? 'chain-truth משותף' : undefined}
         />
         <Stat
           label="תקרה-נותרת"
-          value={capRemaining ?? '—'}
+          value={capRemaining ?? '-'}
           tone={typeof capRemaining === 'number' ? (capRemaining > 0 ? 'emerald' : 'rose') : 'slate'}
           ltr
         />
         <Stat
           label="מרווח-בין-הצבעות"
-          value={theirs?.intervalMinEst != null ? `${theirs.intervalMinEst} דק'` : '—'}
+          value={theirs?.intervalMinEst != null ? `${theirs.intervalMinEst} דק'` : '-'}
           tone="orange"
           hint={theirs?.lastVoteAt ? `הצבעה-אחרונה ${relTime(theirs.lastVoteAt)}` : undefined}
         />
@@ -120,7 +120,7 @@ export function WeaveCard({ weave }: { weave: Status['weave'] }) {
       {capBreached && (
         <p className="mt-1 flex items-start gap-1.5 text-[11px] font-bold leading-relaxed text-amber-400">
           <span aria-hidden>⚠</span>
-          <span>התקרה-המשותפת נחצתה ({combined}/{cap}) — הבוררות דורשת תיאום. נמדד chain-truth, מוצג כשהוא.</span>
+          <span>התקרה-המשותפת נחצתה ({combined}/{cap}), הבוררות דורשת תיאום. נמדד chain-truth, מוצג כשהוא.</span>
         </p>
       )}
 
@@ -140,7 +140,7 @@ export function WeaveCard({ weave }: { weave: Status['weave'] }) {
         </div>
       )}
 
-      {/* ─── THE LAWS — small slate footnotes, exactly as measured ─── */}
+      {/* ─── THE LAWS: small slate footnotes, exactly as measured ─── */}
       {(arb?.partitionLaw || arb?.collisionLaw || arb?.weightLaw) && (
         <ul className="mt-1 space-y-0.5 text-[10px] leading-relaxed text-slate-600">
           {arb?.partitionLaw && <li><b className="text-slate-500">חלוקת-מסילות:</b> {arb.partitionLaw}</li>}

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { ClipboardCheck, RefreshCw, ShieldQuestion } from 'lucide-react'
 
 /* R218-b · Step 2 of the approved plan: CLAIMS-AUDITOR card.
- * Productized R217: the page no longer trusts itself — an independent organ
+ * Productized R217: the page no longer trusts itself, an independent organ
  * recomputes every data-layer claim from ground truth (state files + the
  * metrics time-series DB) and compares against what /api/saos/status serves.
  * Verdicts: MATCH | DRIFT | STALE | UNMEASURABLE. Scope note below is honest:
@@ -24,7 +24,7 @@ type AuditPayload = {
 }
 
 function fmtClock(iso?: string): string {
-  if (!iso) return '—'
+  if (!iso) return '-'
   const d = new Date(iso)
   const p = (n: number) => String(n).padStart(2, '0')
   return `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}Z`
@@ -64,7 +64,7 @@ export default function ClaimsAudit() {
 
   useEffect(() => {
     load()
-    const t = setInterval(() => load(), 300_000) /* audits move slowly — 5min */
+    const t = setInterval(() => load(), 300_000) /* audits move slowly: 5min */
     return () => clearInterval(t)
   }, [load])
 
@@ -101,7 +101,7 @@ export default function ClaimsAudit() {
       </div>
 
       {state === 'down' ? (
-        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'ביקורת אינה זמינה כרגע — אין להציג תוצאות שלא נמדדו.'}</p>
+        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'ביקורת אינה זמינה כרגע, אין להציג תוצאות שלא נמדדו.'}</p>
       ) : !counts ? (
         <p className="mt-3 animate-pulse text-xs text-slate-500">מריץ ביקורת-ראשונה (משווה את מה שהדף מציג מול קבצי-האמת)…</p>
       ) : (
@@ -130,7 +130,7 @@ export default function ClaimsAudit() {
 
           {allGreen && (
             <p className="mt-3 text-xs text-emerald-300/90">
-              כל {matches} הטענות-הנמדדות תואמות לאמת-המקור — הדף מספר את-האמת בשכבת-הנתונים.
+              כל {matches} הטענות-הנמדדות תואמות לאמת-המקור: הדף מספר את-האמת בשכבת-הנתונים.
             </p>
           )}
 
