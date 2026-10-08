@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { withLlmRetry, withVoice } from "../_llm";
+import { withVoice } from "../_llm";
 import { SYMBOL_PROMPT_LAW, ANTI_TEMPLATE_LAW, validateDraftBody } from "../_symbols";
+import { runLlmChain, compactContext } from "@/lib/llm-chain";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -66,29 +67,65 @@ export async function POST(req: Request) {
   try {
     const ZAI = (await import("z-ai-web-dev-sdk")).default;
     const zai = await ZAI.create();
-    const completion = await withLlmRetry(() => zai.chat.completions.create({
-      messages: [
-        { role: "assistant", content: withVoice(`${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}\n\n${ANTI_TEMPLATE_LAW}`, personaBrief) },
-        { role: "user", content: userPrompt },
+    /* R285 · THE CHAIN: primary full brief, compact-retry compacted + capped.
+     * Unique law rejects an echo of the first candidate; symbol gate after. */
+    const system = withVoice(`${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}\n\n${ANTI_TEMPLATE_LAW}`, personaBrief);
+    const callZai = (sys: string, user: string, cap: number) =>
+      zai.chat.completions.create({
+        messages: [
+          { role: "assistant", content: sys },
+          { role: "user", content: user },
+        ],
+        thinking: { type: "disabled" },
+      }).then((completion: unknown) => {
+        const raw = (completion as { choices?: { message?: { content?: string } }[] })?.choices?.[0]?.message?.content ?? "";
+        const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+        let body = "";
+        try {
+          const parsed = JSON.parse(jsonText);
+          body = String(parsed?.reply?.body ?? "");
+        } catch {
+          body = raw.trim(); /* lenient: engine still re-sanitizes */
+        }
+        if (!body.trim()) throw new Error("empty reply from provider");
+        return { value: body.trim().slice(0, cap), tokens: (completion as { usage?: { total_tokens?: number } })?.usage?.total_tokens ?? 0 };
+      });
+
+    const chain = await runLlmChain<string>({
+      purpose: "reply",
+      candidates: [
+        { name: "primary", call: () => callZai(system, userPrompt, 1200) },
+        {
+          name: "compact-retry",
+          call: () =>
+            callZai(
+              compactContext(system, 1400),
+              compactContext(userPrompt, 700) + "\nHard cap: 2 sentences, anchored on their sharpest word.",
+              600,
+            ),
+        },
       ],
-      thinking: { type: "disabled" },
-    }));
-    const raw = completion.choices?.[0]?.message?.content ?? "";
-    const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
-    let replyBody = "";
-    try {
-      const parsed = JSON.parse(jsonText);
-      replyBody = String(parsed?.reply?.body ?? "");
-    } catch {
-      /* lenient fallback: some models return bare text, still engine-sanitized */
-      replyBody = raw.trim();
+      validate: (s) => (s && s.trim() ? s.trim() : null),
+      timeoutMs: 45_000,
+      cacheKey: `reply|${postTitle}|${commentBody}|${personaBrief ?? ""}`,
+    });
+    if (!chain.ok || !chain.output) {
+      return NextResponse.json(
+        { ok: false, error: `llm-chain exhausted (${chain.errorClass ?? "unknown"})`, chain: { attempts: chain.attempts, ms: chain.ms } },
+        { status: 502 },
+      );
     }
-    if (!replyBody) return NextResponse.json({ ok: false, error: "empty reply" }, { status: 502 });
+    const replyBody = chain.output;
     /* R283 · THE SYMBOL LAW GATE — the engine never receives a body that
      * carries a banned glyph or survives as template framing */
     const valid = validateDraftBody(replyBody);
     if (valid === null) return NextResponse.json({ ok: false, error: "symbol-law-refused" }, { status: 502 });
-    return NextResponse.json({ ok: true, reply: { body: valid }, at: new Date().toISOString() });
+    return NextResponse.json({
+      ok: true,
+      reply: { body: valid },
+      chain: { selected: chain.selected, attempts: chain.attempts, cacheHit: chain.cacheHit, ms: chain.ms },
+      at: new Date().toISOString(),
+    });
   } catch (e) {
     return NextResponse.json(
       { ok: false, error: String((e as Error)?.message ?? e).slice(0, 200) },

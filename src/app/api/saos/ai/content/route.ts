@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { withLlmRetry } from "../_llm";
 import { SYMBOL_PROMPT_LAW, enforceSymbolLaw } from "../_symbols";
+import { runLlmChain, compactContext } from "@/lib/llm-chain";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -95,24 +95,80 @@ export async function POST(req: Request) {
   try {
     const ZAI = (await import("z-ai-web-dev-sdk")).default;
     const zai = await ZAI.create();
-    /* R263 · THE LLM RETRY: 429 weather killed a whole round (measured live
-     * 01:09Z); the provider call now rides the escalating-backoff retry */
-    const completion = await withLlmRetry(() => zai.chat.completions.create({
-      messages: [
-        { role: "assistant", content: `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}` },
-        { role: "user", content: userPrompt },
+    /* R285 · THE CHAIN (satisfy mode): the 4-draft ask is the bar. Primary
+     * rides the full brief; when its VALID drafts fall short, compact-retry
+     * tops up 2 more from a lossy-compacted brief (Execution-Forking law,
+     * budget-honest: the second candidate runs ONLY on shortfall). Titles
+     * merge with a token-overlap guard so the queue never fills with twins.
+     * The heaviest call keeps 2 attempts inside maxDuration 120. */
+    const callZai = (user: string, sys: string) =>
+      zai.chat.completions.create({
+        messages: [
+          { role: "assistant", content: sys },
+          { role: "user", content: user },
+        ],
+        thinking: { type: "disabled" },
+      }).then((completion: unknown) => {
+        const raw = (completion as { choices?: { message?: { content?: string } }[] })?.choices?.[0]?.message?.content ?? "";
+        const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+        let drafts: unknown = [];
+        try {
+          const parsed = JSON.parse(jsonText);
+          drafts = Array.isArray(parsed?.drafts) ? parsed.drafts : [];
+        } catch {
+          throw new Error("unparseable LLM output");
+        }
+        const arr = Array.isArray(drafts) ? (drafts as Record<string, unknown>[]).filter((d) => d && typeof d === "object") : [];
+        if (!arr.length) throw new Error("empty drafts from provider");
+        return { value: arr, tokens: (completion as { usage?: { total_tokens?: number } })?.usage?.total_tokens ?? 0 };
+      });
+
+    const compactUser = compactContext(userPrompt, 2600)
+      + "\nDraft ONLY 2 posts this time (the two strongest topics), same HARD LAW, bodies 450 to 550 words. Return STRICT JSON only.";
+
+    const titleTokens = (t: string) => String(t ?? "").toLowerCase().split(/[^a-z0-9\u0590-\u05ff]+/).filter(Boolean);
+    const titleSim = (a: string, b: string) => {
+      const A = new Set(titleTokens(a));
+      const B = new Set(titleTokens(b));
+      if (!A.size || !B.size) return 0;
+      let inter = 0;
+      for (const t of A) if (B.has(t)) inter++;
+      return inter / (A.size + B.size - inter);
+    };
+
+    const chain = await runLlmChain<Record<string, unknown>[]>({
+      purpose: "content",
+      candidates: [
+        { name: "primary", call: () => callZai(userPrompt, `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`) },
+        { name: "compact-retry", call: () => callZai(compactUser, compactContext(`${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`, 2200)) },
       ],
-      thinking: { type: "disabled" },
-    }), 2); // 4-draft generation is the heaviest call: 2 attempts stay inside maxDuration 120
-    const raw = completion.choices?.[0]?.message?.content ?? "";
-    const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
-    let drafts: unknown = [];
-    try {
-      const parsed = JSON.parse(jsonText);
-      drafts = Array.isArray(parsed?.drafts) ? parsed.drafts : [];
-    } catch {
-      return NextResponse.json({ ok: false, error: "unparseable LLM output", raw: raw.slice(0, 400) }, { status: 502 });
+      validate: (arr) => {
+        if (!Array.isArray(arr) || !arr.length) return null;
+        for (const d of arr) {
+          const o = d as { title?: unknown; body?: unknown };
+          if (typeof o?.title !== "string" || typeof o?.body !== "string") return null;
+        }
+        return arr;
+      },
+      satisfied: (merged) => ((merged?.length ?? 0)) >= 4,
+      merge: (acc, next) => {
+        const out = [...(acc ?? [])];
+        for (const d of next) {
+          const twin = out.some((x) => titleSim(String((x as { title?: unknown })?.title), String((d as { title?: unknown })?.title)) >= 0.6);
+          if (!twin) out.push(d);
+        }
+        return out;
+      },
+      timeoutMs: 55_000,
+      cacheKey: `content|${topics.map((t) => (t as { id?: string })?.id ?? "").join(",")}|${personas.map((p) => p.account).join(",")}`,
+    });
+    if (!chain.ok || !chain.output) {
+      return NextResponse.json(
+        { ok: false, error: `llm-chain exhausted (${chain.errorClass ?? "unknown"})`, chain: { attempts: chain.attempts, ms: chain.ms } },
+        { status: 502 },
+      );
     }
+    let drafts: unknown = chain.output;
     /* R283 · THE SYMBOL LAW GATE — every draft's title and body ride the
      * normalizer, a draft that still carries a banned glyph is dropped here
      * so the queue never fills with text the operator has banned */
@@ -127,7 +183,12 @@ export async function POST(req: Request) {
         })
         .filter(Boolean);
     }
-    return NextResponse.json({ ok: true, drafts, at: new Date().toISOString() });
+    return NextResponse.json({
+      ok: true,
+      drafts,
+      chain: { selected: chain.selected, attempts: chain.attempts, cacheHit: chain.cacheHit, ms: chain.ms, draftsRaw: chain.output.length },
+      at: new Date().toISOString(),
+    });
   } catch (e) {
     return NextResponse.json(
       { ok: false, error: String((e as Error)?.message ?? e).slice(0, 200) },

@@ -30,6 +30,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
+import net from "node:net";
 import path from "node:path";
 
 const PORT = 3044;
@@ -81,13 +82,29 @@ function heartbeat() {
 }
 
 /* ── dev-server probe: ANY HTTP response counts (compile-slow ok); only a
- *    connection-level failure counts as DOWN. ───────────────────────────── */
+ *    connection-level failure counts as DOWN.
+ *    R285 fix 1 (measured): the cold compile of / took 7.1s while the probe
+ *    gave up at 6s → the keeper judged a HEALTHY compiling server as down
+ *    and spawned a respawn storm (4 EADDRINUSE entries measured live).
+ *    R285 fix 2 (measured): probing / itself is wrong — the cockpit page is
+ *    the HEAVIEST route (SSR 1.3s+ warm, 40s+ cold) → a live server judged
+ *    dead → needless respawns. The probe now hits a tiny non-existent path:
+ *    a 404 answers instantly and proves listening without any compile. ── */
 async function devHealthy(): Promise<boolean> {
   try {
-    const r = await fetch(`http://127.0.0.1:${DEV_PORT}/`, { signal: AbortSignal.timeout(6000) });
-    return r.status > 0; // even 404/500 means the server is listening
+    const r = await fetch(`http://127.0.0.1:${DEV_PORT}/__keeper_probe`, { signal: AbortSignal.timeout(6000) });
+    return r.status > 0; // 404 is proof of life: the server is listening
   } catch {
-    return false;
+    /* HTTP slow/failed — is the port at least accepting connections? */
+    return await new Promise((resolve) => {
+      const socket = new net.Socket();
+      const done = (ok: boolean) => { socket.destroy(); resolve(ok); };
+      socket.setTimeout(4000);
+      socket.once("connect", () => done(true));
+      socket.once("timeout", () => done(false));
+      socket.once("error", () => done(false));
+      socket.connect(DEV_PORT, "127.0.0.1");
+    });
   }
 }
 
