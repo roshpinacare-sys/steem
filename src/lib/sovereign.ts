@@ -71,13 +71,14 @@ type Core = {
   cycleBusy: boolean;
   testBusy: boolean;
   wdBusy: boolean;
+  syncBusy: boolean;
 };
 
 /* SOVEREIGN_GEN: upgrade generation. Bumping it makes the next module
  * evaluation (HMR/API-route recompile, no server restart needed) clear the
  * previous generation's timers, so stale closures can never double-heal,
  * and arm a fresh core carrying state over from sovereign.json. */
-const SOVEREIGN_GEN = 3; // v3: plain-bun spawns (determinism law, R217, no mid-flight hot reloads of a signing organism)
+const SOVEREIGN_GEN = 5; // v5: R279 boot-time git sync — every boot pulls the latest committed truth before arming (operator law: everything must run from git)
 const g = globalThis as unknown as { __saosSovereign?: Core; __saosSovereignGen?: number };
 
 const nowIso = () => new Date().toISOString();
@@ -557,6 +558,77 @@ function control(core: Core, action: string, by: string, note?: string): void {
   core.state.control = core.state.control.slice(0, 20);
 }
 
+/* ── R279 · BOOT-TIME GIT SYNC ──────────────────────────────────────────────
+ * המפעיל (R279): "הכל חייב לרוץ מהגיט... לא למות בגלל שסנדבוקס מת".
+ * הסנדבוקס הוא רק מארח-ריצה; האמת השמורה היא origin/saos-cockpit. כל עלייה
+ * מושכת את הקומיט-האחרון לפני-חימוש, כך שסנדבוקס שנמחק וחזר מתעדכן לעצמו
+ * בלי יד-אנושית. חוקי-בטיחות, כולם כמו-הדוקטרינה:
+ *  - FF-ONLY בלבד (git merge --ff-only); כוח אסור לנצח
+ *  - פילוג (local ahead) לעולם לא נכתב-מחדש כאן — רק נרשם ליומן; ההתאוששות
+ *    החוקית נשארת החלטה-מפורשת דרך שער-הדחיפה
+ *  - מצב-חי קדוש: אם העץ-המקומי מלוכלך וה-merge ידרוס אותו — נכשלים רך
+ *    (bounded staleness), לעולם לא משאירים קונפליקטים על-הדיסק
+ *  - אף-כישלון לא חוסם את-העלייה: זו הרמה-הטובה-ביותר, לא תנאי-הכרחי
+ */
+const GIT_MS = { fetch: 25_000, quick: 10_000, merge: 45_000 } as const;
+
+async function git(args: string[], timeoutMs: number): Promise<{ code: number; text: string }> {
+  return await new Promise((resolve) => {
+    let text = "";
+    let done = false;
+    const finish = (code: number) => { if (!done) { done = true; resolve({ code, text }); } };
+    try {
+      const p = spawn("git", args, { cwd: process.cwd(), env: { ...process.env, GIT_TERMINAL_PROMPT: "0" } });
+      p.stdout.on("data", (d) => { text += String(d); });
+      p.stderr.on("data", (d) => { text += String(d); });
+      const t = setTimeout(() => { try { p.kill("SIGKILL"); } catch { /* */ } finish(-1); }, timeoutMs);
+      p.on("close", (code) => { clearTimeout(t); finish(code ?? -1); });
+      p.on("error", () => { clearTimeout(t); finish(-1); });
+    } catch { finish(-1); }
+  });
+}
+
+async function bootSyncFromGit(core: Core): Promise<void> {
+  if (core.syncBusy) return;
+  core.syncBusy = true;
+  try {
+    const fetched = await git(["fetch", "origin", "saos-cockpit"], GIT_MS.fetch);
+    if (fetched.code !== 0) {
+      appendEvent(core, "boot-sync-fetch-fail", { code: fetched.code, err: fetched.text.slice(-160) });
+      return;
+    }
+    const cnt = await git(["rev-list", "--left-right", "--count", "HEAD...origin/saos-cockpit"], GIT_MS.quick);
+    const parts = cnt.text.trim().split(/\s+/).map(Number);
+    const ahead = Number.isFinite(parts[0]) ? parts[0] : -1;
+    const behind = Number.isFinite(parts[1]) ? parts[1] : -1;
+    if (ahead === 0 && behind === 0) { appendEvent(core, "boot-sync-ok", { synced: true }); return; }
+    if (behind === 0) { appendEvent(core, "boot-sync-local-ahead", { ahead }); return; }
+    if (ahead > 0) {
+      appendEvent(core, "boot-sync-diverged", { ahead, behind, note: "lawful reconcile only — never auto (SOVEREIGN-WRITER-LAW)" });
+      return;
+    }
+    const ff = await git(["merge", "--ff-only", "origin/saos-cockpit"], GIT_MS.merge);
+    if (ff.code !== 0) {
+      appendEvent(core, "boot-sync-blocked", { behind, code: ff.code, err: ff.text.slice(-200), note: "dirty-tree overlap — bounded staleness, no conflicted tree left behind" });
+      return;
+    }
+    const head = (await git(["rev-parse", "--short", "HEAD"], GIT_MS.quick)).text.trim();
+    control(core, "boot-sync", "instrumentation", `fast-forwarded to origin/saos-cockpit @ ${head} (+${behind})`);
+    appendEvent(core, "boot-sync-ff", { behind, head });
+    /* חילוף-קוד-מכוון (חוק-הדטרמיניזם R217: לעולם לא hot-swap לאורגניזם
+     * חותם; הדרך-החוקית היא kill → spawn → verify). רק איבר שכבר חי עם
+     * קוד-ישן מוחלף; אם עדיין לא עלה, ה-watchdog ירים אותו על הקוד-הטרי. */
+    const ourEnginePid = (() => { try { const p = parseInt(fs.readFileSync(PID_FILE, "utf8").trim(), 10); return Number.isFinite(p) && p > 0 && pidAlive(p) && pidIsOurEngine(p) ? p : 0; } catch { return 0; } })();
+    if (ourEnginePid) await healEngine(core, "boot-sync-code-swap");
+    const ourCustodianPid = (() => { try { const p = parseInt(fs.readFileSync(CUSTODIAN_PID_FILE, "utf8").trim(), 10); return Number.isFinite(p) && p > 0 && pidAlive(p) && pidIsOurCustodian(p) ? p : 0; } catch { return 0; } })();
+    if (ourCustodianPid) await healCustodian(core, "boot-sync-code-swap");
+  } catch (e) {
+    appendEvent(core, "boot-sync-error", { error: String((e as Error)?.message ?? e).slice(0, 160) });
+  } finally {
+    core.syncBusy = false;
+  }
+}
+
 /** נקודת-הצתה אחת: idempotent, HMR-safe, self-arming */
 export function ensureSovereign(by = "auto"): Core {
   if (g.__saosSovereign && g.__saosSovereignGen === SOVEREIGN_GEN) return g.__saosSovereign;
@@ -608,6 +680,7 @@ export function ensureSovereign(by = "auto"): Core {
     cycleBusy: false,
     testBusy: false,
     wdBusy: false,
+    syncBusy: false,
   };
   g.__saosSovereign = core;
   g.__saosSovereignGen = SOVEREIGN_GEN;
@@ -618,6 +691,10 @@ export function ensureSovereign(by = "auto"): Core {
     carriedOver: { checks: core.state.watchdog.checks, cyclesOk: core.state.cycles.ok, heals: core.state.watchdog.heals },
   });
 
+  // R279 · GIT IS THE SOURCE OF TRUTH: before arming, pull the latest committed
+  // state from origin. A wiped or stale sandbox self-heals to saos-cockpit with
+  // zero human steps; every outcome is journaled.
+  void bootSyncFromGit(core);
   // immediate first check + adopt-or-heal, then cadence
   void watchdogTick(core);
   core.timers.wd = setInterval(() => void watchdogTick(core), WD_MS);
