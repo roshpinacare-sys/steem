@@ -41,6 +41,7 @@ import { X2Card } from '@/components/saos/X2Card'
 import { CustodyRedAlert } from '@/components/saos/CustodyRedAlert'
 import { RevenueRailCard } from '@/components/saos/RevenueRailCard'
 import { WatchdogCard } from '@/components/saos/WatchdogCard'
+import { YieldCard } from '@/components/saos/YieldCard'
 import type { Status, Sovereign } from '@/components/saos/types'
 
 /* T-21d · the cockpit is now a composition: data plumbing (this file, verbatim behavior)
@@ -879,10 +880,14 @@ export default function Home() {
 
             {/* R287 · REVENUE ARCHITECT: the content compiler's BROADCAST-READY
                 staging buffer + the live authority watchdog (GPG drift flags
-                echoed to dev.log + node-health circuit breaker). */}
+                echoed to dev.log + node-health circuit breaker).
+                R288 · YIELD RAIL: the finance digest (telemetry → digest →
+                buffer) + the local token transaction engine (pool → plan →
+                custody gate → dust law → executeAs staging). */}
             {renderSection('revenue', (
               <>
                 <RevenueRailCard />
+                <YieldCard />
                 <WatchdogCard />
               </>
             ))}
