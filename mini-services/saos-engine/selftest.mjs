@@ -2254,14 +2254,43 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("normalize: the Oct 8 pair normalizes to overlapping cores", normalizeBodyForClash(oct8First).includes("small kindnesses compound quietly") && normalizeBodyForClash(oct8Second).includes("small kindnesses compound quietly"));
 
   /* THE FLEET SAID-LEDGER: the same-tick race class (the chain has not yet
-   * indexed the first reply when the second account drafts). Day-scoped:
-   * a selftest key can never poison the live day, and old days prune. */
-  const tDay = "1970-01-01"; // sandbox-proof testing law: a key no live day can collide with
-  ok("ledger: foreign day reads empty", fleetSaidFor(tDay).length === 0);
+   * indexed the first reply when the second account drafts). Day-scoped.
+   * R275 FIX: the day key is run-unique — a second selftest run must never
+   * read the first run's writes (the R274 key was static and made the
+   * vector lie on run 2). No live day can collide with it either. */
+  const tDay = `1970-01-01-selftest-${process.pid}`; // sandbox-proof + run-unique
+  ok("ledger: fresh run-unique day reads empty", fleetSaidFor(tDay).length === 0);
   noteFleetSaid(tDay, "haran", "selftest ledger body one");
   noteFleetSaid(tDay, "macrame", "selftest ledger body two");
   eq("ledger: two intents are readable fleet-wide", fleetSaidFor(tDay).length, 2);
   ok("ledger: the second drafter sees the first draft BEFORE broadcast", replyFresh("fresh selftest draft", fleetSaidFor(tDay), { maxSimilarity: 0.34 }) && !replyFresh("selftest ledger body one continued", fleetSaidFor(tDay), { maxSimilarity: 0.34 }));
+}
+
+/* ═══ R275 · THE CLONE GUARD REACHES HIVE (R274 stage summary left this gap:
+ * "ה-Hive rail מקבל את salt-הקול דרך intel-pack אך guard-ההורה שלו עוד ללא
+ * parentClash. רשום לסבב הבא"). The chain probe re-measured the disease with
+ * corrected pagination: 14 real clusters, ALL pre-guard, worst 0.95. The
+ * vectors below replay the LITERAL measured chain pairs through the pure
+ * verdict core that now guards both Hive conversational lanes. ═══ */
+{
+  const { clashVerdict } = await import("./hive-social.mjs");
+  const { normalizeBodyForClash } = await import("./army-social.mjs");
+
+  /* the measured 0.93 triple under headcorner/saos-transparency-20261008 —
+   * lsa 06:20, cashmachine 06:40, wic 10:10 (all Oct 8, all pre-guard) */
+  const measured = [
+    { author: "lsa", body: "Here's the thing: I keep coming back to \"real\" while reading. Small kindnesses compound quietly: nobody writes them down, everybody feels them, and you can feel them landing even when nobody names them. Which small kindness paid you back the most this year?" },
+    { author: "cashmachine", body: "No free lunch: I keep coming back to \"real\" while reading. Small kindnesses compound quietly: nobody writes them down, everybody feels them, and you can feel them landing even when nobody names them. Which small kindness paid you back the most this year?" },
+  ];
+  const v = clashVerdict("haran", "Measure twice: I keep coming back to \"real\" while reading. Small kindnesses compound quietly: nobody writes them down, everybody feels them, and you can feel them landing even when nobody names them. Which small kindness paid you back the most this year?", measured);
+  ok("hive guard: the measured prefix-swap disease is vetoed on the hive rail", v.clash === true && v.sim >= 0.9);
+  ok("hive guard: the veto names the blocker", v.who === "lsa" || v.who === "cashmachine");
+  const clean = clashVerdict("haran", "The repair guide angle is the part I reread twice, because naming the first step honestly is rarer than any checklist and the bin comment lands close to home", measured);
+  ok("hive guard: a genuinely different body passes the same law", clean.clash === false && clean.sim < 0.34);
+  const own = clashVerdict("lsa", "Here's the thing: I keep coming back to \"real\" while reading", measured);
+  ok("hive guard: our own voice under the parent is flagged for the OWN-VOICE veto", own.own === true);
+  ok("hive guard: empty replies fail OPEN (unreachable chain never silences the rail)", clashVerdict("haran", "anything at all", []).clash === false);
+  ok("hive guard: normalization is the same law on both chains", normalizeBodyForClash("**knot** it right ![x](https://a.b/c) or start over") === "knot it right or start over");
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
