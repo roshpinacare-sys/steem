@@ -28,7 +28,7 @@ const verdictTone = (v?: string | null): Tone => {
   const s = v ?? ''
   if (/^MEASURED/i.test(s)) return 'emerald' // MEASURED · MEASURED-PENDING · MEASURED-*
   if (/READ-OK/i.test(s)) return 'emerald' // READ-OK-NO-UNPAID-VOTES
-  if (/READ-FAILED|FAIL|ERROR/i.test(s)) return 'rose'
+  if (/SCAN-FAILED|READ-FAILED|FAIL|ERROR/i.test(s)) return 'rose' // R282: failed scan is never a zero
   return 'slate'
 }
 
@@ -46,7 +46,7 @@ const countdown = (daysRemaining?: number | null, hoursRemaining?: number | null
   return '-'
 }
 
-export function PayoutsCard({ payouts }: { payouts: Status['payouts'] }) {
+export function PayoutsCard({ payouts, soldierClaims }: { payouts: Status['payouts']; soldierClaims?: Status['soldierClaims'] }) {
   if (!payouts) return null
 
   const payout = payouts.payout ?? null
@@ -132,6 +132,62 @@ export function PayoutsCard({ payouts }: { payouts: Status['payouts'] }) {
       </div>
 
       {payouts.law && <p className="mt-1 text-[11px] leading-relaxed text-slate-500">{payouts.law}</p>}
+
+      {/* ─── R282 · SCAN COVERAGE + SOLDIER CLAIMS (the anti-false-zero strip) ─── */}
+      {(scan?.rewardCoverage || soldierClaims) && (
+        <div className="mt-2 space-y-2">
+          {scan?.rewardCoverage && (
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2">
+              <span className="text-[11px] font-bold text-slate-400">כיסוי-סריקת-היסטוריה:</span>
+              <StatusBadge
+                tone={scan.rewardCoverage.verdict === 'SCAN-COMPLETE' ? 'emerald' : scan.rewardCoverage.verdict === 'SCAN-PARTIAL' ? 'amber' : 'rose'}
+              >
+                {scan.rewardCoverage.verdict ?? '-'}
+              </StatusBadge>
+              <span className="tnum text-[11px] text-slate-500" dir="ltr">
+                {scan.rewardCoverage.rows ?? 0} rows · {scan.rewardCoverage.windows ?? 0} windows · {scan.rewardCoverage.reason ?? ''}
+              </span>
+              <span className="text-[11px] text-slate-500">— אפס-עם-כיסוי-כושל הוא SCAN-FAILED, לעולם לא "אין-תגמולים"</span>
+            </div>
+          )}
+          {soldierClaims && (
+            <div className="rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-400">תביעות-חיילים <span dir="ltr">(R282)</span>:</span>
+                <StatusBadge
+                  tone={soldierClaims.verdict === 'CLAIMED' ? 'emerald' : soldierClaims.verdict === 'PARTIAL' ? 'amber' : soldierClaims.verdict === 'FAILED' || soldierClaims.verdict === 'CUSTODY-FAILED' ? 'rose' : 'slate'}
+                  solid={soldierClaims.verdict === 'CLAIMED'}
+                >
+                  {soldierClaims.verdict ?? '-'}
+                </StatusBadge>
+                <span className="tnum text-[11px] text-slate-500" dir="ltr">
+                  {soldierClaims.scanned ?? 0}/{soldierClaims.rosterSize ?? 0} נסרקו · {soldierClaims.claimed?.length ?? 0} נתבעו
+                </span>
+                {soldierClaims.custody?.verdict && (
+                  <span className="tnum text-[11px] text-slate-500" dir="ltr">
+                    custody {soldierClaims.custody.verified ?? '?'}/{soldierClaims.custody.of ?? '?'}
+                  </span>
+                )}
+              </div>
+              {(soldierClaims.claimed?.length ?? 0) > 0 && (
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {soldierClaims.claimed!.slice(0, 4).map((c, i) => (
+                    <span key={i} className="tnum rounded border border-slate-800 px-1.5 py-0.5 text-[10px] text-slate-400" dir="ltr">
+                      {c.account} {c.txid ? `tx:${c.txid.slice(0, 10)}…` : c.verdict}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {(soldierClaims.failed?.length ?? 0) > 0 && (
+                <p className="mt-1 text-[11px] text-rose-400" dir="ltr">
+                  failed: {soldierClaims.failed!.map((f) => `${f.account}(${f.verdict})`).join(', ')}
+                </p>
+              )}
+              {soldierClaims.law && <p className="mt-1 text-[11px] leading-relaxed text-slate-500">{soldierClaims.law}</p>}
+            </div>
+          )}
+        </div>
+      )}
     </SectionCard>
   )
 }
