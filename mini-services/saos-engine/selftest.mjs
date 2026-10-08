@@ -2351,6 +2351,81 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("hive guard: normalization is the same law on both chains", normalizeBodyForClash("**knot** it right ![x](https://a.b/c) or start over") === "knot it right or start over");
 }
 
+/* ═══ R287 · THE HIGH-DENSITY CONTENT COMPILER (pure layer) ═══════════════ */
+{
+  const { scrubBody, validatePackage, pkgCid, chainPackages, cadenceNextEligible, CADENCE } = await import("./content-compiler.mjs");
+
+  /* scrub: telemetry & secret shapes die, clean prose lives.
+   * The secret-shaped fixtures are BUILT programmatically: this file never
+   * contains a literal token (the hygiene law applies to tests too). */
+  const patLike = "github_" + "pat_" + "AbCdEf1234567890AbCdEf1234567890";
+  const wifLike = "5K" + "a1B2c3D4e5".repeat(5).slice(0, 49); /* exact 51-char WIF shape */
+  const dirty = "Working from /home/z/my-project today at http://localhost:3000.\ntoken: " + patLike + "\nkey " + wifLike + "\nThe morning market smelled of wet stone and fresh bread before the crowd arrived at all.";
+  const s = scrubBody(dirty);
+  ok("compiler scrub: sandbox path removed", !s.text.includes("/home/z"));
+  ok("compiler scrub: localhost url removed", !s.text.includes("localhost"));
+  ok("compiler scrub: PAT token removed", !s.text.includes("pat_"));
+  ok("compiler scrub: WIF-shaped token removed", !s.text.includes(wifLike));
+  ok("compiler scrub: clean prose survives intact", s.text.includes("wet stone and fresh bread"));
+  ok("compiler scrub: hits are counted by kind", s.scrubbed >= 4 && s.hits.length >= 4);
+  const cleanBody = "A plain sentence with no telemetry whatsoever, kept exactly as it was written by the writer.";
+  eq("compiler scrub: clean text untouched", scrubBody(cleanBody).text, cleanBody);
+  eq("compiler scrub: clean text zero hits", scrubBody(cleanBody).scrubbed, 0);
+
+  /* schema: the strict structural gate (body built by repetition — the
+   * same convention as the existing long-body vectors — to clear the
+   * 300-word doctrine floor deterministically) */
+  const bakeryPara = "The quiet economics of a neighborhood bakery starts before sunrise, when the ovens warm and the first trays go in by feel rather than by rule. The baker knows the street by its appetites and the street knows the bakery by its smells. By nine the good crust is gone, by noon the shop smells of scraped trays and swept floors, and the whole day has been a chain of small predictions measured against yesterday and found wrong just enough to matter.";
+  const longBody = bakeryPara + " " + ("Regulars never read the price signs, the nurse ending a shift buys the same loaf as the builder starting one, and the tray that sells out first is never the fancy one. " + bakeryPara.toLowerCase()).repeat(2);
+  const good = { title: "The Quiet Economics of Neighborhood Bakeries", body: longBody, tags: ["life", "economics"] };
+  ok("compiler schema: a real document passes", validatePackage(good).ok === true);
+  eq("compiler schema: short title rejected", validatePackage({ ...good, title: "tiny" }).checks.find((c) => c.k === "title-length").ok, false);
+  ok("compiler schema: raw script tag rejected", validatePackage({ ...good, body: good.body + " <script>alert(1)</script>" }).ok === false);
+  ok("compiler schema: non-https link rejected", validatePackage({ ...good, body: good.body + " [x](http://evil.example/a)" }).ok === false);
+  ok("compiler schema: unbalanced fences rejected", validatePackage({ ...good, body: good.body + "\n```\ncode" }).ok === false);
+  ok("compiler schema: underweight body rejected", validatePackage({ ...good, body: "Too short to ship." }).ok === false);
+  ok("compiler schema: malformed tag rejected", validatePackage({ ...good, tags: ["Bad_Tag!"] }).ok === false);
+
+  /* addressing: deterministic content-address + honest parent chain */
+  eq("compiler cid: deterministic (tag order does not matter)", pkgCid(good.title, good.body, good.tags).id, pkgCid(good.title, good.body, ["economics", "life"]).id);
+  ok("compiler cid: different body different id", pkgCid(good.title, good.body + " one more word", good.tags).id !== pkgCid(good.title, good.body, good.tags).id);
+  const chained = chainPackages([{ id: "b", compiledAt: "2026-10-09T10:00:00Z" }, { id: "a", compiledAt: "2026-10-09T09:00:00Z" }]);
+  eq("compiler chain: parent linkage ts-ordered", chained.packages.map((p) => `${p.id}<${p.parentCid ?? "root"}`).join(","), "a<root,b<a");
+  eq("compiler chain: head is the newest", chained.headCid, "b");
+
+  /* cadence L-26: the law itself + the slot math */
+  eq("compiler cadence: the law is L-26", CADENCE.law, "L-26");
+  eq("compiler cadence: post interval 300s", CADENCE.post.minIntervalSec, 300);
+  ok("compiler cadence: custody red freezes", CADENCE.freezeOnCustodyRed === true);
+  eq("compiler cadence: slot honors interval + jitter", cadenceNextEligible("2026-10-09T10:00:00Z", Date.parse("2026-10-09T10:01:00Z"), 45000), "2026-10-09T10:05:45.000Z");
+  eq("compiler cadence: no last post → eligible now", cadenceNextEligible(null, 1759996800000, 0), new Date(1759996800000).toISOString());
+  eq("compiler cadence: fresh post pushes slot forward", cadenceNextEligible("2026-10-09T10:00:00Z", Date.parse("2026-10-09T10:02:00Z"), 0), "2026-10-09T10:05:00.000Z");
+}
+
+/* ═══ R287 · THE LIVE AUTHORITY WATCHDOG (pure layer) ═════════════════════ */
+{
+  const { classifySig, circuitBreaker, BREAKER } = await import("./authority-watchdog.mjs");
+
+  eq("watchdog sig: G is SIGNED", classifySig("G"), "SIGNED");
+  eq("watchdog sig: N is UNSIGNED", classifySig("N"), "UNSIGNED");
+  ok("watchdog sig: B/E/X/U are INVALID", ["B", "E", "X", "U"].every((g) => classifySig(g) === "INVALID"));
+  eq("watchdog sig: unknown glyph is UNKNOWN", classifySig("?"), "UNKNOWN");
+
+  const now = 1759996800000;
+  let br = null;
+  br = circuitBreaker(br, { ok: false, ms: 900 }, now);
+  eq("watchdog breaker: first fail counts", br.consecutiveFails, 1);
+  eq("watchdog breaker: still open under threshold", br.verdict, "OPEN");
+  br = circuitBreaker(br, { ok: false, ms: 900 }, now);
+  br = circuitBreaker(br, { ok: false, ms: 900 }, now);
+  eq("watchdog breaker: 3 consecutive fails quarantine", br.verdict, "QUARANTINED");
+  ok("watchdog breaker: quarantine horizon is 30min", Date.parse(br.quarantinedUntil) - now === BREAKER.quarantineMs);
+  br = circuitBreaker(br, { ok: true, ms: 120 }, now);
+  eq("watchdog breaker: a success heals the counter", br.verdict === "OPEN" && br.consecutiveFails === 0, true);
+  br = circuitBreaker(br, { ok: true, ms: 4000 }, now);
+  ok("watchdog breaker: slow witness (>2500ms) quarantines itself", br.verdict === "QUARANTINED" && br.reason.includes("latency"));
+}
+
 /* ═══ R285 · THE RESILIENCE PLANE (llm-chain): the five laws as vectors.
  * Hermetic: candidates are injected, the ledger is a tmp file, the fast path
  * is flushed between vectors. The real drill (live 1-token provider) runs via

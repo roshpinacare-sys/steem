@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-08T21:37:36.403Z",
+  "verdict": "COMPILED-EMPTY",
+  "custodyGate": "GREEN",
+  "cadence": {
+    "law": "L-26",
+    "post": {
+      "minIntervalSec": 300,
+      "jitterSec": 45,
+      "perDayPerAccount": 1
+    },
+    "comment": {
+      "minIntervalSec": 180
+    },
+    "vote": {
+      "minIntervalSec": 15,
+      "perDayPerAccount": 3
+    },
+    "freezeOnCustodyRed": true
+  },
+  "intakeMeasured": {
+    "draftsInQueue": 24,
+    "intakeRows": 0,
+    "candidates": 24
+  },
+  "stats": {
+    "staged": 0,
+    "rejected": 0,
+    "dupDropped": 14,
+    "scrubHits": 0,
+    "bufferMax": 24
+  },
+  "headCid": null,
+  "packages": [],
+  "rejected": [],
+  "ms": 3,
+  "law": "native compile → scrub → strict schema → sha256 content-address → L-26 slot → BROADCAST-READY in the staging buffer; this rail never broadcasts — the custody-gated rails stay the only broadcasters"
+}

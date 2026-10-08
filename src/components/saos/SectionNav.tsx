@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { Banknote, BrainCircuit, Radio, Users, Activity } from 'lucide-react'
+import { Banknote, BrainCircuit, Radio, Users, Activity, Coins } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -11,13 +11,14 @@ import { cn } from '@/lib/utils'
  * long scroll); the pills filter sections with snap scrolling and 44px touch targets.
  * Hidden on lg+ where the full grid renders as always.
  */
-export type SectionId = 'command' | 'market' | 'army' | 'economy' | 'system'
+export type SectionId = 'command' | 'market' | 'army' | 'economy' | 'revenue' | 'system'
 
 export const SECTIONS: { id: SectionId; label: string; icon: LucideIcon; hint: string }[] = [
   { id: 'command', label: 'פיקוד', icon: Radio, hint: 'מנוע · מחזור · ארנק' },
   { id: 'market', label: 'שוק', icon: Activity, hint: 'ספר · היפר-גריד' },
   { id: 'army', label: 'צבא', icon: Users, hint: 'צי · חיילים · תפקידים' },
   { id: 'economy', label: 'כלכלה', icon: Banknote, hint: 'מסילות · P&L · דלק' },
+  { id: 'revenue', label: 'הכנסה', icon: Coins, hint: 'מהדר-תוכן · כלב-שמירה' },
   { id: 'system', label: 'מערכת', icon: BrainCircuit, hint: 'קיורציה · למידה · אינטל' },
 ]
 
