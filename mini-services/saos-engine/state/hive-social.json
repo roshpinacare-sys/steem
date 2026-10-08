@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-08T17:36:48.734Z",
+  "at": "2026-10-08T18:34:43.148Z",
   "day": "2026-10-08",
   "results": [
     {
@@ -11,7 +11,7 @@
     {
       "account": "cashmachine",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "cashmachine",
@@ -27,7 +27,7 @@
     {
       "account": "haran",
       "lane": "fleet-comment",
-      "verdict": "DAY-CAP"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "haran",
@@ -43,12 +43,12 @@
     {
       "account": "israelnews",
       "lane": "fleet-comment",
-      "verdict": "DAY-CAP"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "israelnews",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "NOTHING-TO-DEEPEN"
     },
     {
       "account": "lsa",
@@ -59,40 +59,38 @@
     {
       "account": "lsa",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "lsa",
       "lane": "deepen",
-      "verdict": "REJECTED",
-      "reason": "payer has not enough RC mana for transaction:has_mana: Account: lsa has 904750958 RC, needs 92773020"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "macrame",
       "lane": "fleet-vote",
-      "verdict": "DAY-CAP"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "macrame",
       "lane": "fleet-comment",
-      "verdict": "CLONE-VETO",
-      "reason": "near-duplicate (~0.66) already under parent by haran"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "macrame",
       "lane": "deepen",
-      "verdict": "REJECTED",
-      "reason": "payer has not enough RC mana for transaction:has_mana: Account: macrame has 843406390 RC, needs 9174"
+      "verdict": "SCHEDULE-LATER"
     },
     {
       "account": "siq",
       "lane": "fleet-vote",
-      "verdict": "DAY-CAP"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "siq",
       "lane": "fleet-comment",
-      "verdict": "DAY-CAP"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "siq",
@@ -102,17 +100,18 @@
     {
       "account": "wic",
       "lane": "fleet-vote",
-      "verdict": "DAY-CAP"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "wic",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "wic",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "wog",
@@ -123,7 +122,7 @@
     {
       "account": "wog",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "wog",
@@ -139,22 +138,22 @@
     {
       "account": "woq",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "woq",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "NOTHING-TO-DEEPEN"
     }
   ],
-  "caps": "≤2 votes @25% · ≤1 comment · ≤1 deepen /day/account · anti-herd · persona-voiced · RC-gated · veto-armed",
+  "caps": "≤3 votes @25% · ≤3 comment · ≤2 deepen /day/account · anti-herd · persona-voiced · RC-gated · veto-armed",
   "custody": {
     "verified": 9,
     "total": 9
   },
   "verdict": "HIVE-SOCIAL-IDLE",
   "executed": 0,
-  "ms": 10859,
+  "ms": 50374,
   "perAccount": {
     "cashmachine": {
       "done": {
