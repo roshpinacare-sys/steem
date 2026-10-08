@@ -1136,7 +1136,10 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("frequency cap", !frequencyVerdict(3, 3).ok);
   ok("frequency ok", frequencyVerdict(0, 3).ok);
 
-  ok("cross-chain hive refused", !crossChainVerdict("hive").ok);
+  /* R254 LAW UPDATE: the operator re-armed HIVE as a measured trial — hive
+   * is allowed with stricter gates, blurt stays refused. */
+  ok("cross-chain hive allowed (R254 trial)", crossChainVerdict("hive").ok);
+  ok("cross-chain blurt refused", !crossChainVerdict("blurt").ok);
   ok("cross-chain empty refused", !crossChainVerdict("").ok);
   ok("cross-chain steem ok", crossChainVerdict("steem").ok);
 
@@ -1147,8 +1150,10 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("full gate good draft passes", g1.ok);
   const g2 = spamVerdict({ ...goodDraft, body: "thin", title: "hi" }, { chain: "steem" });
   ok("full gate thin refused", !g2.ok && g2.reasons.some((r) => r.includes("body-too-thin")));
-  const g3 = spamVerdict(goodDraft, { chain: "hive" });
-  ok("full gate cross-chain refused", !g3.ok && g3.reasons[0].includes("REFUSED-CROSS-CHAIN-PAUSE"));
+  const g3 = spamVerdict(goodDraft, { chain: "blurt" });
+  ok("full gate blurt refused", !g3.ok && g3.reasons[0].includes("operator-pause"));
+  const g4 = spamVerdict(goodDraft, { chain: "hive" });
+  ok("full gate hive runs trial gates (stricter min)", g4.trial === true && g4.checks.chainGate?.trial === true);
   ok("gate tightened min applies", spamVerdict({ ...goodDraft, body: "x".repeat(1300) }, { chain: "steem", g: { ...GATE_DEFAULTS, minPostChars: 1600 } }).ok === false);
 
   const ov1 = organicVerdict(Array.from({ length: 5 }, () => ({ outside: 0, flags: 0 })));
@@ -1763,6 +1768,70 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   caught = null;
   try { dq.matchOption([{ label: "A" }, { label: "B" }], "0"); } catch (e) { caught = e.code; }
   eq("decisionqueue: numeric 0 refused (kills M25)", caught, "NO-MATCH");
+}
+
+/* ── R254 · DASH-LAW + LEGAL IMAGES + SMART-REPLY + HIVE GATES + SLOTS ────── */
+{
+  const { normalizeDashes, sanitizeDraft: sd2, wordCount: wc2, MIN_POST_WORDS: mpw } = await import("./content.mjs");
+  const { licenseOk, pickImage, creditLine, embedImage, queryFor } = await import("./illustrate.mjs");
+  const { repFromRaw, replyTargetVerdict, fleetPublishMinutes } = await import("./army-social.mjs");
+  const { flagPauseVerdict, chainGate } = await import("./spamgate.mjs");
+  const { HIVE_CHAIN_ID, STEEM_CHAIN_ID } = await import("./steemtx.mjs");
+
+  eq("dashes: spaced em → colon", normalizeDashes("a — b"), "a: b");
+  eq("dashes: bare em → colon-space", normalizeDashes("a—b"), "a: b");
+  eq("dashes: spaced en → colon", normalizeDashes("a – b"), "a: b");
+  eq("dashes: bare en (range) → hyphen", normalizeDashes("5–7"), "5-7");
+  eq("dashes: plain text untouched", normalizeDashes("a, b; c"), "a, b; c");
+
+  const longBody = `The first frost always finds the small things first. ${"A sentence about the quiet work of a season and its long shadow. ".repeat(45)}`;
+  const dashy = sd2({ title: "A season measured in small quiet things", body: `${longBody} It ships: one rule — ship it — under the hood. What do you keep?`, tags: ["life", "seasons"] });
+  eq("dash-draft SURVIVES via normalizer", dashy ? dashy.title.slice(0, 10) : null, "A season m");
+  eq("dash-draft has zero em-dashes", dashy ? dashy.body.includes("—") : true, false);
+  const illegalImg = sd2({ title: "A season measured in small quiet things", body: longBody, tags: ["life", "seasons"], image: { url: "https://evil.example/x.png", alt: "x", credit: "x" } });
+  eq("non-wikimedia image rejected", illegalImg?.image ?? null, null);
+  eq("wordCount counts words", wc2("one two three"), 3);
+
+  eq("license: CC0 ok", licenseOk("CC0 1.0"), true);
+  eq("license: CC BY-SA ok", licenseOk("CC BY-SA 4.0"), true);
+  eq("license: all-rights-reserved refused", licenseOk("© all rights reserved"), false);
+  eq("license: empty refused", licenseOk(""), false);
+  const picked = pickImage([
+    { url: "https://upload.wikimedia.org/a.jpg", license: "fair use", width: 1200, height: 800 },
+    { url: "https://upload.wikimedia.org/b.jpg", license: "CC BY 2.0", width: 1400, height: 900 },
+  ], 1);
+  eq("pickImage drops non-free", picked?.license, "CC BY 2.0");
+  eq("creditLine names author+license", creditLine({ artist: "Ada", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:X" }).startsWith("Image: Ada, CC0"), true);
+  const emb = embedImage("BODY", { url: "https://upload.wikimedia.org/b.jpg", alt: "alt text", artist: "Ada", license: "CC0", page: "" });
+  eq("embedImage appends md+credit", emb.startsWith("BODY\n\n![alt text]("), true);
+  eq("embedImage idempotent", embedImage(emb, { url: "https://upload.wikimedia.org/b.jpg", alt: "a", artist: "x", license: "CC0", page: "" }), emb);
+  eq("queryFor prefers concrete tags", queryFor(null, ["food", "story", "culture"], "t"), "food culture");
+  eq("queryFor skips abstract life", queryFor(null, ["life", "tools"], "t"), "tools");
+
+  eq("rep: raw 1e9 = rep 25", repFromRaw(1e9), 25);
+  eq("rep: raw 0 = rep 0", repFromRaw(0), 0);
+  eq("reply: fleet always relevant", replyTargetVerdict({ author: "wog", repRaw: 0, body: "x", isFleet: true }).class, "fleet");
+  eq("reply: bot name skipped", replyTargetVerdict({ author: "upvote-bot", repRaw: 1e12, body: "long enough comment body" }).class, "skip");
+  eq("reply: low rep skipped", replyTargetVerdict({ author: "freshhuman", repRaw: 100, body: "long enough comment body here" }).reasons[0].startsWith("low-rep"), true);
+  eq("reply: template-praise skipped", replyTargetVerdict({ author: "humanone", repRaw: 1e10, body: "that's a great post!" }).class, "skip");
+  eq("reply: real human passes", replyTargetVerdict({ author: "humanone", repRaw: 1e10, body: "What did you use to measure the gap between the frames?" }).class, "human");
+
+  const slots = fleetPublishMinutes("2026-10-07", ["a", "b", "c", "d"], { window: [11, 21] });
+  eq("slots: 4 distinct minutes", new Set(Object.values(slots)).size, 4);
+  eq("slots: inside window", Object.values(slots).every((m) => m >= 660 && m < 1260), true);
+  eq("slots: deterministic", JSON.stringify(fleetPublishMinutes("2026-10-07", ["a", "b"], { window: [11, 21] })), JSON.stringify(fleetPublishMinutes("2026-10-07", ["a", "b"], { window: [11, 21] })));
+  eq("schedule: publishMinute pinned", buildDaySchedule(42, { publishMinute: 777 })[0].minute, 777);
+
+  eq("flagPause: none", flagPauseVerdict({ flags: 0 }).pause, false);
+  eq("flagPause: one flag pauses", flagPauseVerdict({ flags: 1, author: "x", permlink: "p", chain: "hive" }).pause, true);
+  eq("chainGate: hive = stricter trial", chainGate("hive").trial, true);
+  eq("chainGate: hive minPostChars 1600", chainGate("hive").g.minPostChars, 1600);
+  eq("chainGate: blurt refused", chainGate("blurt").ok, false);
+  eq("chainGate: steem plain", chainGate("steem").trial, false);
+  eq("crossChain: hive allowed", crossChainVerdict("hive").ok, true);
+  eq("crossChain: blurt still refused", crossChainVerdict("blurt").ok, false);
+  eq("hive chain id is beeab0de…", HIVE_CHAIN_ID.slice(0, 4).toString("hex"), "beeab0de");
+  eq("steem chain id is 32 zero bytes", STEEM_CHAIN_ID.every((b) => b === 0), true);
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

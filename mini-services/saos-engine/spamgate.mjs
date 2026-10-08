@@ -107,6 +107,27 @@ const BANNED_TAGS = new Set(["nsfw", "porn", "airdrop", "giveaway", "free-steem"
 
 /* ── pure: verdicts ───────────────────────────────────────────────────────── */
 
+/* R254 · CHAIN GATES (operator approval, verbatim intent): "אני מאשר ניסיון
+ * ובחינה פתיחה בhive וזיהוי spaminator על מה הוא מסמן ולמה ומה הסיבות
+ * ותיקונים לאחר מכן" + "לגבי blurt תמתין נבחן תוצאות בhive".
+ * → HIVE: ALLOWED as a measured trial, with STRICTER gates (rep-0 accounts
+ *   on Hive are exactly what spaminator hunts — our posts must be BETTER
+ *   there than on Steem, not equal).
+ * → BLURT: still REFUSED (the pause stands until the operator re-arms it). */
+export const CHAIN_POLICY = Object.freeze({
+  steem: { allowed: true },
+  hive: { allowed: true, trial: true, minPostChars: 1600, maxSelfSimPost: 0.25, minCommentChars: 260, dayCap: 1 },
+  blurt: { allowed: false, reason: "operator-pause (R254: 'לגבי blurt תמתין')" },
+});
+
+export function chainGate(chain, g = GATE_DEFAULTS) {
+  const pol = CHAIN_POLICY[String(chain ?? "").toLowerCase()] ?? null;
+  if (!pol) return { ok: false, reasons: [`unknown-chain(${chain})`], g };
+  if (!pol.allowed) return { ok: false, reasons: [pol.reason ?? `chain-refused(${chain})`], g: null };
+  const gg = pol.trial ? { ...g, minPostChars: pol.minPostChars ?? g.minPostChars, maxSelfSimPost: pol.maxSelfSimPost ?? g.maxSelfSimPost, minCommentChars: pol.minCommentChars ?? g.minCommentChars } : g;
+  return { ok: true, reasons: [], g: gg, trial: !!pol.trial };
+}
+
 export const GATE_DEFAULTS = Object.freeze({
   minPostChars: 1200,   // measured: spaminator flags from 283; 1230-1580 victims too → comfortable headroom
   minCommentChars: 200, // measured: victim comments were 8-130 chars
@@ -189,11 +210,13 @@ export function frequencyVerdict(postsToday, cap, g = GATE_DEFAULTS) {
   return { ok, reasons: ok ? [] : [`day-cap-reached(${postsToday}>=${cap})`] };
 }
 
-/* the operator's stop order — in code, fail-closed */
+/* the chain law — R254: steem + hive allowed (hive as measured trial with
+ * stricter gates via chainGate), blurt still fail-closed. */
 export function crossChainVerdict(chain) {
-  return chain === "steem"
-    ? { ok: true, reasons: [] }
-    : { ok: false, reasons: [`REFUSED-CROSS-CHAIN-PAUSE(chain=${chain || "unknown"}; steem-only while the operator pause stands)`] };
+  const c = String(chain ?? "").toLowerCase();
+  return c === "steem" || c === "hive"
+    ? { ok: true, reasons: [], chain: c }
+    : { ok: false, reasons: [`REFUSED-CROSS-CHAIN-PAUSE(chain=${chain || "unknown"}; allowed: steem + hive-trial · blurt waits per operator R254)`] };
 }
 
 /* ── pure: the one gate ───────────────────────────────────────────────────── */
@@ -202,24 +225,29 @@ export function crossChainVerdict(chain) {
  * ctx: {isComment, chain, ownRecentBodies, postsToday, dayCap, g} */
 export function spamVerdict(draft, ctx = {}) {
   const { isComment = false, chain = "steem", ownRecentBodies = [], postsToday = 0, dayCap = 1, g = GATE_DEFAULTS } = ctx;
+  const cg = chainGate(chain, g);
+  if (!cg.ok) {
+    return { ok: false, reasons: cg.reasons.slice(0, 3), checks: { chain: cg }, gate: "saos-spamgate-v1", isComment };
+  }
+  const gg = cg.g;
   const cc = crossChainVerdict(chain);
-  const checks = { crossChain: cc };
-  const reasons = [...cc.reasons];
-  if (cc.ok) {
+  const checks = { crossChain: cc, chainGate: { ok: true, trial: !!cg.trial } };
+  const reasons = [];
+  {
     const parts = [
-      ["title", isComment ? { ok: true, reasons: [] } : titleVerdict(draft?.title, g)],
-      ["tags", isComment ? { ok: true, reasons: [] } : tagVerdict(draft?.tags, g)],
-      ["body", bodyVerdict(isComment ? draft?.body : `${draft?.title ?? ""}\n${draft?.body ?? ""}`, { isComment, g })],
-      ["selfSim", selfSimVerdict(draft?.body ?? "", ownRecentBodies, { isComment, g })],
-      ["grounding", groundingVerdict(draft, { isComment, g })],
-      ["frequency", frequencyVerdict(postsToday, dayCap, g)],
+      ["title", isComment ? { ok: true, reasons: [] } : titleVerdict(draft?.title, gg)],
+      ["tags", isComment ? { ok: true, reasons: [] } : tagVerdict(draft?.tags, gg)],
+      ["body", bodyVerdict(isComment ? draft?.body : `${draft?.title ?? ""}\n${draft?.body ?? ""}`, { isComment, g: gg })],
+      ["selfSim", selfSimVerdict(draft?.body ?? "", ownRecentBodies, { isComment, g: gg })],
+      ["grounding", groundingVerdict(draft, { isComment, g: gg })],
+      ["frequency", frequencyVerdict(postsToday, dayCap, gg)],
     ];
     for (const [name, v] of parts) {
       checks[name] = v;
       if (!v.ok) reasons.push(...(v.reasons ?? []).map((r) => `${name}:${r}`));
     }
   }
-  return { ok: reasons.length === 0, reasons, checks, gate: "saos-spamgate-v1", isComment };
+  return { ok: reasons.length === 0, reasons, checks, gate: "saos-spamgate-v1", isComment, trial: !!cg.trial };
 }
 
 /* ── pure: the organic-verdict learning loop ────────────────────────────────
@@ -235,6 +263,27 @@ export function organicVerdict(recentPosts, { window = 5, minOutside = 1, pauseD
   if (flags > 0) return { ok: false, tighten: true, verdict: "FLAGGED-STOP", flags, pauseDays, minPostChars: tightenedChars };
   if (zero === window) return { ok: true, tighten: true, verdict: "ZERO-ORGANIC-TIGHTEN", zero, minPostChars: tightenedChars };
   return { ok: true, tighten: false, verdict: "ORGANIC-OK", zero, posts: posts.length };
+}
+
+/* ── pure: R254 · THE DOWNVOTE VETO (operator law, verbatim intent) ─────────
+ * "שיעצרו שיש downvote ואז נבחן מה הסיבה ונשפר בכל המערכות תמיד בהתאם"
+ * The moment ANY of our posts eats a downvote: that author STOPS publishing
+ * (per-account pause), the flag is journaled WITH evidence (who/what/why
+ * candidates), and resumption is a deliberate analysis-first decision —
+ * as long as nothing is flagged, the round continues (operator: "כל עוד
+ * לא מקבלים ממשיכים"). */
+export function flagPauseVerdict(postRow) {
+  const flags = Number(postRow?.flags ?? 0);
+  if (!Number.isFinite(flags) || flags <= 0) return { pause: false, reasons: [] };
+  return {
+    pause: true,
+    reasons: [
+      `downvoted(${flags}x)`,
+      `post=${postRow?.author ?? "?"}/${String(postRow?.permlink ?? "").slice(0, 44)}`,
+      `bodyLen=${postRow?.bodyLen ?? "?"} chain=${postRow?.chain ?? "steem"}`,
+      "analysis-first: read the downvoter + reason, fix the law, only then resume",
+    ],
+  };
 }
 
 /* ── state (IO-lite; verdict-only, no secrets) ────────────────────────────── */

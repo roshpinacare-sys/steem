@@ -310,6 +310,10 @@ export function serializeTx({ ref_block_num, ref_block_prefix, expiration, opera
 }
 
 export const STEEM_CHAIN_ID = Buffer.alloc(32); // mainnet chain id = 32 zero bytes
+/* R254 · HIVE mainnet chain id — taken from @hiveio/dhive DEFAULT_CHAIN_ID
+ * (measured from the official client source, installed+read 2026-10-07),
+ * then judged live by the node on the probe broadcast. */
+export const HIVE_CHAIN_ID = Buffer.from("beeab0de00000000000000000000000000000000000000000000000000000000", "hex");
 
 /* ── signing ────────────────────────────────────────────────────────────── */
 export function signDigest(digest32, wif) {
@@ -322,8 +326,9 @@ export function signDigest(digest32, wif) {
 }
 
 /** build + sign a full tx from ops. Returns BOTH the binary digest proof and
- * the JSON form ready for condenser_api.broadcast_transaction. */
-export function buildTx({ ops, dgpo, wifs, ttlSec = 45, nowSec = Math.floor(Date.now() / 1000) }) {
+ * the JSON form ready for condenser_api.broadcast_transaction.
+ * R254: chainId is parameterized — Steem (32 zero bytes) or Hive. */
+export function buildTx({ ops, dgpo, wifs, ttlSec = 45, nowSec = Math.floor(Date.now() / 1000), chainId = STEEM_CHAIN_ID }) {
   const headNum = dgpo.head_block_number;
   const idBytes = Buffer.from(String(dgpo.head_block_id), "hex");
   const ref_block_num = headNum & 0xffff;
@@ -332,7 +337,7 @@ export function buildTx({ ops, dgpo, wifs, ttlSec = 45, nowSec = Math.floor(Date
   const iso = (sec) => new Date(sec * 1000).toISOString().slice(0, 19);
   const body = { ref_block_num, ref_block_prefix, expiration, operations: ops, extensions: [] };
   const bin = serializeTx({ ...body, expiration });
-  const digest = sha256(Buffer.concat([STEEM_CHAIN_ID, bin]));
+  const digest = sha256(Buffer.concat([chainId, bin]));
   const sigs = wifs.map((w) => signDigest(Buffer.from(digest), w).toString("hex"));
   return {
     digestHex: Buffer.from(digest).toString("hex"),
