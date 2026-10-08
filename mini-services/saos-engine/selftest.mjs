@@ -2222,7 +2222,7 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
  * proved two measured clone classes; every fix below is locked as a vector
  * seeded from the MEASURED failure, not from imagination. ═══ */
 {
-  const { fleetSaidFor, noteFleetSaid, normalizeBodyForClash } = await import("./army-social.mjs");
+  const { fleetSaidFor, noteFleetSaid, clearFleetSaid, normalizeBodyForClash } = await import("./army-social.mjs");
   const { synthesizePersonaComment, synthesizePersonaReply } = await import("./intel-pack.mjs");
 
   /* CLASS 1 (Oct 6 20:52-20:55, measured on-chain): two accounts, same parent,
@@ -2257,11 +2257,18 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
    * indexed the first reply when the second account drafts). Day-scoped:
    * a selftest key can never poison the live day, and old days prune. */
   const tDay = "1970-01-01"; // sandbox-proof testing law: a key no live day can collide with
-  ok("ledger: foreign day reads empty", fleetSaidFor(tDay).length === 0);
+  /* R276 self-cleaning law: the probe day is purged BEFORE the empty-read
+   * (measured incident: CI state-pushback re-poisoned the fake day — the
+   * purge makes the test idempotent across runs and clones) and AFTER the
+   * block (no poison leaves in the persisted ledger). */
+  const purged = clearFleetSaid(tDay);
+  ok("ledger: foreign day reads empty after purge", fleetSaidFor(tDay).length === 0);
   noteFleetSaid(tDay, "haran", "selftest ledger body one");
   noteFleetSaid(tDay, "macrame", "selftest ledger body two");
   eq("ledger: two intents are readable fleet-wide", fleetSaidFor(tDay).length, 2);
   ok("ledger: the second drafter sees the first draft BEFORE broadcast", replyFresh("fresh selftest draft", fleetSaidFor(tDay), { maxSimilarity: 0.34 }) && !replyFresh("selftest ledger body one continued", fleetSaidFor(tDay), { maxSimilarity: 0.34 }));
+  clearFleetSaid(tDay);
+  ok("ledger: probe day purged after the block (no poison persists)", fleetSaidFor(tDay).length === 0);
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

@@ -425,6 +425,21 @@ export function fleetSaidFor(day) {
   const doc = readJson(SAID_FILE, { days: {} });
   return (doc.days?.[day] ?? []).map((e) => String(e.body ?? ""));
 }
+/* R276: self-cleaning probe — a selftest (or tooling) purges its own day key
+ * before/after probing. Measured incident 2026-10-08: the 1970-01-01 probe day
+ * survived CI state-pushback (keep-last-2 never evicts it when no newer fake
+ * day exists), re-poisoning every later clone: "foreign day reads empty" failed
+ * forever. The purge is the law: a probe day is ALWAYS wiped before and after. */
+export function clearFleetSaid(day) {
+  const doc = readJson(SAID_FILE, { days: {} });
+  const days = { ...(doc.days ?? {}) };
+  if (!(day in days)) return 0;
+  const removed = days[day].length;
+  delete days[day];
+  writeJson(SAID_FILE, { days });
+  return removed;
+}
+
 export function noteFleetSaid(day, account, body) {
   const doc = readJson(SAID_FILE, { days: {} });
   const days = { ...(doc.days ?? {}) };
