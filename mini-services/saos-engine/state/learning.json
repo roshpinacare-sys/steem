@@ -1,20 +1,20 @@
 {
-  "at": "2026-10-08T17:24:43.138Z",
+  "at": "2026-10-08T17:17:16.151Z",
   "enabled": true,
-  "runsTotal": 447,
+  "runsTotal": 448,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 135,
-      "oks": 130,
+      "window": 132,
+      "oks": 126,
       "fails": 3,
-      "blocked": 2,
-      "okRate": 96.3,
-      "blockedRate": 1.5,
+      "blocked": 3,
+      "okRate": 95.5,
+      "blockedRate": 2.3,
       "failReasons": {
         "unknown": 3
       },
-      "msP50": 64449,
+      "msP50": 63579,
       "msP90": 230531
     },
     "curator": {
@@ -37,16 +37,16 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 73,
-      "downs": 0,
-      "heals": 1,
-      "healVerified": 1,
+      "checks": 2374,
+      "downs": 104,
+      "heals": 37,
+      "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T17:24:43.221Z",
+      "lastCheckAt": "2026-10-08T17:15:56.124Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-08T16:14:45.517Z",
-      "lastUpAt": "2026-10-08T17:24:43.222Z",
-      "blips": 0
+      "lastSpawnAt": null,
+      "lastUpAt": "2026-10-08T17:15:56.131Z",
+      "blips": 1
     }
   },
   "lessons": [
@@ -54,14 +54,14 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×2/135 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×3/132 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "cycle-latency-tail",
       "severity": "medium",
-      "evidence": "p50 64449ms vs p90 230531ms",
+      "evidence": "p50 63579ms vs p90 230531ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     }
@@ -71,9 +71,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 345,
+    "signing-cred-blocked": 346,
     "broadcast-fails": 130,
-    "cycle-latency-tail": 113
+    "cycle-latency-tail": 114
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
