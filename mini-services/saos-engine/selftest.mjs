@@ -295,6 +295,9 @@ ok("tick emits anchor quote", t1.events.some((e) => e.type === "anchor.quote"));
 ok("tick arb signal", t1.events.some((e) => e.type === "arb.signal"));
 const st1 = fold({ runCount: 0 }, t1);
 eq("fold runCount", st1.runCount, 1);
+/* R269 · the fleet liveness contract: fold must stamp `at` (the reader's
+ * field) — its absence measured a live agent DEAD on the cockpit board */
+ok("fold stamps at", typeof st1.at === "string" && st1.at.length > 0);
 
 /* 13 · no-market fail-closed */
 const t3 = tick({ refPrice: 0, internalFeed: 0, inventory: { steem: 10, sbd: 10 }, runCount: 1, now: "2026-01-01T00:00:00Z" });

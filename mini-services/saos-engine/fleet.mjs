@@ -99,10 +99,12 @@ export function fleetState({ now = new Date().toISOString(), credential = null, 
     `daily-report.json finishedAt=${cycleAt ?? "—"}${cycleFailing.length ? ` · FAILING-STEPS: ${cycleFailing.join(",")}` : ""}`,
   ));
 
-  /* 4 · grid-tick — trigger network (thing-drags-thing) */
+  /* 4 · grid-tick — trigger network (thing-drags-thing)
+   * R269: the writer stamped `asof` while the reader demanded `at` — the
+   * agent measured DEAD while alive (runCount 86). Reader now accepts both. */
   agents.push(mk("grid-tick", "4 micro-grids · trigger network",
-    classifyAgent({ lastRunAt: stateJson?.at ?? null, nowMs, freshnessMin: FRESH.grid }),
-    `state.json at=${stateJson?.at ?? "—"} runCount=${stateJson?.runCount ?? "?"}`));
+    classifyAgent({ lastRunAt: stateJson?.at ?? stateJson?.asof ?? null, nowMs, freshnessMin: FRESH.grid }),
+    `state.json at=${stateJson?.at ?? stateJson?.asof ?? "—"} runCount=${stateJson?.runCount ?? "?"}`));
 
   /* 5 · book-keeper (peg) — parity-anchored ladder */
   const pegIdle = offer?.verdict && ["NO-PARITY"].includes(offer.verdict);
