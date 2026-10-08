@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-08T07:49:08.961Z",
+  "at": "2026-10-08T07:59:08.963Z",
   "enabled": true,
-  "runsTotal": 418,
+  "runsTotal": 419,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -14,8 +14,8 @@
       "failReasons": {
         "unknown": 2
       },
-      "msP50": 31665,
-      "msP90": 113220
+      "msP50": 39103,
+      "msP90": 114905
     },
     "curator": {
       "present": true,
@@ -32,20 +32,20 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 3,
+      "window": 2,
       "fails": 0,
       "lastError": null
     },
     "watchdog": {
-      "checks": 3196,
+      "checks": 3206,
       "downs": 107,
       "heals": 41,
       "healVerified": 40,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T07:49:09.220Z",
+      "lastCheckAt": "2026-10-08T07:59:09.225Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-08T02:51:14.014Z",
-      "lastUpAt": "2026-10-08T07:49:09.222Z",
+      "lastUpAt": "2026-10-08T07:59:09.228Z",
       "blips": 2
     }
   },
@@ -57,13 +57,6 @@
       "evidence": "cycle-blocked ×5/126 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "cycle-latency-tail",
-      "severity": "medium",
-      "evidence": "p50 31665ms vs p90 113220ms",
-      "lesson": "cycle duration tail is fat — RPC latency inside steps",
-      "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     }
   ],
   "tunings": {},
@@ -71,7 +64,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 316,
+    "signing-cred-blocked": 317,
     "broadcast-fails": 125,
     "cycle-latency-tail": 90
   },
