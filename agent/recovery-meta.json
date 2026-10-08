@@ -1,5 +1,5 @@
 {
- "format": "recovery-meta-2",
+ "format": "recovery-meta-3",
  "doctrine": "operator directive 2026-09-10: \"זה אצלך בקבצים לא אצלי\" — system custody, private repo. Supersedes chat-only passwords (the chat-only era stranded KEYS-ZIP-2026-09-09 forever).",
  "keysZipPass": "p3Xoj4xEBmidkzmnO3VLa9tQZR4zifLk",
  "keysZipFile": "agent/vault/KEYS-ZIP-2026-10-08-ROT4.zip.enc",
@@ -24,14 +24,37 @@
  "gpgKey": {
   "id": "r5-2026-10-08",
   "pubAnchor": "signing/w1-signing-key-r5-2026-10-08.asc",
-  "sealedFile": "agent/vault/W1-SIGNING-KEY-r5.enc",
-  "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> → gpg --import (the SAME keysZipPass of this meta)",
+  "sealedFile": "agent/vault/EXTRA-SECRETS-2026-10-08-ROT4.zip.enc (member signing/w1-signing-key-r5.asc)",
+  "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> | unzip -p <blob> signing/w1-signing-key-r5.asc | gpg --import",
   "sealedAt": "2026-10-08T13:48Z",
-  "note": "R273: first self-revivable signing key. r3 died with its sandbox; r4 was sealed operator-only (VAULT_PASS, unrecoverable). r5 revives from git in any sandbox via the documented vault formula.",
+  "note": "R284: re-sealed into the live-pass era; the old single-file W1-SIGNING-KEY-r5.enc was stranded on a pre-ROT4 pass (dead)",
   "keyFp": "301E53150D283869A614D78114F411FEF0FC3424",
   "sealedSha256": "ee465a077c4e855036be13197cea7df51fad598c23f210b2360462212308d2b0"
  },
  "rotationId": "ROT3",
  "rotatedAt": "2026-10-08T18:37:51.248Z",
- "rotationNote": "R283: headconer operator-sheet absorption (instant-custody record); prior ROT3 snapshot kept in history"
+ "rotationNote": "R284: vault-completion seal - all live secret classes now open with the ONE pass of this meta; pass rotation is a FULL-RESEAL operation, never a meta-edit alone",
+ "extras": {
+  "file": "agent/vault/EXTRA-SECRETS-2026-10-08-ROT4.zip.enc",
+  "passRef": "keysZipPass (this same meta)",
+  "outerSha256": "8e3b73443c6efc81270c6fc4fbbc1d748015c45f7269107d5fecde5c07116b3b",
+  "innerSha256": "5e5d0a5312968bb7eac43b2f62c465c98b8535250b9496df7966dddeb25862b9",
+  "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> | unzip -Z1 (signing/ pat/ dex/)",
+  "contents": [
+   "signing/w1-signing-key-r5.asc",
+   "pat/pat.env (GITHUB_TOKEN live fine-grained)",
+   "dex/wallets-seed.json",
+   "dex/wallets-registry.json"
+  ],
+  "sealedAt": "2026-10-08T19:2xZ (R284)",
+  "law": "every secret class sealed to the ONE live pass of this meta; zero plaintext secrets tracked"
+ },
+ "stranded": {
+  "agent/vault/KEYS-SEED-2026-10-04.zip.enc": "dead-pass (pre-ROT pass era); its truth is carried by dex/ inside extras + GEN-1 zip copy",
+  "agent/vault/PAT-2026-10-07.env.enc": "dead-pass (operator VAULT_PASS era); live PAT re-sealed inside extras pat/",
+  "agent/vault/W1-SIGNING-KEY-r5.enc": "dead-pass (pre-ROT4); r5 key re-sealed inside extras signing/",
+  "agent/vault/W1-SIGNING-KEY-r4.enc.asc": "dead (r4 era, operator-only pass, unrecoverable by design)",
+  "agent/vault/ABSORB-*.zip.enc": "historical; absorbed content lives in ROT4 vault.json headconer entry"
+ },
+ "masterPasswordRef": ".secrets/headcorner.key is a MARKER file (not a credential); master custody = wif-direct chain-judged from vault (R284 truth)"
 }
