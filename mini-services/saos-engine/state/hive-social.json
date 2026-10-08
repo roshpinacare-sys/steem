@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-08T07:39:08.960Z",
+  "at": "2026-10-08T07:49:08.961Z",
   "day": "2026-10-08",
   "results": [
     {
@@ -81,9 +81,8 @@
     {
       "account": "siq",
       "lane": "fleet-vote",
-      "verdict": "BROADCAST",
-      "permlink": "wog/d1791413864325-1",
-      "digest8": "05801ab0"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "siq",
@@ -98,7 +97,9 @@
     {
       "account": "wic",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "BROADCAST",
+      "permlink": "wog/d1791413864325-1",
+      "digest8": "654b01c2"
     },
     {
       "account": "wic",
@@ -148,7 +149,7 @@
   },
   "verdict": "HIVE-SOCIAL-EXECUTED",
   "executed": 1,
-  "ms": 10126,
+  "ms": 13185,
   "perAccount": {
     "cashmachine": {
       "done": {},
@@ -179,7 +180,9 @@
       "said": []
     },
     "wic": {
-      "done": {},
+      "done": {
+        "fleetVote": 1
+      },
       "said": []
     },
     "wog": {
