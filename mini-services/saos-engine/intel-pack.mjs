@@ -369,7 +369,13 @@ export function synthesizeComment({ postTitle, postExcerpt, seed = 1 } = {}) {
  * base body ships unchanged. Pure, selftest-locked. */
 export function synthesizePersonaComment({ account, postTitle, postExcerpt, seed = 1 } = {}) {
   const persona = personaOf(account);
-  const base = synthesizeComment({ postTitle, postExcerpt, seed });
+  /* R274 · THE VOICE SALT: the account itself is mixed into the RNG seed.
+   * The seed used to be only post/excerpt-derived, so two accounts drafting
+   * for the same target in the same tick (bridge 429s, state freshly wiped)
+   * produced the SAME core under two different names — measured on-chain
+   * (Oct 6 20:52-20:55 burst, identical bodies, identical seconds). One
+   * writer, one voice, one draft: the account is part of the identity now. */
+  const base = synthesizeComment({ postTitle, postExcerpt, seed: `${account ?? "anon"}|${seed}` });
   if (!base || !persona) return base;
   const motto = String(persona.slang?.[0] ?? "").trim();
   if (!motto || base.toLowerCase().includes(motto.toLowerCase())) return base;
@@ -379,7 +385,10 @@ export function synthesizePersonaComment({ account, postTitle, postExcerpt, seed
 
 export function synthesizePersonaReply({ account, postTitle, commentBody, myPrior = "", seed = 1 } = {}) {
   const persona = personaOf(account);
-  const base = synthesizeReply({ postTitle, commentBody, myPrior, seed });
+  /* R274 · THE VOICE SALT (same law as the comment writer): the account is
+   * part of the seed, so the same thread never mints the same core twice,
+   * no matter which sibling asks. */
+  const base = synthesizeReply({ postTitle, commentBody, myPrior, seed: `${account ?? "anon"}|${seed}` });
   if (!base || !persona) return base;
   const motto = String(persona.slang?.[0] ?? "").trim();
   if (!motto || base.toLowerCase().includes(motto.toLowerCase())) return base;

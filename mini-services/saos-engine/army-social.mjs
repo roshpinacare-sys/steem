@@ -392,6 +392,83 @@ async function alreadyAnswered(account, parentAuthor, parentPermlink) {
   } catch { return false; }
 }
 
+/* ── R274 · THE CLONE GUARD (chain truth, sandbox-proof) ──────────────────
+ * OPERATOR ORDER (verbatim intent): "כל התגובות מהמשתמשים לפוסטים הן אותה
+ * תגובה... בכנות תמשיך ודחוף". The chain audit proved it: identical bodies
+ * shipped from different accounts at identical seconds (Oct 6 burst), and
+ * the same account shipped the same core twice 20 minutes apart (Oct 8,
+ * headcorner/saos-transparency) with only the persona motto swapped.
+ *
+ * ROOT CAUSE, measured: (1) the seeded fallback minted the same core for
+ * every account because the seed carried no account (fixed in intel-pack,
+ * the VOICE SALT); (2) the freshness memory lived ONLY in state files that
+ * a sandbox restore rewinds to yesterday — the operator's standing demand
+ * is sovereignty INDEPENDENT of the sandbox, so the dedup memory must live
+ * in the only store that always survives: THE CHAIN ITSELF.
+ *
+ * THE LAW: before any conversational broadcast, read the parent's LIVE
+ * replies once; refuse when any body already under that parent (any author,
+ * fleet or not) is a near-copy of the draft. This closes the clone classes
+ * state could never close: a wiped state file, a second engine process, or
+ * two accounts racing the same thread in one tick. */
+
+/* the fleet-wide said-ledger: intents land here BEFORE the broadcast (the
+ * same-tick race class — the chain may not have indexed the first reply
+ * when the second account drafts) and receipts after. Day-keyed, tiny,
+ * committed with the state by CI — the in-memory layer that chain reads
+ * cannot see milliseconds into. */
+const SAID_FILE = path.join(STATE, "social-said.json");
+/* day-scoped: { days: { [day]: [{account, body, at}] } } — only the last two
+ * days are kept. Day-scoping makes the ledger safe to probe from selftests
+ * under a fake key without ever touching the live day. */
+export function fleetSaidFor(day) {
+  const doc = readJson(SAID_FILE, { days: {} });
+  return (doc.days?.[day] ?? []).map((e) => String(e.body ?? ""));
+}
+export function noteFleetSaid(day, account, body) {
+  const doc = readJson(SAID_FILE, { days: {} });
+  const days = { ...(doc.days ?? {}) };
+  const list = days[day] ?? [];
+  list.push({ account, body: String(body ?? "").slice(0, 300), at: new Date().toISOString() });
+  days[day] = list.slice(-120); // bounded: the day's conversation, not history
+  const keep = Object.keys(days).sort().slice(-2); // yesterday + today, nothing else
+  const pruned = {};
+  for (const k of keep) pruned[k] = days[k];
+  writeJson(SAID_FILE, { days: pruned });
+}
+
+/* pure: normalized body for clash comparison (links, images, markup and
+ * punctuation noise stripped — the chain shows markdown, the law compares
+ * meaning-shaped text) */
+export function normalizeBodyForClash(b) {
+  return String(b ?? "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/[#*_>~`|]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase()
+    .slice(0, 300);
+}
+
+/* one chain read, two verdicts: is OUR voice already under this parent
+ * (the old pair-guard), and does ANY existing reply already say this
+ * (the clone veto). maxSimilarity = the same 0.34 Jaccard law as replyFresh. */
+export async function parentClash(account, parentAuthor, parentPermlink, body, { maxSimilarity = 0.34 } = {}) {
+  let replies = [];
+  try {
+    const r = await rpcCall("condenser_api.get_content_replies", [parentAuthor, parentPermlink]);
+    if (r.ok) replies = r.result ?? [];
+  } catch { /* unreachable chain → fail OPEN here; the broadcast gates still hold */ }
+  const out = { own: false, clash: false, who: null, sim: 0 };
+  for (const c of replies) {
+    if (account && c.author === account) out.own = true;
+    const sim = textSimilarity(normalizeBodyForClash(body), normalizeBodyForClash(c.body));
+    if (sim >= maxSimilarity && sim >= out.sim) { out.clash = true; out.who = c.author; out.sim = Math.round(sim * 100) / 100; }
+  }
+  return out;
+}
+
 /* R243 SPAMGATE · the author's own recent chain bodies (the repetition law
  * spaminator hunts). Chain-truth only; on read failure the check degrades to
  * an empty history — every OTHER gate check still applies (fail-soft here,
@@ -779,7 +856,13 @@ async function doFleetComment({ account, master, st, p, nowMs, now }) {
   const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author, account });
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
-  if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R274 CLONE GUARD: the said-memory is [own state + fleet ledger + THE CHAIN].
+   * A sandbox restore rewinds the first two; the chain remembers everything. */
+  const day = dayKeyOf(now);
+  if (!replyFresh(body, [...(st.said ?? []), ...fleetSaidFor(day)], { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  const clash = await parentClash(account, pick.author, pick.permlink, body, { maxSimilarity: p.repeatSimilarityMax });
+  if (clash.own) return false;
+  if (clash.clash) { journalRefusal(now, account, `clone-veto:fleet-comment:${pick.author}/${pick.permlink}`, { ok: false, reasons: [`near-duplicate body (~${clash.sim}) already under the parent by ${clash.who}`] }); return false; }
   /* R243 SPAMGATE (grafted): the comment gate — measured depth + repetition +
    * bait-phrases, tight on comments where spaminator is the most suspicious */
   const cgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
@@ -789,6 +872,7 @@ async function doFleetComment({ account, master, st, p, nowMs, now }) {
     "comment",
     { parent_author: pick.author, parent_permlink: pick.permlink, author: account, permlink, title: "", body, json_metadata: JSON.stringify({ app: "saos-social-rail" }) },
   ]];
+  noteFleetSaid(day, account, body); // R274 intent-before-broadcast: the same-tick sibling sees this draft
   const res = await executeAs(account, ops, { tag: "social-fleet-comment", role: "posting" });
   if (!res.ok) return false;
   st.commented = [...(st.commented ?? []), `${pick.author}/${pick.permlink}`];
@@ -807,7 +891,12 @@ async function doReply({ account, st, p, now }) {
   const raw = await draftReplyViaBridge({ ...target, account });
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
-  if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R274 CLONE GUARD (same law as every conversational lane) */
+  const day = dayKeyOf(now);
+  if (!replyFresh(body, [...(st.said ?? []), ...fleetSaidFor(day)], { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  const clash = await parentClash(account, target.parentAuthor, target.parentPermlink, body, { maxSimilarity: p.repeatSimilarityMax });
+  if (clash.own) return false;
+  if (clash.clash) { journalRefusal(now, account, `clone-veto:reply:${target.comment}`, { ok: false, reasons: [`near-duplicate body (~${clash.sim}) already under the parent by ${clash.who}`] }); return false; }
   /* R243 SPAMGATE (grafted): reply gate — same law as fleet comments */
   const rgate = spamVerdict({ body }, { isComment: true, chain: "steem", ownRecentBodies: await ownRecentBodies(account), g: gateGlobals() });
   if (!rgate.ok) { journalRefusal(now, account, `reply:${target.comment}`, rgate); return false; }
@@ -816,6 +905,7 @@ async function doReply({ account, st, p, now }) {
     "comment",
     { parent_author: target.parentAuthor, parent_permlink: target.parentPermlink, author: account, permlink, title: "", body, json_metadata: JSON.stringify({ app: "saos-social-rail" }) },
   ]];
+  noteFleetSaid(day, account, body); // R274 intent-before-broadcast
   const res = await executeAs(account, ops, { tag: "social-reply", role: "posting" });
   if (!res.ok) return false;
   st.replied = [...(st.replied ?? []), target.comment];
@@ -875,12 +965,18 @@ async function doCommunityComment({ account, master, st, p, nowMs, now }) {
   const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author, account });
   const body = sanitizeReply(raw);
   if (!body) return false;
-  if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R274 CLONE GUARD (same law as every conversational lane) */
+  const day = dayKeyOf(now);
+  if (!replyFresh(body, [...(st.said ?? []), ...fleetSaidFor(day)], { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  const clash = await parentClash(account, pick.author, pick.permlink, body, { maxSimilarity: p.repeatSimilarityMax });
+  if (clash.own) return false;
+  if (clash.clash) { journalRefusal(now, account, `clone-veto:community-comment:${pick.author}/${pick.permlink}`, { ok: false, reasons: [`near-duplicate body (~${clash.sim}) already under the parent by ${clash.who}`] }); return false; }
   const permlink = `re-${pick.author}-${pick.permlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",
     { parent_author: pick.author, parent_permlink: pick.permlink, author: account, permlink, title: "", body, json_metadata: JSON.stringify({ app: "saos-social-rail" }) },
   ]];
+  noteFleetSaid(day, account, body); // R274 intent-before-broadcast
   const res = await executeAs(account, ops, { tag: "social-community-comment", role: "posting" });
   if (!res.ok) return false;
   st.community = [...(st.community ?? []), pick.key];
@@ -945,12 +1041,18 @@ async function doDeepen({ account, master, st, p, now }) {
   });
   const body = sanitizeReply(raw);
   if (!body) return false;
-  if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  /* R274 CLONE GUARD (same law as every conversational lane) */
+  const day = dayKeyOf(now);
+  if (!replyFresh(body, [...(st.said ?? []), ...fleetSaidFor(day)], { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
+  const clash = await parentClash(account, target.parentAuthor, target.parentPermlink, body, { maxSimilarity: p.repeatSimilarityMax });
+  if (clash.own) return false;
+  if (clash.clash) { journalRefusal(now, account, `clone-veto:deepen:${target.comment}`, { ok: false, reasons: [`near-duplicate body (~${clash.sim}) already under the parent by ${clash.who}`] }); return false; }
   const permlink = `re-${target.parentAuthor}-${target.parentPermlink}-${Date.parse(now).toString(36)}`.replace(/[^a-z0-9-]/gi, "").toLowerCase().slice(0, 240);
   const ops = [[
     "comment",
     { parent_author: target.parentAuthor, parent_permlink: target.parentPermlink, author: account, permlink, title: "", body, json_metadata: JSON.stringify({ app: "saos-social-rail" }) },
   ]];
+  noteFleetSaid(day, account, body); // R274 intent-before-broadcast
   const res = await executeAs(account, ops, { tag: "social-deepen", role: "posting" });
   if (!res.ok) return false;
   st.deepened = [...(st.deepened ?? []), target.comment];
