@@ -2851,3 +2851,22 @@ Work Log:
 Stage Summary:
 - הכספת-כעת-בבעלות-מלאה-של-האוטונומיה — כל-מחלקות-הסודות (שרשרות, חתימה, PAT, DEX) נפתחות-במעבר-האחד-של-המטא-שבגיט; הגוף-מתחדש-מהגיט-לבד-בפקודה-אחת-משיבוט-טרי-והוכח-חי; הקלט-היחיד-מהמפעיל — אימות-GitHub. אפס-בקשות-מפתחות.
 - פערים-גלויים: headconer-ממתין-משאבים (RC/liquid — נמדד-קודם); Actions-secrets-tier-על-הריפו-הציבורי — לא-הוגדר (לא-נדרש-לזרימה-החיה; אופציה-עתידית-לחתימה-מ-Actions).
+
+---
+Task ID: R285
+Agent: cockpit zai-web session
+Task: המשך-מהיכן-שנעצרתי + פרומפט-חיצוני-שני (Sovereign Custodian Mode) — בחינה, השלמת-פערים, אימות, דחיפה
+
+Work Log:
+- הבלוב GIT-CRED-2026-10-08.enc נמצא נעקב-בגיט-אך-חסר-פין-במטא (orphan blob — המיזוג-בין-השרשרות איבד את ה-pin). תוקן-בחוק-25 המלא — bun scripts/sovereign-selfcustody.mjs seal: איטום-מחדש, API-probe חי, roundtrip GIT-CUSTODY-ALIVE, tokenExpiresAt 2026-12-12, הפין-הושב למטא.
+- probe-כספת v2 נבנה-מחדש-מעל-הטופולוגיה-האמת של recovery-meta-3 — מטריצה מלאה **10/10 PASS** (ROT4-HEAD 15-חשבונות sha-ok, GEN1-ERA 15-חשבונות, EXTRAS signing fp-MATCH + pat SAME-as-live + dex-נוכח, GIT-CRED fp זהה-לחי, שלושת-ה-stranded-המתועדים נמדדו-מתים-כנדרש, W1-R5-standalone נפתח-תחת-המעבר-החי (הוא-אוטם-מחדש-לגיטימי), KEYS-BACKUP-TAR 15-איברים תחת-מעברו-שלו, WALLET-SEED-PLAIN לא-נעקב + IDENTICAL-to-sealed).
+- שלושה-באגי-probe-נתפסו-בזמן-הבנייה (שמות-איברים מול כניסות-תיקיה ב-zip, homedir-gpg, ניתוח-שדה-fpr ב-colons) — וכן-תקלה-עצמית-אחת: קריאת-חבר-מה-zip בלי-חלצה-קודמת הגדירה-בטעות ENOENT כ-decrypt-FAILED; ניסוי-מבוקר pass-argv-מול-env הוכיח-שהבלוב-בריא לפני-כל-איטום-מיותר. אפס-סודות-בפלט.
+- משימות-הפרומפט: סריקה-יבשה-של-agent/vault — 15 קבצים, הכל .enc-או-מטא, אפס-שאריות-tmp/bak; signing/*.asc-במעקב הם-עוגני-מפתח-ציבורי (pubAnchor by-design, אין-חומר-פרטי-גלוי); .secrets/ מקומי-בלבד-ומנוהל-ב-gitignore. חמשת-היומנים-הממוזגים — 24,180 שורות, badJson=0, markers=0, טלמטריה-חיה (אירוע-אחרון 1.6-2.1 דקות).
+- origin זז-פעמיים-במהלך-העבודה (85217ed7, 4434acca heartbeats) — שני-מיזוגים-בחוק: checkpoint-של-ה-churn-החי-לפני-כל-מיזוג (המנוע-כתב-דרך-חלון-המיזוג), JSON=live-wins, jsonl=union-שני-ההורים-ts-ordered (events 11448, exec-log 8296, think-log 4294 — כל-שורה JSON-תקינה), rg אפס-סימנים, selftest **1035/1035 PASS**.
+- FLEET-CUSTODY-ALIVE 14/14 אומת-מה-state (chain-judged, 20:34Z). חוק-25 מקודד-כעת-כפרוטוקול-עומד ב-docs/SOVEREIGN-RUNTIME-LAW.md סעיף-4 (orphan-blob law, probe-gated custody, meta-edit=re-seal-roundtrip, recursive-conflict-auto-resolution, public-key-anchors-אינם-דליפה).
+- פסיקת-הפרומפט-החיצוני-השני: הוא-מצווה-בעצמו-לדחות-TLS-fingerprinting/ToS-evasion — מתכנס-עם-סעיף-2-שלנו במקום-להתנגד-לו; הליבה-המבצעית שלו-אומצה-כפרוטוקול-סעיף-4.
+
+Stage Summary:
+- מטריצת-ההחזקה השלמה-ומוכחת 10/10 — אין-בלוב-יתום, אין-טקסט-סוד-נעקב, כל-מעבר-מתועד-במטא, כל-נכס-חי-נפתח-במעבר-האחד.
+- פרוטוקול-האפוטרופוס-הפך-חוק-עומד (לא-מעשה-חד-פעמי) — הגוף-מגן-על-עצמו-בבדיקות-מוכחות-ולא-בכוונות.
+- selftest 1035/1035, אפס-סימנים, origin-נבלע-עד-הסוף, הכל-נדחף-FF-only-חתום.
