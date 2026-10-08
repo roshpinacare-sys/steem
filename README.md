@@ -9,7 +9,7 @@
 - **מוח (engine)** — `mini-services/saos-engine/` — מחזורים יומיים (21 שלבים): תצפית, מועצה (council), גריד, מלחמת-תוכן, חיילים, עוגני-אמת, התאמה-למידה. Node/bun טהור, תלות-רשת מינימלית (@noble).
 - **קוקפיט (UI)** — Next.js 16 + Prisma/SQLite — תצוגה-חיה של כל-המדדים ב-`:3000`.
 - **שרשרת-חוק (git-sovereignty)** — כל-קומיט-גוף חתום-GPG, דחיפה-רק-FF דרך שער (`scripts/sovereign-push.sh`), וכל-tip נעוגן-על-השרשרת הציבורית (`saos-git-custody-v1` ע"י `headcorner`) — כך קו-האמת ניתן-לאימות ע"י-כל-צד-שלישי לנצח.
-- **ביקורת-פנימית** — `selftest.mjs` (427 וקטורים, fail-closed) + ביקורות-adversarial ב-`audit/`.
+- **ביקורת-פנימית** — `selftest.mjs` (fail-closed; המספר-המדוד-הנוכחי: `mini-services/saos-engine/state/selftest-last-run.json`) + ביקורות-adversarial ב-`audit/` + מבחן-רקבון-המפה `scripts/doctrine-audit.mjs`.
 
 ## התחלה-מהירה (מגיט-בלבד — שום-תלות בסנדבוקס קודם)
 ```bash

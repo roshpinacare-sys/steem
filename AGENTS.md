@@ -1,7 +1,8 @@
 # AGENTS.md — חוק-פתיחה-חובה לכל סוכן, סשן וכלי-אוטומציה
 
 > קרא קובץ-זה **לפני כל פעולה**. הוא המקור-היחיד לאמת על איך עובדים כאן.
-> גרסה: R241 · סמכות: SOVEREIGN-WRITER-LAW.md + docs/SANDBOX-DISTRUST-LAW.md
+> גרסה: R267 · סמכות: SOVEREIGN-WRITER-LAW.md + docs/SANDBOX-DISTRUST-LAW.md
+> שכבת-הידיעה: **agent/COLD-START.md → agent/DOCTRINE.md → agent/ATLAS.md** — המפה-הנאכפת-ע"י `scripts/doctrine-audit.mjs`
 
 ---
 
@@ -20,15 +21,17 @@
 ```bash
 git fetch origin saos-cockpit && git reset --hard origin/saos-cockpit   # אפס-אמון למצב-מקומי
 bash scripts/divergence-check.sh                                        # חייב 0/0 או התאמה-מפורשת
-node mini-services/saos-engine/selftest.mjs                             # חייב N/N PASS — מספר-הוקפא בקוד
+cd mini-services/saos-engine && bun selftest.mjs; cd ../..             # חייב N/N PASS (המדידה נרשמת ל-state/selftest-last-run.json)
+bash scripts/doctrine-audit.mjs                                         # חייב PASS — המפה-לא-רקבה (R267)
 ```
-- אם הסנדבוקס נמחק → **`scripts/sovereign-bootstrap.sh`** משחזר הכל מהגיט בלבד (הוכח: 427/427 מ-clone-טרי).
+- הפרוטוקול-המלא (כולל מה-לא-לחפור-מחדש): **agent/COLD-START.md**.
+- אם הסנדבוקס נמחק → **`scripts/sovereign-bootstrap.sh`** משחזר הכל מהגיט בלבד (הוכח מ-clone-טרי בעידנו; האמת-הנוכחית של מספר-הוקטורים: `mini-services/saos-engine/state/selftest-last-run.json`).
 - אחרי כל שינוי: קומיט → **`scripts/sovereign-push.sh`** (FF-only, חתום-GPG). דחיית-שער = עצור ותעד, אל תעקוף.
 
 ### חוק-חתימה (סעיף 2.5 בשער)
 - קומיטי-גוף עם קידומת `R2xx:` / `SAOS-custodian:` **חייבים חתימת-GPG**.
 - קומיט-לא-חתום מותר רק כ-checkpoint עם נושא-ניטרלי (לא-R2xx/לא-SAOS-custodian) — ואז חובה לתעד ב-worklog למה.
-- **מצב ידוע R241**: המפתח-הסודי BA339C99 אבד-במחיקת-סנדבוקס. עד-חזרת-יכולת-החתימה (סודות-מפעיל/רוטציה-מאושרת) — אין להריץ את ה-custodian (קומיטיו יידחו). פרטים: `audit/r241/CLAIM-TRUTH-AUDIT.md`.
+- **מצב-עודכן R267**: יכולת-החתימה שוחזרה (ed25519, נוצר 2026-10-07 — `gpg --list-secret-keys`); כל-הקומיטים-האחרונים חתומים-G וה-custodian חי (3041). ההיסטוריה (אבדן-מפתח-BA339C99 במחיקת-סנדבוקס) נשמרת ב-`audit/r241/CLAIM-TRUTH-AUDIT.md` — השיעור נשאר: סוד-שחי-רק-בסנדבוקס הוא-סוד-שנשכח.
 
 ### אמת-שרשרת (איך מוודאים "ריבונות" בלי לסמוך על אף אחד)
 - עוגן-ה-git-מפורסם-על-השרשרת: `custom_json` מזהה `saos-git-custody-v1` מהחשבון `headcorner`.
