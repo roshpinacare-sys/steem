@@ -1,0 +1,57 @@
+{
+  "armed": true,
+  "note": "operator standing order 2026-09-29: full autonomous execution, doctrine-capped",
+  "maxOpsPerCycle": 12,
+  "maxAskSteemPerCycle": 200,
+  "maxBidSbdPerCycle": 20,
+  "bidReserveSbd": 0.5,
+  "minRcPct": 20,
+  "policy": {
+    "allowTransfersOut": false,
+    "allowDelegation": false,
+    "transferAllowlist": []
+  },
+  "operator": {
+    "allowSoldierDeploy": false
+  },
+  "soldiers": {
+    "enabled": false,
+    "count": 3,
+    "prefix": "hcsoldier",
+    "steemEach": 10,
+    "sbdEach": 2,
+    "minLevel": 0.2
+  },
+  "promo": {
+    "armed": true,
+    "perDay": 1,
+    "tags": [
+      "steem",
+      "defi",
+      "marketmaking",
+      "saos"
+    ]
+  },
+  "curate": {
+    "enabled": true,
+    "maxPerDay": 10,
+    "baseWeightPct": 50,
+    "minWeightPct": 20,
+    "minVpEffPct": 60
+  },
+  "hyperGrid": {
+    "enabled": true,
+    "tickMs": 3000,
+    "levels": 10,
+    "spacingBps": 15,
+    "ttlSec": 60,
+    "orderTtlSec": 3600,
+    "askBudgetPct": 0.12,
+    "minRcPct": 25,
+    "setpointPct": 50,
+    "burst": 3,
+    "maxOpsPerTick": 24,
+    "opsDayCap": 32000,
+    "chainTailSec": 60
+  }
+}
