@@ -55,6 +55,20 @@ const flagVal = (f) => {
 };
 const FRESH_MS = 24 * 60 * 60 * 1000;
 
+/* R264 · חוק-הכתיבה-השלמה: POSIX write() רשאי לחוקית לחזור-חלקי (RLIMIT_FSIZE,
+ * ENOSPC-על-סף, אותות) — כתיבה-חלקית-שקטה מוציאה לפועל rename של קובץ-state קרוע
+ * עם rc=0. נמדד-חי: state 18.5KB תחת `ulimit -f 1` → JSON-קרוע-בן-512בייט פורסם
+ * ב-rename עם יציאה 0 ו-41 משימות נעלמו בשקט (המשפחה שהחוק אוסר). החוק: לולאה
+ * עד שכל-בייט נכתב; כתיבה שנעצרת (0 התקדמות) או נכשלת הופכת סירוב-נקוב —
+ * tmp-חלקי לעולם לא נחתך ב-rename (חוק-SQLite/Postgres לכתיבה שלמה). */
+function writeAll(fd, buf) {
+  let at = 0;
+  while (at < buf.length) {
+    const n = writeSync(fd, buf, at, buf.length - at);
+    if (!(n > 0)) throw new Error(`SHORT-WRITE: ${n}-בייט בהיסט-${at} — מסרב לפרסם קובץ קרוע`);
+    at += n;
+  }
+}
 /* R259 · fsync לפני-rename: rename אטומי מול-תהליכים אחרים, אבל מול-אובדן-חשמל
  * ה-content עלול לא להספיק-להישטף — fsync סוגר-את-משפחת-הכשל-הזו (כמו-SQLite). */
 function atomicWrite(file, content) {
@@ -72,7 +86,7 @@ function atomicWrite(file, content) {
     throw e;
   }
   try {
-    try { writeSync(fd, content); fsyncSync(fd); } finally { closeSync(fd); }
+    try { writeAll(fd, Buffer.from(content, "utf8")); fsyncSync(fd); } finally { closeSync(fd); }
     /* R263 · seam-בדיקה-בלבד (אדיש-כברירת-מחדל): חלון-הזרקה דטרמיניסטי לווקטור-החטיפה —
      * עיכוב-מותנה-env לפני בדיקת-הבעלות כך שה-hijacker החיצוני מספיק להחליף את
      * המנעול בתוך-הקטע-הקריטי. ללא-ה-env: אפס-השפעה. */
@@ -96,6 +110,14 @@ function atomicWrite(file, content) {
     throw e;
   }
   sweepTmp(file);
+  /* R264 · dir-fsync: גם-כניסת-ה-rename עצמה חייבת-לשרוד-אובדן-חשמל (חוק-ה-dir-fsync
+   * של-SQLite ב-unixSync). best-effort מטבעו: פלטפורמות-שאינן-מאפשרות-פתיחת-fd-של
+   * תיקייה שוקעות-בחן-למצב-R259 — עמידות-ה-durability רק-גדלה, לעולם-לא-מייצרת
+   * כשל-חדש: כתיבה-שנחתה-כבר-אינה-הופכת-שגיאה בגלל-dir-fsync. */
+  try {
+    const dfd = openSync(path.dirname(file), "r");
+    try { fsyncSync(dfd); } finally { closeSync(dfd); }
+  } catch { /* best-effort — fsync-הקובץ כבר-מחזיק */ }
 }
 /* R259 · היגיינת-שאריות: SIGKILL בין-כתיבה-ל-rename משאיר `.tmp-<pid>` לנצח.
  * בטוח-מבנית: מנעול-הכותב-מסדר-כותבים-לקובץ, אז-כל-`*.tmp-*` מעל-60s שייך-לתהליך-מת (נמדד, SIGKILL×40). */
@@ -204,7 +226,8 @@ function withLock(file, fn) {
     const claimFile = `${lockFile}.claim-${process.pid}-${randomUUID().replaceAll("-", "").slice(0, 8)}`;
     try {
       const cfd = openSync(claimFile, "wx", 0o600); // התביעה-נולדת-שלמה: pid-בתוכה *לפני* ששם-המנעול-קיים
-      try { writeSync(cfd, `${process.pid} ${new Date().toISOString()}\n`); } finally { closeSync(cfd); }
+      /* R264 · גם-התביעה נכתבת בחוק-הכתיבה-השלמה — מנעול-שנולד-קרוע הוא-מנעול-שקרי. */
+      try { writeAll(cfd, Buffer.from(`${process.pid} ${new Date().toISOString()}\n`, "utf8")); } finally { closeSync(cfd); }
       try {
         linkSync(claimFile, lockFile); claimed = true; // אטומי: EEXIST = מישהו-מחזיק; המנעול-מעולם-לא-נולד-קרוע
         try { ino = statSync(claimFile).ino; } catch { /* לא-יקרה: זה עתה קישרנו; ה-inode-חי-דרך-שם-המנעול */ }
