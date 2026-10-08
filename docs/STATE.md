@@ -45,7 +45,7 @@
 
 ## 6 · המראה-הציבורית (R254 · מבוקרת-R256→R260)
 
-הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=e6d9b32) —
+הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=2450a7b) —
 src/ המודולים-הטהורים (taskgraph/decisionqueue/worklog-intel) · cli/ · test/ (96-וקטורים + cli-contract-95-וקטורי-ספאוון) ·
 docs/PATTERNS.md+STATE-CONTRACT.md · tools/ (טריו-git-safety-מדוד) · docs/ci.example.yml (ממתין-לטוקן-עם-workflow-scope) · SECURITY.md · .gitattributes.
 ביקורות-חוסר-אמון (R256→R260): באג-fresh-clone-תוקן · באג-CRLF-תוקן · מנעול-כותב+מזהים-עמידים-להתנגשות (R258) ·
