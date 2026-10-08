@@ -1,12 +1,16 @@
-# SOVEREIGN CYCLE — external sovereignty heartbeat (R241, SANDBOX-DISTRUST-LAW §4.2)
-# Runs on GitHub infrastructure — survives sandbox wipes BY DESIGN.
-# Every 30 min: fresh clone -> install -> full selftest -> chain-anchor probe vs HEAD.
-# No keys here, ever (law §3): observe-only. Chain-signing stays machine-local.
+# SOVEREIGN CYCLE — R241 observe-only heartbeat. RETIRED FROM SCHEDULE (R280).
+# Measured 2026-10-08: this private repo's Actions sit behind the billing wall
+# (every scheduled run fails job-level with empty logs — zero minutes left),
+# so a red alarm fired every few hours while the REAL external life ran on the
+# public host roshpinacare-sys/saos-runtime (sovereign-runtime.yml — self-pulse
+# chain, hourly backstop, selftest gate, chain-anchor probe, fleet conversation,
+# DEX takeover, state push-back).
+# Kept as a WORKFLOW_DISPATCH-ONLY diagnostic for whenever the operator chooses
+# to pay for private minutes. Never scheduled again — the pulse lives on the
+# public host, free and alive.
 name: sovereign-cycle
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch: {}
 
 permissions:
