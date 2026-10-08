@@ -106,7 +106,11 @@ function unlockGeneration({ ref, zip, metaRef }) {
     const vault = JSON.parse(fs.readFileSync(path.join(TMP, "opened", "agent", "keys", "vault.json"), "utf8"));
     const byName = new Map((vault.accounts ?? []).map((a) => [a.username, a]));
     const out = {};
-    for (const name of ARMY) {
+    /* R273: the account of record joins every generation unlock — the master
+     * WIFs travel the same sha-pinned memory-only path (never the cache). */
+    const masterAcct = masterAccount();
+    const names = [...new Set([...ARMY, masterAcct])];
+    for (const name of names) {
       const a = byName.get(name);
       const wif = a?.keys?.steem?.posting?.wif ?? a?.keys?.posting?.wif ?? null;
       const pub = a?.keys?.steem?.posting?.pub ?? a?.keys?.posting?.pub ?? null;
@@ -200,9 +204,49 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       pulled = pullArmyKeysFromVault();
       adopted = await adoptFromCache();
     }
+    /* R273 · MASTER WIF CUSTODY — the vault IS the master delivery too.
+     * Operator standing law 2026-10-06 ("אין מה לבקש מפתחות — הכל בכספת
+     * בגיט") extended to the account of record: the SAME chain-judged,
+     * GEN-2-first/GEN-1-fallback revival the army gets. Custody = a WIF
+     * whose derived pubkey matches the LIVE chain authority (the chain is
+     * the only judge — the password preimage is not required). The marker
+     * file below only satisfies the typed loadCredential precondition of
+     * direct-caller lanes; it is NOT a credential, and it is written ONLY
+     * after the chain verified at least one master role, and ONLY when no
+     * operator credential file already exists. */
+    const master = masterAccount();
+    const masterBefore = armyCustodyState([master]).accounts[master];
+    let masterRoles = [];
+    if (masterBefore !== "master-verified") {
+      const gensM = [];
+      const mErrors = [];
+      for (const spec of [
+        { gen: "GEN-2", ref: GIT_REF, zip: VAULT_ZIP, metaRef: META_REF },
+        { gen: "GEN-1", ref: GEN1_COMMIT, zip: GEN1_ZIP, metaRef: META_REF },
+      ]) {
+        try { gensM.push(unlockGeneration(spec)); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
+      }
+      for (const role of ["posting", "active"]) {
+        for (const g of gensM) {
+          const entry = g.accounts?.[master] ?? null;
+          const wif = role === "active" ? (entry?.activeWif ?? null) : (entry?.wif ?? null);
+          if (!wif) continue;
+          const r = await adoptVerifiedWifIdentity(master, wif, { role });
+          if (r.ok) { masterRoles.push({ role, gen: g.gen }); break; }
+        }
+      }
+      const KEY_FILE = path.join(SECRETS, "headcorner.key");
+      if (masterRoles.length && !fs.existsSync(KEY_FILE)) {
+        fs.mkdirSync(SECRETS, { recursive: true, mode: 0o700 });
+        fs.writeFileSync(KEY_FILE, `${master} wif-direct:git-vault\n`, { mode: 0o600 });
+        appendLine(LOG_FILE, { at: new Date().toISOString(), tag: "master-wif-marker", verdict: "marker-only-not-a-credential", roles: masterRoles.map((r) => r.role) });
+      }
+      appendLine(path.join(STATE, "events.jsonl"), { type: "master.custody", at: now, verdict: masterRoles.length ? "MASTER-CUSTODY-ALIVE" : "MASTER-CUSTODY-REFUSED", roles: masterRoles, errors: mErrors });
+    }
     const after = armyCustodyState(roster);
     const doc = {
       at: now, verdict: after.verified === roster.length ? "FLEET-CUSTODY-ALIVE" : "PARTIAL",
+      master: { roles: masterRoles, before: masterBefore, law: "chain-judged wif-direct, GEN-2 first" },
       before: { verified: before.verified }, after: { verified: after.verified, total: after.total },
       pulled: pulled ? { extracted: pulled.extracted, missing: pulled.missing } : null,
       adopted: adopted.results ?? null, law: "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",

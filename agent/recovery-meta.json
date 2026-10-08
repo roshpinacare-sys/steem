@@ -20,5 +20,15 @@
     "masterPasswordRef": ".secrets/headcorner.key (0600) — 64-hex, mirrored ONLY inside this vault",
     "note": "constant-k incident response — see worklog R245"
   },
-  "absorptionNote": "R265: headcorner.operatorSheet added (8 keys, two chains, verdicts measured vs live) — whale verdict stands: live Hive authorities match NO held key (0/4 re-proven); operator domain"
+  "absorptionNote": "R265: headcorner.operatorSheet added (8 keys, two chains, verdicts measured vs live) — whale verdict stands: live Hive authorities match NO held key (0/4 re-proven); operator domain",
+  "gpgKey": {
+    "id": "r5-2026-10-08",
+    "pubAnchor": "signing/w1-signing-key-r5-2026-10-08.asc",
+    "sealedFile": "agent/vault/W1-SIGNING-KEY-r5.enc",
+    "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> → gpg --import (the SAME keysZipPass of this meta)",
+    "sealedAt": "2026-10-08T13:48Z",
+    "note": "R273: first self-revivable signing key. r3 died with its sandbox; r4 was sealed operator-only (VAULT_PASS, unrecoverable). r5 revives from git in any sandbox via the documented vault formula.",
+    "keyFp": "301E53150D283869A614D78114F411FEF0FC3424",
+    "sealedSha256": "ee465a077c4e855036be13197cea7df51fad598c23f210b2360462212308d2b0"
+  }
 }
