@@ -43,14 +43,15 @@
 - **גל-4-הנשאר**: docs/STATE.md-מהחוזה-בקוד (generated+CI-check) · gitsafety-env-מושתל-בהרצת-סוכנים-חיצוניים
 - **שכבת-התצוגה** (מסילת-הסוכן-השני): קונסול-החי — כל-הערוצים-כאן-מוכנים-לגרייה
 
-## 6 · המראה-הציבורית (R254 · מבוקרת-R256→R259)
+## 6 · המראה-הציבורית (R254 · מבוקרת-R256→R260)
 
-הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=9bfb006) —
-src/ המודולים-הטהורים (taskgraph/decisionqueue/worklog-intel) · cli/ · test/ (82-וקטורים + cli-contract-57-וקטורי-ספאוון) ·
+הליבה-הפתוחה חיה-ציבורית: **github.com/roshpinacare-sys/saos-agents** (MIT, main=26cfc26) —
+src/ המודולים-הטהורים (taskgraph/decisionqueue/worklog-intel) · cli/ · test/ (90-וקטורים + cli-contract-77-וקטורי-ספאוון) ·
 docs/PATTERNS.md+STATE-CONTRACT.md · tools/ (טריו-git-safety-מדוד) · docs/ci.example.yml (ממתין-לטוקן-עם-workflow-scope) · SECURITY.md · .gitattributes.
-ביקורות-חוסר-אמון (R256→R259): באג-fresh-clone-תוקן · באג-CRLF-תוקן · מנעול-כותב+מזהים-עמידים-להתנגשות (R258) ·
+ביקורות-חוסר-אמון (R256→R260): באג-fresh-clone-תוקן · באג-CRLF-תוקן · מנעול-כותב+מזהים-עמידים-להתנגשות (R258) ·
 **R259 — מנוע-מוטציות-מדוד (kill-rate 43%→97% + מוטנט-שקול-מסווג), 21-וקטורי-הריגה · cli-contract-ספאוון (חוזה-קודי-יציאה/אפס-stack-traces/מירוץ-12-כותבים) ·
 validate-before-persist (הרעלת-מצב-נמדדה-ונחסמה) · חיות-בעלים-במנעול (SIGKILL-storm-התאוששות-מלאה) · נרמול-U+2028/2029 (fuzz-2000-אפס-הפרות) ·
-fsync-לפני-rename + סריקת-שאריות-tmp · כיסוי-V8-פונקציות 49/50-בליבה · ירוק-ב-bun+node-על-שיבוט-טרי-מ-GitHub**.
+fsync-לפני-rename + סריקת-שאריות-tmp · כיסוי-V8-פונקציות 49/50-בליבה · ירוק-ב-bun+node-על-שיבוט-טרי-מ-GitHub** ·
+**R260 — סבב-הענקים: 6-פרובות-חיות-הפכו-לחוק: CWE-59 (openSync "wx"+0600 — symlink-על-tmp-נעקב-וקורבן-נדרס; נמדד-ונחסם) · חוזה-argv-סגור (UNKNOWN-FLAG-נדחה-בשם; בליעה-שקטה-של-תוויות-"--"/טעות-כתיב-נמדדה-ונחסמה) · אין-תשובה-ריקה-שמתחזה (INVALID-DECISION) · מיון-מכונה-חף-ICU (cmpStr-code-unit ב-ready/listOpen) · ולידציית-צורה-בשני-הולידטורים (state-פגום-נדחה-בשם במקום-"Pundefined"/TypeError) · סרת-הבטחה-המתה-מ-gitsafety-env (GIT_ALLOW_PROTOCOL-מנצח — חוזה-מוכרז: סירוב-כולל-כולל-file) · SIGTERM-storm-נקי · prototype-pollution-נמדד-נקי · npm-pack-install-צרכן-ירוק**.
 סריקת-סודות-על-כל-ההיסטוריה-אפס-פגיעות. הסנכרון-ידני-מדוד: src-byte-identical (cmp) · cli-מותאם-נתיבות-בלבד (ה-cp-העיוור-נתפס-ע"י-השער) →
 סריקות (דפוסים+PAT-מילולי) → דחיפה. כספות/מפתחות/state/מודולי-עסקים/התיקייה-הרצינית — לעולם-לא.
