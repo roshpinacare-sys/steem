@@ -1,20 +1,20 @@
 {
-  "at": "2026-10-08T21:11:41.315Z",
+  "at": "2026-10-08T21:17:09.187Z",
   "enabled": true,
-  "runsTotal": 463,
+  "runsTotal": 464,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 87,
-      "oks": 81,
-      "fails": 4,
+      "window": 82,
+      "oks": 75,
+      "fails": 5,
       "blocked": 2,
-      "okRate": 93.1,
-      "blockedRate": 2.3,
+      "okRate": 91.5,
+      "blockedRate": 2.4,
       "failReasons": {
-        "unknown": 4
+        "unknown": 5
       },
-      "msP50": 146062,
+      "msP50": 161269,
       "msP90": 280420
     },
     "curator": {
@@ -25,37 +25,38 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 57.7,
+      "vpEff": 59.9,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 1,
+      "window": 0,
       "fails": 0,
       "lastError": null
     },
     "watchdog": {
-      "checks": 2552,
+      "checks": 2558,
       "downs": 106,
-      "heals": 39,
-      "healVerified": 38,
+      "heals": 40,
+      "healVerified": 39,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T21:10:56.298Z",
+      "lastCheckAt": "2026-10-08T21:16:56.806Z",
       "engineUp": true,
-      "lastSpawnAt": null,
-      "lastUpAt": "2026-10-08T21:10:56.327Z",
+      "lastSpawnAt": "2026-10-08T21:13:54.757Z",
+      "lastUpAt": "2026-10-08T21:16:56.809Z",
       "blips": 1
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×2/87 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×2/82 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
   ],
   "tunings": {},
@@ -63,7 +64,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 361,
+    "signing-cred-blocked": 362,
     "broadcast-fails": 130,
     "cycle-latency-tail": 119
   },
