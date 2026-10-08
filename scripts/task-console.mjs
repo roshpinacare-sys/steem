@@ -71,7 +71,13 @@ function atomicWrite(file, content) {
     if (e.code === "EEXIST") throw new Error(`TMP-EXISTS: ${path.basename(tmp)} כבר-קיים (symlink-או-שארית) — נדחה-בשם, לא-נעקף; sweepTmp ינקה שארית מעל-60s`);
     throw e;
   }
-  try { writeSync(fd, content); fsyncSync(fd); } finally { closeSync(fd); }
+  try {
+    try { writeSync(fd, content); fsyncSync(fd); } finally { closeSync(fd); }
+    /* R263 · seam-בדיקה-בלבד (אדיש-כברירת-מחדל): חלון-הזרקה דטרמיניסטי לווקטור-החטיפה —
+     * עיכוב-מותנה-env לפני בדיקת-הבעלות כך שה-hijacker החיצוני מספיק להחליף את
+     * המנעול בתוך-הקטע-הקריטי. ללא-ה-env: אפס-השפעה. */
+    const injectDelay = Number(process.env.SAOS_TEST_PERSIST_DELAY_MS ?? 0);
+    if (injectDelay > 0) { try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, injectDelay); } catch { /* בלי-חסימה */ } }
   /* R262c · בדיקת-בעלות-אחרונה (האטימות-המלאה): ה-rename חוצה רק אם שם-המנעול
    * עדיין מצביע על ה-inode של התביעה-שלי. שני-כותבים לא יכולים שניהם לעבור —
    * לשם-יש inode אחד ולכל-כותב claim-inode ייחודי משלו; כל-חלון-מירוץ שנותר
@@ -81,7 +87,14 @@ function atomicWrite(file, content) {
     try { ino = statSync(`${file}.lock`).ino; } catch { /* המנעול נעלם — סירוב */ }
     if (ino !== ACTIVE_LOCK.ino) throw new Error(`LOCK-LOST-MIDWRITE: ${path.basename(file)} — המנעול השתנה מתחתינו בזמן-הכתיבה; הכתיבה נדחית-בשם (הרץ שוב), לעולם לא אובדן-שקט`);
   }
-  renameSync(tmp, file);
+    renameSync(tmp, file);
+  } catch (e) {
+    /* R263 · היגיינת-כשל: כותב-שנדחה (LOCK-LOST-MIDWRITE/שגיאת-כתיבה) לא-משאיר
+     * tmp-יתום מאחוריו — הכשל נקוב והסנדבוקס נשאר-נקי (נמדד: סירובים השאירו
+     * tasks.json.tmp-<pid> והולידו-flake בווקטור-השאריות). */
+    try { unlinkSync(tmp); } catch { /* כבר-פונה */ }
+    throw e;
+  }
   sweepTmp(file);
 }
 /* R259 · היגיינת-שאריות: SIGKILL בין-כתיבה-ל-rename משאיר `.tmp-<pid>` לנצח.
