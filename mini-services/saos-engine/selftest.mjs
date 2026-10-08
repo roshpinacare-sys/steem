@@ -2351,6 +2351,144 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("hive guard: normalization is the same law on both chains", normalizeBodyForClash("**knot** it right ![x](https://a.b/c) or start over") === "knot it right or start over");
 }
 
+/* ═══ R285 · THE RESILIENCE PLANE (llm-chain): the five laws as vectors.
+ * Hermetic: candidates are injected, the ledger is a tmp file, the fast path
+ * is flushed between vectors. The real drill (live 1-token provider) runs via
+ * the board API — here we prove the MECHANICS, deterministically. ═══ */
+{
+  const L = await import("../../src/lib/llm-chain.ts");
+  const os = await import("node:os");
+  const fsp = await import("node:fs/promises");
+  const ledger = path.join(os.tmpdir(), `saos-selftest-chain-${Date.now()}-${process.pid}.jsonl`);
+
+  eq("chain classify: 429 is rate-limit", L.classifyError(new Error("429 Too many requests")), "rate-limit");
+  eq("chain classify: 401 is auth", L.classifyError(new Error("status 401 unauthorized")), "auth");
+  eq("chain classify: abort is timeout", L.classifyError(new Error("request aborted")), "timeout");
+  eq("chain classify: ECONNRESET is network", L.classifyError(new Error("fetch failed ECONNRESET")), "network");
+  eq("chain classify: 503 is provider", L.classifyError(new Error("status 503 service unavailable")), "provider");
+  eq("chain classify: gibberish is unknown", L.classifyError(new Error("weird")), "unknown");
+
+  eq("compaction: duplicate lines collapse", L.compactContext("a\nb\na\nb", 100), "a\nb");
+  const big = Array.from({ length: 50 }, (_, i) => `line-${i} ${"x".repeat(20)}`).join("\n");
+  const compacted = L.compactContext(big, 300);
+  ok("compaction: budget respected", compacted.length <= 300);
+  ok("compaction: head and tail survive, middle dropped", compacted.startsWith("line-0") && compacted.trim().endsWith(big.split("\n").pop().trim()));
+  ok("compaction: seam carries no banned glyph", !/[-:"]/.test(L.compactContext(big, 300).split("\n").find((l) => l.includes("קומפקציה")) ?? ""));
+  eq("compaction: short input returns untouched", L.compactContext("tiny", 100), "tiny");
+  eq("compaction: zero budget is empty", L.compactContext("tiny", 0), "");
+
+  /* law 1 + 3: mid-turn failover, then honest exhaustion */
+  const r1 = await L.runLlmChain({
+    purpose: "selftest",
+    ledgerPath: ledger,
+    candidates: [
+      { name: "c1-throws-429", call: async () => { throw new Error("429 too many requests"); } },
+      { name: "c2-valid", call: async () => ({ value: "real answer" }) },
+    ],
+  });
+  ok("chain: mid-turn failover hands control to candidate 2", r1.ok && r1.selected === "c2-valid" && r1.output === "real answer");
+  eq("chain: the failed attempt records its class", r1.attempts[0].errorClass, "rate-limit");
+
+  const rEx = await L.runLlmChain({
+    purpose: "selftest",
+    ledgerPath: ledger,
+    candidates: [
+      { name: "c1", call: async () => { throw new Error("429"); } },
+      { name: "c2", call: async () => { throw new Error("timeout after 10ms"); } },
+    ],
+  });
+  ok("chain: honest exhaustion never invents output", rEx.ok === false && rEx.output === null && rEx.selected === null);
+  eq("chain: exhaustion carries the LAST error class", rEx.errorClass, "timeout");
+
+  /* law 1 (validate) + law 2 (unique) */
+  const rVal = await L.runLlmChain({
+    purpose: "selftest",
+    ledgerPath: ledger,
+    candidates: [
+      { name: "c1-invalid", call: async () => ({ value: "no digits here" }) },
+      { name: "c2-valid", call: async () => ({ value: "answer 42" }) },
+    ],
+    validate: (s) => (/\d/.test(s) ? s : null),
+  });
+  ok("chain: validate-reject is a candidate failure, the next candidate rides", rVal.ok && rVal.selected === "c2-valid");
+  eq("chain: the validate rejection records invalid", rVal.attempts[0].errorClass, "invalid");
+
+  /* unique law lives where several candidates actually run: the merge lane
+   * (unsatisfiable bar keeps the whole chain running). In first-valid mode a
+   * valid candidate WINS and the chain stops — that is law 1, not a bug. */
+  const rDup = await L.runLlmChain({
+    purpose: "selftest",
+    ledgerPath: ledger,
+    candidates: [
+      { name: "c1", call: async () => ({ value: "same words" }) },
+      { name: "c2-echo", call: async () => ({ value: "  same words " }) },
+      { name: "c3", call: async () => ({ value: "different words" }) },
+    ],
+    satisfied: () => false, /* force all candidates to run */
+    merge: (acc, next) => [acc, next].flat().filter((s) => typeof s === "string"),
+  });
+  ok("chain: a repeated answer is rejected as duplicate (unique law)", rDup.ok && rDup.output.includes("same words") && !rDup.output.includes("  same words ") && rDup.output.filter((s) => s === "same words").length === 1);
+  eq("chain: the echo records duplicate", rDup.attempts[1].errorClass, "duplicate");
+  const rFirst = await L.runLlmChain({
+    purpose: "selftest",
+    ledgerPath: ledger,
+    candidates: [
+      { name: "c1-good", call: async () => ({ value: "first wins" }) },
+      { name: "c2-never", call: async () => ({ value: "never runs" }) },
+    ],
+  });
+  ok("chain: first-valid wins and stops the chain (law 1)", rFirst.ok && rFirst.selected === "c1-good" && rFirst.attempts.length === 1);
+
+  /* satisfy mode: top-up merge with the twin guard, honest partial */
+  const rTop = await L.runLlmChain({
+    purpose: "selftest",
+    ledgerPath: ledger,
+    candidates: [
+      { name: "c1-two", call: async () => ({ value: [{ t: "alpha" }, { t: "beta" }] }) },
+      { name: "c2-topup", call: async () => ({ value: [{ t: "gamma" }, { t: "alpha" }] }) },
+    ],
+    validate: (arr) => (Array.isArray(arr) && arr.length ? arr : null),
+    satisfied: (merged) => ((merged?.length ?? 0)) >= 4,
+    merge: (acc, next) => {
+      const out = [...(acc ?? [])];
+      for (const d of next) if (!out.some((x) => x.t === d.t)) out.push(d);
+      return out;
+    },
+  });
+  ok("chain satisfy: the twin is merged away, valid partial ships", rTop.ok && rTop.output.length === 3);
+  eq("chain satisfy: unsatisfied merge records merged-partial", rTop.selected, "merged-partial");
+
+  /* law 4: the fast path (exact key, TTL, tokensSaved, raw key never stored) */
+  let realCalls = 0;
+  const keyed = () =>
+    L.runLlmChain({
+      purpose: "selftest",
+      ledgerPath: ledger,
+      cacheKey: `selftest-key-${Date.now() % 2 ? "a" : "a"}`,
+      candidates: [{ name: "counter", call: async () => { realCalls++; return { value: "cached answer", tokens: 7 }; } }],
+    });
+  const first = await keyed();
+  const second = await keyed();
+  ok("fast path: first run is real, second is a hit", !first.cacheHit && second.cacheHit && second.selected === "fastpath");
+  eq("fast path: tokensSaved is the last real usage", second.tokensSaved, 7);
+  ok("fast path: the raw key is never observable (sha256 only)", L.fastPathKeysWitness().every((k) => /^[0-9a-f]{64}$/.test(k)));
+  const spilled = L.flushFastPath();
+  ok("flush: empties the cache and reports the spill", spilled >= 1 && L.fastPathKeysWitness().length === 0);
+
+  /* the drill, hermetic (injected provider — the LIVE drill runs via the board) */
+  const drill = await L.drillChain({ ledgerPath: ledger, provider: async () => ({ value: "p", tokens: 1 }) });
+  ok("drill: forced-fail candidate fails, live provider carries, drillOk true", drill.ok && drill.drillOk && drill.selected === "drill-provider-1t");
+
+  /* law 5: the ledger is metadata-only */
+  const rows = (await fsp.readFile(ledger, "utf8")).split("\n").filter(Boolean).map((l) => JSON.parse(l));
+  ok("ledger: rows exist for every chain run", rows.filter((r) => r.kind === "chain").length >= 5);
+  ok("ledger: no prompt content, no model output, ever", rows.every((r) => !("prompt" in r) && !("output" in r) && !("content" in r) && JSON.stringify(r).length < 1500));
+  const kpis = L.chainKpis(ledger);
+  ok("board KPIs are derived from the ledger", kpis.kpis.calls >= 5 && kpis.kpis.failoverRate > 0);
+
+  await fsp.unlink(ledger).catch(() => {});
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

@@ -1,21 +1,21 @@
 {
-  "at": "2026-10-08T20:14:17.818Z",
+  "at": "2026-10-08T20:51:48.329Z",
   "enabled": true,
-  "runsTotal": 457,
+  "runsTotal": 461,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 114,
-      "oks": 107,
-      "fails": 5,
+      "window": 108,
+      "oks": 102,
+      "fails": 4,
       "blocked": 2,
-      "okRate": 93.9,
-      "blockedRate": 1.8,
+      "okRate": 94.4,
+      "blockedRate": 1.9,
       "failReasons": {
-        "unknown": 5
+        "unknown": 4
       },
-      "msP50": 98227,
-      "msP90": 247911
+      "msP50": 104113,
+      "msP90": 256546
     },
     "curator": {
       "present": true,
@@ -37,15 +37,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 2498,
+      "checks": 2532,
       "downs": 106,
       "heals": 39,
       "healVerified": 38,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T20:13:32.804Z",
+      "lastCheckAt": "2026-10-08T20:51:03.309Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-08T20:13:32.837Z",
+      "lastUpAt": "2026-10-08T20:51:03.339Z",
       "blips": 1
     }
   },
@@ -54,7 +54,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×2/114 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×2/108 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
@@ -64,7 +64,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 355,
+    "signing-cred-blocked": 359,
     "broadcast-fails": 130,
     "cycle-latency-tail": 119
   },
