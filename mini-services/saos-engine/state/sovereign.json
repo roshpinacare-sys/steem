@@ -1,9 +1,10 @@
 {
-  "bootedAt": "2026-10-08T16:14:43.092Z",
-  "pid": 2076,
+  "bootedAt": "2026-10-08T13:36:20.743Z",
+  "pid": 6043,
   "armed": true,
   "paused": false,
   "watchdog": {
+<<<<<<< HEAD
     "checks": 23,
     "downs": 0,
     "heals": 1,
@@ -25,22 +26,46 @@
     "lastHealth": "ok",
     "lastMs": 168140,
     "nextAt": "2026-10-08T16:37:35.274Z"
+=======
+    "checks": 2357,
+    "downs": 104,
+    "heals": 37,
+    "healVerified": 36,
+    "healFailed": 0,
+    "lastCheckAt": "2026-10-08T16:34:20.873Z",
+    "engineUp": true,
+    "lastSpawnAt": null,
+    "lastUpAt": "2026-10-08T16:34:20.876Z",
+    "blips": 1
+  },
+  "cycles": {
+    "autoRuns": 229,
+    "ok": 167,
+    "fail": 20,
+    "blocked": 42,
+    "lastAt": "2026-10-08T16:29:12.890Z",
+    "lastOk": true,
+    "lastHealth": "ok",
+    "lastMs": 168427,
+    "nextAt": "2026-10-08T16:39:12.890Z"
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
   },
   "selftest": {
     "runs": 2,
-    "lastAt": "2026-10-08T16:14:43.494Z",
+    "lastAt": "2026-10-08T13:36:21.032Z",
     "lastOk": true,
-    "passed": 1020,
-    "total": 1020
+    "passed": 999,
+    "total": 999
   },
   "cred": {
     "present": true,
     "firstDownAt": null,
-    "lastDownAt": null,
-    "alerts": 0,
-    "lastAlertAt": null
+    "lastDownAt": "2026-10-08T14:04:20.769Z",
+    "alerts": 14,
+    "lastAlertAt": "2026-10-08T14:04:20.769Z"
   },
   "custodian": {
+<<<<<<< HEAD
     "checks": 23,
     "downs": 0,
     "heals": 1,
@@ -49,25 +74,135 @@
     "up": true,
     "lastUpAt": "2026-10-08T16:34:43.156Z",
     "lastSpawnAt": "2026-10-08T16:14:50.360Z"
+=======
+    "checks": 799,
+    "downs": 4,
+    "heals": 4,
+    "healFailed": 0,
+    "lastCheckAt": "2026-10-08T16:34:20.876Z",
+    "up": true,
+    "lastUpAt": "2026-10-08T16:34:20.878Z",
+    "lastSpawnAt": null
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
   },
   "control": [
     {
-      "at": "2026-10-08T16:14:44.674Z",
-      "action": "boot-sync",
-      "by": "instrumentation",
-      "note": "fast-forwarded to origin/saos-cockpit @ 5d8d659f (+1)"
-    },
-    {
-      "at": "2026-10-08T16:14:43.092Z",
+      "at": "2026-10-08T13:36:20.743Z",
       "action": "boot",
-      "by": "api-snapshot",
-      "note": "SovereignCore armed (gen 5)"
+      "by": "instrumentation",
+      "note": "SovereignCore armed (gen 3)"
     },
     {
-      "at": "2026-10-08T16:12:43.065Z",
+      "at": "2026-10-08T13:33:17.298Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed (gen 3)"
+    },
+    {
+      "at": "2026-10-08T13:02:06.731Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed (gen 3)"
+    },
+    {
+      "at": "2026-10-05T23:09:05.746Z",
       "action": "boot",
       "by": "api-snapshot",
       "note": "SovereignCore armed (gen 3)"
+    },
+    {
+      "at": "2026-10-05T22:49:14.940Z",
+      "action": "boot",
+      "by": "api-snapshot",
+      "note": "SovereignCore armed (gen 2)"
+    },
+    {
+      "at": "2026-10-05T19:07:28.445Z",
+      "action": "resume",
+      "by": "operator-cockpit"
+    },
+    {
+      "at": "2026-10-05T18:17:33.670Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-10-04T21:45:39.352Z",
+      "action": "pause",
+      "by": "operator-cockpit"
+    },
+    {
+      "at": "2026-10-04T19:34:42.985Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-10-04T17:49:24.538Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-10-02T17:14:29.332Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-10-01T23:11:15.317Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-10-01T20:04:40.191Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-09-30T17:34:17.192Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-09-30T17:29:15.682Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-09-30T17:27:38.295Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-09-30T17:25:54.215Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-09-30T15:26:15.021Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-09-30T14:51:45.897Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
+    },
+    {
+      "at": "2026-09-29T18:32:32.601Z",
+      "action": "boot",
+      "by": "instrumentation",
+      "note": "SovereignCore armed"
     }
   ]
 }

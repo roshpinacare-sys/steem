@@ -143,7 +143,7 @@ export function deriveLessons({ cycles, curator, exec, credentialNow = null }) {
           : "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
         action: credAlive
           ? "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-          : "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt",
+          : "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only",
       });
     }
     /* T-18: name the histogram's blind spot instead of letting "none" pass as
