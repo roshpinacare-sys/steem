@@ -1,20 +1,20 @@
 {
-  "at": "2026-10-08T18:14:43.145Z",
+  "at": "2026-10-08T18:34:43.148Z",
   "enabled": true,
-  "runsTotal": 451,
+  "runsTotal": 453,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
       "window": 136,
-      "oks": 129,
-      "fails": 4,
+      "oks": 128,
+      "fails": 5,
       "blocked": 3,
-      "okRate": 94.9,
+      "okRate": 94.1,
       "blockedRate": 2.2,
       "failReasons": {
-        "unknown": 4
+        "unknown": 5
       },
-      "msP50": 73437,
+      "msP50": 77968,
       "msP90": 230531
     },
     "curator": {
@@ -25,7 +25,7 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 56.5,
+      "vpEff": 57.7,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -37,15 +37,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 123,
+      "checks": 143,
       "downs": 0,
       "heals": 1,
       "healVerified": 1,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T18:14:43.260Z",
+      "lastCheckAt": "2026-10-08T18:34:43.271Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-08T16:14:45.517Z",
-      "lastUpAt": "2026-10-08T18:14:43.261Z",
+      "lastUpAt": "2026-10-08T18:34:43.273Z",
       "blips": 0
     }
   },
@@ -57,13 +57,6 @@
       "evidence": "cycle-blocked ×3/136 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "cycle-latency-tail",
-      "severity": "medium",
-      "evidence": "p50 73437ms vs p90 230531ms",
-      "lesson": "cycle duration tail is fat — RPC latency inside steps",
-      "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     }
   ],
   "tunings": {},
@@ -71,7 +64,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 349,
+    "signing-cred-blocked": 351,
     "broadcast-fails": 130,
     "cycle-latency-tail": 117
   },

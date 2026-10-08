@@ -9,6 +9,7 @@
  * Byte-law: broadcast only when get_transaction_hex == my serialization.
  */
 import { wifDecode, buildTx, signDigest } from "./steemtx.mjs";
+import { createHash } from "node:crypto";
 import * as secp from "@noble/secp256k1";
 import { readFileSync } from "fs";
 
@@ -77,7 +78,7 @@ for (const u of TARGETS) {
     const nodeHex=await call("condenser_api.get_transaction_hex",[probe]);
     res.byteMatch = nodeHex === bin.toString("hex");
     if(!res.byteMatch){ res.verdict="BYTE-MISMATCH"; res.nodeLen=nodeHex.length/2; res.myLen=bin.length; out.results.push(res); continue; }
-    const digest=(()=>{const h=require("crypto").createHash("sha256");h.update(CHAIN_ID);h.update(bin);return h.digest();})();
+    const digest=(()=>{const h=createHash("sha256");h.update(CHAIN_ID);h.update(bin);return h.digest();})();
     const sig=signDigest(Buffer.from(digest),k1.active.wif).toString("hex");
     // local verify: sig must verify against the GEN-1 active pubkey bytes
     const secret=wifDecode(k1.active.wif);
