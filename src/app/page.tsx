@@ -34,6 +34,7 @@ import { TeamsCard } from '@/components/saos/TeamsCard'
 import { RcTankCard } from '@/components/saos/RcTankCard'
 import { EconomicsRailsCard } from '@/components/saos/EconomicsRailsCard'
 import { PayoutsCard } from '@/components/saos/PayoutsCard'
+import { LlmChainCard } from '@/components/saos/LlmChainCard'
 import { WeaveCard } from '@/components/saos/WeaveCard'
 import { CouncilCard } from '@/components/saos/CouncilCard'
 import { X2Card } from '@/components/saos/X2Card'
@@ -331,6 +332,9 @@ export default function Home() {
             {renderSection('command', (
               <>
                 <WalletConsoleCard s={s} adopt={adopt} orders={orders} />
+
+                {/* R285 · מישור-החוסן: שרשרת-ה-LLM (עצמאית-מהמנוע, עצמה-מביאה) */}
+                <LlmChainCard />
 
                 {/* ריבונות-מתמשכת · המערכת דואגת לעצמה (T-10) */}
                 <SectionCard
