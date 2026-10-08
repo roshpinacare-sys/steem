@@ -346,13 +346,21 @@ export function profileDoc(account) {
   if (PROFILE_BANNED.some((w) => blob.includes(w))) return null; // exposure-guarded, fail closed
   /* R262: the verified image pair rides with the doc — profiles carry the
    * picture and the details for everyone (operator order). URLs come only
-   * from the byte-verified canon; anything else is a selftest failure. */
+   * from the byte-verified canon; anything else is a selftest failure.
+   * R264: location/website are EXPLICITLY BLANKED (the same law hiveProfileDoc
+   * always had) — a merge must never resurrect the old identity's ghosts
+   * (measured live on wic: location="Steemit" + website=steemit.com/@wic). */
   const imgs = imagesOf(account);
-  return imgs ? { name, about, interests, ...imgs } : { name, about, interests };
+  const base = { name, about, interests, location: "", website: "" };
+  return imgs ? { ...base, ...imgs } : base;
 }
 
 /** pure: merge the persona profile into an account's EXISTING json_metadata —
- * unknown top-level keys and unknown profile keys survive (never wipe). */
+ * unknown top-level keys and unknown profile keys survive (never wipe).
+ * R264: the persona doc now also carries EXPLICIT location:"" + website:""
+ * so the OLD-identity ghosts the merge would otherwise preserve (measured
+ * live: wic carried location="Steemit" + website=steemit.com/@wic through
+ * three "successful" profile syncs) are overwritten on BOTH chains. */
 export function mergeProfileMetadata(existingRaw, profile) {
   let base = {};
   if (typeof existingRaw === "string" && existingRaw.trim()) {
@@ -363,14 +371,16 @@ export function mergeProfileMetadata(existingRaw, profile) {
   return JSON.stringify({ ...base, profile: { ...prevProfile, ...profile } });
 }
 
-/** pure: profile sync verdict — did anything actually change? (idempotence) */
+/** pure: profile sync verdict — did anything actually change? (idempotence)
+ * R264: location/website joined the compared keys — a ghost that survived
+ * the merge is a CHANGE the sync must converge on, not a hidden constant. */
 export function profileDiffers(existingRaw, profile) {
   let base = {};
   if (typeof existingRaw === "string" && existingRaw.trim()) {
     try { base = JSON.parse(existingRaw); } catch { base = {}; }
   } else if (existingRaw && typeof existingRaw === "object") base = existingRaw;
   const cur = base?.profile ?? {};
-  return ["name", "about", "interests", "profile_image", "cover_image"].some((k) => JSON.stringify(cur[k] ?? null) !== JSON.stringify((profile ?? {})[k] ?? null));
+  return ["name", "about", "interests", "profile_image", "cover_image", "location", "website"].some((k) => JSON.stringify(cur[k] ?? null) !== JSON.stringify((profile ?? {})[k] ?? null));
 }
 
 /** pure: assign personas to a batch of drafts —
