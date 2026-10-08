@@ -1,6 +1,6 @@
 {
-  "verdict": "RECRUITED",
-  "active": 9,
+  "verdict": "FULL-STRENGTH",
+  "active": 11,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/market.json: 507 trades/24h measured (vol 4728.69 STEEM)",
+      "evidence": "state/market.json: 502 trades/24h measured (vol 4620.208 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -21,11 +21,11 @@
       "role": "כלכלן-RC",
       "lane": "resource",
       "capability": "RC tank economics + equilibrium governor — the volume ceiling law",
-      "status": "planned",
+      "status": "active",
       "cadence": "3s tick",
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
-      "recruitedAt": null,
-      "evidence": null,
+      "recruitedAt": "2026-10-08T06:49:08.934Z",
+      "evidence": "state/hyper-grid.json: equilibrium 10214 ops/day measured (RC governor live)",
       "priorStatus": "planned"
     },
     {
@@ -33,11 +33,11 @@
       "role": "מבקר-עסקאות",
       "lane": "truth",
       "capability": "chain-truth fill/op counters over account history (max(state, chain-truth))",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
-      "recruitedAt": null,
-      "evidence": null,
+      "recruitedAt": "2026-10-08T06:49:08.934Z",
+      "evidence": "state/observe.json: 1 chain-truth fills counted (last 2026-10-08T06:30:39.000Z)",
       "priorStatus": "planned"
     },
     {
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T06:39:08.935Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T06:49:08.934Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-08T06:39:08.935Z",
+  "at": "2026-10-08T06:49:08.934Z",
   "pid": 28921
 }
