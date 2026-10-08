@@ -1,17 +1,16 @@
 {
-  "at": "2026-10-08T18:54:03.833Z",
+  "at": "2026-10-08T19:19:10.704Z",
   "day": "2026-10-08",
   "results": [
     {
       "account": "cashmachine",
       "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
+      "verdict": "NO-CANDIDATE"
     },
     {
       "account": "cashmachine",
       "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "NO-CANDIDATE"
     },
     {
       "account": "cashmachine",
@@ -21,13 +20,12 @@
     {
       "account": "haran",
       "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
+      "verdict": "NO-CANDIDATE"
     },
     {
       "account": "haran",
       "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "haran",
@@ -37,60 +35,57 @@
     {
       "account": "israelnews",
       "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
+      "verdict": "NO-CANDIDATE"
     },
     {
       "account": "israelnews",
       "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "israelnews",
       "lane": "deepen",
+      "verdict": "SCHEDULE-LATER"
+    },
+    {
+      "account": "lsa",
+      "lane": "fleet-vote",
+      "verdict": "NO-CANDIDATE"
+    },
+    {
+      "account": "lsa",
+      "lane": "fleet-comment",
+      "verdict": "SCHEDULE-LATER"
+    },
+    {
+      "account": "lsa",
+      "lane": "deepen",
       "verdict": "NOTHING-TO-DEEPEN"
     },
     {
-      "account": "lsa",
-      "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
-    },
-    {
-      "account": "lsa",
-      "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
-    },
-    {
-      "account": "lsa",
-      "lane": "deepen",
-      "verdict": "RC-LOW-HONEST-DEFER"
-    },
-    {
       "account": "macrame",
       "lane": "fleet-vote",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "macrame",
       "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "NO-CANDIDATE"
     },
     {
       "account": "macrame",
       "lane": "deepen",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "NOTHING-TO-DEEPEN"
     },
     {
       "account": "siq",
       "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "siq",
       "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "siq",
@@ -100,60 +95,57 @@
     {
       "account": "wic",
       "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "wic",
       "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "SCHEDULE-LATER"
     },
     {
       "account": "wic",
       "lane": "deepen",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "SCHEDULE-LATER"
     },
     {
       "account": "wog",
       "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
+      "verdict": "NO-CANDIDATE"
     },
     {
       "account": "wog",
       "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
+      "verdict": "SCHEDULE-LATER"
     },
     {
       "account": "wog",
-      "lane": "deepen",
-      "verdict": "RC-LOW-HONEST-DEFER"
-    },
-    {
-      "account": "woq",
-      "lane": "fleet-vote",
-      "verdict": "REJECTED",
-      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
-    },
-    {
-      "account": "woq",
-      "lane": "fleet-comment",
-      "verdict": "RC-LOW-HONEST-DEFER"
-    },
-    {
-      "account": "woq",
       "lane": "deepen",
       "verdict": "NOTHING-TO-DEEPEN"
+    },
+    {
+      "account": "woq",
+      "lane": "fleet-vote",
+      "verdict": "NO-CANDIDATE"
+    },
+    {
+      "account": "woq",
+      "lane": "fleet-comment",
+      "verdict": "NO-CANDIDATE"
+    },
+    {
+      "account": "woq",
+      "lane": "deepen",
+      "verdict": "SCHEDULE-LATER"
     }
   ],
-  "caps": "≤3 votes @25% · ≤3 comment · ≤2 deepen /day/account · anti-herd · persona-voiced · RC-gated · veto-armed",
+  "caps": "≤2 votes @25% · ≤1 comment · ≤1 deepen /day/account · anti-herd · persona-voiced · RC-gated · veto-armed",
   "custody": {
     "verified": 9,
     "total": 9
   },
   "verdict": "HIVE-SOCIAL-IDLE",
   "executed": 0,
-  "ms": 53395,
+  "ms": 27009,
   "perAccount": {
     "cashmachine": {
       "done": {
