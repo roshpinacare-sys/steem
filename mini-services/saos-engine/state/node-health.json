@@ -1,0 +1,94 @@
+{
+  "at": "2026-10-08T21:42:46.708Z",
+  "endpoints": [
+    {
+      "chain": "steem",
+      "endpoint": "https://api.steemit.com",
+      "ok": true,
+      "ms": 839,
+      "consecutiveFails": 0,
+      "quarantinedUntil": null,
+      "verdict": "OPEN",
+      "reason": null
+    },
+    {
+      "chain": "steem",
+      "endpoint": "https://api.justyy.com",
+      "ok": true,
+      "ms": 201,
+      "consecutiveFails": 0,
+      "quarantinedUntil": null,
+      "verdict": "OPEN",
+      "reason": null
+    },
+    {
+      "chain": "steem",
+      "endpoint": "https://steemapi.boylikegirl.club",
+      "ok": false,
+      "ms": 488,
+      "consecutiveFails": 5,
+      "quarantinedUntil": "2026-10-08T22:12:47.547Z",
+      "verdict": "QUARANTINED",
+      "reason": "5 consecutive failures"
+    },
+    {
+      "chain": "hive",
+      "endpoint": "https://api.hive.blog",
+      "ok": true,
+      "ms": 685,
+      "consecutiveFails": 0,
+      "quarantinedUntil": null,
+      "verdict": "OPEN",
+      "reason": null
+    },
+    {
+      "chain": "hive",
+      "endpoint": "https://api.openhive.network",
+      "ok": true,
+      "ms": 625,
+      "consecutiveFails": 0,
+      "quarantinedUntil": null,
+      "verdict": "OPEN",
+      "reason": null
+    },
+    {
+      "chain": "hive",
+      "endpoint": "https://api.deathwing.me",
+      "ok": true,
+      "ms": 242,
+      "consecutiveFails": 0,
+      "quarantinedUntil": null,
+      "verdict": "OPEN",
+      "reason": null
+    },
+    {
+      "chain": "blurt",
+      "endpoint": "https://blurt-rpc.saboin.com",
+      "ok": true,
+      "ms": 765,
+      "consecutiveFails": 0,
+      "quarantinedUntil": null,
+      "verdict": "OPEN",
+      "reason": null
+    },
+    {
+      "chain": "blurt",
+      "endpoint": "https://rpc.blurt.world",
+      "ok": false,
+      "ms": 117,
+      "consecutiveFails": 5,
+      "quarantinedUntil": "2026-10-08T22:12:47.547Z",
+      "verdict": "QUARANTINED",
+      "reason": "5 consecutive failures"
+    }
+  ],
+  "quarantined": 2,
+  "alive": 6,
+  "verdict": "2-QUARANTINED",
+  "breaker": {
+    "failThreshold": 3,
+    "latencyMs": 2500,
+    "quarantineMs": 1800000
+  },
+  "law": "receipts/node-health.jsonl is the dynamic receipt rail; 3 consecutive fails or >2500ms quarantine an endpoint 30min (circuit breaker)"
+}

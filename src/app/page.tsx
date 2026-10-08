@@ -39,6 +39,8 @@ import { WeaveCard } from '@/components/saos/WeaveCard'
 import { CouncilCard } from '@/components/saos/CouncilCard'
 import { X2Card } from '@/components/saos/X2Card'
 import { CustodyRedAlert } from '@/components/saos/CustodyRedAlert'
+import { RevenueRailCard } from '@/components/saos/RevenueRailCard'
+import { WatchdogCard } from '@/components/saos/WatchdogCard'
 import type { Status, Sovereign } from '@/components/saos/types'
 
 /* T-21d · the cockpit is now a composition: data plumbing (this file, verbatim behavior)
@@ -872,6 +874,16 @@ export default function Home() {
                 {/* T-23f · שעון-הפאייאוט + ספקטרום-ההון X-2; אופציונליים, נטענים רק כשהמנוע מדווח */}
                 <PayoutsCard payouts={s.payouts} soldierClaims={s.soldierClaims} />
                 <X2Card x2={s.economics?.x2} />
+              </>
+            ))}
+
+            {/* R287 · REVENUE ARCHITECT: the content compiler's BROADCAST-READY
+                staging buffer + the live authority watchdog (GPG drift flags
+                echoed to dev.log + node-health circuit breaker). */}
+            {renderSection('revenue', (
+              <>
+                <RevenueRailCard />
+                <WatchdogCard />
               </>
             ))}
 

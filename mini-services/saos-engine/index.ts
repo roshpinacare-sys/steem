@@ -27,6 +27,11 @@ import { payoutsState } from "./payouts.mjs";
 import { soldierClaimsState } from "./soldier-claims.mjs";
 import { weaveState } from "./weave.mjs";
 import { communityStatus } from "./community.mjs";
+/* R287 · REVENUE ARCHITECT: the high-density content compiler (staging rail,
+ * never broadcasts) + the live authority watchdog (GPG drift + node-health
+ * circuit breaker). Native, zero new dependencies. */
+import { compileRevenue, compilerState } from "./content-compiler.mjs";
+import { runWatchdog, watchdogState, runNodeHealth, nodeHealthState } from "./authority-watchdog.mjs";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -153,6 +158,11 @@ async function handle(req) {
       /* R263 · THE BRIDGE CIRCUIT BREAKER (the 429-storm law): the cockpit
        * sees whether the LLM bridge is closed/half-open/open and why */
       bridgeGuard: bridgeGuardState(),
+      /* R287 · REVENUE RAIL: the BROADCAST-READY staging buffer + the L-26
+       * cadence law + the authority watchdog + node-health circuit breaker */
+      revenue: compilerState(),
+      watchdog: watchdogState(),
+      nodeHealth: nodeHealthState(),
       execLog,
       events: readLines(path.join(STATE, "events.jsonl"), 20),
       notes: ["sovereign engine · state lives inside my-project · master credential engine-held, doctrine-capped, never logged", "T-14: continuous-learning layer live — lessons from recorded history, hard-clamped tunings, growth-option discovery", "T-22: one-body law — every domain fact on this page is computed exactly once (here)"],
@@ -199,6 +209,18 @@ async function handle(req) {
   }
   if (p === "/cycle-status") {
     return json({ ok: true, at: new Date().toISOString(), running: cycleRunning(), marker: cycleMarker() });
+  }
+  /* R287 · the revenue compiler rail (read-only state + on-demand compile) */
+  if (p === "/revenue") {
+    return json({ ok: true, at: new Date().toISOString(), revenue: compilerState() });
+  }
+  if (p === "/revenue-compile") {
+    if (req.method !== "POST") return json({ ok: false, error: "POST required" }, 405);
+    try { return json({ ok: true, at: new Date().toISOString(), revenue: compileRevenue() }); }
+    catch (e) { return json({ ok: false, error: String(e?.message ?? e).slice(0, 160) }, 500); }
+  }
+  if (p === "/watchdog") {
+    return json({ ok: true, at: new Date().toISOString(), watchdog: watchdogState(), nodeHealth: nodeHealthState() });
   }
   if (p === "/live") {
     try {
@@ -346,4 +368,28 @@ try {
 // the same watchdog (process-lifetime = engine lifetime).
 try { startHyperGrid(); } catch (e) {
   console.error(`hypergrid boot failed: ${String(e?.message ?? e)}`);
+}
+
+// R287 · REVENUE ARCHITECT LOOPS: the content compiler feeds the staging
+// buffer from the reasoning gateway's own queue (10min cadence — the queue
+// itself is fed by the 2h content cadence, so 10min is strictly local work);
+// the authority watchdog scans lineage + fleet every 15min; node-health
+// probes fire every 5min and keep the circuit-breaker receipts rolling.
+// All detached, fail-soft, zero interference with the signing cycle.
+try {
+  /* R287 note: reviveWriterIdentity is SYNC (returns the doc), compileRevenue
+   * is SYNC (staging write) — Promise.resolve() tolerates both shapes so a
+   * shape change can never crash the boot again (measured live this day:
+   * ".then is not a function" killed these boot lines in the old tree). */
+  Promise.resolve(reviveWriterIdentity()).then((r) => console.log(`writer identity revival: ${(r as { verdict?: string })?.verdict ?? "done"}`)).catch((e) => console.error(`writer revival error: ${String(e?.message ?? e).slice(0, 120)}`));
+  Promise.resolve(compileRevenue()).then((r) => console.log(`revenue compiler: ${r.verdict} (${r.stats?.staged ?? 0} broadcast-ready)`)).catch((e) => console.error(`revenue compiler boot error: ${String(e?.message ?? e).slice(0, 120)}`));
+  Promise.resolve(runWatchdog()).then((r) => console.log(`authority watchdog: ${r.verdict}`)).catch((e) => console.error(`watchdog boot error: ${String(e?.message ?? e).slice(0, 120)}`));
+  Promise.resolve(runNodeHealth()).then((r) => console.log(`node health: ${r.verdict}`)).catch((e) => console.error(`node health boot error: ${String(e?.message ?? e).slice(0, 120)}`));
+  const intervals: ReturnType<typeof setInterval>[] = [];
+  intervals.push(setInterval(() => { Promise.resolve(compileRevenue()).catch(() => null); }, 10 * 60_000));
+  intervals.push(setInterval(() => { Promise.resolve(runWatchdog()).catch(() => null); }, 15 * 60_000));
+  intervals.push(setInterval(() => { Promise.resolve(runNodeHealth()).catch(() => null); }, 5 * 60_000));
+  for (const t of intervals) t.unref?.();
+} catch (e) {
+  console.error(`revenue loops boot failed: ${String(e?.message ?? e)}`);
 }
