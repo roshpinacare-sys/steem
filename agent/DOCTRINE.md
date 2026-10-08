@@ -47,7 +47,8 @@
 4. **מנוע-תוכן**: corpus עם רצפה מזינה-עצמית, Daily-Ledger מאומן (builder-טהור עם שערי-אומנות), פרסונות-פר-חשבון, חלונות-פרסום מפוזרים.
 5. **כספת-גיט**: חותמת `KEYS-ZIP-2026-10-08` (sha-pinned כפול, roundtrip-מאומת); חוק-העידן: נתיב-הארכיון נקרא-מהמטא-של-עידנו; חוק-הצורה: per-chain גובר על flat (`pickVaultKey`).
 6. **שער-אמת**: `scripts/sovereign-push.sh` (FF-only + github-guard G1-G4 fail-closed + חתימת-גוף) + `doctrine-audit` (R267).
-7. **ביקורת-עצמית**: selftest 999 וקטורים (האמת-המדודה: `state/selftest-last-run.json`), cli-contract, storm-345k, red-team-פר-סבב.
+7. **ביקורת-עצמית**: selftest 1010 וקטורים (האמת-המדודה: `state/selftest-last-run.json`), cli-contract, storm-345k, red-team-פר-סבב.
+8. **חוק-השיבוט (R274)**: אסור-שניים-שיאמרו-את-אותו-דבר. salt-הקול (החשבון בתוך seed המצערת) + parentClash מול התגובות החיות תחת הודעת-האם (הזיכרון הריבוני הוא השרשרת עצמה, לא קובץ-state ששחזור מחזיר) + fleet said-ledger בהיקף-יום לפני שידור. נירמול-גוף קודם ההשוואה (markup, תמונות וקישורים שופלים).
 
 ## 4 · מה נותן ערך ואימות (נמדד, לא מאמין)
 
