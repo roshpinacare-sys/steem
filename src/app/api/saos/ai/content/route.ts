@@ -47,6 +47,9 @@ export async function POST(req: Request) {
   /* R254 · THE STYLE LAW (operator: nobody writes with "—", dev slang is
    * welcome): obeyed at the SOURCE so drafts never even arrive with dashes. */
   const style = (body.styleLaw && typeof body.styleLaw === "object" ? body.styleLaw : null) as { dashes?: string; slang?: string[]; slangGuidance?: string } | null;
+  /* R262 · THE FORMAT LAW (operator: understand what a post can carry, HTML
+   * up to what level): safe markdown + HTML subset in, stripping tags out. */
+  const format = (body.formatLaw && typeof body.formatLaw === "object" ? body.formatLaw : null) as { allowed?: string[]; forbidden?: string[]; guidance?: string } | null;
 
   const userPrompt = [
     "Draft 4 DISTINCT posts for a general Steem audience. NOT about Steem itself — about life, work, mind, streets, craft, food, nature, ideas.",
@@ -75,6 +78,11 @@ export async function POST(req: Request) {
     "STYLE LAW (R254):",
     ...(style?.dashes ? [`- ${style.dashes}`] : []),
     ...(style?.slang?.length ? [`- professional developer slang, used naturally: ${style.slang.slice(0, 12).join(", ")}`, `- ${style.slangGuidance ?? "at most one or two per post, only where a real developer would say them"}`] : []),
+    "",
+    "FORMAT LAW (R262):",
+    ...(format?.allowed?.length ? [`- MAY use: ${format.allowed.join("; ")}`] : []),
+    ...(format?.forbidden?.length ? [`- MUST NOT use: ${format.forbidden.join("; ")}`] : []),
+    ...(format?.guidance ? [`- ${format.guidance}`] : []),
     "",
     personas.length ? 'Return each draft with "persona": "<the account id from [persona:...]>".' : "",
     "Return STRICT JSON only.",

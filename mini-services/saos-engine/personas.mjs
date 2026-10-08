@@ -37,7 +37,7 @@ export const PERSONAS = {
     traits: ["steady", "precise", "allergic to hand-waving"],
     slang: ["let's measure it", "close the loop", "back-of-envelope math", "the numbers held"],
     register: { pro: 75, hood: 25 },
-    owns: ["everyday-money", "tools", "ideas"],
+    owns: ["everyday-money", "tools", "ideas", "on-chain-publishing"],
     neverDo: ["lecture anyone about money", "round a number up to sound better"],
     replyStyle: "answers with the shortest true sentence, then one concrete next step",
     signatureMove: "ends with a number the reader can check tonight",
@@ -177,7 +177,7 @@ export const PERSONAS = {
     traits: ["sharp", "compact", "inviting"],
     slang: ["flip it", "ask better", "the door stays open", "race condition for the mind"],
     register: { pro: 65, hood: 35 },
-    owns: ["questions", "language", "ideas"],
+    owns: ["questions", "language", "ideas", "post-craft"],
     neverDo: ["rhetorical trap-questions", "answer for the reader"],
     replyStyle: "reframes the asker's question sharper, answers in two lines, returns a better one",
     signatureMove: "closes on the question the reader came in carrying, upgraded",
@@ -230,6 +230,79 @@ export const PERSONAS = {
 
 export const PERSONA_IDS = Object.keys(PERSONAS);
 
+/* ── R262 · THE PROFILE IMAGE CANON (the visibility law) ────────────────────
+ * Operator order 2026-10-08 (verbatim intent): profiles must carry the IMAGE
+ * and the details for EVERYONE (macrame called out by name), professional
+ * and communal. Every URL below was picked from Wikimedia Commons and
+ * byte-verified live (HTTP 200 + image/* + manual visual review) in round
+ * R262 before being baked in — the legal image contract (upload.wikimedia.org
+ * only) holds here exactly as it holds in illustrate.mjs. Two images per
+ * voice: profile_image (avatar) + cover_image (banner).
+ */
+export const PERSONA_IMAGES = {
+  headcorner: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/d/da/Ruler_image.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/8/82/Die_Gartenlaube_%281899%29_b_0292_a_2.jpg",
+  },
+  cashmachine: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/c/cf/Jeffersontown_Museum_Cash_Register.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Euro_coins_line.jpg",
+  },
+  haran: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/4/4a/Jeweler%27s-screwdriver-set-bright.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/f/f4/Screwdriver-Set-222523-480x360_%284904404681%29.jpg",
+  },
+  israelnews: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/c/c1/A_stack_of_newspapers_%28cropped%29.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/1/10/A_stack_of_newspapers.jpg",
+  },
+  lsa: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Old_Corner_Bookstore-201.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/7/74/Old_Corner_Bookstore-202.jpg",
+  },
+  macrame: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Keith_Russell_macrame_1.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/d/d8/Double_eight_-2.JPG",
+  },
+  siq: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Park_Bench_in_Autumn_-_geograph.org.uk_-_2253098.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/f/f5/Benches_amid_autumn_leaves_in_Victoria_Park_-_geograph.org.uk_-_3753301.jpg",
+  },
+  tov: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/f/f6/Guests_around_table_at_Arctic_Club_dinner%2C_Seattle%2C_April_27%2C_1916_%28MOHAI_13046%29.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Judy_Chicago_The_Dinner_Party.jpg",
+  },
+  wic: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Forest_Track%2C_Kielder_Forest_-_geograph.org.uk_-_2729187.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Woodland_Path%2C_Summerseat_Island_-_geograph.org.uk_-_6192898.jpg",
+  },
+  wog: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Stoppuhr_digital_noBG.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Magnifying_glass_on_the_page_of_a_book.jpg",
+  },
+  woq: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Light_Blue_Door_-_geograph.org.uk_-_374983.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/3/31/Doorway_MET_sfx34-20-2s1.jpg",
+  },
+  hcsoldier4: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/a/a7/Pen_and_notebook_-_Narei.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/8/89/Notebook_%2816864494368%29.jpg",
+  },
+  hcsoldier5: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/8/88/Street_photography_at_night.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Baltimore_Harbor_Skyline_Night_2022.jpg",
+  },
+  hcsoldier6: {
+    profile_image: "https://upload.wikimedia.org/wikipedia/commons/b/be/Market_stall%2C_Borough_Market_-_geograph.org.uk_-_2244312.jpg",
+    cover_image: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Fruit_and_vegetable_stall_-_geograph.org.uk_-_874455.jpg",
+  },
+};
+
+/** pure (R262): the image pair for a persona, or null when the canon has none */
+export function imagesOf(account) {
+  return Object.prototype.hasOwnProperty.call(PERSONA_IMAGES, account) ? PERSONA_IMAGES[account] : null;
+}
+
 /** the arc thresholds (lifetime published posts) — MEASURED, not clocked */
 export const ARC_THRESHOLDS = [0, 4, 10, 18];
 const ARC_NOTES = [
@@ -271,7 +344,11 @@ export function profileDoc(account) {
   const interests = p.interests.slice(0, 5).map((i) => String(i).toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 24)).filter(Boolean);
   const blob = `${name}\n${about}\n${interests.join(" ")}`.toLowerCase();
   if (PROFILE_BANNED.some((w) => blob.includes(w))) return null; // exposure-guarded, fail closed
-  return { name, about, interests };
+  /* R262: the verified image pair rides with the doc — profiles carry the
+   * picture and the details for everyone (operator order). URLs come only
+   * from the byte-verified canon; anything else is a selftest failure. */
+  const imgs = imagesOf(account);
+  return imgs ? { name, about, interests, ...imgs } : { name, about, interests };
 }
 
 /** pure: merge the persona profile into an account's EXISTING json_metadata —
@@ -293,7 +370,7 @@ export function profileDiffers(existingRaw, profile) {
     try { base = JSON.parse(existingRaw); } catch { base = {}; }
   } else if (existingRaw && typeof existingRaw === "object") base = existingRaw;
   const cur = base?.profile ?? {};
-  return ["name", "about", "interests"].some((k) => JSON.stringify(cur[k] ?? null) !== JSON.stringify((profile ?? {})[k] ?? null));
+  return ["name", "about", "interests", "profile_image", "cover_image"].some((k) => JSON.stringify(cur[k] ?? null) !== JSON.stringify((profile ?? {})[k] ?? null));
 }
 
 /** pure: assign personas to a batch of drafts —

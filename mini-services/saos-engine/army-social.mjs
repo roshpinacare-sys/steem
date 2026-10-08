@@ -60,7 +60,7 @@ import * as path from "node:path";
 import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
-import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS } from "./content.mjs";
+import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS, normalizeDashes } from "./content.mjs";
 import { personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata } from "./personas.mjs";
 import { synthesizeComment, synthesizeReply, mentionsAny } from "./intel-pack.mjs";
 import { spamVerdict, organicVerdict, flagPauseVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
@@ -183,7 +183,10 @@ export const TEMPLATE_OPENERS = [
   "wonderful perspective", "fascinating post", "amazing post", "beautiful post",
 ];
 export function sanitizeReply(text) {
-  const body = String(text ?? "").trim().replace(/\s+/g, " ");
+  /* R262: the style law finally covers REPLIES too — the synthesizer frames
+   * shipped literal " — " for rounds because only the POST lanes normalized.
+   * Rewrite first, ban second, same contract as sanitizeDraft. */
+  const body = normalizeDashes(String(text ?? "")).trim().replace(/\s+/g, " ");
   if (body.length < 20 || body.length > 700) return null;
   const low = body.toLowerCase();
   /* R243: the first 90 chars carry the opener — template praise there = dead
@@ -959,7 +962,7 @@ async function doDeepen({ account, master, st, p, now }) {
  *  · DOCTRINE CAPS: ≤2 broadcasts per run, custody-gated (keyless = honest
  *    DEFER), think-gate re-checks every broadcast.
  */
-const PROFILE_MAX_PER_RUN = 2;
+const PROFILE_MAX_PER_RUN = 4; // R262: operator order "verify everything on everyone" — images for all 14, custody-gated, idempotent
 
 export function personasState() {
   return readJson(PERSONAS_FILE, null);
