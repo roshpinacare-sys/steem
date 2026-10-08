@@ -70,7 +70,12 @@ import { readCommunityState, communityPostMeta, communityMetaObj } from "./commu
 import { embedImage } from "./illustrate.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
-const STATE = path.join(DIR, "state");
+/* SAOS_STATE_DIR (R275 merge law): the selftest may run while the live engine
+ * flushes the same state files — two writers, one file, the probe's seeds get
+ * clobbered mid-run (measured live: the R277 vector read the engine's snapshot
+ * instead of its own seed). Tests set SAOS_STATE_DIR to an isolated dir; the
+ * engine never does, so runtime behavior is byte-identical. */
+const STATE = process.env.SAOS_STATE_DIR || path.join(DIR, "state");
 const SOCIAL_FILE = path.join(STATE, "social.json");
 const FLAG_PAUSES_FILE = path.join(STATE, "flag-pauses.json");
 const COMMUNITY_ROUND_FILE = path.join(STATE, "community-round.json");
@@ -418,11 +423,15 @@ async function alreadyAnswered(account, parentAuthor, parentPermlink) {
  * committed with the state by CI — the in-memory layer that chain reads
  * cannot see milliseconds into. */
 const SAID_FILE = path.join(STATE, "social-said.json");
+/* R275 merge law: the ledger path is resolved PER CALL — SAOS_STATE_DIR can
+ * redirect the selftest to an isolated dir even though the module-level
+ * consts froze at import time. Engine: env unset → byte-identical behavior. */
+const saidFile = () => path.join(process.env.SAOS_STATE_DIR || STATE, "social-said.json");
 /* day-scoped: { days: { [day]: [{account, body, at}] } } — only the last two
  * days are kept. Day-scoping makes the ledger safe to probe from selftests
  * under a fake key without ever touching the live day. */
 export function fleetSaidFor(day) {
-  const doc = readJson(SAID_FILE, { days: {} });
+  const doc = readJson(saidFile(), { days: {} });
   return (doc.days?.[day] ?? []).map((e) => String(e.body ?? ""));
 }
 /* R276: self-cleaning probe — a selftest (or tooling) purges its own day key
@@ -431,17 +440,17 @@ export function fleetSaidFor(day) {
  * day exists), re-poisoning every later clone: "foreign day reads empty" failed
  * forever. The purge is the law: a probe day is ALWAYS wiped before and after. */
 export function clearFleetSaid(day) {
-  const doc = readJson(SAID_FILE, { days: {} });
+  const doc = readJson(saidFile(), { days: {} });
   const days = { ...(doc.days ?? {}) };
   if (!(day in days)) return 0;
   const removed = days[day].length;
   delete days[day];
-  writeJson(SAID_FILE, { days });
+  writeJson(saidFile(), { days });
   return removed;
 }
 
 export function noteFleetSaid(day, account, body) {
-  const doc = readJson(SAID_FILE, { days: {} });
+  const doc = readJson(saidFile(), { days: {} });
   const days = { ...(doc.days ?? {}) };
   const list = days[day] ?? [];
   list.push({ account, body: String(body ?? "").slice(0, 300), at: new Date().toISOString() });
@@ -449,7 +458,7 @@ export function noteFleetSaid(day, account, body) {
   const keep = Object.keys(days).sort().slice(-2); // yesterday + today, nothing else
   const pruned = {};
   for (const k of keep) pruned[k] = days[k];
-  writeJson(SAID_FILE, { days: pruned });
+  writeJson(saidFile(), { days: pruned });
 }
 
 /* pure: normalized body for clash comparison (links, images, markup and
