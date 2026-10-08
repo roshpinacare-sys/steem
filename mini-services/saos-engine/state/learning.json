@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "at": "2026-10-08T20:57:41.753Z",
   "enabled": true,
   "runsTotal": 462,
@@ -12,30 +11,11 @@
       "blocked": 2,
       "okRate": 93.4,
       "blockedRate": 2.2,
-=======
-  "at": "2026-10-08T20:54:03.849Z",
-  "enabled": true,
-  "runsTotal": 467,
-  "verdict": "LEARNED",
-  "metrics": {
-    "cycles": {
-      "window": 122,
-      "oks": 115,
-      "fails": 5,
-      "blocked": 2,
-      "okRate": 94.3,
-      "blockedRate": 1.6,
->>>>>>> origin/saos-cockpit
       "failReasons": {
         "unknown": 4
       },
-<<<<<<< HEAD
       "msP50": 124858,
       "msP90": 276259
-=======
-      "msP50": 108686,
-      "msP90": 230531
->>>>>>> origin/saos-cockpit
     },
     "curator": {
       "present": true,
@@ -57,7 +37,6 @@
       "lastError": null
     },
     "watchdog": {
-<<<<<<< HEAD
       "checks": 2540,
       "downs": 106,
       "heals": 39,
@@ -68,18 +47,6 @@
       "lastSpawnAt": null,
       "lastUpAt": "2026-10-08T20:56:56.725Z",
       "blips": 1
-=======
-      "checks": 278,
-      "downs": 1,
-      "heals": 2,
-      "healVerified": 2,
-      "healFailed": 0,
-      "lastCheckAt": "2026-10-08T20:54:03.973Z",
-      "engineUp": true,
-      "lastSpawnAt": "2026-10-08T18:44:08.887Z",
-      "lastUpAt": "2026-10-08T20:54:03.976Z",
-      "blips": 0
->>>>>>> origin/saos-cockpit
     }
   },
   "lessons": [
@@ -87,11 +54,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-<<<<<<< HEAD
       "evidence": "cycle-blocked ×2/91 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-=======
-      "evidence": "cycle-blocked ×2/122 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
->>>>>>> origin/saos-cockpit
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
@@ -101,11 +64,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-<<<<<<< HEAD
     "signing-cred-blocked": 360,
-=======
-    "signing-cred-blocked": 365,
->>>>>>> origin/saos-cockpit
     "broadcast-fails": 130,
     "cycle-latency-tail": 119
   },
