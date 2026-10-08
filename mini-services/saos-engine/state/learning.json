@@ -1,18 +1,18 @@
 {
-  "at": "2026-10-08T07:09:45.196Z",
+  "at": "2026-10-08T07:19:45.196Z",
   "enabled": true,
-  "runsTotal": 7,
-  "verdict": "NO-NEW-LESSONS",
+  "runsTotal": 8,
+  "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 6,
-      "oks": 6,
+      "window": 7,
+      "oks": 7,
       "fails": 0,
       "blocked": 0,
       "okRate": 100,
       "blockedRate": 0,
       "failReasons": {},
-      "msP50": 19129,
+      "msP50": 15764,
       "msP90": 49140
     },
     "curator": {
@@ -35,19 +35,27 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 3153,
+      "checks": 3163,
       "downs": 108,
       "heals": 41,
       "healVerified": 39,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T07:09:45.325Z",
+      "lastCheckAt": "2026-10-08T07:19:45.329Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-08T02:09:50.199Z",
-      "lastUpAt": "2026-10-08T07:09:45.327Z",
+      "lastUpAt": "2026-10-08T07:19:45.332Z",
       "blips": 1
     }
   },
-  "lessons": [],
+  "lessons": [
+    {
+      "id": "cycle-latency-tail",
+      "severity": "medium",
+      "evidence": "p50 15764ms vs p90 49140ms",
+      "lesson": "cycle duration tail is fat — RPC latency inside steps",
+      "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
+    }
+  ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
@@ -55,7 +63,7 @@
     "unclassified-fail-legacy": 107,
     "signing-cred-blocked": 308,
     "broadcast-fails": 125,
-    "cycle-latency-tail": 82
+    "cycle-latency-tail": 83
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
