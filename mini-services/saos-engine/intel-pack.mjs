@@ -32,6 +32,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { mulberry32, hashSeed } from "./curator.mjs";
+import { personaOf } from "./personas.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 
@@ -355,6 +356,35 @@ export function synthesizeComment({ postTitle, postExcerpt, seed = 1 } = {}) {
     if (legalBody(body)) return body;
   }
   return null;
+}
+
+/* ── R263 · PERSONA-FLAVORED SEED WRITERS (operator order: "לשפר
+ * אינטלגנציה וסגנון כתיבה אישי יעודי לכל אחד מסודר" — a dedicated personal
+ * writing style per account, organized). The bridge is the first writer and
+ * carries the FULL persona brief; these seeded writers are the legal floor
+ * when the bridge is down (429 measured live, R263) — and the floor now
+ * carries the persona's signature slang as a motto opener, so even the
+ * fallback reads like the voice, not like the pack. The flavor is an
+ * UPGRADE, never a veto: if the woven body breaks a length law, the lawful
+ * base body ships unchanged. Pure, selftest-locked. */
+export function synthesizePersonaComment({ account, postTitle, postExcerpt, seed = 1 } = {}) {
+  const persona = personaOf(account);
+  const base = synthesizeComment({ postTitle, postExcerpt, seed });
+  if (!base || !persona) return base;
+  const motto = String(persona.slang?.[0] ?? "").trim();
+  if (!motto || base.toLowerCase().includes(motto.toLowerCase())) return base;
+  const woven = `${cap(motto)}: ${base}`;
+  return legalBody(woven) ? woven : base;
+}
+
+export function synthesizePersonaReply({ account, postTitle, commentBody, myPrior = "", seed = 1 } = {}) {
+  const persona = personaOf(account);
+  const base = synthesizeReply({ postTitle, commentBody, myPrior, seed });
+  if (!base || !persona) return base;
+  const motto = String(persona.slang?.[0] ?? "").trim();
+  if (!motto || base.toLowerCase().includes(motto.toLowerCase())) return base;
+  const woven = `${cap(motto)}: ${base}`;
+  return legalBody(woven) ? woven : base;
 }
 
 /* ── pure: synthesizeReply — answer a comment on OUR thread ─────────────────

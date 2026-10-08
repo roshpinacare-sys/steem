@@ -61,9 +61,10 @@ import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
 import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS, normalizeDashes } from "./content.mjs";
-import { personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata } from "./personas.mjs";
-import { synthesizeComment, synthesizeReply, mentionsAny } from "./intel-pack.mjs";
+import { personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata, personaBrief } from "./personas.mjs";
+import { synthesizeReply, synthesizePersonaComment, synthesizePersonaReply, isProbeComment, mentionsAny } from "./intel-pack.mjs";
 import { spamVerdict, organicVerdict, flagPauseVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
+import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
 import { reviveArmyCustody, ARMY_ROSTER as ROSTER_BASE } from "./vault-revival.mjs";
 import { readCommunityState, communityPostMeta, communityMetaObj } from "./community.mjs";
 import { embedImage } from "./illustrate.mjs";
@@ -324,39 +325,52 @@ async function fetchRepliableComments(account, repliedSet, p) {
   return null;
 }
 
-async function draftReplyViaBridge({ postTitle, postExcerpt, commentAuthor, commentBody, myPrior }) {
-  if (process.env.SAOS_OFFLINE !== "1") try {
+/* R263 · THE PERSONA-VOICED REPLY: the bridge carries the FULL persona brief
+ * (lens, traits, personal slang, register dial) and drafts IN that voice;
+ * the seeded persona writer is the lawful floor. THE PROBE SHIELD RUNS
+ * FIRST: an investigating comment never reaches the LLM (fail-closed). */
+async function draftReplyViaBridge({ account, postTitle, postExcerpt, commentAuthor, commentBody, myPrior }) {
+  if (isProbeComment(commentBody)) {
+    return synthesizeReply({ postTitle, commentBody, myPrior, seed: `${postTitle}|${commentBody?.slice(0, 60) ?? ""}` });
+  }
+  const brief = personaBrief(account);
+  if (process.env.SAOS_OFFLINE !== "1" && brief && bridgeOpen()) try {
     const r = await fetch(`${BRIDGE}/api/saos/ai/reply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postTitle, postExcerpt, commentAuthor, commentBody, myPrior }),
+      body: JSON.stringify({ postTitle, postExcerpt, commentAuthor, commentBody, myPrior, personaBrief: brief }),
       signal: AbortSignal.timeout(90_000),
     });
     if (r.ok) {
       const j = await r.json();
-      if (j?.reply?.body) return j.reply.body;
+      if (j?.reply?.body) { noteBridgeSuccess(); return j.reply.body; }
     }
-  } catch { /* fall through to the pack */ }
-  return synthesizeReply({ postTitle, commentBody, myPrior, seed: `${postTitle}|${commentBody?.slice(0, 60) ?? ""}` });
+    noteBridgeFailure(`reply:${r.status}`);
+  } catch (e) { noteBridgeFailure(`reply:${String(e?.message ?? e).slice(0, 40)}`); }
+  return synthesizePersonaReply({ account, postTitle, commentBody, myPrior, seed: `${postTitle}|${commentBody?.slice(0, 60) ?? ""}` });
 }
 
 /* R244 · bridge-or-pack: the bridge is FIRST when reachable (LLM-grade), the
  * offline intelligence pack is the FLOOR (anchored, topic-aware, laws-safe).
- * The conversation never again depends on one machine being up. */
-async function draftCommentViaBridge({ postTitle, postExcerpt, author }) {
-  if (process.env.SAOS_OFFLINE !== "1") try {
+ * R263: the floor speaks in the account's PERSONA voice, and the bridge gets
+ * the full persona brief — the conversation never again depends on one
+ * machine being up, and no voice is ever interchangeable. */
+async function draftCommentViaBridge({ postTitle, postExcerpt, author, account }) {
+  const brief = personaBrief(account);
+  if (process.env.SAOS_OFFLINE !== "1" && brief && bridgeOpen()) try {
     const r = await fetch(`${BRIDGE}/api/saos/ai/comment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postTitle, postExcerpt, author }),
+      body: JSON.stringify({ postTitle, postExcerpt, author, personaBrief: brief }),
       signal: AbortSignal.timeout(90_000),
     });
     if (r.ok) {
       const j = await r.json();
-      if (j?.comment?.body) return j.comment.body;
+      if (j?.comment?.body) { noteBridgeSuccess(); return j.comment.body; }
     }
-  } catch { /* fall through to the pack */ }
-  return synthesizeComment({ postTitle, postExcerpt, seed: `${postTitle}|${postExcerpt.slice(0, 60)}` });
+    noteBridgeFailure(`comment:${r.status}`);
+  } catch (e) { noteBridgeFailure(`comment:${String(e?.message ?? e).slice(0, 40)}`); }
+  return synthesizePersonaComment({ account, postTitle, postExcerpt, seed: `${postTitle}|${postExcerpt.slice(0, 60)}` });
 }
 
 /* R244 · THE PAIR-GUARD (chain truth, race-proof): state memory dedupes
@@ -755,7 +769,7 @@ async function doFleetComment({ account, master, st, p, nowMs, now }) {
   const tier = candidates.filter((c) => (c.children ?? 0) === minChildren);
   const pick = tier[(hashSeed(`${now.slice(0, 10)}|${account}|comment`) + st.done["fleet-comment"]) % tier.length];
   if (await alreadyAnswered(account, pick.author, pick.permlink)) return false; // pair-guard
-  const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author });
+  const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author, account });
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
@@ -783,7 +797,7 @@ async function doReply({ account, st, p, now }) {
   const target = await fetchRepliableComments(account, new Set(st.replied ?? []), p);
   if (!target) return false;
   if (await alreadyAnswered(account, target.parentAuthor, target.parentPermlink)) { st.replied = [...(st.replied ?? []), target.comment]; return false; } // pair-guard
-  const raw = await draftReplyViaBridge(target);
+  const raw = await draftReplyViaBridge({ ...target, account });
   const body = sanitizeReply(raw);
   if (!body) return false; /* bridge down / law violation → honest skip, no spam */
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
@@ -851,7 +865,7 @@ async function doCommunityComment({ account, master, st, p, nowMs, now }) {
   });
   if (!pick) return false;
   if (await alreadyAnswered(account, pick.author, pick.permlink)) return false; // pair-guard
-  const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author });
+  const raw = await draftCommentViaBridge({ postTitle: pick.title, postExcerpt: pick.excerpt, author: pick.author, account });
   const body = sanitizeReply(raw);
   if (!body) return false;
   if (!replyFresh(body, st.said, { maxSimilarity: p.repeatSimilarityMax })) { st.said = [...(st.said ?? []), body.slice(0, 300)]; return false; }
@@ -915,6 +929,7 @@ async function doDeepen({ account, master, st, p, now }) {
   if (!target) return false;
   if (await alreadyAnswered(account, target.parentAuthor, target.parentPermlink)) { st.deepened = [...(st.deepened ?? []), target.comment]; return false; } // pair-guard
   const raw = await draftReplyViaBridge({
+    account,
     postTitle: target.rootTitle,
     postExcerpt: "",
     commentAuthor: "",
@@ -987,7 +1002,13 @@ export async function runProfiles({ now = new Date().toISOString(), roster = [ma
       const r = await rpcCall("condenser_api.get_accounts", [[account]]);
       live = r?.ok ? r.result?.[0] ?? null : null;
     } catch { live = null; }
-    const existingRaw = String(live?.json_metadata ?? "{}");
+    /* R263 IDEMPOTENCE FIX (measured live): the write lands in
+     * posting_json_metadata — the idempotence read MUST read the same field
+     * the chain serves and the frontends render (posting first, json fallback,
+     * exactly the field the R263 audit and every frontend read). The old read
+     * of json_metadata alone re-broadcast the same 4 profiles forever (3
+     * passes = 12 wasted writes, measured this round). */
+    const existingRaw = String(live?.posting_json_metadata || live?.json_metadata || "{}");
     if (!profileDiffers(existingRaw, doc)) {
       st.perAccount[account] = { ...(st.perAccount[account] ?? {}), at: now, verdict: "SYNCED-CHAIN-TRUTH", name: doc.name };
       out.skipped.push({ account, reason: "chain-already-matches" });

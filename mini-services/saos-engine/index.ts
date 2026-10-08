@@ -20,6 +20,7 @@ import { startHyperGrid, hyperState } from "./hypergrid.mjs";
 import { webintelState } from "./webintel.mjs";
 import { contentState } from "./content.mjs";
 import { personasPublic } from "./personas.mjs";
+import { bridgeGuardState } from "./bridge-guard.mjs";
 import { rcTankState } from "./rctank.mjs";
 import { payoutsState } from "./payouts.mjs";
 import { weaveState } from "./weave.mjs";
@@ -145,6 +146,9 @@ async function handle(req) {
        * between professional and neighborhood): canon + sync + arc state —
        * verdicts only, no secrets exist in this layer by construction */
       personas: personasPublic(readJson(path.join(STATE, "personas.json"))),
+      /* R263 · THE BRIDGE CIRCUIT BREAKER (the 429-storm law): the cockpit
+       * sees whether the LLM bridge is closed/half-open/open and why */
+      bridgeGuard: bridgeGuardState(),
       execLog,
       events: readLines(path.join(STATE, "events.jsonl"), 20),
       notes: ["sovereign engine · state lives inside my-project · master credential engine-held, doctrine-capped, never logged", "T-14: continuous-learning layer live — lessons from recorded history, hard-clamped tunings, growth-option discovery", "T-22: one-body law — every domain fact on this page is computed exactly once (here)"],
