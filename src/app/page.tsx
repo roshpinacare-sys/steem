@@ -25,6 +25,9 @@ import BuilderQueue from '@/components/builder-queue'
 import { useAdoptCredential } from '@/components/saos/useAdoptCredential'
 import { WalletConsoleCard } from '@/components/saos/WalletConsoleCard'
 import { FleetCard } from '@/components/saos/FleetCard'
+import { HiveConnectionCard } from '@/components/saos/HiveConnectionCard'
+import { FleetMatrixCard } from '@/components/saos/FleetMatrixCard'
+import type { FleetEvidence } from '@/components/saos/FleetEvidence'
 import { PersonasCard } from '@/components/saos/PersonasCard'
 import { RolesCard } from '@/components/saos/RolesCard'
 import { TeamsCard } from '@/components/saos/TeamsCard'
@@ -51,6 +54,7 @@ const uptimeStr = (bootedAt?: string): string => {
 export default function Home() {
   const [s, setS] = useState<Status | null>(null)
   const [sov, setSov] = useState<Sovereign | null>(null)
+  const [evi, setEvi] = useState<FleetEvidence | null>(null)
   const [loading, setLoading] = useState(false)
   const [cycling, setCycling] = useState(false)
   const [acting, setActing] = useState<string | null>(null)
@@ -77,6 +81,16 @@ export default function Home() {
     try {
       const a = await fetch('/api/saos/sovereign', { cache: 'no-store' })
       setSov(await a.json())
+    } catch { /* next poll retries */ }
+  }, [])
+
+  /* R269 · fleet-evidence — the operator SEES the Hive connection + the whole
+   * users matrix (custody/RC/delegations/publish verdicts), not prose. */
+  const loadEvi = useCallback(async () => {
+    try {
+      const a = await fetch('/api/saos/fleet-evidence', { cache: 'no-store' })
+      const j = await a.json()
+      if (j?.ok) setEvi(j as FleetEvidence)
     } catch { /* next poll retries */ }
   }, [])
 
@@ -151,10 +165,12 @@ export default function Home() {
   useEffect(() => {
     load()
     loadSov()
+    loadEvi()
     const t = setInterval(load, 30000)
     const t2 = setInterval(loadSov, 30000)
-    return () => { clearInterval(t); clearInterval(t2) }
-  }, [load, loadSov])
+    const t3 = setInterval(loadEvi, 60000)
+    return () => { clearInterval(t); clearInterval(t2); clearInterval(t3) }
+  }, [load, loadSov, loadEvi])
 
   /** section wrapper: on mobile renders ONLY the active section (filtered by state);
    *  on lg+ every section renders — the full grid as always. */
@@ -588,6 +604,12 @@ export default function Home() {
               <>
                 {/* הצי · אמת-אחת לכל-הסוכנים (T-15) */}
                 <FleetCard s={s} />
+
+                {/* R269 · מטריצת-הצי — כל-המשתמשים × שתי-השרשרות: סמכות/RC/האצלות/פסק-פרסום (2/3 רוחב — שורה-מלאה מול כרטיס-החיבור) */}
+                <FleetMatrixCard evi={evi} className="md:col-span-2 lg:col-span-2" />
+
+                {/* R269 · חיבור-Hive — הראיות המדודות: מי/מתי/אילו-מפתחות + ציר-זמן + קבלות */}
+                <HiveConnectionCard evi={evi} />
 
                 {/* R255 · פרסונות-הצי — פרופילים, אישיות, סלנג אישי וקשתות-התפתחות */}
                 <PersonasCard s={s} />
