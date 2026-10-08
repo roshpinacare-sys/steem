@@ -19,8 +19,17 @@ import { tick, fold } from "./grid.mjs";
 import { classifyAgent } from "./fleet.mjs";
 import { PERSONAS, PERSONA_IDS, personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata, assignPersonas, personaBrief } from "./personas.mjs";
 import { OP_IDS } from "./steemtx.mjs";
+import os from "node:os";
+import fs from "node:fs";
+import path from "node:path";
 
 let pass = 0, fail = 0;
+/* R275 ISOLATION LAW: the selftest runs while the live engine flushes the
+ * same state files — two writers, one file (measured live: the engine's
+ * snapshot clobbered the probe's seed mid-run and a vector lied). Every
+ * army-social state read/write below resolves against an isolated tmp dir. */
+process.env.SAOS_STATE_DIR = path.join(os.tmpdir(), `saos-selftest-state-${process.pid}`);
+try { fs.mkdirSync(process.env.SAOS_STATE_DIR, { recursive: true }); } catch { /* exists */ }
 const eq = (name, a, b) => {
   const ja = JSON.stringify(a), jb = JSON.stringify(b);
   if (ja === jb) { pass++; }
