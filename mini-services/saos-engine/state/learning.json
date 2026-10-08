@@ -1,16 +1,16 @@
 {
-  "at": "2026-10-08T00:59:24.423Z",
+  "at": "2026-10-08T01:19:24.425Z",
   "enabled": true,
-  "runsTotal": 377,
+  "runsTotal": 379,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 103,
-      "oks": 97,
+      "window": 104,
+      "oks": 98,
       "fails": 1,
       "blocked": 5,
       "okRate": 94.2,
-      "blockedRate": 4.9,
+      "blockedRate": 4.8,
       "failReasons": {
         "unknown": 1
       },
@@ -37,15 +37,15 @@
       "lastError": "missing required active authority:Missing Active Authority headcorner"
     },
     "watchdog": {
-      "checks": 2824,
+      "checks": 2844,
       "downs": 104,
       "heals": 37,
       "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T00:59:24.781Z",
+      "lastCheckAt": "2026-10-08T01:19:24.795Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-07T13:39:29.573Z",
-      "lastUpAt": "2026-10-08T00:59:24.783Z",
+      "lastUpAt": "2026-10-08T01:19:24.797Z",
       "blips": 1
     }
   },
@@ -54,7 +54,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×5/103 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×5/104 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
@@ -78,9 +78,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 275,
-    "broadcast-fails": 122,
-    "cycle-latency-tail": 49
+    "signing-cred-blocked": 277,
+    "broadcast-fails": 124,
+    "cycle-latency-tail": 51
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }

@@ -2121,3 +2121,28 @@ Stage Summary:
 - הקהילה-מתועדת-לעד ב-docs/COMMUNITY.md (ה-3-STEEM: fee-tx מדוד, לא-מיתוס-ה-100) והזרימה-אליה-נעשתה-מרוכזת (1:1 + סיבוב-כולם)
 - אף-אחד-לא-כותב-יותר-עם-מקפים: הגייט-הטהור-שומר-והמנרמל-מתקן-במקור; התוכן-מתובל-בסלנג-מפתחים-ונושא-תמונות-חוקיות-עם-קרדיט
 >>>>>>> origin/saos-cockpit
+
+---
+Task ID: R260
+Agent: Z.ai Code (main)
+Task: המפעיל: "תמשיך עוד יותר עמוק ודחוף" — סבב R260: פרובות-ענקים חדשות (לא-חזרה-על-הארסנל), תיקון-איכותי, דחיפה-דו-כיוונית
+
+Work Log:
+- 🔬 **distrust-mode כרגיל**: fresh-clone מ-GitHub (9bfb006) — baseline ירוק-מלא (82/82-bun+node · 12/12 · drill · 57/57×2) לפני-כל-פרובה
+- 🔴 **P1 — תשובה-ריקה-שמתחזה (נמדד-חי)**: `decision-answer <id>` חשוף (בלי-אפשרות-ובלי-טקסט) שמר answer={by,at} וסגר-החלטה-בשקט rc=0 — החלטה-התקבלה-בלי-שאמרו-כלום. תרופה-מבנית ב-answerDecision (נקודת-חנק): תשובה-חייבת-אפשרות-או-טקסט-לא-ריק → INVALID-DECISION
+- 🔴 **P2 — CWE-59 follow-open (הוכח-חי עם-wrapper באותו-pid)**: `openSync(tmp,"w")` עוקב-אחרי-symlink שהוצב-מראש ב-tasks.json.tmp-<pid> — קובץ-קורבן מחוץ-ל-state/ נדרס בתוכן-ה-state (VICTIM-SENTINEL נמחק). תרופה: **"wx"+0600 (O_EXCL)** — מסרב-לכל-כניסה-קיימת (symlink-או-שארית) → TMP-EXISTS-נדחה-בשם; הקורבן-הטרי נשאר-שלם (נמדד)
+- 🔴 **P3 — בליעה-שקטה-ב-argv (3-מקרים-נמדדו)**: (a) טעות-כתיב --priorty התקבלה-שקט (עדיפות=0); (b) תוויות-אפשרויות המתחילות-ב-"--" נבלעו-יחד-עם-הטוקן-הבא — decision-add "--keep A" "--drop B" → החלטה-עם-0-אפשרויות (וגם --id נשמט-מהפוזיציונליים); (c) מילת-סיבה המתחילה-ב-"--" בלעה-את-המילה-שאחריה. תרופה: **חוזה-argv-סגור** — KNOWN_FLAGS+UNKNOWN-FLAG-נדחה-בשם · flagVal-לא-בולע-flag-כערך · positional-מדלג-רק-value-flags-מוכרים · סיבת-חובה-ב-reopen/cancel
+- 🔴 **P6 — הבטחה-מתה ב-gitsafety-env (מבודד-מכריע)**: `GIT_ALLOW_PROTOCOL` מנצח-את-ה-env-config — protocol.file.allow=user הייתה-מתה (ls-remote-מקומי נדחק rc=128 למרות-ההבטחה; ה-config-לבדו היה-מאפשר rc=0). תרופה: השורה-הוסרה (GIT_CONFIG_COUNT 4→3), החוזה-מוכרז-בקול: **סירוב-כולל INCLUDING-file** + וקטורי-חוזה (https-נדחה · file-נדחה · set -euo pipefail-שורד)
+- 🔴 **P9 — state-פגום-מבנית זרם-דרך (נמדד)**: עדיפות-חסרה רונדרה "Pundefined" · deps-מחרוזת נאספה תו-תו · options-חסרות קרסו ב-TypeError-גולמי-תלוי-מנוע-ריצה ("undefined is not an object") במקום-סירוב-נקוב. תרופה: validateGraph (כותרת-מחרוזת/deps-מערך/עדיפות-סופית) + validateDQ (אפשרויות-מערך-עם-תוויות) → INVALID-GRAPH/INVALID-DQ נקוב
+- **P4 — מיון-מכונה-חף-ICU**: localeCompare("a","B") = -1 (ICU) מול-code-unit B<a — build-חף-ICU/גרסת-ICU-אחרת מסדר-שוב; תור-המפעיל הוא-חוזה-מכונה → **cmpStr-code-unit** ב-ready/listOpen (+וקטור-הורג: ["T-B","T-a"] ו-["B-2","b-1"])
+- **P5 — prototype-pollution: נקי (נמדד)**: state-עם-__proto__-מוזרק נקרא-בלי-זיהום-Object.prototype (JSON.parse-own-property-בלבד; אין-merge-עמוק-בשום-מודול) — נשאר-נקי-גם-אחרי-השינויים
+- **P7 — מבט-צרכן (npm-pack→install→run)**: הטארבול-המותקן ירוק-על-הכל (selftest-82 · drill · analytics) — וה-16-קבצים-ב-whitelist-לא-נשברו
+- **P8 — SIGTERM-storm: נקי** — 8-כתיבות-שנהרגו-בין-ההרצות, JSON-תקין, final rc=0, אפס-שאריות-tmp (אותה-משפחה-כמו-SIGKILL — חיות-הבעלים-מכסה)
+- **וקטורי-הריגה**: selftest-פרטי 813→**821** (8-וקטורי-P1/P4/P9) · cli-contract 57→**77** (20-וקטורי-ספאוון: argv-סגור ×10 · תחזית-ריקה ×3 · CWE-59-wrapper ×3 · gitsafety ×3 — byte-identical-לשני-העצים) · selftest-ציבורי 82→**90** — הכל-ירוק-ב-bun+node
+- **שער-ציבורי-מלא**: src-byte-identical (cmp-3/3) · cli-contract-byte-identical · selftest-90/90×2-runtimes · analytics-12/12 · drill-252 · cli-contract-77/77×2 · npm-pack-16 · אודיט-אפס-תלויות · סריקות (דפוסים+PAT-מילולי+היסטוריה-מלאה) = אפס-פגיעות · **דחיפה: 9bfb006→26cfc26** · API: public · שיבוט-טרי-מ-GitHub: ירוק-על-הכל+Quick-Start-עובד
+- **תרופות-הוכחו-חי**: bare-answer→REFUSED-INVALID-DECISION · --priorty→REFUSED-UNKNOWN-FLAG · "--keep A"→REFUSED-UNKNOWN-FLAG-הקורבן-נקוב · symlink→REFUSED-TMP-EXISTS-והקורבן-שלם · state-פגום→REFUSED-INVALID-DQ-נקוב
+
+Stage Summary:
+- שיטות-הענקים-בסבב: **הפרובה-שהופכת-לחוק-באותו-סבב** (כל-פרובה-נמדדה-חי-על-שיבוט-טרי, תוקנה-פרטי-קודם, והוכחה-שוב-על-הקוד-המתוקן) · **בידוד-מנגנונים** (P6: מי-מנצח — GIT_ALLOW_PROTOCOL מול-env-config — נמדד-בנפרד-והוכרע) · **חוזה-argv-סגור** (git-style: סירוב-נקוב ≥ בליעה-שקטה) · **חוזה-מיון-מכונה** (אפס-תלות-ICU)
+- 4-משפחות-כשל-חדשות-נחסמו: תחזית-ריקה-שמתחזה · follow-open-על-קבצים-זמניים (CWE-59) · בליעת-argv-שקטה · state-פגום-מבנית-שזורם-דרך
+- הריפו-הציבורי: main=**26cfc26** — 90+77-וקטורים, אפס-תלויות, ירוק-בשתי-הריצות-על-תוכן-ה-GitHub-עצמו
