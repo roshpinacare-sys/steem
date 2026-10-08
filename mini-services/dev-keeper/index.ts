@@ -54,6 +54,7 @@ const NEXT_CACHE_LIMIT = 1.2 * 1024 * 1024 * 1024; // 1.2GB
 const RSS_LIMIT_KB = 1.6 * 1024 * 1024; // 1.6GB — OOM fired at 1.74GB (measured)
 const RSS_SUSTAINED_TICKS = 3;
 const RSS_COOLDOWN_MS = 30 * 60_000;
+const RSS_HARD_CEILING_KB = 2.0 * 1024 * 1024; // R287b: within-cooldown override — at 2.0GB the no-storm law yields to imminent OOM (measured 21:59: the server died at 2.3GB while the cooldown withheld the kill)
 
 fs.mkdirSync(STATE_DIR, { recursive: true });
 
@@ -164,8 +165,8 @@ function rssGuard() {
   lastRssMB = hit ? Math.round(hit.rssKb / 1024) : 0;
   if (!hit || hit.rssKb < RSS_LIMIT_KB) { rssTicks = 0; return; }
   rssTicks += 1;
-  if (rssTicks < RSS_SUSTAINED_TICKS) { lastAction = `rss-watch-${lastRssMB}MB`; return; }
-  if (Date.now() - lastRssActionMs < RSS_COOLDOWN_MS) {
+  if (rssTicks < RSS_SUSTAINED_TICKS && hit.rssKb < RSS_HARD_CEILING_KB) { lastAction = `rss-watch-${lastRssMB}MB`; return; }
+  if (Date.now() - lastRssActionMs < RSS_COOLDOWN_MS && hit.rssKb < RSS_HARD_CEILING_KB) {
     log(`rss-guard: ${lastRssMB}MB again within cooldown — NOT killing (no storm); watching`);
     return;
   }
