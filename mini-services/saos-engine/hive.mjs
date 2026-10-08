@@ -93,6 +93,26 @@ function gitShowBytes(commit, file) {
  * Hive ("Missing Active Authority"), unlike the Steem posting_json_metadata
  * lane. Full custody was already measured (owner+active+posting all match the
  * GEN-1 pubs) — we simply were not carrying the key. */
+/**
+ * pickVaultKey — R265 VAULT-SHAPE LAW (pure, selftest-locked).
+ * Two record shapes live in vault history: the roster's flat
+ * keys.{posting,active}.wif and the master records' per-chain
+ * keys.{chain}.{role}.wif. The chain-specific record WINS when present
+ * (it is the only shape that can differ per chain); the flat record is the
+ * fallback. Measured R265: headcorner's GEN-1 record carried a per-chain
+ * hive entry whose wif field disagreed with its own pub — the SHAPE law is
+ * not enough by itself; the caller still verifies every WIF against the
+ * live authority (fail-closed, nothing here trusts a record).
+ */
+export function pickVaultKey(rec, role, chain = "hive") {
+  if (!rec) return null;
+  const perChain = rec.keys?.[chain]?.[role]?.wif;
+  if (perChain) return perChain;
+  const flat = rec.keys?.[role]?.wif;
+  if (flat) return flat;
+  return null;
+}
+
 function unlockHiveKeysFromGitVault() {
   fs.rmSync(TMP, { recursive: true, force: true });
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
@@ -112,9 +132,9 @@ function unlockHiveKeysFromGitVault() {
     const byName = new Map((vault.accounts ?? []).map((a) => [a.username, a]));
     const extracted = { posting: {}, active: {} };
     for (const name of HIVE_ROSTER) {
-      const pwif = byName.get(name)?.keys?.posting?.wif;
+      const pwif = pickVaultKey(byName.get(name), "posting", "hive");
       if (pwif) extracted.posting[name] = pwif; // memory-only from here
-      const awif = byName.get(name)?.keys?.active?.wif;
+      const awif = pickVaultKey(byName.get(name), "active", "hive");
       if (awif) extracted.active[name] = awif;  // memory-only from here
     }
     return extracted;

@@ -1932,7 +1932,7 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   const { dayScheduleFor, minuteOfDay, leastSupported, leastCommented, voteOp, commentOp, replyPermlink, CAPS, WINDOW } = await import("./hive-social.mjs");
   const { isProbeComment, synthesizeReply: reply2 } = await import("./intel-pack.mjs");
   const { FORMAT_LAW, TOPIC_POOL, normalizeDashes } = await import("./content.mjs");
-  const { pickRcFitDraft } = await import("./hive.mjs");
+  const { pickRcFitDraft, pickVaultKey } = await import("./hive.mjs");
 
   /* ── the image canon: everyone carries a verified pair ── */
   eq("images: canon covers all 14 voices", PERSONA_IDS.every((id) => !!PERSONA_IMAGES[id]), true);
@@ -1966,6 +1966,15 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("meta rc floor is tiny vs post cost", META_RC_FLOOR < 300_000_001);
   eq("macrame first in roster order", HIVE_PROFILE_ORDER[0], "macrame");
   eq("hive roster order: all nine, no dupes", new Set(HIVE_PROFILE_ORDER).size, 9);
+
+  /* ── R265 vault-shape law: per-chain master records beat flat records ── */
+  eq("pickVaultKey: flat roster record", pickVaultKey({ keys: { posting: { wif: "FLAT-P" }, active: { wif: "FLAT-A" } } }, "posting"), "FLAT-P");
+  eq("pickVaultKey: per-chain record wins over flat", pickVaultKey({ keys: { hive: { posting: { wif: "CHAIN-P" } }, posting: { wif: "FLAT-P" } } }, "posting"), "CHAIN-P");
+  eq("pickVaultKey: per-chain falls back to flat when chain missing", pickVaultKey({ keys: { steem: { posting: { wif: "STEEM-P" } }, posting: { wif: "FLAT-P" } } }, "posting"), "FLAT-P");
+  eq("pickVaultKey: steem chain requested reads the steem record", pickVaultKey({ keys: { steem: { active: { wif: "STEEM-A" } }, active: { wif: "FLAT-A" } } }, "active", "steem"), "STEEM-A");
+  eq("pickVaultKey: absent role = null", pickVaultKey({ keys: { hive: { memo: { wif: "M" } } } }, "posting"), null);
+  eq("pickVaultKey: null record = null", pickVaultKey(null, "posting"), null);
+  eq("pickVaultKey: empty record = null", pickVaultKey({}, "posting"), null);
 
   /* ── the RC mutual-aid pool: measured-budget planning ── */
   ok("lift target crosses the measured post line with margin", LIFT_TARGET > 2_300_000_000 && LIFT_TARGET < 4_000_000_000);
