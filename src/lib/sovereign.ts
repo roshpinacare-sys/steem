@@ -624,6 +624,12 @@ export function ensureSovereign(by = "auto"): Core {
   // first autonomous cycle shortly after boot (engine may still be warming)
   setTimeout(() => { if (!core.state.paused) void runEngineCycle(core, "auto"); }, 45_000);
   core.timers.cycle = setInterval(() => void runEngineCycle(core, "auto"), CYCLE_MS);
+  /* R273-b: immediate first selftest, same doctrine as the watchdog's
+   * "immediate first check, then cadence". Measured gap: after the second
+   * crash the restored core carried a stale boot-time result (311, measured
+   * by pre-merge code) for 6h while the real suite already passed 999/999 —
+   * a fresh boot must re-measure NOW, not at boot+6h. */
+  void runSelftest(core);
   core.timers.st = setInterval(() => void runSelftest(core), SELFTEST_MS);
   return core;
 }
