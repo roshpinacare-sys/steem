@@ -2146,6 +2146,41 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("breaker: cooldown is minutes-scale, not seconds-scale theater", COOLDOWN_MS >= 5 * 60_000);
 }
 
+/* ═══ R264 · THE ADVERSARIAL ROUND (claims treated as lies) ═════════════════
+ * the operator ordered: verify your own claims like a professional — the
+ * red-team found real refutations and every fix here is locked as a vector,
+ * each one seeded from a MEASURED live failure. */
+{
+  const { profileDoc, profileDiffers, mergeProfileMetadata } = await import("./personas.mjs");
+  const { buildLedgerBody, ledgerTitle } = await import("./promo.mjs");
+  const { MIN_POST_WORDS } = await import("./content.mjs");
+
+  /* the wic ghost, planted exactly as measured live on chain: */
+  const ghostRaw = JSON.stringify({ profile: { name: "Old Name", location: "Steemit", website: "https://steemit.com/@wic", profile_image: "https://images.pexels.com/x.jpg" } });
+  ok("ghost law: profileDoc blanks location and website", profileDoc("wic").location === "" && profileDoc("wic").website === "");
+  ok("ghost law: profileDiffers FLAGS the planted ghost (the R263 blind spot)", profileDiffers(ghostRaw, profileDoc("wic")) === true);
+  const merged = JSON.parse(mergeProfileMetadata(ghostRaw, profileDoc("wic")));
+  ok("ghost law: the merge overwrites the ghost with blanks", merged.profile.location === "" && merged.profile.website === "");
+  ok("ghost law: unknown top-level keys still survive the merge", (() => { const m = JSON.parse(mergeProfileMetadata(JSON.stringify({ custom_key: "keep-me", profile: {} }), profileDoc("siq"))); return m.custom_key === "keep-me"; })());
+  ok("ghost law: a synced profile is idempotent (differs=false)", profileDiffers(mergeProfileMetadata(ghostRaw, profileDoc("wic")), profileDoc("wic")) === false);
+
+  /* the ledger builder: the daily report that violated our own laws on chain */
+  const body = buildLedgerBody({
+    dayIso: "2026-10-08T04:00:00Z", parity: 1.234567, paritySource: "internal feed", lowConfidence: false,
+    orders: 5, fills: 12, realizedSbd: 3.2, curationUsd: 0.5, authorUsd: 0.3, gridVerdict: "live on the book",
+    decisions: [{ kind: "soldiers", decision: "grids-live", reason: "parity in band" }],
+  });
+  ok("ledger: ≥300 words (the 140w lesson)", body.split(/\s+/).filter(Boolean).length >= 300);
+  ok("ledger: dash-free", !body.includes("—") && !body.includes("–"));
+  ok("ledger: zero codenames (the saos-tag lesson)", !["saos", "sovereign", "fleet", "soldier", "doctrine", "keyless"].some((w) => body.toLowerCase().includes(w)));
+  ok("ledger: carries the markdown table (format law)", body.includes("| Measure | Value |"));
+  ok("ledger: ends with an inviting question", /\?\s*$/.test(body.trim()));
+  ok("ledger title: neutral, dash-free, no codenames", !/—|saos|sovereign/i.test(ledgerTitle("2026-10-08T04:00:00Z")));
+  let codenameCaught = false;
+  try { buildLedgerBody({ dayIso: "2026-10-08", parity: 1, orders: 1, fills: 1, realizedSbd: 1, curationUsd: 1, authorUsd: 1, decisions: [{ kind: "curate", decision: "ok", reason: "the fleet aligned on parity" }] }); } catch (e) { codenameCaught = String(e.message).includes("exposure"); }
+  ok("ledger negative control: a planted codename (even inside a reason) is REFUSED", codenameCaught);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

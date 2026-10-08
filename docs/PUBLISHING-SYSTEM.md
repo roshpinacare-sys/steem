@@ -191,3 +191,43 @@ anti-forensics law (we never need to trust our memory of what ran).
 4. External-world re-engagement ONLY after this self-contained period proves
    the motion (operator OPSEC order): polite to responders, zero details,
    no other communities' credentials, no posting into other communities.
+
+---
+
+## 8 · R264 · THE ADVERSARIAL AUDIT (claims treated as lies)
+
+The operator's order: verify your own claims like a professional does. The
+red-team probe (`probe-r264-redteam.mjs`, chains-only evidence + negative
+controls) found four REAL refutations in R263's claims, all fixed in-round:
+
+1. **Ghost fields survived the profile merge** — wic carried
+   `location="Steemit"` + `website=steemit.com/@wic` through three
+   "successful" syncs. Fix: profileDoc blanks location/website (both chains),
+   profileDiffers compares them, the sweep re-converged (verified 14/14
+   ghost-free).
+2. **The daily transparency post violated our own laws on chain** — 140
+   words, an em-dash in the title, and the internal codename in the permlink,
+   the title AND the tags (a probe magnet). Fix: rebuilt as "The Daily
+   Ledger" — pure craft-gated builder (≥300 words, dash-free, codename-free,
+   a real table, one closing question; refuses to ship any leak). The legacy
+   permlink series is honored as that day's report (one ledger per day).
+3. **The offline floor had no reserves** — all 9 corpus pillars were already
+   published, so a bridge storm meant a starving queue. Fix: 4 new pillars
+   (2 voices that had none), + the self-heal clause (an empty eligible queue
+   overrides the content cadence). Proven live: 4 fresh drafts queued DURING
+   the ongoing 429 storm.
+4. **The second writer publishes outside the house laws** — the external
+   weave publisher (`the-weave/publisher/1.0`) shipped dash-titled, thin,
+   codename-heavy posts from the shared account. Fix: a craft addendum
+   published in the weave handshake (in-band demand: same account, same
+   laws, or no post); the partner's code is outside this container — the
+   operator may need to weigh in (D-ROT class).
+
+Honest verdicts after the fixes: CONFIRMED (Steem 14/14 ghost-free profiles,
+zero trial-era downvotes, engagement 22/23 posts voted · 70 comments);
+PARTIAL (persona-voiced comments and staggered windows are selftest-locked
+and armed — their on-chain proof lands with the 07:00+ UTC windows);
+REFUTED-then-documented (wic's Hive profile pends RC regen ~8h; every
+remaining craft/codename violation on chain is pre-R264 immutable history).
+Negative controls: 4/4 (each detector proven able to FAIL a planted
+violation — no vacuous checks).

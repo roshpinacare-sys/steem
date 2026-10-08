@@ -244,7 +244,15 @@ export function recentPublishedTitles(queue, n = 12) {
 export async function runContent({ now = new Date().toISOString(), force = false } = {}) {
   const prev = readJson(FILE, null);
   const lastMs = prev?.draftedAt ? Date.parse(prev.draftedAt) : 0;
-  if (!force && Number.isFinite(lastMs) && Date.now() - lastMs < CADENCE_MS) {
+  /* R264 · THE SELF-HEAL CLAUSE (adversarial-audit finding): the fixed 2h
+   * cadence assumed queue depth. Measured live: after the 429 storm the
+   * queue sat at ZERO drafted while the gate calmly counted down two more
+   * hours — a publishing system that has nothing to publish is not running.
+   * LAW: an empty eligible queue overrides the cadence (the writers' room
+   * runs now), a fed queue waits its turn. */
+  const eligible = (prev?.queue ?? []).filter((d) => d?.status === "drafted" && String(d?.draftedAt ?? "") >= PUBLISH_ELIGIBLE_SINCE).length;
+  const starved = eligible === 0;
+  if (!force && !starved && Number.isFinite(lastMs) && Date.now() - lastMs < CADENCE_MS) {
     return { verdict: "CADENCE-GATED", lastAt: prev.draftedAt, draftsQueued: (prev.queue ?? []).filter((d) => d.status === "drafted").length };
   }
   /* grounding (R240: light now — topics+voices own the diversity; telemetry
