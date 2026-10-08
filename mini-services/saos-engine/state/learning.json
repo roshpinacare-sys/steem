@@ -1,21 +1,19 @@
 {
-  "at": "2026-10-08T08:29:08.964Z",
+  "at": "2026-10-08T13:12:06.746Z",
   "enabled": true,
-  "runsTotal": 422,
+  "runsTotal": 223,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 129,
-      "oks": 122,
-      "fails": 2,
-      "blocked": 5,
-      "okRate": 94.6,
-      "blockedRate": 3.9,
-      "failReasons": {
-        "unknown": 2
-      },
-      "msP50": 40790,
-      "msP90": 124858
+      "window": 83,
+      "oks": 73,
+      "fails": 0,
+      "blocked": 10,
+      "okRate": 88,
+      "blockedRate": 12,
+      "failReasons": {},
+      "msP50": 8666,
+      "msP90": 14183
     },
     "curator": {
       "present": true,
@@ -25,7 +23,7 @@
         "BROADCAST-FAIL": 3,
         "VOTED": 23
       },
-      "vpEff": 39.5,
+      "vpEff": 0,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -37,33 +35,25 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 3236,
-      "downs": 107,
-      "heals": 41,
-      "healVerified": 40,
+      "checks": 2154,
+      "downs": 104,
+      "heals": 37,
+      "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T08:29:09.242Z",
+      "lastCheckAt": "2026-10-08T13:12:06.754Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-08T02:51:14.014Z",
-      "lastUpAt": "2026-10-08T08:29:09.244Z",
-      "blips": 2
+      "lastSpawnAt": "2026-10-08T13:02:11.799Z",
+      "lastUpAt": "2026-10-08T13:12:06.755Z",
+      "blips": 1
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×5/129 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "cycle-latency-tail",
-      "severity": "medium",
-      "evidence": "p50 40790ms vs p90 124858ms",
-      "lesson": "cycle duration tail is fat — RPC latency inside steps",
-      "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
+      "severity": "high",
+      "evidence": "cycle-blocked ×10/83 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
     }
   ],
   "tunings": {},
@@ -71,9 +61,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 320,
-    "broadcast-fails": 125,
-    "cycle-latency-tail": 93
+    "signing-cred-blocked": 142,
+    "broadcast-fails": 65
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
