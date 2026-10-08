@@ -38,7 +38,7 @@ import * as path from "node:path";
 import { rpcHive, HIVE_ROSTER, POST_RC_COST, hiveCustody, sendAs } from "./hive.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
 import { synthesizeReply, synthesizePersonaComment, synthesizePersonaReply, isProbeComment } from "./intel-pack.mjs";
-import { sanitizeReply, replyFresh } from "./army-social.mjs";
+import { sanitizeReply, replyFresh, normalizeBodyForClash, textSimilarity, fleetSaidFor, noteFleetSaid } from "./army-social.mjs";
 import { personaBrief } from "./personas.mjs";
 import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
 
@@ -173,6 +173,31 @@ async function commentsOnMyPost(parentAuthor, parentPermlink) {
   const r = await rpcHive("condenser_api.get_content_replies", [parentAuthor, parentPermlink]);
   return r.ok ? (r.result ?? []) : [];
 }
+
+/* R275 · THE CLONE GUARD ON HIVE (the layer R274 left for this round).
+ * The said-list in state dies with a sandbox; the chain does not. One read
+ * of the live replies under the parent, the same 0.34 Jaccard law as the
+ * Steem rail — no near-duplicate body lands under the same parent no matter
+ * which chain, which account, or how old the local memory is.
+ * The verdict core is PURE (offline-testable); the wrapper only fetches. */
+export function clashVerdict(account, body, replies, { maxSimilarity = 0.34 } = {}) {
+  const out = { own: false, clash: false, who: null, sim: 0 };
+  const mine = normalizeBodyForClash(body);
+  for (const c of replies ?? []) {
+    if (account && c.author === account) out.own = true;
+    const s = textSimilarity(mine, normalizeBodyForClash(c.body));
+    if (s >= maxSimilarity && s >= out.sim) { out.clash = true; out.who = c.author; out.sim = Math.round(s * 100) / 100; }
+  }
+  return out;
+}
+export async function hiveParentClash(account, parentAuthor, parentPermlink, body, { maxSimilarity = 0.34 } = {}) {
+  let replies = [];
+  try {
+    const r = await rpcHive("condenser_api.get_content_replies", [parentAuthor, parentPermlink]);
+    if (r.ok) replies = r.result ?? [];
+  } catch { /* unreachable chain → fail OPEN here; the said-ledger still holds */ }
+  return clashVerdict(account, body, replies, { maxSimilarity });
+}
 async function rcAvailableOf(account) {
   const r = await rpcHive("rc_api.find_rc_accounts", { accounts: [account] });
   const a = r?.result?.rc_accounts?.[0];
@@ -257,15 +282,22 @@ export async function runHiveSocial({ now = new Date().toISOString() } = {}) {
           const raw = await personaCommentViaBridge({ account, postTitle: pick.title ?? "", postExcerpt: String(pick.body ?? "").slice(0, 400), seed: hashSeed(`${day}|${account}|${pick.permlink}`) });
           const body = sanitizeReply(raw);
           if (!body) push("fleet-comment", "NO-LAWFUL-BODY");
-          else if (!replyFresh(body, said)) push("fleet-comment", "REPEAT-VETO");
+          else if (!replyFresh(body, [...said, ...fleetSaidFor(day)])) push("fleet-comment", "REPEAT-VETO");
           else {
+            /* R275 clone guard vs the chain itself — the sandbox-proof memory */
+            const clash = await hiveParentClash(account, pick.author, pick.permlink, body);
+            if (clash.own) push("fleet-comment", "OWN-VOICE-VETO");
+            else if (clash.clash) push("fleet-comment", "CLONE-VETO", { reason: `near-duplicate (~${clash.sim}) already under parent by ${clash.who}` });
+            else {
             const pl = replyPermlink(pick.author, pick.permlink, now);
+            noteFleetSaid(day, account, body); // intent-before-broadcast, same-tick siblings see this
             const res = await sendAs(account, commentOp(account, pick.author, pick.permlink, pl, body));
             if (res.ok) {
               done.fleetComment = (done.fleetComment ?? 0) + 1;
               said.add(body); st.said = Array.from(said).slice(-12);
               push("fleet-comment", "BROADCAST", { permlink: `${pick.author}/${pick.permlink}`, digest8: res.digest8 });
             } else push("fleet-comment", res.verdict ?? "REJECTED", { reason: String(res.error ?? "").slice(0, 100) });
+            }
           }
         }
       }
@@ -295,15 +327,22 @@ export async function runHiveSocial({ now = new Date().toISOString() } = {}) {
           const raw = await personaReplyViaBridge({ account, postTitle: target.post.title ?? "", commentBody: String(comment.body ?? "").slice(0, 400), seed: hashSeed(`${day}|${account}|${comment.permlink}`) });
           const body = sanitizeReply(raw);
           if (!body) push("deepen", "NO-LAWFUL-BODY");
-          else if (!replyFresh(body, said)) push("deepen", "REPEAT-VETO");
+          else if (!replyFresh(body, [...said, ...fleetSaidFor(day)])) push("deepen", "REPEAT-VETO");
           else {
+            /* R275 clone guard vs the chain itself — the sandbox-proof memory */
+            const clash = await hiveParentClash(account, comment.author, comment.permlink, body);
+            if (clash.own) push("deepen", "OWN-VOICE-VETO");
+            else if (clash.clash) push("deepen", "CLONE-VETO", { reason: `near-duplicate (~${clash.sim}) already under parent by ${clash.who}` });
+            else {
             const pl = replyPermlink(comment.author, comment.permlink, now);
+            noteFleetSaid(day, account, body); // intent-before-broadcast
             const res = await sendAs(account, commentOp(account, comment.author, comment.permlink, pl, body));
             if (res.ok) {
               done.deepen = (done.deepen ?? 0) + 1;
               said.add(body); st.said = Array.from(said).slice(-12);
               push("deepen", "BROADCAST", { permlink: `${comment.author}/${comment.permlink}`, digest8: res.digest8 });
             } else push("deepen", res.verdict ?? "REJECTED", { reason: String(res.error ?? "").slice(0, 100) });
+            }
           }
         }
       }
