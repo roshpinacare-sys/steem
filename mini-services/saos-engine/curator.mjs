@@ -42,18 +42,18 @@ const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }
 export function curatorPolicy() {
   return {
     enabled: true,
-    maxPerDay: 10,           // votes/day — well inside 20%/day VP regen
-    baseWeightPct: 50,       // a fresh post gets 50%
-    minWeightPct: 20,        // weight decays linearly toward this at ageMax
-    minVpEffPct: 60,         // effective mana floor — never drain the battery
+    maxPerDay: 30,           // R289 yield-tune (measured): 10 votes/day × ~50% = 4% VP/day vs 20% regen = 80% of the battery wasted. 30 × ~52% avg ≈ 15.6% VP/day < regen → sustainable forever; the VP floor governs the rest.
+    baseWeightPct: 70,       // R289: early strong votes earn the bigger curation share (rshares share of the pool)
+    minWeightPct: 35,        // R289: late-ish votes keep enough weight to matter
+    minVpEffPct: 35,         // R289 measured bug: the 60% floor blocked ALL votes at vpEff 59.4% (curator.json VP-FLOOR) — the battery was never allowed to cycle below 60% = 40% of the battery permanently unusable. 35% floor + 15.6%/day burn keeps equilibrium above the floor.
     maxPerAuthorPerDay: 1,   // diversity: one vote per author per day
     ageMinMinutes: 10,       // too fresh = possibly unfinished spam
-    ageMaxMinutes: 1200,     // 20h — beyond that the curation share is dust
+    ageMaxMinutes: 240,      // R289: 1200min (20h) votes earn ~dust — the curation share decays with every later voter; 4h window concentrates the same VP where returns live
     minBodyChars: 600,       // real content, not micro-dust
     maxPendingSbd: 30,       // bandwagon guard — late votes on hot posts earn little
     maxVotesPerCycle: 3,     // T-85: spread the day's votes across random windows
     tags: ["steem", "crypto", "defi", "trading", "technology", "ai"],
-    excludeAccounts: ["headcorner", "hcsoldier1", "hcsoldier2", "hcsoldier3"],
+    excludeAccounts: ["headcorner", "hcsoldier1", "hcsoldier2", "hcsoldier3", "hcsoldier4", "hcsoldier5", "hcsoldier6", "cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq"], // R289: full roster — the fuel rail votes OUTSIDE rising content only; fleet-support is army-social's law
   };
 }
 
