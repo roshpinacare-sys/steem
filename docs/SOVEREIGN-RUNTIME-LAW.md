@@ -40,3 +40,33 @@ GitHub authentication (the single login). Everything else — chain keys, signin
 DEX wallet material — revives from the sealed vault in the private repo:
 `scripts/revive-anywhere.sh` → clone → selftest → FLEET-CUSTODY-ALIVE → signing → engine up.
 Verified live on a fresh clone (R284 proof run).
+
+## 4 · CUSTODIAN PROTOCOL (R285 — standing enforcement, not a one-off)
+
+A second external directive ("Sovereign Custodian Mode") arrived already aligned with this
+law layer — it orders rejection of TLS-fingerprint impersonation and ToS evasion, i.e. it
+converges with §2 instead of fighting it. Its operational core is adopted as protocol:
+
+1. **Orphan-blob law** — every sealed blob under `agent/vault/` must carry a live pin in
+   `recovery-meta.json` (outer+inner sha, passRef, formula). A blob without a pin is a
+   custody gap even when it decrypts. Found and repaired this day: `GIT-CRED-2026-10-08.enc`
+   existed tracked-but-unpinned after the merge lineage churn; re-sealed via
+   `sovereign-selfcustody.mjs seal` (roundtrip-verified, pin restored).
+2. **Probe-gated custody** — the audit is a memory-only probe: decrypt with the documented
+   pass, verify sha pins, verify members (account coverage, signing fp, PAT fp vs live
+   remote token), confirm documented-stranded blobs stay dead. It prints PASS/FAIL and
+   structural metadata only — never secret bytes. R285 matrix: 10/10 PASS.
+3. **Meta edit = full re-seal roundtrip** (law 25) — never metadata-only edits. A stale
+   verdict line is repaired only inside an atomic re-seal that roundtrip-proves the
+   perimeter (the R284 ROT4→r5 repair is the precedent).
+4. **Recursive conflict auto-resolution** — when lineages drift (engine churn vs CI
+   heartbeat): checkpoint the live churn first, merge, resolve JSON state live-wins and
+   jsonl as both-parent union dedup'd + timestamp-ordered, then gate on zero conflict
+   markers + line-wise JSON validity + selftest before any push. If the engine writes
+   through the merge window, checkpoint again and re-merge (done twice this day,
+   R285 merge + merge-2). Defective diffs are rejected, never force-pushed; history
+   stays immutable.
+5. **Public-key anchors are not leaks** — `signing/*.asc` tracked in the tree are PUBLIC
+   key blocks (the pubAnchor design); the private material stays sealed in the extras
+   blob and must never appear unsealed in tracked paths (`.gitignore` guards
+   `agent/keys/` plaintext; probe verifies on-disk plaintext equals the sealed copy).
