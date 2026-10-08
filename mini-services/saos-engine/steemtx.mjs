@@ -174,7 +174,7 @@ class Writer {
 }
 
 /* ── operation serializers (field order = chain registry order) ─────────── */
-export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, account_update: 10, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18, delegate_vesting_shares: 40 };
+export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, account_update: 10, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18, delegate_vesting_shares: 40, account_update2: 43 };
 /* R216 custody-witness: custom_json=18 obtained by CHAIN TRUTH (get_transaction_hex,
  * node-serialized probe 2026-10-05: op-id byte = 0x12 = 18; body fields verified:
  * required_auths vec + required_posting_auths vec + id str + json str). Same method
@@ -257,12 +257,20 @@ function serOp(name, v, w) {
     case "account_update":
       /* R245 EMERGENCY KEY ROTATION: {account, owner?, active?, posting?,
        * memo_key, json_metadata} — fc optionals = varint(0/1) prefix.
-       * Owner-signed; owner keys never broadcast ⇒ never constant-k exposed. */
+       * Owner-signed; owner keys never broadcast ⇒ never constant-k exposed.
+       * 🔴 R255 BYTE-ORACLE REPAIR (2026-10-08, get_transaction_hex byte-diff,
+       * node-judged): this op HAS a trailing extensions varint — the R245
+       * canon claimed "every op" but THIS case never got it, so every
+       * rotation tx was ONE BYTE SHORT (digest mismatch ⇒ "missing required
+       * active authority") — the chain-judged proof explains why the R245-ROT2
+       * re-sealed keys never went live (the old army's authorities are still
+       * GEN-1 — measured live 2026-10-08). memo_key here is PLAIN (op-43's is
+       * optional-wrapped — the node's own bytes are the only truth). */
       w.str(v.account);
       for (const role of ["owner", "active", "posting"]) {
         if (v[role]) { w.varint(1).authority(v[role]); } else { w.varint(0); }
       }
-      w.pubkey(v.memo_key).str(v.json_metadata ?? "{}");
+      w.pubkey(v.memo_key).str(v.json_metadata ?? "{}").varint(0);
       break;
     case "vote":
       w.str(v.voter).str(v.author).str(v.permlink).i16(v.weight);
@@ -284,6 +292,33 @@ function serOp(name, v, w) {
       w.varint((v.required_posting_auths ?? []).length);
       for (const a of v.required_posting_auths ?? []) w.str(a);
       w.str(v.id).str(v.json ?? "{}");
+      break;
+    case "account_update2":
+      /* R255 PROFILE-VISIBILITY (2026-10-08): op id 43 by CHAIN TRUTH probe
+       * (get_transaction_hex, node-serialized: op-id byte 0x2b = 43 — same
+       * method as R216 custom_json=18 / R209 claim=39 / T-91 ttv=3).
+       * WHY IT EXISTS: the custom_json id "update_account_metadata" write was
+       * a PHANTOM — the node ACCEPTED the tx (txid returned) but account state
+       * never changed (get_accounts json_metadata stayed empty; chain truth
+       * beats every claim, the third txid-oracle lesson). The consensus
+       * profile write is THIS op. Body: account, owner?/active?/posting?
+       * (fc-optional authority: varint(0) = absent), memo_key (fc-optional
+       * pubkey: varint(1) flag THEN the 33 bytes — node byte-oracle proved
+       * the flag byte), json_metadata, posting_json_metadata, extensions. */
+      w.str(v.account);
+      for (const role of ["owner", "active", "posting"]) {
+        if (v[role]) { w.varint(1).authority(v[role]); } else { w.varint(0); }
+      }
+      if (v.memo_key) { w.varint(1).pubkey(v.memo_key); } else { w.varint(0); }
+      /* 🔴 R255 CONSENSUS-FORM LAW (2026-10-08, the txid-oracle doctrine's
+       * sharpest lesson yet): get_transaction_hex's serialization of THIS op
+       * carries ONE PHANTOM BYTE the consensus digest does NOT. Four
+       * get_transaction_hex-identical variants were rejected
+       * ("missing required active authority" / "unknown key"); the accepted
+       * broadcast proved the digest form = optional-memo + PLAIN strings +
+       * op-extensions, WITHOUT the phantom. THE NODE'S ACCEPT/REJECT IS THE
+       * ONLY BYTE ORACLE — get_transaction_hex is a hint, never the judge. */
+      w.str(v.json_metadata ?? "").str(v.posting_json_metadata ?? "").varint(0);
       break;
     default:
       throw new Error(`op-not-serializable: ${name}`);

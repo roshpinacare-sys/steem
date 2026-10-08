@@ -53,6 +53,20 @@ const VAULT_ZIP = "agent/vault/KEYS-ZIP-2026-10-07.zip.enc"; /* R245-ROT2: the G
 const META_REF = "agent/recovery-meta.json";
 const GIT_REF = "origin/main";
 
+/* R255 · DUAL-GENERATION CUSTODY (chain-judged, 2026-10-08 00:0xZ measured):
+ * the ROT2 re-seal (fe8aaf2f) staged GEN-2 keys in the git vault, but the
+ * CHAIN-JUDGED probe proved the old army's LIVE Steem authorities are still
+ * the GEN-1 keys (cashmachine/haran/lsa: GEN-1-derived pub == live posting
+ * authority, byte-exact; GEN-2 pubs mismatch) — the ROT2 rotation broadcast
+ * never executed on-chain. LAW: the vault generations are BOTH unlocked,
+ * sha-pinned, memory-only, and the LIVE CHAIN judges which generation is
+ * custody-alive, per account, per role. No file, claim, or freshness beats
+ * the chain. The pending owner-signed GEN-2 activation is an operator-level
+ * decision (recorded in the worklog + DecisionQueue) — never a silent
+ * side-effect. */
+const GEN1_COMMIT = "1c9f00d0";
+const GEN1_ZIP = "agent/vault/KEYS-ZIP-2026-09-10.zip.enc";
+
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson0600 = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true, mode: 0o700 }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2), { mode: 0o600 }); fs.chmodSync(t, 0o600); fs.renameSync(t, p); }; /* R235: atomic, 0600 preserved */
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
@@ -64,43 +78,73 @@ function gitShowBytes(ref, file) {
   return Buffer.from(out);
 }
 
-/* git pull + decrypt + sha-pin + extract army WIFs → 0600 cache (verdict-only) */
-function pullArmyKeysFromVault() {
+/** unlock ONE sha-pinned vault generation (git → sha-pin → AES decrypt →
+ * unzip) and return per-account posting+active WIF material (memory only).
+ * Both vault shapes are handled: flat keys.{role} (GEN-1) and the nested
+ * keys.steem.{role} form. The plaintext tmp never outlives this function. */
+function unlockGeneration({ ref, zip, metaRef }) {
   fs.rmSync(TMP, { recursive: true, force: true });
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
-  const meta = JSON.parse(gitShowBytes(GIT_REF, META_REF).toString("utf8"));
-  const enc = gitShowBytes(GIT_REF, VAULT_ZIP);
-  const outerSha = sha256(enc);
-  if (outerSha !== meta.keysZipSha256) throw new Error(`vault-outer-sha-mismatch (${outerSha.slice(0, 8)})`);
-  fs.writeFileSync(path.join(TMP, "keys-zip.enc"), enc, { mode: 0o600 });
-  const pass = String(meta.keysZipPass);
-  execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-    "-in", path.join(TMP, "keys-zip.enc"), "-out", path.join(TMP, "inner.zip"),
-    "-pass", `pass:${pass}`], { stdio: ["ignore", "ignore", "pipe"] });
-  const innerBuf = fs.readFileSync(path.join(TMP, "inner.zip"));
-  const innerSha = sha256(innerBuf);
-  if (innerSha !== meta.keysZipInnerSha256) throw new Error(`vault-inner-sha-mismatch (${innerSha.slice(0, 8)})`);
-  fs.writeFileSync(path.join(TMP, "inner.zip"), innerBuf, { mode: 0o600 });
-  execFileSync("unzip", ["-o", "-q", path.join(TMP, "inner.zip"), "agent/keys/vault.json", "-d", path.join(TMP, "opened")]);
-  const vault = JSON.parse(fs.readFileSync(path.join(TMP, "opened", "agent", "keys", "vault.json"), "utf8"));
-  const byName = new Map((vault.accounts ?? []).map((a) => [a.username, a]));
+  try {
+    const meta = JSON.parse(gitShowBytes(ref, metaRef).toString("utf8"));
+    const enc = gitShowBytes(ref, zip);
+    const outerSha = sha256(enc);
+    if (outerSha !== meta.keysZipSha256) throw new Error(`vault-outer-sha-mismatch (${outerSha.slice(0, 8)})`);
+    fs.writeFileSync(path.join(TMP, "keys-zip.enc"), enc, { mode: 0o600 });
+    execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
+      "-in", path.join(TMP, "keys-zip.enc"), "-out", path.join(TMP, "inner.zip"),
+      "-pass", `pass:${meta.keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
+    const innerBuf = fs.readFileSync(path.join(TMP, "inner.zip"));
+    const innerSha = sha256(innerBuf);
+    if (innerSha !== meta.keysZipInnerSha256) throw new Error(`vault-inner-sha-mismatch (${innerSha.slice(0, 8)})`);
+    fs.writeFileSync(path.join(TMP, "inner.zip"), innerBuf, { mode: 0o600 });
+    execFileSync("unzip", ["-o", "-q", path.join(TMP, "inner.zip"), "agent/keys/vault.json", "-d", path.join(TMP, "opened")]);
+    const vault = JSON.parse(fs.readFileSync(path.join(TMP, "opened", "agent", "keys", "vault.json"), "utf8"));
+    const byName = new Map((vault.accounts ?? []).map((a) => [a.username, a]));
+    const out = {};
+    for (const name of ARMY) {
+      const a = byName.get(name);
+      const wif = a?.keys?.steem?.posting?.wif ?? a?.keys?.posting?.wif ?? null;
+      const pub = a?.keys?.steem?.posting?.pub ?? a?.keys?.posting?.pub ?? null;
+      const activeWif = a?.keys?.steem?.active?.wif ?? a?.keys?.active?.wif ?? null;
+      const activePub = a?.keys?.steem?.active?.pub ?? a?.keys?.active?.pub ?? null;
+      if (wif) out[name] = { wif, pub, activeWif, activePub };
+    }
+    return { gen: ref === GEN1_COMMIT ? "GEN-1" : "GEN-2", outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), accounts: out };
+  } finally {
+    fs.rmSync(TMP, { recursive: true, force: true });
+  }
+}
+
+/* R255 · git pull + decrypt + sha-pin + extract BOTH generations → 0600
+ * cache (verdict-only). The CHAIN (at adoption time) decides which
+ * generation is custody-alive per account — the cache is material, not
+ * truth. */
+function pullArmyKeysFromVault() {
+  const gens = [];
+  const errors = [];
+  for (const spec of [
+    { gen: "GEN-2", ref: GIT_REF, zip: VAULT_ZIP, metaRef: META_REF },
+    { gen: "GEN-1", ref: GEN1_COMMIT, zip: GEN1_ZIP, metaRef: META_REF },
+  ]) {
+    try { gens.push(unlockGeneration(spec)); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
+  }
   const accounts = [];
   const missing = [];
   for (const name of ARMY) {
-    const a = byName.get(name);
-    const wif = a?.keys?.steem?.posting?.wif ?? a?.keys?.posting?.wif;
-    const pub = a?.keys?.steem?.posting?.pub ?? a?.keys?.posting?.pub;
-    if (!wif) { missing.push(name); continue; }
-    accounts.push({ name, wif, pub: pub ?? null });
+    const gensFor = gens.map((g) => ({ gen: g.gen, ...(g.accounts[name] ?? {}) })).filter((g) => g.wif);
+    if (!gensFor.length) { missing.push(name); continue; }
+    accounts.push({ name, gens: gensFor });
   }
-  if (!accounts.length) throw new Error("vault-had-no-army-posting-keys");
-  writeJson0600(CACHE_FILE, { extractedAt: new Date().toISOString(), source: VAULT_ZIP, outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), accounts });
-  /* the plaintext vault never outlives the extraction */
-  fs.rmSync(TMP, { recursive: true, force: true });
-  return { ok: true, extracted: accounts.length, missing };
+  if (!accounts.length) throw new Error(`vault-had-no-army-posting-keys (${errors.join(" | ")})`);
+  writeJson0600(CACHE_FILE, { extractedAt: new Date().toISOString(), generations: gens.map((g) => ({ gen: g.gen, outerSha: g.outerSha, innerSha: g.innerSha })), errors, accounts });
+  return { ok: true, extracted: accounts.length, missing, errors };
 }
 
-/* adopt cached WIFs into memory custody — every one judged by the live chain */
+/* adopt cached WIFs into memory custody — every one judged by the live chain.
+ * R255: generation-ordered (GEN-2 first, GEN-1 fallback) — the chain rejects
+ * a dead generation and the next one is tried; the winning generation is
+ * journaled (custody.gen) so the ledger records WHICH vault is alive. */
 async function adoptFromCache({ force = false } = {}) {
   const cache = readJson(CACHE_FILE, null);
   if (!cache?.accounts?.length) return { ok: false, reason: "no-cache" };
@@ -108,10 +152,24 @@ async function adoptFromCache({ force = false } = {}) {
   for (const a of cache.accounts) {
     if (!force && armyCustodyState([a.name]).accounts[a.name] === "verified") {
       results.push({ account: a.name, verdict: "ALREADY-VERIFIED" });
-      continue;
+    } else {
+      let done = null;
+      for (const g of (a.gens ?? [])) {
+        const r = await adoptVerifiedWifIdentity(a.name, g.wif, { role: "posting" });
+        if (r.ok) { done = { gen: g.gen, activeWif: g.activeWif }; results.push({ account: a.name, verdict: "VERIFIED-VS-CHAIN", gen: g.gen, pubkey: r.pubkey ?? null }); break; }
+        results.push({ account: a.name, verdict: `GEN-${g.gen}-REFUSED:${r.reason}` });
+      }
+      if (!done) continue;
     }
-    const r = await adoptVerifiedWifIdentity(a.name, a.wif, { role: "posting" });
-    results.push({ account: a.name, verdict: r.ok ? "VERIFIED-VS-CHAIN" : `REFUSED:${r.reason}`, pubkey: r.pubkey ?? null });
+    /* R255 · ACTIVE adoption (fail-closed, same chain-judgment law): the
+     * profile lane signs account_update2 with the active authority. */
+    const cacheAcc = a;
+    for (const g of (cacheAcc.gens ?? [])) {
+      if (!g.activeWif) continue;
+      const ra = await adoptVerifiedWifIdentity(a.name, g.activeWif, { role: "active" });
+      if (ra.ok) { results.push({ account: a.name, verdict: "ACTIVE-VERIFIED", gen: g.gen }); break; }
+      results.push({ account: a.name, verdict: `ACTIVE-GEN-${g.gen}-REFUSED:${ra.reason}` });
+    }
   }
   return { ok: results.some((r) => r.verdict === "VERIFIED-VS-CHAIN" || r.verdict === "ALREADY-VERIFIED"), results };
 }
@@ -123,8 +181,21 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
   const before = armyCustodyState(roster);
   let pulled = null;
   try {
-    if (!fs.existsSync(CACHE_FILE)) pulled = pullArmyKeysFromVault();
-    const adopted = await adoptFromCache();
+    /* R255 · STALE-CACHE SELF-HEAL (root cause of the 23:44 PARTIAL 3/14):
+     * the cache only re-pulled when MISSING, so the pre-rotation 19:19 cache
+     * kept feeding DEAD posting keys ("posting-authority-mismatch" for the
+     * whole old army) while the GEN-2 vault sat one git-show away. NEW LAW:
+     * a cache that still leaves roster accounts unverified is re-pulled from
+     * the git vault (sha-pinned) and adoption re-judged — the vault re-pulls
+     * until the chain says yes. */
+    const cacheIsDualGen = Array.isArray(readJson(CACHE_FILE, {})?.generations);
+    if (!fs.existsSync(CACHE_FILE) || !cacheIsDualGen) pulled = pullArmyKeysFromVault();
+    let adopted = await adoptFromCache();
+    const after0 = armyCustodyState(roster);
+    if (after0.verified < roster.length && !pulled) {
+      pulled = pullArmyKeysFromVault();
+      adopted = await adoptFromCache();
+    }
     const after = armyCustodyState(roster);
     const doc = {
       at: now, verdict: after.verified === roster.length ? "FLEET-CUSTODY-ALIVE" : "PARTIAL",
@@ -145,4 +216,4 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
   }
 }
 
-export { ARMY as ARMY_ROSTER_VAULT };
+export { ARMY as ARMY_ROSTER_VAULT, ARMY as ARMY_ROSTER };

@@ -30,11 +30,17 @@ Output STRICT JSON only, no markdown fences:
 {"drafts":[{"title":"...","body":"...","tags":["tag1","tag2"],"angle":"...","voice":"...","seoNote":"...","groundedOn":["..."]}]}`;
 
 export async function POST(req: Request) {
-  let body: { topics?: unknown; voices?: unknown; recentTitles?: unknown; findings?: unknown; exposureLaw?: unknown; styleLaw?: unknown } = {};
+  let body: { topics?: unknown; voices?: unknown; personas?: unknown; recentTitles?: unknown; findings?: unknown; exposureLaw?: unknown; styleLaw?: unknown } = {};
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: "json-body required" }, { status: 400 }); }
 
   const topics = (Array.isArray(body.topics) ? body.topics : []).slice(0, 6);
   const voices = (Array.isArray(body.voices) ? body.voices : []).slice(0, 12);
+  /* R255 · PERSONA SHEETS (engine-sent): full soul briefs per author. When
+   * present they OWN the voice block — the drafts come back tagged with the
+   * persona id so the publish rail can match voices to accounts. */
+  const personas = (Array.isArray(body.personas) ? body.personas : [])
+    .filter((p: unknown): p is { account: string; brief: string; owns?: string[] } => !!p && typeof (p as { account?: unknown })?.account === "string" && typeof (p as { brief?: unknown })?.brief === "string")
+    .slice(0, 4);
   const recentTitles = (Array.isArray(body.recentTitles) ? body.recentTitles : []).slice(0, 12);
   const findings = Array.isArray(body.findings) ? body.findings.slice(0, 8) : [];
   const law = Array.isArray(body.exposureLaw) ? body.exposureLaw : [];
@@ -50,8 +56,12 @@ export async function POST(req: Request) {
     "THIS ROUND'S TOPICS — draft #1,2,3,4 take topics #1,2,3,4 IN ORDER (build one concrete piece per topic, do not just restate the hint):",
     ...topics.map((t: { id?: string; hint?: string; tags?: string[] }, i) => `${i + 1}. ${(t?.id ?? "?")} — ${(t?.hint ?? "")} (suggested tags: ${(t?.tags ?? []).join(", ")})`),
     "",
-    "THIS ROUND'S VOICES — draft #i is written in voice #i (a DIFFERENT voice per draft; the feed must not sound like one bot):",
-    ...voices.slice(0, 4).map((v: { account?: string; voice?: string }, i) => `${i + 1}. ${v?.voice ?? "clear and concrete"}`),
+    personas.length
+      ? "THIS ROUND'S AUTHORS — draft #i is written BY author #i, IN their voice, AT their development stage (a voice that grew; honor the slang but never force it; keep the register dial: professional lean stays crisp, neighborhood lean stays warm):"
+      : "THIS ROUND'S VOICES — draft #i is written in voice #i (a DIFFERENT voice per draft; the feed must not sound like one bot):",
+    ...(personas.length
+      ? personas.map((p, i) => `${i + 1}. [persona:${p.account}]\n${p.brief}`)
+      : voices.slice(0, 4).map((v: { account?: string; voice?: string }, i) => `${i + 1}. ${v?.voice ?? "clear and concrete"}`)),
     "",
     "DO NOT come close to these already-published titles (different topic AND different words):",
     ...(recentTitles.length ? recentTitles.map((t: unknown) => `- ${String(t).slice(0, 90)}`) : ["- (none)"]),
@@ -66,8 +76,9 @@ export async function POST(req: Request) {
     ...(style?.dashes ? [`- ${style.dashes}`] : []),
     ...(style?.slang?.length ? [`- professional developer slang, used naturally: ${style.slang.slice(0, 12).join(", ")}`, `- ${style.slangGuidance ?? "at most one or two per post, only where a real developer would say them"}`] : []),
     "",
+    personas.length ? 'Return each draft with "persona": "<the account id from [persona:...]>".' : "",
     "Return STRICT JSON only.",
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   try {
     const ZAI = (await import("z-ai-web-dev-sdk")).default;
