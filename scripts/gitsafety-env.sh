@@ -16,11 +16,13 @@ gitsafety_env() {
   export GIT_ALLOW_PROTOCOL="agentcraft-none"
   export GIT_TERMINAL_PROMPT="0"
   # 3) חוזה-פרוטוקולים דרך-env-config (בלי-לכתוב-ל-.git/config — אפס-מוטציה-לריפו)
-  export GIT_CONFIG_COUNT="4"
+  # R260 · מדידה-חיה: GIT_ALLOW_PROTOCOL מנצח-את-ה-config, ולכן השורה protocol.file.allow=user
+  # הייתה-הבטחה-מתה (ls-remote-מקומי נדחק rc=128 למרות-ההבטחה). החוזה-האמיתי: סירוב-כולל
+  # INCLUDING-file — עכשיו הסקריפט אומר-את-זה-בקול ומדדי-ה-cli-contract מחזיקים-את-זה.
+  export GIT_CONFIG_COUNT="3"
   export GIT_CONFIG_KEY_0="protocol.allow"        GIT_CONFIG_VALUE_0="never"
   export GIT_CONFIG_KEY_1="protocol.https.allow"  GIT_CONFIG_VALUE_1="never"
   export GIT_CONFIG_KEY_2="protocol.http.allow"   GIT_CONFIG_VALUE_2="never"
-  export GIT_CONFIG_KEY_3="protocol.file.allow"   GIT_CONFIG_VALUE_3="user"
 }
 if [[ $# -gt 0 ]]; then
   gitsafety_env
