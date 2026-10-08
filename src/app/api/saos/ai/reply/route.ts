@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { withLlmRetry, withVoice } from "../_llm";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -32,7 +33,7 @@ Output STRICT JSON only, no markdown fences:
 {"reply":{"body":"..."}}`;
 
 export async function POST(req: Request) {
-  let body: { postTitle?: unknown; postExcerpt?: unknown; commentAuthor?: unknown; commentBody?: unknown; myPrior?: unknown } = {};
+  let body: { postTitle?: unknown; postExcerpt?: unknown; commentAuthor?: unknown; commentBody?: unknown; myPrior?: unknown; personaBrief?: unknown } = {};
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: "json-body required" }, { status: 400 }); }
 
   const postTitle = String(body.postTitle ?? "").slice(0, 200);
@@ -40,6 +41,8 @@ export async function POST(req: Request) {
   const commentAuthor = String(body.commentAuthor ?? "").slice(0, 60);
   const commentBody = String(body.commentBody ?? "").slice(0, 400);
   const myPrior = String(body.myPrior ?? "").slice(0, 400);
+  /* R263 · THE PERSONA BRIEF: the reply is drafted IN the account's own voice */
+  const personaBrief = typeof body.personaBrief === "string" ? body.personaBrief : null;
   if (!commentBody.trim()) return NextResponse.json({ ok: false, error: "commentBody required" }, { status: 400 });
 
   const userPrompt = [
@@ -60,13 +63,13 @@ export async function POST(req: Request) {
   try {
     const ZAI = (await import("z-ai-web-dev-sdk")).default;
     const zai = await ZAI.create();
-    const completion = await zai.chat.completions.create({
+    const completion = await withLlmRetry(() => zai.chat.completions.create({
       messages: [
-        { role: "assistant", content: SYSTEM_PROMPT },
+        { role: "assistant", content: withVoice(SYSTEM_PROMPT, personaBrief) },
         { role: "user", content: userPrompt },
       ],
       thinking: { type: "disabled" },
-    });
+    }));
     const raw = completion.choices?.[0]?.message?.content ?? "";
     const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
     let replyBody = "";

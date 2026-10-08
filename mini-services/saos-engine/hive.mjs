@@ -34,6 +34,7 @@ import { HIVE_CHAIN_ID, buildTx, wifDecode, pubkeyFromSeed } from "./steemtx.mjs
 import { spamVerdict, flagPauseVerdict } from "./spamgate.mjs";
 import { wordCount, MIN_POST_WORDS, titleSimilarity, recentPublishedTitles } from "./content.mjs";
 import { embedImage } from "./illustrate.mjs";
+import { mulberry32, hashSeed } from "./curator.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -308,6 +309,54 @@ export function pickRcFitDraft(queue) {
   return eligible.slice().sort((a, b) => wordCount(a.body) - wordCount(b.body))[0];
 }
 
+/* ── R263 · THE PERSONA-AFFINITY PICK (voice and profile are ONE identity) ──
+ * The chain audit (R263 opening): drafts carry a persona tag from the
+ * writers' room, and every account wears its persona ON CHAIN (profile
+ * name/about/images). A draft tagged persona:cashmachine reads wrong when
+ * haran's profile ships it — the reader sees one person in two bodies.
+ * LAW: among eligible drafts, the one whose persona == the publishing
+ * account wins; when none matches, the RC-fit fallback keeps quality (the
+ * pool is pre-sanitized, so the fallback trades affinity, never law).
+ * Pure, selftest-locked. */
+export function pickPersonaFitDraft(queue, account) {
+  const eligible = (Array.isArray(queue) ? queue : []).filter((d) => d?.status === "drafted" && wordCount(d.body) >= MIN_POST_WORDS);
+  const own = eligible.find((d) => d.persona === account);
+  if (own) return own;
+  return eligible.slice().sort((a, b) => wordCount(a.body) - wordCount(b.body))[0] ?? null;
+}
+
+/* ── R263 · THE STAGGERED POST WINDOW (operator order verbatim intent:
+ * "ופרסמו כל אחד בזמנו לא צריך כולם עכשיו" — each account publishes in its
+ * OWN seeded minute, never a synchronized fleet burst). Same auditability
+ * law as every lane: mulberry32(day|account) inside 07:00-23:00 UTC,
+ * deterministic → reproducible post-hoc from state. The window OPENS at its
+ * minute (like the hive-social lanes): a pass before the minute defers
+ * honestly with SCHEDULE-LATER, a pass after it may ship. Pure. */
+export const POST_WINDOW = { minMinute: 7 * 60, maxMinute: 23 * 60 };
+export function hivePostMinuteFor(account, dayIso) {
+  const rand = mulberry32(Number(hashSeed(`${dayIso}|${account}|hive-post`)) >>> 0);
+  return Math.floor(POST_WINDOW.minMinute + rand() * (POST_WINDOW.maxMinute - POST_WINDOW.minMinute));
+}
+const minuteOfDayUtc = (iso) => { const d = new Date(iso); return d.getUTCHours() * 60 + d.getUTCMinutes(); };
+
+/* ── R263 · THE HUMAN PERMLINK (spaminator optics + SEO craft) ──────────────
+ * The chain audit (R263 opening) showed Hive permlinks like
+ * `d1791392700696-5` (raw draft ids): machine-shaped, and spaminators read
+ * machine shapes. The permlink is now a TITLE SLUG — the same craft the
+ * Steem rail ships — with the draft id only as fallback. Laws: lowercase
+ * [a-z0-9-], no leading/trailing dash, STARTS WITH A LETTER (the node
+ * contract), ≤64 chars. Pure, selftest-locked. */
+export function slugPermlink(title, fallback = "") {
+  const clean = (s) => String(s ?? "").toLowerCase().normalize("NFKD")
+    .replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "").slice(0, 64);
+  let slug = clean(title);
+  if (slug && /^[0-9]/.test(slug)) slug = `post-${slug}`.slice(0, 64).replace(/-+$/g, "");
+  if (slug.length >= 8 && /^[a-z]/.test(slug)) return slug;
+  const fb = clean(fallback);
+  if (fb && /^[0-9]/.test(fb)) return `post-${fb}`.slice(0, 64).replace(/-+$/g, "");
+  return (fb.length >= 8 && /^[a-z]/.test(fb)) ? fb : "saos-post";
+}
+
 /* ── THE RAIL: probe-sized sovereign rounds on Hive ───────────────────────── */
 export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } = {}) {
   const t0 = Date.now();
@@ -330,10 +379,16 @@ export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } 
   const recentTitles = recentPublishedTitles(queue, 12);
   const results = [];
   let executed = 0;
-  /* RC-sorted roster: the strongest accounts speak first (measured, not vibes) */
+  /* RC-sorted roster: the strongest accounts speak first (measured, not vibes).
+   * R263 · THE STAGGERED WINDOW gate runs FIRST (a pure map lookup, zero RPC):
+   * an account whose seeded post minute has not arrived yet defers honestly —
+   * the fleet never bursts in sync, each voice speaks in its own time. */
+  const nowMin = minuteOfDayUtc(now);
   const order = [];
   for (const account of HIVE_ROSTER) {
     if (pauseActive(account)) { results.push({ account, verdict: "PAUSED-DOWNVOTE" }); continue; }
+    const postMinute = hivePostMinuteFor(account, day);
+    if (postMinute > nowMin) { results.push({ account, verdict: "SCHEDULE-LATER", postMinuteUtc: postMinute }); continue; }
     if (custody.results[account] !== "VERIFIED-VS-HIVE-CHAIN") { results.push({ account, verdict: custody.results[account] }); continue; }
     if (!(await rcOk(account))) { results.push({ account, verdict: "RC-LOW-HONEST-DEFER" }); continue; }
     const used = (prev.day === day ? (prev.accounts?.[account] ?? 0) : 0);
@@ -341,7 +396,8 @@ export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } 
     order.push({ account });
   }
   for (const { account } of order.slice(0, Math.max(0, limit))) {
-    const draft = pickRcFitDraft(queue); // R262: the shortest eligible draft maximizes broadcast success at tiny stake
+    /* R263: persona-affinity first (voice == profile identity), RC-fit fallback */
+    const draft = pickPersonaFitDraft(queue, account); // R262+R263: quality gates pre-passed; affinity then brevity
     if (!draft) { results.push({ account, verdict: "NO-DRAFT" }); continue; }
     const clash = recentTitles.find((t) => titleSimilarity(t, draft.title) >= 0.5);
     if (clash) { results.push({ account, verdict: "MONOCULTURE-VETO" }); continue; }
@@ -359,7 +415,9 @@ export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } 
       body = embedImage(body, draft.image);
       metaObj.image = [draft.image.url];
     }
-    const permlink = String(draft.id).toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 80) || `saos-${day.replace(/-/g, "")}`;
+    /* R263: the HUMAN permlink — a title slug (SEO craft, spaminator optics),
+     * the machine draft id only a fallback */
+    const permlink = slugPermlink(draft.title, String(draft.id));
     const firstTag = (draft.tags ?? [])[0] ?? "life";
     const ops = [["comment", { parent_author: "", parent_permlink: firstTag, author: account, permlink, title: draft.title, body, json_metadata: JSON.stringify(metaObj) }]];
     const res = await broadcastHive(ops, memHive[account], {});
