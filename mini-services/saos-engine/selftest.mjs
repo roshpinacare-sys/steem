@@ -379,17 +379,17 @@ const posts = [
   mkPost("alice", "second", 60),                                   // author-cap (2nd alice)
   mkPost("heidi", "caps", 60, { title: "SCREAMING SPAM TITLE HERE" }), // spam-title
   mkPost("ivan", "ok1", 240),
-  mkPost("judy", "ok2", 720),
+  mkPost("judy", "ok2", 200),                                     // R289: inside the 4h window (old fixture 720min is now lawfully too-old)
 ];
 const planC = filterCandidates({ posts, voter: "headcorner", policy: CP, nowMs: NOW });
-eq("curator selected", planC.selected.map((v) => v.author), ["alice", "ivan", "judy"]);
+eq("curator selected (R289 order: weight-desc inside 4h window)", planC.selected.map((v) => v.author), ["alice", "judy", "ivan"]);
 eq("curator alice weight decays", planC.selected[0].weight, weightForAge(30, CP));
 ok("curator fresh > old weight", planC.selected[0].weight > planC.selected[2].weight);
 eq("curator weight in band", weightForAge(30, CP) <= CP.baseWeightPct * 100 && weightForAge(1300, CP) === CP.minWeightPct * 100, true);
 ok("curator rejections honest", planC.rejected.some((r) => r.reason === "too-old") && planC.rejected.some((r) => r.reason === "short-body") && planC.rejected.some((r) => r.reason === "self-fleet") && planC.rejected.some((r) => r.reason === "already-voted") && planC.rejected.some((r) => r.reason === "bandwagon") && planC.rejected.some((r) => r.reason === "author-cap"));
 
-/* day-cap: 10 already voted today ⇒ nothing new */
-const capped = filterCandidates({ posts: [mkPost("kate", "late", 60)], voter: "x", policy: CP, nowMs: NOW, votesToday: 10 });
+/* day-cap: maxPerDay already voted today => nothing new (R289: policy-driven cap, not hardcoded 10) */
+const capped = filterCandidates({ posts: [mkPost("kate", "late", 60)], voter: "x", policy: CP, nowMs: NOW, votesToday: CP.maxPerDay });
 eq("curator day-cap", capped.selected.length, 0);
 ok("curator day-cap reason", capped.rejected.some((r) => r.reason === "day-cap"));
 
