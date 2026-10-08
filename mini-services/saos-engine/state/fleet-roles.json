@@ -1,6 +1,6 @@
 {
-  "verdict": "RECRUITED",
-  "active": 10,
+  "verdict": "FULL-STRENGTH",
+  "active": 11,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -33,12 +33,12 @@
       "role": "מבקר-עסקאות",
       "lane": "truth",
       "capability": "chain-truth fill/op counters over account history (max(state, chain-truth))",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-08T06:49:08.934Z",
-      "evidence": null,
-      "priorStatus": "active"
+      "evidence": "state/observe.json: 1 chain-truth fills counted (last 2026-10-08T20:50:00.000Z)",
+      "priorStatus": "planned"
     },
     {
       "id": "treasury-sentinel",
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/selftest-last-run.json: 1035/1035 PASS at 2026-10-08T20:39:47.091Z",
+      "evidence": "state/selftest-last-run.json: 1035/1035 PASS at 2026-10-08T20:56:35.084Z",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-08T20:44:03.846Z",
+  "at": "2026-10-08T20:54:03.849Z",
   "pid": 26170
 }
