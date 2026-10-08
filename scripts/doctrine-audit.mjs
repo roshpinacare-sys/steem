@@ -48,6 +48,7 @@ const WHITELIST = new Map([
   ["blurt.mjs", "planned third-chain module (ready-to-arm) — its recorded ABSENCE is the fact"],
   ["keys.steem.*", "vault-shape JSON field fragment (inside the encrypted vault, not a tree file)"],
   ["keys.posting", "vault-shape JSON field fragment (inside the encrypted vault, not a tree file)"],
+  ["engine.pid", "runtime pid file — written by engine startup (index.ts:315), may be consumed by the live state materializer mid-run; absence on disk is legal (R258, measured)"],
 ]);
 function resolveToken(tok) {
   const bases = [ROOT, ENGINE, path.join(ENGINE, "state"), path.join(ENGINE, ".."), path.join(ROOT, "scripts"), path.join(ROOT, "docs"), path.join(ROOT, "agent", "vault"), path.join(ROOT, "agent")];
