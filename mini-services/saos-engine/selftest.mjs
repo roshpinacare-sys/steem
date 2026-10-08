@@ -1770,6 +1770,32 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   caught = null;
   try { dq.matchOption([{ label: "A" }, { label: "B" }], "0"); } catch (e) { caught = e.code; }
   eq("decisionqueue: numeric 0 refused (kills M25)", caught, "NO-MATCH");
+  /* ── R260 · סבב-הענקים: פרובות-חיות שהפכו-לחוק ──
+   * P1 — תשובה-ריקה-שמתחזה: `decision-answer <id>` חשוף שמר answer={by,at} וסגר-החלטה
+   * בשקט (נמדד-חי, rc=0). תשובה-חייבת-לומר-משהו. */
+  caught = null;
+  try { dq.answerDecision(mk(), "D1", {}); } catch (e) { caught = e.code; }
+  eq("decisionqueue: bare answer (no option/text) refused — no silent pretense (R260 P1)", caught, "INVALID-DECISION");
+  caught = null;
+  try { dq.answerDecision(mk(), "D1", { text: "" }); } catch (e) { caught = e.code; }
+  eq("decisionqueue: empty-string text is still no content (R260 P1)", caught, "INVALID-DECISION");
+  /* P4 — חוזה-מיון-מכונה חף-מ-ICU: localeCompare("a","B") = -1 (ICU) אבל code-unit אומר B<a;
+   * build-חף-ICU של node (או גרסת-ICU אחרת) מסדר-שוב. תור-המפעיל חוזה-מכונה — לא-תלות-סביבה. */
+  const gIcu = { tasks: [
+    tg.createTask({ id: "T-a", title: "a", createdAt: "2026-01-01T00:00:00Z" }),
+    tg.createTask({ id: "T-B", title: "b", createdAt: "2026-01-01T00:00:00Z" }),
+  ] };
+  eq("taskgraph: ready tie-break is code-unit, ICU-free (B<a, not ICU's a<B) (R260 P4)", tg.ready(gIcu).map((t) => t.id), ["T-B", "T-a"]);
+  eq("decisionqueue: listOpen tie-break code-unit (R260 P4)", dq.listOpen({ decisions: [
+    dq.createDecision({ id: "b-1", kind: "question", question: "x", options: ["a"], createdAt: "2026-01-01T00:00:00Z" }),
+    dq.createDecision({ id: "B-2", kind: "question", question: "y", options: ["a"], createdAt: "2026-01-01T00:00:00Z" }),
+  ] }).map((d) => d.id), ["B-2", "b-1"]);
+  /* P9 — state-פגום-מבנית נדחה-בשם (נמדד: עדיפות-חסרה רונדרה "Pundefined"; deps-מחרוזת
+   * נאספה תו-תו; אפשרויות-חסרות קרסו ב-TypeError-גולמי-של-מנוע-הריצה) */
+  eq("taskgraph: validateGraph refuses deps-as-string (R260 P9)", tg.validateGraph({ tasks: [{ id: "S", title: "s", status: "todo", deps: "AB", priority: 0 }] }).errors.some((e) => e.includes("deps-לא-מערך")), true);
+  eq("taskgraph: validateGraph refuses junk priority (R260 P9)", tg.validateGraph({ tasks: [{ id: "S", title: "s", status: "todo", deps: [], priority: "high" }] }).errors.some((e) => e.includes("עדיפות-פגומה")), true);
+  eq("taskgraph: validateGraph refuses empty title (R260 P9)", tg.validateGraph({ tasks: [{ id: "S", title: "", status: "todo", deps: [], priority: 0 }] }).errors.some((e) => e.includes("כותרת-פגומה")), true);
+  eq("decisionqueue: validateDQ refuses missing options array (R260 P9)", dq.validateDQ({ decisions: [{ id: "X", kind: "question", question: "q", status: "open" }] }).errors.some((e) => e.includes("אפשרויות-פגומות")), true);
 }
 
 /* ── R254 · DASH-LAW + LEGAL IMAGES + SMART-REPLY + HIVE GATES + SLOTS ────── */
