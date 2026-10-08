@@ -60,7 +60,7 @@ import * as path from "node:path";
 import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
-import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS, normalizeDashes } from "./content.mjs";
+import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS, normalizeDashes, enforceSymbolLaw } from "./content.mjs";
 import { personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata, personaBrief } from "./personas.mjs";
 import { synthesizeReply, synthesizePersonaComment, synthesizePersonaReply, isProbeComment, mentionsAny } from "./intel-pack.mjs";
 import { spamVerdict, organicVerdict, flagPauseVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
@@ -194,12 +194,23 @@ export const TEMPLATE_OPENERS = [
   "this hits home", "so true", "very true", "totally agree", "100% agree", "keep it up",
   "keep up the great", "loved this", "enjoyed this read", "mind blown", "what a thoughtful",
   "this deserves more", "underrated post", "totally agree with this",
+  /* R283 (operator order — the third measured generation, chain-truthed):
+   * the template framings the fallback pack minted for rounds. A body that
+   * opens like a form letter is dead conversation and it never ships. */
+  "let's measure it", "lets measure it", "bottom line up front", "the trigger point is",
+  "one more layer", "this is exactly the thread worth pulling", "here's the thing",
+  "heres the thing", "let me add this", "the way i see it",
 ];
 export function sanitizeReply(text) {
   /* R262: the style law finally covers REPLIES too — the synthesizer frames
    * shipped literal " — " for rounds because only the POST lanes normalized.
-   * Rewrite first, ban second, same contract as sanitizeDraft. */
-  const body = normalizeDashes(String(text ?? "")).trim().replace(/\s+/g, " ");
+   * Rewrite first, ban second, same contract as sanitizeDraft.
+   * R283: the SYMBOL LAW rides here too — dashes, double quotes and colons
+   * rewrite to safe punctuation, anything that survives the rewrite with a
+   * banned glyph is a REFUSAL, never a broadcast. */
+  const normalized = enforceSymbolLaw(String(text ?? ""));
+  if (normalized === null) return null;
+  const body = normalized.trim().replace(/\s+/g, " ");
   if (body.length < 20 || body.length > 700) return null;
   const low = body.toLowerCase();
   /* R243: the first 90 chars carry the opener — template praise there = dead

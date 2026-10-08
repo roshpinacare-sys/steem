@@ -33,6 +33,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { mulberry32, hashSeed } from "./curator.mjs";
 import { personaOf } from "./personas.mjs";
+import { enforceSymbolLaw, SYMBOL_LAW_BANNED } from "./content.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 
@@ -313,15 +314,21 @@ export function mentionsAny(text, names) {
   });
 }
 function legalBody(body) {
-  const t = String(body ?? "").trim().replace(/\s+/g, " ");
-  if (t.length < 120 || t.length > 650) return false;
+  /* R283 · THE SYMBOL LAW — the fallback pack's own frames carry dashes and
+   * colons in their literals; every frame rides the normalizer first and a
+   * survivor that still carries a banned glyph is rejected. Returns the
+   * NORMALIZED text (never the raw frame) or null. */
+  const normalized = enforceSymbolLaw(body);
+  if (normalized === null) return null;
+  const t = normalized.trim().replace(/\s+/g, " ");
+  if (t.length < 120 || t.length > 650) return null;
   const low = t.toLowerCase();
   const head = low.slice(0, 90);
-  if (BANNED_OPENERS.some((b) => head.includes(b))) return false;
+  if (BANNED_OPENERS.some((b) => head.includes(b))) return null;
   const bannedWords = ["headcorner", "cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq", "saos", "hcsoldier", "guaranteed", "price target", "financial advice"];
-  if (mentionsAny(low, bannedWords)) return false;
-  if (low.includes("http://") || low.includes("https://")) return false;
-  return true;
+  if (mentionsAny(low, bannedWords)) return null;
+  if (low.includes("http://") || low.includes("https://")) return null;
+  return t;
 }
 
 /* small helper: questions arrive lowercase from the modules — a sentence that
@@ -342,18 +349,18 @@ export function synthesizeComment({ postTitle, postExcerpt, seed = 1 } = {}) {
   const question = cap(pick(m.questions, rand));
   const a0 = anchors[0] ?? "", a1 = anchors[1] ?? "";
   const frames = [
-    () => `The ${a0 ? `"${a0}"` : "detail"} part is what pulls me in here. ${cap(insight)} — and posts like this are where that actually shows. ${question}`,
-    () => `I keep coming back to ${a0 ? `"${a0}"` : "this"} while reading. ${cap(insight)}, and you can see it working right inside this piece. ${question}`,
-    () => `What holds my attention here is ${a0 ? `"${a0}"` : "the structure"}${a1 ? ` paired with "${a1}"` : ""}. ${cap(insight)}. ${question}`,
-    () => `There is a specific kind of attention in writing about ${a0 ? `"${a0}"` : "this"} the way you did. ${cap(insight)} — most people skip straight past it. ${question}`,
-    () => `Saved this one. ${cap(insight)}, and the way ${a0 ? `"${a0}"` : "the main thread"} carries the whole piece proves it. ${question}`,
+    () => `The ${a0 ? `whole ${a0} angle` : "detail part"} is what pulls me in here. ${cap(insight)}, and posts like this are where that actually shows. ${question}`,
+    () => `I keep coming back to ${a0 ? `the ${a0} thread` : "this"} while reading. ${cap(insight)}, and you can see it working right inside this piece. ${question}`,
+    () => `What holds my attention here is ${a0 ? `the ${a0} part` : "the structure"}${a1 ? ` paired with the ${a1} detail` : ""}. ${cap(insight)}. ${question}`,
+    () => `There is a specific kind of attention in writing about ${a0 ? `the ${a0} part` : "this"} the way you did. ${cap(insight)}, and most people skip straight past it. ${question}`,
+    () => `Saved this one. ${cap(insight)}, and the way ${a0 ? `the ${a0} thread` : "the main thread"} carries the whole piece proves it. ${question}`,
     () => `This reads like it was written by someone who actually did the ${a0 ?? "work"}. ${cap(insight)}. ${question}`,
-    () => `The ${a0 ?? "core"} angle here deserves a second reading. ${cap(insight)} — and the piece earns that reading. ${question}`,
-    () => `You put words on something I have seen but never named${a0 ? ` — that "${a0}" thread` : ""}. ${cap(insight)}. ${question}`,
+    () => `The ${a0 ?? "core"} angle here deserves a second reading. ${cap(insight)}, and the piece earns that reading. ${question}`,
+    () => `You put words on something I have seen but never named${a0 ? `, that ${a0} thread` : ""}. ${cap(insight)}. ${question}`,
   ];
   for (let i = 0; i < frames.length + 2; i++) {
-    const body = pick(frames, rand)();
-    if (legalBody(body)) return body;
+    const body = legalBody(pick(frames, rand)());
+    if (body) return body;
   }
   return null;
 }
@@ -377,10 +384,10 @@ export function synthesizePersonaComment({ account, postTitle, postExcerpt, seed
    * writer, one voice, one draft: the account is part of the identity now. */
   const base = synthesizeComment({ postTitle, postExcerpt, seed: `${account ?? "anon"}|${seed}` });
   if (!base || !persona) return base;
-  const motto = String(persona.slang?.[0] ?? "").trim();
-  if (!motto || base.toLowerCase().includes(motto.toLowerCase())) return base;
-  const woven = `${cap(motto)}: ${base}`;
-  return legalBody(woven) ? woven : base;
+  /* R283 · the motto-weaving is retired — the chain audit showed the woven
+   * mottos read as form-letter framing (the operator's template complaint).
+   * The persona voice rides the bridge brief; the seeded floor stays plain. */
+  return base;
 }
 
 export function synthesizePersonaReply({ account, postTitle, commentBody, myPrior = "", seed = 1 } = {}) {
@@ -390,10 +397,8 @@ export function synthesizePersonaReply({ account, postTitle, commentBody, myPrio
    * no matter which sibling asks. */
   const base = synthesizeReply({ postTitle, commentBody, myPrior, seed: `${account ?? "anon"}|${seed}` });
   if (!base || !persona) return base;
-  const motto = String(persona.slang?.[0] ?? "").trim();
-  if (!motto || base.toLowerCase().includes(motto.toLowerCase())) return base;
-  const woven = `${cap(motto)}: ${base}`;
-  return legalBody(woven) ? woven : base;
+  /* R283 · the motto-weaving is retired (form-letter framing, measured). */
+  return base;
 }
 
 /* ── pure: synthesizeReply — answer a comment on OUR thread ─────────────────
@@ -410,7 +415,8 @@ export function synthesizeReply({ postTitle, commentBody, myPrior = "", seed = 1
     for (let i = 0; i < PROBE_DEFLECT_FRAMES.length * 2; i++) {
       const idx = Math.floor(rand() * PROBE_DEFLECT_FRAMES.length);
       const body = PROBE_DEFLECT_FRAMES[idx % PROBE_DEFLECT_FRAMES.length](a0);
-      if (legalBody(body) && !isProbeComment(body)) return body;
+      const clean = legalBody(body);
+      if (clean && !isProbeComment(clean)) return clean;
     }
     return null; // fail-closed: a probe never gets an improvised answer
   }
@@ -421,16 +427,16 @@ export function synthesizeReply({ postTitle, commentBody, myPrior = "", seed = 1
   const question = cap(pick(m.questions, rand));
   const a0 = anchors[0] ?? "", a1 = anchors[1] ?? "";
   const frames = [
-    () => `You went straight at the ${a0 ? `"${a0}"` : "core"} part, so here is the rest of that thought. ${cap(insight)} — that is the piece I would add to your point. ${question}`,
+    () => `You went straight at the ${a0 ? `the ${a0} part` : "core"}, so here is the rest of that thought. ${cap(insight)}, and that is the piece I would add to your point. ${question}`,
     () => `The ${a0 ?? "question"} you raise is the honest one. ${cap(insight)}, and it took me a while to see it that way too. ${question}`,
-    () => `Fair reading on ${a0 ? `"${a0}"` : "this"}. Where I land slightly differently: ${insight}. ${question}`,
-    () => `This is exactly the thread worth pulling — ${a0 ? `the "${a0}" angle` : "your angle"}. One more layer: ${insight}. ${question}`,
-    () => `I hadn't connected ${a0 ? `"${a0}"` : "that part"} with the bigger picture until your comment. ${cap(insight)}. ${question}`,
-    () => `Taking your ${a0 ?? "point"} seriously leads somewhere interesting. ${cap(insight)} — and that is where the real discussion starts. ${question}`,
+    () => `Fair reading on ${a0 ? `the ${a0} angle` : "this"}. Where I land slightly differently. ${insight}. ${question}`,
+    () => `This is exactly the thread worth pulling, ${a0 ? `the ${a0} angle` : "your angle"}. There is one more layer here. ${insight}. ${question}`,
+    () => `I had not connected ${a0 ? `the ${a0} part` : "that part"} with the bigger picture until your comment. ${cap(insight)}. ${question}`,
+    () => `Taking your ${a0 ?? "point"} seriously leads somewhere interesting. ${cap(insight)}, and that is where the real discussion starts. ${question}`,
   ];
   for (let i = 0; i < frames.length + 2; i++) {
-    const body = pick(frames, rand)();
-    if (legalBody(body)) return body;
+    const body = legalBody(pick(frames, rand)());
+    if (body) return body;
   }
   return null;
 }
