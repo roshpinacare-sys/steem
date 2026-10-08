@@ -64,6 +64,10 @@ export function fold(state, tickRes) {
     simFills: (state.simFills ?? 0) + (tickRes.fills?.length ?? 0),
     simFeesMu: (state.simFeesMu ?? 0) + (tickRes.feesMu ?? 0),
     asof: tickRes.events[0]?.at ?? state.asof,
+    /* R269 · the fleet reader (fleet.mjs) judges grid-tick liveness by `at` —
+     * the field rename to `asof` alone measured the agent DEAD while it was
+     * alive (runCount kept rising). Both names stamped: contract kept. */
+    at: tickRes.events[0]?.at ?? state.at,
     market: { refPrice: tickRes.events[0]?.refPrice ?? null, source: "engine", stale: false },
   };
   return s;
