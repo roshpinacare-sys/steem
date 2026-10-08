@@ -246,6 +246,8 @@ export async function GET() {
     conversions: s.conversions ?? null,
     /* R254: איבר-hive (הבחינה-המבוקרת — passthrough של-verdicts בלבד) */
     hive: s.hive ?? null,
+    /* R255: מנוע-הפרסונות (פרופילים + אישיות + סלנג — passthrough של-verdicts) */
+    personas: s.personas ?? null,
     rcTank: s.rcTank ?? null,
     payouts: s.payouts ?? null,
     weave: s.weave ?? null,

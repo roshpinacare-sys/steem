@@ -61,9 +61,10 @@ import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
 import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS } from "./content.mjs";
+import { personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata } from "./personas.mjs";
 import { synthesizeComment, synthesizeReply, mentionsAny } from "./intel-pack.mjs";
 import { spamVerdict, organicVerdict, flagPauseVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
-import { reviveArmyCustody } from "./vault-revival.mjs";
+import { reviveArmyCustody, ARMY_ROSTER as ROSTER_BASE } from "./vault-revival.mjs";
 import { readCommunityState, communityPostMeta, communityMetaObj } from "./community.mjs";
 import { embedImage } from "./illustrate.mjs";
 
@@ -73,6 +74,7 @@ const SOCIAL_FILE = path.join(STATE, "social.json");
 const FLAG_PAUSES_FILE = path.join(STATE, "flag-pauses.json");
 const COMMUNITY_ROUND_FILE = path.join(STATE, "community-round.json");
 const CONTENT_FILE = path.join(STATE, "content-ops.json");
+const PERSONAS_FILE = path.join(STATE, "personas.json");
 const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
 
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
@@ -593,7 +595,18 @@ async function doPublish(account, st, p, now, day) {
   for (const d of queue) {
     if (d?.status === "drafted" && (d.draftedAt ?? "") < PUBLISH_ELIGIBLE_SINCE) { d.status = "retired-old-stock"; d.retiredAt = now; retired++; }
   }
-  const draft = queue.find((d) => d.status === "drafted" && !st.published?.includes(d.id));
+  const draft = (() => {
+    /* R255 · THE PERSONA MATCH: an account prefers drafts written BY its own
+     * persona (content.mjs tags them); the first eligible untagged draft is
+     * adopted and ASSIGNED this persona, so the voice stays one-to-one and
+     * the arc state stays truthful. FIFO otherwise — pacing laws untouched. */
+    const eligible = queue.filter((d) => d.status === "drafted" && !st.published?.includes(d.id));
+    const own = eligible.find((d) => d.persona === account);
+    if (own) return own;
+    const adopt = eligible.find((d) => !personaOf(d.persona));
+    if (adopt) { adopt.persona = account; adopt.adoptedAt = now; }
+    return adopt;
+  })();
   if (!draft) { if (retired) writeJson(CONTENT_FILE, c); return false; }
   /* R244 · THE SPAM-SAFETY FLOOR AT THE GATE: drafts drafted before the
    * 300-word law (e.g. the 15:38 bridge batch) are retired here, not
@@ -674,6 +687,16 @@ async function doPublish(account, st, p, now, day) {
   const res = await executeAs(account, ops, { tag: "social-post", role: "posting" });
   if (!res.ok) return false;
   st.published = [...(st.published ?? []), draft.id];
+  /* R255 · THE ARC ADVANCES ON MEASURED TRUTH: lifetime posts live in the
+   * chain (this publish just added one); the stage pointer is recomputed
+   * from that count, so a persona's development is provable, never claimed. */
+  const arc = arcStageOf(account, (st.published ?? []).length);
+  if (arc) {
+    st.persona = { ...(st.persona ?? {}), stage: arc.index, stageTitle: arc.title, nextAt: arc.nextAt, updatedAt: now };
+    const pdoc = readJson(PERSONAS_FILE, { perAccount: {} });
+    pdoc.arcs = { ...(pdoc.arcs ?? {}), [account]: { stage: arc.index, title: arc.title, nextAt: arc.nextAt, lifetimePosts: arc.lifetimePosts, at: now } };
+    writeJson(PERSONAS_FILE, pdoc);
+  }
   /* R254: the community round records the voice so the round completes */
   if (roundArmed && inCommunity) {
     const r2 = readJson(COMMUNITY_ROUND_FILE, null);
@@ -908,4 +931,97 @@ async function doDeepen({ account, master, st, p, now }) {
   st.deepened = [...(st.deepened ?? []), target.comment];
   st.said = [...(st.said ?? []), body.slice(0, 300)];
   return true;
+}
+
+/* ═══ R255 · THE PERSONA PROFILE SYNC (the visibility law) ═════════════════
+ * Operator order (verbatim intent): "לשפר את הנראות שלנו שנראה טוב שיתארגנו
+ * על פרופילים" — the fleet's on-chain profiles become PERSONAS: display name,
+ * about-line and interests per account, written by the CONSENSUS op
+ * account_update2 (op id 43, chain-truth probe in steemtx.mjs).
+ *
+ * 🔴 THE PHANTOM-WRITE LESSON (2026-10-07, third txid-oracle class): the
+ * first implementation broadcast custom_json id "update_account_metadata" —
+ * the node ACCEPTED the txs (txids 8c06c5e0…/ab68df1b…) yet get_accounts
+ * showed EMPTY json_metadata: a no-op recorded by no plugin. The chain's
+ * judgment (state, not receipts) is the only truth — the write moved to
+ * account_update2 and the state verdicts are now derived FROM the chain.
+ *
+ * LAWS:
+ *  · HONEST: profileDoc() fails CLOSED if any field smells of exposure
+ *    (dashes, coordination words) — a persona is a writer's voice, never a
+ *    fake biography (content.mjs exposure law restated).
+ *  · IDEMPOTENT-BY-CHAIN-TRUTH: profileDiffers() reads the LIVE account and
+ *    skips only when the chain already matches — a fresh state line can
+ *    never overwrite the chain's verdict (no time-based freshness gates).
+ *  · MERGE-NOT-WIPE: existing json_metadata is merged (unknown top-level
+ *    keys survive) and written to BOTH json_metadata and
+ *    posting_json_metadata (old + new frontend contract).
+ *  · DOCTRINE CAPS: ≤2 broadcasts per run, custody-gated (keyless = honest
+ *    DEFER), think-gate re-checks every broadcast.
+ */
+const PROFILE_MAX_PER_RUN = 2;
+
+export function personasState() {
+  return readJson(PERSONAS_FILE, null);
+}
+
+export async function runProfiles({ now = new Date().toISOString(), roster = [masterAccount(), ...ROSTER_BASE] } = {}) {
+  const t0 = Date.now();
+  const st = readJson(PERSONAS_FILE, { perAccount: {} });
+  st.perAccount = st.perAccount ?? {};
+  const out = { at: now, updated: [], skipped: [], deferred: [], caps: `≤${PROFILE_MAX_PER_RUN}/run · chain-truth idempotent · custody-gated · account_update2(43)` };
+  for (const account of roster) {
+    if (out.updated.length >= PROFILE_MAX_PER_RUN) { out.deferred.push({ account, reason: "run-cap" }); continue; }
+    const doc = profileDoc(account);
+    if (!doc) { out.deferred.push({ account, reason: "exposure-guard-null" }); continue; }
+    const cust = custodyOf(account);
+    if (cust === "no-custody" || cust === "keyed-unverified" || cust === "master-unverified") {
+      out.deferred.push({ account, reason: `custody:${cust}` });
+      continue;
+    }
+    let live = null;
+    try {
+      const r = await rpcCall("condenser_api.get_accounts", [[account]]);
+      live = r?.ok ? r.result?.[0] ?? null : null;
+    } catch { live = null; }
+    const existingRaw = String(live?.json_metadata ?? "{}");
+    if (!profileDiffers(existingRaw, doc)) {
+      st.perAccount[account] = { ...(st.perAccount[account] ?? {}), at: now, verdict: "SYNCED-CHAIN-TRUTH", name: doc.name };
+      out.skipped.push({ account, reason: "chain-already-matches" });
+      continue;
+    }
+    /* the consensus write: merged metadata to posting_json_metadata ONLY —
+     * the chain's authority law: a non-empty json_metadata field demands
+     * ACTIVE authority ("missing required active authority" — measured live
+     * 2026-10-07); posting_json_metadata alone signs with POSTING, which is
+     * exactly where the profile UI contract lives (steemit/hive profile
+     * readers). The merged body preserves the existing json_metadata keys. */
+    const meta = mergeProfileMetadata(existingRaw, doc);
+    const op = ["account_update2", {
+      account,
+      owner: null, active: null, posting: null,
+      memo_key: String(live?.memo_key ?? ""),
+      json_metadata: "",
+      posting_json_metadata: meta,
+      extensions: [],
+    }];
+    if (!op[1].memo_key) { out.deferred.push({ account, reason: "memo-key-unreadable" }); continue; }
+    /* the Steem node demands ACTIVE authority for account_update2 (measured
+     * live: get_required_signatures returns the active pubkey even for a
+     * posting_json_metadata-only write) — the profile lane signs active,
+     * backed by the R245 access-law full-custody keys from the git vault. */
+    const res = await executeAs(account, [op], { tag: "profile-sync", role: "active" });
+    if (res.ok) {
+      st.perAccount[account] = { ...(st.perAccount[account] ?? {}), at: now, verdict: "BROADCAST", txid: res.txid ?? null, name: doc.name, about: doc.about.slice(0, 80) };
+      out.updated.push({ account, name: doc.name, txid: res.txid ?? null });
+      appendLine(path.join(STATE, "events.jsonl"), { type: "personas.profile-sync", at: now, account, name: doc.name, op: "account_update2", txid: res.txid ?? null });
+    } else {
+      st.perAccount[account] = { ...(st.perAccount[account] ?? {}), at: now, verdict: res.verdict ?? "REFUSED", reason: res.reason ?? (res.reasons?.[0] ?? null) };
+      out.deferred.push({ account, reason: res.verdict ?? "REFUSED" });
+    }
+  }
+  st.at = now;
+  writeJson(PERSONAS_FILE, st);
+  out.ms = Date.now() - t0;
+  return out;
 }

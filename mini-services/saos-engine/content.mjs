@@ -21,6 +21,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { readCorpus } from "./intel-pack.mjs";
 import { illustrateDraft } from "./illustrate.mjs";
+import { PERSONAS, PERSONA_IDS, assignPersonas, personaBrief, personaOf } from "./personas.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -229,6 +230,15 @@ export async function runContent({ now = new Date().toISOString(), force = false
     .map((f) => ({ title: f.title, host: f.host, url: f.url }));
   const topics = topicRotationFor(now, 6);
   const voices = Object.entries(VOICES).map(([account, voice]) => ({ account, voice }));
+  /* R255 · THE PERSONA SHEETS ride with the payload: each draft is written BY
+   * a persona (name, lens, traits, personal slang, pro/hood register, owned
+   * topics) AT ITS MEASURED development stage (lifetime posts from army.json
+   * — chain truth, not vibes). The feed now reads like people who grew. */
+  const army = readJson(path.join(STATE, "army.json"), null);
+  const lifetimeOf = (a) => (army?.accounts?.[a]?.published ?? []).length;
+  const personas = PERSONA_IDS
+    .map((id) => ({ account: id, brief: personaBrief(id, lifetimeOf(id)), owns: PERSONAS[id].owns }))
+    .filter((p) => p.brief);
   const recentTitles = recentPublishedTitles(prev?.queue, 12);
   const t0 = Date.now();
   let raw = null, bridgeError = null;
@@ -241,7 +251,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topics, voices, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW }),
+      body: JSON.stringify({ topics, voices, personas, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW }),
       signal: AbortSignal.timeout(120_000),
     });
     if (!r.ok) throw new Error(`bridge ${r.status}`);
@@ -253,9 +263,11 @@ export async function runContent({ now = new Date().toISOString(), force = false
    * IN the tree, so content survives any sandbox wipe by design). */
   if (!raw) {
     const corpus = readCorpus();
-    raw = { drafts: corpus.map((c) => ({ title: c.title, body: c.body, tags: c.tags, angle: c.angle, voice: c.voice, groundedOn: [c.topic] })) };
+    raw = { drafts: corpus.map((c) => ({ title: c.title, body: c.body, tags: c.tags, angle: c.angle, voice: c.voice, persona: personaOf(c.voice) ? c.voice : null, groundedOn: [c.topic] })) };
   }
-  const sanitized = (raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean);
+  /* R255: personas assigned at the gate — explicit draft.persona wins, else
+   * topic-ownership round-robin; no voice writes twice in one batch. */
+  const sanitized = assignPersonas((raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean));
   const exposureBlocked = (raw?.drafts ?? []).length - sanitized.length;
   const { kept, dropped } = dedupeTitles(sanitized, recentTitles);
   /* R254 · LEGAL IMAGES: the top kept drafts get a Wikimedia Commons image
