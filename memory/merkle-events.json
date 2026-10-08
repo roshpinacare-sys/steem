@@ -392,5 +392,25 @@
       "chainAfter": "1a70197edd6f23a30867d7f9b8a45798a54bd74a4916d7eb3af65239635c63e8",
       "at": "2026-10-08T13:39:56.166Z"
     }
-  ]
+  ],
+  "rebase": {
+    "at": "2026-10-08T13:30:22.258Z",
+    "reason": "crash-lost-bytes: batches 65-71 anchored from an in-place edited variant of events.jsonl that did not survive the sandbox crash; committed bytes fold batches 1-64 and 72-76 exactly",
+    "lostBatches": [
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71
+    ],
+    "lostByteRange": [
+      6773,
+      7100
+    ],
+    "base": "e0af626a17fabaf90b427fd61590f28eb27cc655c6808ec9f5764b0862f263f8",
+    "witness": "old chain roots remain in git history of memory/merkle-events.json + Steem tip anchor 2026-10-08T06:58Z",
+    "law": "honest rebase — no fake byte-proof for lost batches; chain continuity via recorded chainAfter of batch 71"
+  }
 }
