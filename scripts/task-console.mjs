@@ -25,7 +25,7 @@ import {
   createDecision, answerDecision, settleDecision, reopenDecision, cancelDecision,
   listOpen, deserializeDQ, validateDQ,
 } from "../mini-services/saos-engine/decisionqueue.mjs";
-import { readFileSync, renameSync, existsSync, mkdirSync, openSync, writeSync, closeSync, unlinkSync, statSync, readdirSync, fsyncSync } from "node:fs";
+import { readFileSync, renameSync, existsSync, mkdirSync, openSync, writeSync, closeSync, unlinkSync, statSync, readdirSync, fsyncSync, linkSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -72,6 +72,15 @@ function atomicWrite(file, content) {
     throw e;
   }
   try { writeSync(fd, content); fsyncSync(fd); } finally { closeSync(fd); }
+  /* R262c · בדיקת-בעלות-אחרונה (האטימות-המלאה): ה-rename חוצה רק אם שם-המנעול
+   * עדיין מצביע על ה-inode של התביעה-שלי. שני-כותבים לא יכולים שניהם לעבור —
+   * לשם-יש inode אחד ולכל-כותב claim-inode ייחודי משלו; כל-חלון-מירוץ שנותר
+   * הופך מאובדן-עדכונים-שקט לסירוב-נקוב (LOCK-LOST-MIDWRITE) — החוק מוחזק. */
+  if (ACTIVE_LOCK && ACTIVE_LOCK.file === file) {
+    let ino = null;
+    try { ino = statSync(`${file}.lock`).ino; } catch { /* המנעול נעלם — סירוב */ }
+    if (ino !== ACTIVE_LOCK.ino) throw new Error(`LOCK-LOST-MIDWRITE: ${path.basename(file)} — המנעול השתנה מתחתינו בזמן-הכתיבה; הכתיבה נדחית-בשם (הרץ שוב), לעולם לא אובדן-שקט`);
+  }
   renameSync(tmp, file);
   sweepTmp(file);
 }
@@ -114,49 +123,95 @@ function positional(list) {
 
 /* R258 · מנעול-כותב: rename-אטומי מונע-קורום אבל לא אובדן-עדכונים — נמדד-חי:
  * 20-task-add-מקבילים → 11-שורדים (read-modify-write אינו טרנזקציה בין-תהליכים).
- * O_EXCL-יוצר-מנעול-אטומית; מנעול-מת (>30s) = רכוש-תהליך-מת ומועבר-הצדה;
- * המתנה-קצרה ואז סירוב-שקוב LOCK-BUSY (לעולם לא שתיקה). */
+ * R259 · O_EXCL + חיות-בעלים.
+ * R262 · **מנעולים-נולדים-שלמים** (התיקון-המדוד של סבב-ההפתעה): ה-R259 יצר-מנעול
+ * *ריק* (O_EXCL) וכתב-את-ה-pid *אחרי* הרכישה ("אינפורמטיבי-בלבד") — חלון-µs
+ * שהפך-אמיתי בעומס-קר של 20-כותבים: מתחרה-קרא בעלים-ריק, הזדקן-אותו >250ms,
+ * **גנב מנעול מכותב-חי**, שני-כותבים-בתוך-הקטע-הקריטי → אובדן-עדכונים-שקט
+ * עם rc=0 לכולם (נמדד: 20-כותבים → 16-18-משימות, אפס-יציאות-שגיאה).
+ * התיקון: ה-pid נכתב-קודם לקובץ-תביעה-פרטי, ו-`link()` מקדם-אותו לשם-המנעול
+ * אטומית — מנעול **לא-יכול-להיווצר בלי ה-pid של הבעלים בתוכו** (גניבת-בעלים-ריק
+ * הוסרה; חוק-הגיל-30s נשאר-גיבוי לזבל-זר). השחרור מאמת-בעלות לפני unlink —
+ * מנעול-גנוב-תיאורטית אינו-שלנו-למחוק. */
 const LOCK_STALE_MS = 30_000, LOCK_WAIT_MS = 2000;
+/* R262c · ה-inode של המנעול-הפעיל שלי (CLI חד-חוטי — מנעול אחד בכל-רגע) */
+let ACTIVE_LOCK = null;
+function lockOwnerPid(lockFile) {
+  try {
+    const pid = Number(readFileSync(lockFile, "utf8").trim().split(/\s+/)[0]);
+    return Number.isInteger(pid) && pid > 0 ? pid : null; // null = זבל-זר (לא-בפורמט-שלנו)
+  } catch { return undefined; } // נעלם-בין-הקריאות — נסה-שוב
+}
+/* R262b · מוטקס-גניבה (נמדד-חי): גניבה=קריאה→probe→rename היא check-then-act —
+ * במדידה: 7ms בין-קריאת-הבעלים-המת ל-rename, ובתוכן נכנס-יורש-חי (link מצליח
+ * רק-אחרי-שהשם-מתפנה) → ה-rename הרג מנעול-חי → שני-מחזיקים → אובדן-שקט.
+ * המוטקס (O_EXCL על שם-קבוע + TTL-גיל) מסדר-גנבים-בטור; בתוכו שם-המנעול עדיין
+ * תפוס-על-ידי-inode-המת (אף-יורש לא יכול להיקשר) → החלון קורס לאפס. יתום-מוטקס
+ * (SIGKILL בתוך-הגניבה) מנוקה-לפי-גיל ומעכב-רק-גניבות — לעולם לא כותבים-רגילים. */
+function stealIfDead(file, lockFile) {
+  const stealMtx = `${file}.steal`;
+  let mtx = null;
+  try { mtx = openSync(stealMtx, "wx", 0o600); } catch (e) {
+    if (e.code !== "EEXIST") throw e;
+    try { if (Date.now() - statSync(stealMtx).mtimeMs > LOCK_STALE_MS) renameSync(stealMtx, `${stealMtx}.stale-${Date.now()}`); } catch { /* מתחרה-זז */ }
+    return; // גנב-אחר-פעיל — נסה-שוב-בסיבוב-הבא
+  }
+  try {
+    const owner = lockOwnerPid(lockFile);
+    if (owner === undefined) return; // המנעול נעלם מעצמו
+    let ownerIno = null;
+    let dead = false;
+    if (owner === null) {
+      try { ownerIno = statSync(lockFile).ino; dead = Date.now() - statSync(lockFile).mtimeMs > LOCK_STALE_MS; } catch { return; }
+    } else {
+      try { ownerIno = statSync(lockFile).ino; } catch { return; }
+      try { process.kill(owner, 0); } catch (pe) { dead = pe.code === "ESRCH"; }
+      if (!dead) { try { dead = Date.now() - statSync(lockFile).mtimeMs > LOCK_STALE_MS; } catch { return; } } // גיבוי לחי-שנתקע
+    }
+    if (dead) {
+      /* R262b · אימות-inode מיד-לפני-ה-rename: ההחלטה התקבלה מקריאה-קודמת —
+       * אם השם כבר-מצביע על inode-אחר (יורש-חי נכנס בין-לבין) הגניבה מבוטלת. */
+      try {
+        const inoNow = statSync(lockFile).ino;
+        if (inoNow === ownerIno) renameSync(lockFile, `${lockFile}.stale-${Date.now()}`);
+      } catch { /* המנעול נעלם מעצמו — אין-מה-לגנוב */ }
+    }
+  } finally {
+    try { closeSync(mtx); } catch { /* כבר-סגור */ }
+    try { unlinkSync(stealMtx); } catch { /* כבר-פונה */ }
+  }
+}
 function withLock(file, fn) {
   mkdirSync(path.dirname(file), { recursive: true }); // סדר-הפעולות-חשוב: התיקייה-לפני-המנעול (למדנו-ב-R258-מהריצה-החוזרת)
   const lockFile = `${file}.lock`;
   const t0 = Date.now();
-  let fd = null;
-  while (fd === null) {
+  for (;;) {
+    let claimed = false;
+    let ino = null;
+    const claimFile = `${lockFile}.claim-${process.pid}-${randomUUID().replaceAll("-", "").slice(0, 8)}`;
     try {
-      fd = openSync(lockFile, "wx");
-    } catch (e) {
-      if (e.code !== "EEXIST") throw e;
+      const cfd = openSync(claimFile, "wx", 0o600); // התביעה-נולדת-שלמה: pid-בתוכה *לפני* ששם-המנעול-קיים
+      try { writeSync(cfd, `${process.pid} ${new Date().toISOString()}\n`); } finally { closeSync(cfd); }
       try {
-        // R259 · חיות-הבעלים: SIGKILL באמצע-כתיבה משאיר-מנעול-יתום-שחוסם-כתיבה-עד-30s (נמדד).
-        // probe signal-0 — בעלים-מת (ESRCH) = גניבה-מיידית גם-אם-המנעול-טרי; סף-הגיל נשאר-גיבוי לבעלים-חי-שנתקע.
-        let dead = false;
-        try {
-          const ownerPid = Number(readFileSync(lockFile, "utf8").trim().split(/\s+/)[0]);
-          const age = Date.now() - statSync(lockFile).mtimeMs;
-          if (Number.isInteger(ownerPid) && ownerPid > 0) {
-            try { process.kill(ownerPid, 0); } catch (pe) { dead = pe.code === "ESRCH"; }
-          } else {
-            // בעלים-לא-קריא (ריק/זבל): תהליך-שנהרג-בין-יצירת-המנעול-לכתיבת-ה-pid (נמדד ב-SIGKILL-storm).
-            // חסד-250ms מכסה-את-חלון-הµs-של-כותב-חי-שטרם-כתב-את-ה-pid; אחר-כך-זה-יתום.
-            dead = age > 250;
-          }
-          if (age > LOCK_STALE_MS) dead = true; // חוק-הגיל-נשאר-גיבוי לבעלים-חי-שנתקע
-        } catch { /* קריאה-נכשלה/המנעול-נעלם — נסה-שוב */ }
-        if (dead) {
-          try { renameSync(lockFile, `${lockFile}.stale-${Date.now()}`); } catch { /* כבר-איננו */ } // העברה-אטומית — רק-כותב-אחד-מנצח
-        }
-      } catch { /* כבר-איננו — נסה-שוב */ }
-      if (Date.now() - t0 > LOCK_WAIT_MS) throw new Error(`LOCK-BUSY: ${path.basename(lockFile)} מוחזק-בידי-כותב-אחר`);
-      try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25); } catch { /* בלי-חסימה — המשך */ }
+        linkSync(claimFile, lockFile); claimed = true; // אטומי: EEXIST = מישהו-מחזיק; המנעול-מעולם-לא-נולד-קרוע
+        try { ino = statSync(claimFile).ino; } catch { /* לא-יקרה: זה עתה קישרנו; ה-inode-חי-דרך-שם-המנעול */ }
+      } finally { try { unlinkSync(claimFile); } catch { /* כבר-פונה */ } }
+    } catch (e) {
+      try { unlinkSync(claimFile); } catch { /* כבר-פונה */ }
+      if (e.code !== "EEXIST") throw e; // שאריות-תביעה-הן-שלנו; EEXIST-ב-link = התנגשות-לגיטימית
     }
-  }
-  try { writeSync(fd, `${process.pid} ${new Date().toISOString()}\n`); } catch { /* אינפורמטיבי-בלבד */ }
-  try {
-    return fn();
-  } finally {
-    try { closeSync(fd); } catch { /* כבר-סגור */ }
-    try { unlinkSync(lockFile); } catch { /* כבר-פונה */ }
+    if (claimed) {
+      ACTIVE_LOCK = { file, ino }; // claim-inode == lock-inode (hardlink) — נלכד *לפני* מחיקת-ה-claim
+      try {
+        return fn();
+      } finally {
+        ACTIVE_LOCK = null;
+        try { if (lockOwnerPid(lockFile) === process.pid) unlinkSync(lockFile); } catch { /* כבר-פונה */ } // אימות-בעלות: לעולם לא מוחקים מנעול-של-זר
+      }
+    }
+    if (Date.now() - t0 > LOCK_WAIT_MS) throw new Error(`LOCK-BUSY: ${path.basename(lockFile)} מוחזק-בידי-כותב-אחר`);
+    stealIfDead(file, lockFile);
+    try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25); } catch { /* בלי-חסימה — המשך */ }
   }
 }
 
