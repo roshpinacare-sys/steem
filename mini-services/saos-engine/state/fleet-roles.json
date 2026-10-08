@@ -1,6 +1,6 @@
 {
   "verdict": "RECRUITED",
-  "active": 9,
+  "active": 8,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 527 trades/24h measured (vol 5062.167 STEEM)",
+      "evidence": "state/market.json: 522 trades/24h measured (vol 4945.549 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -33,11 +33,11 @@
       "role": "מבקר-עסקאות",
       "lane": "truth",
       "capability": "chain-truth fill/op counters over account history (max(state, chain-truth))",
-      "status": "active",
+      "status": "planned",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/observe.json: 1 chain-truth fills counted (last 2026-10-08T03:59:18.000Z)",
+      "evidence": null,
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -143bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -146bps)",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/selftest-last-run.json: 976/976 PASS at 2026-10-08T04:44:32.229Z",
+      "evidence": "state/selftest-last-run.json: 983/983 PASS at 2026-10-08T05:28:08.370Z",
       "priorStatus": "active"
     },
     {
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T05:19:45.193Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T05:29:45.193Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-08T05:19:45.193Z",
+  "at": "2026-10-08T05:29:45.193Z",
   "pid": 20909
 }
