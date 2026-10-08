@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { withLlmRetry, withVoice } from "../_llm";
+import { SYMBOL_PROMPT_LAW, ANTI_TEMPLATE_LAW, validateDraftBody } from "../_symbols";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -23,7 +24,8 @@ HARD LAW (violations make a comment unusable):
 - Never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected. Write as one independent author.
 - Never address anyone by @username and never mention any account names.
 - No financial advice, no profit promises, no price predictions, no links, no solicitation.
-- BANNED OPENERS (never in the first sentence): "That's a great post", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates", "Wonderful post". Open with SUBSTANCE instead.
+- NO dashes anywhere, NO double quotes anywhere, NO colons anywhere (the absolute symbol ban).
+- BANNED OPENERS (never in the first sentence): "That's a great post", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates", "Wonderful post", "Let's measure it", "Bottom line up front", "Here's the thing". Open with SUBSTANCE instead.
 - React to the post's SPECIFIC point: pick the single sharpest idea, detail, or example in the post and say something real about it: what it explains, what it misses, what it reminded you of, where it leads.
 - Add ONE thing the post did not already say (a concrete example, an honest counterpoint, a related question from your own reading or life). Never just praise, never summarize the post back at its author.
 - Optionally end with ONE specific question that opens the conversation (never "What do you think?").
@@ -60,7 +62,7 @@ export async function POST(req: Request) {
     const zai = await ZAI.create();
     const completion = await withLlmRetry(() => zai.chat.completions.create({
       messages: [
-        { role: "assistant", content: withVoice(SYSTEM_PROMPT, personaBrief) },
+        { role: "assistant", content: withVoice(`${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}\n\n${ANTI_TEMPLATE_LAW}`, personaBrief) },
         { role: "user", content: userPrompt },
       ],
       thinking: { type: "disabled" },
@@ -76,7 +78,10 @@ export async function POST(req: Request) {
       commentBody = raw.trim();
     }
     if (!commentBody) return NextResponse.json({ ok: false, error: "empty comment" }, { status: 502 });
-    return NextResponse.json({ ok: true, comment: { body: commentBody }, at: new Date().toISOString() });
+    /* R283 · THE SYMBOL LAW GATE — fail-closed on banned glyphs and template framing */
+    const valid = validateDraftBody(commentBody);
+    if (valid === null) return NextResponse.json({ ok: false, error: "symbol-law-refused" }, { status: 502 });
+    return NextResponse.json({ ok: true, comment: { body: valid }, at: new Date().toISOString() });
   } catch (e) {
     return NextResponse.json(
       { ok: false, error: String((e as Error)?.message ?? e).slice(0, 200) },

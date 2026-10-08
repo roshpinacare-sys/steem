@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { withLlmRetry, withVoice } from "../_llm";
+import { SYMBOL_PROMPT_LAW, ANTI_TEMPLATE_LAW, validateDraftBody } from "../_symbols";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -23,8 +24,8 @@ HARD LAW (violations make a reply unusable):
 - Never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected. Write as one independent author.
 - Never address anyone by @username and never mention any account names.
 - No financial advice, no profit promises, no price predictions, no links, no solicitation.
-- NO em dashes or en dashes anywhere (use commas, colons, or parentheses instead).
-- BANNED OPENERS (never start with these, never even in the first sentence): "That's a great point", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates", "Couldn't have said it better", "Such an insightful", "Spot on", "Great share", "This hits home", "So true", "Loved this", "Keep it up", "Following for more". Start with SUBSTANCE: an idea, a detail, a memory, an example, or a gentle pushback.
+- NO dashes anywhere, NO double quotes anywhere, NO colons anywhere (the absolute symbol ban).
+- BANNED OPENERS (never start with these, never even in the first sentence): "That's a great point", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates", "Couldn't have said it better", "Such an insightful", "Spot on", "Great share", "This hits home", "So true", "Loved this", "Keep it up", "Following for more", "Let's measure it", "Bottom line up front", "Here's the thing". Start with SUBSTANCE: an idea, a detail, a memory, an example, or a gentle pushback.
 - VARY YOUR SHAPE across replies: do not always open with "the X detail caught me" or always end with a question; some replies assert, some reply with a short story, some end mid-thought inviting the other side to continue.
 - Quote or paraphrase ONE specific word/idea/example from the commenter's actual words and build on it. If their comment is vague, pick the one concrete thing it implies and expand that.
 - Add something the commenter did NOT already say: a small concrete detail, an honest counterpoint, or a lived example. Never just praise, never just agree.
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
     const zai = await ZAI.create();
     const completion = await withLlmRetry(() => zai.chat.completions.create({
       messages: [
-        { role: "assistant", content: withVoice(SYSTEM_PROMPT, personaBrief) },
+        { role: "assistant", content: withVoice(`${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}\n\n${ANTI_TEMPLATE_LAW}`, personaBrief) },
         { role: "user", content: userPrompt },
       ],
       thinking: { type: "disabled" },
@@ -83,7 +84,11 @@ export async function POST(req: Request) {
       replyBody = raw.trim();
     }
     if (!replyBody) return NextResponse.json({ ok: false, error: "empty reply" }, { status: 502 });
-    return NextResponse.json({ ok: true, reply: { body: replyBody }, at: new Date().toISOString() });
+    /* R283 · THE SYMBOL LAW GATE — the engine never receives a body that
+     * carries a banned glyph or survives as template framing */
+    const valid = validateDraftBody(replyBody);
+    if (valid === null) return NextResponse.json({ ok: false, error: "symbol-law-refused" }, { status: 502 });
+    return NextResponse.json({ ok: true, reply: { body: valid }, at: new Date().toISOString() });
   } catch (e) {
     return NextResponse.json(
       { ok: false, error: String((e as Error)?.message ?? e).slice(0, 200) },

@@ -104,7 +104,11 @@ async function personaReplyViaBridge({ account, postTitle, commentBody, myPrior 
 export const VOTE_RC_FLOOR = 50_000_000;
 export const COMMENT_RC_FLOOR = 600_000_000;
 export const FLEET_VOTE_WEIGHT = 2500; // 25% — support, not self-dealing
-export const CAPS = { fleetVote: 2, fleetComment: 1, deepen: 1 };
+/* R283 · FULL-ACTIVITY CAPS (operator order 2026-10-08, verbatim intent:
+ * "תוכיח תפעיל שם הכל מיד פעילות מלאה") — the probe-era caps (1 comment,
+ * 1 deepen, 2 votes) held the Hive organ at a whisper. The floors and the
+ * veto stay untouched — a broke account still does not broadcast. */
+export const CAPS = { fleetVote: 3, fleetComment: 3, deepen: 2 };
 export const WINDOW = { minMinute: 7 * 60, maxMinute: 23 * 60 }; // 07:00–23:00 UTC
 
 /* ── pure: seeded daily schedule (auditability law) ───────────────────────── */
