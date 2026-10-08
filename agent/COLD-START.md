@@ -38,6 +38,7 @@ bash scripts/doctrine-audit.mjs         # חייב PASS — כישלון = המ�
 
 - `mini-services/saos-engine/state/` — מצב-החיים: `sovereign.json`, `army-custody.json`, `hive-custody.json`, `bridge-guard.json`, `rc-pool.json`, `selftest-last-run.json`.
 - `state/r267-crosschain.json` + `state/r267-blurt-fleet.json` — פסקי-הכתר על שלוש-השרשרות.
+- `state/r268-hive-forensics.json` + `state/r268-hive-posts.json` — מי-חיבר-מה-ומתי על-Hive (התשובה-הסגורה: ATLAS §9; לא-לחפור-מחדש).
 - DecisionQueue/`state/decisions.json` — ההחלטות-הממתינות למפעיל (הלוויתן-ה-Hive = תחום-מפעיל).
 - **אל-תריץ מחדש** probes-של-סבבים-קודמים ללא-סיבה-חדשה — הראיות כבר ב-state. מדידה-חדשה רק לשאלה-חדשה.
 

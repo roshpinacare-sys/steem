@@ -223,7 +223,7 @@
     "redeploy": {
       "name": "redeploy",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "REDEPLOY-HOLD",
       "reason": "at-or-below-floor",
       "powerUpSteem": 0,
@@ -259,7 +259,7 @@
     "soldiers": {
       "name": "soldiers",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "DISABLED-T80-OPERATOR-STOP"
     },
     "community": {
@@ -311,9 +311,9 @@
       "name": "social",
       "ok": true,
       "ms": null,
-      "verdict": "PART-GATED",
+      "verdict": "SOCIAL-IDLE",
       "executed": 0,
-      "refused": 14,
+      "refused": 0,
       "due": 0
     },
     "organic": {
@@ -330,16 +330,113 @@
       "ms": 0,
       "verdict": "CUSTODY-DEFERRED",
       "updated": 0,
-      "skipped": 0,
-      "deferred": 14
+      "skipped": 14,
+      "deferred": 0
     },
     "hive": {
       "name": "hive",
       "ok": true,
-      "ms": 3,
-      "verdict": "HIVE-NO-CUSTODY",
+      "ms": 8206,
+      "verdict": "HIVE-IDLE",
       "executed": 0,
-      "custody": null,
+      "custody": {
+        "verified": 9,
+        "total": 9
+      },
+      "reason": null
+    },
+    "hiveProfiles": {
+      "name": "hiveProfiles",
+      "ok": true,
+      "ms": 7842,
+      "verdict": "DEFERRED",
+      "updated": 0,
+      "skipped": 8,
+      "deferred": 1
+    },
+    "rcPool": {
+      "name": "rcPool",
+      "ok": true,
+      "ms": 7531,
+      "verdict": "POOL-PENDING-REGEN",
+      "lifts": 1,
+      "measured": {
+        "cashmachine": {
+          "maxB": 2.105,
+          "curB": 1.069,
+          "availB": 1.094,
+          "canPost": false,
+          "structural": true
+        },
+        "haran": {
+          "maxB": 2.265,
+          "curB": 1.578,
+          "availB": 1.619,
+          "canPost": false,
+          "structural": true
+        },
+        "israelnews": {
+          "maxB": 2.227,
+          "curB": 1.516,
+          "availB": 1.575,
+          "canPost": false,
+          "structural": true
+        },
+        "lsa": {
+          "maxB": 3.891,
+          "curB": 0.587,
+          "availB": 0.689,
+          "canPost": false,
+          "structural": false
+        },
+        "macrame": {
+          "maxB": 4.178,
+          "curB": 0.492,
+          "availB": 0.602,
+          "canPost": false,
+          "structural": false
+        },
+        "siq": {
+          "maxB": 2.29,
+          "curB": 1.386,
+          "availB": 1.446,
+          "canPost": false,
+          "structural": true
+        },
+        "wic": {
+          "maxB": 3.086,
+          "curB": 0.014,
+          "availB": 0.131,
+          "canPost": false,
+          "structural": false
+        },
+        "wog": {
+          "maxB": 3.273,
+          "curB": 0.037,
+          "availB": 0.123,
+          "canPost": false,
+          "structural": false
+        },
+        "woq": {
+          "maxB": 2.273,
+          "curB": 1.385,
+          "availB": 1.413,
+          "canPost": false,
+          "structural": true
+        }
+      },
+      "deferred": 0
+    },
+    "hiveSocial": {
+      "name": "hiveSocial",
+      "ok": true,
+      "ms": 4998,
+      "verdict": "HIVE-SOCIAL-IDLE",
+      "executed": 0,
+      "custody": {
+        "verified": 9,
+        "total": 9
+      },
       "reason": null
     },
     "bus": {
@@ -348,7 +445,7 @@
       "ms": 5852,
       "verdict": "BUS-GATED:REFUSED",
       "delivered": 0,
-      "published": 0
+      "published": 1
     },
     "rctank": {
       "name": "rctank",
@@ -388,7 +485,7 @@
       "verdict": "CADENCE-GATED",
       "pass": 983,
       "fail": 0,
-      "at": "2026-10-08T05:39:50.121Z"
+      "at": "2026-10-08T05:22:32.338Z"
     },
     "economics": {
       "name": "economics",
@@ -397,22 +494,22 @@
       "totalMeasuredUsdPerDay": 0,
       "totalEstUsdPerDay": 0.525274,
       "rails": 6,
-      "measuredCount": 0,
+      "measuredCount": 1,
       "estimatedCount": 2,
-      "blockedCount": 4
+      "blockedCount": 3
     },
     "recruit": {
       "name": "recruit",
       "ok": true,
       "ms": 1,
       "verdict": "RECRUITED",
-      "active": 8,
+      "active": 9,
       "total": 11
     },
     "council": {
       "name": "council",
       "ok": true,
-      "ms": 4,
+      "ms": 5,
       "verdict": "MESH-ALIVE",
       "organs": [
         "custodian:ALIVE",
