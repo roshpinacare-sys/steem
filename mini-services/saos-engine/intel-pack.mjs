@@ -265,6 +265,38 @@ function seededRand(seed) {
   return rand;
 }
 
+/* ── R262 · THE PROBE SHIELD (operator order, verbatim intent): "למגיבים
+ * לנו אפשר לענות בצורה נחמדת אבל שלא יחקרו פרטים תהיה מקצועי וחדשן ואיכותי
+ * אבל גם עוזר וקהילתי... שוק הקריפטו מלא סכנות" — an outsider asking about
+ * bots/automation/account-networks gets a POLITE, professional, community-
+ * warm reply that pivots to the topic and reveals NOTHING: no confirm, no
+ * deny, no numbers, no names, no mechanics. Pure regex, selftest-vectorable. */
+export const PROBE_PATTERNS = [
+  /\bbots?\b/i,
+  /\bautomat(ion|ed|ic)\b/i,
+  /\bmultiple accounts?\b/i,
+  /\bhow many accounts?\b/i,
+  /\bwho (is|are) (really )?(behind|running|writing)\b/i,
+  /\bsame person\b/i,
+  /\baccount network\b/i,
+  /\bare you (a )?(bot|human|ai|llm|program)\b/i,
+  /\bai[- ]?generated\b/i,
+  /\bchatgpt\b|\bgpt\b|\bllm\b/i,
+  /\bwho controls?\b/i,
+  /\borganized (group|network|team)\b/i,
+];
+export function isProbeComment(text) {
+  return PROBE_PATTERNS.some((p) => p.test(String(text ?? "")));
+}
+
+/* the guarded pivot frames: kind, professional, zero internal surface */
+const PROBE_DEFLECT_FRAMES = [
+  (a0) => `Appreciate you asking. I keep the answer simple: I write here about ${a0 ? `"${a0}"` : "the things in this post"} because they matter to me, and I would rather keep the conversation on that. ${cap(pick(GENERIC.insights, seededRand("deflect1")))} ${cap(pick(GENERIC.questions, seededRand("deflect2")))}`,
+  (a0) => `Fair question, and the honest answer is boring: this is just my corner for ${a0 ? `"${a0}"` : "the topic"} and whatever I notice about it. The part I find worth talking about is ${cap(pick(GENERIC.insights, seededRand("deflect3")))}. ${cap(pick(GENERIC.questions, seededRand("deflect4")))}`,
+  (a0) => `I would rather keep this thread about the ideas themselves: ${cap(pick(GENERIC.insights, seededRand("deflect5")))} That is where a reply earns its space here. ${cap(pick(GENERIC.questions, seededRand("deflect6")))}`,
+  (a0) => `Good curiosity, though the who and the how matter less than the what: ${cap(pick(GENERIC.insights, seededRand("deflect7")))} If something here helped you, that is the whole point of the corner. ${cap(pick(GENERIC.questions, seededRand("deflect8")))}`,
+];
+
 /* ── laws the output must satisfy (mirrors army-social sanitizeReply) ─────── */
 const BANNED_OPENERS = ["that's a great", "great point", "great post", "i completely agree", "thanks for sharing", "well said", "amazing post", "beautiful post", "fascinating", "wonderful"];
 /* R244 ROOT-CAUSE FIX: bare substring matching collides with common English —
@@ -327,9 +359,22 @@ export function synthesizeComment({ postTitle, postExcerpt, seed = 1 } = {}) {
 
 /* ── pure: synthesizeReply — answer a comment on OUR thread ─────────────────
  * Frame laws: (1) address their actual point (anchor their words), (2) add a
- * new angle from the module (no self-repeat), (3) pass the ball back. */
+ * new angle from the module (no self-repeat), (3) pass the ball back.
+ * R262: a comment that PROBES internal mechanics (bots, automation, account
+ * networks) never gets an organic frame — it gets the guarded pivot (polite,
+ * topical, nothing revealed), per the operator's crypto-street law. */
 export function synthesizeReply({ postTitle, commentBody, myPrior = "", seed = 1 } = {}) {
   const rand = seededRand(String(seed) + "r");
+  if (isProbeComment(commentBody)) {
+    const anchors = anchorPhrases(postTitle, myPrior, { n: 1 });
+    const a0 = anchors[0] ?? "";
+    for (let i = 0; i < PROBE_DEFLECT_FRAMES.length * 2; i++) {
+      const idx = Math.floor(rand() * PROBE_DEFLECT_FRAMES.length);
+      const body = PROBE_DEFLECT_FRAMES[idx % PROBE_DEFLECT_FRAMES.length](a0);
+      if (legalBody(body) && !isProbeComment(body)) return body;
+    }
+    return null; // fail-closed: a probe never gets an improvised answer
+  }
   const { topic } = detectTopic(`${postTitle} ${commentBody}`);
   const m = TOPIC_MODULES[topic] ?? GENERIC;
   const anchors = anchorPhrases(commentBody, myPrior, { n: 2 });

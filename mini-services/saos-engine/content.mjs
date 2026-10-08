@@ -61,6 +61,8 @@ export const TOPIC_POOL = [
   { id: "seasons", hint: "seasons and routines: how light and weather reshape a working day", tags: ["life", "nature"] },
   { id: "language", hint: "language quirks, translation slips, and the words that refuse to migrate", tags: ["writing", "life"] },
   { id: "objects", hint: "memory and objects: why one old tool beats a shelf of new ones", tags: ["life", "story"] },
+  { id: "on-chain-publishing", hint: "what a blockchain post can carry that a blog cannot: permanent tables, collapsible sections, embedded legal images, and formatting that survives every reader", tags: ["writing", "technology"] },
+  { id: "post-craft", hint: "the craft of a post that earns a reply: the opener, the honest detail, the question that actually gets answered", tags: ["writing", "life"] },
 ];
 
 /** pure: day-seeded rotation of n distinct topics from the pool */
@@ -152,6 +154,28 @@ export const STYLE_LAW = {
     "rubber-duck it", "hotfix", "refactor", "the long tail", "fallthrough",
   ],
   slangGuidance: "sprinkle at most one or two per post, only where a real developer would say them",
+};
+
+/* R262 · THE FORMAT LAW (operator order, verbatim intent): "צריך להבין מה
+ * אפשר לעשות עם פוסט אם אפשר html עד איזה רמה מה נוכל לעשות בפוסטים" —
+ * the chain stores the body RAW; frontends sanitize. What RENDERS on
+ * Steemit/PeakD/Ecency: markdown + a safe HTML subset (headings, bold,
+ * italics, lists, tables, blockquotes, code blocks, <center>, <sub>/<sup>,
+ * <hr>, <details>/<summary> collapsibles, https images). What NEVER ships:
+ * <script>, <style>, <iframe>, on-* attributes, javascript: URLs — they are
+ * stripped by every frontend, so writing them is noise at best. The writer's
+ * room may now FORMAT like professionals: a table for real comparisons, a
+ * collapsible TL;DR, a centered pull-quote. Structure is content. */
+export const FORMAT_LAW = {
+  allowed: [
+    "markdown: headings #..####, bold, italics, lists, blockquotes, fenced code blocks, links, https images",
+    "safe HTML subset that renders on all major frontends: <center>, <hr>, <sub>, <sup>, <blockquote>, tables (<table><tr><th><td>), <details><summary> collapsible sections",
+  ],
+  forbidden: [
+    "<script>, <style>, <iframe>, <object>, <embed>, on-* attributes, javascript: URLs — every frontend strips them",
+    "image hotlinks from non-https or non-Wikimedia sources in posts we ship (the rail embeds only upload.wikimedia.org with mandatory attribution)",
+  ],
+  guidance: "use structure only where it serves the reader: one table for a real comparison, one collapsible for an optional deep-dive, centered pull-quote at most once. Formatting is seasoning, not the dish.",
 };
 
 /* R254 · pure: the dash normalizer — the bridge kept writing " — " and the
@@ -251,7 +275,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topics, voices, personas, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW }),
+      body: JSON.stringify({ topics, voices, personas, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
       signal: AbortSignal.timeout(120_000),
     });
     if (!r.ok) throw new Error(`bridge ${r.status}`);
