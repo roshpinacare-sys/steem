@@ -1,31 +1,30 @@
 {
-  "startedAt": "2026-10-08T13:22:06.748Z",
+  "startedAt": "2026-10-08T13:34:02.313Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 4723,
+      "ms": 2011,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.05994,
-        "sbdUsd": 0.5758172452294076,
-        "parity": 0.1040955276984101,
-        "source": "internal-feed-fallback+derived-sbd",
-        "lowConfidence": true
+        "steemUsd": 0.05989,
+        "sbdUsd": 0.562943,
+        "parity": 0.10638732518212324,
+        "source": "coingecko"
       },
       "feed": 0.1040955276984101,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 0
+        "bps": 220
       },
-      "steemUsd": 0.05994,
-      "sbdUsd": 0.5758172452294076,
+      "steemUsd": 0.05989,
+      "sbdUsd": 0.562943,
       "inventory": {
         "steem": 5.119,
         "sbd": 3.418,
-        "spOwn": 966.5502819598107,
+        "spOwn": 966.5508263654382,
         "rcPct": 31.1
       },
       "ordersOk": true,
@@ -103,57 +102,61 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.1040955276984101 (internal-feed-fallback+derived-sbd) · fills 1 · fuel 0$"
+      "summary": "parity 0.10638732518212324 (coingecko) · fills 1 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1658,
-      "verdict": "DECISIONS:4",
+      "ms": 2388,
+      "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
+        "parity-drift:monitor",
         "soldiers:grids-live",
         "rc-health:healthy",
         "curation:curator-armed"
       ],
-      "spreadBpsRec": 187,
+      "spreadBpsRec": 296,
       "book": {
-        "bestAsk": 0.10882460637129257,
-        "bestBid": 0.1068102196018115,
-        "spreadBps": 187
+        "bestAsk": 0.1085316733797144,
+        "bestBid": 0.10536314481952361,
+        "spreadBps": 296
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 1,
-      "runCount": 266,
-      "signals": 3,
-      "retiredFills": 0,
-      "arbSignal": null,
+      "runCount": 268,
+      "signals": 4,
+      "retiredFills": 2,
+      "arbSignal": {
+        "gapBps": 220,
+        "dir": "sell-external"
+      },
       "layers": "measured (see state.json.grids)"
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 1745,
+      "ms": 1520,
       "verdict": "OFFER-READY",
       "asks": 5,
       "bids": 0,
       "flowAsks": 1,
       "flowBids": 0,
       "staleCount": 5,
-      "skew": -0.219076,
+      "skew": -0.217539,
       "book": {
-        "bestAsk": 0.10882460637129257,
-        "bestBid": 0.1068102196018115,
-        "askDepthSteem": 118.458,
-        "bidDepthSbd": 2965.885,
-        "at": "2026-10-08T13:22:06.748Z"
+        "bestAsk": 0.1085316733797144,
+        "bestBid": 0.10536314481952361,
+        "askDepthSteem": 88.923,
+        "bidDepthSbd": 2960.042,
+        "at": "2026-10-08T13:34:02.313Z"
       },
       "market": {
-        "tradesPerDay": 502,
-        "spreadBps": 209.16
+        "tradesPerDay": 240,
+        "spreadBps": 300.72
       },
       "liquidity": {
         "deployedAsks": 0,
@@ -169,12 +172,12 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
-      "verdict": "CONVERT-HOLD",
-      "amountSbd": 0,
-      "edgeBps": 0,
-      "marketSbdUsd": 0.575817,
-      "impliedSbdUsd": 0.575817,
+      "ms": 0,
+      "verdict": "CONVERT-PLAN",
+      "amountSbd": 2.918,
+      "edgeBps": 220,
+      "marketSbdUsd": 0.562943,
+      "impliedSbdUsd": 0.575337,
       "marketSourceNote": "external-measured"
     },
     "redeploy": {
@@ -195,20 +198,46 @@
     },
     "curate": {
       "name": "curate",
-      "ok": false,
-      "ms": 4,
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
+      "ok": true,
+      "ms": 1725,
+      "verdict": "VP-FLOOR",
+      "votes": 0,
+      "txid": null,
+      "vpEff": 39.5,
+      "votesToday": 0,
+      "error": null
     },
     "execute": {
       "name": "execute",
-      "ok": false,
-      "ms": 2,
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
+      "ok": true,
+      "ms": 3508,
+      "verdict": "THINK-GATE-REFUSED",
+      "txid": null,
+      "ops": 6,
+      "opNames": [
+        "limit_order_create",
+        "limit_order_create",
+        "limit_order_create",
+        "limit_order_create",
+        "limit_order_create",
+        "convert"
+      ],
+      "node": null,
+      "error": null,
+      "promo": {
+        "verdict": "ALREADY-POSTED-LEGACY",
+        "permlink": "daily-ledger-20261008"
+      },
+      "opsToday": 6,
+      "opsDayCap": 1500,
+      "cancels": 0,
+      "created": 5,
+      "hyperLayer": "hypergrid-owns-flow"
     },
     "soldiers": {
       "name": "soldiers",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "DISABLED-T80-OPERATOR-STOP"
     },
     "community": {
@@ -224,13 +253,13 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 1745,
+      "ms": 10,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked"
       ],
       "tunings": [],
-      "discoveryVerdict": "OPTIONS-FOUND",
+      "discoveryVerdict": "FRESH-CACHED",
       "topOpportunities": [
         "spread-wide(measured)",
         "tags-realloc(measured)",
@@ -284,7 +313,7 @@
     "hive": {
       "name": "hive",
       "ok": true,
-      "ms": 4,
+      "ms": 2,
       "verdict": "HIVE-NO-CUSTODY",
       "executed": 0,
       "custody": null,
@@ -322,7 +351,7 @@
     "bus": {
       "name": "bus",
       "ok": true,
-      "ms": 5215,
+      "ms": 5360,
       "verdict": "BUS-GATED:REFUSED",
       "delivered": 0,
       "published": 0
@@ -330,7 +359,7 @@
     "rctank": {
       "name": "rctank",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "MEASURED",
       "maxRc": 1954520572054,
       "opsPerDayEquilibrium": 10214,
@@ -340,7 +369,7 @@
     "payouts": {
       "name": "payouts",
       "ok": true,
-      "ms": 2660,
+      "ms": 2090,
       "verdict": "READ-OK-NO-UNPAID-VOTES",
       "day": "2026-10-08",
       "pendingVests": 0,
@@ -351,7 +380,7 @@
     "weave": {
       "name": "weave",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "PUBLISHED",
       "day": "2026-10-08",
       "theirVotesToday": 0,
@@ -372,16 +401,16 @@
       "ok": true,
       "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.53325,
+      "totalEstUsdPerDay": 0.568944,
       "rails": 6,
       "measuredCount": 1,
-      "estimatedCount": 2,
-      "blockedCount": 3
+      "estimatedCount": 3,
+      "blockedCount": 2
     },
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 2,
+      "ms": 1,
       "verdict": "FULL-STRENGTH",
       "active": 11,
       "total": 11
@@ -389,7 +418,7 @@
     "council": {
       "name": "council",
       "ok": true,
-      "ms": 5,
+      "ms": 9,
       "verdict": "MESH-ALIVE",
       "organs": [
         "custodian:ALIVE",
@@ -429,17 +458,11 @@
     "measuredTotalUsdPerDay": 0,
     "honesty": "unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"
   },
-  "ok": false,
-  "health": "blocked",
+  "ok": true,
+  "health": "ok",
   "failures": {
-    "failedSteps": [
-      "curate",
-      "execute"
-    ],
-    "blockedSteps": [
-      "curate",
-      "execute"
-    ]
+    "failedSteps": [],
+    "blockedSteps": []
   },
   "blockages": [
     {
@@ -455,5 +478,5 @@
       "reason": "below-min-powerup"
     }
   ],
-  "finishedAt": "2026-10-08T13:22:24.540Z"
+  "finishedAt": "2026-10-08T13:34:19.230Z"
 }
