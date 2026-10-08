@@ -47,6 +47,15 @@ fi
 # no push may ever carry secret material or abuse API limits.
 bash scripts/github-guard.sh
 
+# --- LAW CLAUSE 3.7 (R267): the map must be true — doctrine-audit, fail-closed ---
+# agent/DOCTRINE.md + agent/ATLAS.md + agent/COLD-START.md are the enforced
+# self-knowledge layer; a push that moves reality while the map lies publishes
+# a trap for the next agent (the 427-vectors class of rot). Same law as the
+# guard above: gate failure = stop and document, never bypass.
+if [[ -f scripts/doctrine-audit.mjs ]]; then
+  bun scripts/doctrine-audit.mjs || { echo "LAW-VIOLATION: doctrine-audit failed — fix the docs in the same commit that moved reality"; exit 3; }
+fi
+
 # --- LAW CLAUSE 2.5 (R220): body-prefixed commits MUST be GPG-signed ---
 # Unsigned commits with a body prefix (R2xx / SAOS-custodian) are a writer-law
 # violation (identity clause 7) — the gate now REFUSES to publish them.
