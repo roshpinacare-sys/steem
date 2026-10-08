@@ -1,7 +1,7 @@
 # חוק אי-אמון-בסנדבוקס (SANDBOX-DISTRUST-LAW) — R241
 
 > מעמד: חוק-גוף מאושר-מפעיל (פקודת-מפעיל 2026-10-07: "אין להסתמך על שום פעילות אוטונומית מסנדבוקס חיצוני... לבצע על הגיט אוטונומי ריבוני ולא לסמוך בשום דבר בסנדבוקס שנמחק 5 פעמים ביום").
-> נגזר מ: SOVEREIGN-WRITER-LAW.md · אכיפה: scripts/sovereign-push.sh · scripts/sovereign-bootstrap.sh · scripts/chain-anchor-probe.mjs · .github/workflows/sovereign-cycle.yml
+> נגזר מ: SOVEREIGN-WRITER-LAW.md · אכיפה: scripts/sovereign-push.sh · scripts/sovereign-bootstrap.sh · scripts/chain-anchor-probe.mjs · roshpinacare-sys/saos-runtime/.github/workflows/sovereign-runtime.yml (המארח-החוץ) · .github/workflows/sovereign-cycle.yml (אבחון-בהזמנה-בלבד)
 
 ## ממצא-העובדה שהחוק נולד-ממנו
 ב-2026-10-07 נמדד: הסנדבוקס נמחק פעם-נוספת (HEAD מקומי נשמט 131 קומיטים לאחור), תהליך-ה-custodian מת (שתיקת-קומיטים 11:54→14:13 UTC), ו**המפתח-הסודי-לחתימה BA339C99 אבד** עם-הכרינג. המערכת המשיכה "לענות" (:3000/:3040) אך **יכולת-הריבונות (כתיבה-חתומה-לגיט) הייתה מתה** — בדיוק-השקר שהחוק-זה סוגר: טענות-ריבונות שחיות-רק-בסנדבוקס אינן-ריבונות.
@@ -24,7 +24,7 @@
 
 ## סעיף 4 — המשך-קיום (survivability)
 1. **שחזור**: `scripts/sovereign-bootstrap.sh` — clone-טרי → התקנה → selftest מלא → דוח. חובה-הוכחה: הסקור זהה-למספר-הוקפא בקוד. (הוכח-R241: 427/427 מ-clone-טרי.)
-2. **דופק-חיצוני**: `.github/workflows/sovereign-cycle.yml` רץ-על-תשתית-GitHub (לא-סנדבוקס) כל-30 דק: clone → install → selftest → פרובת-עוגן-שרשרת מול-HEAD. כשל = אזעקה-גלויה בלוח-ה-Actions.
+2. **דופק-חיצוני (R280)**: המארח-החוץ הוא המאגר-הציבורי `roshpinacare-sys/saos-runtime` (דקות-Actions-חינמיות) — `sovereign-runtime.yml` נושא-את-שעון-הרשת בעצמו: כל-מחזור (הצלחה-או-כשל) מפעיל-את-הבא אחרי-15-דק (פולס-עצמי, קצב-קבוע ~20-25-דק) ו-cron-שעתי הוא-גיבוי-מחיה-עצמית אם-השרשרת-מתה. מחזור-אחד: clone-מסונן-blobs של-ענף-הרשומה → selftest → פרובת-עוגן-שרשרת מול-HEAD → שיחת-הצי-על-השרשרת (guards-R274/R275) → DEX-takeover כשהעוגן-המקומי-מזדקן → החזרת-state ל-`saos-cockpit` (FF-only). כשל = אזעקה-גלויה בלוח-ה-Actions-הציבורי. רקע-מדוד (2026-10-08): מתזמן-GitHub הוריד cron-של-30-דק לפערים-של-~7.5-שעות, וה-workflow-הפרטי `sovereign-cycle.yml` מת-על-קיר-חיוב-המאגר-הפרטי (ריצות-ריקות-מ-לוגים) — לכן-הדופק-עבר-למארח-הציבורי-עם-הפולס-העצמי, וה-`sovereign-cycle` נשאר-כלי-אבחון-בהזמנה-בלבד.
 3. **עיגון**: כל-tip-מפורסם נעוגן-על-השרשרת (`saos-git-custody-v1`). אימות-עצמאי: `scripts/chain-anchor-probe.mjs` — DRIFT = עצור-הכל-וחקור.
 4. **כתיבה**: רק דרך-השער (`sovereign-push.sh` — FF-only, דחיית-קומיטי-גוף-לא-חתומים, סעיף 2.5).
 
