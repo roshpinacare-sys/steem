@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "at": "2026-10-08T16:34:43.135Z",
   "enabled": true,
   "runsTotal": 442,
@@ -7,6 +8,16 @@
     "cycles": {
       "window": 133,
       "oks": 125,
+=======
+  "at": "2026-10-08T16:26:20.763Z",
+  "enabled": true,
+  "runsTotal": 441,
+  "verdict": "LEARNED",
+  "metrics": {
+    "cycles": {
+      "window": 132,
+      "oks": 123,
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
       "fails": 3,
       "blocked": 5,
       "okRate": 94,
@@ -14,8 +25,13 @@
       "failReasons": {
         "unknown": 3
       },
+<<<<<<< HEAD
       "msP50": 57040,
       "msP90": 230531
+=======
+      "msP50": 57018,
+      "msP90": 228181
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
     },
     "curator": {
       "present": true,
@@ -37,6 +53,7 @@
       "lastError": null
     },
     "watchdog": {
+<<<<<<< HEAD
       "checks": 23,
       "downs": 0,
       "heals": 1,
@@ -47,6 +64,18 @@
       "lastSpawnAt": "2026-10-08T16:14:45.517Z",
       "lastUpAt": "2026-10-08T16:34:43.153Z",
       "blips": 0
+=======
+      "checks": 2349,
+      "downs": 104,
+      "heals": 37,
+      "healVerified": 36,
+      "healFailed": 0,
+      "lastCheckAt": "2026-10-08T16:26:20.868Z",
+      "engineUp": true,
+      "lastSpawnAt": null,
+      "lastUpAt": "2026-10-08T16:26:20.871Z",
+      "blips": 1
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
     }
   },
   "lessons": [
@@ -54,14 +83,22 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
+<<<<<<< HEAD
       "evidence": "cycle-blocked ×5/133 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+=======
+      "evidence": "cycle-blocked ×6/132 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "cycle-latency-tail",
       "severity": "medium",
+<<<<<<< HEAD
       "evidence": "p50 57040ms vs p90 230531ms",
+=======
+      "evidence": "p50 57018ms vs p90 228181ms",
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     }
@@ -71,9 +108,15 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
+<<<<<<< HEAD
     "signing-cred-blocked": 340,
     "broadcast-fails": 130,
     "cycle-latency-tail": 108
+=======
+    "signing-cred-blocked": 339,
+    "broadcast-fails": 130,
+    "cycle-latency-tail": 107
+>>>>>>> 91fae21a (R278-d: end-to-end live verification — engine measured FLEET-CUSTODY-ALIVE 14/14 x3, selftest 1020/1020 x2, browser-verified cockpit (zero errors, vault-law text live); 4 residual password-demand texts eradicated (signer CREDENTIAL-MISSING/FOREIGN-CREDENTIAL, fleet credRevival, learning T-16) → vault law: revival is automatic, paste optional-only)
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
