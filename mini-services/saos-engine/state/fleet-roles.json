@@ -1,6 +1,6 @@
 {
-  "verdict": "FULL-STRENGTH",
-  "active": 11,
+  "verdict": "RECRUITED",
+  "active": 10,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/market.json: 504 trades/24h measured (vol 4318.874 STEEM)",
+      "evidence": "state/market.json: 331 trades/24h measured (vol 3626.678 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -37,7 +37,7 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-08T06:49:08.934Z",
-      "evidence": "state/observe.json: 7 chain-truth fills counted (last 2026-10-08T07:49:15.000Z)",
+      "evidence": "state/observe.json: 1 chain-truth fills counted (last 2026-10-08T11:13:51.000Z)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -10bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 0bps)",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/selftest-last-run.json: 999/999 PASS at 2026-10-08T07:26:18.151Z",
+      "evidence": "state/selftest-last-run.json: 999/999 PASS at 2026-10-08T13:44:25.134Z",
       "priorStatus": "active"
     },
     {
@@ -105,12 +105,12 @@
       "role": "מודיעין-רשת",
       "lane": "growth",
       "capability": "external eyes — rotating web scans of the STEEM/SBD ecosystem, competitors and market news, feeding the strategist and the analyst",
-      "status": "active",
+      "status": "planned",
       "cadence": "6h",
       "truthContract": "findings carry url+date from real search results; no finding without a source",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/webintel.json: 20 sourced findings, age 2h — external recon live",
-      "priorStatus": "active"
+      "evidence": null,
+      "priorStatus": "planned"
     },
     {
       "id": "payout-auditor",
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T08:29:08.964Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T13:49:26.255Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -133,10 +133,10 @@
       "cadence": "daily",
       "truthContract": "their votes counted from chain history minus our journal, never from our own logs",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/weave.json: saos.weave.core.v1 published, age 2h — second-writer votes today 0 — החוזה-האחד פומבי",
+      "evidence": "state/weave.json: saos.weave.core.v1 published, age 8h — second-writer votes today 0 — החוזה-האחד פומבי",
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-08T08:29:08.964Z",
-  "pid": 28921
+  "at": "2026-10-08T13:49:26.255Z",
+  "pid": 3430
 }
