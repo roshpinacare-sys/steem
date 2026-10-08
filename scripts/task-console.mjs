@@ -18,14 +18,15 @@
  *   bun scripts/task-console.mjs drill [--seed N] [--json]
  */
 import {
-  createTask, setStatus, ready, progress, validateGraph, deserialize, serialize,
+  createTask, setStatus, ready, progress, validateGraph, deserialize,
   runDrill, STATUSES,
 } from "../mini-services/saos-engine/taskgraph.mjs";
 import {
   createDecision, answerDecision, settleDecision, reopenDecision, cancelDecision,
-  listOpen, deserializeDQ, serializeDQ,
+  listOpen, deserializeDQ, validateDQ,
 } from "../mini-services/saos-engine/decisionqueue.mjs";
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, writeSync, closeSync, unlinkSync, statSync } from "node:fs";
+import { readFileSync, renameSync, existsSync, mkdirSync, openSync, writeSync, closeSync, unlinkSync, statSync, readdirSync, fsyncSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -46,11 +47,27 @@ const flagVal = (f) => {
 };
 const FRESH_MS = 24 * 60 * 60 * 1000;
 
+/* R259 · fsync לפני-rename: rename אטומי מול-תהליכים אחרים, אבל מול-אובדן-חשמל
+ * ה-content עלול לא להספיק-להישטף — fsync סוגר-את-משפחת-הכשל-הזו (כמו-SQLite). */
 function atomicWrite(file, content) {
   mkdirSync(path.dirname(file), { recursive: true });
   const tmp = `${file}.tmp-${process.pid}`;
-  writeFileSync(tmp, content);
+  const fd = openSync(tmp, "w");
+  try { writeSync(fd, content); fsyncSync(fd); } finally { closeSync(fd); }
   renameSync(tmp, file);
+  sweepTmp(file);
+}
+/* R259 · היגיינת-שאריות: SIGKILL בין-כתיבה-ל-rename משאיר `.tmp-<pid>` לנצח.
+ * בטוח-מבנית: מנעול-הכותב-מסדר-כותבים-לקובץ, אז-כל-`*.tmp-*` מעל-60s שייך-לתהליך-מת (נמדד, SIGKILL×40). */
+function sweepTmp(file) {
+  try {
+    const dir = path.dirname(file);
+    for (const e of readdirSync(dir)) {
+      if (!e.startsWith(`${path.basename(file)}.tmp-`)) continue;
+      const p = path.join(dir, e);
+      try { if (Date.now() - statSync(p).mtimeMs > 60_000) unlinkSync(p); } catch { /* מירוץ — הסריקה-הבאה */ }
+    }
+  } catch { /* התיקייה-נעלמה — אין-מה-לסרוק */ }
 }
 function loadJson(file, fallback) {
   if (!existsSync(file)) return fallback;
@@ -58,8 +75,9 @@ function loadJson(file, fallback) {
     return JSON.parse(readFileSync(file, "utf8"));
   } catch (e) {
     // הסגר-בסגנון-המקור: לא crash-loop — קובץ-קורום מועבר-לצד-ומתחיל-נקי
-    const quarantine = `${file}.corrupt-${Date.now()}`;
-    renameSync(file, quarantine);
+    if (!existsSync(file)) return fallback; // R259: קורא-אחר-כבר-הסגיר-אותו (מירוץ-קוראים — לא-קריסת-ENOENT)
+    const quarantine = `${file}.corrupt-${Date.now()}-${process.pid}`; // סיומת-pid: מזהה-עמיד-להתנגשות (לקח-R258)
+    try { renameSync(file, quarantine); } catch { return fallback; } // נעלם-באמצע — מתחילים-נקי
     console.error(`[task-console] קובץ-קורום-הועבר-להסגר: ${path.basename(quarantine)}`);
     return fallback;
   }
@@ -91,8 +109,23 @@ function withLock(file, fn) {
     } catch (e) {
       if (e.code !== "EEXIST") throw e;
       try {
-        if (Date.now() - statSync(lockFile).mtimeMs > LOCK_STALE_MS) {
-          renameSync(lockFile, `${lockFile}.stale-${Date.now()}`); // העברה-אטומית — רק-כותב-אחד-מנצח
+        // R259 · חיות-הבעלים: SIGKILL באמצע-כתיבה משאיר-מנעול-יתום-שחוסם-כתיבה-עד-30s (נמדד).
+        // probe signal-0 — בעלים-מת (ESRCH) = גניבה-מיידית גם-אם-המנעול-טרי; סף-הגיל נשאר-גיבוי לבעלים-חי-שנתקע.
+        let dead = false;
+        try {
+          const ownerPid = Number(readFileSync(lockFile, "utf8").trim().split(/\s+/)[0]);
+          const age = Date.now() - statSync(lockFile).mtimeMs;
+          if (Number.isInteger(ownerPid) && ownerPid > 0) {
+            try { process.kill(ownerPid, 0); } catch (pe) { dead = pe.code === "ESRCH"; }
+          } else {
+            // בעלים-לא-קריא (ריק/זבל): תהליך-שנהרג-בין-יצירת-המנעול-לכתיבת-ה-pid (נמדד ב-SIGKILL-storm).
+            // חסד-250ms מכסה-את-חלון-הµs-של-כותב-חי-שטרם-כתב-את-ה-pid; אחר-כך-זה-יתום.
+            dead = age > 250;
+          }
+          if (age > LOCK_STALE_MS) dead = true; // חוק-הגיל-נשאר-גיבוי לבעלים-חי-שנתקע
+        } catch { /* קריאה-נכשלה/המנעול-נעלם — נסה-שוב */ }
+        if (dead) {
+          try { renameSync(lockFile, `${lockFile}.stale-${Date.now()}`); } catch { /* כבר-איננו */ } // העברה-אטומית — רק-כותב-אחד-מנצח
         }
       } catch { /* כבר-איננו — נסה-שוב */ }
       if (Date.now() - t0 > LOCK_WAIT_MS) throw new Error(`LOCK-BUSY: ${path.basename(lockFile)} מוחזק-בידי-כותב-אחר`);
@@ -109,7 +142,17 @@ function withLock(file, fn) {
 }
 
 /* מזהה-עמיד-להתנגשות: Date.now()-לבדו התנגש-בין-שני-תהליכים-באותו-מילישנייה (נמדד-ב-R258) */
-const newId = (p) => `${p}-${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+/* R259 · crypto-מזהה: Math.random().toString(36).slice(2,6) יכול-להתקצר-מתחת-4-תווים-בזנב-ההסתברות — randomUUID-חותך-את-הזנב-כולו */
+const newId = (p) => `${p}-${Date.now().toString(36).toUpperCase()}${randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()}`;
+
+/* R259 · validate-before-persist: deserialize מסרב-לגרף-לא-חוקי-בקריאה, אבל-כלום-לא-מנע
+ * **התמדה**-של-מצב-לא-חוקי (נמדד-חי: task-add-עם-dep-רפאים/עם-id-כפול → הרעלה-קבועה — כל-הפקודות
+ * REFUSED-עד-ניתוח-ידני). נקודת-חנק-אחת: שום-דבר-לא-נוחת-בדיסק-בלי-לעבור-את-המודול-עצמו. */
+function persistValidated(file, doc, validate) {
+  const v = validate(doc);
+  if (!v.ok) throw new Error(`INVALID-STATE: ${v.errors.join(" · ")} — לא-נשמר (validate-before-persist, R259)`);
+  atomicWrite(file, JSON.stringify(doc, null, 2));
+}
 
 /* קשירת-commit-לראיית-הדחיפה: ה-commit-חייב-להיות-קיים-ולהיות-ה-push-עצמו-או-אב-קדמון-שלו */
 function commitPushBound(commit) {
@@ -158,7 +201,8 @@ try {
   switch (cmd) {
     case "tasks":
     case "progress": {
-      const g = deserialize(readFileSync(TASKS_FILE, "utf8"));
+      // R259 · דרך-loadJson בלבד: קריאה-גולמית הייתה מתה-ENOENT ב-fresh-clone ובלי-הסגר-על-קובץ-קורום (התקנון-R256 — סטייה-דו-כיוונית-שנתפסה)
+      const g = deserialize(loadJson(TASKS_FILE, { tasks: [] }));
       const p = progress(g);
       if (has("--json")) {
         console.log(JSON.stringify({ at: new Date().toISOString(), progress: p, tasks: g.tasks, ready: ready(g).map((t) => t.id) }, null, 2));
@@ -172,7 +216,8 @@ try {
     }
     case "task-add": {
       const title = args[1];
-      if (!title) throw new Error("שימוש: task-add \"<title>\" [--priority N] [--deps a,b]");
+      // R259 · שומר-הכותרת: "task-add --id X title" שמר-בשקט-כותרת "--id" (נמדד) — כותרת-קודמת-לדגלים, נדחה-בגלוי
+      if (!title || title.startsWith("--")) throw new Error('שימוש: task-add "<title>" [--priority N] [--deps a,b] — הכותרת-חייבת-לבוא-לפני-הדגלים');
       withLock(TASKS_FILE, () => {
         const g = deserialize(loadJson(TASKS_FILE, { tasks: [] }));
         const t = createTask({
@@ -183,7 +228,7 @@ try {
           assignee: flagVal("--assignee") ?? null,
         });
         g.tasks.push(t);
-        atomicWrite(TASKS_FILE, serialize(g));
+        persistValidated(TASKS_FILE, g, validateGraph);
         console.log(`added: ${t.id} (todo) ${t.title}`);
       });
       break;
@@ -208,7 +253,7 @@ try {
           }
         }
         setStatus(g, id, to, { evidence, reason: flagVal("--reason"), commit });
-        atomicWrite(TASKS_FILE, serialize(g));
+        persistValidated(TASKS_FILE, g, validateGraph);
         console.log(`${id} → ${to}${to === "done" ? " ✓ (עבר-את-שער-הדחיפה-המאומתת)" : ""}`);
       });
       break;
@@ -246,7 +291,7 @@ try {
         const dq = deserializeDQ(loadJson(DQ_FILE, { decisions: [] }));
         const d = createDecision({ id: flagVal("--id") ?? newId("D"), kind, question, options: positional(args.slice(3)) });
         dq.decisions.push(d);
-        atomicWrite(DQ_FILE, serializeDQ(dq));
+        persistValidated(DQ_FILE, dq, validateDQ);
         console.log(`decision-open: ${d.id} (${d.kind}) — ${d.options.length} אפשרויות, מומלץ: ${d.options[0]?.label ?? "—"}`);
       });
       break;
@@ -256,7 +301,7 @@ try {
       withLock(DQ_FILE, () => {
         const dq = deserializeDQ(loadJson(DQ_FILE, { decisions: [] }));
         const d = answerDecision(dq, id, { by: flagVal("--by") ?? "operator", optionText: input, text: flagVal("--text") });
-        atomicWrite(DQ_FILE, serializeDQ(dq));
+        persistValidated(DQ_FILE, dq, validateDQ);
         console.log(`answered: ${d.id} → ${d.answer.option ?? "(טקסט-חופשי)"}${d.answer.text ? ` · "${d.answer.text}"` : ""} — settle-רק-אחרי-האפקט-בפועל`);
       });
       break;
@@ -265,7 +310,7 @@ try {
       withLock(DQ_FILE, () => {
         const dq = deserializeDQ(loadJson(DQ_FILE, { decisions: [] }));
         const d = settleDecision(dq, args[1]);
-        atomicWrite(DQ_FILE, serializeDQ(dq));
+        persistValidated(DQ_FILE, dq, validateDQ);
         console.log(`settled: ${d.id}`);
       });
       break;
@@ -274,7 +319,7 @@ try {
       withLock(DQ_FILE, () => {
         const dq = deserializeDQ(loadJson(DQ_FILE, { decisions: [] }));
         const d = reopenDecision(dq, args[1], positional(args.slice(2)).join(" "));
-        atomicWrite(DQ_FILE, serializeDQ(dq));
+        persistValidated(DQ_FILE, dq, validateDQ);
         console.log(`reopened: ${d.id} — חוזר-ל-open עם-הסיבה-בהיסטוריה`);
       });
       break;
@@ -283,7 +328,7 @@ try {
       withLock(DQ_FILE, () => {
         const dq = deserializeDQ(loadJson(DQ_FILE, { decisions: [] }));
         const d = cancelDecision(dq, args[1], positional(args.slice(2)).join(" "));
-        atomicWrite(DQ_FILE, serializeDQ(dq));
+        persistValidated(DQ_FILE, dq, validateDQ);
         console.log(`cancelled: ${d.id}`);
       });
       break;
