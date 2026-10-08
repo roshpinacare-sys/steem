@@ -87,7 +87,11 @@ function unlockGeneration({ ref, zip, metaRef }) {
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
   try {
     const meta = JSON.parse(gitShowBytes(ref, metaRef).toString("utf8"));
-    const enc = gitShowBytes(ref, zip);
+    /* R265: the archive path is OWNED BY THE META of that era (keysZipFile) —
+     * a re-seal moves the file AND the pass together; the spec `zip` stays as
+     * a fallback for metas from before the field existed. */
+    const zipPath = String(meta.keysZipFile ?? zip);
+    const enc = gitShowBytes(ref, zipPath);
     const outerSha = sha256(enc);
     if (outerSha !== meta.keysZipSha256) throw new Error(`vault-outer-sha-mismatch (${outerSha.slice(0, 8)})`);
     fs.writeFileSync(path.join(TMP, "keys-zip.enc"), enc, { mode: 0o600 });
