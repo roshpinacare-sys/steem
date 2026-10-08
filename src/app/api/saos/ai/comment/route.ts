@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { withLlmRetry, withVoice } from "../_llm";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -32,11 +33,15 @@ Output STRICT JSON only, no markdown fences:
 {"comment":{"body":"..."}}`;
 
 export async function POST(req: Request) {
-  let body: { postTitle?: unknown; postExcerpt?: unknown; author?: unknown } = {};
+  let body: { postTitle?: unknown; postExcerpt?: unknown; author?: unknown; personaBrief?: unknown } = {};
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: "json-body required" }, { status: 400 }); }
 
   const postTitle = String(body.postTitle ?? "").slice(0, 200);
   const postExcerpt = String(body.postExcerpt ?? "").slice(0, 400);
+  /* R263 · THE PERSONA BRIEF: the engine sends the writer's full soul sheet
+   * (lens, traits, personal slang, register dial) — the comment is drafted
+   * IN that voice, not in a generic one. */
+  const personaBrief = typeof body.personaBrief === "string" ? body.personaBrief : null;
   if (!postTitle.trim()) return NextResponse.json({ ok: false, error: "postTitle required" }, { status: 400 });
 
   const userPrompt = [
@@ -53,13 +58,13 @@ export async function POST(req: Request) {
   try {
     const ZAI = (await import("z-ai-web-dev-sdk")).default;
     const zai = await ZAI.create();
-    const completion = await zai.chat.completions.create({
+    const completion = await withLlmRetry(() => zai.chat.completions.create({
       messages: [
-        { role: "assistant", content: SYSTEM_PROMPT },
+        { role: "assistant", content: withVoice(SYSTEM_PROMPT, personaBrief) },
         { role: "user", content: userPrompt },
       ],
       thinking: { type: "disabled" },
-    });
+    }));
     const raw = completion.choices?.[0]?.message?.content ?? "";
     const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
     let commentBody = "";

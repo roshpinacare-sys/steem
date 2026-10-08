@@ -248,6 +248,8 @@ export async function GET() {
     hive: s.hive ?? null,
     /* R255: מנוע-הפרסונות (פרופילים + אישיות + סלנג — passthrough של-verdicts) */
     personas: s.personas ?? null,
+    /* R263: מפסק-הקשר של-הגשר (חוק-סערת-ה-429 — passthrough של-verdicts) */
+    bridgeGuard: s.bridgeGuard ?? null,
     rcTank: s.rcTank ?? null,
     payouts: s.payouts ?? null,
     weave: s.weave ?? null,
