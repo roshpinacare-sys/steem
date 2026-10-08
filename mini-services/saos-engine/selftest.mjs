@@ -17,6 +17,8 @@ import { buildBusMessage, busOp, parseBusEntry, filterInbox, busRateLimit, deliv
 import { thinkGate } from "./signer.mjs";
 import { tick, fold } from "./grid.mjs";
 import { classifyAgent } from "./fleet.mjs";
+import { PERSONAS, PERSONA_IDS, personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata, assignPersonas, personaBrief } from "./personas.mjs";
+import { OP_IDS } from "./steemtx.mjs";
 
 let pass = 0, fail = 0;
 const eq = (name, a, b) => {
@@ -1832,6 +1834,64 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("crossChain: blurt still refused", crossChainVerdict("blurt").ok, false);
   eq("hive chain id is beeab0de…", HIVE_CHAIN_ID.slice(0, 4).toString("hex"), "beeab0de");
   eq("steem chain id is 32 zero bytes", STEEM_CHAIN_ID.every((b) => b === 0), true);
+}
+
+/* ── R255 · THE PERSONA ENGINE (canon, arcs, profiles, assignment) ─────── */
+{
+  eq("personas: 14 canon voices", PERSONA_IDS.length, 14);
+  eq("personas: roster covered", ["headcorner", ...["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq"], "hcsoldier4", "hcsoldier5", "hcsoldier6"].every((a) => personaOf(a)), true);
+  eq("personas: unknown = null", personaOf("spaminator"), null);
+  eq("personas: register dials sum to 100", PERSONA_IDS.every((id) => PERSONAS[id].register.pro + PERSONAS[id].register.hood === 100), true);
+  eq("personas: zero dashes in any field", PERSONA_IDS.every((id) => !JSON.stringify(PERSONAS[id]).includes("\u2014") && !JSON.stringify(PERSONAS[id]).includes("\u2013")), true);
+  eq("personas: every voice owns topics + slang", PERSONA_IDS.every((id) => PERSONAS[id].owns.length >= 3 && PERSONAS[id].slang.length >= 3 && PERSONAS[id].traits.length === 3), true);
+  eq("personas: arc stages = 4 for all", PERSONA_IDS.every((id) => PERSONAS[id].arc.length === 4), true);
+
+  const st0 = arcStageOf("lsa", 0);
+  const st1 = arcStageOf("lsa", 4);
+  const st3 = arcStageOf("lsa", 18);
+  eq("arc: stage 0 at zero posts", st0.index, 0);
+  eq("arc: advances at threshold 4", st1.index, 1);
+  eq("arc: top stage at 18", st3.index, 3);
+  eq("arc: nextAt pointer", st1.nextAt, 10);
+  eq("arc: negative clamps to 0", arcStageOf("lsa", -5).index, 0);
+  eq("arc: unknown account = null", arcStageOf("spaminator", 9), null);
+
+  const doc = profileDoc("macrame");
+  ok("profileDoc: about bounded", doc && doc.about.length <= 200 && doc.name.length <= 40);
+  ok("profileDoc: interests sanitized", doc && doc.interests.every((i) => /^[a-z0-9-]{1,24}$/.test(i)));
+  eq("profileDoc: exposure-guard passes for canon", PERSONA_IDS.every((id) => profileDoc(id) !== null), true);
+
+  const merged = mergeProfileMetadata('{"app":"x","profile":{"cover_image":"https://i.example/c.png"}}', { name: "N", about: "A", interests: ["a"] });
+  ok("merge: unknown top-level keys survive", JSON.parse(merged).app === "x");
+  ok("merge: unknown profile keys survive", JSON.parse(merged).profile.cover_image === "https://i.example/c.png");
+  ok("merge: persona fields applied", JSON.parse(merged).profile.name === "N");
+  eq("merge: garbage metadata tolerated", Object.keys(JSON.parse(mergeProfileMetadata("not-json-at-all", { name: "N", about: "A", interests: [] }))).length, 1);
+
+  eq("diff: same profile = idempotent", profileDiffers(mergeProfileMetadata("{}", { name: "N", about: "A", interests: ["a"] }), { name: "N", about: "A", interests: ["a"] }), false);
+  eq("diff: changed about differs", profileDiffers("{}", { name: "N", about: "A", interests: [] }), true);
+
+  const assigned = assignPersonas([
+    { title: "a", tags: ["repair"], groundedOn: ["repair"] },
+    { title: "b", tags: ["craft"], groundedOn: ["craft"] },
+    { title: "c", tags: ["life"], groundedOn: ["attention"] },
+  ]);
+  eq("assign: ownership match", [assigned[0].persona, assigned[1].persona], ["haran", "macrame"]);
+  ok("assign: no voice twice in one batch", new Set(assigned.filter((d) => d.persona).map((d) => d.persona)).size === assigned.filter((d) => d.persona).length);
+  eq("assign: explicit persona wins", assignPersonas([{ persona: "wic", tags: ["repair"], groundedOn: ["repair"] }])[0].persona, "wic");
+
+  const brief = personaBrief("cashmachine", 5);
+  ok("brief: contains lens + stage", brief.includes("counter") && brief.includes("development stage (2/4)"));
+  ok("brief: carries personal slang", brief.includes("no free lunch"));
+  eq("brief: unknown = null", personaBrief("spaminator", 0), null);
+
+  /* R255 · the account_update2 chain-truth lock: op id 43 probed from the
+   * node's own serialization (get_transaction_hex, 2026-10-07); the byte
+   * shape is the regression guard for the phantom-write fix. */
+  eq("account_update2 op-id = 43 (chain truth)", OP_IDS.account_update2, 43);
+  const au2 = serializeTx({ ref_block_num: 0, ref_block_prefix: 0, expiration: 0, operations: [["account_update2", { account: "hcsoldier4", owner: null, active: null, posting: null, memo_key: "STM1111111111111111111111111111111114T1Anm", json_metadata: "{\"x\":1}", posting_json_metadata: "{\"x\":1}", extensions: [] }]], extensions: [] });
+  eq("account_update2: op-count + op-id bytes", [au2[10], au2[11]], [1, 43]);
+  eq("account_update2: account str then absent authorities varint(0)x3", [au2[12], au2[23], au2[24], au2[25]], [10, 0, 0, 0]);
+  eq("account_update2: extensions terminator", au2[au2.length - 1], 0);
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

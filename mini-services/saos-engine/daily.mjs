@@ -35,7 +35,7 @@ import { runRecruiter } from "./recruiter.mjs";
 import { runEconomics } from "./economics.mjs";
 import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
-import { runSocial, runOrganicWatch } from "./army-social.mjs";
+import { runSocial, runOrganicWatch, runProfiles } from "./army-social.mjs";
 import { runHiveRail } from "./hive.mjs";
 import { syncCommunityMembership, readCommunityState } from "./community.mjs";
 import { runBus } from "./bus.mjs";
@@ -797,6 +797,14 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.organic = await stepWrap("organic", async () => {
     const out = await runOrganicWatch({ now });
     return { verdict: out.organic?.verdict ?? null, activePauses: Object.keys(out.pauses ?? {}).length, flags: out.posts?.reduce((n, p2) => n + (p2.flags ?? 0), 0) ?? 0, ms: null };
+  });
+
+  /* R255 · THE PERSONA PROFILE SYNC (the visibility law): on-chain profiles
+   * become organized personas (name/about/interests, merged metadata,
+   * idempotent, ≤2/run, custody-gated). Fail-isolated. */
+  report.steps.profiles = await stepWrap("profiles", async () => {
+    const out = await runProfiles({ now });
+    return { verdict: out.updated.length > 0 ? "PROFILES-UPDATED" : out.deferred.some((d) => String(d.reason ?? "").startsWith("custody")) ? "CUSTODY-DEFERRED" : "SYNCED", updated: out.updated.length, skipped: out.skipped.length, deferred: out.deferred.length, ms: out.ms ?? null };
   });
 
   /* R254 · THE HIVE ORGAN (operator-approved trial, verbatim: "אני מאשר

@@ -82,17 +82,30 @@ export async function adoptVerifiedWifIdentity(account, wif, { role = "posting",
       const r = await rpcCall("condenser_api.get_accounts", [[account]]);
       const acc = r.ok ? r.result?.[0] : null;
       if (!acc) return { ok: false, reason: "account-not-found" };
-      pubs = (acc.posting?.key_auths ?? []).map((k) => k[0]);
+      /* R255 · ROLE-EXACT LAW (the old code compared EVERY role against the
+       * POSTING authority — a live-chain-matching active wif was refused as
+       * "posting-authority-mismatch", which silently amputated the active
+       * role from the whole fleet). Each role is now judged against ITS OWN
+       * live authority; the chain stays the only judge. */
+      pubs = role === "active" ? (acc.active?.key_auths ?? []).map((k) => k[0])
+        : role === "owner" ? (acc.owner?.key_auths ?? []).map((k) => k[0])
+        : role === "memo" ? [acc.memo_key].filter(Boolean)
+        : (acc.posting?.key_auths ?? []).map((k) => k[0]);
     }
-    if (!pubs.includes(derived)) return { ok: false, reason: "posting-authority-mismatch", pubkey: derived };
+    if (!pubs.includes(derived)) return { ok: false, reason: `${role}-authority-mismatch`, pubkey: derived };
     const fp = fingerprint(wif);
+    /* R255 · IDENTITY MERGE: adopting a second role must ADD to the identity
+     * already chain-verified in this process — the old whole-object replace
+     * wiped the posting wif the moment an active wif was adopted (and vice
+     * versa), breaking every later broadcast of the first role. */
+    const prev = mem.identities[account];
     mem.identities[account] = {
-      password: null,
-      wifs: { [role]: String(wif).trim() },
+      password: prev?.password ?? null,
+      wifs: { ...(prev?.wifs ?? {}), [role]: String(wif).trim() },
       matchedOrder: "wif-direct",
       verified: {
         ok: true, account, matchedOrder: "wif-direct",
-        roles: { [role]: { pubkey: derived, matched: true } },
+        roles: { ...(prev?.verified?.roles ?? {}), [role]: { pubkey: derived, matched: true } },
         fingerprint: fp,
       },
     };

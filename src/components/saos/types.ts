@@ -196,10 +196,30 @@ export type Status = {
       status?: string
       draftedAt?: string | null
       groundedOn?: string[]
+      persona?: string | null
     }[]
     law?: string | null
     bridgeError?: string | null
     ms?: number | null
+  } | null
+  /* R255 · מנוע-הפרסונות: קאנון + סנכרון-פרופילים-על-השרשרת + קשתות-התפתחות */
+  personas?: {
+    at?: string | null
+    canon?: {
+      id: string
+      name: string
+      about: string
+      lens: string
+      traits: string[]
+      slang: string[]
+      register: { pro: number; hood: number }
+      owns: string[]
+      interests: string[]
+      arc: { stages: string[]; thresholds: number[] }
+    }[]
+    sync?: Record<string, { verdict?: string; at?: string; txid?: string | null; name?: string; reason?: string | null }>
+    arcs?: Record<string, { stage?: number; title?: string; nextAt?: number | null; lifetimePosts?: number; at?: string }>
+    law?: string
   } | null
   rcTank?: {
     day?: string | null

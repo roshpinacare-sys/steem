@@ -25,6 +25,7 @@ import BuilderQueue from '@/components/builder-queue'
 import { useAdoptCredential } from '@/components/saos/useAdoptCredential'
 import { WalletConsoleCard } from '@/components/saos/WalletConsoleCard'
 import { FleetCard } from '@/components/saos/FleetCard'
+import { PersonasCard } from '@/components/saos/PersonasCard'
 import { RolesCard } from '@/components/saos/RolesCard'
 import { TeamsCard } from '@/components/saos/TeamsCard'
 import { RcTankCard } from '@/components/saos/RcTankCard'
@@ -587,6 +588,9 @@ export default function Home() {
               <>
                 {/* הצי · אמת-אחת לכל-הסוכנים (T-15) */}
                 <FleetCard s={s} />
+
+                {/* R255 · פרסונות-הצי — פרופילים, אישיות, סלנג אישי וקשתות-התפתחות */}
+                <PersonasCard s={s} />
 
                 {/* R237 · מועצת-האיברים — רשת-התקשורת החיה + רישום-החסימות + אינטליגנציית-ה-power-up */}
                 <CouncilCard
