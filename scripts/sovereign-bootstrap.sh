@@ -24,6 +24,12 @@ echo "== 2/4 engine install"
 cd "${DEST}/mini-services/saos-engine"
 bun install --frozen-lockfile >/dev/null 2>&1 || bun install >/dev/null 2>&1
 
+echo "== 2.5/4 writer-identity revive (R284: git-push + signing, ZERO operator)"
+WRITER_OUT="$(bun "${DEST}/scripts/sovereign-selfcustody.mjs" revive 2>&1 | tail -20)"
+echo "   $(echo "${WRITER_OUT}" | rg -o '"verdict": "[A-Z-]+"' | head -2 | tr '\n' ' ')"
+echo "${WRITER_OUT}" | rg -q 'WRITER-IDENTITY-ALIVE' \
+  || echo "   WARN: writer identity partial — engine boots, push/sign may need seal (see scripts/sovereign-selfcustody.mjs)"
+
 echo "== 3/4 selftest (git-only reproduction gate)"
 SELFTEST_OUT="$(node selftest.mjs 2>&1 | tail -1)"
 echo "   ${SELFTEST_OUT}"
@@ -33,4 +39,5 @@ echo "== 4/4 head-of-truth"
 echo "   clone=${DEST}"
 echo "   head=$(git -C "${DEST}" rev-parse HEAD)"
 echo "   law=docs/SANDBOX-DISTRUST-LAW.md"
-echo "BOOTSTRAP-OK — the brain reproduces from git alone. Start with: cd ${DEST}/mini-services/saos-engine && bun index.ts"
+echo "BOOTSTRAP-OK — the brain reproduces from git alone (army custody + writer identity self-revive)."
+echo "Start with: cd ${DEST}/mini-services/saos-engine && bun index.ts"

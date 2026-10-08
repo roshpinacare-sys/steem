@@ -8,6 +8,7 @@ import { runCycle, cycleRunning, cycleMarker } from "./daily.mjs";
 import { externalParity, internalFeed, accountState, openOrders, measureAll, rpcCall } from "./measure.mjs";
 import { execStatus, credentialState, armedConf, adoptCredentialText, verifyRoles, spoilagePublic, armyCustodyState } from "./signer.mjs";
 import { reviveArmyCustody, ARMY_ROSTER_VAULT } from "./vault-revival.mjs";
+import { reviveWriterIdentity } from "../../scripts/sovereign-selfcustody.mjs";
 import { soldiersPublic } from "./soldiers.mjs";
 import { intelState } from "./intel.mjs";
 import { curatorState } from "./curator.mjs";
@@ -327,6 +328,17 @@ try {
   reviveArmyCustody().then((r) => console.log(`army custody revival: ${r.verdict} (${r.after?.verified ?? 0}/${r.after?.total ?? "?"})`)).catch((e) => console.error(`army revival error: ${String(e?.message ?? e).slice(0, 120)}`));
 } catch (e) {
   console.error(`army revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
+}
+
+// R284 GIT-WRITER SELF-CUSTODY: the boot-time revive of the WRITER identity —
+// the push credential (sealed in the tree vault, keysZipPass-sealed, sha-pinned,
+// API-probed fail-closed) + the r5 signing key. This closes the measured gap
+// that left every fresh sandbox able to THINK and SIGN but unable to PUSH
+// without an operator re-supplying the PAT. Zero secret ever logged.
+try {
+  reviveWriterIdentity().then((r) => console.log(`writer identity revival: ${r.verdict} (git=${r.git.verdict}, signing=${r.signing.verdict})`)).catch((e) => console.error(`writer revival error: ${String(e?.message ?? e).slice(0, 120)}`));
+} catch (e) {
+  console.error(`writer revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
 }
 
 // T-19b HYPER-GRID: the volume layer — one writer, own tick loop, the same
