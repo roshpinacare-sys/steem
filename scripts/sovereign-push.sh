@@ -33,6 +33,18 @@ if [[ "$REMOTE_TIP" != "$LOCAL_HEAD" ]] && ! git merge-base --is-ancestor "$REMO
   bash scripts/conflict-forecast.sh || true
 fi
 
+# --- LAW CLAUSE 3.45 (R283): NO CONFLICT MARKERS IN THE PUSHED TREE ---
+# Measured twice on 2026-10-08: a merge committed with unresolved markers
+# reached the remote and poisoned live-state files for the parallel chain.
+# The gate scans TRACKED files for merge markers and refuses the push.
+MARKED=$(git grep -l -E '^(<<<<<<< |\=======\r?$|>>>>>>> )' -- . ':!*.min.*' 2>/dev/null | grep -v -E 'node_modules|\.next/' | head -5 || true)
+if [[ -n "$MARKED" ]]; then
+  echo "LAW-VIOLATION: unresolved conflict markers in the tree — push refused:"
+  echo "$MARKED"
+  echo "Resolve from the merge parents (union for ledgers, alive-wins for state), verify, then push."
+  exit 3
+fi
+
 # --- LAW CLAUSE 2: FF-only gate ---
 if git merge-base --is-ancestor "$REMOTE_TIP" "$LOCAL_HEAD"; then
   : # fast-forward possible (or already synced)

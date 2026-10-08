@@ -9,6 +9,7 @@
  * Byte-law: broadcast only when get_transaction_hex == my serialization.
  */
 import { wifDecode, buildTx, signDigest } from "./steemtx.mjs";
+import { createHash } from "node:crypto";
 import * as secp from "@noble/secp256k1";
 import { readFileSync } from "fs";
 import { createHash } from "crypto";

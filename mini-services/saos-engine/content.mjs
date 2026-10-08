@@ -179,16 +179,44 @@ export const FORMAT_LAW = {
   guidance: "use structure only where it serves the reader: one table for a real comparison, one collapsible for an optional deep-dive, centered pull-quote at most once. Formatting is seasoning, not the dish.",
 };
 
-/* R254 · pure: the dash normalizer — the bridge kept writing " — " and the
- * hard ban burned WHOLE drafts (4 exposure-blocked, queue starving to
- * NO-DRAFTS on 2026-10-07). Nobody writes with "—" anymore because the
- * normalizer REWRITES it before the ban check: " — " → ": ", bare "—" →
- * ", ", en dash → plain hyphen. The ban stays as the last line of defense
- * for anything the rewrite misses. */
+/* R283 · THE SYMBOL LAW (operator order 2026-10-08, the strictest ban):
+ * these glyphs NEVER appear in ANY outbound text — title, post, reply,
+ * comment — in any state, anywhere — the dash glyphs, every double-quote
+ * glyph, and the colon. The old normalizer REWROTE dashes into colons
+ * (": ") which merely traded one banned mark for another; the chain audit
+ * measured 120 of 235 live bodies carrying banned glyphs. The new law:
+ * normalize into safe readable punctuation, then FAIL CLOSED on anything
+ * that still carries a banned glyph. A URL inside markdown is protected
+ * (it renders as an image or link, it is not visible prose). */
+export const SYMBOL_LAW_BANNED = /[\u2014\u2013\u2012\u2015:"\u201c\u201d]/;
+
+export function enforceSymbolLaw(text) {
+  let t = String(text ?? "");
+  if (!t) return "";
+  /* protect markdown link/image targets and bare URLs from the colon rewrite */
+  const urls = [];
+  t = t.replace(/\]\(([^)\s]+)\)/g, (m, u) => { urls.push(u); return `]\u0000${urls.length - 1}\u0000)`; });
+  t = t.replace(/\bhttps:\/\/[^\s)]+/g, (u) => { urls.push(u); return `\u0000${urls.length - 1}\u0000`; });
+  t = t
+    .replace(/(\s*)[\u2014\u2013\u2012\u2015](\s*)/g, ", ")      /* any dash glyph → comma pause */
+    .replace(/["\u201c\u201d]/g, "")                             /* double quotes → dropped, words stay */
+    .replace(/:\s*([a-z])/g, (m, c) => `. ${c.toUpperCase()}`)   /* sentence colon → period + capital */
+    .replace(/(\s*):(\s*)/g, ". ")                               /* any leftover colon → period */
+    .replace(/\s+([.,])/g, "$1")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  /* the glyph test runs on the MASKED text (a URL is not visible prose) */
+  if (SYMBOL_LAW_BANNED.test(t)) return null;
+  t = t.replace(/\u0000(\d+)\u0000/g, (m, i) => `${urls[Number(i)] ?? ""}`);
+  return t;
+}
+
+/* R254 → R283: the dash normalizer is now the symbol law — dashes rewrite to
+ * comma pauses (NEVER to colons, which are equally banned by the operator),
+ * double quotes drop, colons rewrite to periods. Kept as an alias because
+ * every rail already calls it. */
 export function normalizeDashes(text) {
-  return String(text ?? "")
-    .replace(/(\s*)—(\s*)/g, ": ")
-    .replace(/(\s*)–(\s*)/g, (_, a, b) => (a || b ? ": " : "-"));
+  return enforceSymbolLaw(text);
 }
 
 /* R270 · THE ANTI-GENERIC OPENERS (operator order: "התגובות שלנו הן די
@@ -255,16 +283,17 @@ export const MIN_POST_WORDS = Number(process.env.SAOS_MIN_POST_WORDS) || 300;
  * Commons with mandatory attribution) rides along as {url, alt, credit}. */
 export function sanitizeDraft(d) {
   if (!d || typeof d !== "object") return null;
-  const title = normalizeDashes(String(d.title ?? "").trim());
-  const body = normalizeDashes(String(d.body ?? "").trim());
+  const title = enforceSymbolLaw(String(d.title ?? "").trim());
+  const body = enforceSymbolLaw(String(d.body ?? "").trim());
+  if (title === null || body === null) return null; // R283 SYMBOL-LAW-REFUSED (fail-closed)
   if (title.length < 12 || wordCount(body) < MIN_POST_WORDS) return null; // a real post, not a stub (R244: 300-word spam-safety floor)
   const tags = (Array.isArray(d.tags) ? d.tags : [])
     .map((t) => String(t).toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 24))
     .filter(Boolean).slice(0, 5);
   if (tags.length < 2) return null;
   const blob = `${title}\n${body}`.toLowerCase();
-  const banned = ["headcorner", "saos", "צבא", "army of accounts", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target", "in today's world", "in conclusion", "—", "–"];
-  if (banned.some((w) => blob.includes(w))) return null; // EXPOSURE-BLOCKED
+  const banned = ["headcorner", "saos", "צבא", "army of accounts", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target", "in today's world", "in conclusion", "—", "–", ":", '"', "\u201c", "\u201d"];
+  if (banned.some((w) => blob.includes(w))) return null; // EXPOSURE-BLOCKED (R283: the symbol law rides here too)
   /* R270: the opening must not be an AI-stock opener (title OR first 140 chars) */
   const open = `${title.toLowerCase()}\n${openingSlice(body)}`;
   if (GENERIC_POST_OPENERS.some((g) => open.includes(g))) return null; // GENERIC-BLOCKED
