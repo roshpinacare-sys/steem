@@ -3123,3 +3123,24 @@ Work Log:
 
 Stage Summary:
 - צינור-הדחיפה-פתוח-מחדש: טווח-הדחיפה-ירד-מ~2GB-למגה-בייטים-בודדים; הארכיון-לעולם-לא-יחרוג-שוב-בזכות-חוק-המשמר. השכתוב-היה-מקומי-בלבד-על-קומיטים-שלא-פורסמו-מעולם; שום-היסטוריה-מפורסמת-לא-נגעה.
+
+---
+Task ID: R287
+Agent: Z.ai Code (cockpit zai-web session)
+Task: אודיט-עומק של דוח-הייצוב החיצוני + שתי ההכרעות (פריסת-תוכן לפנקסים · סטרימינג טרנזקציות Steem/Blurt)
+
+Work Log:
+- אודיט-אמת של הדוח, טענה-טענה מול-המכונה: selftest 1066/1066 אומת בריצה-חיה; 0400b5d0 קיים (25 קומיטים אחריו נחתו); 0/0 מול origin/saos-cockpit אומת; llm-chain.ts נאודיט מול דוקטרינת fcc-llm-chain — חמשת-החוקים ממומשים כהלכה (שרשרת-מועמדים, ייחודיות, תשישות-כנה, fast-path sha256/LRU-128+tokensSaved, פנקס metadata-only) + compaction ו-satisfaction/merge (merged-partial). ה-403MB וחוק-ה-64MB מאומתים ב-e11d3c23 וב-custodian.
+- **סתירה-נמדדת לדוח**: ה-OOM לא "נפתר" — keeper.log מעיד על סערת-respawn שלמה הערב (~11 יצירות-חיים 20:45→21:33); next-server נמדד 2.18GB בזמן-האודיט והגיע ל-1.75GB שוב ב-21:39. ה-keeper היה רק ריאקטיבי (מנקה-cache אחרי-מוות).
+- **R287 חוק-ה-RSS המקדים** (dev-keeper/index.ts): /proc נבדק בכל-טיק; 1.6GB במשך 3-טיקים רצופים → SIGTERM מבוקר לעץ → ה-respawn הקיים בונה-מחדש עם-cache-נקה; קואולינג 30 דק (אין-סערת-הרגות); rssMB/rssLimitMB/rssRespawns נחשפים ב-/health. **הוכח חי**: 21:51:42 RSS=1642MB>1638MB sustained → SIGTERM → respawn → dev-healthy. 100MB לפני נקודת-ה-OOM ההיסטורית — ה-kernel לא היה השופט.
+- **R287 social-streamer.mjs** (תשובת-ההכרעות, בקוד): מסילת-הפרסום בשערים-מסודרים — mode-file (dryrun ברירת-מחדל וגם בהיעדר-קובץ) → armed (.secrets/social-armed.json) → kill-switch (state/social-pause.json) → מכסות (4/יום-צי, פער 180 דק/חשבון) → dedupe ממופה-תוכן. חתימה RFC6979 מקומית (steemtx, חסן-שרשרת) + אימות noble מול-הסמכות-החיה; broadcast רק ב-live דרך network_broadcast_api על סולם-הנודים הקיים.
+- **באג-שנתפס-ותוקן**: import דינמי `{default: secp}` הניב namespace שבור → כל-אימות נפל ל-catch (SIGNATURE-VERIFY-FAILED שווא); התוקן ל-import מרחב-שמות כמסילת dryrun-sign המוכחת. חוק-ה-dedupe תוקן בעקבותיו: שורות-כשל אינן שורפות טיוטה (מעולם-לא-נגעו-בשרשרת); dryrun חוסם-dryrun, BROADCASTED חוסם-הכל.
+- **פריסת-האחסון הופעלה**: content/drafts/<sha8>.json — טיוטה-אחת=קובץ-אחד ממופה-תוכן (שיעור-ה-403MB: אף-בלוב-ענק-אחד לעולם לא נכתב-שוב); 30 רשומות-תור → 13 טיוטות-ייחודיות (17 כפילויות נבלמו ב-idempotency); content/sent/social-sent.jsonl — פנקס metadata-only (~200B/שורה — חסום-מבנית מתחת לחוק-ה-64MB).
+- מחזור-יבש מלא אומת פעמיים: DRYRUN-SIGNED-NOT-BROADCASTED על haran+cashmachine (GEN-1), חתימה-מאומתת-מול-הסמכות-החיה, broadcast=false, אפס-חשיפת-מפתח.
+- **שרשרת-החיים נמדדה ונסגרה**: spawn ישיר מ-tool-call נקצר (2 מדידות); הדרך-היחידה = השתלה מעץ-next-server השורד (POST /api/saos/spawn-dev-keeper); ה-keeper החדש שרד את-גבול-הקריאה, שומר על-השרת, והרגולטור כבר ביצע ריבונות-מלאה על מחזור-חיים שלם.
+- אומת-דפדפן (agent-browser): קוקפיט רינדור מלא דסקטופ+מובייל (0 גלילה-אופקית), selftest 1066/1066 בבאנר, טלמטריית llm-chain חיה (934 טוקנים-שנחסכו), HIVE 9/11 STALE חשוף-כנה; lint נקי.
+
+Stage Summary:
+- שתי ההכרעות ניתנו-והופעלו: (1) פריסת-הפנקסים = content-addressed drafts + metadata-only sent ledger, חסמים-מבניים לא-טרונקציה; (2) סטרימינג = כן, אך-בשערים: המסילה חיה ומוכחת ב-dryrun; המעבר-לחיים הוא שתי-החלטות-קבצים (mode=live + social-armed.json) בלי-שינוי-קוד, עם מכסות/kill-switch/dedupe כבר-אכופים.
+- Blurt נשאר-כנות: נאמד אך-לא-חובר — chain-id יימדד ולא-יונח; הטענה החיצונית "Blurt authorities מאומתות" לא-אומתה כאן (Steem: 13/13 מוכח).
+- עמדת-ה-OOM החדשה: השרת כבר-לא-מותיר-ל-kernel הכרעה — ה-keeper מחליף אותו מבוקר 100MB לפני-הקו-האדום.
