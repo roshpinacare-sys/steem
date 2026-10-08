@@ -2269,6 +2269,19 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("ledger: the second drafter sees the first draft BEFORE broadcast", replyFresh("fresh selftest draft", fleetSaidFor(tDay), { maxSimilarity: 0.34 }) && !replyFresh("selftest ledger body one continued", fleetSaidFor(tDay), { maxSimilarity: 0.34 }));
   clearFleetSaid(tDay);
   ok("ledger: probe day purged after the block (no poison persists)", fleetSaidFor(tDay).length === 0);
+
+  /* R277 · THE FLEET BODY-CLASH VETO — seeded from the MEASURED incident
+   * (2026-10-08: the same root body shipped from two accounts ~19h apart —
+   * headcorner 13:50Z vs hcsoldier4 19:41Z, haran/lsa pair; the monoculture
+   * veto compares titles only, so the body class slipped through). The law:
+   * a publish body is judged against the fleet's two-day ledger at 0.5. */
+  const yDay = "1970-01-01"; // same probe day — the purge law keeps it honest
+  noteFleetSaid(yDay, "hcsoldier4", oct8First.slice(0, 300));
+  const fleetVoices = [...fleetSaidFor(tDay), ...fleetSaidFor(yDay)];
+  ok("R277 fleet body-clash: the measured cross-account pair is REFUSED at 0.5", !replyFresh(oct8First, fleetVoices, { maxSimilarity: 0.5 }));
+  ok("R277 fleet body-clash: the motto-swap class is REFUSED at 0.5", !replyFresh(oct8Second, fleetVoices, { maxSimilarity: 0.5 }));
+  ok("R277 fleet body-clash: a genuinely distinct body PASSES", replyFresh("a completely different body about mountain weather, patience and the way trail markers fade", fleetVoices, { maxSimilarity: 0.5 }));
+  clearFleetSaid(yDay);
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
