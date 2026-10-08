@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-08T01:29:08.906Z",
+  "at": "2026-10-08T01:39:08.907Z",
   "enabled": true,
-  "runsTotal": 380,
+  "runsTotal": 381,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -33,19 +33,19 @@
     },
     "exec": {
       "window": 3,
-      "fails": 1,
-      "lastError": "missing required active authority:Missing Active Authority headcorner"
+      "fails": 0,
+      "lastError": null
     },
     "watchdog": {
-      "checks": 2816,
+      "checks": 2826,
       "downs": 106,
       "heals": 40,
       "healVerified": 39,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T01:29:08.910Z",
+      "lastCheckAt": "2026-10-08T01:39:08.921Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-08T01:29:08.912Z",
+      "lastUpAt": "2026-10-08T01:39:08.928Z",
       "blips": 2
     }
   },
@@ -64,14 +64,6 @@
       "evidence": "p50 18622ms vs p90 63579ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
-    },
-    {
-      "id": "broadcast-fails",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "1/3 broadcasts failed in the window (last: missing required active authority:Missing Active Authority h) · last fail 2026-10-08T01:02:34.756Z < last OK broadcast 2026-10-08T01:29:18.210Z (live posting-role ops succeed)",
-      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
-      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},
@@ -79,9 +71,9 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 278,
+    "signing-cred-blocked": 279,
     "broadcast-fails": 125,
-    "cycle-latency-tail": 52
+    "cycle-latency-tail": 53
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
