@@ -2074,6 +2074,68 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("topic pool: publishing-capability themes exist", TOPIC_POOL.some((t) => t.id === "on-chain-publishing") && TOPIC_POOL.some((t) => t.id === "post-craft"));
 }
 
+/* ═══ R263 · THE ORGANIZED PUBLISHING ROUND ═════════════════════════════════
+ * the operator ordered: posts operated BETTER on Hive (each account in its
+ * OWN time, voice and profile ONE identity), a dedicated personal writing
+ * style for every account on BOTH chains, and the whole thing engineered,
+ * verified, pushed. Every law here is pure and offline. */
+{
+  const { pickPersonaFitDraft, slugPermlink, hivePostMinuteFor, POST_WINDOW } = await import("./hive.mjs");
+  const { synthesizePersonaComment, synthesizePersonaReply } = await import("./intel-pack.mjs");
+  const { MIN_POST_WORDS } = await import("./content.mjs");
+
+  const body = (n) => Array.from({ length: n }, () => "word").join(" ");
+  const queue = [
+    { id: "d1", status: "drafted", title: "The Short One", persona: "haran", body: body(MIN_POST_WORDS) },
+    { id: "d2", status: "drafted", title: "The Longest One Here By Far", persona: "macrame", body: body(MIN_POST_WORDS + 50) },
+    { id: "d3", status: "drafted", title: "Unassigned Voice Draft", body: body(MIN_POST_WORDS + 10) },
+    { id: "d4", status: "published", title: "Old News Already Out", persona: "haran", body: body(MIN_POST_WORDS) },
+  ];
+  eq("persona-affinity: own-persona draft wins over shorter unassigned", pickPersonaFitDraft(queue, "haran")?.id, "d1");
+  eq("persona-affinity: affinity beats brevity for its own voice", pickPersonaFitDraft(queue, "macrame")?.id, "d2");
+  eq("persona-affinity: unassigned account falls to the shortest eligible", pickPersonaFitDraft(queue, "siq")?.id, "d1");
+  eq("persona-affinity: empty queue → null", pickPersonaFitDraft([], "haran"), null);
+  ok("persona-affinity: a published draft never ships again", ["d1", "d2", "d3"].includes(pickPersonaFitDraft(queue, "haran")?.id));
+
+  eq("slug: title becomes a human permlink", slugPermlink("What a Plant Hanger Actually Costs: Cord, Hours, Mistakes", "d1791392700696-5"), "what-a-plant-hanger-actually-costs-cord-hours-mistakes");
+  ok("slug: ≤64 chars", slugPermlink("What a Plant Hanger Actually Costs: Cord, Hours, Mistakes").length <= 64);
+  eq("slug: leading digit gets the legal prefix", slugPermlink("5 Small Habits That Quietly Compound", "d1"), "post-5-small-habits-that-quietly-compound");
+  eq("slug: machine draft id falls back lawful", slugPermlink("", "d1791392700696-5"), "d1791392700696-5");
+  ok("slug: always starts with a letter (node contract)", /^[a-z]/.test(slugPermlink("1232", "")));
+  ok("slug: no leading or trailing dash", !/^-|-$/.test(slugPermlink("  trailing dash test — ", "x")));
+
+  const m1 = hivePostMinuteFor("cashmachine", "2026-10-08");
+  eq("post window: deterministic per day|account", hivePostMinuteFor("cashmachine", "2026-10-08"), m1);
+  ok("post window: inside 07:00-23:00 UTC", m1 >= POST_WINDOW.minMinute && m1 < POST_WINDOW.maxMinute);
+  ok("post window: the fleet is staggered, not synchronized", new Set(["cashmachine", "haran", "lsa", "macrame", "siq", "wic", "wog", "woq", "israelnews"].map((a) => hivePostMinuteFor(a, "2026-10-08"))).size > 3);
+
+  const pc = synthesizePersonaComment({ account: "haran", postTitle: "Fixing the Garden Gate Hinge", postExcerpt: "The hinge kept sagging until I noticed the screws were stripped, here is the whole story", seed: 5 });
+  ok("persona comment: lawful body", !!pc && pc.length >= 120 && pc.length <= 650);
+  ok("persona comment: carries the voice's signature slang", !!pc && pc.toLowerCase().includes("measure twice"));
+  const pcUnknown = synthesizePersonaComment({ account: "nobody-here", postTitle: "Fixing the Garden Gate Hinge", postExcerpt: "screws stripped story continues here", seed: 5 });
+  ok("persona comment: unknown account → lawful base body", !!pcUnknown && pcUnknown.length >= 120);
+  const pr = synthesizePersonaReply({ account: "cashmachine", postTitle: "The Waiting Room Is the Most Honest Building in Town", commentBody: "The clock part hit me, I never noticed how reliable those old clocks are", myPrior: "waiting rooms record what people do when nothing can be done", seed: 7 });
+  ok("persona reply: lawful body", !!pr && pr.length >= 120 && pr.length <= 650);
+  ok("persona reply: carries the voice's signature slang", !!pr && pr.toLowerCase().includes("no free lunch"));
+  const probePersona = synthesizePersonaReply({ account: "headcorner", postTitle: "A Quiet Bench", commentBody: "are you a bot? how many accounts do you people run?", myPrior: "", seed: 9 });
+  ok("persona reply: a probe still gets the guarded pivot, never improvisation", !!probePersona && !/not a bot|we are human|100% human/i.test(probePersona));
+  ok("persona writers: never mention account names", [pc, pr].every((b) => !b || !["cashmachine", "haran", "headcorner", "saos"].some((w) => b.toLowerCase().includes(w))));
+}
+
+/* ═══ R263 · THE BRIDGE CIRCUIT BREAKER (the 429-storm law) ═════════════════ */
+{
+  const { breakerVerdict, breakerAfterFailure, breakerAfterSuccess, FAIL_THRESHOLD, COOLDOWN_MS } = await import("./bridge-guard.mjs");
+  eq("breaker: fresh state passes", breakerVerdict(null, 1_000_000), "pass");
+  let s = { failStreak: 0, open: false, openSince: null };
+  for (let i = 0; i < FAIL_THRESHOLD; i++) s = breakerAfterFailure(s, 1_000_000 + i * 1000);
+  eq("breaker: threshold consecutive failures open the circuit", s.open, true);
+  eq("breaker: an open circuit blocks calls inside the cooldown", breakerVerdict(s, 1_000_000 + 60_000), "open");
+  eq("breaker: half-open after the cooldown (one probe call allowed)", breakerVerdict(s, 1_002_000 + COOLDOWN_MS + 1_000), "pass");
+  eq("breaker: a probe failure re-opens for another FULL cooldown", breakerVerdict(breakerAfterFailure({ ...s, open: true, openSince: 1_002_000 }, 1_002_000 + COOLDOWN_MS + 5_000), 1_002_000 + COOLDOWN_MS + 6_000), "open");
+  eq("breaker: one success closes the circuit and resets the streak", breakerVerdict(breakerAfterSuccess(), 9_999_999), "pass");
+  ok("breaker: cooldown is minutes-scale, not seconds-scale theater", COOLDOWN_MS >= 5 * 60_000);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

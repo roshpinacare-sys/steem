@@ -14,10 +14,12 @@
  *  · anti-herd: the vote lands on the least-supported sibling post
  *    (chain-truth active_votes), the comment lands on the least-commented
  *    one — support spreads, never herds (T-87 law, cross-chain).
- *  · voices, not bots: every comment comes from synthesizeComment /
- *    synthesizeReply (the pure seeded writers) under sanitizeReply +
- *    replyFresh (no repeats, no template praise, no dash violations, no
- *    self-replies, no sibling names in bodies).
+ *  · voices, not bots: every comment is drafted IN the account's PERSONA
+ *    (bridge first with the full persona brief; the seeded persona writers
+ *    synthesizePersonaComment/Reply are the lawful floor) under sanitizeReply
+ *    + replyFresh (no repeats, no template praise, no dash violations, no
+ *    self-replies, no sibling names in bodies). The probe shield runs BEFORE
+ *    the bridge: an investigating comment never reaches the LLM (fail-closed).
  *  · CAPS (per account per day): ≤2 fleet votes (weight 25%), ≤1 fleet
  *    comment, ≤1 deepen. Presence, never flood.
  *  · RC-gated per action (measured budget: a vote ≈ dust, a comment ≈ a
@@ -35,16 +37,66 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { rpcHive, HIVE_ROSTER, POST_RC_COST, hiveCustody, sendAs } from "./hive.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
-import { synthesizeComment, synthesizeReply } from "./intel-pack.mjs";
+import { synthesizeReply, synthesizePersonaComment, synthesizePersonaReply, isProbeComment } from "./intel-pack.mjs";
 import { sanitizeReply, replyFresh } from "./army-social.mjs";
+import { personaBrief } from "./personas.mjs";
+import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const FILE = path.join(STATE, "hive-social.json");
+/* R263: the conversation bridge (the cockpit LLM). Engine-called, backend-only. */
+const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
 
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); };
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
+
+/* ── R263 · THE PERSONA-VOICED CONVERSATION (operator order: "לשפר
+ * אינטלגנציה וסגנון כתיבה אישי יעודי לכל אחד מסודר") — a comment is no
+ * longer interchangeable: the bridge gets the FULL persona brief (lens,
+ * traits, personal slang, register dial) and drafts IN that voice; the
+ * seeded persona writers are the lawful floor when the bridge is down
+ * (429 measured live). The engine re-sanitizes in pure code — the bridge
+ * drafts, the engine decides. Fail-soft: any bridge error falls to the
+ * persona floor, never to silence. */
+async function personaCommentViaBridge({ account, postTitle, postExcerpt, seed }) {
+  const brief = personaBrief(account);
+  if (process.env.SAOS_OFFLINE !== "1" && brief && bridgeOpen()) try {
+    const r = await fetch(`${BRIDGE}/api/saos/ai/comment`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postTitle, postExcerpt, personaBrief: brief }),
+      signal: AbortSignal.timeout(90_000),
+    });
+    if (r.ok) {
+      const j = await r.json();
+      if (j?.comment?.body) { noteBridgeSuccess(); return j.comment.body; }
+    }
+    noteBridgeFailure(`hive-comment:${r.status}`);
+  } catch (e) { noteBridgeFailure(`hive-comment:${String(e?.message ?? e).slice(0, 40)}`); }
+  return synthesizePersonaComment({ account, postTitle, postExcerpt, seed });
+}
+
+async function personaReplyViaBridge({ account, postTitle, commentBody, myPrior = "", seed }) {
+  /* THE PROBE SHIELD RUNS FIRST: a comment that investigates bots/automation/
+   * account networks never reaches the LLM at all — the fail-closed deflector
+   * answers it (R262 law, now enforced BEFORE the bridge, not only in it). */
+  if (isProbeComment(commentBody)) return synthesizeReply({ postTitle, commentBody, myPrior, seed });
+  const brief = personaBrief(account);
+  if (process.env.SAOS_OFFLINE !== "1" && brief && bridgeOpen()) try {
+    const r = await fetch(`${BRIDGE}/api/saos/ai/reply`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postTitle, commentBody, myPrior, personaBrief: brief }),
+      signal: AbortSignal.timeout(90_000),
+    });
+    if (r.ok) {
+      const j = await r.json();
+      if (j?.reply?.body) { noteBridgeSuccess(); return j.reply.body; }
+    }
+    noteBridgeFailure(`hive-reply:${r.status}`);
+  } catch (e) { noteBridgeFailure(`hive-reply:${String(e?.message ?? e).slice(0, 40)}`); }
+  return synthesizePersonaReply({ account, postTitle, commentBody, myPrior, seed });
+}
 
 /* the measured budget: a full ≥1600-char post costs ~2.3B RC (hive.mjs);
  * a comment body ≤500 chars is roughly a quarter of that — the gate stays
@@ -200,7 +252,10 @@ export async function runHiveSocial({ now = new Date().toISOString() } = {}) {
         const rc = await rcAvailableOf(account);
         if (rc.available < COMMENT_RC_FLOOR) push("fleet-comment", "RC-LOW-HONEST-DEFER");
         else {
-          const body = sanitizeReply(synthesizeComment({ postTitle: pick.title ?? "", postExcerpt: String(pick.body ?? "").slice(0, 400), seed: hashSeed(`${day}|${account}|${pick.permlink}`) }) ?? "");
+          /* R263: the comment speaks in THIS account's persona (bridge first,
+           * persona seed floor) — no interchangeable applause across voices */
+          const raw = await personaCommentViaBridge({ account, postTitle: pick.title ?? "", postExcerpt: String(pick.body ?? "").slice(0, 400), seed: hashSeed(`${day}|${account}|${pick.permlink}`) });
+          const body = sanitizeReply(raw);
           if (!body) push("fleet-comment", "NO-LAWFUL-BODY");
           else if (!replyFresh(body, said)) push("fleet-comment", "REPEAT-VETO");
           else {
@@ -235,7 +290,10 @@ export async function runHiveSocial({ now = new Date().toISOString() } = {}) {
         const rc = await rcAvailableOf(account);
         if (rc.available < COMMENT_RC_FLOOR) push("deepen", "RC-LOW-HONEST-DEFER");
         else {
-          const body = sanitizeReply(synthesizeReply({ postTitle: target.post.title ?? "", commentBody: String(comment.body ?? "").slice(0, 400), seed: hashSeed(`${day}|${account}|${comment.permlink}`) }) ?? "");
+          /* R263: the deepen reply speaks in THIS account's persona; the probe
+           * shield already ran inside personaReplyViaBridge (fail-closed) */
+          const raw = await personaReplyViaBridge({ account, postTitle: target.post.title ?? "", commentBody: String(comment.body ?? "").slice(0, 400), seed: hashSeed(`${day}|${account}|${comment.permlink}`) });
+          const body = sanitizeReply(raw);
           if (!body) push("deepen", "NO-LAWFUL-BODY");
           else if (!replyFresh(body, said)) push("deepen", "REPEAT-VETO");
           else {

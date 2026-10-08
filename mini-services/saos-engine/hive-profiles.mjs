@@ -39,6 +39,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { rpcHive, HIVE_ROSTER, hiveCustody, sendAsActive } from "./hive.mjs";
 import { profileDoc, profileDiffers, mergeProfileMetadata } from "./personas.mjs";
+import { rcAvailable } from "./rc-pool.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -86,7 +87,7 @@ export function hiveProfileOp(account, metadataJson, memoKey = "") {
 export async function runHiveProfiles({ now = new Date().toISOString() } = {}) {
   const t0 = Date.now();
   const custody = await hiveCustody({ now });
-  const out = { at: now, custody: { verified: custody.verified, total: custody.total }, updated: [], skipped: [], deferred: [], caps: "idempotent-vs-chain · custody-gated · account_update2(43) · posting-signed · macrame-first" };
+  const out = { at: now, custody: { verified: custody.verified, total: custody.total }, updated: [], skipped: [], deferred: [], caps: "idempotent-vs-chain · custody-gated · account_update2(43) · active-signed (the Hive node's live law) · macrame-first" };
   if (custody.verified === 0) {
     out.verdict = "HIVE-NO-CUSTODY";
     out.ms = Date.now() - t0;
@@ -109,10 +110,15 @@ export async function runHiveProfiles({ now = new Date().toISOString() } = {}) {
       continue;
     }
     /* RC floor for the meta op: honest-defer a drained account (its profile
-     * syncs next pass; a node rejection also maps here, fail-soft) */
+     * syncs next pass; a node rejection also maps here, fail-soft).
+     * R263 PHYSICS FIX (measured live): the gate reads the REGEN-ADJUSTED
+     * available mana (current + regen since last update — the same formula
+     * every other rail and rc-pool use), NOT the raw current_mana. The raw
+     * read deferred haran with 1.86B truly available (0.29B raw) — a
+     * profile write costs a measured ~0.145B; the manabar IS the budget. */
     const rc = await rpcHive("rc_api.find_rc_accounts", { accounts: [account] });
     const a = rc?.result?.rc_accounts?.[0];
-    const avail = a ? Number(a.rc_manabar?.current_mana ?? 0) : 0;
+    const avail = a ? rcAvailable(a).available : 0;
     if (avail < META_RC_FLOOR) { out.deferred.push({ account, reason: "rc-low-meta-defer", avail }); continue; }
     const meta = mergeProfileMetadata(existingRaw, doc);
     const op = hiveProfileOp(account, meta, String(live.memo_key ?? ""));

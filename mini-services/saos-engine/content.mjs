@@ -22,6 +22,7 @@ import * as path from "node:path";
 import { readCorpus } from "./intel-pack.mjs";
 import { illustrateDraft } from "./illustrate.mjs";
 import { PERSONAS, PERSONA_IDS, assignPersonas, personaBrief, personaOf } from "./personas.mjs";
+import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -271,16 +272,40 @@ export async function runContent({ now = new Date().toISOString(), force = false
    * single machine. */
   if (process.env.SAOS_OFFLINE === "1") {
     bridgeError = "offline-mode (SAOS_OFFLINE=1)";
-  } else try {
-    const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topics, voices, personas, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
-      signal: AbortSignal.timeout(120_000),
-    });
-    if (!r.ok) throw new Error(`bridge ${r.status}`);
-    raw = await r.json();
-  } catch (e) { bridgeError = String(e?.message ?? e).slice(0, 160); }
+  } else if (!bridgeOpen()) {
+    /* R263 · THE CIRCUIT BREAKER: a 429 storm is open — the writers' room
+     * does not dial the provider at all this round; the corpus floor speaks
+     * and the queue stays fed. One honest note, zero wasted calls. */
+    bridgeError = "bridge-circuit-open (429 storm cooldown)";
+  } else {
+    /* R263 · THE BRIDGE RETRY (measured root cause of BRIDGE-DOWN at 01:09Z:
+     * LLM provider 429). ONE honest retry after a short cooldown before the
+     * corpus floor takes over — rate limits are transient weather; a starving
+     * draft queue is structural damage. The route itself retries internally
+     * too; this second attempt covers a whole-route failure (502, compile,
+     * restart). */
+    const attempt = async () => {
+      const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topics, voices, personas, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
+        signal: AbortSignal.timeout(120_000),
+      });
+      if (!r.ok) throw new Error(`bridge ${r.status}`);
+      return r.json();
+    };
+    try {
+      raw = await attempt();
+      noteBridgeSuccess();
+    } catch (e) {
+      bridgeError = String(e?.message ?? e).slice(0, 160);
+      noteBridgeFailure(`content:${bridgeError}`);
+      if (bridgeOpen()) {
+        await new Promise((res) => setTimeout(res, Number(process.env.SAOS_CONTENT_BRIDGE_RETRY_MS) || 20_000));
+        try { raw = await attempt(); bridgeError = null; noteBridgeSuccess(); } catch (e2) { bridgeError = String(e2?.message ?? e2).slice(0, 160); noteBridgeFailure(`content-retry:${bridgeError}`); }
+      }
+    }
+  }
 
   /* R244 · THE OFFLINE FLOOR: bridge down / CI mode → the sovereign corpus
    * speaks (hand-crafted pillar posts mined into git — the intelligence lives

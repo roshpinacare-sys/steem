@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { withLlmRetry } from "../_llm";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -91,13 +92,15 @@ export async function POST(req: Request) {
   try {
     const ZAI = (await import("z-ai-web-dev-sdk")).default;
     const zai = await ZAI.create();
-    const completion = await zai.chat.completions.create({
+    /* R263 · THE LLM RETRY: 429 weather killed a whole round (measured live
+     * 01:09Z); the provider call now rides the escalating-backoff retry */
+    const completion = await withLlmRetry(() => zai.chat.completions.create({
       messages: [
         { role: "assistant", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt },
       ],
       thinking: { type: "disabled" },
-    });
+    }), 2); // 4-draft generation is the heaviest call: 2 attempts stay inside maxDuration 120
     const raw = completion.choices?.[0]?.message?.content ?? "";
     const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
     let drafts: unknown = [];
