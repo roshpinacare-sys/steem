@@ -1920,6 +1920,160 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("account_update2: extensions terminator", au2[au2.length - 1], 0);
 }
 
+/* ═══ R262 · THE VISIBILITY + ACTIVATION ROUND ═══════════════════════════════
+ * the operator ordered: professional profiles WITH images for everyone on
+ * Hive (macrame first), RC mutual-aid to reactivate the structurally-broken
+ * accounts, a community loop on Hive, the post-format law, and the
+ * outside-probe shield. Every law here is pure and offline. */
+{
+  const { PERSONA_IMAGES, imagesOf } = await import("./personas.mjs");
+  const { hiveProfileDoc, hiveProfileOp, HIVE_PROFILE_ORDER, META_RC_FLOOR } = await import("./hive-profiles.mjs");
+  const { planLifts, delegateRcOps, rcAvailable, LIFT_TARGET, DONOR_KEEP_MAX, MIN_DELEGATION_RC } = await import("./rc-pool.mjs");
+  const { dayScheduleFor, minuteOfDay, leastSupported, leastCommented, voteOp, commentOp, replyPermlink, CAPS, WINDOW } = await import("./hive-social.mjs");
+  const { isProbeComment, synthesizeReply: reply2 } = await import("./intel-pack.mjs");
+  const { FORMAT_LAW, TOPIC_POOL, normalizeDashes } = await import("./content.mjs");
+  const { pickRcFitDraft } = await import("./hive.mjs");
+
+  /* ── the image canon: everyone carries a verified pair ── */
+  eq("images: canon covers all 14 voices", PERSONA_IDS.every((id) => !!PERSONA_IMAGES[id]), true);
+  eq("images: canon has no extras", Object.keys(PERSONA_IMAGES).sort().join(","), [...PERSONA_IDS].sort().join(","));
+  ok("images: all URLs are upload.wikimedia.org commons",
+    PERSONA_IDS.every((id) => [PERSONA_IMAGES[id].profile_image, PERSONA_IMAGES[id].cover_image]
+      .every((u) => /^https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\//.test(u))));
+  ok("images: avatar ≠ cover", PERSONA_IDS.every((id) => PERSONA_IMAGES[id].profile_image !== PERSONA_IMAGES[id].cover_image));
+  eq("imagesOf unknown = null", imagesOf("spaminator"), null);
+
+  /* profileDoc carries the pair; profileDiffers SEES the old image */
+  const macDoc = profileDoc("macrame");
+  eq("macrame persona name", macDoc.name, "Slow Craft Bench");
+  ok("macrame doc carries wikimedia avatar", /^https:\/\/upload\.wikimedia\.org\//.test(macDoc.profile_image ?? ""));
+  ok("differs: old real-person image is detected", profileDiffers('{"profile":{"profile_image":"https://steemitimages.com/DQold/20180227_170209.jpg","name":"MacrameLoosh"}}', macDoc) === true);
+  eq("differs: image-only change still differs", profileDiffers(mergeProfileMetadata("{}", { name: "Slow Craft Bench", about: macDoc.about, interests: macDoc.interests }), macDoc), true);
+  eq("differs: full doc idempotent", profileDiffers(mergeProfileMetadata("{}", macDoc), macDoc), false);
+
+  /* ── hive profile doc: identity replaces the old person, nothing survives ── */
+  const hDoc = hiveProfileDoc("macrame");
+  eq("hive doc: name", hDoc.name, "Slow Craft Bench");
+  eq("hive doc: location blanked", hDoc.location, "");
+  eq("hive doc: website blanked (instagram ghost dies here)", hDoc.website, "");
+  ok("hive doc: images ride along", !!hDoc.profile_image && !!hDoc.cover_image);
+
+  /* the op: profile-only account_update2, posting-signed shape */
+  const hop = hiveProfileOp("macrame", '{"profile":{}}', "STM1111111111111111111111111111111114T1Anm");
+  eq("hive profile op: id + account", [hop[0], hop[1].account], ["account_update2", "macrame"]);
+  eq("hive profile op: no authority changes", [hop[1].owner, hop[1].active, hop[1].posting, hop[1].extensions], [null, null, null, []]);
+  eq("hive profile op: posting_json_metadata lane", hop[1].posting_json_metadata, '{"profile":{}}');
+  ok("meta rc floor is tiny vs post cost", META_RC_FLOOR < 300_000_001);
+  eq("macrame first in roster order", HIVE_PROFILE_ORDER[0], "macrame");
+  eq("hive roster order: all nine, no dupes", new Set(HIVE_PROFILE_ORDER).size, 9);
+
+  /* ── the RC mutual-aid pool: measured-budget planning ── */
+  ok("lift target crosses the measured post line with margin", LIFT_TARGET > 2_300_000_000 && LIFT_TARGET < 4_000_000_000);
+  ok("donor floor keeps donors posting-capable", DONOR_KEEP_MAX > 2_300_000_000);
+  eq("min delegation = the node's own number (measured live, R262)", MIN_DELEGATION_RC, 1_607_605_799);
+  /* the measured live fixture (R262 rc_api): five structural, one donor */
+  const states = {
+    cashmachine: { max: 2_105_000_000, cur: 138_000_000 },
+    haran: { max: 2_265_000_000, cur: 291_000_000 },
+    israelnews: { max: 2_227_000_000, cur: 363_000_000 },
+    lsa: { max: 3_891_000_000, cur: 735_000_000 },
+    macrame: { max: 4_178_000_000, cur: 637_000_000 },
+    siq: { max: 2_290_000_000, cur: 1_643_000_000 },
+    wic: { max: 3_086_000_000, cur: 14_000_000 },
+    wog: { max: 3_273_000_000, cur: 359_000_000 },
+    woq: { max: 2_273_000_000, cur: 392_000_000 },
+  };
+  const lifts = planLifts(states);
+  eq("plan: exactly one affordable minimum delegation", lifts.length, 1);
+  eq("plan: the donor is the only account above keep+min (macrame)", lifts[0].from, "macrame");
+  ok("plan: recipient is a structural account, lifted past target", ["cashmachine", "haran", "israelnews", "siq", "woq"].includes(lifts[0].to) && states[lifts[0].to].max + lifts[0].maxRc >= LIFT_TARGET);
+  eq("plan: the lift is exactly the chain minimum", lifts[0].maxRc, MIN_DELEGATION_RC);
+  ok("plan: donor keeps its own posting line", states[lifts[0].from].max - lifts[0].maxRc >= DONOR_KEEP_MAX);
+  ok("plan: lsa cannot donate without falling under its line", planLifts({ a: { max: 3_891_000_000, cur: 1 }, b: { max: 2_290_000_000, cur: 1 } }).every((l) => l.from !== "a"));
+  /* conservation: total max is fixed — the pool cannot invent RC */
+  const totalMax = Object.values(states).reduce((s, x) => s + x.max, 0);
+  ok("plan: total conserved (pool is aid, not minting)", totalMax > 25_000_000_000 && totalMax < 26_000_000_000);
+  /* exact fixture: donor needs max ≥ keep+min, recipient needs max+min ≥ target */
+  eq("plan: exact fixture", planLifts({ a: { max: 4_100_000_000, cur: 1 }, b: { max: 2_000_000_000, cur: 0.5 }, c: { max: 2_200_000_000, cur: 0.1 } }), [{ from: "a", to: "c", maxRc: 1_607_605_799 }]);
+  eq("plan: paused recipient skipped", planLifts({ a: { max: 4_100_000_000, cur: 1 }, b: { max: 2_200_000_000, cur: 0.5 } }, { paused: { b: true } }), []);
+  eq("plan: recipient that a minimum lift cannot save is skipped", planLifts({ a: { max: 4_100_000_000, cur: 1 }, b: { max: 2_000_000_000, cur: 0.5 } }), []);
+  eq("plan: no donors under floor", planLifts({ a: { max: 2_900_000_000, cur: 1 }, b: { max: 2_200_000_000, cur: 0.5 } }), []);
+
+  /* the wire shape: delegate_rc custom_json (id "rc") */
+  const dop = delegateRcOps("macrame", ["siq"], 1_607_605_799);
+  eq("delegate op: wrapper", [dop[0][0], dop[0][1].id, dop[0][1].required_auths, dop[0][1].required_posting_auths], ["custom_json", "rc", [], ["macrame"]]);
+  const inner = JSON.parse(dop[0][1].json);
+  eq("delegate op: inner op name", inner[0], "delegate_rc");
+  eq("delegate op: payload", [inner[1].from, inner[1].delegatees, inner[1].max_rc], ["macrame", ["siq"], 1_607_605_799]);
+
+  /* rc regen math: full at 5 days, clamped at max */
+  eq("rc: immediate", Math.round(rcAvailable({ rc_manabar: { current_mana: 100, last_update_time: 1000 }, max_rc: 1000 }, 1000).available), 100);
+  eq("rc: quarter regen (108000s of 432000s)", Math.round(rcAvailable({ rc_manabar: { current_mana: 0, last_update_time: 0 }, max_rc: 1000 }, 108000).available), 250);
+  eq("rc: half regen", Math.round(rcAvailable({ rc_manabar: { current_mana: 0, last_update_time: 0 }, max_rc: 1000 }, 216000).available), 500);
+  eq("rc: clamped at max", Math.round(rcAvailable({ rc_manabar: { current_mana: 0, last_update_time: 0 }, max_rc: 1000 }, 10_000_000).available), 1000);
+
+  /* ── the hive community loop: schedules, anti-herd, op shapes ── */
+  const sched = dayScheduleFor("macrame", "2026-10-08T00:00:00Z");
+  eq("sched: lane counts", [sched.filter((s) => s.kind === "fleet-vote").length, sched.filter((s) => s.kind === "fleet-comment").length, sched.filter((s) => s.kind === "deepen").length], [CAPS.fleetVote, CAPS.fleetComment, CAPS.deepen]);
+  ok("sched: minutes inside the window, sorted", sched.every((s) => s.minute >= WINDOW.minMinute && s.minute < WINDOW.maxMinute) && sched.every((s, i) => i === 0 || s.minute >= sched[i - 1].minute));
+  eq("sched: deterministic", JSON.stringify(dayScheduleFor("macrame", "2026-10-08T00:00:00Z")), JSON.stringify(sched));
+  ok("sched: per-account decorrelated", JSON.stringify(dayScheduleFor("woq", "2026-10-08T00:00:00Z")) !== JSON.stringify(sched));
+  eq("minuteOfDay", minuteOfDay("2026-10-08T13:07:00Z"), 13 * 60 + 7);
+
+  const posts = [
+    { author: "lsa", permlink: "p1", children: 8, active_votes: [{ voter: "headcorner" }, { voter: "wic" }] },
+    { author: "siq", permlink: "p2", children: 1, active_votes: [] },
+  ];
+  eq("anti-herd vote: lonely post wins", leastSupported(posts, ["headcorner", "wic", "lsa", "siq"]).permlink, "p2");
+  eq("anti-herd comment: least-commented wins", leastCommented(posts).permlink, "p2");
+  eq("anti-herd: empty pool", leastSupported([], []), null);
+
+  const vo = voteOp("siq", "lsa", "p1", 2500);
+  eq("vote op", vo, [["vote", { voter: "siq", author: "lsa", permlink: "p1", weight: 2500 }]]);
+  const co = commentOp("siq", "lsa", "p1", "re-lsa-p1-20261008", "body here", "life");
+  eq("comment op: parent + app tag", [co[0][0], co[0][1].parent_author, co[0][1].parent_permlink, co[0][1].author], ["comment", "lsa", "p1", "siq"]);
+  ok("comment op: json metadata parseable", !!JSON.parse(co[0][1].json_metadata).app);
+  eq("reply permlink: sanitized stem + day", replyPermlink("lsa", "The Dish, That Remembers!", "2026-10-08T01:00:00Z"), "re-lsa-thedishthatremembers-20261008");
+  ok("reply permlink: hive-legal charset only", /^re-[a-z0-9-]+$/.test(replyPermlink("lsa", "Uppercase AND spaces!!", "2026-10-08T01:00:00Z")));
+
+  /* ── the RC-fit draft pick: shortest eligible draft first, quality untouched ── */
+  const qfix = [
+    { id: "a", status: "drafted", title: "long", body: "w ".repeat(500) },
+    { id: "b", status: "drafted", title: "short", body: "w ".repeat(310) },
+    { id: "c", status: "drafted", title: "under-floor", body: "w ".repeat(120) },
+    { id: "d", status: "published", title: "old", body: "w ".repeat(200) },
+  ];
+  eq("rc-fit: shortest eligible wins", pickRcFitDraft(qfix)?.id, "b");
+  eq("rc-fit: empty queue", pickRcFitDraft([]), null);
+  eq("rc-fit: under-floor only = null", pickRcFitDraft([{ status: "drafted", title: "x", body: "tiny body" }]), null);
+
+  /* ── the probe shield: outsiders get warmth, never internals ── */
+  ok("probe: bot question detected", isProbeComment("are you a bot? who is really running these accounts?"));
+  ok("probe: automation probe detected", isProbeComment("This looks automated, is it AI-generated?"));
+  ok("probe: network probe detected", isProbeComment("how many accounts do you people run?"));
+  eq("probe: benign thread comment passes through", isProbeComment("The knot section hit home, how long did the first one take you?"), false);
+  const probeReply = reply2({ postTitle: "The Dish That Remembers", commentBody: "honest question, are you a bot or AI-generated? how many accounts are behind this?", seed: 11 });
+  ok("probe reply: exists and lawful", !!probeReply && !!sanitizeReply(probeReply));
+  ok("probe reply: contains no banned internals", !["saos", "headcorner", "hcsoldier", "fleet", "multi-account"].some((w) => probeReply.toLowerCase().includes(w)));
+  ok("probe reply: warm pivot, not a denial machine", !/not a bot|we are human|100% human/i.test(probeReply));
+  ok("organic reply still organic for benign comments", !!reply2({ postTitle: "The Dish That Remembers", commentBody: "the rice part reminded me of my grandmother's kitchen, tell me more about the spices", seed: 12 }));
+
+  /* ── the style law finally covers replies: dashes rewritten, not banned ── */
+  const dashed = sanitizeReply("The part about knots that got me is the patience piece, honestly, and it took me three tries to get it right");
+  ok("sanitizeReply: lawful body passes", !!dashed);
+  const emdashed = sanitizeReply("I tried this knot three times this week, and the cord told the truth — that part was written well");
+  ok("sanitizeReply: em-dash rewritten to legal punctuation, body kept", !!emdashed && !emdashed.includes("—") && emdashed.includes(": "));
+  const endashed = sanitizeReply("Seven to ten tries is the honest range for a first crown knot, and that is the real lesson here, not speed");
+  ok("sanitizeReply: lawful body without dashes passes", !!endashed);
+  eq("normalizeDashes: spaced em dash becomes colon", normalizeDashes("a thing — a consequence"), "a thing: a consequence");
+  eq("normalizeDashes: bare em dash still becomes legal punctuation", normalizeDashes("a thing—a consequence"), "a thing: a consequence");
+
+  /* ── the format law: what a post may carry ── */
+  ok("format law: allowed subset named", (FORMAT_LAW.allowed ?? []).length >= 2 && FORMAT_LAW.allowed.join(" ").includes("details"));
+  ok("format law: stripping tags named", (FORMAT_LAW.forbidden ?? []).join(" ").includes("script") && (FORMAT_LAW.forbidden ?? []).join(" ").includes("iframe"));
+  ok("topic pool: publishing-capability themes exist", TOPIC_POOL.some((t) => t.id === "on-chain-publishing") && TOPIC_POOL.some((t) => t.id === "post-craft"));
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
