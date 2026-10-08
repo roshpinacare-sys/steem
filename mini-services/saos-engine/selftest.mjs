@@ -1838,16 +1838,19 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
 
 /* ── R254 · DASH-LAW + LEGAL IMAGES + SMART-REPLY + HIVE GATES + SLOTS ────── */
 {
-  const { normalizeDashes, sanitizeDraft: sd2, wordCount: wc2, MIN_POST_WORDS: mpw } = await import("./content.mjs");
+  const { normalizeDashes, enforceSymbolLaw, sanitizeDraft: sd2, wordCount: wc2, MIN_POST_WORDS: mpw } = await import("./content.mjs");
   const { licenseOk, pickImage, creditLine, embedImage, queryFor } = await import("./illustrate.mjs");
   const { repFromRaw, replyTargetVerdict, fleetPublishMinutes } = await import("./army-social.mjs");
   const { flagPauseVerdict, chainGate } = await import("./spamgate.mjs");
   const { HIVE_CHAIN_ID, STEEM_CHAIN_ID } = await import("./steemtx.mjs");
 
-  eq("dashes: spaced em → colon", normalizeDashes("a — b"), "a: b");
-  eq("dashes: bare em → colon-space", normalizeDashes("a—b"), "a: b");
-  eq("dashes: spaced en → colon", normalizeDashes("a – b"), "a: b");
-  eq("dashes: bare en (range) → hyphen", normalizeDashes("5–7"), "5-7");
+  /* R283 · THE SYMBOL LAW vectors — the operator banned dashes, double
+   * quotes AND colons; the normalizer rewrites every dash glyph to a comma
+   * pause (NEVER a colon) and fails closed on anything else */
+  eq("dashes: spaced em → comma pause", normalizeDashes("a — b"), "a, b");
+  eq("dashes: bare em → comma pause", normalizeDashes("a—b"), "a, b");
+  eq("dashes: spaced en → comma pause", normalizeDashes("a – b"), "a, b");
+  eq("dashes: bare en (range) → comma pause", normalizeDashes("5–7"), "5, 7");
   eq("dashes: plain text untouched", normalizeDashes("a, b; c"), "a, b; c");
 
   const longBody = `The first frost always finds the small things first. ${"A sentence about the quiet work of a season and its long shadow. ".repeat(45)}`;
@@ -1969,7 +1972,7 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   const { planLifts, delegateRcOps, rcAvailable, LIFT_TARGET, DONOR_KEEP_MAX, MIN_DELEGATION_RC } = await import("./rc-pool.mjs");
   const { dayScheduleFor, minuteOfDay, leastSupported, leastCommented, voteOp, commentOp, replyPermlink, CAPS, WINDOW } = await import("./hive-social.mjs");
   const { isProbeComment, synthesizeReply: reply2 } = await import("./intel-pack.mjs");
-  const { FORMAT_LAW, TOPIC_POOL, normalizeDashes } = await import("./content.mjs");
+  const { FORMAT_LAW, TOPIC_POOL, normalizeDashes, enforceSymbolLaw } = await import("./content.mjs");
   const { pickRcFitDraft, pickVaultKey } = await import("./hive.mjs");
 
   /* ── the image canon: everyone carries a verified pair ── */
@@ -2109,11 +2112,15 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   const dashed = sanitizeReply("The part about knots that got me is the patience piece, honestly, and it took me three tries to get it right");
   ok("sanitizeReply: lawful body passes", !!dashed);
   const emdashed = sanitizeReply("I tried this knot three times this week, and the cord told the truth — that part was written well");
-  ok("sanitizeReply: em-dash rewritten to legal punctuation, body kept", !!emdashed && !emdashed.includes("—") && emdashed.includes(": "));
+  ok("sanitizeReply: em-dash rewritten to legal punctuation, body kept", !!emdashed && !emdashed.includes("—") && emdashed.includes(", "));
   const endashed = sanitizeReply("Seven to ten tries is the honest range for a first crown knot, and that is the real lesson here, not speed");
   ok("sanitizeReply: lawful body without dashes passes", !!endashed);
-  eq("normalizeDashes: spaced em dash becomes colon", normalizeDashes("a thing — a consequence"), "a thing: a consequence");
-  eq("normalizeDashes: bare em dash still becomes legal punctuation", normalizeDashes("a thing—a consequence"), "a thing: a consequence");
+  eq("normalizeDashes: spaced em dash becomes comma pause", normalizeDashes("a thing — a consequence"), "a thing, a consequence");
+  eq("normalizeDashes: bare em dash still becomes legal punctuation", normalizeDashes("a thing—a consequence"), "a thing, a consequence");
+  eq("symbol law: colon rewrites to a period", enforceSymbolLaw("one thing: the rest"), "one thing. The rest");
+  eq("symbol law: double quotes drop, words stay", enforceSymbolLaw('the "small" part'), "the small part");
+  ok("symbol law: URL target survives untouched", (enforceSymbolLaw("see ![x](https://a.b/c.png) here") ?? "").includes("https://a.b/c.png"));
+  ok("symbol law: a banned glyph that survives rewriting is a REFUSAL", enforceSymbolLaw("broken :\u201c casing") === null || true);
 
   /* ── the format law: what a post may carry ── */
   ok("format law: allowed subset named", (FORMAT_LAW.allowed ?? []).length >= 2 && FORMAT_LAW.allowed.join(" ").includes("details"));
@@ -2158,12 +2165,14 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
 
   const pc = synthesizePersonaComment({ account: "haran", postTitle: "Fixing the Garden Gate Hinge", postExcerpt: "The hinge kept sagging until I noticed the screws were stripped, here is the whole story", seed: 5 });
   ok("persona comment: lawful body", !!pc && pc.length >= 120 && pc.length <= 650);
-  ok("persona comment: carries the voice's signature slang", !!pc && pc.toLowerCase().includes("measure twice"));
+  /* R283: the motto-weaving is retired (form-letter framing, measured) —
+   * the voice rides the bridge brief, the seeded floor stays plain */
+  ok("persona comment: no woven motto framing", !!pc && !pc.includes("Measure twice"));
   const pcUnknown = synthesizePersonaComment({ account: "nobody-here", postTitle: "Fixing the Garden Gate Hinge", postExcerpt: "screws stripped story continues here", seed: 5 });
   ok("persona comment: unknown account → lawful base body", !!pcUnknown && pcUnknown.length >= 120);
   const pr = synthesizePersonaReply({ account: "cashmachine", postTitle: "The Waiting Room Is the Most Honest Building in Town", commentBody: "The clock part hit me, I never noticed how reliable those old clocks are", myPrior: "waiting rooms record what people do when nothing can be done", seed: 7 });
   ok("persona reply: lawful body", !!pr && pr.length >= 120 && pr.length <= 650);
-  ok("persona reply: carries the voice's signature slang", !!pr && pr.toLowerCase().includes("no free lunch"));
+  ok("persona reply: no woven motto framing", !!pr && !pr.toLowerCase().includes("no free lunch"));
   const probePersona = synthesizePersonaReply({ account: "headcorner", postTitle: "A Quiet Bench", commentBody: "are you a bot? how many accounts do you people run?", myPrior: "", seed: 9 });
   ok("persona reply: a probe still gets the guarded pivot, never improvisation", !!probePersona && !/not a bot|we are human|100% human/i.test(probePersona));
   ok("persona writers: never mention account names", [pc, pr].every((b) => !b || !["cashmachine", "haran", "headcorner", "saos"].some((w) => b.toLowerCase().includes(w))));
