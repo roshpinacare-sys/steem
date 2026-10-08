@@ -2217,6 +2217,53 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("ledger day B: still dash-free, ≥300 words, ends with a question", !bodyB.includes("—") && !bodyB.includes("–") && bodyB.split(/\s+/).filter(Boolean).length >= 300 && /\?\s*$/.test(bodyB.trim()));
 }
 
+/* ═══ R274 · THE CLONE GUARD (operator order, verbatim intent): "כל התגובות
+ * מהמשתמים לפוסטים הן אותה תגובה... בכנות תמשיך ודחוף". The chain audit
+ * proved two measured clone classes; every fix below is locked as a vector
+ * seeded from the MEASURED failure, not from imagination. ═══ */
+{
+  const { fleetSaidFor, noteFleetSaid, normalizeBodyForClash } = await import("./army-social.mjs");
+  const { synthesizePersonaComment, synthesizePersonaReply } = await import("./intel-pack.mjs");
+
+  /* CLASS 1 (Oct 6 20:52-20:55, measured on-chain): two accounts, same parent,
+   * IDENTICAL bodies at identical seconds — the fallback seed carried no
+   * account, so every sibling minted the same core. THE VOICE SALT FIX:
+   * same target, two accounts → two different cores, not two prefixes. */
+  const ca = synthesizePersonaComment({ account: "haran", postTitle: "How do you evaluate content value on Steem", postExcerpt: "value comes from attention and time, here is my measure", seed: "Post|excerpt" });
+  const cb = synthesizePersonaComment({ account: "macrame", postTitle: "How do you evaluate content value on Steem", postExcerpt: "value comes from attention and time, here is my measure", seed: "Post|excerpt" });
+  ok("clone class 1: two accounts, same target → distinct bodies", !!ca && !!cb && ca !== cb);
+  ok("clone class 1: distinct beyond the persona motto prefix", ca.replace(/^[^:]+:\s*/, "") !== cb.replace(/^[^:]+:\s*/, ""));
+  const ra = synthesizePersonaReply({ account: "lsa", postTitle: "Walking is how I think on routes", commentBody: "I never noticed how reliable old clocks are", myPrior: "", seed: "T|C" });
+  const rb = synthesizePersonaReply({ account: "siq", postTitle: "Walking is how I think on routes", commentBody: "I never noticed how reliable old clocks are", myPrior: "", seed: "T|C" });
+  ok("clone class 1 (reply lane): distinct bodies per account", !!ra && !!rb && ra !== rb);
+
+  /* CLASS 2 (Oct 8 06:20/06:40, measured on-chain, headcorner/saos-transparency):
+   * the SAME core shipped twice 20 minutes apart with only the motto swapped,
+   * after a state restore emptied the per-account said-memory. The gate MUST
+   * see through a prefix swap — these are the literal chain bodies. */
+  const oct8First = "Here's the thing: I keep coming back to \"real\" while reading. Small kindnesses compound quietly: nobody writes them down, everybody feels them, and you can feel them landing even when nobody names them. Which small kindness paid you back the most this year?";
+  const oct8Second = "No free lunch: I keep coming back to \"real\" while reading. Small kindnesses compound quietly: nobody writes them down, everybody feels them, and you can feel them landing even when nobody names them. Which small kindness paid you back the most this year?";
+  ok("clone class 2: the measured Oct 8 pair is ABOVE the repeat threshold", textSimilarity(oct8First, oct8Second) > 0.34);
+  ok("clone class 2: replyFresh refuses the second body even when said-memory was ONLY the first", !replyFresh(oct8Second, [oct8First.slice(0, 300)], { maxSimilarity: 0.34 }));
+  ok("clone class 2: two byte-identical bodies are always refused", !replyFresh("Same body exactly as before here", ["Same body exactly as before here"], { maxSimilarity: 0.34 }));
+
+  /* THE CHAIN-SHAPED LAW: normalization strips the noise the chain adds so
+   * the Jaccard law compares meaning, not markdown. */
+  const noisy = "Look at **this** one! ![pic](https://upload.wikimedia.org/x.jpg) Read https://example.org/post twice";
+  eq("normalize: markup, images and links fall before comparison", normalizeBodyForClash(noisy), "look at this one! read twice");
+  ok("normalize: the Oct 8 pair normalizes to overlapping cores", normalizeBodyForClash(oct8First).includes("small kindnesses compound quietly") && normalizeBodyForClash(oct8Second).includes("small kindnesses compound quietly"));
+
+  /* THE FLEET SAID-LEDGER: the same-tick race class (the chain has not yet
+   * indexed the first reply when the second account drafts). Day-scoped:
+   * a selftest key can never poison the live day, and old days prune. */
+  const tDay = "1970-01-01"; // sandbox-proof testing law: a key no live day can collide with
+  ok("ledger: foreign day reads empty", fleetSaidFor(tDay).length === 0);
+  noteFleetSaid(tDay, "haran", "selftest ledger body one");
+  noteFleetSaid(tDay, "macrame", "selftest ledger body two");
+  eq("ledger: two intents are readable fleet-wide", fleetSaidFor(tDay).length, 2);
+  ok("ledger: the second drafter sees the first draft BEFORE broadcast", replyFresh("fresh selftest draft", fleetSaidFor(tDay), { maxSimilarity: 0.34 }) && !replyFresh("selftest ledger body one continued", fleetSaidFor(tDay), { maxSimilarity: 0.34 }));
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
