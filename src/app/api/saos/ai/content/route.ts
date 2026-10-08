@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { withLlmRetry } from "../_llm";
+import { SYMBOL_PROMPT_LAW, enforceSymbolLaw } from "../_symbols";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -20,7 +21,7 @@ HARD LAW (violations make a draft unusable):
 - Never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected. Write as an independent author.
 - No financial advice, no profit promises, no price predictions or targets, no solicitation.
 - NO fabricated personal identities: never invent named family members, specific biographies, or claim a specific hometown/job history. Write as a general human observer ("you know that moment when..." is fine).
-- No AI telltales: never start with "In today's world" or similar; never end with "In conclusion"; NO em dashes or en dashes anywhere (use commas, colons, or parentheses instead); avoid "delve", "tapestry", "realm".
+- No AI telltales: never start with "In today's world" or similar; never end with "In conclusion"; NO dashes anywhere, NO double quotes anywhere, NO colons anywhere (the absolute symbol ban); avoid "delve", "tapestry", "realm".
 - BANNED OPENINGS (any of these in the first sentence makes the draft unusable): "In this article", "In this post", "Let's dive", "As we all know", "It's no secret", "In the ever-evolving", "In the world of", "Have you ever wondered", "Are you tired of", "Unlock the", "In the realm of", "The digital landscape", "Game-changer". Start inside a scene, a question, or a specific claim instead.
 - VARIETY: the recent titles listed may share a theme but your piece must NOT reuse their opening move or structure. If three recent posts opened with a question, open with a scene. If they opened with a scene, open with a claim.
 - Plain human prose: concrete nouns, specific small details, one clear idea per paragraph. Show, don't lecture.
@@ -98,7 +99,7 @@ export async function POST(req: Request) {
      * 01:09Z); the provider call now rides the escalating-backoff retry */
     const completion = await withLlmRetry(() => zai.chat.completions.create({
       messages: [
-        { role: "assistant", content: SYSTEM_PROMPT },
+        { role: "assistant", content: `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}` },
         { role: "user", content: userPrompt },
       ],
       thinking: { type: "disabled" },
@@ -111,6 +112,20 @@ export async function POST(req: Request) {
       drafts = Array.isArray(parsed?.drafts) ? parsed.drafts : [];
     } catch {
       return NextResponse.json({ ok: false, error: "unparseable LLM output", raw: raw.slice(0, 400) }, { status: 502 });
+    }
+    /* R283 · THE SYMBOL LAW GATE — every draft's title and body ride the
+     * normalizer, a draft that still carries a banned glyph is dropped here
+     * so the queue never fills with text the operator has banned */
+    if (Array.isArray(drafts)) {
+      drafts = drafts
+        .map((d) => {
+          const o = d as { title?: unknown; body?: unknown };
+          const title = enforceSymbolLaw(String(o?.title ?? ""));
+          const body = enforceSymbolLaw(String(o?.body ?? ""));
+          if (title === null || body === null) return null;
+          return { ...(o as object), title, body };
+        })
+        .filter(Boolean);
     }
     return NextResponse.json({ ok: true, drafts, at: new Date().toISOString() });
   } catch (e) {

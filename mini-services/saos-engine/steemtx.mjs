@@ -228,13 +228,15 @@ function serOp(name, v, w) {
       w.str(v.from).str(v.to).asset(v.amount);
       break;
     case "claim_account":
-      /* R246 REPAIR (txid-oracle class, same ruling as convert/vote/comment):
-       * the trailing varint(0) came from get_transaction_hex probes — the SAME
-       * tool R245-b proved ADDS phantom extension bytes that live consensus
-       * does not serialize. Every live-proven op (vote/comment/claim/delegate/
-       * convert/account_update) serializes with NO trailing extensions byte.
-       * Unused op kept doctrine-consistent — no phantom bytes, ever. */
-      w.str(v.creator).asset(v.fee ?? "0.000 STEEM");
+      /* R283 SCHEMA REPAIR — byte-aligned with the OFFICIAL @hiveio/dhive
+       * serializer (its live broadcast got past authority to the honest RC
+       * error, which our encoding never achieved): body = creator, fee,
+       * extensions(empty array = varint 0). The R246 note had the field
+       * order REVERSED (fee-first) and the extensions byte stripped — both
+       * wrong for THIS op; every claim died "Missing Active Authority"
+       * (measured 2026-10-08 18:18-19:0xZ with the fingerprint proving the
+       * correct active WIF signed — the digest, not the key, was wrong). */
+      w.str(v.creator).asset(v.fee ?? "0.000 STEEM").varint(0);
       break;
     case "create_claimed_account":
       /* R246: phantom extensions byte removed (txid-oracle doctrine —
