@@ -37,6 +37,7 @@ import { PayoutsCard } from '@/components/saos/PayoutsCard'
 import { WeaveCard } from '@/components/saos/WeaveCard'
 import { CouncilCard } from '@/components/saos/CouncilCard'
 import { X2Card } from '@/components/saos/X2Card'
+import { CustodyRedAlert } from '@/components/saos/CustodyRedAlert'
 import type { Status, Sovereign } from '@/components/saos/types'
 
 /* T-21d · the cockpit is now a composition: data plumbing (this file, verbatim behavior)
@@ -246,6 +247,10 @@ export default function Home() {
       <SectionNav active={section} onChange={handleSection} />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-4 sm:py-6">
+        {/* R286 · RED ALERT ENGINE — the screen is the alarm. Solid red the
+            moment any custody vector drops, self-polling, zero dependencies. */}
+        <CustodyRedAlert />
+
         {err && (
           <Card className="mb-4 border-rose-500/30 bg-rose-500/10 py-0 backdrop-blur-sm" role="alert">
             <CardContent className="p-4 text-sm text-rose-300">{err}</CardContent>
