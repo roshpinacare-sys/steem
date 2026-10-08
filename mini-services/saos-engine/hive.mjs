@@ -78,14 +78,20 @@ export async function rpcHive(method, params, timeoutMs = 12000) {
 }
 
 /* ── custody: memory-only WIF unlock from the GEN-1 git vault ─────────────── */
-let memHive = {}; // account → { wif, pubkey, verifiedAt } — never persisted
+let memHive = {};        // account → posting WIF (never persisted)
+let memHiveActive = {};  // account → active WIF (never persisted) — R262: Hive profile writes demand ACTIVE
 
 function gitShowBytes(commit, file) {
   return execFileSync("git", ["show", `${commit}:${file}`], { cwd: path.join(DIR, "..", ".."), maxBuffer: 64 * 1024 * 1024 });
 }
 
-/** pull + decrypt GEN-1, extract posting WIFs for HIVE_ROSTER into MEMORY.
- * Fail-closed: sha-pins both layers; wipes the plaintext tmp immediately. */
+/** pull + decrypt GEN-1, extract posting AND active WIFs for HIVE_ROSTER into
+ * MEMORY. Fail-closed: sha-pins both layers; wipes the plaintext tmp immediately.
+ * R262: the active WIF joins the memory-only set — the Hive node JUDGED live
+ * (2026-10-08) that account_update2 profile writes demand ACTIVE authority on
+ * Hive ("Missing Active Authority"), unlike the Steem posting_json_metadata
+ * lane. Full custody was already measured (owner+active+posting all match the
+ * GEN-1 pubs) — we simply were not carrying the key. */
 function unlockHiveKeysFromGitVault() {
   fs.rmSync(TMP, { recursive: true, force: true });
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
@@ -103,10 +109,12 @@ function unlockHiveKeysFromGitVault() {
     execFileSync("unzip", ["-o", "-q", path.join(TMP, "inner.zip"), "agent/keys/vault.json", "-d", path.join(TMP, "o")]);
     const vault = JSON.parse(fs.readFileSync(path.join(TMP, "o", "agent", "keys", "vault.json"), "utf8"));
     const byName = new Map((vault.accounts ?? []).map((a) => [a.username, a]));
-    const extracted = {};
+    const extracted = { posting: {}, active: {} };
     for (const name of HIVE_ROSTER) {
-      const wif = byName.get(name)?.keys?.posting?.wif;
-      if (wif) extracted[name] = wif; // memory-only from here
+      const pwif = byName.get(name)?.keys?.posting?.wif;
+      if (pwif) extracted.posting[name] = pwif; // memory-only from here
+      const awif = byName.get(name)?.keys?.active?.wif;
+      if (awif) extracted.active[name] = awif;  // memory-only from here
     }
     return extracted;
   } finally {
@@ -114,24 +122,35 @@ function unlockHiveKeysFromGitVault() {
   }
 }
 
-/** verify one WIF against the LIVE Hive chain posting authority */
-async function verifyHivePosting(account, wif) {
+/** verify one WIF against the LIVE Hive chain authority of the given role */
+async function verifyHiveAuthority(account, wif, role = "posting") {
   const acc = await rpcHive("condenser_api.get_accounts", [[account]]);
-  const auth = acc.ok ? acc.result?.[0]?.posting?.key_auths?.[0]?.[0] : null;
-  if (!auth) return { ok: false, reason: "no-live-authority" };
+  const auth = acc.ok ? acc.result?.[0]?.[role]?.key_auths?.[0]?.[0] : null;
+  if (!auth) return { ok: false, reason: `no-live-${role}-authority` };
   let derived = null;
   try { derived = pubkeyFromSeed(wifDecode(String(wif).trim())); } catch { return { ok: false, reason: "wif-decode-fail" }; }
   if (derived !== auth) return { ok: false, reason: "authority-mismatch", derived };
   return { ok: true, pubkey: derived };
 }
 
-/** idempotent custody pass: unlock + verify all roster accounts. Returns
- * verdict-only state (never the keys). */
+/** verify one WIF against the LIVE Hive chain posting authority (kept name —
+ * used by every rail) */
+async function verifyHivePosting(account, wif) {
+  return verifyHiveAuthority(account, wif, "posting");
+}
+
+/** idempotent custody pass: unlock + verify all roster accounts (posting AND
+ * active — both are required: posts/replies sign posting, profile writes sign
+ * active, per the node's live judgment). Returns verdict-only state. */
 export async function hiveCustody({ now = new Date().toISOString() } = {}) {
   const results = {};
   let verified = 0;
   try {
-    if (Object.keys(memHive).length === 0) memHive = unlockHiveKeysFromGitVault();
+    if (Object.keys(memHive).length === 0) {
+      const unlocked = unlockHiveKeysFromGitVault();
+      memHive = unlocked.posting;
+      memHiveActive = unlocked.active;
+    }
     for (const name of HIVE_ROSTER) {
       const wif = memHive[name];
       if (!wif) { results[name] = "NO-GEN1-KEY"; continue; }
@@ -139,6 +158,13 @@ export async function hiveCustody({ now = new Date().toISOString() } = {}) {
       results[name] = v.ok ? "VERIFIED-VS-HIVE-CHAIN" : `REFUSED:${v.reason}`;
       if (v.ok) { memHive[name] = wif; verified++; }
       else delete memHive[name];
+      /* the active key verifies too when present — profile writes depend on it */
+      const awif = memHiveActive[name];
+      if (awif) {
+        const av = await verifyHiveAuthority(name, awif, "active");
+        if (av.ok) memHiveActive[name] = awif;
+        else delete memHiveActive[name];
+      }
     }
   } catch (e) {
     const doc = { at: now, verdict: "UNLOCK-FAIL", error: String(e?.message ?? e).slice(0, 140) };
@@ -146,9 +172,10 @@ export async function hiveCustody({ now = new Date().toISOString() } = {}) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "hive.custody", at: now, ...doc });
     return { ...doc, verified: 0, results: {} };
   }
-  const doc = { at: now, verdict: verified === HIVE_ROSTER.length ? "HIVE-CUSTODY-ALIVE" : verified > 0 ? "PARTIAL" : "NONE", verified, total: HIVE_ROSTER.length, results, law: "GEN-1 git vault → sha-pin → memory-only WIF → live Hive authority match" };
+  const activeCount = Object.keys(memHiveActive).length;
+  const doc = { at: now, verdict: verified === HIVE_ROSTER.length ? "HIVE-CUSTODY-ALIVE" : verified > 0 ? "PARTIAL" : "NONE", verified, total: HIVE_ROSTER.length, activeVerified: activeCount, results, law: "GEN-1 git vault → sha-pin → memory-only WIF → live Hive authority match (posting + active)" };
   writeJson(path.join(STATE, "hive-custody.json"), doc);
-  appendLine(path.join(STATE, "events.jsonl"), { type: "hive.custody", at: now, verdict: doc.verdict, verified, total: HIVE_ROSTER.length });
+  appendLine(path.join(STATE, "events.jsonl"), { type: "hive.custody", at: now, verdict: doc.verdict, verified, total: HIVE_ROSTER.length, activeVerified: activeCount });
   return doc;
 }
 
@@ -180,6 +207,14 @@ export async function sendAs(account, ops) {
   return broadcastHive(ops, wif);
 }
 
+/** R262: send ops signed by the ACTIVE key (Hive profile writes — the node
+ * judged: "Missing Active Authority" for account_update2). Memory-only. */
+export async function sendAsActive(account, ops) {
+  const wif = memHiveActive[account];
+  if (!wif) return { ok: false, verdict: "NO-MEMORY-ACTIVE-WIF", reason: "active key not custody-verified" };
+  return broadcastHive(ops, wif);
+}
+
 /** the chain-id/sig validator: one tiny probe vote (measured weight ≤1%)
  * judged live by the node — the txid-oracle law, cross-chain edition */
 export async function hiveProbeVote({ account, targetAuthor, targetPermlink, weightPct = 1 } = {}) {
@@ -198,13 +233,16 @@ function fleetHivePaused() { return readJson(HIVE_OPS_FILE, null)?.fleetPaused?.
 
 export function hiveOpsState() { return readJson(HIVE_OPS_FILE, null); }
 
+/* MEASURED (2026-10-07, node-judged): a ≥1600-char post at our tiny stake
+ * costs ~2.3B RC (node rejected cashmachine@1.52B-available and haran@1.78B
+ * with "needs 2301883372"). available = current + regen since update
+ * (full regen = 5 days). Broken-stake accounts defer honestly — a node
+ * rejection also maps to defer (fail-soft, nothing consumed).
+ * R262: exported — the RC mutual-aid pool (rc-pool.mjs) plans lifts against
+ * this measured line, one source of truth. */
+export const POST_RC_COST = 2_300_000_000;
+
 async function rcOk(account) {
-  /* MEASURED (2026-10-07, node-judged): a ≥1600-char post at our tiny stake
-   * costs ~2.3B RC (node rejected cashmachine@1.52B-available and haran@1.78B
-   * with "needs 2301883372"). available = current + regen since update
-   * (full regen = 5 days). Broken-stake accounts defer honestly — a node
-   * rejection also maps to defer (fail-soft, nothing consumed). */
-  const POST_RC_COST = 2_300_000_000;
   const r = await rpcHive("rc_api.find_rc_accounts", { accounts: [account] });
   const a = r?.result?.rc_accounts?.[0];
   if (!a) return false;
@@ -260,6 +298,16 @@ export async function hiveDownvoteScan({ now = new Date().toISOString(), sinceIs
   return { flagged, newFlags };
 }
 
+/* pure (R262): the RC-fit draft pick — every queued draft passed the same
+ * quality gates (≥300 words), so among ELIGIBLE drafts the SHORTEST one
+ * gives a budget-limited account its best chance to actually fit under the
+ * RC line. Quality is not traded: the pool is pre-sanitized. */
+export function pickRcFitDraft(queue) {
+  const eligible = (Array.isArray(queue) ? queue : []).filter((d) => d?.status === "drafted" && wordCount(d.body) >= MIN_POST_WORDS);
+  if (!eligible.length) return null;
+  return eligible.slice().sort((a, b) => wordCount(a.body) - wordCount(b.body))[0];
+}
+
 /* ── THE RAIL: probe-sized sovereign rounds on Hive ───────────────────────── */
 export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } = {}) {
   const t0 = Date.now();
@@ -293,7 +341,7 @@ export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } 
     order.push({ account });
   }
   for (const { account } of order.slice(0, Math.max(0, limit))) {
-    const draft = queue.find((d) => d.status === "drafted" && wordCount(d.body) >= MIN_POST_WORDS);
+    const draft = pickRcFitDraft(queue); // R262: the shortest eligible draft maximizes broadcast success at tiny stake
     if (!draft) { results.push({ account, verdict: "NO-DRAFT" }); continue; }
     const clash = recentTitles.find((t) => titleSimilarity(t, draft.title) >= 0.5);
     if (clash) { results.push({ account, verdict: "MONOCULTURE-VETO" }); continue; }

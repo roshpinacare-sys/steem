@@ -37,6 +37,9 @@ import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
 import { runSocial, runOrganicWatch, runProfiles } from "./army-social.mjs";
 import { runHiveRail } from "./hive.mjs";
+import { runHiveProfiles } from "./hive-profiles.mjs";
+import { runRcPool } from "./rc-pool.mjs";
+import { runHiveSocial } from "./hive-social.mjs";
 import { syncCommunityMembership, readCommunityState } from "./community.mjs";
 import { runBus } from "./bus.mjs";
 import { runRcTank, rcTankState } from "./rctank.mjs";
@@ -813,6 +816,34 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
    * BLURT STAYS PAUSED (operator: "לגבי blurt תמתין"). Fail-isolated. */
   report.steps.hive = await stepWrap("hive", async () => {
     const out = await runHiveRail({ now, limit: 2 });
+    return { verdict: out.verdict, executed: out.executed ?? 0, custody: out.custody ?? null, reason: out.reason ?? null, ms: out.ms ?? null };
+  });
+
+  /* R262 · HIVE PROFILES (operator order: professional profile + image for
+   * EVERYONE on Hive, macrame first): persona identity + verified Wikimedia
+   * images via account_update2, idempotent vs the chain, custody-gated. */
+  report.steps.hiveProfiles = await stepWrap("hiveProfiles", async () => {
+    const out = await runHiveProfiles({ now });
+    return { verdict: out.verdict, updated: out.updated?.length ?? 0, skipped: out.skipped?.length ?? 0, deferred: out.deferred?.length ?? 0, ms: out.ms ?? null };
+  });
+
+  /* R262 · THE RC MUTUAL-AID POOL (operator order: "להחזיר להפעיל את כולם
+   * על Hive"): measured RC budgets showed five accounts structurally under
+   * the post line (max_rc < 2.3B, waiting never fixes that). Donors inside
+   * our own custody lift them via delegate_rc; every lift is re-measured
+   * and journaled; the chain judges each broadcast. */
+  report.steps.rcPool = await stepWrap("rcPool", async () => {
+    const out = await runRcPool({ now });
+    return { verdict: out.verdict, lifts: out.lifts?.length ?? 0, measured: out.measured ?? null, deferred: out.deferred?.length ?? 0, ms: out.ms ?? null };
+  });
+
+  /* R262 · THE HIVE COMMUNITY LOOP (operator order: everyone active in their
+   * time, going over the community members, replying and voting per ability
+   * — our own channel): anti-herd fleet votes @25%, persona-voiced comments
+   * on the least-commented sibling post, deepens on answers to us. Capped,
+   * RC-gated, veto-armed, seeded schedules (auditability law). */
+  report.steps.hiveSocial = await stepWrap("hiveSocial", async () => {
+    const out = await runHiveSocial({ now });
     return { verdict: out.verdict, executed: out.executed ?? 0, custody: out.custody ?? null, reason: out.reason ?? null, ms: out.ms ?? null };
   });
 
