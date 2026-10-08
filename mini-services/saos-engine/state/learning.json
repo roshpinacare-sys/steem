@@ -1,51 +1,55 @@
 {
-  "at": "2026-10-08T21:04:03.853Z",
+  "at": "2026-10-08T21:24:03.852Z",
   "enabled": true,
-  "runsTotal": 468,
+  "runsTotal": 470,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 123,
-      "oks": 116,
+      "window": 125,
+      "oks": 118,
       "fails": 5,
       "blocked": 2,
-      "okRate": 94.3,
+      "okRate": 94.4,
       "blockedRate": 1.6,
       "failReasons": {
         "unknown": 5
       },
-      "msP50": 108686,
-      "msP90": 230531
+      "msP50": 112250,
+      "msP90": 232579
     },
     "curator": {
       "present": true,
-      "totalVotes": 39,
-      "window": 26,
+      "totalVotes": 42,
+      "window": 30,
       "verdicts": {
         "BROADCAST-FAIL": 3,
-        "VOTED": 23
+        "VOTED": 27
       },
-      "vpEff": 59.6,
-      "meanAgeMinutes": null,
-      "tagsVoted": {},
+      "vpEff": 60.1,
+      "meanAgeMinutes": 574,
+      "tagsVoted": {
+        "steem": 1,
+        "ai": 1,
+        "crypto": 1
+      },
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 2,
+      "window": 3,
       "fails": 0,
       "lastError": null
     },
     "watchdog": {
-      "checks": 288,
+      "checks": 308,
       "downs": 1,
       "heals": 2,
       "healVerified": 2,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T21:04:03.980Z",
+      "lastCheckAt": "2026-10-08T21:24:04.005Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-08T18:44:08.887Z",
-      "lastUpAt": "2026-10-08T21:04:03.983Z",
+      "lastUpAt": "2026-10-08T21:24:04.007Z",
       "blips": 0
     }
   },
@@ -54,7 +58,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×2/123 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×2/125 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
@@ -64,7 +68,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 366,
+    "signing-cred-blocked": 368,
     "broadcast-fails": 130,
     "cycle-latency-tail": 119
   },
