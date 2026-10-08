@@ -23,6 +23,12 @@
  *  3. OOM ROOT-CAUSE HYGIENE: before every respawn, if .next/ > 1.2GB → wipe
  *     it (server is down at that moment — safe full rebuild). The measured
  *     failure was an unbounded turbopack cache, not a code bug.
+ *  3-b. R287 PRE-EMPTIVE RSS GUARD (measured): the kernel OOM-kill fired at
+ *     next-server RSS=1.74GB while the server was still UP — law 3 only acted
+ *     AFTER death. The guard now watches /proc RSS every tick: > 1.6GB
+ *     sustained 3 consecutive ticks (24s) → SIGTERM the server tree → the
+ *     existing probe+respawn machinery rebuilds it with a clean cache.
+ *     Bounded: 30min cooldown, no kill storm inside cooldown.
  *  4. BOUNDED LOG: keeper.log capped (last ~200 lines rewritten).
  *  5. Boot-grace 45s: at boot, /start.sh itself starts dev; the keeper must
  *     not race it (EADDRINUSE self-resolves, but no need to burn a cycle).
@@ -45,6 +51,9 @@ const LOOP_MS = 8000;
 const BOOT_GRACE_MS = 45_000;
 const RESPAWN_COOLDOWN_MS = 25_000;
 const NEXT_CACHE_LIMIT = 1.2 * 1024 * 1024 * 1024; // 1.2GB
+const RSS_LIMIT_KB = 1.6 * 1024 * 1024; // 1.6GB — OOM fired at 1.74GB (measured)
+const RSS_SUSTAINED_TICKS = 3;
+const RSS_COOLDOWN_MS = 30 * 60_000;
 
 fs.mkdirSync(STATE_DIR, { recursive: true });
 
@@ -115,6 +124,59 @@ function nextDirBytes(): number {
   } catch { return 0; }
 }
 
+/* ── R287 pre-emptive RSS guard: rebuild BEFORE the kernel decides for us ── */
+let rssTicks = 0;
+let lastRssActionMs = 0;
+let rssRespawns = 0;
+let lastRssMB = 0;
+
+function nextServerPids(): number[] {
+  const out: number[] = [];
+  for (const pat of ["next-server", "next dev"]) {
+    try {
+      const r = spawnSync("pgrep", ["-f", pat], { encoding: "utf8", timeout: 8000 });
+      for (const line of (r.stdout ?? "").split("\n")) {
+        const pid = Number(line.trim());
+        if (pid && pid !== process.pid && !out.includes(pid)) out.push(pid);
+      }
+    } catch { /* pgrep missing is impossible on this box; ignore quietly */ }
+  }
+  return out.slice(0, 16);
+}
+
+function biggestRss(): { pid: number; rssKb: number } | null {
+  let best: { pid: number; rssKb: number } | null = null;
+  for (const pid of nextServerPids()) {
+    try {
+      const st = fs.readFileSync(`/proc/${pid}/status`, "utf8");
+      const m = /VmRSS:\s+(\d+)\s+kB/.exec(st);
+      if (m) {
+        const rssKb = Number(m[1]);
+        if (!best || rssKb > best.rssKb) best = { pid, rssKb };
+      }
+    } catch { /* pid vanished mid-scan: fine */ }
+  }
+  return best;
+}
+
+function rssGuard() {
+  const hit = biggestRss();
+  lastRssMB = hit ? Math.round(hit.rssKb / 1024) : 0;
+  if (!hit || hit.rssKb < RSS_LIMIT_KB) { rssTicks = 0; return; }
+  rssTicks += 1;
+  if (rssTicks < RSS_SUSTAINED_TICKS) { lastAction = `rss-watch-${lastRssMB}MB`; return; }
+  if (Date.now() - lastRssActionMs < RSS_COOLDOWN_MS) {
+    log(`rss-guard: ${lastRssMB}MB again within cooldown — NOT killing (no storm); watching`);
+    return;
+  }
+  lastRssActionMs = Date.now();
+  rssTicks = 0;
+  rssRespawns += 1;
+  const pids = nextServerPids();
+  log(`rss-guard: RSS=${lastRssMB}MB > ${Math.round(RSS_LIMIT_KB / 1024)}MB sustained ${RSS_SUSTAINED_TICKS} ticks — SIGTERM pre-emptive rebuild (pids ${pids.join(",")}, respawn #${rssRespawns})`);
+  for (const pid of pids) { try { process.kill(pid, "SIGTERM"); } catch { /* already gone */ } }
+}
+
 /* ── the one and only command this organ may ever spawn (fixed whitelist) ── */
 function spawnDevServer(): boolean {
   if (nextDirBytes() > NEXT_CACHE_LIMIT) {
@@ -156,7 +218,8 @@ Bun.serve({
         uptimeSec: Math.round((Date.now() - startedAt) / 1000),
         devUp, spawns, lastSpawnAt, lastAction,
         nextMB: Math.round(nextDirBytes() / 1048576),
-        law: "R262 dev-keeper: fixed-command watchdog over :3000, R216-b surviving-lineage spawn, no secrets, no params",
+        rssMB: lastRssMB, rssLimitMB: Math.round(RSS_LIMIT_KB / 1024), rssRespawns,
+        law: "R262 dev-keeper: fixed-command watchdog over :3000, R216-b surviving-lineage spawn, no secrets, no params; R287 pre-emptive RSS guard 1.6GB→SIGTERM→rebuild",
       });
     }
     return json({ ok: false, error: "not-found", routes: ["/health"] }, 404);
@@ -179,6 +242,7 @@ const booted = Date.now();
 setInterval(async () => {
   heartbeat();
   devUp = await devHealthy();
+  rssGuard(); /* R287: runs regardless of health — the ballooning process IS healthy-looking until it dies */
   if (devUp) { lastAction = "dev-healthy"; return; }
   if (Date.now() - booted < BOOT_GRACE_MS) { lastAction = "boot-grace"; return; }
   if (Date.now() - lastSpawnMs < RESPAWN_COOLDOWN_MS) { lastAction = "cooldown"; return; }
