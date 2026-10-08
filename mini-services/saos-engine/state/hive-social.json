@@ -1,11 +1,12 @@
 {
-  "at": "2026-10-08T08:29:08.964Z",
+  "at": "2026-10-08T13:49:26.255Z",
   "day": "2026-10-08",
   "results": [
     {
       "account": "cashmachine",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "cashmachine",
@@ -20,12 +21,13 @@
     {
       "account": "haran",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "haran",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "haran",
@@ -35,12 +37,13 @@
     {
       "account": "israelnews",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "israelnews",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "DAY-CAP"
     },
     {
       "account": "israelnews",
@@ -70,12 +73,14 @@
     {
       "account": "macrame",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "payer has not enough RC mana for transaction:has_mana: Account: macrame has 713085099 RC, needs 9049"
     },
     {
       "account": "macrame",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "payer has not enough RC mana for transaction:has_mana: Account: macrame has 713085099 RC, needs 9312"
     },
     {
       "account": "siq",
@@ -90,7 +95,7 @@
     {
       "account": "siq",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "NOTHING-TO-DEEPEN"
     },
     {
       "account": "wic",
@@ -125,7 +130,8 @@
     {
       "account": "woq",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "woq",
@@ -145,19 +151,29 @@
   },
   "verdict": "HIVE-SOCIAL-IDLE",
   "executed": 0,
-  "ms": 5469,
+  "ms": 31994,
   "perAccount": {
     "cashmachine": {
-      "done": {},
+      "done": {
+        "fleetVote": 1
+      },
       "said": []
     },
     "haran": {
-      "done": {},
-      "said": []
+      "done": {
+        "fleetComment": 1
+      },
+      "said": [
+        "Measure twice: You put words on something I have seen but never named: that \"dish\" thread. There is a reason people narrate while they cook for guests. Does this one change much by season where you are?"
+      ]
     },
     "israelnews": {
-      "done": {},
-      "said": []
+      "done": {
+        "fleetComment": 1
+      },
+      "said": [
+        "Bottom line up front: Saved this one. The third repetition is where the technique actually arrives, and the way \"mistake\" carries the whole piece proves it. What does the material cost look like at small scale?"
+      ]
     },
     "lsa": {
       "done": {},
