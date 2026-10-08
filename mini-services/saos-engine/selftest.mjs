@@ -8,6 +8,7 @@ import {
   doctrineAccount, credentialGate, rcAnomaly, recruitRoles, aggregateRails,
   normalizeWebIntel, webIntelFresh,
   payoutWindow, rewardHistoryRollup, vpNow, x2Spectrum, weaveArbitration, weaveFresh, opTypeName,
+  scanWalkPlan, coverageVerdict, mergeHistoryWindows,
   signalDigest, measuredLayers, redeployIntel, blockageLedger, organVerdict, meshVerdict,
 } from "./lib.mjs";
 import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE, openingFresh, openingSimilarity } from "./content.mjs";
@@ -927,6 +928,28 @@ const rollup = rewardHistoryRollup({ rows: rewardRows, vestsToSteem: 0.5, steemU
 ok("rollup sums-measured", rollup.opsCount === 4 && rollup.curationVests === 150 && rollup.authorSbd === 2 && rollup.claims === 1);
 ok("rollup vests-converted", rollup.curationUsdPerDay != null && rollup.windowDays >= 2 && rollup.confidence === "measured");
 ok("rollup junk-tolerant", rewardHistoryRollup({ rows: "junk" }).opsCount === 0 && rewardHistoryRollup({ rows: [null, [1, {}]] }).opsCount === 0);
+
+/* R282 · the honest scan: unit-measured flip + walk plan + coverage + merge */
+const rollupUnits = rewardHistoryRollup({ rows: rewardRows, vestsToSteem: 0.5, steemUsd: null, sbdUsd: null });
+ok("rollup unit-measured-no-pricer", rollupUnits.confidence === "measured" && rollupUnits.curationSteemPerDay === 37.5 && rollupUnits.curationUsdPerDay === null);
+/* no vests→steem ratio: the CURATION side stays unmeasured, but author SBD is
+ * unit-measurable — with only-curation rows the confidence drops to estimated */
+const curOnlyRows = [[1, { op: ["curation_reward", { reward: "100.000000 VESTS" }], timestamp: "2026-10-07T12:00:00" }], [2, { op: ["curation_reward", { reward: "50.000000 VESTS" }], timestamp: "2026-10-08T12:00:00" }]];
+const rollupNoRatio = rewardHistoryRollup({ rows: curOnlyRows, vestsToSteem: null });
+ok("rollup no-ratio-honest-estimated", rollupNoRatio.confidence === "estimated" && rollupNoRatio.curationSteemPerDay === null && rollupNoRatio.opsCount === 2);
+ok("rollup author-sbd-unit-measured-no-ratio", rewardHistoryRollup({ rows: rewardRows, vestsToSteem: null }).authorSbdPerDay === 1);
+const walkPlan = scanWalkPlan({ maxWindows: 120, windowSize: 100 });
+ok("walk plan ok", walkPlan.ok === true && walkPlan.maxRows === 12000 && walkPlan.genesisIdx === 2);
+ok("walk plan invalid", scanWalkPlan({ maxWindows: 0 }).ok === false && scanWalkPlan({ windowSize: 2000 }).ok === false && scanWalkPlan({ maxWindows: "x" }).ok === false);
+ok("coverage zero-windows-failed", coverageVerdict({ windowsRead: 0, rowsFound: 0 }).verdict === "SCAN-FAILED");
+ok("coverage partial", coverageVerdict({ windowsRead: 120, rowsFound: 12120, budgetReached: true, genesisReached: false }).verdict === "SCAN-PARTIAL");
+ok("coverage complete", coverageVerdict({ windowsRead: 5, rowsFound: 300, genesisReached: true }).verdict === "SCAN-COMPLETE");
+ok("coverage junk-failed", coverageVerdict({ windowsRead: -1 }).verdict === "SCAN-FAILED" && coverageVerdict({ windowsRead: "x", rowsFound: 5 }).verdict === "SCAN-FAILED");
+const winA = [[300, { op: ["vote", {}], timestamp: "2026-10-08T10:00:00" }], [299, { op: ["curation_reward", { reward: "5.000000 VESTS" }], timestamp: "2026-10-08T09:00:00" }]];
+const winB = [[299, { op: ["curation_reward", { reward: "5.000000 VESTS" }], timestamp: "2026-10-08T09:00:00" }], [298, { op: ["vote", {}], timestamp: "2026-10-08T08:00:00" }], [null, null]];
+const merged = mergeHistoryWindows([winA, winB]);
+ok("merge dedupe+order", merged.length === 3 && merged[0][0] === 298 && merged[2][0] === 300);
+ok("merge junk-drop", mergeHistoryWindows(["junk", [null, null]]).length === 0);
 
 /* VP probe (T-18e) */
 const vp = vpNow({ currentMana: 75000000000, maxMana: 100000000000, vests: "1000 VESTS", now: "2026-10-02T00:00:00Z" });

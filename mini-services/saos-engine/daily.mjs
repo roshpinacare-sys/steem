@@ -44,6 +44,7 @@ import { syncCommunityMembership, readCommunityState } from "./community.mjs";
 import { runBus } from "./bus.mjs";
 import { runRcTank, rcTankState } from "./rctank.mjs";
 import { runPayouts, payoutsState } from "./payouts.mjs";
+import { runSoldierClaims } from "./soldier-claims.mjs";
 import { runWeave, weaveState } from "./weave.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -878,6 +879,16 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     }
     const out = await runPayouts({ now, account: ACCOUNT });
     return { verdict: out.verdict, day: out.day, pendingVests: out.pending?.vests ?? null, daysRemaining: out.payout?.daysRemaining ?? null, rollupConfidence: out.rollup?.confidence ?? null, firstVoteDay: out.scan?.firstVoteDay ?? null };
+  });
+
+  /* R282 · SOLDIER CLAIMS: the income-capture rail — chain-truth pending
+   * rewards on the ARMY accounts get claimed (canonical op 39, posting
+   * authority) instead of rotting on-chain. The R282 measured gap:
+   * israelnews held 359.77 vests + 0.223 STEEM pending with NO claim path.
+   * Bounded (maxClaimsPerRun), chain-truth-triggered, journaled. */
+  report.steps.soldierClaims = await stepWrap("soldierClaims", async () => {
+    const s = await runSoldierClaims({ now, execute: true });
+    return { verdict: s.verdict, scanned: s.scanned, rosterSize: s.rosterSize, pendingAccounts: s.pendingAccounts.length, claimed: s.claimed.length, failed: s.failed.length, txids: s.claimed.filter((c) => c.txid).map((c) => c.txid).slice(0, 5) };
   });
 
   /* T-23 · WEAVE HANDSHAKE: the one-body contract with the external second

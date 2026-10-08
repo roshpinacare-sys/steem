@@ -38,15 +38,18 @@ export function runEconomics(now = new Date().toISOString()) {
   const sbdUsd = observe?.parity?.sbdUsd ?? null;
   const steemUsd = observe?.parity?.steemUsd ?? null;
   /* T-23 · the payouts instrument: settled chain rewards flip the curation
-   * rail from estimated to measured (the rollup converts vests chain-side;
-   * we price the $ here with the same single pricer) */
+   * rail from estimated to measured. R282: the rollup now measures per-day
+   * in raw UNITS (curationSteemPerDay, vests→steem converted chain-side) —
+   * this rollup prices with ITS pricer only (single-pricer law). The old
+   * gate divided vests by days and priced vests as steem units, AND keyed
+   * the flip on the rollup's own $ field (null here) — the rail could
+   * never flip even while the chain paid. Measured live 2026-10-08. */
   const payouts = readJson(path.join(STATE, "payouts.json"), null);
-  const curationMeasuredSteemPerDay = payouts?.rollup?.confidence === "measured"
-    && payouts.rollup.windowDays
-    ? payouts.rollup.curationVests / payouts.rollup.windowDays
-    : null;
-  const curationMeasuredUsdPerDay = curationMeasuredSteemPerDay != null && (steemUsd ?? 0) > 0
-    ? Math.round(curationMeasuredSteemPerDay * steemUsd * 1e6) / 1e6 : null;
+  const curationMeasuredUsdPerDay = payouts?.rollup?.confidence === "measured"
+    && payouts.rollup.curationSteemPerDay != null && (steemUsd ?? 0) > 0
+    ? Math.round(payouts.rollup.curationSteemPerDay * steemUsd * 1e6) / 1e6
+    : null; /* unit-less rollups (no vests→steem ratio) HOLD at null —
+              * pricing vests as steem is the lie class R282 killed */
 
   /* realized trading: measured by pnlFromFills over the observable fill
    * window; per-day normalization waits for fill-timestamp windows (honest) */

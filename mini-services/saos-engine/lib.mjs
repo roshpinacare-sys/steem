@@ -1019,6 +1019,16 @@ export function rewardHistoryRollup({ rows = [], steemUsd = null, sbdUsd = null,
   const curationUsdPerDay = curationUsd != null && windowDays != null ? Math.round((curationUsd / windowDays) * 1e6) / 1e6 : null;
   const authorSbdUsd = num(sbdUsd) > 0 ? Math.round(authorSbd * Number(sbdUsd) * 1e6) / 1e6 : null;
   const authorUsdPerDay = authorSbdUsd != null && windowDays != null ? Math.round((authorSbdUsd / windowDays) * 1e6) / 1e6 : null;
+  /* R282 · UNIT-MEASURED per-day (raw units, UNPRICED — the single-pricer
+   * law: this rollup measures, the economics rollup prices with ITS pricer).
+   * The measured/estimated flip now keys on real settled UNITS, not on a
+   * pricer being present — the old gate conflated "measured" with "priced"
+   * and held the rail estimated forever while the chain paid. A literal
+   * zero stream is NOT a measured stream (absence ≠ measurement): a lane
+   * counts only when its settled total is > 0. */
+  const curationSteemPerDay = curationSteem != null && curationVests > 0 && windowDays != null ? Math.round((curationSteem / windowDays) * 1e6) / 1e6 : null;
+  const authorSbdPerDay = authorSbd > 0 && windowDays != null ? Math.round((authorSbd / windowDays) * 1e6) / 1e6 : null;
+  const unitMeasured = curationSteemPerDay != null || authorSbdPerDay != null;
   return {
     opsCount, claims,
     curationVests: Math.round(curationVests * 1e6) / 1e6,
@@ -1027,12 +1037,85 @@ export function rewardHistoryRollup({ rows = [], steemUsd = null, sbdUsd = null,
     authorVests: Math.round(authorVests * 1e6) / 1e6,
     windowDays, oldestTs: oldestTs != null ? new Date(oldestTs).toISOString() : null,
     newestTs: newestTs != null ? new Date(newestTs).toISOString() : null,
+    curationSteemPerDay, authorSbdPerDay,
     curationUsdPerDay, authorUsdPerDay,
-    confidence: opsCount === 0 ? "blocked" : (curationUsdPerDay != null || authorUsdPerDay != null) ? "measured" : "estimated",
+    confidence: opsCount === 0 ? "blocked" : unitMeasured ? "measured" : "estimated",
     note: opsCount === 0
       ? "no settled reward ops in the scanned window yet — the payout clock decides when this flips to measured"
-      : "settled chain rewards — window-labeled",
+      : unitMeasured
+        ? `settled chain rewards MEASURED (${curationSteemPerDay != null ? `${curationSteemPerDay} STEEM/day` : ""}${authorSbdPerDay != null ? ` · ${authorSbdPerDay} SBD/day` : ""}) — unpriced here, economics prices`
+        : "settled reward ops present — units need a vests→steem ratio to measure per-day",
   };
+}
+
+/* ═══ R282 · THE HONEST SCAN (anti-false-zero instrument) ═══
+ * THE MEASURED ROOT-CAUSE (2026-10-08): the payout scanner demanded
+ * limit=10000 in one call; the live node fleet now caps ah_api at
+ * limit≤100 ("upper limit is 100" on api.justyy) and one node is 502 —
+ * so the big call failed on EVERY node, the fallback treated the failure
+ * as "empty rows", and the rollup reported a CONFIDENT ZERO. Chain truth
+ * (chunked walk, same day): 13 votes, 3 settled curation rewards, 3
+ * claims — the income rail was never zero, it was UNMEASURED. These pure
+ * cores make the walk plannable and its coverage honest: a scan that
+ * reads nothing must say SCAN-FAILED, never zero. Pure. Vector-tested. */
+
+/* R282 · SCAN WALK PLAN: the bounded backward-walk plan for history scans.
+ * The walk starts at -1 (head) and steps windows of `windowSize` (≤ the
+ * node cap) until `maxWindows` is exhausted or the account's genesis row
+ * (idx 2) is reached. `windowsFor(ops)` answers "is my budget enough for
+ * the ops I want?" — the honest pre-flight, before any network read. */
+export function scanWalkPlan({ maxWindows = 150, windowSize = 100 } = {}) {
+  const mw = Number(maxWindows), ws = Number(windowSize);
+  if (!Number.isFinite(mw) || mw < 1 || !Number.isFinite(ws) || ws < 1 || ws > 1000) {
+    return { ok: false, reason: "invalid-plan-params" };
+  }
+  return {
+    ok: true, maxWindows: mw, windowSize: ws,
+    maxRows: mw * ws,
+    genesisIdx: 2, // steem account history is 1-based; 2 = first op row
+    law: "חלונות-קטנים מהראש אחורה — תקציב-מקסימלי ממסגר; הכיסוי מדווח בכנות, הכישלון מעיד על עצמו",
+  };
+}
+
+/* R282 · COVERAGE VERDICT: the honest label of a scan outcome.
+ * - readFailed=true (zero windows read)  → SCAN-FAILED (never a zero)
+ * - budgetReached (stopped at maxWindows with more history ahead)
+ *                                        → SCAN-PARTIAL (REAL rows, bounded)
+ * - walk finished (genesis/head reached) → SCAN-COMPLETE
+ * - zero windows read but no failure    → SCAN-FAILED (same law)
+ * partial windows (a window shorter than windowSize with genesis NOT
+ * reached) still count the rows but the coverage stays partial-honest. */
+export function coverageVerdict({ windowsRead = 0, rowsFound = 0, budgetReached = false, genesisReached = false } = {}) {
+  const w = Number(windowsRead), r = Number(rowsFound);
+  if (!Number.isFinite(w) || w < 0 || !Number.isFinite(r) || r < 0) {
+    return { verdict: "SCAN-FAILED", reason: "invalid-inputs", rows: 0 };
+  }
+  if (w === 0) return { verdict: "SCAN-FAILED", reason: "no-window-read", rows: 0 };
+  if (budgetReached && !genesisReached) {
+    return { verdict: "SCAN-PARTIAL", reason: "budget-bound", rows: r, windows: w };
+  }
+  return { verdict: "SCAN-COMPLETE", reason: genesisReached ? "genesis-reached" : "head-exhausted", rows: r, windows: w };
+}
+
+/* R282 · WINDOW MERGE: dedupe + order the collected history rows across
+ * windows. The backward walk can overlap (a re-read window) — the merge is
+ * idempotent by row index, junk rows drop, and the output is ascending by
+ * idx (the rollup expects chronological order for its window math). Pure. */
+export function mergeHistoryWindows(windows = []) {
+  const seen = new Set();
+  const out = [];
+  for (const win of (Array.isArray(windows) ? windows : [])) {
+    for (const row of (Array.isArray(win) ? win : [])) {
+      const idx = Array.isArray(row) ? row[0] : null;
+      if (!Number.isFinite(Number(idx)) || !row?.[1]?.op) continue;
+      const key = Number(idx);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(row);
+    }
+  }
+  out.sort((a, b) => Number(a[0]) - Number(b[0]));
+  return out;
 }
 
 /* T-23 · VP EQUILIBRIUM (T-18e): current voting power from the manabar.
