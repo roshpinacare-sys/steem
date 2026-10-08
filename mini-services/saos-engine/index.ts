@@ -32,6 +32,11 @@ import { communityStatus } from "./community.mjs";
  * circuit breaker). Native, zero new dependencies. */
 import { compileRevenue, compilerState } from "./content-compiler.mjs";
 import { runWatchdog, watchdogState, runNodeHealth, nodeHealthState } from "./authority-watchdog.mjs";
+/* R288 · FINANCE DIGEST + YIELD DISTRIBUTOR: telemetry → digest → buffer
+ * (operator question #1) and the local token transaction engine for the
+ * secondary fleet wallets (operator question #2) — both native, gated. */
+import { runFinanceDigest, financeDigestState } from "./finance-digest.mjs";
+import { runYieldDistribution, yieldState } from "./yield-distributor.mjs";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -163,6 +168,10 @@ async function handle(req) {
       revenue: compilerState(),
       watchdog: watchdogState(),
       nodeHealth: nodeHealthState(),
+      /* R288 · the digest rail (telemetry → intake → buffer) + the yield
+       * distribution rail (pool → plan → custody-gated execution) */
+      financeDigest: financeDigestState(),
+      yieldRail: yieldState(),
       execLog,
       events: readLines(path.join(STATE, "events.jsonl"), 20),
       notes: ["sovereign engine · state lives inside my-project · master credential engine-held, doctrine-capped, never logged", "T-14: continuous-learning layer live — lessons from recorded history, hard-clamped tunings, growth-option discovery", "T-22: one-body law — every domain fact on this page is computed exactly once (here)"],
@@ -222,6 +231,25 @@ async function handle(req) {
   if (p === "/watchdog") {
     return json({ ok: true, at: new Date().toISOString(), watchdog: watchdogState(), nodeHealth: nodeHealthState() });
   }
+  /* R288 · the finance digest rail (read-only state + on-demand rebuild) */
+  if (p === "/finance-digest") {
+    if (req.method === "POST") {
+      try { return json({ ok: true, at: new Date().toISOString(), digest: await runFinanceDigest({ force: true }) }); }
+      catch (e) { return json({ ok: false, error: String(e?.message ?? e).slice(0, 160) }, 500); }
+    }
+    return json({ ok: true, at: new Date().toISOString(), digest: financeDigestState() });
+  }
+  /* R288 · the yield distribution rail — GET is the measured plan state;
+   * POST /yield-run is the operator-visible execute path (the think gate
+   * and the custody gate still own every broadcast decision). */
+  if (p === "/yield") {
+    return json({ ok: true, at: new Date().toISOString(), yieldRail: yieldState() });
+  }
+  if (p === "/yield-run") {
+    if (req.method !== "POST") return json({ ok: false, error: "POST required" }, 405);
+    try { return json({ ok: true, at: new Date().toISOString(), yieldRail: await runYieldDistribution({ execute: true }) }); }
+    catch (e) { return json({ ok: false, error: String(e?.message ?? e).slice(0, 160) }, 500); }
+  }
   if (p === "/live") {
     try {
       const [par, feed, acc, oo] = await Promise.all([externalParity(), internalFeed(), accountState(ACCOUNT), openOrders(ACCOUNT)]);
@@ -270,7 +298,7 @@ async function handle(req) {
                      : "credential secured but not matching this account's authorities — install the proposedPubkeys on steemit.com, or paste the CURRENT password instead",
     });
   }
-  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential"] }, 404);
+  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential", "/finance-digest", "/yield", "/yield-run"] }, 404);
 }
 
 // T-15 SINGLE-INSTANCE LAW (measured live: 3 duplicate engine processes were
@@ -389,6 +417,11 @@ try {
   intervals.push(setInterval(() => { Promise.resolve(compileRevenue()).catch(() => null); }, 10 * 60_000));
   intervals.push(setInterval(() => { Promise.resolve(runWatchdog()).catch(() => null); }, 15 * 60_000));
   intervals.push(setInterval(() => { Promise.resolve(runNodeHealth()).catch(() => null); }, 5 * 60_000));
+  /* R288 · the digest loop (30min — the day-cap law limits it to 2/day) and
+   * the yield PLANNING loop (10min, plan-only: measure → verdict → journal;
+   * execution stays on the explicit POST /yield-run path). */
+  intervals.push(setInterval(() => { Promise.resolve(runFinanceDigest()).catch(() => null); }, 30 * 60_000));
+  intervals.push(setInterval(() => { Promise.resolve(runYieldDistribution({ execute: false })).catch(() => null); }, 10 * 60_000));
   for (const t of intervals) t.unref?.();
 } catch (e) {
   console.error(`revenue loops boot failed: ${String(e?.message ?? e)}`);
