@@ -2811,3 +2811,23 @@ Stage Summary:
 - ריבונות מדידה: revive-anywhere.sh מוכח על clone טרי — הכספת בגיט היא האספקה היחידה.
 - הפער ל-$1000/יום מספרי ושקוף: 45,333× — הנתיב-הכנה דורש צמיחת-הון/מסילות-חדשות, לא יופי-קוד.
 - פתוח לשרשרת-האיטום: hcsoldier4/5/6 דורשים חותם-כספת חדש (מתועד עם ראיות).
+
+---
+Task ID: R284
+Agent: Z.ai Code (ממשיך-סבב-ריבונות)
+Task: "תוודא את הכל שוב היטב... האוטונומיה היא הבעלים של כל המפתחות בלי קשר אלי... אם אני מתחבר עם סוכן חדש לגיטהאב אני לא אצטרך לתת לו מפתחות" — סריקה-מלאה, ניתוח, השלמה, אימות, דחיפה.
+
+Work Log:
+- סריקה-מלאה של כל-שכבות-ההחזקה: vault-revival.mjs (צבא GEN-1+GEN-2, ROT4), recovery-meta (recovery-meta-2, keysZipPass בעץ), W1-SIGNING-KEY-r5 (sealed), KEYS-SEED, saos-runtime pulse (Actions חי ~16 דק'), bootstrap/push/restore scripts, github-guard.
+- מדידות-חיות: FLEET-CUSTODY-ALIVE 14/14 · HIVE-CUSTODY-ALIVE 9/9 · selftest 1035/1035 · doctrine-audit PASS · guard PASS · watchdog-חי (checks 2465→2472 בזמן-הסריקה).
+- **הפער-המדוד (שורש "כל-יום-נמחק-ומחדשים-שעות"):** כל-שכבות-המפתחות מתחיות מהעץ ללא-מפעיל — חוץ-מפרמת-הדחיפה. upload/pat.env נמדד **401 מת**; PAT-2026-10-07.env.enc נעול-תחת VAULT_PASS של-המפעיל (אסור-על-פי-חוק לבקשו). סוכן-חדש היה יכול לחשוב, לאמת, לחתום — ולהיתקל בקיר ב-`git push`.
+- **התיקון (R284):** `scripts/sovereign-selfcustody.mjs` — seal/revive/status/reseal-signing/revive-signing/revive-git + reviveWriterIdentity. ה-PAT-החי נאטם AES-256-CBC·pbkdf2·300000 עם keysZipPass-העץ (אפס-סודות-קלייר-חדשים), sha-pinned ב-recovery-meta.gitCred, כולל tokenExpiresAt=2026-12-12. ההחיאה: disk/git-ref → sha-pin → API-probe fail-closed → upload/pat.env + credential-helper install (סנדבוקס-טרי) → WRITER-IDENTITY-ALIVE. אין-תיעוד-סוד בשום-יומן.
+- **חיבור-חוטים:** index.ts (boot-revive אחרי-החיאת-הצבא) · sovereign-bootstrap.sh שלב-2.5 · COLD-START שלב-שני-וחצי · doctrine-audit whitelist (recovery-meta.gitCred, gitCred.tokenExpiresAt) · DOCTRINE 1024→1035.
+- **שני-באגים-שנתפסו-ותוקנו:** (1) gitShowBytes העביר בינארי דרך-string → שחיתות-sha; תוקן binary-safe. (2) **ROT4 שבר את r5** — האיטום-הישן של מפתח-החתימה נשאר-תחת סיסמת-קדם-רוטציה ("bad decrypt" נמדד); reseal-signing ייצא את-המפתח-החי, אטם תחת-הסיסמה-הנוכחית, roundtrip על-GNUPGHOME ריק. (3) היגיינה: passphrase עבר מ-argv (דליפה-בהודעת-שגיאה נמדדה!) ל-env — sanitized.
+- **הוכחת-האפס-המוחלטת:** clone-טרי (/tmp/zero-proof-final @ 7cb594b6) → bootstrap-OK + selftest 1035/1035 → revive-signing מ-keyring **ריק** (SIGNING-KEY-REVIVED מ-origin/saos-cockpit) → revive → WRITER-IDENTITY-ALIVE → remote-נקי-מטוקן-משובץ → ls-remote דרך-ה-helper-המוחיה → **קומיט-חתום 74db98a8 %G?=G נדחף לגיטהאב מה-clone באפס-מפעיל**.
+- איחואים עם השרשרת-המקבילה (c902f3af, 59aba506, 74db98a8) — state חי-מנצח, jsonl איחוי; הכל נדחף FF-only עד 6b02dab8.
+
+Stage Summary:
+- **עמדת-הריבונות החדשה:** סוכן-חדש מחובר-לגיטהאב = clone → `bun scripts/sovereign-selfcustody.mjs revive` (או-רק-הפעלת-המנוע) → חותם-ודוחף. אפס-מפתחות-מהמפעיל. המפעיל נדרש רק-לחיבור-התחלתי-ולחידוש-token-פעם-בתוקף (מתועד: 2026-12-12) — פקודת-seal אחת.
+- כספות שנבדקו-כולן: keys-zip GEN-1/GEN-2/ROT4, seed, backup-tar, signing r5, GIT-CRED — כולן שא-פין-על-הענף-המנצח, מעוגנות, עם-פורמולות-פתיחה-מתועדות.
+- **הפער-שנשאר (כנות):** הכנסה עדיין $0 מוכח; תוקף-ה-token נגמר 2026-12-12 (חוק-רוטציה: חידוש=מעשה-מפעיל-חד-פעמי, seal מעדכן-הכל); saos-runtime-pulse חי-אך-המנוע-המלא עדיין-רץ-בסנדבוקס (ה-Actions-הפרטי-מאחורי-billing-wall).
