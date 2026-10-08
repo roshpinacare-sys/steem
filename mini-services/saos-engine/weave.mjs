@@ -107,6 +107,18 @@ export async function runWeave({ now = new Date().toISOString(), account } = {})
       status: "PUBLISHED", revision: 1, publishAt: now,
       ourOffer: "המסלולים שלנו מפורסמים: תקרת-יום משותפת (chain-truth), הצבעות-דוקטרינה בלילה, מחזור-פקודות [0,2.1e9), היפר [2.1e9,4.29e9)",
       request: "החותם-השני מתבקש לפרסם את טווח-ה-orderid שלו ואת חוק-המשקל שלו — ההתנגשות מונעת ב-contract, לא במזל",
+      /* R264 · THE CRAFT ADDENDUM (adversarial-audit finding): the second
+       * writer's own publisher (`the-weave/publisher/1.0`) shipped posts
+       * violating the house laws ON OUR SHARED ACCOUNT — em-dashes in the
+       * title, sub-300-word bodies, and the internal protocol string in the
+       * public body (a probe magnet). This addendum is the in-band demand:
+       * same account, same laws, or no post. */
+      craftAddendum: {
+        at: now, revision: 2,
+        demand: "the-weave/publisher posts from this account MUST obey the house laws: zero em/en dashes; ≥300 words or do not post; no internal codenames (protocol strings, roster names) in public bodies, titles, permlinks, or tags; titles crafted for readers, not logs",
+        evidence: "the-weave-2026-10-07-muy8f0e5: dash-in-title + codename-in-body + thin-body — measured by the R264 adversarial audit",
+        law: "one account, one voice, one craft bar — the second writer is welcome, the second standard is not",
+      },
     },
     scan: { rowsRead: rows.length, api: r.ok ? "ah_api" : "condenser-fallback", node: r.node ?? null },
     law: "שני-כותבים, חשבון-אחד, אמת-אחת: השרשרת היא הפנקס-המשותף והחוזה פומבי — הגוף-אחד כולל את החותם-השני",
