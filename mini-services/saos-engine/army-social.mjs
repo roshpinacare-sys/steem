@@ -354,7 +354,7 @@ async function draftReplyViaBridge({ account, postTitle, postExcerpt, commentAut
     }
     noteBridgeFailure(`reply:${r.status}`);
   } catch (e) { noteBridgeFailure(`reply:${String(e?.message ?? e).slice(0, 40)}`); }
-  return synthesizePersonaReply({ account, postTitle, commentBody, myPrior, seed: `${postTitle}|${commentBody?.slice(0, 60) ?? ""}` });
+  return synthesizePersonaReply({ account, postTitle, commentBody, myPrior, seed: `${account}|${postTitle}|${commentBody?.slice(0, 60) ?? ""}` });
 }
 
 /* R244 · bridge-or-pack: the bridge is FIRST when reachable (LLM-grade), the
@@ -377,7 +377,7 @@ async function draftCommentViaBridge({ postTitle, postExcerpt, author, account }
     }
     noteBridgeFailure(`comment:${r.status}`);
   } catch (e) { noteBridgeFailure(`comment:${String(e?.message ?? e).slice(0, 40)}`); }
-  return synthesizePersonaComment({ account, postTitle, postExcerpt, seed: `${postTitle}|${postExcerpt.slice(0, 60)}` });
+  return synthesizePersonaComment({ account, postTitle, postExcerpt, seed: `${account}|${postTitle}|${postExcerpt.slice(0, 60)}` });
 }
 
 /* R244 · THE PAIR-GUARD (chain truth, race-proof): state memory dedupes
@@ -751,6 +751,24 @@ async function doPublish(account, st, p, now, day) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "social.monoculture-veto", at: now, account, title: String(draft.title).slice(0, 80), against: String(clash).slice(0, 80) });
     return false;
   }
+  /* R277 · THE FLEET BODY-CLASH VETO (measured incident 2026-10-08): the same
+   * root body shipped from two accounts ~19h apart (headcorner 13:50Z today
+   * vs hcsoldier4 19:41Z yesterday; haran/lsa pair) — the monoculture veto
+   * compares TITLES only and the said-ledger covered replies, not posts.
+   * A root post whose body core is near-identical to ANYTHING the fleet said
+   * or published in the ledger's two-day window is retired, never broadcast. */
+  {
+    const prevDay = dayKeyOf(new Date(Date.parse(now) - 86400000).toISOString());
+    const fleetVoices = [...fleetSaidFor(day), ...fleetSaidFor(prevDay)];
+    if (!replyFresh(draft.body, fleetVoices, { maxSimilarity: 0.5 })) {
+      draft.status = "vetoed-fleet-body-clash";
+      draft.vetoedAt = now;
+      draft.vetoReason = "body core near-identical to a fleet voice in the last 48h (R277)";
+      writeJson(CONTENT_FILE, c);
+      appendLine(path.join(STATE, "events.jsonl"), { type: "social.fleet-body-clash-veto", at: now, account, title: String(draft.title).slice(0, 80) });
+      return false;
+    }
+  }
   /* R243 SPAMGATE (grafted, union merge): nothing publishes without clearing
    * the measured spam law (thin-body / bait-phrases / link-stuffing /
    * self-repetition / ungrounded / cross-chain — the @spaminator profile). */
@@ -796,6 +814,11 @@ async function doPublish(account, st, p, now, day) {
     metaObj.image = [draft.image.url];
   }
   const meta = JSON.stringify(metaObj);
+  /* R277 intent-before-broadcast: the publish body enters the fleet ledger
+   * BEFORE the broadcast so a same-tick sibling's veto sees it (the same law
+   * the conversational lanes obey), and so the 48h body-clash window holds
+   * across runs, processes, and sandboxes. */
+  noteFleetSaid(day, account, body);
   const ops = [[
     "comment",
     { parent_author: "", parent_permlink: inCommunity ? cst.name : "steem", author: account, permlink, title: draft.title, body, json_metadata: meta },
