@@ -77,7 +77,7 @@ export function useAdoptCredential(onDone?: () => void | Promise<void>): AdoptSt
           await onDone?.()
         } else if (j?.ok) {
           setStep('mismatch')
-          setMsg({ ok: false, text: `אומץ אך לא נמצא תואם לחשבון (${j.reason ?? 'CREDENTIAL-MISMATCH'}), התקן את המפתחות-המוצעים ב-steemit.com או הדבק את הסיסמה-הנוכחית` })
+          setMsg({ ok: false, text: `אומץ אך לא נמצא תואם לחשבון (${j.reason ?? 'CREDENTIAL-MISMATCH'}) — אין-דרישה-מהמפעיל: החתימה ממשיכה דרך החיאת-הוולט האוטומטית (wif-direct, מאומת-שרשרת)` })
         } else if (typeof j?.reason === 'string' && j.reason.startsWith('ACCOUNT-MISMATCH-DOCTRINE')) {
           /* T-21 identity-integrity: the engine refuses foreign-account pastes
            * at the door, the measurement rails are never hijacked again */

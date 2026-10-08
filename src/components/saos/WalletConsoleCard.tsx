@@ -107,7 +107,7 @@ export function WalletConsoleCard({ s, adopt, orders }: { s: Status | null; adop
           )}
           {verdict === 'CREDENTIAL-MISMATCH' && (
             <span className="text-[10px] leading-relaxed text-amber-400/90">
-              המפתחות-הנגזרים אינם תואמים את רשויות-השרשרת, הדבק את הסיסמה-הנוכחית למטה (ערוץ-ההקמה-המהיר)
+              תעודה-שהודבקה אינה תואמת את השרשרת — אין-דרישה-מהמפעיל: ההחיאה-האוטומטית מכספת-הגיט (wif-direct) ממשיכה לחתום
             </span>
           )}
         </div>
@@ -116,7 +116,7 @@ export function WalletConsoleCard({ s, adopt, orders }: { s: Status | null; adop
       {/* paste-revival: אפס-ריסטרט, שירות-עצמי */}
       <div className="mt-3 border-t border-slate-800 pt-2">
         <p className="text-[11px] leading-relaxed text-slate-400">
-          <b className="text-slate-200">הקמת-חתימה (שירות-עצמי):</b> הדבק את האישורי: המנוע מאבטח (0600), מאמץ, ומאמת מול-השרשרת באותו-רגע. ערוץ-חלופי: הפל את קובץ-הסיסמה-הראשית כ-<code dir="ltr">upload/headcorner.txt</code>.
+          <b className="text-slate-200">החתימה מתחייה-עצמאית מכספת-הגיט</b> (sha-pinned, מאומת-שרשרת בכל אתחול ומחזור) — אין-דרישת-סיסמה מהמפעיל. ההדבקה למטה: ערוץ-רשות-בלבד למי-שמעוניין; ההדבקה של חשבון/סיסמה שגויים לעולם לא תשבית את החתימה-מהוולט.
         </p>
         <AdoptCredentialFlow adopt={adopt} />
       </div>

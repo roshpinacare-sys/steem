@@ -2222,7 +2222,7 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
  * proved two measured clone classes; every fix below is locked as a vector
  * seeded from the MEASURED failure, not from imagination. ═══ */
 {
-  const { fleetSaidFor, noteFleetSaid, normalizeBodyForClash } = await import("./army-social.mjs");
+  const { fleetSaidFor, noteFleetSaid, clearFleetSaid, normalizeBodyForClash } = await import("./army-social.mjs");
   const { synthesizePersonaComment, synthesizePersonaReply } = await import("./intel-pack.mjs");
 
   /* CLASS 1 (Oct 6 20:52-20:55, measured on-chain): two accounts, same parent,
@@ -2254,16 +2254,33 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("normalize: the Oct 8 pair normalizes to overlapping cores", normalizeBodyForClash(oct8First).includes("small kindnesses compound quietly") && normalizeBodyForClash(oct8Second).includes("small kindnesses compound quietly"));
 
   /* THE FLEET SAID-LEDGER: the same-tick race class (the chain has not yet
-   * indexed the first reply when the second account drafts). Day-scoped.
-   * R275 FIX: the day key is run-unique — a second selftest run must never
-   * read the first run's writes (the R274 key was static and made the
-   * vector lie on run 2). No live day can collide with it either. */
-  const tDay = `1970-01-01-selftest-${process.pid}`; // sandbox-proof + run-unique
-  ok("ledger: fresh run-unique day reads empty", fleetSaidFor(tDay).length === 0);
+   * indexed the first reply when the second account drafts). Day-scoped:
+   * a selftest key can never poison the live day, and old days prune. */
+  const tDay = "1970-01-01"; // sandbox-proof testing law: a key no live day can collide with
+  /* R276 self-cleaning law (merged R275+R276: the purge subsumes the
+   * run-unique-key idea and ALSO cleans CI state-pushback poison): the probe
+   * day is purged BEFORE the empty-read and AFTER the block. */
+  const purged = clearFleetSaid(tDay);
+  ok("ledger: foreign day reads empty after purge", fleetSaidFor(tDay).length === 0);
   noteFleetSaid(tDay, "haran", "selftest ledger body one");
   noteFleetSaid(tDay, "macrame", "selftest ledger body two");
   eq("ledger: two intents are readable fleet-wide", fleetSaidFor(tDay).length, 2);
   ok("ledger: the second drafter sees the first draft BEFORE broadcast", replyFresh("fresh selftest draft", fleetSaidFor(tDay), { maxSimilarity: 0.34 }) && !replyFresh("selftest ledger body one continued", fleetSaidFor(tDay), { maxSimilarity: 0.34 }));
+  clearFleetSaid(tDay);
+  ok("ledger: probe day purged after the block (no poison persists)", fleetSaidFor(tDay).length === 0);
+
+  /* R277 · THE FLEET BODY-CLASH VETO — seeded from the MEASURED incident
+   * (2026-10-08: the same root body shipped from two accounts ~19h apart —
+   * headcorner 13:50Z vs hcsoldier4 19:41Z, haran/lsa pair; the monoculture
+   * veto compares titles only, so the body class slipped through). The law:
+   * a publish body is judged against the fleet's two-day ledger at 0.5. */
+  const yDay = "1970-01-01"; // same probe day — the purge law keeps it honest
+  noteFleetSaid(yDay, "hcsoldier4", oct8First.slice(0, 300));
+  const fleetVoices = [...fleetSaidFor(tDay), ...fleetSaidFor(yDay)];
+  ok("R277 fleet body-clash: the measured cross-account pair is REFUSED at 0.5", !replyFresh(oct8First, fleetVoices, { maxSimilarity: 0.5 }));
+  ok("R277 fleet body-clash: the motto-swap class is REFUSED at 0.5", !replyFresh(oct8Second, fleetVoices, { maxSimilarity: 0.5 }));
+  ok("R277 fleet body-clash: a genuinely distinct body PASSES", replyFresh("a completely different body about mountain weather, patience and the way trail markers fade", fleetVoices, { maxSimilarity: 0.5 }));
+  clearFleetSaid(yDay);
 }
 
 /* ═══ R275 · THE CLONE GUARD REACHES HIVE (R274 stage summary left this gap:

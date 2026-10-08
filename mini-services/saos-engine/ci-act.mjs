@@ -140,6 +140,25 @@ let INPROC_FP = null; /* the adopted WIF's fingerprint (from the adoption result
  * child gets the same WIFs via CI_ADOPT_WIF_* env (engine-side adoption). */
 async function adoptInProcess() {
   const out = {};
+  /* R276: the MASTER credential first — CI_HEADCORNER_CRED is chain-judged for
+   * the master account itself (posting). Measured incident 2026-10-08 14:51Z:
+   * without this adoption the parent's custody check read master-unverified
+   * (the army envs are cashmachine keys — they can never verify HEAD by
+   * definition) and the custody anchor refused CUSTODY-REFUSED:master-unverified
+   * even though the chain-proven credential was already staged to the keyfile. */
+  {
+    const raw = (process.env.CI_HEADCORNER_CRED ?? "").trim();
+    if (!raw) { out.master = { ok: false, verdict: "absent" }; }
+    else try {
+      const bare = raw.startsWith("P") && raw.length >= 51 ? raw.slice(1) : raw;
+      const { adoptVerifiedWifIdentity } = await import("./signer.mjs");
+      const r = await adoptVerifiedWifIdentity(ACCOUNT, bare, { role: "posting" });
+      if (r?.ok) INPROC_FP = r.fingerprint ?? INPROC_FP;
+      out.master = { ok: !!r?.ok, verdict: String(r?.ok ? `wif-verified-fp=${r.fingerprint}` : (r?.reason ?? "adoption-refused")).slice(0, 120) };
+    } catch (e) {
+      out.master = { ok: false, verdict: `error:${String(e).slice(0, 80)}` };
+    }
+  }
   for (const [role, envName] of [["posting", "CI_STEEM_POSTING_WIF"], ["active", "CI_STEEM_ACTIVE_WIF"]]) {
     const raw = (process.env[envName] ?? "").trim();
     if (!raw) { out[role] = { ok: false, verdict: "absent" }; continue; }

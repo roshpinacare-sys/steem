@@ -38,6 +38,10 @@ const SECRETS = path.join(DIR, "..", "..", ".secrets");
 const TMP = path.join(SECRETS, "vault-tmp");
 const CACHE_FILE = path.join(SECRETS, "army-keys.json");
 const CUSTODY_FILE = path.join(STATE, "army-custody.json");
+/* R273-d: the master-wif-marker journal line referenced LOG_FILE — never
+ * defined in this module (latent: the master block first ran live TODAY and
+ * died mid-revival with "LOG_FILE is not defined"). Own journal file now. */
+const LOG_FILE = path.join(STATE, "exec-log.jsonl");
 
 /* R245 · EMPIRE-EXPANSION (operator order 2026-10-07): the replacement
  * generation hcsoldier4/5/6 — minted on-chain 2026-10-04 (commit 1c9f00d0)
@@ -51,7 +55,23 @@ const ARMY = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "to
   "hcsoldier4", "hcsoldier5", "hcsoldier6"];
 const VAULT_ZIP = "agent/vault/KEYS-ZIP-2026-10-07.zip.enc"; /* R245-ROT2: the GEN-2 vault (previous archive kept in history — its keys are DEAD) */
 const META_REF = "agent/recovery-meta.json";
-const GIT_REF = "origin/main";
+/* R273-d · REF-RESOLUTION LAW (the measured gap that stranded the revival):
+ * the meta/vault blobs were resolved from ONE hard-coded ref ("origin/main").
+ * This sandbox's branch of record is saos-cockpit — origin/main held nothing,
+ * every revival died with "fatal: invalid obj", and the engine then demanded
+ * an operator password that the operator, by standing law (2026-09-06/10-06
+ * "זה אצלך בקבצים לא אצלי" / "אין מה לבקש מפתחות — הכל בכספת בגיט"), must
+ * NEVER be asked for. NEW LAW: resolve the FIRST ref that actually carries
+ * the meta blob — branch of record first, main second, local HEAD last.
+ * A wrong ref is a typed error, never a demand for secrets. */
+const GIT_REF_CANDIDATES = ["origin/saos-cockpit", "origin/main", "HEAD"];
+function resolveGitRef(metaRef = META_REF) {
+  for (const ref of GIT_REF_CANDIDATES) {
+    try { gitShowBytes(ref, metaRef); return ref; } catch { /* try next */ }
+  }
+  throw new Error(`no-carrying-ref-for-meta (tried: ${GIT_REF_CANDIDATES.join(", ")})`);
+}
+const GIT_REF = "origin/saos-cockpit"; /* legacy default — callers use resolveGitRef() */
 
 /* R255 · DUAL-GENERATION CUSTODY (chain-judged, 2026-10-08 00:0xZ measured):
  * the ROT2 re-seal (fe8aaf2f) staged GEN-2 keys in the git vault, but the
@@ -132,7 +152,7 @@ function pullArmyKeysFromVault() {
   const gens = [];
   const errors = [];
   for (const spec of [
-    { gen: "GEN-2", ref: GIT_REF, zip: VAULT_ZIP, metaRef: META_REF },
+    { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF },
     { gen: "GEN-1", ref: GEN1_COMMIT, zip: GEN1_ZIP, metaRef: META_REF },
   ]) {
     try { gens.push(unlockGeneration(spec)); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
@@ -221,7 +241,7 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       const gensM = [];
       const mErrors = [];
       for (const spec of [
-        { gen: "GEN-2", ref: GIT_REF, zip: VAULT_ZIP, metaRef: META_REF },
+        { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF },
         { gen: "GEN-1", ref: GEN1_COMMIT, zip: GEN1_ZIP, metaRef: META_REF },
       ]) {
         try { gensM.push(unlockGeneration(spec)); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
