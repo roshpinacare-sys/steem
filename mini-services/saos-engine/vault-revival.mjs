@@ -87,6 +87,29 @@ const GIT_REF = "origin/saos-cockpit"; /* legacy default — callers use resolve
 const GEN1_COMMIT = "1c9f00d0";
 const GEN1_ZIP = "agent/vault/KEYS-ZIP-2026-09-10.zip.enc";
 
+/* R278 · GEN-1 ERA-META LAW (the root fix for "the keys vanish every day").
+ * MEASURED GAP (2026-10-08): GEN1_COMMIT lived ONLY on origin/main's history —
+ * a fresh sandbox fetching just the branch of record had no such object,
+ * every GEN-1 unlock died "invalid obj", 10 army accounts stayed dead, and
+ * the engine fell back to demanding an operator password — exactly what the
+ * standing operator laws forbid. FIX: the GEN-1 archive AND its era meta are
+ * SEALED ON THE BRANCH OF RECORD (agent/vault/KEYS-ZIP-2026-09-10.zip.enc +
+ * agent/vault/GEN-1-ERA-META.json, sha-pinned c2e0dfd5/1392b18e, pairing
+ * roundtrip-verified live). Resolution order: era meta on any carrying ref
+ * (branch of record → main → HEAD), historical GEN1_COMMIT last. Two
+ * independent carriers now hold the same truth: this branch and main. */
+const GEN1_ERA_META = "agent/vault/GEN-1-ERA-META.json";
+function resolveGen1MetaSpec() {
+  const candidates = [
+    ...GIT_REF_CANDIDATES.map((ref) => ({ ref, metaRef: GEN1_ERA_META })),
+    { ref: GEN1_COMMIT, metaRef: META_REF }, /* historical carrier */
+  ];
+  for (const c of candidates) {
+    try { gitShowBytes(c.ref, c.metaRef); return c; } catch { /* try next */ }
+  }
+  throw new Error(`no-carrying-ref-for-gen1-meta (tried: ${candidates.map((c) => `${c.ref}:${c.metaRef}`).join(", ")})`);
+}
+
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson0600 = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true, mode: 0o700 }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2), { mode: 0o600 }); fs.chmodSync(t, 0o600); fs.renameSync(t, p); }; /* R235: atomic, 0600 preserved */
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
@@ -102,7 +125,7 @@ function gitShowBytes(ref, file) {
  * unzip) and return per-account posting+active WIF material (memory only).
  * Both vault shapes are handled: flat keys.{role} (GEN-1) and the nested
  * keys.steem.{role} form. The plaintext tmp never outlives this function. */
-function unlockGeneration({ ref, zip, metaRef }) {
+function unlockGeneration({ ref, zip, metaRef, genLabel }) {
   fs.rmSync(TMP, { recursive: true, force: true });
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
   try {
@@ -138,7 +161,7 @@ function unlockGeneration({ ref, zip, metaRef }) {
       const activePub = a?.keys?.steem?.active?.pub ?? a?.keys?.active?.pub ?? null;
       if (wif) out[name] = { wif, pub, activeWif, activePub };
     }
-    return { gen: ref === GEN1_COMMIT ? "GEN-1" : "GEN-2", outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), accounts: out };
+    return { gen: genLabel, outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), accounts: out };
   } finally {
     fs.rmSync(TMP, { recursive: true, force: true });
   }
@@ -153,9 +176,9 @@ function pullArmyKeysFromVault() {
   const errors = [];
   for (const spec of [
     { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF },
-    { gen: "GEN-1", ref: GEN1_COMMIT, zip: GEN1_ZIP, metaRef: META_REF },
+    { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP },
   ]) {
-    try { gens.push(unlockGeneration(spec)); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
+    try { gens.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
   }
   const accounts = [];
   const missing = [];
@@ -185,7 +208,7 @@ async function adoptFromCache({ force = false } = {}) {
       for (const g of (a.gens ?? [])) {
         const r = await adoptVerifiedWifIdentity(a.name, g.wif, { role: "posting" });
         if (r.ok) { done = { gen: g.gen, activeWif: g.activeWif }; results.push({ account: a.name, verdict: "VERIFIED-VS-CHAIN", gen: g.gen, pubkey: r.pubkey ?? null }); break; }
-        results.push({ account: a.name, verdict: `GEN-${g.gen}-REFUSED:${r.reason}` });
+        results.push({ account: a.name, verdict: `${g.gen}-REFUSED:${r.reason}` });
       }
       if (!done) continue;
     }
@@ -196,7 +219,7 @@ async function adoptFromCache({ force = false } = {}) {
       if (!g.activeWif) continue;
       const ra = await adoptVerifiedWifIdentity(a.name, g.activeWif, { role: "active" });
       if (ra.ok) { results.push({ account: a.name, verdict: "ACTIVE-VERIFIED", gen: g.gen }); break; }
-      results.push({ account: a.name, verdict: `ACTIVE-GEN-${g.gen}-REFUSED:${ra.reason}` });
+      results.push({ account: a.name, verdict: `ACTIVE-${g.gen}-REFUSED:${ra.reason}` });
     }
   }
   return { ok: results.some((r) => r.verdict === "VERIFIED-VS-CHAIN" || r.verdict === "ALREADY-VERIFIED"), results };
@@ -242,9 +265,9 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       const mErrors = [];
       for (const spec of [
         { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF },
-        { gen: "GEN-1", ref: GEN1_COMMIT, zip: GEN1_ZIP, metaRef: META_REF },
+        { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP },
       ]) {
-        try { gensM.push(unlockGeneration(spec)); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
+        try { gensM.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
       }
       for (const role of ["posting", "active"]) {
         for (const g of gensM) {
