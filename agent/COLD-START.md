@@ -28,6 +28,14 @@ node ../../scripts/chain-anchor-probe.mjs   # עוגן-tip מול-השרשרת �
 curl -s localhost:3040/ >/dev/null && echo engine-ok   # + 3041/3042/3043 במידת-הצורך
 ```
 
+## שלב-שני-וחצי · חייאת-זהות-הכותב (R284 — אפס-מפעיל)
+
+```bash
+cd /home/z/my-project
+bun scripts/sovereign-selfcustody.mjs revive   # חייב WRITER-IDENTITY-ALIVE
+```
+המנוע מריץ את-זה אוטומטית בכל-עלייה (index.ts). זיהוי-הכותב (פרמת-דחיפה + מפתח-חתימה r5) חי-בכספת-העץ (`recovery-meta.gitCred` + `gpgKey`, keysZipPass-sealed, sha-pinned, API-probe fail-closed) — **אסור לבקש מהמפעיל פרמות** (חוק 2026-09-06/10-06). אם-`GIT-CUSTODY-DEAD` — ה-token פג (מדוד: תוקף-ברירת `gitCred.tokenExpiresAt`); המפעיל מחבר-token-חדש-פעם-אחת ופקודת `seal` מעדכנת-הכל.
+
 ## שלב-שלוש · הדוקטרינה-לא-רקבה
 
 ```bash
