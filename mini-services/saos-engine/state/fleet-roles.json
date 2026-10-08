@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 572 trades/24h measured (vol 5986.682 STEEM)",
+      "evidence": "state/market.json: 575 trades/24h measured (vol 5706.262 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -26,7 +26,7 @@
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
       "evidence": null,
-      "priorStatus": "active"
+      "priorStatus": "planned"
     },
     {
       "id": "fill-auditor",
@@ -37,7 +37,7 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/observe.json: 7 chain-truth fills counted (last 2026-10-08T01:49:15.000Z)",
+      "evidence": "state/observe.json: 11 chain-truth fills counted (last 2026-10-08T02:29:15.000Z)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -493bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -231bps)",
       "priorStatus": "active"
     },
     {
@@ -109,7 +109,7 @@
       "cadence": "6h",
       "truthContract": "findings carry url+date from real search results; no finding without a source",
       "recruitedAt": "2026-10-01T22:23:08.223Z",
-      "evidence": "state/webintel.json: 20 sourced findings, age 4h — external recon live",
+      "evidence": "state/webintel.json: 20 sourced findings, age 5h — external recon live",
       "priorStatus": "active"
     },
     {
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T02:10:30.188Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T03:09:45.189Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -133,10 +133,10 @@
       "cadence": "daily",
       "truthContract": "their votes counted from chain history minus our journal, never from our own logs",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/weave.json: saos.weave.core.v1 published, age 2h — second-writer votes today 0 — החוזה-האחד פומבי",
+      "evidence": "state/weave.json: saos.weave.core.v1 published, age 3h — second-writer votes today 0 — החוזה-האחד פומבי",
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-08T02:10:30.188Z",
+  "at": "2026-10-08T03:09:45.189Z",
   "pid": 20909
 }
