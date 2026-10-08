@@ -76,7 +76,7 @@ export async function GET() {
     fuelHistory:
       (observe?.fuel?.curationOps ?? 0) > 0
         ? `מסילת-הדלק חיה: ${observe.fuel.curationOps} פעולות-קיורציה בחלון-המדידה (${observe.fuel.windowSpanDays}d)`
-        : "המסילה חמושה; חתימה-חסומה עד אימות-אישורי (שער-הדוקטרינה), ההקמה: הדבקת סיסמת-master עדכנית בקונסול הארנק",
+        : "המסילה חמושה; האימות מתבצע אוטומטית מכספת-הגיט (wif-direct, מאומת-שרשרת) — אין-צעד-אנושי ואין-דרישת-סיסמה מהמפעיל",
     deployedSteem: orderTotals.askedSteem,
     bidSbd: orderTotals.bidSbd,
     bookEmpty: orders.length === 0,

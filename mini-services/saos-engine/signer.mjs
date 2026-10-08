@@ -546,7 +546,7 @@ export async function verifyRoles(account = null) {
       reason: "derived pubkeys do not match this account's on-chain authorities under any standard scheme — the credential was likely never installed (or belongs to a different account)",
       fingerprint: fingerprint(id.password),
       proposedPubkeys: proposed,
-      guidance: "operator, pick one: (a) upload the CURRENT password (the one steemit.com accepts for this account) as upload/headcorner.txt — the engine secures and adopts it automatically; or (b) on steemit.com → Permissions, replace Owner/Active/Posting/Memo keys with the proposedPubkeys below — after that single step the system is fully autonomous forever",
+      guidance: "operator law (2026-09-10 + 2026-10-06, standing): the operator is NEVER asked for secrets — the git vault is the only adoption channel and the automatic vault revival (chain-judged wif-direct) keeps signing regardless of any pasted credential. This mismatch is informational for a manually-pasted credential only; no action by the operator is required or wanted.",
     };
   }
   const roles = {};
