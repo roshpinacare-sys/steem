@@ -1646,6 +1646,11 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   const FIXUSEP = "prose\u2028Task ID: U-1\nAgent: a\nTask: t\n\u2029Task ID: U-2\nAgent: b\nTask: t2\n";
   eq("worklog-intel: U+2028/U+2029 glued headers parse (fuzz class)", wi.parseWorklog(FIXUSEP).blocks.map((b) => b.taskId), ["U-1", "U-2"]);
   eq("worklog-intel: U+2028/U+2029 lineCount measured", wi.parseWorklog(FIXUSEP).lineCount, 9);
+  /* R259 · מנוע-המוטציות-חי: MUT-C (עיגון-מוחלש ^\s*Task ID:) שרד-את-הרשת-983-במדידה-חיה —
+   * שורת-גוף-מוטה-שמתחילה-ב-Task-ID (ציטוט/הזחה) חייבת-להישאר-תוכן-שקט, לא-לפתוח-בלוק-פנטום. הווקטור-הורג-אותה. */
+  const FIXINDENT = "Task ID: K-1\nAgent: a\nTask: anchor\n\nWork Log:\n- real bullet\n  Task ID: ghost indented quote\n\nStage Summary:\n- s\n";
+  eq("worklog-intel: indented Task ID stays body text — no phantom block (kills MUT-C)", wi.parseWorklog(FIXINDENT).blocks.length, 1);
+  eq("worklog-intel: phantom ghost taskId never becomes a block", wi.parseWorklog(FIXINDENT).blocks.map((b) => b.taskId).includes("ghost"), false);
   const cliSrc = await (async () => {
     try {
       const fsx = await import("node:fs");
