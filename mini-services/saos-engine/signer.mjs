@@ -461,8 +461,10 @@ export function loadCredential(account = null) {
         noteCredMissing();
         throw new Error(
           "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). " +
-          "Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/headcorner.txt — " +
-          "the engine secures it (0600 into .secrets/), adopts it on the next cycle, and the whole signing fleet revives."
+          "OPERATOR LAW 2026-10-06 (\"אין מה לבקש מפתחות — הכל בכספת בגיט\"): the operator is NEVER asked for secrets. " +
+          "Self-revival is automatic: reviveArmyCustody (cycle step 1) pulls the git vault, chain-verifies the master WIF, " +
+          "and writes this marker itself — no operator action exists or is required. Seeing this message means the custody " +
+          "step did not run first — an engine sequencing bug, never an operator task."
         );
       }
       throw e;
@@ -475,7 +477,7 @@ export function loadCredential(account = null) {
      * account (masterAccount() never reads this file anymore). */
     if (acct !== masterAccount()) {
       noteForeignCredential(acct);
-      throw new Error(`FOREIGN-CREDENTIAL: the key file holds "${acct}" but this engine's account of record is "${masterAccount()}" — paste the ${masterAccount()} credential to revive signing`);
+      throw new Error(`FOREIGN-CREDENTIAL: the key file holds "${acct}" but this engine's account of record is "${masterAccount()}" — the marker is written by the git-vault revival (reviveArmyCustody), never by hand; re-run the custody step`);
     }
   }
   const id = identity(acct);

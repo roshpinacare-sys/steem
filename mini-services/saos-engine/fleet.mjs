@@ -69,7 +69,7 @@ export function fleetState({ now = new Date().toISOString(), credential = null, 
   const enginePid = readJson(path.join(STATE, "engine.pid"), null);
   const engineUp = enginePid ? pidAlive(enginePid.pid ?? enginePid) : false;
 
-  const credRevival = "drop upload/headcorner.txt → engine self-adopts (0600) on next cycle, zero restart";
+  const credRevival = "self-revival from the git vault (R278: GEN-1+GEN-2 on the branch of record) — zero operator action; paste is an optional channel only";
 
   const mk = (id, role, cls, evidence) => ({ id, role, ...cls, evidence });
 
