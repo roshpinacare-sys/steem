@@ -6,7 +6,7 @@
 // NEVER: force, merge autonomy, non-canonical branches, commits of invalid (torn) JSON.
 import { spawnSync } from "node:child_process";
 import { thinkGate, executeAs, masterAccount, credentialFingerprint, verifyRoles } from "../saos-engine/signer.mjs";
-import { appendFileSync, writeFileSync, readFileSync, readdirSync } from "node:fs";
+import { appendFileSync, writeFileSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync, renameSync } from "node:fs";
 
 const REPO = "/home/z/my-project";
 const STATE_DIR = `${REPO}/mini-services/saos-engine/state`;
@@ -75,6 +75,36 @@ async function anchorWitness(): Promise<void> {
 let lastTick: TickResult | null = null;
 let log: TickResult[] = [];
 
+/* R285 · THE LEDGER BOUNDER LAW: the live node writers append to archive
+ * ledgers with no cap of their own (measured: chain-archive-fork-quarantine
+ * grew to 403MB in a day — five whole-file rewrites of it in one push range
+ * made git hang up on GitHub and blocked every push). The tree truth-anchor
+ * is the chain itself, not the archive; the archive keeps only its recent
+ * operative tail. Bounded at 64MB, tail 2000, alert on every trim. */
+const BOUNDED_LEDGERS: Array<{ path: string; maxBytes: number; tailLines: number }> = [
+  { path: "sovereign/node/chain-archive-fork-quarantine.jsonl", maxBytes: 64 * 1024 * 1024, tailLines: 2000 },
+  { path: "sovereign/node/chain-archive.jsonl", maxBytes: 64 * 1024 * 1024, tailLines: 2000 },
+];
+function boundLedgers() {
+  for (const l of BOUNDED_LEDGERS) {
+    try {
+      const st = statSync(`${REPO}/${l.path}`);
+      if (st.size <= l.maxBytes) continue;
+      const src = openSync(`${REPO}/${l.path}`, "r");
+      const tail = readSync(src, Buffer.alloc(Math.min(st.size, l.maxBytes)), 0, Math.min(st.size, l.maxBytes), st.size - Math.min(st.size, l.maxBytes));
+      closeSync(src);
+      const lines = tail.toString("utf8", 0, tail.bytesRead).split("\n").filter((x) => x.trim());
+      const keep = lines.slice(-l.tailLines);
+      const tmp = `${REPO}/${l.path}.bound-tmp`;
+      writeFileSync(tmp, keep.join("\n") + "\n");
+      renameSync(tmp, `${REPO}/${l.path}`);
+      appendAlert("ledger-bound", `${l.path} trimmed ${st.size} -> ${keep.length} lines`);
+    } catch (e) {
+      if (!String(e).includes("ENOENT")) appendAlert("ledger-bound-fail", `${l.path} :: ${String(e).slice(0, 120)}`);
+    }
+  }
+}
+
 function tick() {
   const res: TickResult = {
     at: new Date().toISOString(),
@@ -86,6 +116,7 @@ function tick() {
     pushed: false,
   };
   try {
+    boundLedgers();
     res.head = sh("git", ["rev-parse", "HEAD"]).out;
 
     // 1) divergence visibility (read-only)

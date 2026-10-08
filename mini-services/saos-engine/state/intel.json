@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-08T20:54:03.849Z",
+  "at": "2026-10-08T21:11:41.315Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 0bps → dragK 1",
+      "reason": "spread 201bps → dragK 1.1005",
       "action": {
-        "spreadBpsRec": 0,
-        "bestAsk": 0.1057926743827593,
-        "bestBid": 0.10579211848717271
+        "spreadBpsRec": 201,
+        "bestAsk": 0.106,
+        "bestBid": 0.1038917089678511
       },
-      "at": "2026-10-08T20:54:03.849Z"
+      "at": "2026-10-08T21:11:41.315Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates 111bps from external parity",
+      "action": {
+        "bps": 111
+      },
+      "at": "2026-10-08T21:11:41.315Z"
     },
     {
       "kind": "soldiers",
@@ -19,20 +28,20 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-08T20:54:03.849Z"
+      "at": "2026-10-08T21:11:41.315Z"
     },
     {
       "kind": "rewards",
       "decision": "claim",
-      "reason": "unclaimed: 0 STEEM + 0 SBD + 20.971411 VESTS — free fuel, claim now",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 335.542401 VESTS — free fuel, claim now",
       "action": {
         "ok": true,
         "steem": 0,
         "sbd": 0,
-        "vests": 20.971411,
+        "vests": 335.542401,
         "any": true
       },
-      "at": "2026-10-08T20:54:03.849Z"
+      "at": "2026-10-08T21:11:41.315Z"
     },
     {
       "kind": "rc-health",
@@ -41,7 +50,7 @@
       "action": {
         "rcPct": 32.5
       },
-      "at": "2026-10-08T20:54:03.849Z"
+      "at": "2026-10-08T21:11:41.315Z"
     },
     {
       "kind": "curation",
@@ -52,13 +61,13 @@
         "vpEff": 57.7,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-08T20:54:03.849Z"
+      "at": "2026-10-08T21:11:41.315Z"
     }
   ],
-  "spreadBpsRec": 0,
+  "spreadBpsRec": 201,
   "book": {
-    "bestAsk": 0.1057926743827593,
-    "bestBid": 0.10579211848717271,
-    "spreadBps": 0
+    "bestAsk": 0.106,
+    "bestBid": 0.1038917089678511,
+    "spreadBps": 201
   }
 }

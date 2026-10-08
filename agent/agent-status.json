@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-08T21:06:55.304Z",
+  "updatedAt": "2026-10-08T21:11:55.336Z",
   "account": "headcorner",
   "dryRun": true,
   "feed": 0.104095,
@@ -76,13 +76,13 @@
       }
     },
     "watcher": {
-      "lastRun": "2026-10-08T21:03:54.583Z",
+      "lastRun": "2026-10-08T21:08:54.589Z",
       "status": "ok",
       "detail": "edge 2.34% · window closed",
       "counters": {}
     },
     "transferWatch": {
-      "lastRun": "2026-10-08T21:03:54.374Z",
+      "lastRun": "2026-10-08T21:08:54.582Z",
       "status": "ok",
       "detail": "0 new incoming",
       "counters": {}
@@ -105,11 +105,11 @@
       }
     },
     "empire": {
-      "lastRun": "2026-10-08T20:38:53.289Z",
-      "status": "error",
-      "detail": "Command failed: /usr/bin/node /home/z/my-project/agent/keyscan.cjs\nnode:internal/modules/cjs/loader:1568\n  throw err;\n  ",
+      "lastRun": "2026-10-08T21:08:58.240Z",
+      "status": "ok",
+      "detail": "key-references: 1 Steem · 1 Hive · controllable-now 2 · auto-onboard armed (new key-linked accounts discovered ≤30m)",
       "counters": {
-        "scans": 1
+        "scans": 2
       }
     },
     "dexMm": {
@@ -132,7 +132,7 @@
       }
     },
     "armyCuration": {
-      "lastRun": "2026-10-08T20:23:53.186Z",
+      "lastRun": "2026-10-08T21:08:53.187Z",
       "status": "idle",
       "detail": "no army voters with posting keys",
       "counters": {
@@ -159,9 +159,9 @@
       }
     },
     "linkage": {
-      "lastRun": "2026-10-08T19:38:53.081Z",
-      "status": "idle",
-      "detail": "no linkage_report.json yet — first audit dispatching",
+      "lastRun": "2026-10-08T21:08:53.172Z",
+      "status": "partial",
+      "detail": "21/22 chains linked · hive-pending: @tov(audit-only) · נבדק 03:50:21Z",
       "counters": {
         "linkedChains": 21,
         "chainsTotal": 22,
@@ -170,12 +170,12 @@
     },
     "worldlog": {
       "counters": {
-        "seq": 0,
-        "total": 0
+        "seq": 225,
+        "total": 301
       },
       "status": "disabled",
       "detail": "no POSTING_WIF",
-      "lastRun": "2026-10-08T20:38:53.250Z"
+      "lastRun": "2026-10-08T21:08:53.255Z"
     },
     "commandBus": {
       "counters": {
@@ -184,7 +184,7 @@
       },
       "status": "idle",
       "detail": "אין חיילים עם מפתח-memo בכספת — הערוץ רדום",
-      "lastRun": "2026-10-08T21:06:55.304Z"
+      "lastRun": "2026-10-08T21:10:55.335Z"
     },
     "netTask": {
       "counters": {
@@ -194,13 +194,13 @@
       },
       "status": "dry",
       "detail": "DRY_RUN — תור משימות רדום",
-      "lastRun": "2026-10-08T21:05:55.277Z"
+      "lastRun": "2026-10-08T21:11:55.330Z"
     },
     "genesis": {
       "counters": {},
       "status": "dry",
       "detail": "DRY_RUN — מדרגה רדומה",
-      "lastRun": "2026-10-08T20:23:53.186Z"
+      "lastRun": "2026-10-08T21:08:53.187Z"
     },
     "fleetSell": {
       "counters": {},
@@ -228,7 +228,7 @@
       },
       "status": "dry",
       "detail": "[DRY] lock rail ready",
-      "lastRun": "2026-10-08T20:23:53.187Z"
+      "lastRun": "2026-10-08T21:08:53.190Z"
     },
     "reflex": {
       "counters": {},
@@ -237,16 +237,22 @@
       "lastRun": "2026-10-08T20:38:52.992Z"
     },
     "gitkeeper": {
-      "counters": {},
-      "status": "firing",
-      "detail": "auto-save pass spawned (add → secret-gate → commit → push)",
-      "lastRun": "2026-10-08T20:38:53.251Z"
+      "counters": {
+        "lastCommit": "a0d7140a",
+        "result": "committed",
+        "pushed": true,
+        "files": 14,
+        "at": "2026-10-08T21:08:53.355Z"
+      },
+      "status": "ok",
+      "detail": "pushed ✓ a0d7140a · 14 files",
+      "lastRun": "2026-10-08T21:09:18.292Z"
     },
     "hivePower": {
       "counters": {},
       "status": "idle",
       "detail": "no active wif — powerup requires active authority",
-      "lastRun": "2026-10-08T20:23:53.188Z"
+      "lastRun": "2026-10-08T21:08:53.191Z"
     },
     "wrapped": {
       "counters": {
@@ -262,10 +268,15 @@
       "lastRun": "2026-10-08T20:49:53.357Z"
     },
     "microdex": {
-      "counters": {},
-      "status": "firing",
-      "detail": "microdex beat spawned (soldier self-signed fills/orders/pool-swaps)",
-      "lastRun": "2026-10-08T21:02:55.223Z"
+      "counters": {
+        "opsToday": 0,
+        "beats": 862,
+        "soldiers": 0,
+        "verified": 0
+      },
+      "status": "standby",
+      "detail": "opsToday 0 · beats 862 · soldiers 0 · verified 0/0",
+      "lastRun": "2026-10-08T21:10:25.225Z"
     },
     "yield": {
       "counters": {
@@ -279,21 +290,25 @@
       "lastRun": "2026-10-08T16:39:53.127Z"
     },
     "merchant": {
-      "counters": {},
-      "status": "firing",
-      "detail": "merchant scan spawned (memo orders → delivery + receipt)",
-      "lastRun": "2026-10-08T20:53:53.395Z"
+      "counters": {
+        "sales": 1,
+        "revenue": 0.001,
+        "verified": 1
+      },
+      "status": "ok",
+      "detail": "sales 1 · revenue 0.001 STEEM · verified 1/1 · beats 166",
+      "lastRun": "2026-10-08T21:09:53.422Z"
     },
     "saosnet": {
       "counters": {
-        "height": 237168,
-        "beats": 4637,
+        "height": 237396,
+        "beats": 4641,
         "checkpoints": 64,
         "verified": 2805
       },
       "status": "ok",
-      "detail": "height 237168 · root cd2e9e35d9… · cps 64 · last@237168 steem=pending · verified 2805",
-      "lastRun": "2026-10-08T21:05:55.283Z"
+      "detail": "height 237396 · root 2839ac87e9… · cps 64 · last@237396 steem=pending · verified 2805",
+      "lastRun": "2026-10-08T21:11:55.336Z"
     },
     "weaveBatch": {
       "counters": {
@@ -307,14 +322,14 @@
     "guardian": {
       "counters": {},
       "status": "ok",
-      "detail": "self-heal dispatched (pid 21065)",
-      "lastRun": "2026-10-08T20:58:53.348Z"
+      "detail": "self-heal dispatched (pid 23746)",
+      "lastRun": "2026-10-08T21:08:53.352Z"
     },
     "heReport": {
       "counters": {},
       "status": "ok",
-      "detail": "Hebrew report dispatched (pid 16330) → docs/REPORT_HE.md",
-      "lastRun": "2026-10-08T20:38:53.255Z"
+      "detail": "Hebrew report dispatched (pid 23729) → docs/REPORT_HE.md",
+      "lastRun": "2026-10-08T21:08:53.298Z"
     },
     "reanchor": {
       "counters": {
@@ -339,7 +354,7 @@
       },
       "status": "ok",
       "detail": "standby — rc-נתונים-חלקיים (rows=1/0) — מחכה-למחזור-הבא",
-      "lastRun": "2026-10-08T20:38:53.926Z"
+      "lastRun": "2026-10-08T21:08:53.967Z"
     },
     "verify15": {
       "counters": {},
@@ -348,10 +363,13 @@
       "lastRun": "2026-10-08T20:38:53.069Z"
     },
     "matrix": {
-      "counters": {},
-      "status": "error",
-      "detail": "no fresh evidence after run",
-      "lastRun": "2026-10-08T19:38:53.127Z"
+      "counters": {
+        "lastRunAt": "2026-10-08T21:10:19.438Z",
+        "verdict": "93/154"
+      },
+      "status": "ok",
+      "detail": "fresh matrix 93/154 · honest-reds · 86s",
+      "lastRun": "2026-10-08T21:10:19.448Z"
     }
   },
   "fleet": {
@@ -375,16 +393,16 @@
     "agents": []
   },
   "empire": {
-    "scannedAt": "2026-10-08T16:38:53.120Z",
+    "scannedAt": "2026-10-08T21:08:53.411Z",
     "summary": {
       "totalAccounts": 2,
       "steemCount": 1,
       "hiveCount": 1,
-      "totalSP": 4023.797,
+      "totalSP": 4023.882,
       "totalHP": 21.598,
       "totalHive": 0.034,
       "totalHbd": 0.003,
-      "totalSteem": 0.619,
+      "totalSteem": 2.266,
       "controllableNow": 2,
       "heSwapHive": 0.030207
     }
@@ -403,34 +421,10 @@
     "lastAction": "not run yet"
   },
   "saosnet": {
-    "height": 237168,
-    "stateRoot": "cd2e9e35d99e5d1a0061bb3af644c828ac127d4383c438e2b6d801e3016bd95e",
+    "height": 237396,
+    "stateRoot": "2839ac87e9818472e443f32b803e6c445c91477ca343ce4af6fd28643818911b",
     "genesisHash": "5a8b98311c8333efd361fc88972d3f0936216d6ff0e6d39ea7d8e30a35a12ad8",
     "checkpoints": [
-      {
-        "height": 236868,
-        "stateRoot": "f6a6b0a513116f78cf1ea704b1509b86f33b19d4ae01269bc3a88e83e8dc26ba",
-        "checkpointHash": "e909545d965ece8effe3960c73fb640edb3cd4c86d07975d8eece8b182b97417",
-        "anchors": {},
-        "attests": [],
-        "at": "2026-10-08T20:57:38.000Z"
-      },
-      {
-        "height": 236928,
-        "stateRoot": "81470183c16e1624750a7e4963204dfeca615324922d5ad79bddbda4062dd562",
-        "checkpointHash": "1d7d292b7d8eee7d819a95ade8e043a1f57f86a23777168d124999943e9d40f0",
-        "anchors": {},
-        "attests": [],
-        "at": "2026-10-08T20:59:14.084Z"
-      },
-      {
-        "height": 236988,
-        "stateRoot": "48f295fc013c3f03002985224ff9309266c53ff153cef050ac0b8c91956c6eff",
-        "checkpointHash": "f677f4c4a8b59a7a2eb4cf69883da90839f8161f3ff849b8852ab1b5e36bf12c",
-        "anchors": {},
-        "attests": [],
-        "at": "2026-10-08T21:00:50.146Z"
-      },
       {
         "height": 237048,
         "stateRoot": "763ad5136a0ccac003b6f3afa61322284e470c48e37e2903a0cd483a39dd543a",
@@ -454,11 +448,35 @@
         "anchors": {},
         "attests": [],
         "at": "2026-10-08T21:05:38.365Z"
+      },
+      {
+        "height": 237228,
+        "stateRoot": "760da0e9bfc53194783ac5c1bbd2328e03b07b7d38451662f303a495c9b9c237",
+        "checkpointHash": "25634fbcf87e002f7f3c72debe6b4e6d5d1404bbfc8dbb1853a8b48480c712b8",
+        "anchors": {},
+        "attests": [],
+        "at": "2026-10-08T21:07:14.455Z"
+      },
+      {
+        "height": 237336,
+        "stateRoot": "cb8be66bb0a5b5942a814de1722fec1291c32a74812deba2e5b5608a7727106a",
+        "checkpointHash": "9cd7dd36c18ec16d9f325011b998dc842cac9ff7838767b70f970b50eb052624",
+        "anchors": {},
+        "attests": [],
+        "at": "2026-10-08T21:10:02.747Z"
+      },
+      {
+        "height": 237396,
+        "stateRoot": "2839ac87e9818472e443f32b803e6c445c91477ca343ce4af6fd28643818911b",
+        "checkpointHash": "c061686da284cafe331784daedc0ece38c70002ce1728864f8e9931724198503",
+        "anchors": {},
+        "attests": [],
+        "at": "2026-10-08T21:11:38.816Z"
       }
     ],
     "verifiedCount": 2805,
-    "beats": 4637,
-    "at": "2026-10-08T21:05:38.376Z"
+    "beats": 4641,
+    "at": "2026-10-08T21:11:38.826Z"
   },
   "wrapped": {
     "booted": true,

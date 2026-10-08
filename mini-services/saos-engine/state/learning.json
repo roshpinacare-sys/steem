@@ -1,21 +1,21 @@
 {
-  "at": "2026-10-08T20:57:41.753Z",
+  "at": "2026-10-08T21:11:41.315Z",
   "enabled": true,
-  "runsTotal": 462,
+  "runsTotal": 463,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 91,
-      "oks": 85,
+      "window": 87,
+      "oks": 81,
       "fails": 4,
       "blocked": 2,
-      "okRate": 93.4,
-      "blockedRate": 2.2,
+      "okRate": 93.1,
+      "blockedRate": 2.3,
       "failReasons": {
         "unknown": 4
       },
-      "msP50": 124858,
-      "msP90": 276259
+      "msP50": 146062,
+      "msP90": 280420
     },
     "curator": {
       "present": true,
@@ -37,26 +37,25 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 2540,
+      "checks": 2552,
       "downs": 106,
       "heals": 39,
       "healVerified": 38,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-08T20:56:56.642Z",
+      "lastCheckAt": "2026-10-08T21:10:56.298Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-08T20:56:56.725Z",
+      "lastUpAt": "2026-10-08T21:10:56.327Z",
       "blips": 1
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×2/91 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+      "severity": "high",
+      "evidence": "cycle-blocked ×2/87 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
     }
   ],
   "tunings": {},
@@ -64,7 +63,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 360,
+    "signing-cred-blocked": 361,
     "broadcast-fails": 130,
     "cycle-latency-tail": 119
   },
