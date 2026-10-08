@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-08T16:34:43.135Z",
+  "at": "2026-10-08T16:54:43.137Z",
   "day": "2026-10-08",
   "results": [
     {
@@ -64,7 +64,8 @@
     {
       "account": "lsa",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "payer has not enough RC mana for transaction:has_mana: Account: lsa has 882486432 RC, needs 99325703"
     },
     {
       "account": "macrame",
@@ -75,13 +76,12 @@
       "account": "macrame",
       "lane": "fleet-comment",
       "verdict": "REJECTED",
-      "reason": "payer has not enough RC mana for transaction:has_mana: Account: macrame has 808127964 RC, needs 9569"
+      "reason": "payer has not enough RC mana for transaction:has_mana: Account: macrame has 819529627 RC, needs 9837"
     },
     {
       "account": "macrame",
       "lane": "deepen",
-      "verdict": "REJECTED",
-      "reason": "payer has not enough RC mana for transaction:has_mana: Account: macrame has 808156976 RC, needs 9581"
+      "verdict": "REPEAT-VETO"
     },
     {
       "account": "siq",
@@ -152,7 +152,7 @@
   },
   "verdict": "HIVE-SOCIAL-IDLE",
   "executed": 0,
-  "ms": 26549,
+  "ms": 28411,
   "perAccount": {
     "cashmachine": {
       "done": {
