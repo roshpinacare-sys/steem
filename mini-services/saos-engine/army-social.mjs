@@ -62,13 +62,16 @@ import { executeAs, masterAccount, armedConf, custodyOf } from "./signer.mjs";
 import { mulberry32, hashSeed } from "./curator.mjs";
 import { PUBLISH_ELIGIBLE_SINCE, titleSimilarity, recentPublishedTitles, wordCount, MIN_POST_WORDS } from "./content.mjs";
 import { synthesizeComment, synthesizeReply, mentionsAny } from "./intel-pack.mjs";
-import { spamVerdict, organicVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
+import { spamVerdict, organicVerdict, flagPauseVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
 import { reviveArmyCustody } from "./vault-revival.mjs";
-import { readCommunityState, communityPostMeta } from "./community.mjs";
+import { readCommunityState, communityPostMeta, communityMetaObj } from "./community.mjs";
+import { embedImage } from "./illustrate.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const SOCIAL_FILE = path.join(STATE, "social.json");
+const FLAG_PAUSES_FILE = path.join(STATE, "flag-pauses.json");
+const COMMUNITY_ROUND_FILE = path.join(STATE, "community-round.json");
 const CONTENT_FILE = path.join(STATE, "content-ops.json");
 const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
 
@@ -86,7 +89,8 @@ export function socialPolicy() {
   const conf = armedConf();
   return {
     enabled: true,
-    publishWindow: [7, 23],     // UTC hours a publish may land in (broad daylight)
+    publishWindow: [11, 21],   // R254: prime-time UTC hours (measured Steem activity peak)
+    fleetSlotWindow: [11, 21], // fleet publish slots cut from the same prime window
     maxPostsPerDay: 1,          // per account — presence, never flood (anti-spam law stays)
     maxFleetVotesPerDay: 3,     // per account — R244 amplification (תגביר עוצמה)
     fleetWeightPct: 25,         // low weight: support, not self-dealing
@@ -110,17 +114,44 @@ export function socialPolicy() {
 
 export const dayKeyOf = (iso) => String(iso ?? new Date().toISOString()).slice(0, 10);
 
+/* ── pure: R254 · FLEET PUBLISH SLOTS (better scheduling, operator order) ───
+ * "אני רוצה אינטלגנציה רבה בהפעלה של כולם וגם יפה אני רואה תזמונים יותר
+ * טובים" — the fleet no longer draws independent random publish minutes
+ * (which collided: two accounts posting within minutes reads as bot pacing).
+ * The prime window (11:00–21:00 UTC, measured Steem activity hours) is cut
+ * into ONE SLOT PER ACCOUNT; each account jitters inside its own slot. The
+ * ≥ slot-width separation is collision-free BY CONSTRUCTION, still seeded
+ * and reproducible (auditability is law). */
+export function fleetPublishMinutes(dayIso, roster, { window = [11, 21], jitterMin = 12 } = {}) {
+  const list = (Array.isArray(roster) ? roster : []).filter(Boolean);
+  const out = {};
+  if (!list.length) return out;
+  const startMin = Math.max(0, Math.min(23, window[0])) * 60;
+  const endMin = Math.max(startMin + list.length, Math.min(1440, window[1] * 60));
+  const slotW = Math.max(1, Math.floor((endMin - startMin) / list.length));
+  list.forEach((account, i) => {
+    const rand = mulberry32(hashSeed(`${dayIso}|${account}|fleet-slot-v1`));
+    const base = startMin + i * slotW + Math.floor(slotW / 2);
+    const jitter = Math.floor(rand() * (2 * jitterMin + 1)) - jitterMin;
+    const lo = startMin + i * slotW, hi = startMin + (i + 1) * slotW - 1;
+    out[account] = Math.min(hi, Math.max(lo, base + jitter));
+  });
+  return out;
+}
+
 /* ── pure: the day schedule (auditable randomness) ──────────────────────────
  * seed → deterministic minute-of-day per action kind. Publish lands once in
- * the daylight window; fleet votes + replies scatter through waking hours. */
-export function buildDaySchedule(seed, { publishWindow = [7, 23] } = {}) {
+ * the daylight window; fleet votes + replies scatter through waking hours.
+ * R254: publishMinute (exact) lets the FLEET-SLOT system pin each account's
+ * publish into a collision-free prime-time slot. */
+export function buildDaySchedule(seed, { publishWindow = [11, 21], publishMinute = null } = {}) {
   const rand = mulberry32(seed);
   const minuteOf = (h0, h1) => {
     const start = h0 * 60, span = Math.max(1, (h1 - h0) * 60);
     return start + Math.floor(rand() * span);
   };
   return [
-    { kind: "publish", minute: minuteOf(publishWindow[0], publishWindow[1]) },
+    { kind: "publish", minute: Number.isFinite(publishMinute) ? publishMinute : minuteOf(publishWindow[0], publishWindow[1]) },
     { kind: "fleet-vote", minute: minuteOf(6, 24) },
     { kind: "fleet-vote", minute: minuteOf(6, 24) },
     { kind: "fleet-vote", minute: minuteOf(6, 24) },   // R244 amplification
@@ -224,6 +255,33 @@ async function fetchFleetPosts({ viewer, accounts, nowMs, p, excludePermlinks })
   return out;
 }
 
+/* ── R254 · THE SMART REPLY CLASSIFIER (operator law, verbatim intent) ──────
+ * "אם הם מגיבים לנו לראות שזה לא איזה בוט עם דירוג נמוך לענות רק למי
+ * שרלוונטי צריך מערכת חכמה" — we manage our activity among ourselves and
+ * never feed bots: a commenter with a bot-shaped name, a sub-25 reputation,
+ * or a hollow template-praise body is NOT a conversation partner. Only
+ * relevant humans (or fleet siblings inside the caps) get our words. */
+const BOT_NAME_RE = /(bot$|^bot|[-_.]bot|upvote|promot|booster|smartsteem|tipu|treeplanter|steembasicincome|sbi[0-9]|guest|spam|faucet)/i;
+export function repFromRaw(raw) {
+  const r = Number(raw ?? 0);
+  if (!Number.isFinite(r) || r <= 0) return 0;
+  return Math.max(0, Math.round((Math.log10(r) - 9) * 9 + 25));
+}
+export function replyTargetVerdict({ author, repRaw, body, isFleet = false }, p = {}) {
+  const minRep = Number(p.minReplyRep ?? 25);
+  const reasons = [];
+  if (isFleet) return { ok: true, reasons: [], class: "fleet" }; // capped + sanitized elsewhere
+  if (!author) return { ok: false, reasons: ["no-author"], class: "invalid" };
+  if (BOT_NAME_RE.test(String(author))) reasons.push(`bot-name(${author})`);
+  const rep = repFromRaw(repRaw);
+  if (rep < minRep) reasons.push(`low-rep(${rep}<${minRep})`);
+  const b = String(body ?? "").trim();
+  const opener = TEMPLATE_OPENERS.find((t) => b.toLowerCase().includes(t));
+  if (opener && b.length < 120) reasons.push(`template-praise(${b.length}c)`);
+  if (b.length < 15) reasons.push(`too-thin(${b.length}c)`);
+  return { ok: reasons.length === 0, reasons, class: reasons.length === 0 ? "human" : "skip", rep };
+}
+
 /* ── comment replies scan on an account's own recent posts ───────────────── */
 async function fetchRepliableComments(account, repliedSet, p) {
   const recent = await rpcCall("condenser_api.get_discussions_by_blog", [{ tag: account, limit: 4 }]);
@@ -239,6 +297,15 @@ async function fetchRepliableComments(account, repliedSet, p) {
       if (String(c.body ?? "").trim().length < p.minCommentChars) continue;
       const isFleet = ARMY_ROSTER.includes(c.author) || c.author === masterAccount();
       if (isFleet && !p.fleetRepliesEnabled) continue; // T-87: fleet conversation is lawful — caps + sanitizer still hold
+      /* R254 SMART-REPLY: bots and low-rep drive-bys get silence, not words
+       * (the chain verdict is fetched per candidate — one cheap lookup). */
+      const acc = await rpcCall("condenser_api.get_accounts", [[c.author]]);
+      const repRaw = acc?.ok ? acc.result?.[0]?.reputation : undefined;
+      const verdict = replyTargetVerdict({ author: c.author, repRaw, body: c.body, isFleet }, p);
+      if (!verdict.ok) {
+        appendLine(path.join(STATE, "events.jsonl"), { type: "social.reply-skipped", at: new Date().toISOString(), account, commenter: c.author, class: verdict.class, reasons: verdict.reasons.slice(0, 3) });
+        continue;
+      }
       return {
         comment: key,
         parentAuthor: c.author,
@@ -347,14 +414,28 @@ export async function runOrganicWatch({ now = new Date().toISOString(), window =
         else if (rosterSet.has(v.voter)) fleet++;
         else outside++;
       }
-      rows.push({ author, permlink, at: d.publishedAt ?? null, fleet, outside, flags, replies: Number(r.result.children ?? 0), pendingSbd: r.result.pending_payout_value ?? null });
+      rows.push({ author, permlink, at: d.publishedAt ?? null, fleet, outside, flags, replies: Number(r.result.children ?? 0), pendingSbd: r.result.pending_payout_value ?? null, bodyLen: String(r.result.body ?? "").length, tags: (() => { try { return JSON.parse(r.result.json_metadata ?? "{}").tags ?? []; } catch { return []; } })() });
     } catch { /* fail-soft per row */ }
   }
   const organic = organicVerdict(rows);
+  /* R254 · THE DOWNVOTE VETO (operator law): any flag → the AUTHOR's rail
+   * pauses (persisted across days in flag-pauses.json — resumption is a
+   * deliberate, analysis-first decision, never a silent auto-resume). */
+  const pauses = readJson(FLAG_PAUSES_FILE, { accounts: {} });
+  let newPauses = 0;
+  for (const row of rows) {
+    const v = flagPauseVerdict(row);
+    if (!v.pause) continue;
+    const cur = pauses.accounts[row.author] ?? null;
+    if (!cur?.active) newPauses++;
+    pauses.accounts[row.author] = { active: true, since: cur?.since ?? now, updatedAt: now, reasons: v.reasons, post: { permlink: row.permlink, flags: row.flags, outside: row.outside } };
+    appendLine(path.join(STATE, "events.jsonl"), { type: "downvote.pause", at: now, account: row.author, permlink: row.permlink, flags: row.flags, evidence: v.reasons });
+  }
+  if (newPauses > 0 || Object.keys(pauses.accounts ?? {}).length) writeJson(FLAG_PAUSES_FILE, { at: now, accounts: pauses.accounts ?? {} });
   const prev = spamwatchState() ?? {};
-  const doc = { at: now, posts: rows, organic, tightened: organic.tighten ? (prev.tightened && prev.tightened.since ? { minPostChars: organic.minPostChars ?? 1600, since: prev.tightened.since } : { minPostChars: organic.minPostChars ?? 1600, since: now }) : null };
+  const doc = { at: now, posts: rows, organic, pauses: Object.fromEntries(Object.entries(pauses.accounts ?? {}).filter(([, v]) => v.active).map(([k, v]) => [k, { since: v.since, flags: v.post?.flags }])), tightened: organic.tighten ? (prev.tightened && prev.tightened.since ? { minPostChars: organic.minPostChars ?? 1600, since: prev.tightened.since } : { minPostChars: organic.minPostChars ?? 1600, since: now }) : null };
   saveSpamwatch(doc);
-  appendLine(path.join(STATE, "events.jsonl"), { type: "organic.verdict", at: now, verdict: organic.verdict, tighten: !!organic.tighten, rows: rows.length });
+  appendLine(path.join(STATE, "events.jsonl"), { type: "organic.verdict", at: now, verdict: organic.verdict, tighten: !!organic.tighten, rows: rows.length, activePauses: Object.values(pauses.accounts ?? {}).filter((v) => v.active).length });
   return doc;
 }
 
@@ -376,6 +457,8 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
 
   const prev = readJson(SOCIAL_FILE, null);
   const carried = prev?.day === day ? prev : { day, accounts: {}, seeds: {} };
+  /* R254 · flag pauses ride into each account's state (doPublish checks) */
+  const flagPauses = readJson(FLAG_PAUSES_FILE, { accounts: {} })?.accounts ?? {};
 
   const base = {
     enabled: p.enabled, at: now, day,
@@ -395,6 +478,10 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     st.rc = { day: today, rcPct: acc.ok ? (acc.rcPct ?? 100) : 100 };
     return st.rc.rcPct >= 15;
   };
+
+  /* R254 · FLEET SLOTS: one collision-free prime-time publish minute per
+   * account, computed once per run, deterministic per day (auditable). */
+  const fleetMinutes = fleetPublishMinutes(day, [master, ...ARMY_ROSTER], { window: p.fleetSlotWindow ?? [11, 21] });
 
   for (const account of [master, ...ARMY_ROSTER]) {
     const st = carried.accounts[account] ?? {
@@ -423,10 +510,14 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
       continue;
     }
 
+    /* R254 · the flag pause rides into the account state (doPublish checks) */
+    st.paused = flagPauses[account]?.active ? flagPauses[account] : null;
+
     /* the day's schedule — seeded per day+account, rebuilt cheaply every run */
     const seed = hashSeed(`${day}|${account}|social-v1`);
     carried.seeds[account] = seed;
-    const schedule = buildDaySchedule(seed, { publishWindow: p.publishWindow });
+    const pubMin = fleetMinutes[account];
+    const schedule = buildDaySchedule(seed, { publishWindow: p.publishWindow, publishMinute: Number.isFinite(pubMin) ? pubMin : null });
     const due = schedule.filter((s) => minuteOfDay >= s.minute && st.done[s.kind] < capOf(s.kind, p));
     dueCount += due.length;
 
@@ -487,6 +578,13 @@ const capOf = (kind, p) =>
  * retired, never broadcast (the queue was choked by pre-R240 SEO stock; the
  * chain showed a 2026-10-01 draft shipping on 10-07). */
 async function doPublish(account, st, p, now, day) {
+  /* R254 · THE DOWNVOTE VETO at the door: a flagged author does not speak
+   * again until the operator-level analysis clears the resumption (the
+   * pause is set by runOrganicWatch the moment a downvote lands). */
+  if (st.paused?.active) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.flagged-paused", at: now, account, reason: st.paused.reasons?.[0] ?? "downvote" });
+    return false;
+  }
   if (st.done.publish >= p.maxPostsPerDay) return false;
   const c = readJson(CONTENT_FILE, null);
   const queue = Array.isArray(c?.queue) ? c.queue : [];
@@ -536,26 +634,55 @@ async function doPublish(account, st, p, now, day) {
     return false;
   }
   const permlink = permlinkStem(draft.title, day, st.done.publish ?? 0);
-  /* R246 COMMUNITY-RAIL (measured flow, 3-community forensics): every THIRD
-   * lifetime post of each account lands INSIDE our community (metadata.community
-   * + tags[0] = community — the hivemind contract), the rest stays in the open
-   * tags. A fleet that posts only into its own compound is a walled garden and
-   * a voting-ring smell; a fleet that never posts home abandons its own organ.
-   * The 1:2 ratio keeps both honest. */
+  /* R246 COMMUNITY-RAIL, R254 CENTRALIZATION (operator order, verbatim
+   * intent): "ולהתחיל להפעיל אותה שיזרמו לשם נעשה את זה מרוכז שיהיה לנו מקום
+   * פעילות" — the flow now CENTERS on our community: every SECOND lifetime
+   * post of each account lands INSIDE hive-457262 (metadata.community +
+   * tags[0] = community, the hivemind contract), the rest stays in the open
+   * tags. The R246 1:2 was measured good; the operator wants home base to
+   * be the primary place of activity now that the organ exists. */
   const cst = readCommunityState();
   const communityArmed = cst?.name && ["fleet-joined", "live"].includes(cst.phase);
-  const thirdPost = (st.published?.length ?? 0) % 3 === 2;
-  const inCommunity = communityArmed && thirdPost;
-  const meta = inCommunity
-    ? communityPostMeta(cst.name, draft.tags)
-    : JSON.stringify({ tags: draft.tags, app: "saos-social-rail" });
+  /* R254 · THE COMMUNITY ROUND (operator order, verbatim: "תן הוראה
+   * לסיבוב אחד של כולם גם כקהילה עם פוסטים והכל כמו שצריך"): a one-shot
+   * armed order — EVERY account's next publish lands HOME (hive-457262)
+   * until all subscribers have posted the round or 36h pass. Journaled. */
+  const round = readJson(COMMUNITY_ROUND_FILE, null);
+  const roundArmed = round?.armed === true
+    && communityArmed
+    && String(now) < String(round.expiresAt ?? "")
+    && !(round.posted ?? []).includes(account);
+  const secondPost = (st.published?.length ?? 0) % 2 === 1;
+  const inCommunity = communityArmed && (roundArmed || secondPost);
+  const baseMeta = inCommunity
+    ? communityMetaObj(cst.name, draft.tags)
+    : { tags: draft.tags, app: "saos-social-rail" };
+  /* R254 · IMAGES (operator: "שימוש בתמונות לפי חוק"): a legal Commons image
+   * rides at the END of the body with its mandatory credit line, and is
+   * declared in metadata.image (the frontend thumbnail contract). */
+  let body = draft.body;
+  const metaObj = { ...baseMeta };
+  if (draft.image?.url && /^https:\/\/upload\.wikimedia\.org\//.test(draft.image.url)) {
+    body = embedImage(body, draft.image);
+    metaObj.image = [draft.image.url];
+  }
+  const meta = JSON.stringify(metaObj);
   const ops = [[
     "comment",
-    { parent_author: "", parent_permlink: inCommunity ? cst.name : "steem", author: account, permlink, title: draft.title, body: draft.body, json_metadata: meta },
+    { parent_author: "", parent_permlink: inCommunity ? cst.name : "steem", author: account, permlink, title: draft.title, body, json_metadata: meta },
   ]];
   const res = await executeAs(account, ops, { tag: "social-post", role: "posting" });
   if (!res.ok) return false;
   st.published = [...(st.published ?? []), draft.id];
+  /* R254: the community round records the voice so the round completes */
+  if (roundArmed && inCommunity) {
+    const r2 = readJson(COMMUNITY_ROUND_FILE, null);
+    if (r2?.armed) {
+      r2.posted = [...(r2.posted ?? []), account];
+      if ((r2.posted ?? []).length >= (r2.roster ?? []).length) r2.armed = false; // round complete
+      writeJson(COMMUNITY_ROUND_FILE, r2);
+    }
+  }
   /* the draft is spent — mark it in the shared queue so no account double-posts it */
   draft.status = "published";
   draft.publishedAt = now;

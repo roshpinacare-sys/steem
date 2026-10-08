@@ -89,7 +89,12 @@ export function subscribeOp(community, account) {
 /** post metadata for publishing INTO the community (hivemind contract:
  * metadata.community set + tags[0] = community name) */
 export function communityPostMeta(community, tags, app = "saos-community-rail") {
-  return JSON.stringify({ community, tags: [community, ...tags], app });
+  return JSON.stringify(communityMetaObj(community, tags, app));
+}
+
+/** R254: object form (the rail merges the legal-image contract into it) */
+export function communityMetaObj(community, tags, app = "saos-community-rail") {
+  return { community, tags: [community, ...tags], app };
 }
 
 /* ── keys: fresh, random, written once, never logged ─────────────────────── */

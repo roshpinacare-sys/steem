@@ -133,6 +133,13 @@ async function handle(req) {
       /* R237-B COUNCIL: the live inter-organ mesh — measured verdicts for
        * custodian/metrics/builder + the last engine→builder work-order */
       council: readJson(path.join(STATE, "council.json")),
+      /* R254 · the HIVE organ (operator-approved trial): custody verdicts,
+       * probe receipts, fleet pause — verdicts only, never keys */
+      hive: {
+        ops: readJson(path.join(STATE, "hive-ops.json")),
+        custody: readJson(path.join(STATE, "hive-custody.json")),
+        flagPauses: readJson(path.join(STATE, "flag-pauses.json")),
+      },
       execLog,
       events: readLines(path.join(STATE, "events.jsonl"), 20),
       notes: ["sovereign engine · state lives inside my-project · master credential engine-held, doctrine-capped, never logged", "T-14: continuous-learning layer live — lessons from recorded history, hard-clamped tunings, growth-option discovery", "T-22: one-body law — every domain fact on this page is computed exactly once (here)"],

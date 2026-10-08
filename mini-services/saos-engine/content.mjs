@@ -20,6 +20,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { readCorpus } from "./intel-pack.mjs";
+import { illustrateDraft } from "./illustrate.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -131,10 +132,38 @@ const EXPOSURE_LAW = [
   "never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected",
   "no financial advice, no profit promises, no price targets",
   "no fabricated personal identities: no invented family members, no named real places as personal history; write as a general human observer",
-  "no AI telltales: never open with 'In today's world', never close with 'In conclusion', no em/en dashes",
+  "no AI telltales: never open with 'In today's world', never close with 'In conclusion'",
+  "NEVER use em dashes or en dashes (— or –): rewrite with commas, colons, or parentheses instead",
+  "professional developer slang is welcome in moderation: ship it, under the hood, edge case, back-of-envelope math, debug, iterate, close the loop, race condition, the happy path, tech debt — used naturally, never forced",
   "supportive community tone — teach, ask, answer; public knowledge only",
   "SEO: concrete curiosity title, 3-5 topical tags, first paragraph must stand alone",
 ];
+
+/* R254 · THE STYLE LAW the operator ordered (verbatim intent): "תעשה שאף
+ * אחד לא יכתוב עם — כאלה יותר מדי וקצת סלנגים מקצועיים של מפתחים וכו
+ * לשפר עוד". The bridge gets it in the payload; the pure normalizer
+ * ENFORCES it in code (see normalizeDashes + sanitizeDraft). */
+export const STYLE_LAW = {
+  dashes: "never emit em/en dashes (—, –); use commas, colons, or parentheses",
+  slang: [
+    "ship it", "under the hood", "edge case", "back-of-envelope math", "debug",
+    "iterate", "close the loop", "race condition", "the happy path", "tech debt",
+    "rubber-duck it", "hotfix", "refactor", "the long tail", "fallthrough",
+  ],
+  slangGuidance: "sprinkle at most one or two per post, only where a real developer would say them",
+};
+
+/* R254 · pure: the dash normalizer — the bridge kept writing " — " and the
+ * hard ban burned WHOLE drafts (4 exposure-blocked, queue starving to
+ * NO-DRAFTS on 2026-10-07). Nobody writes with "—" anymore because the
+ * normalizer REWRITES it before the ban check: " — " → ": ", bare "—" →
+ * ", ", en dash → plain hyphen. The ban stays as the last line of defense
+ * for anything the rewrite misses. */
+export function normalizeDashes(text) {
+  return String(text ?? "")
+    .replace(/(\s*)—(\s*)/g, ": ")
+    .replace(/(\s*)–(\s*)/g, (_, a, b) => (a || b ? ": " : "-"));
+}
 
 export function contentState() { return readJson(FILE, null); }
 
@@ -145,11 +174,15 @@ export function wordCount(text) {
 }
 export const MIN_POST_WORDS = Number(process.env.SAOS_MIN_POST_WORDS) || 300;
 
-/** pure: validate one draft against the exposure law (selftest-vectorable) */
+/** pure: validate one draft against the exposure law (selftest-vectorable)
+ * R254: dashes are NORMALIZED first (nobody writes with "—": it is rewritten
+ * to legal punctuation before the ban check, so a whole draft no longer
+ * burns for one dash), and an optional LEGAL image (illustrate.mjs: Wikimedia
+ * Commons with mandatory attribution) rides along as {url, alt, credit}. */
 export function sanitizeDraft(d) {
   if (!d || typeof d !== "object") return null;
-  const title = String(d.title ?? "").trim();
-  const body = String(d.body ?? "").trim();
+  const title = normalizeDashes(String(d.title ?? "").trim());
+  const body = normalizeDashes(String(d.body ?? "").trim());
   if (title.length < 12 || wordCount(body) < MIN_POST_WORDS) return null; // a real post, not a stub (R244: 300-word spam-safety floor)
   const tags = (Array.isArray(d.tags) ? d.tags : [])
     .map((t) => String(t).toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 24))
@@ -158,8 +191,15 @@ export function sanitizeDraft(d) {
   const blob = `${title}\n${body}`.toLowerCase();
   const banned = ["headcorner", "saos", "צבא", "army of accounts", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target", "in today's world", "in conclusion", "—", "–"];
   if (banned.some((w) => blob.includes(w))) return null; // EXPOSURE-BLOCKED
+  let image = null;
+  if (d.image && typeof d.image === "object") {
+    const url = String(d.image.url ?? "");
+    const alt = String(d.image.alt ?? "").trim().slice(0, 160);
+    const credit = String(d.image.credit ?? "").trim().slice(0, 300);
+    if (/^https:\/\/upload\.wikimedia\.org\//.test(url) && alt && credit) image = { url, alt, credit };
+  }
   return {
-    title: title.slice(0, 160), body: body.slice(0, 8000), tags,
+    title: title.slice(0, 160), body: body.slice(0, 8000), tags, image,
     angle: String(d.angle ?? "").slice(0, 300) || null,
     voice: String(d.voice ?? "").slice(0, 300) || null,
     seoNote: String(d.seoNote ?? "").slice(0, 300) || null,
@@ -201,7 +241,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topics, voices, recentTitles, findings, exposureLaw: EXPOSURE_LAW }),
+      body: JSON.stringify({ topics, voices, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW }),
       signal: AbortSignal.timeout(120_000),
     });
     if (!r.ok) throw new Error(`bridge ${r.status}`);
@@ -218,6 +258,18 @@ export async function runContent({ now = new Date().toISOString(), force = false
   const sanitized = (raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean);
   const exposureBlocked = (raw?.drafts ?? []).length - sanitized.length;
   const { kept, dropped } = dedupeTitles(sanitized, recentTitles);
+  /* R254 · LEGAL IMAGES: the top kept drafts get a Wikimedia Commons image
+   * with mandatory attribution (fail-soft, enrichment never a blocker — an
+   * illustrated post carries more interest, per the operator's order). */
+  let illustrated = 0;
+  if (kept.length) {
+    for (const d of kept.slice(0, 3)) {
+      try {
+        const img = await illustrateDraft(d, { seedNum: (Date.parse(now) || 0) % 997 });
+        if (img) { d.image = img; illustrated++; }
+      } catch { /* fail-soft per draft */ }
+    }
+  }
   const queue = [
     ...kept.map((d, i) => ({ ...d, id: `d${Date.parse(now)}-${i}`, status: "drafted", draftedAt: now })),
     ...(Array.isArray(prev?.queue) ? prev.queue : []),
@@ -227,7 +279,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     draftedAt: now,
     verdict: kept.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
     source: raw && bridgeError?.startsWith("offline") ? "corpus" : raw ? "bridge" : "none",
-    draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped,
+    draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped, illustrated,
     minPostWords: MIN_POST_WORDS,
     queue,
     law: "R240: נושאים-אנושיים מסבב-יום + קול-אחד-לחשבון + הסרת-כפילויות; חשיפה = נחסמת בטהרת-הנוסח; שידור רק אחרי אימות-חתימה (דוקטרינת-שער)",
@@ -235,7 +287,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     ms: Date.now() - t0,
   };
   writeJson(FILE, doc);
-  return { verdict: doc.verdict, draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped, bridgeError };
+  return { verdict: doc.verdict, draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped, illustrated, bridgeError };
 }
 
 /** recruiter evidence: fresh drafts queued = the content team is really running */
