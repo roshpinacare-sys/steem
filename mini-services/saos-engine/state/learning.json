@@ -17,9 +17,12 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 0,
-      "window": 0,
-      "verdicts": {},
+      "totalVotes": 39,
+      "window": 26,
+      "verdicts": {
+        "BROADCAST-FAIL": 3,
+        "VOTED": 23
+      },
       "vpEff": 39.5,
       "meanAgeMinutes": null,
       "tagsVoted": {},
@@ -35,7 +38,7 @@
       "checks": 3123,
       "downs": 108,
       "heals": 41,
-      "healVerified": 39,
+      "healVerified": 40,
       "healFailed": 0,
       "lastCheckAt": "2026-10-08T06:39:45.313Z",
       "engineUp": true,
@@ -44,9 +47,31 @@
       "blips": 1
     }
   },
-  "lessons": [],
+  "lessons": [
+    {
+      "id": "signing-cred-blocked",
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×5/120 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+    },
+    {
+      "id": "cycle-latency-tail",
+      "severity": "medium",
+      "evidence": "p50 20996ms vs p90 94859ms",
+      "lesson": "cycle duration tail is fat — RPC latency inside steps",
+      "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
+    }
+  ],
   "tunings": {},
   "tuningsApplied": [],
-  "lessonsTotal": {},
+  "lessonsTotal": {
+    "cycle-conn-fails": 132,
+    "unclassified-fail-legacy": 107,
+    "signing-cred-blocked": 308,
+    "broadcast-fails": 125,
+    "cycle-latency-tail": 82
+  },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
