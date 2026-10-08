@@ -1,10 +1,15 @@
 {
+<<<<<<< HEAD
   "startedAt": "2026-10-08T17:24:43.138Z",
+=======
+  "startedAt": "2026-10-08T17:22:56.119Z",
+>>>>>>> origin/saos-cockpit
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
+<<<<<<< HEAD
       "ms": 2883,
       "account": "headcorner",
       "parity": {
@@ -13,11 +18,21 @@
         "parity": 0.10409545319800921,
         "source": "internal-feed-fallback+derived-sbd",
         "lowConfidence": true
+=======
+      "ms": 2372,
+      "account": "headcorner",
+      "parity": {
+        "steemUsd": 0.05751,
+        "sbdUsd": 0.561191,
+        "parity": 0.10247847880668079,
+        "source": "coingecko"
+>>>>>>> origin/saos-cockpit
       },
       "feed": 0.10409545319800921,
       "band": {
         "ok": true,
         "reason": "band-ok",
+<<<<<<< HEAD
         "bps": 0
       },
       "steemUsd": 0.05735,
@@ -26,6 +41,16 @@
         "steem": 0.619,
         "sbd": 0.716,
         "spOwn": 966.6180164126448,
+=======
+        "bps": -155
+      },
+      "steemUsd": 0.05751,
+      "sbdUsd": 0.561191,
+      "inventory": {
+        "steem": 0.619,
+        "sbd": 0.716,
+        "spOwn": 966.6179341138472,
+>>>>>>> origin/saos-cockpit
         "rcPct": 33.9
       },
       "ordersOk": true,
@@ -113,51 +138,88 @@
         "windowSpanDays": 0.13,
         "windowOps": 101,
         "measured": true,
+<<<<<<< HEAD
         "fuelUsdPerDay": 0.0249,
+=======
+        "fuelUsdPerDay": 0.025,
+>>>>>>> origin/saos-cockpit
         "authorUsdPerDay": 0,
         "histLen": 101,
         "node": "https://api.justyy.com"
       },
+<<<<<<< HEAD
       "summary": "parity 0.10409545319800921 (internal-feed-fallback+derived-sbd) · fills 1 · fuel 0.0249$"
+=======
+      "summary": "parity 0.10247847880668079 (coingecko) · fills 1 · fuel 0.025$"
+>>>>>>> origin/saos-cockpit
     },
     "intel": {
       "name": "intel",
       "ok": true,
+<<<<<<< HEAD
       "ms": 1355,
       "verdict": "DECISIONS:4",
+=======
+      "ms": 2517,
+      "verdict": "DECISIONS:5",
+>>>>>>> origin/saos-cockpit
       "decisions": [
         "book-depth:hold-shape",
         "soldiers:grids-live",
         "rc-health:healthy",
         "curation:curator-armed"
       ],
+<<<<<<< HEAD
       "spreadBpsRec": 175,
       "book": {
         "bestAsk": 0.10837438423645321,
         "bestBid": 0.10648988136775994,
         "spreadBps": 175
+=======
+      "spreadBpsRec": 180,
+      "book": {
+        "bestAsk": 0.1084219665726069,
+        "bestBid": 0.10648493238206794,
+        "spreadBps": 180
+>>>>>>> origin/saos-cockpit
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
+<<<<<<< HEAD
       "ms": 1,
       "runCount": 124,
       "signals": 3,
       "retiredFills": 0,
       "arbSignal": null,
+=======
+      "ms": 2,
+      "runCount": 126,
+      "signals": 4,
+      "retiredFills": 2,
+      "arbSignal": {
+        "gapBps": 155,
+        "dir": "buy-external"
+      },
+>>>>>>> origin/saos-cockpit
       "layers": "measured (see state.json.grids)"
     },
     "peg": {
       "name": "peg",
       "ok": true,
+<<<<<<< HEAD
       "ms": 692,
+=======
+      "ms": 725,
+>>>>>>> origin/saos-cockpit
       "verdict": "OFFER-EMPTY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 0,
       "flowBids": 0,
       "staleCount": 7,
+<<<<<<< HEAD
       "skew": -0.250462,
       "book": {
         "bestAsk": 0.10837438423645321,
@@ -165,6 +227,15 @@
         "askDepthSteem": 97.56,
         "bidDepthSbd": 2955.764,
         "at": "2026-10-08T17:24:43.138Z"
+=======
+      "skew": -0.251169,
+      "book": {
+        "bestAsk": 0.1084219665726069,
+        "bestBid": 0.10648493238206794,
+        "askDepthSteem": 97.56,
+        "bidDepthSbd": 2953.341,
+        "at": "2026-10-08T17:22:56.119Z"
+>>>>>>> origin/saos-cockpit
       },
       "market": {
         "tradesPerDay": 231,
@@ -184,18 +255,24 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
+<<<<<<< HEAD
       "edgeBps": 0,
       "marketSbdUsd": 0.550937,
       "impliedSbdUsd": 0.550937,
+=======
+      "edgeBps": -155,
+      "marketSbdUsd": 0.561191,
+      "impliedSbdUsd": 0.552474,
+>>>>>>> origin/saos-cockpit
       "marketSourceNote": "external-measured"
     },
     "redeploy": {
       "name": "redeploy",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "REDEPLOY-HOLD",
       "reason": "at-or-below-floor",
       "powerUpSteem": 0,
@@ -211,7 +288,11 @@
     "curate": {
       "name": "curate",
       "ok": true,
+<<<<<<< HEAD
       "ms": 897,
+=======
+      "ms": 727,
+>>>>>>> origin/saos-cockpit
       "verdict": "VP-FLOOR",
       "votes": 0,
       "txid": null,
@@ -222,7 +303,11 @@
     "execute": {
       "name": "execute",
       "ok": true,
+<<<<<<< HEAD
       "ms": 698,
+=======
+      "ms": 730,
+>>>>>>> origin/saos-cockpit
       "verdict": "NO-OPS",
       "ops": 0,
       "opsToday": 3,
@@ -231,7 +316,7 @@
     "soldiers": {
       "name": "soldiers",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "DISABLED-T80-OPERATOR-STOP"
     },
     "community": {
@@ -247,7 +332,11 @@
     "learn": {
       "name": "learn",
       "ok": true,
+<<<<<<< HEAD
       "ms": 16,
+=======
+      "ms": 9,
+>>>>>>> origin/saos-cockpit
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked",
@@ -275,9 +364,9 @@
       "ok": true,
       "ms": null,
       "verdict": "CADENCE-GATED",
-      "draftsQueued": 19,
+      "draftsQueued": 22,
       "exposureBlocked": 0,
-      "lastAt": "2026-10-08T17:00:56.762Z"
+      "lastAt": "2026-10-08T17:17:16.151Z"
     },
     "social": {
       "name": "social",
@@ -286,7 +375,11 @@
       "verdict": "SOCIAL-IDLE",
       "executed": 0,
       "refused": 0,
+<<<<<<< HEAD
       "due": 36
+=======
+      "due": 35
+>>>>>>> origin/saos-cockpit
     },
     "organic": {
       "name": "organic",
@@ -299,7 +392,11 @@
     "profiles": {
       "name": "profiles",
       "ok": true,
+<<<<<<< HEAD
       "ms": 10797,
+=======
+      "ms": 10670,
+>>>>>>> origin/saos-cockpit
       "verdict": "SYNCED",
       "updated": 0,
       "skipped": 14,
@@ -308,7 +405,11 @@
     "hive": {
       "name": "hive",
       "ok": true,
+<<<<<<< HEAD
       "ms": 9531,
+=======
+      "ms": 8505,
+>>>>>>> origin/saos-cockpit
       "verdict": "HIVE-IDLE",
       "executed": 0,
       "custody": {
@@ -320,7 +421,11 @@
     "hiveProfiles": {
       "name": "hiveProfiles",
       "ok": true,
+<<<<<<< HEAD
       "ms": 7455,
+=======
+      "ms": 6619,
+>>>>>>> origin/saos-cockpit
       "verdict": "DEFERRED",
       "updated": 0,
       "skipped": 8,
@@ -329,21 +434,33 @@
     "rcPool": {
       "name": "rcPool",
       "ok": true,
+<<<<<<< HEAD
       "ms": 7216,
+=======
+      "ms": 6399,
+>>>>>>> origin/saos-cockpit
       "verdict": "POOL-PENDING-REGEN",
       "lifts": 1,
       "measured": {
         "cashmachine": {
           "maxB": 2.105,
           "curB": 0.069,
+<<<<<<< HEAD
           "availB": 0.127,
+=======
+          "availB": 0.126,
+>>>>>>> origin/saos-cockpit
           "canPost": false,
           "structural": true
         },
         "haran": {
           "maxB": 2.265,
           "curB": 0.693,
+<<<<<<< HEAD
           "availB": 0.77,
+=======
+          "availB": 0.769,
+>>>>>>> origin/saos-cockpit
           "canPost": false,
           "structural": true
         },
@@ -357,21 +474,34 @@
         "lsa": {
           "maxB": 3.891,
           "curB": 0.817,
+<<<<<<< HEAD
           "availB": 0.899,
+=======
+          "availB": 0.898,
+>>>>>>> origin/saos-cockpit
           "canPost": false,
           "structural": false
         },
         "macrame": {
           "maxB": 4.178,
           "curB": 0.509,
+<<<<<<< HEAD
           "availB": 0.837,
+=======
+          "availB": 0.836,
+>>>>>>> origin/saos-cockpit
           "canPost": false,
           "structural": false
         },
         "siq": {
           "maxB": 2.29,
+<<<<<<< HEAD
           "curB": 0.508,
           "availB": 0.508,
+=======
+          "curB": 1.322,
+          "availB": 1.502,
+>>>>>>> origin/saos-cockpit
           "canPost": false,
           "structural": true
         },
@@ -385,14 +515,22 @@
         "wog": {
           "maxB": 3.273,
           "curB": 0.346,
+<<<<<<< HEAD
           "availB": 0.357,
+=======
+          "availB": 0.356,
+>>>>>>> origin/saos-cockpit
           "canPost": false,
           "structural": false
         },
         "woq": {
           "maxB": 2.273,
           "curB": 1.327,
+<<<<<<< HEAD
           "availB": 1.467,
+=======
+          "availB": 1.466,
+>>>>>>> origin/saos-cockpit
           "canPost": false,
           "structural": true
         }
@@ -402,9 +540,15 @@
     "hiveSocial": {
       "name": "hiveSocial",
       "ok": true,
+<<<<<<< HEAD
       "ms": 38017,
       "verdict": "HIVE-SOCIAL-IDLE",
       "executed": 0,
+=======
+      "ms": 34254,
+      "verdict": "HIVE-SOCIAL-EXECUTED",
+      "executed": 1,
+>>>>>>> origin/saos-cockpit
       "custody": {
         "verified": 9,
         "total": 9
@@ -414,7 +558,11 @@
     "bus": {
       "name": "bus",
       "ok": true,
+<<<<<<< HEAD
       "ms": 6947,
+=======
+      "ms": 8733,
+>>>>>>> origin/saos-cockpit
       "verdict": "BUS-LIVE",
       "delivered": 0,
       "published": 1
@@ -463,7 +611,11 @@
       "ok": true,
       "ms": 1,
       "totalMeasuredUsdPerDay": 0,
+<<<<<<< HEAD
       "totalEstUsdPerDay": 0,
+=======
+      "totalEstUsdPerDay": 0.526085,
+>>>>>>> origin/saos-cockpit
       "rails": 6,
       "measuredCount": 0,
       "estimatedCount": 0,
@@ -480,7 +632,11 @@
     "council": {
       "name": "council",
       "ok": true,
+<<<<<<< HEAD
       "ms": 5,
+=======
+      "ms": 4,
+>>>>>>> origin/saos-cockpit
       "verdict": "MESH-ALIVE",
       "organs": [
         "custodian:ALIVE",
@@ -499,9 +655,15 @@
       "positionAvgCost": null,
       "unbasedSteem": 0.5,
       "deployedSteem": 0,
+<<<<<<< HEAD
       "fuelUsdPerDay": 0.0249,
       "authorUsdPerDay": 0,
       "measuredTotalUsdPerDay": 0.0249,
+=======
+      "fuelUsdPerDay": 0.025,
+      "authorUsdPerDay": 0,
+      "measuredTotalUsdPerDay": 0.025,
+>>>>>>> origin/saos-cockpit
       "honesty": "unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"
     }
   },
@@ -511,9 +673,15 @@
     "positionAvgCost": null,
     "unbasedSteem": 0.5,
     "deployedSteem": 0,
+<<<<<<< HEAD
     "fuelUsdPerDay": 0.0249,
     "authorUsdPerDay": 0,
     "measuredTotalUsdPerDay": 0.0249,
+=======
+    "fuelUsdPerDay": 0.025,
+    "authorUsdPerDay": 0,
+    "measuredTotalUsdPerDay": 0.025,
+>>>>>>> origin/saos-cockpit
     "honesty": "unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"
   },
   "ok": true,
@@ -536,5 +704,9 @@
       "reason": "at-or-below-floor"
     }
   ],
+<<<<<<< HEAD
   "finishedAt": "2026-10-08T17:27:06.338Z"
+=======
+  "finishedAt": "2026-10-08T17:25:13.596Z"
+>>>>>>> origin/saos-cockpit
 }
