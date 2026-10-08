@@ -1,7 +1,7 @@
 /**
  * T-21d · SAOS cockpit design tokens.
  * Palette law: emerald (live/ok) · amber (warning) · rose (dead/fail) · orange (fleet) · slate/zinc neutrals.
- * NO indigo, NO blue, no cyan/teal/violet/fuchsia — every panel maps to one of the five tones.
+ * NO indigo, NO blue, no cyan/teal/violet/fuchsia, every panel maps to one of the five tones.
  */
 import { cn } from '@/lib/utils'
 

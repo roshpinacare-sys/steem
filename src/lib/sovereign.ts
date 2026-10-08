@@ -1,5 +1,5 @@
 /**
- * T-10 · SovereignCore — ריבונות-מתמשכת (continuous sovereignty layer).
+ * T-10 · SovereignCore: ריבונות-מתמשכת (continuous sovereignty layer).
  *
  * המערכת דואגת לעצמה ללא הפעלה-אנושית:
  *  - נטענת אוטומטית כששרת-Next עולה (instrumentation.register) וגם self-arms בכל קריאת-API
@@ -8,7 +8,7 @@
  *  - SELFTEST (כל 6 שעות): מריץ את סוויטת-האיכות של המנוע ומתעד תוצאה
  *  - יומן-החלטות: state/sovereign.json + state/sovereign-events.jsonl
  *
- * אפס-מפתחות: השכבה הזו מנהלת תהליכים ומתכננת — היא לא ולא יכולה לחתום על-על-שרשרת.
+ * אפס-מפתחות: השכבה הזו מנהלת תהליכים ומתכננת, היא לא ולא יכולה לחתום על-על-שרשרת.
  */
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
@@ -21,9 +21,9 @@ const PID_FILE = path.join(STATE_DIR, "engine.pid");
 const LOG_FILE = path.join(ENGINE_DIR, "engine.log");
 const SOV_FILE = path.join(STATE_DIR, "sovereign.json");
 const SOV_EVENTS = path.join(STATE_DIR, "sovereign-events.jsonl");
-/* R216-b · CUSTODIAN SUPERVISION — the R215 custodian (:3041, bounded-staleness
+/* R216-b · CUSTODIAN SUPERVISION: the R215 custodian (:3041, bounded-staleness
  * ≤10min persistence) had NO supervisor: ad-hoc tool-session launches are
- * reaped by the sandbox (observed live 22:35→22:43Z — process died, loss
+ * reaped by the sandbox (observed live 22:35→22:43Z, process died, loss
  * window silently unbounded again). Same survival doctrine as the engine:
  * spawn from the SURVIVING next-server tree, guard it every watchdog tick. */
 const CUSTODIAN_HTTP = "http://127.0.0.1:3041";
@@ -73,11 +73,11 @@ type Core = {
   wdBusy: boolean;
 };
 
-/* SOVEREIGN_GEN — upgrade generation. Bumping it makes the next module
+/* SOVEREIGN_GEN: upgrade generation. Bumping it makes the next module
  * evaluation (HMR/API-route recompile, no server restart needed) clear the
- * previous generation's timers — so stale closures can never double-heal —
+ * previous generation's timers, so stale closures can never double-heal,
  * and arm a fresh core carrying state over from sovereign.json. */
-const SOVEREIGN_GEN = 3; // v3: plain-bun spawns (determinism law, R217 — no mid-flight hot reloads of a signing organism)
+const SOVEREIGN_GEN = 3; // v3: plain-bun spawns (determinism law, R217, no mid-flight hot reloads of a signing organism)
 const g = globalThis as unknown as { __saosSovereign?: Core; __saosSovereignGen?: number };
 
 const nowIso = () => new Date().toISOString();
@@ -129,7 +129,7 @@ async function custodianHealth(timeoutMs = 3000): Promise<boolean> {
 }
 
 /** בעלות-על-custodian: ה-cwd של התהליך חייב להיות תיקיית-ה-custodian (ה-cmdline
- * זהה למנוע — "bun --hot index.ts" — ולכן ה-cwd הוא המבחין האמין) */
+ * זהה למנוע, "bun --hot index.ts", ולכן ה-cwd הוא המבחין האמין) */
 function pidIsOurCustodian(pid: number): boolean {
   try {
     const cwd = fs.readlinkSync(`/proc/${pid}/cwd`);
@@ -144,7 +144,7 @@ function spawnCustodian(core: Core, reason: string, force = false): void {
     fs.mkdirSync(CUSTODIAN_DIR, { recursive: true });
     const logFd = fs.openSync(CUSTODIAN_LOG, "a");
     /* R217 · PLAIN RUN (determinism law): bun --hot re-executes the entry on
-     * any watched-file edit — measured live (23:03Z) as a 65s blind window +
+     * any watched-file edit, measured live (23:03Z) as a 65s blind window +
      * heal churn on the ENGINE side. Code swaps must be deliberate:
      * edit → kill → watchdog heal-verify. No silent in-place reloads. */
     const child = spawn("bun", ["index.ts"], {
@@ -161,12 +161,12 @@ function spawnCustodian(core: Core, reason: string, force = false): void {
   }
 }
 
-/** ריפוי-custodian: אותה לולאת-אימות כמו המנוע — הריגת-תהליך-תקוע שלנו,
+/** ריפוי-custodian: אותה לולאת-אימות כמו המנוע: הריגת-תהליך-תקוע שלנו,
  * הרמה, ו-3 סבבי-אימות דופק. */
 async function healCustodian(core: Core, reason: string): Promise<void> {
   appendEvent(core, "custodian-heal-attempt", { reason });
   let pid = NaN;
-  try { pid = parseInt(fs.readFileSync(CUSTODIAN_PID_FILE, "utf8").trim(), 10); } catch { /* no pidfile — first boot or externally started */ }
+  try { pid = parseInt(fs.readFileSync(CUSTODIAN_PID_FILE, "utf8").trim(), 10); } catch { /* no pidfile: first boot or externally started */ }
   if (Number.isFinite(pid) && pid > 0 && pidAlive(pid)) {
     if (!pidIsOurCustodian(pid)) {
       appendEvent(core, "custodian-heal-skip-foreign-pid", { pid });
@@ -201,14 +201,14 @@ async function healCustodian(core: Core, reason: string): Promise<void> {
   }
 }
 
-/** הרמת תהליך-מנוע נפרד (detached) — שורד גם ריסטרט של שרת-Next; force=ניסיון-חוזר-פנימי בתוך ריפוי */
+/** הרמת תהליך-מנוע נפרד (detached), שורד גם ריסטרט של שרת-Next; force=ניסיון-חוזר-פנימי בתוך ריפוי */
 function spawnEngine(core: Core, reason: string, force = false): void {
   const t = Date.now();
   if (!force && core.state.watchdog.lastSpawnAt && t - new Date(core.state.watchdog.lastSpawnAt).getTime() < SPAWN_COOLDOWN_MS) return;
   try {
     fs.mkdirSync(STATE_DIR, { recursive: true });
     const logFd = fs.openSync(LOG_FILE, "a");
-    /* R217: plain bun (no --hot) — same determinism law as the custodian: a
+    /* R217: plain bun (no --hot), same determinism law as the custodian: a
      * watched-file edit must NEVER silently reload a signing organism
      * mid-cycle (measured 65s blind window → watchdog heal churn). */
     const child = spawn("bun", ["index.ts"], {
@@ -229,21 +229,21 @@ function spawnEngine(core: Core, reason: string, force = false): void {
 async function healEngine(core: Core, reason: string): Promise<void> {
   appendEvent(core, "heal-attempt", { reason });
   let pid = NaN;
-  try { pid = parseInt(fs.readFileSync(PID_FILE, "utf8").trim(), 10); } catch { /* no pidfile yet — first boot or externally-started engine */ }
+  try { pid = parseInt(fs.readFileSync(PID_FILE, "utf8").trim(), 10); } catch { /* no pidfile yet: first boot or externally-started engine */ }
   if (Number.isFinite(pid) && pid > 0 && pidAlive(pid)) {
     if (!pidIsOurEngine(pid)) {
-      // pid מוחזר-לתהליך-זר או cmdline לא-זמין — לא הורגים; רק מנסים להרים (הפורט יכריע)
+      // pid מוחזר-לתהליך-זר או cmdline לא-זמין, לא הורגים; רק מנסים להרים (הפורט יכריע)
       appendEvent(core, "heal-skip-foreign-pid", { pid });
     } else {
       appendEvent(core, "heal-kill-stale", { pid });
       try { process.kill(pid, "SIGTERM"); } catch { /* already gone */ }
-      // המתנה-עד-מוות-אמיתי (עד 5s) — מונע EADDRINUSE בהרמה-מחדש
+      // המתנה-עד-מוות-אמיתי (עד 5s), מונע EADDRINUSE בהרמה-מחדש
       for (let i = 0; i < 10 && pidAlive(pid); i++) await new Promise((r) => setTimeout(r, 500));
       try { if (pidAlive(pid)) process.kill(pid, "SIGKILL"); } catch { /* gone */ }
       await new Promise((r) => setTimeout(r, 300));
     }
   }
-  // הרמה + לולאת-אימות: 3 סבבים × (4s המתנה + בדיקת-דופק); אם נפל — מרימים שוב (force)
+  // הרמה + לולאת-אימות: 3 סבבים × (4s המתנה + בדיקת-דופק); אם נפל, מרימים שוב (force)
   let up = false;
   for (let round = 1; round <= 3 && !up; round++) {
     if (round > 1) {
@@ -272,7 +272,7 @@ async function healEngine(core: Core, reason: string): Promise<void> {
 
 async function watchdogTick(core: Core): Promise<void> {
   /* T-23 · TICK SINGLE-FLIGHT: an async tick that overlaps the heal of the
-   * previous one double-counts downs and re-enters healEngine — measured as
+   * previous one double-counts downs and re-enters healEngine, measured as
    * part of the blind-window investigation. A running tick blocks the next. */
   if (core.wdBusy) return;
   core.wdBusy = true;
@@ -289,7 +289,7 @@ async function watchdogTickInner(core: Core): Promise<void> {
   const h = await engineHealth();
   const wasUp = core.state.watchdog.engineUp;
   if (h.up) {
-    /* the freshness anchor — the honest "we saw it alive at" timestamp the
+    /* the freshness anchor: the honest "we saw it alive at" timestamp the
      * blind window is measured against */
     core.state.watchdog.lastUpAt = nowIso();
     core.state.watchdog.engineUp = true;
@@ -297,9 +297,9 @@ async function watchdogTickInner(core: Core): Promise<void> {
   if (!h.up) {
     /* T-23 · THE BLIND WINDOW BECOMES A MEASURED ARTIFACT (T-18 finding:
      * engine kill detected ~3.2min late, root-cause pending). Two laws:
-     * (1) TWO-STRIKE — a 5s re-check separates a transient blip from a real
+     * (1) TWO-STRIKE: a 5s re-check separates a transient blip from a real
      * down without waiting a full 60s tick for the confirmation;
-     * (2) downForMs — every down event carries how long since the last
+     * (2) downForMs: every down event carries how long since the last
      * proven-alive moment, so "detection latency" is always journaled, never
      * hidden. */
     await new Promise((r) => setTimeout(r, 5000));
@@ -309,7 +309,7 @@ async function watchdogTickInner(core: Core): Promise<void> {
       core.state.watchdog.blips++;
       core.state.watchdog.lastUpAt = nowIso();
       core.state.watchdog.engineUp = true;
-      appendEvent(core, "watchdog-blip", { downForMs, note: "transient — second pulse proved alive" });
+      appendEvent(core, "watchdog-blip", { downForMs, note: "transient, second pulse proved alive" });
     } else {
       core.state.watchdog.downs++;
       core.state.watchdog.engineUp = false;
@@ -321,7 +321,7 @@ async function watchdogTickInner(core: Core): Promise<void> {
   }
   // T-15 SIGNING-PULSE (the silent-rot lesson, measured live): the engine can
   // be HEALTHY while the whole signing fleet is DEAD (credential lost in a
-  // cold-reset — 3 agents rotted with raw ENOENT for a full day, unnoticed).
+  // cold-reset: 3 agents rotted with raw ENOENT for a full day, unnoticed).
   // The watchdog now treats armed-but-credential-missing as its own DOWN state:
   // journaled hourly (no spam), surfaced in state, revival path carried.
   try {
@@ -346,9 +346,9 @@ async function watchdogTickInner(core: Core): Promise<void> {
       core.state.cred.firstDownAt = null;
     }
   } catch { /* credential-pulse is best-effort; never break the watchdog */ }
-  // R216-b · CUSTODIAN PULSE — same two-strike doctrine as the engine.
+  // R216-b · CUSTODIAN PULSE: same two-strike doctrine as the engine.
   // Custody is bookkeeping, NOT an on-chain act: healing is deliberately
-  // independent of pause/STASIS — a paused organism still deserves an
+  // independent of pause/STASIS, a paused organism still deserves an
   // intact memory.
   try {
     core.state.custodian.checks++;
@@ -375,7 +375,7 @@ async function watchdogTickInner(core: Core): Promise<void> {
   writeJson(SOV_FILE, core.state);
 }
 
-/** T-14: סיווג-כשל — רק כשל-חיבור זכאי לניסיון-חוזר (timeout לא: המחזור עשוי
+/** T-14: סיווג-כשל: רק כשל-חיבור זכאי לניסיון-חוזר (timeout לא: המחזור עשוי
  * לרוץ-בצד-השרת, וניסיון-שני יכפיל פעולות; מדיניות-המכסות תוחמת גם-זאת, אך
  * זהירות קודם-כל). */
 function isConnLevelFailure(err: unknown): boolean {
@@ -384,7 +384,7 @@ function isConnLevelFailure(err: unknown): boolean {
     && !/timeout|abort/i.test(s);
 }
 
-/* T-17: START-ACK + MARKER POLL. The old flow held a 90s HTTP wait — every
+/* T-17: START-ACK + MARKER POLL. The old flow held a 90s HTTP wait, every
  * real multi-vote signing cycle outlived it and was journaled "fail" WHILE
  * ITS VOTES WERE LANDING ON-CHAIN (measured live 16:54-16:57: two real votes
  * broadcast, two cycle-fail events at exactly 90010/90006 ms), and the
@@ -395,7 +395,7 @@ function isConnLevelFailure(err: unknown): boolean {
  * closes and classify from the ENGINE's own truth (ok | blocked | fail) with
  * the engine-measured duration. Guards hoisted, lies removed, overlap dead. */
 const CYCLE_POLL_MS = 4_000;
-const CYCLE_WAIT_MAX_MS = 15 * 60_000; // poll budget — beyond any measured healthy cycle
+const CYCLE_WAIT_MAX_MS = 15 * 60_000; // poll budget: beyond any measured healthy cycle
 
 async function runEngineCycle(core: Core, trigger: "auto" | "kick"): Promise<{ ok: boolean; steps?: Record<string, unknown>; error?: string; ms: number }> {
   if (core.cycleBusy) return { ok: false, error: "cycle-busy", ms: 0 };
@@ -427,14 +427,14 @@ async function runEngineCycle(core: Core, trigger: "auto" | "kick"): Promise<{ o
     writeJson(SOV_FILE, core.state);
   };
   try {
-    // תיקון T-11: אם המנוע נפל בין-הצצות-שעון — ריפוי-מקדים במקום מחזור-שנכשל
+    // תיקון T-11: אם המנוע נפל בין-הצצות-שעון, ריפוי-מקדים במקום מחזור-שנכשל
     const pre = await engineHealth(2000);
     if (!pre.up && !(core.state.paused && trigger === "auto")) {
       await healEngine(core, `cycle-preheal(${trigger})`);
     }
-    // 1 · start-ack (one conn-level heal+retry — T-14 pattern preserved)
+    // 1 · start-ack (one conn-level heal+retry, T-14 pattern preserved)
     /* ackAt is captured BEFORE the POST: the engine writes its marker's
-     * startedAt DURING request handling, i.e. strictly after this moment —
+     * startedAt DURING request handling, i.e. strictly after this moment,
      * capturing it after the response would make every marker look "stale"
      * by a few ms and doom the poll to its full wait budget (measured
      * 17:30:00: marker .695 vs ack .700 → the exact bug, fixed here). */
@@ -446,7 +446,7 @@ async function runEngineCycle(core: Core, trigger: "auto" | "kick"): Promise<{ o
       appendEvent(core, `cycle-retry(${trigger})`, { error: String((ack.err as Error)?.message ?? ack.err).slice(0, 120), engineUpAfterHeal: h.up || core.state.watchdog.engineUp });
       ack = await postAck();
     }
-    // 2 · ack outcomes — every path is explicit, none is a silent "fail"
+    // 2 · ack outcomes: every path is explicit, none is a silent "fail"
     if (!ack.j) {
       const error = String((ack.err as Error)?.message ?? ack.err).slice(0, 160);
       journalCycleFail(`cycle-error(${trigger})`, { error });
@@ -454,7 +454,7 @@ async function runEngineCycle(core: Core, trigger: "auto" | "kick"): Promise<{ o
     }
     if (ack.j.error === "cycle-in-flight") {
       /* a cycle is ALREADY running on the engine (duplicate trigger / kick
-       * while auto is in flight) — a lawful SKIP, never a fail: nothing
+       * while auto is in flight): a lawful SKIP, never a fail: nothing
        * malfunctioned and no double-execution was admitted. */
       appendEvent(core, `cycle-skip(${trigger})`, { reason: "engine-cycle-in-flight", since: ack.j.since ?? null });
       writeJson(SOV_FILE, core.state);
@@ -484,7 +484,7 @@ async function runEngineCycle(core: Core, trigger: "auto" | "kick"): Promise<{ o
       const fresh = !!m && typeof m.startedAt === "string" && m.startedAt >= ackAt;
       if (fresh && m!.running === false) { marker = m; break; } // normal completion
       if (st.running === false && fresh && m!.running !== false) {
-        // phantom marker: the engine (re)started mid-cycle — module state says
+        // phantom marker: the engine (re)started mid-cycle, module state says
         // no cycle runs, the marker never closed ⇒ the process died mid-cycle
         marker = { ...m!, running: false, health: "fail", error: "engine-restarted-mid-cycle" };
         break;
@@ -557,7 +557,7 @@ function control(core: Core, action: string, by: string, note?: string): void {
   core.state.control = core.state.control.slice(0, 20);
 }
 
-/** נקודת-הצתה אחת — idempotent, HMR-safe, self-arming */
+/** נקודת-הצתה אחת: idempotent, HMR-safe, self-arming */
 export function ensureSovereign(by = "auto"): Core {
   if (g.__saosSovereign && g.__saosSovereignGen === SOVEREIGN_GEN) return g.__saosSovereign;
   if (g.__saosSovereign) {
@@ -575,7 +575,7 @@ export function ensureSovereign(by = "auto"): Core {
       armed: true,
       paused: prev?.paused ?? false,
       watchdog: {
-        // T-11: מונים מצטברים-על-פני-אתחולים — רציפות-אמת חוצה-הפעלות (שדות-נדיפים מתאפסים)
+        // T-11: מונים מצטברים-על-פני-אתחולים, רציפות-אמת חוצה-הפעלות (שדות-נדיפים מתאפסים)
         checks: prev?.watchdog?.checks ?? 0, downs: prev?.watchdog?.downs ?? 0,
         heals: prev?.watchdog?.heals ?? 0, healVerified: prev?.watchdog?.healVerified ?? 0, healFailed: prev?.watchdog?.healFailed ?? 0,
         lastCheckAt: null, engineUp: false, lastSpawnAt: null,
@@ -654,7 +654,7 @@ export function sovereignControl(action: string, by = "operator-cockpit"): Recor
       appendEvent(core, "resume", { by });
       return { ok: true, paused: false };
     case "kick-cycle":
-      if (core.state.paused) return { ok: false, error: "paused — הפעל ריבונות קודם" };
+      if (core.state.paused) return { ok: false, error: "paused: הפעל ריבונות קודם" };
       void runEngineCycle(core, "kick").then(() => writeJson(SOV_FILE, core.state));
       return { ok: true, kicked: true };
     case "force-heal":

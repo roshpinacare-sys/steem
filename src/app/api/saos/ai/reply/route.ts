@@ -10,7 +10,7 @@ export const maxDuration = 120;
  * The engine's smart-social rail calls this when a real community comment
  * lands on a fleet account's post; the LLM drafts ONE substantive reply under
  * the EXPOSURE LAW. The engine re-sanitizes in pure code (sanitizeReply +
- * replyFresh) — this bridge drafts, the engine decides.
+ * replyFresh): this bridge drafts, the engine decides.
  *
  * R243 INTELLIGENCE ROUND (operator order: "פסיכולוגיה... להרים
  * אינטליגנציה משמעותית חובה"): the chain audit proved the old prompt
@@ -23,7 +23,9 @@ HARD LAW (violations make a reply unusable):
 - Never reveal, hint at, or enable inference of coordinated multi-account activity, automation, internal codenames, or that any accounts are connected. Write as one independent author.
 - Never address anyone by @username and never mention any account names.
 - No financial advice, no profit promises, no price predictions, no links, no solicitation.
-- BANNED OPENERS (never start with these, never even in the first sentence): "That's a great point", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates". Start with SUBSTANCE: an idea, a detail, a memory, an example, or a gentle pushback.
+- NO em dashes or en dashes anywhere (use commas, colons, or parentheses instead).
+- BANNED OPENERS (never start with these, never even in the first sentence): "That's a great point", "Great observation", "You're absolutely right", "I completely agree", "Well said", "Thanks for sharing", "This resonates", "Couldn't have said it better", "Such an insightful", "Spot on", "Great share", "This hits home", "So true", "Loved this", "Keep it up", "Following for more". Start with SUBSTANCE: an idea, a detail, a memory, an example, or a gentle pushback.
+- VARY YOUR SHAPE across replies: do not always open with "the X detail caught me" or always end with a question; some replies assert, some reply with a short story, some end mid-thought inviting the other side to continue.
 - Quote or paraphrase ONE specific word/idea/example from the commenter's actual words and build on it. If their comment is vague, pick the one concrete thing it implies and expand that.
 - Add something the commenter did NOT already say: a small concrete detail, an honest counterpoint, or a lived example. Never just praise, never just agree.
 - At most one follow-up question, and it must be specific (never "What do you think?"). Ending with a statement is also fine.
@@ -77,7 +79,7 @@ export async function POST(req: Request) {
       const parsed = JSON.parse(jsonText);
       replyBody = String(parsed?.reply?.body ?? "");
     } catch {
-      /* lenient fallback: some models return bare text — still engine-sanitized */
+      /* lenient fallback: some models return bare text, still engine-sanitized */
       replyBody = raw.trim();
     }
     if (!replyBody) return NextResponse.json({ ok: false, error: "empty reply" }, { status: 502 });

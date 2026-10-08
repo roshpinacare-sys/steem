@@ -3,7 +3,7 @@ import fs from "fs";
 
 /* R218-d: builder organ connector (:3043). Same survival doctrine as the
  * metrics organ: spawn from the surviving next-server tree, demand-heal,
- * single-instance law. PROPOSAL-ONLY organ — it cannot touch the live tree,
+ * single-instance law. PROPOSAL-ONLY organ: it cannot touch the live tree,
  * git, or keys even if compromised; merge stays a deliberate outside act. */
 
 export const BUILDER_DIR = "/home/z/my-project/mini-services/saos-builder";
@@ -22,7 +22,7 @@ function spawnBuilder(): number | null {
   if (!fs.existsSync(`${BUILDER_DIR}/index.ts`)) return null;
   fs.mkdirSync(`${BUILDER_DIR}/state`, { recursive: true });
   const out = fs.openSync(`${BUILDER_DIR}/builder.log`, "a");
-  /* R218-a LESSON embedded: direct `bun index.ts` — `bun run dev` under the
+  /* R218-a LESSON embedded: direct `bun index.ts`, `bun run dev` under the
    * inherited next-server env resolves the ROOT package.json script. */
   const child = spawn("bun", ["index.ts"], {
     cwd: BUILDER_DIR,

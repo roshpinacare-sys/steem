@@ -6,7 +6,7 @@ import fs from "fs";
  * launches, but processes spawned from the SURVIVING next-server process tree
  * are not reaped. The keeper then owns the dev server lifecycle (probe :3000,
  * clean-cache-if-bloated, respawn `bun run dev`), so the cockpit preview can
- * no longer die permanently after an OOM/crash — the measured R262 failure.
+ * no longer die permanently after an OOM/crash, the measured R262 failure.
  * Single-instance law: refuse to spawn when :3044 already healthy. */
 
 export const DEV_KEEPER_DIR = "/home/z/my-project/mini-services/dev-keeper";
@@ -26,7 +26,7 @@ function spawnDevKeeper(): number | null {
   fs.mkdirSync(`${DEV_KEEPER_DIR}/state`, { recursive: true });
   const out = fs.openSync(`${DEV_KEEPER_DIR}/keeper.log`, "a");
   /* R218-a LESSON honored: direct `bun index.ts` spawn form (no script-layer
-   * indirection — the inherited env would resolve the ROOT dev script). */
+   * indirection, the inherited env would resolve the ROOT dev script). */
   const child = spawn("bun", ["index.ts"], {
     cwd: DEV_KEEPER_DIR,
     detached: true,

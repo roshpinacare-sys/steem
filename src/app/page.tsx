@@ -43,9 +43,9 @@ import type { Status, Sovereign } from '@/components/saos/types'
  * + design primitives (src/components/saos/*). Mobile gets a real segmented app-nav
  * (one section at a time); desktop keeps the full grid as always. */
 
-const f2 = (v?: number | null) => (typeof v === 'number' ? v.toFixed(2) : '—')
+const f2 = (v?: number | null) => (typeof v === 'number' ? v.toFixed(2) : '-')
 const uptimeStr = (bootedAt?: string): string => {
-  if (!bootedAt) return '—'
+  if (!bootedAt) return '-'
   const sec = Math.max(0, Math.floor((Date.now() - new Date(bootedAt).getTime()) / 1000))
   const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60)
   return h > 0 ? `${h}ש ${m}דק` : `${m}דק`
@@ -61,7 +61,7 @@ export default function Home() {
   const [cycleMsg, setCycleMsg] = useState<string | null>(null)
   const [actMsg, setActMsg] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
-  // T-21d · mobile section state — default פיקוד; on lg+ every section renders regardless
+  // T-21d · mobile section state: default פיקוד; on lg+ every section renders regardless
   const [section, setSection] = useState<SectionId>('command')
 
   const load = useCallback(async () => {
@@ -71,7 +71,7 @@ export default function Home() {
       const a = await fetch('/api/saos/status', { cache: 'no-store' })
       setS(await a.json())
     } catch {
-      setErr('קריאת-הסטטוס נכשלה — נסה רענון')
+      setErr('קריאת-הסטטוס נכשלה, נסה רענון')
     } finally {
       setLoading(false)
     }
@@ -84,7 +84,7 @@ export default function Home() {
     } catch { /* next poll retries */ }
   }, [])
 
-  /* R269 · fleet-evidence — the operator SEES the Hive connection + the whole
+  /* R269 · fleet-evidence: the operator SEES the Hive connection + the whole
    * users matrix (custody/RC/delegations/publish verdicts), not prose. */
   const loadEvi = useCallback(async () => {
     try {
@@ -103,7 +103,7 @@ export default function Home() {
     try {
       /* T-17: the engine acks the start IMMEDIATELY and runs the cycle
        * detached (single-flight + marker). The cockpit polls the engine's
-       * own marker until it closes — a UI wait can never outlive-or-kill a
+       * own marker until it closes, a UI wait can never outlive-or-kill a
        * healthy multi-vote signing cycle again, and the truth message is
        * built from the ENGINE's own classification, not from a hope. */
       const r = await fetch('/api/saos/engine', { method: 'POST' })
@@ -114,7 +114,7 @@ export default function Home() {
         return
       }
       if (ack.error === 'cycle-in-flight') {
-        setCycleMsg('מחזור כבר רץ על המנוע — ממתין לסיומו…')
+        setCycleMsg('מחזור כבר רץ על המנוע, ממתין לסיומו…')
       }
       type Marker = { running?: boolean; health?: string; ms?: number; steps?: Record<string, boolean>; blockedSteps?: string[] | null; failedSteps?: string[] | null; error?: string | null }
       type PollResp = { ok?: boolean; running?: boolean; marker?: Marker | null; rollup?: { measuredTotalUsdPerDay?: number | null } | null; error?: string }
@@ -131,17 +131,17 @@ export default function Home() {
       const stepsStr = () => Object.entries(done?.steps ?? {}).map(([k, ok]) => `${k}:${ok ? 'תקין' : 'כשל'}`).join(' · ')
       const measured = `$${(rollup?.measuredTotalUsdPerDay ?? 0).toFixed(4)}/יום`
       if (!done) {
-        setCycleMsg('המחזור עדיין רץ מעבר לתקציב-ההמתנה (15 דק) — המנוע ממשיך בצד-שלו; בדוק את כרטיס-המחזור לעדכון')
+        setCycleMsg('המחזור עדיין רץ מעבר לתקציב-ההמתנה (15 דק), המנוע ממשיך בצד-שלו; בדוק את כרטיס-המחזור לעדכון')
       } else if (done.health === 'ok') {
         setCycleMsg(`מחזור הושלם (${Math.round((done.ms ?? 0) / 100) / 10}s) · ${stepsStr()} · מדידה ${measured}`)
       } else if (done.health === 'blocked') {
-        setCycleMsg(`מחזור הושלם (חסום-חוקי — החתימה ממתינה לאישורי: ${(done.blockedSteps ?? []).join(', ')}) · ${stepsStr()} · מדידה ${measured}`)
+        setCycleMsg(`מחזור הושלם (חסום-חוקי, החתימה ממתינה לאישורי: ${(done.blockedSteps ?? []).join(', ')}) · ${stepsStr()} · מדידה ${measured}`)
       } else {
-        setCycleMsg(`מחזור הושלם (כשל — נכשלו: ${(done.failedSteps ?? []).join(', ') || done.error || 'לא-ידוע'}) · ${stepsStr()} · מדידה ${measured}`)
+        setCycleMsg(`מחזור הושלם (כשל, נכשלו: ${(done.failedSteps ?? []).join(', ') || done.error || 'לא-ידוע'}) · ${stepsStr()} · מדידה ${measured}`)
       }
       await load()
     } catch {
-      setCycleMsg('הרצת-המחזור נכשלה — בדוק שהמנוע רץ על :3040')
+      setCycleMsg('הרצת-המחזור נכשלה, בדוק שהמנוע רץ על :3040')
     } finally {
       setCycling(false)
     }
@@ -153,7 +153,7 @@ export default function Home() {
     try {
       const r = await fetch('/api/saos/sovereign', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) })
       const j = await r.json()
-      setActMsg(j?.ok ? `${label}: בוצע` : `${label}: נכשל — ${j?.error ?? 'שגיאה'}`)
+      setActMsg(j?.ok ? `${label}: בוצע` : `${label}: נכשל, ${j?.error ?? 'שגיאה'}`)
       await Promise.all([loadSov(), load()])
     } catch {
       setActMsg(`${label}: הרכיב לא זמין כרגע`)
@@ -173,7 +173,7 @@ export default function Home() {
   }, [load, loadSov, loadEvi])
 
   /** section wrapper: on mobile renders ONLY the active section (filtered by state);
-   *  on lg+ every section renders — the full grid as always. */
+   *  on lg+ every section renders, the full grid as always. */
   function renderSection(id: SectionId, children: ReactNode) {
     const meta = SECTIONS.find((x) => x.id === id)
     if (!meta) return null
@@ -242,7 +242,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* MOBILE SECTION NAV — the app-like menu (hidden on lg+) */}
+      {/* MOBILE SECTION NAV: the app-like menu (hidden on lg+) */}
       <SectionNav active={section} onChange={handleSection} />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-4 sm:py-6">
@@ -252,8 +252,8 @@ export default function Home() {
           </Card>
         )}
 
-        {/* T-80 · באנר-הקפאה-ריבונית — דבר-מפעיל 2026-10-04: המערכת עובדת אוטומטית בלי-חשיבה → עצירה, ביקורת, שער-חשיבה.
-            מוצג תמיד כשהמנוע כבוי או הריבונות מושהית — המפעיל חייב לראות את מצב-העצירה בראש-העמוד, לא דף-ריק. */}
+        {/* T-80 · באנר-הקפאה-ריבונית: דבר-מפעיל 2026-10-04: המערכת עובדת אוטומטית בלי-חשיבה → עצירה, ביקורת, שער-חשיבה.
+            מוצג תמיד כשהמנוע כבוי או הריבונות מושהית, המפעיל חייב לראות את מצב-העצירה בראש-העמוד, לא דף-ריק. */}
         {(sov?.state?.paused || !engineUp) && (
           <Card className="mb-4 border-amber-500/40 bg-amber-500/10 py-0 backdrop-blur-sm" role="status">
             <CardContent className="p-4">
@@ -263,10 +263,10 @@ export default function Home() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-amber-300">
-                    {sov?.state?.paused ? 'הקפאה-ריבונית (T-80) · הריבונות מושהית בפקודת-המפעיל' : 'T-80 · המנוע כבוי — האוטונומיה קפואה'}
+                    {sov?.state?.paused ? 'הקפאה-ריבונית (T-80) · הריבונות מושהית בפקודת-המפעיל' : 'T-80 · המנוע כבוי: האוטונומיה קפואה'}
                   </p>
                   <p className="mt-1 text-xs leading-relaxed text-amber-200/80">
-                    נעצר ונבדק בעקבות דבר-המפעיל (04.10): האצלות-אוטומטיות, מימון-חיילים חסרי-מפתח ושימוש-בהם בגריד — הופסקו ונחסמו מבנית.
+                    נעצר ונבדק בעקבות דבר-המפעיל (04.10): האצלות-אוטומטיות, מימון-חיילים חסרי-מפתח ושימוש-בהם בגריד הופסקו ונחסמו מבנית.
                     שער-חשיבה (Think Gate) פעיל על כל שידור: אפוטרופסות-מוכחת קודם, העברות-כספים והאצלות אסורות כברירת-מחדל, כל החלטה מתועדת ביומן.
                     המנוע יופעל מחדש רק בהוראת-מפעיל (כפתור-ההפעלה בכרטיס-הריבונות).
                   </p>
@@ -276,7 +276,7 @@ export default function Home() {
           </Card>
         )}
 
-        {/* T-15 · אזעקת-חתימה-מתה — לעולם לא שוב ריקבון-שקט: 3 סוכנים מתים בשקט יום-שלם עד שזה נחשף.
+        {/* T-15 · אזעקת-חתימה-מתה: לעולם לא שוב ריקבון-שקט: 3 סוכנים מתים בשקט יום-שלם עד שזה נחשף.
             המערכת חייבת לצרוח בראש-העמוד, עם נתיב-ההקמה המדויק. */}
         {s?.credential?.armedButNoCredential && (
           <Card className="mb-4 border-rose-500/40 bg-rose-500/10 py-0 backdrop-blur-sm" role="alert">
@@ -290,12 +290,12 @@ export default function Home() {
                   <p className="mt-1 text-xs leading-relaxed text-rose-200/80">
                     איפוס-הסביבה מחק את <code className="text-rose-300" dir="ltr">{s.credential.keyFile ?? '.secrets/headcorner.key'}</code>
                     {s.credential.missingSince && <> · מת כנראה מאז <span dir="ltr">{s.credential.missingSince.slice(0, 16).replace('T', ' ')}</span> UTC</>}
-                    · הספר על-השרשרת נשאר חי, המחזורים ממשיכים — רק פעולות-חתימה מושבתות.
+                    · הספר על-השרשרת נשאר חי, המחזורים ממשיכים, רק פעולות-חתימה מושבתות.
                   </p>
                   <p className="mt-1.5 text-xs font-semibold leading-relaxed text-emerald-300/90">
-                    ההקמה (שירות-עצמי, אפס-ריסטרט): הדבק את האישורי למטה — המנוע מאבטח (0600), מאמץ, ומאמת מול-השרשרת באותו-רגע. ערוץ-חלופי: הפל את קובץ-הסיסמה-הראשית כ-<code dir="ltr">upload/headcorner.txt</code>.
+                    ההקמה (שירות-עצמי, אפס-ריסטרט): הדבק את האישורי למטה: המנוע מאבטח (0600), מאמץ, ומאמת מול-השרשרת באותו-רגע. ערוץ-חלופי: הפל את קובץ-הסיסמה-הראשית כ-<code dir="ltr">upload/headcorner.txt</code>.
                   </p>
-                  {/* T-16 · בזבוז-VP — המחיר-הנראה של החתימה-החסומה (מדוד + מוערך) */}
+                  {/* T-16 · בזבוז-VP: המחיר-הנראה של החתימה-החסומה (מדוד + מוערך) */}
                   {!!s.spoilage && ((s.spoilage.votesForegone ?? 0) > 0 || (s.spoilage.estSteemForegone ?? 0) > 0) && (
                     <p className="mt-1.5 text-xs font-semibold text-amber-300">
                       בזבוז-VP מתמשך: <span dir="ltr">{s.spoilage.votesForegone}</span> קולות-שנמנעו ב־<span dir="ltr">{s.spoilage.daysBlocked}</span> ימי-חסימה
@@ -303,7 +303,7 @@ export default function Home() {
                       <span className="font-normal text-amber-200/60"> · {s.spoilage.note}</span>
                     </p>
                   )}
-                  {/* T-16/T-21d · paste-revival — הדרך-המהירה ביותר בחזרה לצי-חותם (מצב-משותף עם כרטיס הארנק) */}
+                  {/* T-16/T-21d · paste-revival: הדרך-המהירה ביותר בחזרה לצי-חותם (מצב-משותף עם כרטיס הארנק) */}
                   <AdoptCredentialFlow adopt={adopt} compact />
                 </div>
               </div>
@@ -338,7 +338,7 @@ export default function Home() {
                 >
                   <RailRow label="זמן-רציפות" value={uptimeStr(sov?.state?.bootedAt)} />
                   <div className="mt-2 grid grid-cols-2 gap-2">
-                    <Stat label="בדיקות-דופק" value={sov?.state?.watchdog?.checks ?? '—'} hint={`נפילות ${sov?.state?.watchdog?.downs ?? 0}`} />
+                    <Stat label="בדיקות-דופק" value={sov?.state?.watchdog?.checks ?? '-'} hint={`נפילות ${sov?.state?.watchdog?.downs ?? 0}`} />
                     <Stat label="ריפויים-עצמיים" value={sov?.state?.watchdog?.heals ?? 0} tone="emerald" hint={`אומתו ${sov?.state?.watchdog?.healVerified ?? 0}`} />
                     <Stat
                       label="מחזורים-אוטומטיים"
@@ -346,7 +346,7 @@ export default function Home() {
                       tone={(sov?.state?.cycles?.ok ?? 0) > 0 && sov?.state?.cycles?.lastOk !== false ? 'emerald' : 'slate'}
                       hint={`${sov?.state?.cycles?.blocked ?? 0} חסומים-חוקי · ${sov?.state?.cycles?.fail ?? 0} כשלים`}
                     />
-                    <Stat label="מחזור-בא-בעקבות" value={sov?.state?.cycles?.nextAt ? `${Math.max(0, Math.round((new Date(sov.state.cycles.nextAt).getTime() - Date.now()) / 60000))} דק` : '—'} />
+                    <Stat label="מחזור-בא-בעקבות" value={sov?.state?.cycles?.nextAt ? `${Math.max(0, Math.round((new Date(sov.state.cycles.nextAt).getTime() - Date.now()) / 60000))} דק` : '-'} />
                   </div>
                   <MetricsTrends />
                   <ClaimsAudit />
@@ -405,7 +405,7 @@ export default function Home() {
                     <StatusBadge tone="slate">account: {s?.engine?.info?.account ?? 'headcorner'}</StatusBadge>
                   </div>
                   <p className="mt-2 text-xs leading-relaxed text-slate-400">
-                    observe → intel → tick → peg → convert → curate → execute → soldiers → learn → report — הכל מקומי, אפס-רפו-חיצוני. חתימה-מנוע-מוחזקת מאז T-12 (מוגבלת-דוקטרינה) · מתג-הרג = השהיה.
+                    observe → intel → tick → peg → convert → curate → execute → soldiers → learn → report: הכל מקומי, אפס-רפו-חיצוני. חתימה-מנוע-מוחזקת מאז T-12 (מוגבלת-דוקטרינה) · מתג-הרג = השהיה.
                   </p>
                   <Button onClick={runCycle} disabled={cycling || !engineUp} size="sm" aria-label="הרץ-מחזור-מנוע" className="mt-3 h-11 w-full border border-emerald-500/40 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30 focus-visible:ring-emerald-500/50">
                     <Play className="h-4 w-4 me-1.5" aria-hidden />
@@ -415,21 +415,21 @@ export default function Home() {
                     <p className="mt-2 text-[11px] leading-relaxed text-emerald-300/90 break-words" role="status" aria-live="polite">{cycleMsg}</p>
                   )}
                   <Separator className="my-3 bg-slate-800" />
-                  <RailRow label="מחזור-אחרון" value={s?.rails?.autonomy?.lastCycle ? s.rails.autonomy.lastCycle.slice(11, 19) + ' UTC' : '—'} ltr />
-                  <RailRow label="טיקים" value={s?.grid?.runCount ?? '—'} className="mt-1" />
+                  <RailRow label="מחזור-אחרון" value={s?.rails?.autonomy?.lastCycle ? s.rails.autonomy.lastCycle.slice(11, 19) + ' UTC' : '-'} ltr />
+                  <RailRow label="טיקים" value={s?.grid?.runCount ?? '-'} className="mt-1" />
                 </SectionCard>
 
                 {/* משימה */}
                 <SectionCard icon={Target} tone="slate" title="המשימה · $1000/יום">
                   <div className="flex items-baseline gap-2">
-                    <span className="tnum text-3xl font-black text-amber-400">${usdPerDay !== null ? usdPerDay.toFixed(2) : '—'}</span>
+                    <span className="tnum text-3xl font-black text-amber-400">${usdPerDay !== null ? usdPerDay.toFixed(2) : '-'}</span>
                     <span className="text-xs text-slate-400">נמדד/יום · מתוך ${target}</span>
                   </div>
                   <Progress value={Math.min(((usdPerDay ?? 0) / target) * 100, 100)} className="mt-3 h-2 bg-slate-800 [&>div]:bg-amber-400" />
                   <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
                     {s?.execution?.verdict === 'VERIFIED'
-                      ? 'מצב-חי (T-12): המנוע חתום וריבוני — ספר-פאריטי פרוס בחוקי-הרצפה, צי-חיילים על-הספר, מסילת-קידום רצה, הכל מוגבל-דוקטרינה ומתועד-על-השרשרת. ההכנסה נמדדת ממילויים אמת בלבד.'
-                      : 'כל-מסילות-הביצוע קיימות וחמושות (ספר · המרה · חיילים · קידום) — מוגבלות-דוקטרינה. החסימה-היחידה: התאמת-מפתח.'}
+                      ? 'מצב-חי (T-12): המנוע חתום וריבוני: ספר-פאריטי פרוס בחוקי-הרצפה, צי-חיילים על-הספר, מסילת-קידום רצה, הכל מוגבל-דוקטרינה ומתועד-על-השרשרת. ההכנסה נמדדת ממילויים אמת בלבד.'
+                      : 'כל-מסילות-הביצוע קיימות וחמושות (ספר · המרה · חיילים · קידום), מוגבלות-דוקטרינה. החסימה-היחידה: התאמת-מפתח.'}
                   </p>
                 </SectionCard>
 
@@ -440,17 +440,17 @@ export default function Home() {
                   <Separator className="my-3 bg-slate-800" />
                   <RailRow
                     label="ממומש (A-10)"
-                    value={typeof realized === 'number' ? `${realized.toFixed(3)} SBD` : '—'}
+                    value={typeof realized === 'number' ? `${realized.toFixed(3)} SBD` : '-'}
                     tone={(realized ?? 0) >= 0 ? 'emerald' : 'amber'}
                   />
-                  <RailRow label="מילוי-אחרון" value={s?.observe?.lastFillAt ? s.observe.lastFillAt.slice(0, 16).replace('T', ' ') : '—'} ltr className="mt-1" />
+                  <RailRow label="מילוי-אחרון" value={s?.observe?.lastFillAt ? s.observe.lastFillAt.slice(0, 16).replace('T', ' ') : '-'} ltr className="mt-1" />
                 </SectionCard>
               </>
             ))}
 
             {renderSection('market', (
               <>
-                {/* מיקרו-מסחר · דופק-רשת (T-19) — השוק נמדד, לא מובטח */}
+                {/* מיקרו-מסחר · דופק-רשת (T-19): השוק נמדד, לא מובטח */}
                 <SectionCard
                   icon={Activity}
                   tone="emerald"
@@ -471,32 +471,32 @@ export default function Home() {
                   {s?.offer?.flow ? (
                     <div className="mt-3 space-y-1 border-t border-slate-800 pt-2 text-[11px]">
                       <div className="flex items-center gap-1.5 text-slate-400">
-                        <Target className="h-3.5 w-3.5 text-emerald-300" aria-hidden /> שכבת-זרימה <b className="text-emerald-300">פעילה</b> — נוכחות בחזית-הספר
+                        <Target className="h-3.5 w-3.5 text-emerald-300" aria-hidden /> שכבת-זרימה <b className="text-emerald-300">פעילה</b>: נוכחות בחזית-הספר
                       </div>
                       <div className="ms-5 text-slate-500">
-                        {s.offer.flow.flowAsks ?? 0} asks חזיתיים מ-{s.offer.flow.bestAsk ?? '—'} · {s.offer.flow.flowBids ?? 0} bids מ-{s.offer.flow.bestBid ?? '—'} · מרווח {s.offer.flow.spacingBps}bps · תקציב {s.offer.flow.askBudgetSteem ?? 0} STEEM / {s.offer.flow.bidBudgetSbd ?? 0} SBD
+                        {s.offer.flow.flowAsks ?? 0} asks חזיתיים מ-{s.offer.flow.bestAsk ?? '-'} · {s.offer.flow.flowBids ?? 0} bids מ-{s.offer.flow.bestBid ?? '-'} · מרווח {s.offer.flow.spacingBps}bps · תקציב {s.offer.flow.askBudgetSteem ?? 0} STEEM / {s.offer.flow.bidBudgetSbd ?? 0} SBD
                       </div>
                       <div className="ms-5 text-slate-600">
-                        עוגן-אמת: לעולם לא מוכרים מתחת לפיד-העדים ({s.offer.flow.feedAnchor ?? '—'} SBD/STEEM) — השוק-החי-היחיד-שקיים. רצפת-VF1 ({s.offer.marks?.floor ?? '—'}) שומרת על 80% מההון.
+                        עוגן-אמת: לעולם לא מוכרים מתחת לפיד-העדים ({s.offer.flow.feedAnchor ?? '-'} SBD/STEEM), השוק-החי-היחיד-שקיים. רצפת-VF1 ({s.offer.marks?.floor ?? '-'}) שומרת על 80% מההון.
                       </div>
                     </div>
                   ) : (
-                    <p className="mt-2 text-[11px] text-slate-500">שכבת-הזרימה מושהית — אין קריאת-ספר-חי במחזור-האחרון (המנוע ממשיך בשכבת-הערך בלבד).</p>
+                    <p className="mt-2 text-[11px] text-slate-500">שכבת-הזרימה מושהית, אין קריאת-ספר-חי במחזור-האחרון (המנוע ממשיך בשכבת-הערך בלבד).</p>
                   )}
                   {!!s?.offer?.book && (
                     <div className="mt-2 text-[11px] text-slate-500">
-                      ספר-חי: asks {s.offer.book.bestAsk ?? '—'} / bids {s.offer.book.bestBid ?? '—'} · עומק {s.offer.book.askDepthSteem ?? '—'} STEEM / {s.offer.book.bidDepthSbd ?? '—'} SBD
+                      ספר-חי: asks {s.offer.book.bestAsk ?? '-'} / bids {s.offer.book.bestBid ?? '-'} · עומק {s.offer.book.askDepthSteem ?? '-'} STEEM / {s.offer.book.bidDepthSbd ?? '-'} SBD
                     </div>
                   )}
-                  <p className="mt-2 text-[11px] leading-relaxed text-slate-500">אמת-מדידה: השוק-הפנימי סוחר ~49 עסקאות/יום (נמדד 2026-09-30) — זו התקרה-הכנה של כל אסטרטגיית-לכידה במקום-הזה. המכונה מייצרת נוכחות-מקסימלית בחזית ולוכדת נתח-זרימה, בלי להבטיח זרימה שהשוק לא נותן.</p>
+                  <p className="mt-2 text-[11px] leading-relaxed text-slate-500">אמת-מדידה: השוק-הפנימי סוחר ~49 עסקאות/יום (נמדד 2026-09-30): זו התקרה-הכנה של כל אסטרטגיית-לכידה במקום-הזה. המכונה מייצרת נוכחות-מקסימלית בחזית ולוכדת נתח-זרימה, בלי להבטיח זרימה שהשוק לא נותן.</p>
                 </SectionCard>
 
-                {/* HYPER-GRID · שכבת-הנפח (T-19b) — המנוע שמייצר אלפי פעולות-שרשרת ביום */}
+                {/* HYPER-GRID · שכבת-הנפח (T-19b): המנוע שמייצר אלפי פעולות-שרשרת ביום */}
                 <SectionCard
                   icon={Zap}
                   tone="amber"
                   title={<>HYPER-GRID · שכבת-הנפח <span dir="ltr" className="text-slate-500">(T-19b)</span></>}
-                  actions={<StatusBadge tone="amber">{s?.hyper?.running ? 'חי' : 'כבוי'} · {s?.hyper?.lastVerdict ?? '—'}</StatusBadge>}
+                  actions={<StatusBadge tone="amber">{s?.hyper?.running ? 'חי' : 'כבוי'} · {s?.hyper?.lastVerdict ?? '-'}</StatusBadge>}
                 >
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
                     {s?.hyper?.ops?.opsToday != null && (
@@ -515,46 +515,46 @@ export default function Home() {
                   {s?.hyper?.economics?.opsPerDay != null && (
                     <div className="mt-3 space-y-1 border-t border-slate-800 pt-2 text-[11px]">
                       <div className="text-slate-400">
-                        שיווי-משקל-נמדד: <b className="tnum text-amber-200">{s.hyper.economics.opsPerDay.toLocaleString()}</b> ops/יום — מיכל-RC {s.hyper.economics.regenPerDay != null ? `${(s.hyper.economics.regenPerDay / 1e12).toFixed(2)} טריליון` : '—'} שמתחדש 20%/יום, זוג-ריקוט (ביטול+יצירה) עולה {(s.hyper.economics.pairCost ?? 0) > 0 ? ((s.hyper.economics.pairCost ?? 0) / 1e6).toFixed(1) + 'M RC' : '—'} (מדידה-חיה rc-probe 2026-09-30).
+                        שיווי-משקל-נמדד: <b className="tnum text-amber-200">{s.hyper.economics.opsPerDay.toLocaleString()}</b> ops/יום, מיכל-RC {s.hyper.economics.regenPerDay != null ? `${(s.hyper.economics.regenPerDay / 1e12).toFixed(2)} טריליון` : '-'} שמתחדש 20%/יום, זוג-ריקוט (ביטול+יצירה) עולה {(s.hyper.economics.pairCost ?? 0) > 0 ? ((s.hyper.economics.pairCost ?? 0) / 1e6).toFixed(1) + 'M RC' : '-'} (מדידה-חיה rc-probe 2026-09-30).
                       </div>
                       <div className="text-slate-500">
                         לעומת התקציב-הישן (1,500/יום): זהו שיפור של <b className="text-amber-300">×{(s.hyper.economics.opsPerDay / 1500).toFixed(0)}</b> בנפח-הייצור. המושל שומר: רצפת-RC 25% (הצבעות לעולם לא נחנקות), שורף-רק-את-מה-שמתחדש.
                       </div>
                       {!!s?.hyper?.ops?.chainTail && (
                         <div className="text-slate-600">
-                          אמת-שרשרת (זנב-400-אופס, {s.hyper.ops.chainTailAt ? new Date(s.hyper.ops.chainTailAt).toLocaleTimeString('he-IL') : '—'}): {s.hyper.ops.chainTail.creates ?? 0} יצירות + {s.hyper.ops.chainTail.cancels ?? 0} ביטולים = <b className="tnum">{s.hyper.ops.chainTail.total ?? 0}</b> פעולות-ספר של-החשבון-כולו (היפר + מחזור + חותם-שני).
+                          אמת-שרשרת (זנב-400-אופס, {s.hyper.ops.chainTailAt ? new Date(s.hyper.ops.chainTailAt).toLocaleTimeString('he-IL') : '-'}): {s.hyper.ops.chainTail.creates ?? 0} יצירות + {s.hyper.ops.chainTail.cancels ?? 0} ביטולים = <b className="tnum">{s.hyper.ops.chainTail.total ?? 0}</b> פעולות-ספר של-החשבון-כולו (היפר + מחזור + חותם-שני).
                         </div>
                       )}
                       <div className="text-slate-600">
-                        סולם-ה-100,000× (חוק-גידול נמדד): ops/יום ∝ מיכל-RC ∝ SP. היום 4,034 SP → ~32k/יום; 40k SP → ~320k/יום; תקרת-קצב-השרשרת (טקס/3ש × אצווה) ≈ 2.9M/יום. המנוף: האצלת-RC נכנסת אוטומטית ל-max_rc — השכבה מרוויחה ריאות בלי-שינוי-קוד.
+                        סולם-ה-100,000× (חוק-גידול נמדד): ops/יום ∝ מיכל-RC ∝ SP. היום 4,034 SP → ~32k/יום; 40k SP → ~320k/יום; תקרת-קצב-השרשרת (טקס/3ש × אצווה) ≈ 2.9M/יום. המנוף: האצלת-RC נכנסת אוטומטית ל-max_rc, השכבה מרוויחה ריאות בלי-שינוי-קוד.
                       </div>
                     </div>
                   )}
                   {s?.hyper?.lastTxid && (
                     <div className="mt-2 font-mono text-[10px] break-all text-slate-600">
-                      שידור-אחרון: {s.hyper.lastTxid} · טיק-אחרון {s?.hyper?.lastTickAt ? new Date(s.hyper.lastTickAt).toLocaleTimeString('he-IL') : '—'} · טיקים: {s?.hyper?.ticks ?? 0}
+                      שידור-אחרון: {s.hyper.lastTxid} · טיק-אחרון {s?.hyper?.lastTickAt ? new Date(s.hyper.lastTickAt).toLocaleTimeString('he-IL') : '-'} · טיקים: {s?.hyper?.ticks ?? 0}
                     </div>
                   )}
-                  <p className="mt-2 text-[11px] leading-relaxed text-slate-500">כנות: ops = נוכחות-ואופציה, לא רווח. כל פעולה ממקמת-מחדש רמה-חוקית בחזית-הספר (עוגן-פיד + תקרה); מילויים נמדדים בנפרד (fill_order) וה-P&amp;L נשאר כן (A-10). TTL-ריקוט מתויג כשימור-נוכחות — אפס-ציפייה-למילוי.</p>
+                  <p className="mt-2 text-[11px] leading-relaxed text-slate-500">כנות: ops = נוכחות-ואופציה, לא רווח. כל פעולה ממקמת-מחדש רמה-חוקית בחזית-הספר (עוגן-פיד + תקרה); מילויים נמדדים בנפרד (fill_order) וה-P&amp;L נשאר כן (A-10). TTL-ריקוט מתויג כשימור-נוכחות: אפס-ציפייה-למילוי.</p>
                 </SectionCard>
 
                 {/* פאריטי + הצעה */}
                 <SectionCard icon={Scale} tone="slate" title="הצעת-פאריטי · peg">
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge tone={s?.offer?.verdict === 'OFFER-READY' ? 'emerald' : 'amber'} solid>
-                      <CircleCheck className="h-3 w-3 me-1" aria-hidden />{s?.offer?.verdict ?? '—'}
+                      <CircleCheck className="h-3 w-3 me-1" aria-hidden />{s?.offer?.verdict ?? '-'}
                     </StatusBadge>
                     {s?.offer?.marks?.lowConfidence && <StatusBadge tone="amber">מקור-פנימי · ביטחון-מופחת</StatusBadge>}
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2">
-                    <Stat label="פאריטי" value={s?.offer?.marks?.paritySbdPerSteem ?? '—'} ltr />
-                    <Stat label="סטייה (bps)" value={s?.offer?.parityBps ?? '—'} ltr />
-                    <Stat label="אסקים" value={s?.offer?.plan?.asks?.length ?? '—'} tone="amber" />
-                    <Stat label="בידים" value={s?.offer?.plan?.bids?.length ?? '—'} tone="emerald" />
-                    <Stat label="רצפה" value={s?.offer?.marks?.floor ?? '—'} ltr />
-                    <Stat label="dragK" value={s?.offer?.marks?.dragK ?? '—'} ltr hint="מבנה-החזקה — נגזר ממרווח-הספר במחזור-זה (dragK-הטיק ביומן נגרר-בנפרד מסטיית-הפאריטי)" />
+                    <Stat label="פאריטי" value={s?.offer?.marks?.paritySbdPerSteem ?? '-'} ltr />
+                    <Stat label="סטייה (bps)" value={s?.offer?.parityBps ?? '-'} ltr />
+                    <Stat label="אסקים" value={s?.offer?.plan?.asks?.length ?? '-'} tone="amber" />
+                    <Stat label="בידים" value={s?.offer?.plan?.bids?.length ?? '-'} tone="emerald" />
+                    <Stat label="רצפה" value={s?.offer?.marks?.floor ?? '-'} ltr />
+                    <Stat label="dragK" value={s?.offer?.marks?.dragK ?? '-'} ltr hint="מבנה-החזקה: נגזר ממרווח-הספר במחזור-זה (dragK-הטיק ביומן נגרר-בנפרד מסטיית-הפאריטי)" />
                   </div>
-                  <p className="mt-2 text-[11px] text-slate-500">דוקטרינה: אמת-מחיר-או-כלום · אין-מכירה-מתחת-לפאריטי · מקור: {s?.offer?.marks?.source ?? '—'}</p>
+                  <p className="mt-2 text-[11px] text-slate-500">דוקטרינה: אמת-מחיר-או-כלום · אין-מכירה-מתחת-לפאריטי · מקור: {s?.offer?.marks?.source ?? '-'}</p>
                 </SectionCard>
 
                 {/* סולם-חי */}
@@ -566,7 +566,7 @@ export default function Home() {
                 >
                   {orders.length === 0 ? (
                     <p className="text-sm text-slate-500">
-                      הספר ריק באמת (ordersOk: {String(s?.observe?.ordersOk ?? true)}) — כל ההון נזיל וממתין לפריסה בשער-האופרטור. התוכנית הדוקטרינית מוכנה בכל-מחזור.
+                      הספר ריק באמת (ordersOk: {String(s?.observe?.ordersOk ?? true)}), כל ההון נזיל וממתין לפריסה בשער-האופרטור. התוכנית הדוקטרינית מוכנה בכל-מחזור.
                     </p>
                   ) : (
                     <div className="max-h-72 overflow-auto rounded-lg border border-slate-800">
@@ -605,26 +605,26 @@ export default function Home() {
                 {/* הצי · אמת-אחת לכל-הסוכנים (T-15) */}
                 <FleetCard s={s} />
 
-                {/* R269 · מטריצת-הצי — כל-המשתמשים × שתי-השרשרות: סמכות/RC/האצלות/פסק-פרסום (2/3 רוחב — שורה-מלאה מול כרטיס-החיבור) */}
+                {/* R269 · מטריצת-הצי: כל-המשתמשים × שתי-השרשרות: סמכות/RC/האצלות/פסק-פרסום (2/3 רוחב, שורה-מלאה מול כרטיס-החיבור) */}
                 <FleetMatrixCard evi={evi} className="md:col-span-2 lg:col-span-2" />
 
-                {/* R269 · חיבור-Hive — הראיות המדודות: מי/מתי/אילו-מפתחות + ציר-זמן + קבלות */}
+                {/* R269 · חיבור-Hive: הראיות המדודות: מי/מתי/אילו-מפתחות + ציר-זמן + קבלות */}
                 <HiveConnectionCard evi={evi} />
 
-                {/* R255 · פרסונות-הצי — פרופילים, אישיות, סלנג אישי וקשתות-התפתחות */}
+                {/* R255 · פרסונות-הצי: פרופילים, אישיות, סלנג אישי וקשתות-התפתחות */}
                 <PersonasCard s={s} />
 
-                {/* R237 · מועצת-האיברים — רשת-התקשורת החיה + רישום-החסימות + אינטליגנציית-ה-power-up */}
+                {/* R237 · מועצת-האיברים: רשת-התקשורת החיה + רישום-החסימות + אינטליגנציית-ה-power-up */}
                 <CouncilCard
                   council={s.council}
                   blockages={s.daily?.blockages ?? null}
                   intel={s.daily?.steps?.redeploy?.intel ?? null}
                 />
 
-                {/* T-21d · גיוס-תפקידים — אופציונלי, נטען רק כשהמנוע מדווח */}
+                {/* T-21d · גיוס-תפקידים: אופציונלי, נטען רק כשהמנוע מדווח */}
                 <RolesCard roles={s.roles} />
 
-                {/* T-22f · הצוותים-העומדים — מודיעין-רשת + טיוטות-תוכן; אופציונלי, נטען רק כשהמנוע מדווח */}
+                {/* T-22f · הצוותים-העומדים: מודיעין-רשת + טיוטות-תוכן; אופציונלי, נטען רק כשהמנוע מדווח */}
                 <TeamsCard webintel={s.webintel} content={s.content} />
 
                 {/* T-23f · אריגה · חוזה-הגוף-האחד עם-החותם-השני; אופציונלי, נטען רק כשהמנוע מדווח */}
@@ -639,7 +639,7 @@ export default function Home() {
                 >
                   {s?.soldiers?.frozen && (
                     <p className="mb-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1.5 text-[11px] leading-relaxed text-amber-300">
-                      {s?.soldiers?.t80 ?? 'T-80: חיילים חסרי-מפתח מוקפאים — אפס מימון, אפס גריד, אפס חתימה'}
+                      {s?.soldiers?.t80 ?? 'T-80: חיילים חסרי-מפתח מוקפאים, אפס מימון, אפס גריד, אפס חתימה'}
                     </p>
                   )}
                   {s?.soldiers?.fundedEach && (
@@ -659,7 +659,7 @@ export default function Home() {
                   )}
                   {!s?.soldiers?.deployed && (
                     <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                      תוכנית-הצי: 3 חיילים (hcsoldier1..3) · מומנו מהמאסטר · כל-אחד מריץ סולם-מיקרו-משלו עם-אותן-חוקי-רצפת/פאריטי — מעמיק את האחיזה בספר. הפריסה חסומה-כנות עד-התאמת-מפתח (fail-closed).
+                      תוכנית-הצי: 3 חיילים (hcsoldier1..3) · מומנו מהמאסטר · כל-אחד מריץ סולם-מיקרו-משלו עם-אותן-חוקי-רצפת/פאריטי, מעמיק את האחיזה בספר. הפריסה חסומה-כנות עד-התאמת-מפתח (fail-closed).
                     </p>
                   )}
                 </SectionCard>
@@ -672,23 +672,23 @@ export default function Home() {
                 <SectionCard icon={Banknote} tone="amber" title="רווחיות-אמת · יסוד-עלות ממומש">
                   <div className="flex items-baseline gap-2">
                     <span className={`tnum text-3xl font-black ${(s?.profit?.realizedSbd ?? 0) >= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
-                      {typeof s?.profit?.realizedSbd === 'number' ? `${s.profit.realizedSbd.toFixed(3)} SBD` : '—'}
+                      {typeof s?.profit?.realizedSbd === 'number' ? `${s.profit.realizedSbd.toFixed(3)} SBD` : '-'}
                     </span>
                     <span className="text-xs text-slate-400">ממומש (A-10)</span>
                   </div>
                   <Separator className="my-3 bg-slate-800" />
-                  <RailRow label="פוזיציה פתוחה" value={typeof s?.profit?.positionSteem === 'number' ? `${s.profit.positionSteem.toFixed(1)} STEEM` : '—'} ltr />
-                  <RailRow label="יסוד-עלות ממוצע" value={s?.profit?.positionAvgCost ?? '—'} ltr className="mt-1" />
+                  <RailRow label="פוזיציה פתוחה" value={typeof s?.profit?.positionSteem === 'number' ? `${s.profit.positionSteem.toFixed(1)} STEEM` : '-'} ltr />
+                  <RailRow label="יסוד-עלות ממוצע" value={s?.profit?.positionAvgCost ?? '-'} ltr className="mt-1" />
                   <RailRow
                     label="בלתי-ממומש @ פאריטי"
-                    value={typeof s?.profit?.unrealizedAtParitySbd === 'number' ? `${s.profit.unrealizedAtParitySbd.toFixed(3)} SBD` : '—'}
+                    value={typeof s?.profit?.unrealizedAtParitySbd === 'number' ? `${s.profit.unrealizedAtParitySbd.toFixed(3)} SBD` : '-'}
                     tone={(s?.profit?.unrealizedAtParitySbd ?? 0) >= 0 ? 'emerald' : 'amber'}
                     ltr
                     className="mt-1"
                   />
-                  <RailRow label="ספר · נזיל" value={`${f2(s?.rails?.deployedSteem)} / ${s?.live?.balances?.steem ?? '—'}`} ltr className="mt-1" />
+                  <RailRow label="ספר · נזיל" value={`${f2(s?.rails?.deployedSteem)} / ${s?.live?.balances?.steem ?? '-'}`} ltr className="mt-1" />
                   <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                    כנות: מכירה בלי יסוד-עלות נמדד ({typeof s?.profit?.unbasedSteem === 'number' ? s.profit.unbasedSteem.toFixed(1) : '—'} STEEM → {typeof s?.profit?.unbasedSbd === 'number' ? s.profit.unbasedSbd.toFixed(1) : '—'} SBD) נרשמת unbased — לא נטענת כרווח.
+                    כנות: מכירה בלי יסוד-עלות נמדד ({typeof s?.profit?.unbasedSteem === 'number' ? s.profit.unbasedSteem.toFixed(1) : '-'} STEEM → {typeof s?.profit?.unbasedSbd === 'number' ? s.profit.unbasedSbd.toFixed(1) : '-'} SBD) נרשמת unbased, לא נטענת כרווח.
                   </p>
                 </SectionCard>
 
@@ -696,11 +696,11 @@ export default function Home() {
                 <SectionCard icon={Route} tone="emerald" title="מסילות-אמת · מדידה-מקומית-ריבונית">
                   <RailRow
                     label="דלק-קיורציה/יום"
-                    value={typeof s?.rails?.fuel === 'number' ? `$${s.rails.fuel.toFixed(4)}` : '—'}
+                    value={typeof s?.rails?.fuel === 'number' ? `$${s.rails.fuel.toFixed(4)}` : '-'}
                     tone={(s?.rails?.fuel ?? 0) > 0 ? 'emerald' : 'amber'}
                     ltr
                   />
-                  <RailRow label="מחבר/יום" value={typeof s?.rails?.author === 'number' ? `$${s.rails.author.toFixed(4)}` : '—'} ltr className="mt-1" />
+                  <RailRow label="מחבר/יום" value={typeof s?.rails?.author === 'number' ? `$${s.rails.author.toFixed(4)}` : '-'} ltr className="mt-1" />
                   <RailRow label="הון-עובד מוצב" value={`${f2(s?.rails?.deployedSteem)} STEEM`} tone={s?.rails?.bookEmpty ? 'amber' : 'emerald'} ltr className="mt-1" />
                   <RailRow label="SBD בספר" value={f2(s?.rails?.bidSbd)} ltr className="mt-1" />
                   <div className="mt-2">
@@ -708,7 +708,7 @@ export default function Home() {
                       label="מסילת-ההמרה D-023 (פנ-$1 → ‎3.5 ימים → STEEM)"
                       value={
                         <span className="flex flex-wrap items-center gap-2">
-                          <StatusBadge tone={s?.rails?.convert?.verdict === 'CONVERT-PLAN' ? 'emerald' : 'slate'}>{s?.rails?.convert?.verdict ?? '—'}</StatusBadge>
+                          <StatusBadge tone={s?.rails?.convert?.verdict === 'CONVERT-PLAN' ? 'emerald' : 'slate'}>{s?.rails?.convert?.verdict ?? '-'}</StatusBadge>
                           {s?.rails?.convert?.impliedSbdUsd != null && (
                             <span className="tnum text-[11px] font-normal text-slate-400">proxy-מרומז: ${s.rails.convert.impliedSbdUsd.toFixed(3)} (לא-מזין-חימוש)</span>
                           )}
@@ -761,7 +761,7 @@ export default function Home() {
                       )}
                     </>
                   ) : (
-                    <p className="text-xs text-slate-500">אין-קהילה-עדיין — הפעלת-קהילה ממתינה-להרצה.</p>
+                    <p className="text-xs text-slate-500">אין-קהילה-עדיין: הפעלת-קהילה ממתינה-להרצה.</p>
                   )}
                   <Separator className="my-3 bg-slate-800" />
                   {Array.isArray(s?.conversions) && s.conversions.length > 0 ? (
@@ -769,13 +769,13 @@ export default function Home() {
                       {s.conversions.map((c: { requestid?: number; amount?: string; hoursRemaining?: number | null; expectedSteemAtCurrentFeed?: number | null }) => (
                         <RailRow
                           key={String(c.requestid)}
-                          label={`המרה ${c.amount ?? '—'} · מסתיים בעוד ${typeof c.hoursRemaining === 'number' ? c.hoursRemaining.toFixed(1) : '—'} שעות`}
-                          value={`≈ ${typeof c.expectedSteemAtCurrentFeed === 'number' ? c.expectedSteemAtCurrentFeed.toFixed(1) : '—'} STEEM @ feed-עכשיו`}
+                          label={`המרה ${c.amount ?? '-'} · מסתיים בעוד ${typeof c.hoursRemaining === 'number' ? c.hoursRemaining.toFixed(1) : '-'} שעות`}
+                          value={`≈ ${typeof c.expectedSteemAtCurrentFeed === 'number' ? c.expectedSteemAtCurrentFeed.toFixed(1) : '-'} STEEM @ feed-עכשיו`}
                           ltr
                         />
                       ))}
                       <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-                        חוק-D-023: פירעון = סכום ÷ feed-במועד-הפרעון (לא פניית-$1) · תקרת-באוויר 10 SBD + רזרבה 0.5 מקודדים — ההמרה לא שואבת-את-הכמון.
+                        חוק-D-023: פירעון = סכום ÷ feed-במועד-הפרעון (לא פניית-$1) · תקרת-באוויר 10 SBD + רזרבה 0.5 מקודדים, ההמרה לא שואבת-את-הכמון.
                       </p>
                     </>
                   ) : (
@@ -803,7 +803,7 @@ export default function Home() {
                             </span>
                           }
                         />
-                        <RailRow label="פוסטים-hive היום (תקרה: מבחן-1-לחשבון)" value={ops?.at ? `${Object.values(ops.accounts ?? {}).reduce((a: number, b: any) => a + (b ?? 0), 0) as number} · סבב-אחרון: ${ops.verdict ?? '—'}` : 'ממתין-סבב'} ltr className="mt-1" />
+                        <RailRow label="פוסטים-hive היום (תקרה: מבחן-1-לחשבון)" value={ops?.at ? `${Object.values(ops.accounts ?? {}).reduce((a: number, b: any) => a + (b ?? 0), 0) as number} · סבב-אחרון: ${ops.verdict ?? '-'}` : 'ממתין-סבב'} ltr className="mt-1" />
                         <RailRow
                           label="וטו-downvote (עוצרים-ברגע-שיש-דירוג-שלילי)"
                           value={
@@ -835,29 +835,29 @@ export default function Home() {
                   return (
                     <SectionCard icon={TrendingUp} tone="emerald" title={<>מה-יש-לנו · פוטנציאל-ריבוני <span dir="ltr" className="text-slate-500">(T-10)</span></>}>
                       <div className="grid grid-cols-2 gap-2">
-                        <Stat label="הון-נזיל (STEEM)" value={steemLiquid > 0 ? steemLiquid.toFixed(1) : '—'} ltr />
-                        <Stat label="SBD נזיל" value={sbdLiquid > 0 ? sbdLiquid.toFixed(2) : '—'} ltr />
-                        <Stat label="שווי-הון-עובד (מוערך)" value={capitalUsd ? `$${capitalUsd.toFixed(2)}` : '—'} tone="emerald" ltr />
+                        <Stat label="הון-נזיל (STEEM)" value={steemLiquid > 0 ? steemLiquid.toFixed(1) : '-'} ltr />
+                        <Stat label="SBD נזיל" value={sbdLiquid > 0 ? sbdLiquid.toFixed(2) : '-'} ltr />
+                        <Stat label="שווי-הון-עובד (מוערך)" value={capitalUsd ? `$${capitalUsd.toFixed(2)}` : '-'} tone="emerald" ltr />
                         <Stat label="קצב-נמדד (כנות)" value={`$${rate.toFixed(4)}/יום`} ltr />
                       </div>
                       <Separator className="my-3 bg-slate-800" />
                       <ul className="space-y-1.5 text-[11px] leading-relaxed text-slate-300">
-                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">ספר-פאריטי</b> — תשתית מוכנה מלאה: תכנון OFFER-READY בכל-מחזור + ביצוע-מוסיף (D-021/D-022) + רצפת-ערך (r134-VF1). הפוטנציאל: קציר-מרווחים מעל-פאריטי על {s?.rails?.bookEmpty ? 'הנזיל-המלא (הספר כרגע באמת ריק — התוכנית מוכנה בכל-מחזור)' : <span dir="ltr">~{f2(s?.rails?.deployedSteem)} STEEM בספר</span>}.</span></li>
-                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">קיורציה</b> — נמדדה $4.26/יום כשהייתה פעילה; כרגע רדומה, ממתינה ל-authority פוסטינג (שער X-1). הכלי קיים ומתוכנת (A-12).</span></li>
-                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">מסילת-המרה D-023</b> — יתרון פנימי שנמדד +40.8% (SBD→STEEM פנ-$1); מתחממת אוטומטית כשהאסקים קוצרים SBD.</span></li>
-                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">ריבונות-רציפה (היום)</b> — watchdog + מחזורים-אוטומטיים + ביקורת-איכות + ריפוי-עצמי; זמן-רציפות חי בכרטיס הראשון.</span></li>
+                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">ספר-פאריטי</b>: תשתית מוכנה מלאה: תכנון OFFER-READY בכל-מחזור + ביצוע-מוסיף (D-021/D-022) + רצפת-ערך (r134-VF1). הפוטנציאל: קציר-מרווחים מעל-פאריטי על {s?.rails?.bookEmpty ? 'הנזיל-המלא (הספר כרגע באמת ריק, התוכנית מוכנה בכל-מחזור)' : <span dir="ltr">~{f2(s?.rails?.deployedSteem)} STEEM בספר</span>}.</span></li>
+                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">קיורציה</b>: נמדדה $4.26/יום כשהייתה פעילה; כרגע רדומה, ממתינה ל-authority פוסטינג (שער X-1). הכלי קיים ומתוכנת (A-12).</span></li>
+                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">מסילת-המרה D-023</b>: יתרון פנימי שנמדד +40.8% (SBD→STEEM פנ-$1); מתחממת אוטומטית כשהאסקים קוצרים SBD.</span></li>
+                        <li className="flex items-start gap-1.5"><CircleCheck className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400" aria-hidden /><span><b className="text-slate-100">ריבונות-רציפה (היום)</b>: watchdog + מחזורים-אוטומטיים + ביקורת-איכות + ריפוי-עצמי; זמן-רציפות חי בכרטיס הראשון.</span></li>
                       </ul>
                       <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                        כנות: פוטנציאל ≠ רווח-נמדד. בקצב-הנמדד הנוכחי ${rate.toFixed(4)}/יום, ל-$1000/יום נדרש הון של {needed ? `≈ $${needed.toFixed(0)}` : '—'} (אנלוגיית X-2) או מסילות-תשואה-גבוהות-יותר. כל-מספר כאן חי וממקור-chain או מדידה-מקומית.
+                        כנות: פוטנציאל ≠ רווח-נמדד. בקצב-הנמדד הנוכחי ${rate.toFixed(4)}/יום, ל-$1000/יום נדרש הון של {needed ? `≈ $${needed.toFixed(0)}` : '-'} (אנלוגיית X-2) או מסילות-תשואה-גבוהות-יותר. כל-מספר כאן חי וממקור-chain או מדידה-מקומית.
                       </p>
                     </SectionCard>
                   )
                 })()}
 
-                {/* T-21d · כלכלה · כל-המסילות — אופציונלי, נטען רק כשהמנוע מדווח */}
+                {/* T-21d · כלכלה · כל-המסילות: אופציונלי, נטען רק כשהמנוע מדווח */}
                 <EconomicsRailsCard economics={s.economics} />
 
-                {/* T-22f · מיכל-ה-RC — העקומה המדודה; אופציונלי, נטען רק כשהמנוע מדווח */}
+                {/* T-22f · מיכל-ה-RC: העקומה המדודה; אופציונלי, נטען רק כשהמנוע מדווח */}
                 <RcTankCard rcTank={s.rcTank} />
 
                 {/* T-23f · שעון-הפאייאוט + ספקטרום-ההון X-2; אופציונליים, נטענים רק כשהמנוע מדווח */}
@@ -890,7 +890,7 @@ export default function Home() {
                     <Stat
                       label="מועמדים-נסרקו"
                       value={s?.curator?.candidatesScanned ?? 0}
-                      hint={s?.curator?.candidatesScanned == null && s?.curator?.verdict && s.curator.verdict !== 'VOTED' ? `שער: ${s.curator.verdict} — הסריקה לא רצה במחזור-זה (חוקי)` : undefined}
+                      hint={s?.curator?.candidatesScanned == null && s?.curator?.verdict && s.curator.verdict !== 'VOTED' ? `שער: ${s.curator.verdict}, הסריקה לא רצה במחזור-זה (חוקי)` : undefined}
                     />
                   </div>
                   {!!s?.curator?.lastVotes?.length && (
@@ -904,7 +904,7 @@ export default function Home() {
                     </div>
                   )}
                   <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                    ה-VP המלא (98%+) ישב בטל — עכשיו ~4,034 SP עובדים (נמדד 05.10): הצבעות-בוקר טריות עם-ירידת-משקל-לפי-גיל, מכסה-יומית, רצפת-VP, אפס-הצבעה-עצמית, סינון-ספאם. מפתח-פרסום בלבד — פעולת-הצבעה לא-יכולה להזיז כספים. התשואה נמדדת מ-curation_reward חי (מסילת-הדלק).
+                    ה-VP המלא (98%+) ישב בטל, עכשיו ~4,034 SP עובדים (נמדד 05.10): הצבעות-בוקר טריות עם-ירידת-משקל-לפי-גיל, מכסה-יומית, רצפת-VP, אפס-הצבעה-עצמית, סינון-ספאם. מפתח-פרסום בלבד: פעולת-הצבעה לא-יכולה להזיז כספים. התשואה נמדדת מ-curation_reward חי (מסילת-הדלק).
                   </p>
                 </SectionCard>
 
@@ -928,22 +928,22 @@ export default function Home() {
                         <StatusBadge tone={s.adaptation.status === 'VERIFIED' ? 'emerald' : s.adaptation.status === 'SUPERSEDED' ? 'rose' : 'amber'}>
                           {s.adaptation.status === 'VERIFIED' ? 'כלל-נלמד · נתמך-בראיות'
                             : s.adaptation.status === 'SUPERSEDED' ? 'נפסל · המתנה-בטוחה (fail-closed)'
-                            : s.adaptation.status ?? '—'}
+                            : s.adaptation.status ?? '-'}
                         </StatusBadge>
                         <span className="text-[11px] text-slate-400" dir="ltr">{s.adaptation.adaptationId}</span>
                       </div>
                       <div className="mt-1.5 text-[11px] leading-relaxed text-slate-300">
-                        <b>הכלל:</b> <code className="rounded bg-slate-900 px-1" dir="ltr">claim_reward_balance → role={String(s.adaptation.rule?.roleTo ?? '—')}</code>
+                        <b>הכלל:</b> <code className="rounded bg-slate-900 px-1" dir="ltr">claim_reward_balance → role={String(s.adaptation.rule?.roleTo ?? '-')}</code>
                         {' '}· <b>תיקון-גוף:</b> <code className="rounded bg-slate-900 px-1" dir="ltr">op-id {String(s.adaptation.bodyFix?.opIdFrom ?? '?')}→{String(s.adaptation.bodyFix?.opIdTo ?? '?')}</code> (נשפט-מול-השרשרת)
                       </div>
                       <div className="mt-1 text-[11px] text-slate-500">
-                        ביטחון <b className="tnum text-slate-300">{s.adaptation.confidence ?? '—'}</b>
+                        ביטחון <b className="tnum text-slate-300">{s.adaptation.confidence ?? '-'}</b>
                         {' '}· צריכה-בנתיב-החתימה: <b className="tnum text-slate-300">{s.adaptation.consumptionCount ?? 0}</b>
                         {' '}· הישרדות-אתחולים: <b className="tnum text-slate-300">{s.adaptation.bootCount ?? 0}</b>
                         {' '}· ממתין-לטריגר-טבעי (pending=0 → אין-ניסוי, אמת-אפיסטמית)
                       </div>
                       <div className="mt-1 text-[10px] leading-relaxed text-slate-600" dir="rtl">
-                        מפריך: {s.adaptation.falsifier ?? '—'}
+                        מפריך: {s.adaptation.falsifier ?? '-'}
                       </div>
                     </div>
                   )}
@@ -967,7 +967,7 @@ export default function Home() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="mt-2 text-[11px] text-slate-500">לומד מהיסטוריה-מוקלטת בלבד — אפס המצאות: היסטוריה-ריקה = שיעורים-אפס.</p>
+                    <p className="mt-2 text-[11px] text-slate-500">לומד מהיסטוריה-מוקלטת בלבד, אפס המצאות: היסטוריה-ריקה = שיעורים-אפס.</p>
                   )}
                   {!!s?.learning?.tuningsApplied?.length && (
                     <div className="mt-2 text-[11px]">
@@ -977,28 +977,28 @@ export default function Home() {
                           {t.key}{t.to != null ? ` ${t.from}→${t.to}` : t.added ? ` +${t.added}` : ''}
                         </Badge>
                       ))}
-                      <div className="mt-1 text-slate-600">מוגבל-חוק (LEARN_CLAMP 30–60% משקל · גיל 5–12 דק · תגיות ≤8) — החוקים (רצפת-VF1, רצפת-VP, מכסה-יומית) בלתי-נגישים-ללמידה.</div>
+                      <div className="mt-1 text-slate-600">מוגבל-חוק (LEARN_CLAMP 30-60% משקל · גיל 5-12 דק · תגיות ≤8), החוקים (רצפת-VF1, רצפת-VP, מכסה-יומית) בלתי-נגישים-ללמידה.</div>
                     </div>
                   )}
                   {!!s?.discovery?.opportunities?.length && (
                     <div className="mt-3 border-t border-slate-800 pt-2">
                       <div className="mb-1 flex items-center gap-1.5 text-[11px] text-slate-400">
-                        <Lightbulb className="h-3.5 w-3.5 text-amber-300" aria-hidden /> אופציות-גדילה-שהתגלו ({s.discovery.verdict === 'OPTIONS-FOUND' ? 'מדורגות' : s.discovery.verdict ?? '—'})
+                        <Lightbulb className="h-3.5 w-3.5 text-amber-300" aria-hidden /> אופציות-גדילה-שהתגלו ({s.discovery.verdict === 'OPTIONS-FOUND' ? 'מדורגות' : s.discovery.verdict ?? '-'})
                       </div>
                       <ul className="max-h-36 space-y-1 overflow-y-auto">
                         {s.discovery.opportunities.map((o, i) => (
                           <li key={i} className="flex items-start gap-1.5 text-[11px] leading-relaxed">
                             <HonestyBadge kind={o.potentialClass ?? 'potential'} className="shrink-0" />
-                            <span><b className="text-slate-100">{o.kind}</b> — <span className="text-slate-400">{o.evidence}</span>{o.gate && <span className="text-slate-600"> · שער: {o.gate}</span>}</span>
+                            <span><b className="text-slate-100">{o.kind}</b>: <span className="text-slate-400">{o.evidence}</span>{o.gate && <span className="text-slate-600"> · שער: {o.gate}</span>}</span>
                           </li>
                         ))}
                       </ul>
                       {!!s.discovery.curationEst?.estimatedSteemPerDay && (
-                        <p className="mt-1 text-[10px] text-slate-500">אומדן-מנת-קיורציה ציבורי: ~{s.discovery.curationEst.estimatedSteemPerDay} STEEM/יום (מוערך — רק curation_reward חי נחשב-נמדד)</p>
+                        <p className="mt-1 text-[10px] text-slate-500">אומדן-מנת-קיורציה ציבורי: ~{s.discovery.curationEst.estimatedSteemPerDay} STEEM/יום (מוערך, רק curation_reward חי נחשב-נמדד)</p>
                       )}
                     </div>
                   )}
-                  <p className="mt-2 text-[11px] text-slate-500">לולאה-סוגרת-עצמה: קורא-היסטוריה → שיעורים-מבוססי-ראיות → כיוונים-חסומים → המחזור-הבא רץ-חכם-יותר. הגילוי מדרג ביושר: נמדד &gt; מוערך &gt; פוטנציאל, ולעולם לא מבצע — השערים מחליטים.</p>
+                  <p className="mt-2 text-[11px] text-slate-500">לולאה-סוגרת-עצמה: קורא-היסטוריה → שיעורים-מבוססי-ראיות → כיוונים-חסומים → המחזור-הבא רץ-חכם-יותר. הגילוי מדרג ביושר: נמדד &gt; מוערך &gt; פוטנציאל, ולעולם לא מבצע, השערים מחליטים.</p>
                 </SectionCard>
 
                 {/* אינטליגנציה · מפעילה-את-עצמה (T-12) */}
@@ -1022,12 +1022,12 @@ export default function Home() {
                       {s.intel.decisions.map((d, i) => (
                         <li key={i} className="flex items-start gap-1.5 text-[11px] leading-relaxed">
                           <StatusBadge tone="slate" className="shrink-0">{d.kind}</StatusBadge>
-                          <span><b className="text-slate-100">{d.decision}</b> — <span className="text-slate-400">{d.reason}</span></span>
+                          <span><b className="text-slate-100">{d.decision}</b>: <span className="text-slate-400">{d.reason}</span></span>
                         </li>
                       ))}
                     </ul>
                   )}
-                  <p className="mt-2 text-[11px] text-slate-500">כל-החלטה עם-נימוק — המפעיל רואה הכל, המערכת מריצה הכל בעצמה.</p>
+                  <p className="mt-2 text-[11px] text-slate-500">כל-החלטה עם-נימוק: המפעיל רואה הכל, המערכת מריצה הכל בעצמה.</p>
                 </SectionCard>
 
                 {/* ביצוע-חי · מפתח-ראשי (T-12) */}
@@ -1054,7 +1054,7 @@ export default function Home() {
                   </div>
                   {s?.execution?.verdict === 'CREDENTIAL-MISMATCH' && (
                     <p className="mt-2 text-[11px] leading-relaxed text-amber-400/90">
-                      כנות: התעודה שהועלתה תקינה-מבנית אך המפתחות-הנגזרים-ממנה אינם תואמים את רשויות-השרשרת של {s.execution?.account ?? 'החשבון'} (נבדק מול הרשאות חיות). שני-מסלולים: (א) העלה את סיסמת-האם-הנוכחית כ-upload/headcorner.txt — המנוע מאבטח ומאמץ אוטומטית; (ב) ב-steemit.com → Permissions החלף את המפתחות ל-proposedPubkeys — לאחר-צעד-אחד זה המערכת ריבונית-מלאה לתמיד.
+                      כנות: התעודה שהועלתה תקינה-מבנית אך המפתחות-הנגזרים-ממנה אינם תואמים את רשויות-השרשרת של {s.execution?.account ?? 'החשבון'} (נבדק מול הרשאות חיות). שני-מסלולים: (א) העלה את סיסמת-האם-הנוכחית כ-upload/headcorner.txt: המנוע מאבטח ומאמץ אוטומטית; (ב) ב-steemit.com → Permissions החלף את המפתחות ל-proposedPubkeys, לאחר-צעד-אחד זה המערכת ריבונית-מלאה לתמיד.
                     </p>
                   )}
                   {s?.execution?.proposedPubkeys && (
@@ -1083,17 +1083,17 @@ export default function Home() {
                   )}
                 </SectionCard>
 
-                {/* רשת-טריגרים · R237: שכבת-הסימולציה פרשה — אותות בלבד + שכבות-נוכחות ממודדות */}
+                {/* רשת-טריגרים · R237: שכבת-הסימולציה פרשה, אותות בלבד + שכבות-נוכחות ממודדות */}
                 <SectionCard icon={GitBranch} tone="slate" title="סריקת-אותות · שכבות-נוכחות ממודדות">
                   <div className="grid grid-cols-2 gap-2">
-                    <Stat label="טיקים" value={s?.grid?.runCount ?? '—'} />
+                    <Stat label="טיקים" value={s?.grid?.runCount ?? '-'} />
                     <Stat label="אותות-מחזור" value="ממודדים" />
                     <Stat label="מילויי-סימולציה (מוקפאים)" value={s?.grid?.simFills ?? 0} />
                     <Stat label="עמלות-סימולציה (מוקפאות, µ)" value={f2(s?.grid?.simFeesMu)} ltr />
                   </div>
                   {s?.grid?.sim?.retired && (
                     <p className="mt-2 rounded-lg border border-emerald-900/60 bg-emerald-950/30 p-2 text-[11px] leading-relaxed text-emerald-300/90">
-                      R237: שכבת-הסימולציה פרשה — אפס מילויי-סימולציה במחזורים חיים. מילויים אמיתיים נמדדים מהשרשרת; המונים ההיסטוריים מוקפאים-כמורשת.
+                      R237: שכבת-הסימולציה פרשה, אפס מילויי-סימולציה במחזורים חיים. מילויים אמיתיים נמדדים מהשרשרת; המונים ההיסטוריים מוקפאים-כמורשת.
                     </p>
                   )}
                   <div className="mt-2 grid grid-cols-2 gap-1.5">
@@ -1115,7 +1115,7 @@ export default function Home() {
                   title="יומן-אירועים · מנוע-ריבוני (state/events.jsonl)"
                 >
                   {!s?.events?.length ? (
-                    <p className="text-sm text-slate-500">אין-אירועים עדיין — השכבה-הריבונית מריצה מחזורים אוטומטית כל 10 דק (T-10)</p>
+                    <p className="text-sm text-slate-500">אין-אירועים עדיין, השכבה-הריבונית מריצה מחזורים אוטומטית כל 10 דק (T-10)</p>
                   ) : (
                     <div className="max-h-64 divide-y divide-slate-800/70 overflow-y-auto rounded-lg border border-slate-800">
                       {[...s.events].reverse().map((e, i) => (
@@ -1137,7 +1137,7 @@ export default function Home() {
         )}
       </main>
 
-      {/* FOOTER — sticky (mt-auto) · counters + truth line */}
+      {/* FOOTER: sticky (mt-auto) · counters + truth line */}
       <footer className="mt-auto border-t border-slate-800 bg-slate-950">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-slate-500 sm:flex-row">
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">

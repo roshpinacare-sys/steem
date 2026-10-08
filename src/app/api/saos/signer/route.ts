@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-// SIGNER-LOG — ראיה-פומבית בלבד: mover-log.jsonl מכיל txids ופרמטרי-פקודות,
+// SIGNER-LOG: ראיה-פומבית בלבד: mover-log.jsonl מכיל txids ופרמטרי-פקודות,
 // לעולם לא חומר-מפתח (דוקטרינת A-5: אפס-סודות בגיט, המקור-הריבוני בזמן-ריצה בלבד).
 const MOVER_LOG = "/home/z/audit/saos-dex/grids/state/mover-log.jsonl";
 
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       returned: entries.length,
       entries,
       source: MOVER_LOG,
-      note: "ראיה-פומבית בלבד (txids/פקודות) — אפס-חומר-מפתח עובר דרך שירות-זה",
+      note: "ראיה-פומבית בלבד (txids/פקודות), אפס-חומר-מפתח עובר דרך שירות-זה",
     });
   } catch {
     return NextResponse.json(

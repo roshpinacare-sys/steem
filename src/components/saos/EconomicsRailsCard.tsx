@@ -8,12 +8,12 @@ import { HonestyBadge } from './HonestyBadge'
 import type { Status } from './types'
 import type { Tone } from './tones'
 
-const usd = (v?: number | null) => (typeof v === 'number' ? `$${v.toFixed(4)}/יום` : '—')
+const usd = (v?: number | null) => (typeof v === 'number' ? `$${v.toFixed(4)}/יום` : '-')
 
 /**
- * T-91b · דוקטרינת הצבה-מחדש — חסימת-תצוגה בתוך כרטיס הכלכלה.
+ * T-91b · דוקטרינת הצבה-מחדש: חסימת-תצוגה בתוך כרטיס הכלכלה.
  * מציגה את היחסים הקבועים (ספר-קנייה / power-up / עתודה), את הרצפות,
- * את חוק-הקצב, את פסק-התוכנית החי ואת החוק. המנוע מחשב — כאן רק מציגים.
+ * את חוק-הקצב, את פסק-התוכנית החי ואת החוק. המנוע מחשב, כאן רק מציגים.
  */
 function RedeployDoctrine({ rd }: { rd: NonNullable<Status['economics']>['redeployDoctrine'] }) {
   if (!rd) return null
@@ -31,8 +31,8 @@ function RedeployDoctrine({ rd }: { rd: NonNullable<Status['economics']>['redepl
     : planVerdict === 'REDEPLOY-COOLDOWN' ? 'בקצב-המתנה'
     : planVerdict === 'REDEPLOY-BLOCKED' ? 'חסום'
     : planVerdict === 'REDEPLOY-HOLD' ? 'מחזיק (מתחת לרצפות)'
-    : '—'
-  const pct = (v?: number | null) => (typeof v === 'number' ? `${Math.round(v * 100)}%` : '—')
+    : '-'
+  const pct = (v?: number | null) => (typeof v === 'number' ? `${Math.round(v * 100)}%` : '-')
   const segments = [
     { key: 'buy', label: 'ספר-קנייה', v: bb, cls: 'bg-emerald-500/80' },
     { key: 'pu', label: 'power-up', v: pu, cls: 'bg-amber-500/80' },
@@ -55,7 +55,7 @@ function RedeployDoctrine({ rd }: { rd: NonNullable<Status['economics']>['redepl
         </span>
       </div>
 
-      {/* ratio bar — the fixed shares, one glance */}
+      {/* ratio bar: the fixed shares, one glance */}
       <div className="mt-2 overflow-hidden rounded-md border border-slate-800" role="img" aria-label={`יחסי הצבה-מחדש: ספר-קנייה ${pct(bb)}, power-up ${pct(pu)}, עתודה ${pct(rs)}`}>
         <div className="flex h-4 w-full">
           {segments.map((s) => (
@@ -76,9 +76,9 @@ function RedeployDoctrine({ rd }: { rd: NonNullable<Status['economics']>['redepl
 
       <div className="mt-1.5 text-[10px] leading-relaxed text-slate-500">
         רצפות-הפעלה (העתודה-המבצעית):{' '}
-        <b className="tnum text-slate-300" dir="ltr">{rd.floors?.liquidSteemFloor ?? '—'} STEEM</b> ·{' '}
-        <b className="tnum text-slate-300" dir="ltr">{rd.floors?.liquidSbdFloor ?? '—'} SBD</b>
-        {' '}· קצב: ≤1 power-up/שעה, ≤{rd.maxPerDay ?? '—'}/יום
+        <b className="tnum text-slate-300" dir="ltr">{rd.floors?.liquidSteemFloor ?? '-'} STEEM</b> ·{' '}
+        <b className="tnum text-slate-300" dir="ltr">{rd.floors?.liquidSbdFloor ?? '-'} SBD</b>
+        {' '}· קצב: ≤1 power-up/שעה, ≤{rd.maxPerDay ?? '-'}/יום
         {typeof rd.state?.powerUpsToday === 'number' && <> · היום: {rd.state.powerUpsToday}</>}
       </div>
       {rd.law && <p className="mt-1 text-[10px] leading-relaxed text-slate-600">{rd.law}</p>}
@@ -87,7 +87,7 @@ function RedeployDoctrine({ rd }: { rd: NonNullable<Status['economics']>['redepl
 }
 
 /**
- * T-21d · כלכלה · כל-המסילות — NEW optional card from status.economics.
+ * T-21d · כלכלה · כל-המסילות: NEW optional card from status.economics.
  * Renders ONLY when the engine provides the section (defensive ?. everywhere).
  * Confidence law: measured = solid emerald · estimated = amber + מוערך · blocked = rose.
  */
@@ -132,7 +132,7 @@ export function EconomicsRailsCard({ economics }: { economics: Status['economics
                       {r.estUsdPerDay != null && (
                         <span className={r.measuredUsdPerDay != null ? 'text-xs text-amber-400' : 'text-amber-400'}>~{usd(r.estUsdPerDay)}</span>
                       )}
-                      {r.measuredUsdPerDay == null && r.estUsdPerDay == null && <span className="text-slate-500">—</span>}
+                      {r.measuredUsdPerDay == null && r.estUsdPerDay == null && <span className="text-slate-500">-</span>}
                     </span>
                   }
                   tone={tone}

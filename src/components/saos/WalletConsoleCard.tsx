@@ -10,7 +10,7 @@ import type { AdoptState } from './useAdoptCredential'
 import type { Order, Status } from './types'
 
 /**
- * T-21d · ארנק וקונסול — the ONE authoritative wallet+console card.
+ * T-21d · ארנק וקונסול: the ONE authoritative wallet+console card.
  * Replaces the scattered wallet-ish pieces: balances (chain inventory + live chain-read),
  * fuel (measured rails), credential status (engine-held key / keyless / verdict),
  * and the paste-revival adopt flow with explicit step states and a 30s abort guard.
@@ -35,13 +35,13 @@ export function WalletConsoleCard({ s, adopt, orders }: { s: Status | null; adop
         ? <StatusBadge tone="emerald" solid pulse>אישורי-חי</StatusBadge>
         : <StatusBadge tone="rose" solid>אין-תעודה</StatusBadge>}
     >
-      {/* יתרות — מלאי-השרשרת הנמדד */}
+      {/* יתרות: מלאי-השרשרת הנמדד */}
       {inv ? (
         <div className="grid grid-cols-2 gap-2">
-          <Stat label="STEEM נזיל" value={inv.steem ?? '—'} tone="emerald" ltr />
-          <Stat label="SBD" value={inv.sbd ?? '—'} tone="emerald" ltr />
-          <Stat label="SP · כוח-שרשרת" value={inv.spOwn != null ? inv.spOwn.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'} hint="המנוף-הריבוני (RC ∝ SP)" ltr />
-          <Stat label="דלק-RC" value={typeof rcPct === 'number' ? `${rcPct}%` : '—'} tone={rcTone} hint="רצפת 20% להצבעות" ltr />
+          <Stat label="STEEM נזיל" value={inv.steem ?? '-'} tone="emerald" ltr />
+          <Stat label="SBD" value={inv.sbd ?? '-'} tone="emerald" ltr />
+          <Stat label="SP · כוח-שרשרת" value={inv.spOwn != null ? inv.spOwn.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '-'} hint="המנוף-הריבוני (RC ∝ SP)" ltr />
+          <Stat label="דלק-RC" value={typeof rcPct === 'number' ? `${rcPct}%` : '-'} tone={rcTone} hint="רצפת 20% להצבעות" ltr />
         </div>
       ) : s?.live?.balances ? (
         <div className="grid grid-cols-2 gap-2">
@@ -49,7 +49,7 @@ export function WalletConsoleCard({ s, adopt, orders }: { s: Status | null; adop
           <Stat label="SBD (chain)" value={s.live.balances.sbd} tone="emerald" ltr />
         </div>
       ) : (
-        <p className="text-xs text-slate-500">קריאת-chain לא-זמינה כרגע (RPC) — מוצג-בכנות</p>
+        <p className="text-xs text-slate-500">קריאת-chain לא-זמינה כרגע (RPC), מוצג-בכנות</p>
       )}
 
       {/* מלאי-מוקפא בפקודות-פתוחות */}
@@ -63,11 +63,11 @@ export function WalletConsoleCard({ s, adopt, orders }: { s: Status | null; adop
       <div className="mt-3 space-y-1 border-t border-slate-800 pt-2">
         <RailRow
           label={<span className="flex items-center gap-1.5"><BatteryCharging className="h-3.5 w-3.5 text-emerald-400" aria-hidden />דלק-קיורציה נמדד</span>}
-          value={typeof fuel?.fuelUsdPerDay === 'number' ? `$${fuel.fuelUsdPerDay.toFixed(4)}/יום` : '—'}
+          value={typeof fuel?.fuelUsdPerDay === 'number' ? `$${fuel.fuelUsdPerDay.toFixed(4)}/יום` : '-'}
           tone={(fuel?.fuelUsdPerDay ?? 0) > 0 ? 'emerald' : 'amber'}
         />
-        <RailRow label="מחבר/יום" value={typeof fuel?.authorUsdPerDay === 'number' ? `$${fuel.authorUsdPerDay.toFixed(4)}/יום` : '—'} />
-        <RailRow label="חלון-מדידה" value={fuel?.windowSpanDays != null ? `${fuel.windowSpanDays} ימים · ${fuel.histLen ?? '—'} אופס` : '—'} ltr />
+        <RailRow label="מחבר/יום" value={typeof fuel?.authorUsdPerDay === 'number' ? `$${fuel.authorUsdPerDay.toFixed(4)}/יום` : '-'} />
+        <RailRow label="חלון-מדידה" value={fuel?.windowSpanDays != null ? `${fuel.windowSpanDays} ימים · ${fuel.histLen ?? '-'} אופס` : '-'} ltr />
         {fuel?.windowNote && <p className="text-[10px] leading-relaxed text-amber-400/80">{fuel.windowNote}</p>}
       </div>
 
@@ -88,7 +88,7 @@ export function WalletConsoleCard({ s, adopt, orders }: { s: Status | null; adop
         )}
         {cred?.foreignCredential && (
           <p className="text-[10px] leading-relaxed text-rose-300 font-semibold">
-            אזעקת-שלמות-זהות: קובץ-התעודה מחזיק חשבון זר — החתימה מתה בכנות, ומסילות-המדידה נשארות על חשבון-המערכת. הדבק את האישורי-הנכון למטה.
+            אזעקת-שלמות-זהות: קובץ-התעודה מחזיק חשבון זר: החתימה מתה בכנות, ומסילות-המדידה נשארות על חשבון-המערכת. הדבק את האישורי-הנכון למטה.
           </p>
         )}
         {cred?.alerts != null && cred.alerts > 0 && (
@@ -107,16 +107,16 @@ export function WalletConsoleCard({ s, adopt, orders }: { s: Status | null; adop
           )}
           {verdict === 'CREDENTIAL-MISMATCH' && (
             <span className="text-[10px] leading-relaxed text-amber-400/90">
-              המפתחות-הנגזרים אינם תואמים את רשויות-השרשרת — הדבק את הסיסמה-הנוכחית למטה (ערוץ-ההקמה-המהיר)
+              המפתחות-הנגזרים אינם תואמים את רשויות-השרשרת, הדבק את הסיסמה-הנוכחית למטה (ערוץ-ההקמה-המהיר)
             </span>
           )}
         </div>
       </div>
 
-      {/* paste-revival — אפס-ריסטרט, שירות-עצמי */}
+      {/* paste-revival: אפס-ריסטרט, שירות-עצמי */}
       <div className="mt-3 border-t border-slate-800 pt-2">
         <p className="text-[11px] leading-relaxed text-slate-400">
-          <b className="text-slate-200">הקמת-חתימה (שירות-עצמי):</b> הדבק את האישורי — המנוע מאבטח (0600), מאמץ, ומאמת מול-השרשרת באותו-רגע. ערוץ-חלופי: הפל את קובץ-הסיסמה-הראשית כ-<code dir="ltr">upload/headcorner.txt</code>.
+          <b className="text-slate-200">הקמת-חתימה (שירות-עצמי):</b> הדבק את האישורי: המנוע מאבטח (0600), מאמץ, ומאמת מול-השרשרת באותו-רגע. ערוץ-חלופי: הפל את קובץ-הסיסמה-הראשית כ-<code dir="ltr">upload/headcorner.txt</code>.
         </p>
         <AdoptCredentialFlow adopt={adopt} />
       </div>

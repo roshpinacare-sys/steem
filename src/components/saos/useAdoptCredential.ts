@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
- * T-21d · paste-revival state machine — bulletproof by construction:
+ * T-21d · paste-revival state machine: bulletproof by construction:
  *  - the secret lives ONLY in this hook's state + the POST body (never logged, never stored)
  *  - explicit step states so the operator NEVER sees a stuck "ממתין": שולח… → מאמת מול-השרשרת… → תוצאה
  *  - client-side 30s abort guard (adoptCred has a fetch-timeout risk engine-side) with an
- *    explicit message: "המנוע לא הגיב ב-30 שניות — בדוק שהמנוע רץ"
+ *    explicit message: "המנוע לא הגיב ב-30 שניות, בדוק שהמנוע רץ"
  * Success/failure semantics are identical to the T-16 flow (verified → emerald, mismatch → amber guidance).
  */
 
@@ -72,17 +72,17 @@ export function useAdoptCredential(onDone?: () => void | Promise<void>): AdoptSt
         const j = await r.json().catch(() => null) as Record<string, unknown> | null
         if (j?.ok && j?.verified) {
           setStep('ok')
-          setMsg({ ok: true, text: `אומץ ואומת מול-השרשרת (${j.account} · טביעת-אצבע ${j.fingerprint}) — המחזור-הבא מקים את הצי החותם` })
+          setMsg({ ok: true, text: `אומץ ואומת מול-השרשרת (${j.account} · טביעת-אצבע ${j.fingerprint}), המחזור-הבא מקים את הצי החותם` })
           setText('')
           await onDone?.()
         } else if (j?.ok) {
           setStep('mismatch')
-          setMsg({ ok: false, text: `אומץ אך לא נמצא תואם לחשבון (${j.reason ?? 'CREDENTIAL-MISMATCH'}) — התקן את המפתחות-המוצעים ב-steemit.com או הדבק את הסיסמה-הנוכחית` })
+          setMsg({ ok: false, text: `אומץ אך לא נמצא תואם לחשבון (${j.reason ?? 'CREDENTIAL-MISMATCH'}), התקן את המפתחות-המוצעים ב-steemit.com או הדבק את הסיסמה-הנוכחית` })
         } else if (typeof j?.reason === 'string' && j.reason.startsWith('ACCOUNT-MISMATCH-DOCTRINE')) {
           /* T-21 identity-integrity: the engine refuses foreign-account pastes
-           * at the door — the measurement rails are never hijacked again */
+           * at the door, the measurement rails are never hijacked again */
           setStep('mismatch')
-          setMsg({ ok: false, text: `ההדבקה נדחתה: הדבקת חשבון אחר מחשבון-המערכת — מנוע זה מנהל את ${j.doctrineAccount ?? 'headcorner'} בלבד. הדבק: <${j.doctrineAccount ?? 'headcorner'}> <הסיסמה-הראשית-הנוכחית>` })
+          setMsg({ ok: false, text: `ההדבקה נדחתה: הדבקת חשבון אחר מחשבון-המערכת: מנוע זה מנהל את ${j.doctrineAccount ?? 'headcorner'} בלבד. הדבק: <${j.doctrineAccount ?? 'headcorner'}> <הסיסמה-הראשית-הנוכחית>` })
         } else {
           setStep('fail')
           setMsg({ ok: false, text: `אימוץ נכשל: ${j?.reason ?? j?.error ?? 'שגיאה'}` })
@@ -93,8 +93,8 @@ export function useAdoptCredential(onDone?: () => void | Promise<void>): AdoptSt
         setMsg({
           ok: false,
           text: name === 'TimeoutError' || name === 'AbortError'
-            ? `המנוע לא הגיב ב-${ADOPT_TIMEOUT_MS / 1000} שניות — בדוק שהמנוע רץ`
-            : 'המנוע לא זמין — נסה שוב',
+            ? `המנוע לא הגיב ב-${ADOPT_TIMEOUT_MS / 1000} שניות, בדוק שהמנוע רץ`
+            : 'המנוע לא זמין, נסה שוב',
         })
       } finally {
         clearTimeout(to)

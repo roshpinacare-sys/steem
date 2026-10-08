@@ -7,7 +7,7 @@ import type { FleetEvidence, MatrixAccount, MatrixChain, PublishVerdict } from '
 import { cn } from '@/lib/utils'
 
 /**
- * R269 · "וודא הכל על המשתמשים" — the whole estate, both chains, one table:
+ * R269 · "וודא הכל על המשתמשים": the whole estate, both chains, one table:
  * authority custody, RC tank, delegations in/out, last post, and an honest
  * publish verdict per body. LIVE-PROVEN beats estimates: a body that posted
  * on-chain within 48h needs no RC math to prove it can publish.
@@ -27,7 +27,7 @@ const VERDICT_TONE: Record<string, 'emerald' | 'amber' | 'rose' | 'slate'> = {
   'NOT-EXISTS': 'slate',
 }
 
-const vfmt = (n?: number) => (typeof n === 'number' && n > 0 ? `${Math.round(n).toLocaleString('en-US')}V` : '—')
+const vfmt = (n?: number) => (typeof n === 'number' && n > 0 ? `${Math.round(n).toLocaleString('en-US')}V` : '-')
 
 function AccountRow({ name, a, vestsToHp }: { name: string; a: MatrixAccount; vestsToHp: number }) {
   const verdict = a.publish?.verdict ?? 'NOT-EXISTS'
@@ -37,7 +37,7 @@ function AccountRow({ name, a, vestsToHp }: { name: string; a: MatrixAccount; ve
     const parts: string[] = []
     if (delIn.length) parts.push(`←${delIn.length} (${vfmt(a.delegations_in_vests)})`)
     if (delOut.length) parts.push(`→${delOut.length} (${vfmt(a.delegations_out_vests)})`)
-    return parts.join(' · ') || '—'
+    return parts.join(' · ') || '-'
   })()
   const delDetail = [
     ...delIn.map((d) => `← ${d.from}: ${Math.round(d.vests).toLocaleString('en-US')}V ≈ ${Math.round(d.vests * vestsToHp).toLocaleString('en-US')} SP/HP`),
@@ -58,13 +58,13 @@ function AccountRow({ name, a, vestsToHp }: { name: string; a: MatrixAccount; ve
             RC {a.rc.available_g}G/{a.rc.max_g}G ({a.rc.pct ?? 0}%)
           </span>
         ) : (
-          <span className="shrink-0 text-slate-600">RC —</span>
+          <span className="shrink-0 text-slate-600">RC -</span>
         )}
         <span className="shrink-0 text-slate-400" title={delDetail || 'אין האצלות'}>
           האצלות {delSummary}
         </span>
         <span dir="ltr" className="hidden shrink-0 font-mono text-slate-500 sm:inline" title={a.last_post ?? undefined}>
-          {a.last_post ? a.last_post.slice(5, 10) : '—'}
+          {a.last_post ? a.last_post.slice(5, 10) : '-'}
         </span>
       </div>
     </div>
@@ -89,7 +89,7 @@ function ChainBlock({ label, chain }: { label: string; chain?: MatrixChain }) {
         {entries.map(([name, a]) => (
           <AccountRow key={name} name={name} a={a} vestsToHp={chain?.vestsToHp ?? 0} />
         ))}
-        {!entries.length && <p className="text-[11px] text-slate-500">אין מדידה — הרץ את probe-r269-fleet-matrix.mjs</p>}
+        {!entries.length && <p className="text-[11px] text-slate-500">אין מדידה, הרץ את probe-r269-fleet-matrix.mjs</p>}
       </div>
     </div>
   )
@@ -107,11 +107,11 @@ export function FleetMatrixCard({ evi, className }: { evi: FleetEvidence | null;
       icon={Users}
       tone="orange"
       title={<>מטריצת-הצי · כל-המשתמשים · שתי-השרשרות <span dir="ltr" className="text-slate-500">(R269)</span></>}
-      meta="סמכות + מכל-RC + האצלות + פרסום-אחרון + פסק-פרסום — מדידה חיה מהצמתים, אפס טענות"
+      meta="סמכות + מכל-RC + האצלות + פרסום-אחרון + פסק-פרסום: מדידה חיה מהצמתים, אפס טענות"
       className={className}
       actions={
         <StatusBadge tone="slate" title={measuredAt ?? undefined}>
-          {measuredAt ? `נמדד ${measuredAt.slice(11, 16)}Z` : '—'}
+          {measuredAt ? `נמדד ${measuredAt.slice(11, 16)}Z` : '-'}
         </StatusBadge>
       }
     >
@@ -120,7 +120,7 @@ export function FleetMatrixCard({ evi, className }: { evi: FleetEvidence | null;
           האצלות-באחוזה: {Math.round(totOut + totIn).toLocaleString('en-US')} VESTS ≈ {Math.round((totOut + totIn) * (steem?.vestsToHp ?? 0)).toLocaleString('en-US')} SP/HP
         </span>
         <span className={cn('rounded border border-slate-800 bg-slate-900/70 px-1.5 py-0.5', totOut > 0 ? 'text-emerald-400' : 'text-slate-500')}>
-          המפעיל-צדק: יש האצלות — {Math.round(totOut).toLocaleString('en-US')}V יוצאות
+          המפעיל-צדק: יש האצלות, {Math.round(totOut).toLocaleString('en-US')}V יוצאות
         </span>
       </div>
       <div className="space-y-3">

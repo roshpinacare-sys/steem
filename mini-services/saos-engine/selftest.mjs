@@ -10,7 +10,7 @@ import {
   payoutWindow, rewardHistoryRollup, vpNow, x2Spectrum, weaveArbitration, weaveFresh, opTypeName,
   signalDigest, measuredLayers, redeployIntel, blockageLedger, organVerdict, meshVerdict,
 } from "./lib.mjs";
-import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE } from "./content.mjs";
+import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE, openingFresh, openingSimilarity } from "./content.mjs";
 import { sanitizeReply, replyFresh, textSimilarity, pickColdPost, buildDaySchedule } from "./army-social.mjs";
 import { spamVerdict, organicVerdict, crossChainVerdict, titleVerdict, tagVerdict, bodyVerdict, selfSimVerdict, groundingVerdict, frequencyVerdict, spamPhraseHits, dupSentenceRatio, jaccard, shingles, normalizeText, GATE_DEFAULTS } from "./spamgate.mjs";
 import { buildBusMessage, busOp, parseBusEntry, filterInbox, busRateLimit, deliverInbox, BUS_TYPES, BUS_ID } from "./bus.mjs";
@@ -835,6 +835,17 @@ ok("r243 thanks-opener-blocked", sanitizeReply("Thanks for sharing this perspect
 ok("r243 substantive-passes", sanitizeReply("The reward curve detail caught me off guard when I first tracked my own payouts. Did the timing shift change how you schedule?") !== null);
 ok("r243 roster-name-blocked", sanitizeReply("When wog writes about tools the examples always land well for me.") === null);
 ok("r243 too-short-blocked", sanitizeReply("nice one") === null);
+/* R270 · THE ANTI-GENERIC LAW: AI-stock openers die at the gate, openings
+ * that echo an already-published piece die at the variety gate. */
+ok("r270 generic-opener post blocked", sanitizeDraft({ title: "Toolbox thoughts", body: "In this article we will explore the world of workshop layouts for small spaces and how to make them work. " + "x ".repeat(320), tags: ["tools", "workshop"] }) === null);
+ok("r270 generic-opener title blocked", sanitizeDraft({ title: "It's no secret that workshops matter", body: "The shelf above my workbench collapsed on Tuesday and I have been rethinking what I keep. " + "x ".repeat(320), tags: ["tools", "workshop"] }) === null);
+ok("r270 clean opening passes", sanitizeDraft({ title: "Toolbox thoughts that grew from a rainy week", body: "The shelf above my workbench collapsed on Tuesday and I have been rethinking what I keep around. " + "x ".repeat(320), tags: ["tools", "workshop"] }) !== null);
+ok("r270 opening-variety blocks an echo", !openingFresh("The reward curve detail surprised me when I first tracked payouts closely.", ["The reward curve detail surprised me when I first tracked payouts very closely last month."]));
+ok("r270 opening-variety passes a fresh voice", openingFresh("A rainy week bent the shelf above my workbench and my whole view of tool hoarding.", ["The reward curve detail surprised me when I first tracked payouts closely."]));
+ok("r270 similarity math is sane (identical = 1)", openingSimilarity("same words here now", "same words here now") === 1);
+ok("r270 gen2 reply opener blocked (couldn't have said it better)", sanitizeReply("Couldn't have said it better myself. The reward curve is underrated.") === null);
+ok("r270 gen2 reply opener blocked (spot on)", sanitizeReply("Spot on about delegation economics, I ran into this exact wall last cycle.") === null);
+ok("r270 gen2 reply opener blocked (following for more)", sanitizeReply("Following for more posts like this one about payout timing.") === null);
 ok("r243 similarity-identical", textSimilarity("the reward curve changed how I schedule posts", "the reward curve changed how I schedule posts") === 1);
 ok("r243 similarity-unrelated", textSimilarity("the reward curve changed how I schedule posts", "cold morning air makes the walk feel shorter") < 0.05);
 const saidToday = ["The reward curve detail caught me off guard when I first tracked my own payouts this month."];
@@ -2196,6 +2207,14 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   let codenameCaught = false;
   try { buildLedgerBody({ dayIso: "2026-10-08", parity: 1, orders: 1, fills: 1, realizedSbd: 1, curationUsd: 1, authorUsd: 1, decisions: [{ kind: "curate", decision: "ok", reason: "the fleet aligned on parity" }] }); } catch (e) { codenameCaught = String(e.message).includes("exposure"); }
   ok("ledger negative control: a planted codename (even inside a reason) is REFUSED", codenameCaught);
+  /* R270 · THE ANTI-GENERIC LAW: the ledger must never read like yesterday's
+   * page with new numbers. Title, lede and closer rotate day-seeded. */
+  const titles7 = ["01", "02", "03", "04", "05", "06", "07"].map((d) => ledgerTitle(`2026-10-${d}T04:00:00Z`));
+  ok("ledger title: a week of days yields a VARIETY of titles", new Set(titles7).size >= 3);
+  ok("ledger title: deterministic (same day = same title)", ledgerTitle("2026-10-08T04:00:00Z") === ledgerTitle("2026-10-08T23:30:00Z"));
+  const bodyB = buildLedgerBody({ dayIso: "2026-10-09T04:00:00Z", parity: 1.234567, paritySource: "internal feed", lowConfidence: false, orders: 5, fills: 12, realizedSbd: 3.2, curationUsd: 0.5, authorUsd: 0.3, gridVerdict: "live on the book", decisions: [] });
+  ok("ledger: two different days open differently (anti-generic)", !body.startsWith(bodyB.slice(0, 60)) && body !== bodyB);
+  ok("ledger day B: still dash-free, ≥300 words, ends with a question", !bodyB.includes("—") && !bodyB.includes("–") && bodyB.split(/\s+/).filter(Boolean).length >= 300 && /\?\s*$/.test(bodyB.trim()));
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

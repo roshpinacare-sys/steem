@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/market.json: 502 trades/24h measured (vol 4620.208 STEEM)",
+      "evidence": "state/market.json: 495 trades/24h measured (vol 4383.238 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -26,7 +26,7 @@
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
       "recruitedAt": "2026-10-08T06:49:08.934Z",
       "evidence": "state/hyper-grid.json: equilibrium 10214 ops/day measured (RC governor live)",
-      "priorStatus": "planned"
+      "priorStatus": "active"
     },
     {
       "id": "fill-auditor",
@@ -37,8 +37,8 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-08T06:49:08.934Z",
-      "evidence": "state/observe.json: 1 chain-truth fills counted (last 2026-10-08T06:30:39.000Z)",
-      "priorStatus": "planned"
+      "evidence": "state/observe.json: 2 chain-truth fills counted (last 2026-10-08T06:59:18.000Z)",
+      "priorStatus": "active"
     },
     {
       "id": "treasury-sentinel",
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 0bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 6bps)",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/selftest-last-run.json: 984/984 PASS at 2026-10-08T06:34:14.159Z",
+      "evidence": "state/selftest-last-run.json: 999/999 PASS at 2026-10-08T07:18:25.601Z",
       "priorStatus": "active"
     },
     {
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-08T06:09:45.194Z",
-      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T06:49:08.934Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: READ-OK-NO-UNPAID-VOTES at 2026-10-08T07:19:08.964Z — pending(vests 0), payout clock n/a — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-08T06:49:08.934Z",
+  "at": "2026-10-08T07:19:08.964Z",
   "pid": 28921
 }

@@ -6,7 +6,7 @@ import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /**
- * T-21d · THE mobile navigation fix — a sticky segmented section nav.
+ * T-21d · THE mobile navigation fix: a sticky segmented section nav.
  * On mobile the cockpit renders ONE section at a time (real app-like menu, not a broken
  * long scroll); the pills filter sections with snap scrolling and 44px touch targets.
  * Hidden on lg+ where the full grid renders as always.
@@ -51,7 +51,7 @@ export function SectionNav({ active, onChange }: { active: SectionId; onChange: 
               type="button"
               role="tab"
               aria-selected={isActive}
-              aria-label={`${label} — ${hint}`}
+              aria-label={`${label}: ${hint}`}
               data-section={id}
               onClick={() => onChange(id)}
               className={cn(

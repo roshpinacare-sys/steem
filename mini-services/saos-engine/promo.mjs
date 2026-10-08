@@ -47,8 +47,10 @@ export function buildLedgerBody({ dayIso, parity, paritySource, lowConfidence, o
   const decRows = (Array.isArray(decisions) ? decisions : []).slice(0, 6)
     .map((d) => `| ${kindLabel(d?.kind)} | ${String(d?.decision ?? "?").replace(/\|/g, "/")} | ${String(d?.reason ?? "").replace(/\|/g, "/").slice(0, 80)} |`)
     .join("\n");
+  const seed = daySeed(String(dayIso ?? ""));
+  const ledeCore = `market parity between the two chain tokens closed the day at ${fmt(parity, 6)}${conf}, read from ${paritySource ?? "public feeds"}. The order book held ${orders ?? "?"} open orders and ${fills} real fills in the measured window. Realized result, accounted by average cost, no smoothing: ${fmt(realizedSbd, 6)} SBD.`;
   const body = [
-    `**The numbers first, because that is the whole point of this ledger:** market parity between the two chain tokens closed the day at ${fmt(parity, 6)}${conf}, read from ${paritySource ?? "public feeds"}. The order book held ${orders ?? "?"} open orders and ${fills} real fills in the measured window. Realized result, accounted by average cost, no smoothing: ${fmt(realizedSbd, 6)} SBD.`,
+    LEDE_VARIANTS[seed % LEDE_VARIANTS.length](ledeCore),
     "",
     "This page runs a small, patient experiment on the chain's own markets: a fixed ladder of offers, re-checked every cycle, with every fill and every decision written down where anyone can audit it. Nothing here is a promise and nothing here is advice. The only claim this ledger makes is that the numbers below are the same numbers the system acted on.",
     "",
@@ -70,7 +72,9 @@ export function buildLedgerBody({ dayIso, parity, paritySource, lowConfidence, o
     "",
     "A note on method, because method is the honest part: every figure above is pulled from public chain data and the system's own execution log, then published as-is, including the readings that make the day look unremarkable. An unremarkable day that is reported truthfully is worth more than an exciting one that is dressed up. The ladder does not move on feelings; it moves on the arithmetic in this table, and when the arithmetic is wrong, the loss lands here in plain sight the same way the wins do.",
     "",
-    "That is the whole practice: measure, act, write it down, repeat. If you run anything on this chain (a shop, a stake, a small bot of your own), how do you keep your own ledger honest, and what number do you check first each day?",
+    "That is the whole practice: measure, act, write it down, repeat.",
+    "",
+    CLOSER_VARIANTS[seed % CLOSER_VARIANTS.length],
   ].join("\n");
   const out = normalizeDashes(body);
   const words = out.split(/\s+/).filter(Boolean).length;
@@ -81,9 +85,46 @@ export function buildLedgerBody({ dayIso, parity, paritySource, lowConfidence, o
   return out;
 }
 
-/** pure: the neutral ledger title (no codenames, no dashes) */
+/* R270 · THE ANTI-GENERIC LAW (operator order, verbatim intent): "סליחה
+ * שעצרתי אותך באמצע... ראיתי תגובות שלנו הן די דומות מאוד... אני לא מסוגל
+ * לראות את הדבר הגנרי הזה... תשפר תבונה ואיכות ונראות". A ledger that opens
+ * with the SAME sentence and closes with the SAME question every single day
+ * is a template wearing a data hat. From now on the title, the lede and the
+ * closing question each rotate through a small pool of hand-written variants,
+ * chosen deterministically from the day string (same day = same text, so the
+ * builder stays pure and reproducible; different day = different voice).
+ * Every variant is dash-free, codename-free, and ≥ the craft floor. */
+const daySeed = (day) => Array.from(String(day ?? "")).reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) % 100000, 7);
+
+const TITLE_VARIANTS = [
+  (day) => `The Daily Ledger, ${day}: real numbers, no promises`,
+  (day) => `Ledger notes for ${day}: what the ladder actually did`,
+  (day) => `Numbers over noise, the ${day} page`,
+  (day) => `A day on the order book, written plainly (${day})`,
+  (day) => `The quiet arithmetic of ${day}`,
+  (day) => `${day}: the ledger, the ladder, and nothing dressed up`,
+];
+
+const LEDE_VARIANTS = [
+  (core) => `**The numbers first, because that is the whole point of this ledger:** ${core}`,
+  (core) => `**Measured, not promised. Here is what the day actually produced:** ${core}`,
+  (core) => `**No preamble, just the readings the system acted on:** ${core}`,
+  (core) => `**Plain figures from a patient, auditable experiment:** ${core}`,
+  (core) => `**The day's evidence, exactly as the machines recorded it:** ${core}`,
+];
+
+const CLOSER_VARIANTS = [
+  "If you run anything on this chain (a shop, a stake, a small bot of your own), how do you keep your own ledger honest, and what number do you check first each day?",
+  "Honest ledgers grow boring on purpose. Which boring number do you track every single day, and what has it taught you about your own work?",
+  "Every system like this lives or dies by what it writes down. If you had to publish one number about your own work each day, which one would you choose, and why?",
+  "The ladder repeats the same small loop daily: measure, act, record. What does your own repeat-loop look like, and where do you keep it written down?",
+  "Yesterday's plan met today's market and the table above is the receipt. When your own numbers disagree with your plan, which one do you trust, and how do you notice it?",
+];
+
+/** pure: the neutral ledger title (no codenames, no dashes, day-seeded variant) */
 export function ledgerTitle(dayIso) {
-  return `The Daily Ledger, ${String(dayIso ?? "").slice(0, 10)}: real numbers, no promises`;
+  const day = String(dayIso ?? "").slice(0, 10);
+  return TITLE_VARIANTS[daySeed(day) % TITLE_VARIANTS.length](day);
 }
 
 export async function postDailyReport({ obs, rollup, intel, now }) {

@@ -3,7 +3,7 @@ import { ensureDevKeeperAlive } from "@/lib/dev-keeper-organ";
 
 export const dynamic = "force-dynamic";
 
-/* R262: explicit implantation of the dev-keeper organ (:3044) — mirror of
+/* R262: explicit implantation of the dev-keeper organ (:3044), mirror of
  * spawn-metrics. Idempotent, single-instance law, refused-when-healthy.
  * The keeper watches :3000 and resurrects the dev server after any crash
  * (measured R262 failure: kernel OOM kill of next-server left the cockpit

@@ -25,11 +25,11 @@ export function RailRow({
 }) {
   return (
     <div className={cn('flex min-w-0 flex-wrap items-baseline justify-between gap-3', className)}>
-      {/* min-w-0 (not shrink-0): a long label must be allowed to wrap on 375px —
+      {/* min-w-0 (not shrink-0): a long label must be allowed to wrap on 375px,
           shrink-0 let the T-9 convert-law row push 11px past the mobile viewport (T-22f fix).
           flex-wrap (T-23f): with both sides min-w-0, a long value could still squeeze the
           label BELOW min-content and paint over the value's glyphs (the T-9 autonomy row
-          grazed its CYCLE-OK badge by ~6px at 375px) — letting the value drop to a second
+          grazed its CYCLE-OK badge by ~6px at 375px), letting the value drop to a second
           line keeps every glyph collision impossible without re-introducing page overflow. */}
       <span className="min-w-0 text-[11px] leading-relaxed text-slate-500">{label}</span>
       <span

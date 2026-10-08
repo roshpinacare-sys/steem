@@ -191,6 +191,54 @@ export function normalizeDashes(text) {
     .replace(/(\s*)–(\s*)/g, (_, a, b) => (a || b ? ": " : "-"));
 }
 
+/* R270 · THE ANTI-GENERIC OPENERS (operator order: "התגובות שלנו הן די
+ * דומות מאוד... אני לא מסוגל לראות את הדבר הגנרי הזה"). These AI-stock
+ * openings are the fingerprint of machine-generated filler; a post that
+ * starts like every other AI post is dead on arrival. The ban checks the
+ * OPENING slice only (first 140 chars) so a mid-body mention stays legal. */
+export const GENERIC_POST_OPENERS = [
+  "in this article", "in this post", "in this guide", "let's dive", "lets dive", "let's get started",
+  "as we all know", "it's no secret", "it is no secret", "in the ever-evolving", "ever-evolving world",
+  "in today's fast-paced", "in today's world", "in the world of", "welcome to the future",
+  "have you ever wondered", "have you ever asked", "are you tired of", "unlock the", "unleash the",
+  "embark on a journey", "journey into", "delve into", "dive into the world", "a tapestry of",
+  "in conclusion", "to sum up", "at the end of the day", "game-changer", "game changer",
+  "the digital landscape", "the rapidly evolving", "revolutionize the way", "in the realm of",
+];
+
+/** pure: the opening slice a generic-opener check sees (R270) */
+export function openingSlice(text, chars = 140) {
+  return String(text ?? "").trim().slice(0, chars).toLowerCase();
+}
+
+/** pure (R270): trigram Jaccard similarity between two openings. A local
+ * twin of army-social's ngram law (no import cycle: army-social imports
+ * content.mjs, so the similarity math lives here too). */
+export function openingSimilarity(a, b) {
+  const words = (t) => String(t ?? "").toLowerCase().replace(/[^a-z0-9\s']/g, " ").split(/\s+/).filter(Boolean);
+  const tri = (t) => {
+    const w = words(t); const s = new Set();
+    for (let i = 0; i + 3 <= w.length; i++) s.add(w.slice(i, i + 3).join(" "));
+    if (!s.size && w.length) s.add(w.join(" "));
+    return s;
+  };
+  const A = tri(a), B = tri(b);
+  if (!A.size || !B.size) return 0;
+  let inter = 0;
+  for (const g of A) if (B.has(g)) inter++;
+  return inter / (A.size + B.size - inter);
+}
+
+/** pure (R270): the OPENING-VARIETY gate. A draft whose opening is near-
+ * identical to something ALREADY published is the "same response every
+ * time" complaint in code form: refuse it before it ships. */
+export function openingFresh(body, publishedBodies, { maxSimilarity = 0.4 } = {}) {
+  const opening = openingSlice(body, 220);
+  if (!opening) return false;
+  return !(Array.isArray(publishedBodies) ? publishedBodies : [])
+    .some((b) => openingSimilarity(opening, openingSlice(b, 220)) >= maxSimilarity);
+}
+
 export function contentState() { return readJson(FILE, null); }
 
 /** pure: word count — the R244 anti-shitpost floor counts WORDS, not chars
@@ -217,6 +265,9 @@ export function sanitizeDraft(d) {
   const blob = `${title}\n${body}`.toLowerCase();
   const banned = ["headcorner", "saos", "צבא", "army of accounts", "our accounts", "multi-account", "we control", "our fleet", "guaranteed profit", "price target", "in today's world", "in conclusion", "—", "–"];
   if (banned.some((w) => blob.includes(w))) return null; // EXPOSURE-BLOCKED
+  /* R270: the opening must not be an AI-stock opener (title OR first 140 chars) */
+  const open = `${title.toLowerCase()}\n${openingSlice(body)}`;
+  if (GENERIC_POST_OPENERS.some((g) => open.includes(g))) return null; // GENERIC-BLOCKED
   let image = null;
   if (d.image && typeof d.image === "object") {
     const url = String(d.image.url ?? "");
@@ -327,12 +378,22 @@ export async function runContent({ now = new Date().toISOString(), force = false
   const sanitized = assignPersonas((raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean));
   const exposureBlocked = (raw?.drafts ?? []).length - sanitized.length;
   const { kept, dropped } = dedupeTitles(sanitized, recentTitles);
+  /* R270 · THE OPENING-VARIETY GATE: a draft that opens like an ALREADY
+   * PUBLISHED post is the "same response every time" complaint in code form;
+   * it is dropped here (counted honestly) before the queue ever sees it. */
+  const publishedOpenings = (prev?.queue ?? [])
+    .filter((d) => d?.status === "published" && d?.body)
+    .map((d) => String(d.body));
+  const varietyKept = kept.filter((d) => openingFresh(d.body, publishedOpenings));
+  const varietyDropped = kept.length - varietyKept.length;
+  if (varietyDropped > 0) appendLine(path.join(STATE, "events.jsonl"), { type: "content.variety-dropped", at: now, dropped: varietyDropped });
+  const keptFinal = varietyKept;
   /* R254 · LEGAL IMAGES: the top kept drafts get a Wikimedia Commons image
    * with mandatory attribution (fail-soft, enrichment never a blocker — an
    * illustrated post carries more interest, per the operator's order). */
   let illustrated = 0;
-  if (kept.length) {
-    for (const d of kept.slice(0, 3)) {
+  if (keptFinal.length) {
+    for (const d of keptFinal.slice(0, 3)) {
       try {
         const img = await illustrateDraft(d, { seedNum: (Date.parse(now) || 0) % 997 });
         if (img) { d.image = img; illustrated++; }
@@ -340,15 +401,15 @@ export async function runContent({ now = new Date().toISOString(), force = false
     }
   }
   const queue = [
-    ...kept.map((d, i) => ({ ...d, id: `d${Date.parse(now)}-${i}`, status: "drafted", draftedAt: now })),
+    ...keptFinal.map((d, i) => ({ ...d, id: `d${Date.parse(now)}-${i}`, status: "drafted", draftedAt: now })),
     ...(Array.isArray(prev?.queue) ? prev.queue : []),
   ].slice(0, 30); // bounded queue — the rail posts per doctrine caps, never floods
 
   const doc = {
     draftedAt: now,
-    verdict: kept.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
+    verdict: keptFinal.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
     source: raw && bridgeError?.startsWith("offline") ? "corpus" : raw ? "bridge" : "none",
-    draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped, illustrated,
+    draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, illustrated,
     minPostWords: MIN_POST_WORDS,
     queue,
     law: "R240: נושאים-אנושיים מסבב-יום + קול-אחד-לחשבון + הסרת-כפילויות; חשיפה = נחסמת בטהרת-הנוסח; שידור רק אחרי אימות-חתימה (דוקטרינת-שער)",
@@ -356,7 +417,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     ms: Date.now() - t0,
   };
   writeJson(FILE, doc);
-  return { verdict: doc.verdict, draftsQueued: kept.length, exposureBlocked, dedupeDropped: dropped, illustrated, bridgeError };
+  return { verdict: doc.verdict, draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, illustrated, bridgeError };
 }
 
 /** recruiter evidence: fresh drafts queued = the content team is really running */

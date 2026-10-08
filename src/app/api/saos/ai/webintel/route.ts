@@ -8,7 +8,7 @@ export const maxDuration = 60;
  * T-22 · WEB-INTEL BRIDGE (engine-called, backend-only law).
  * The sovereign engine (:3040) calls this route every 6h as its external
  * eyes: one real web search per call (z-ai-web-dev-sdk, server-side only).
- * Results are returned RAW-ish (url/name/snippet/date/host) — normalization
+ * Results are returned RAW-ish (url/name/snippet/date/host), normalization
  * and the no-source-no-finding law live in the ENGINE's pure core
  * (lib.normalizeWebIntel). One body, one language: this route only speaks
  * "search".

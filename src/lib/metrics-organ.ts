@@ -25,9 +25,9 @@ function spawnMetrics(): number | null {
   fs.mkdirSync(`${METRICS_DIR}/state`, { recursive: true });
   const out = fs.openSync(`${METRICS_DIR}/metrics.log`, "a");
   /* R218-a LESSON (measured, T-15): `bun run dev` under the inherited next-server
-   * env resolves the ROOT package.json script (`next dev -p 3000` — EADDRINUSE),
+   * env resolves the ROOT package.json script (`next dev -p 3000`, EADDRINUSE),
    * NOT the organ's local script. Direct `bun index.ts` is the only correct
-   * spawn form — same determinism law as R217 (no script-layer indirection). */
+   * spawn form, same determinism law as R217 (no script-layer indirection). */
   const child = spawn("bun", ["index.ts"], {
     cwd: METRICS_DIR,
     detached: true,
@@ -53,7 +53,7 @@ export async function ensureMetricsAlive(): Promise<EnsureResult> {
   if (await metricsHealthy()) return { alive: true, action: "already-alive" };
   const pid = spawnMetrics();
   if (pid === null) return { alive: false, action: "spawn-failed" };
-  /* 3 verify rounds x 2s — same bounded-verify doctrine as the watchdog */
+  /* 3 verify rounds x 2s: same bounded-verify doctrine as the watchdog */
   for (let i = 0; i < 3; i++) {
     await new Promise((r) => setTimeout(r, 2000));
     if (await metricsHealthy()) return { alive: true, action: "spawned", pid };
@@ -73,7 +73,7 @@ export async function fetchSnapshot(): Promise<unknown | null> {
 
 /* R218-b: claims-auditor. GET = fresh-if-stale (organ's 6h bound);
  * POST = force re-run. A run fetches the page's own status proxy (30s engine
- * build), so the timeout is generous — the organ answers after it finishes. */
+ * build), so the timeout is generous, the organ answers after it finishes. */
 export async function fetchAudit(force = false): Promise<unknown | null> {
   try {
     const r = await fetch(`http://127.0.0.1:3042/audit`, {

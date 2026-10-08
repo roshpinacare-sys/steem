@@ -15,7 +15,7 @@ type Proposal = { id: string; at: string; file: string; task: string; analysis: 
 type Status = { ok: boolean; note?: string; tasks?: Task[]; proposals?: Proposal[] }
 
 function fmtClock(iso?: string): string {
-  if (!iso) return '—'
+  if (!iso) return '-'
   const d = new Date(iso)
   const p = (n: number) => String(n).padStart(2, '0')
   return `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}Z`
@@ -64,7 +64,7 @@ export default function BuilderQueue() {
         setBusy(false)
         return
       }
-      setMsg('המשימה בתור — מריץ ציק (LLM עד ~100 שניות)…')
+      setMsg('המשימה בתור, מריץ ציק (LLM עד ~100 שניות)…')
       const t = await fetch('/api/saos/builder', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -74,7 +74,7 @@ export default function BuilderQueue() {
       setMsg(
         tj.ok && tj.task
           ? `תוצאה: ${tj.task.status}${tj.task.proposalId ? ` · הצעה ${tj.task.proposalId}` : ''}${tj.task.reason ? ` · ${tj.task.reason}` : ''}`
-          : tj.note ?? 'הציק לא הושלם — בדקו שוב'
+          : tj.note ?? 'הציק לא הושלם, בדקו שוב'
       )
       await load()
     } catch {
@@ -116,13 +116,13 @@ export default function BuilderQueue() {
       </div>
 
       {state === 'down' ? (
-        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'איבר-הבונה אינו זמין — אין להציג טענות שלא אומתו.'}</p>
+        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'איבר-הבונה אינו זמין, אין להציג טענות שלא אומתו.'}</p>
       ) : (
         <>
           {msg && <p className="mt-2 rounded-lg border border-slate-800 bg-slate-950/60 p-2 text-[11px] text-slate-300">{msg}</p>}
           <div className="mt-3 space-y-1.5">
             {tasks.length === 0 && proposals.length === 0 && (
-              <p className="text-xs text-slate-500">התור ריק — הצעות נוצרות ממשימות (הכפתור מריץ את הראשונה: תיקון הקידומת המיושנת במשמר).</p>
+              <p className="text-xs text-slate-500">התור ריק: הצעות נוצרות ממשימות (הכפתור מריץ את הראשונה: תיקון הקידומת המיושנת במשמר).</p>
             )}
             {tasks.map((t) => (
               <div key={t.id} className="flex items-start justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/50 p-2 text-[11px]">
@@ -154,7 +154,7 @@ export default function BuilderQueue() {
             ))}
           </div>
           <p className="mt-2 text-[10px] text-slate-500">
-            חוק: הצעה-בלבד — האיבר לעולם לא כותב בעץ-החי, לא רץ git, לא מחזיק מפתחות · ולידציה: עוגן-יחיד + תחביר-תוצאה (מנוע-ה-transpile של bun על עותק-סנדבוקס) · ראיות (hashים ופסקים בלבד) זורמות ל-memory/build-proposals.jsonl ונחתמות-לשרשרת דרך המשמר · מיזוג = החלטה-מכוונת מחוץ לאיבר.
+            חוק: הצעה-בלבד: האיבר לעולם לא כותב בעץ-החי, לא רץ git, לא מחזיק מפתחות · ולידציה: עוגן-יחיד + תחביר-תוצאה (מנוע-ה-transpile של bun על עותק-סנדבוקס) · ראיות (hashים ופסקים בלבד) זורמות ל-memory/build-proposals.jsonl ונחתמות-לשרשרת דרך המשמר · מיזוג = החלטה-מכוונת מחוץ לאיבר.
           </p>
         </>
       )}

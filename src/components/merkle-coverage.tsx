@@ -31,7 +31,7 @@ type MerklePayload = {
 }
 
 function fmtClock(iso?: string): string {
-  if (!iso) return '—'
+  if (!iso) return '-'
   const d = new Date(iso)
   const p = (n: number) => String(n).padStart(2, '0')
   return `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}Z`
@@ -90,7 +90,7 @@ export default function MerkleCoverage() {
       </div>
 
       {state === 'down' ? (
-        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'אימות-השרשרת אינו זמין כרגע — לא יוצגו טענות שלא אומתו.'}</p>
+        <p className="mt-3 text-xs text-amber-300/90">{data?.note ?? 'אימות-השרשרת אינו זמין כרגע, לא יוצגו טענות שלא אומתו.'}</p>
       ) : !cov ? (
         <p className="mt-3 animate-pulse text-xs text-slate-500">מחשב שורש-מרקל מהבייטים הגולמיים…</p>
       ) : (
@@ -116,11 +116,11 @@ export default function MerkleCoverage() {
 
           <div className="mt-2 rounded-lg border border-slate-800 bg-slate-950/60 p-2">
             <div className="text-[10px] text-slate-500">שורש-השרשרת המצטבר (sha256 · מחויב-גיט ונעול-שעתי)</div>
-            <div className="tnum mt-0.5 truncate font-mono text-[11px] text-emerald-300/90" dir="ltr">{rec?.chainRoot ?? '—'}</div>
+            <div className="tnum mt-0.5 truncate font-mono text-[11px] text-emerald-300/90" dir="ltr">{rec?.chainRoot ?? '-'}</div>
           </div>
 
           <p className="mt-2 text-[10px] text-slate-500">
-            {data?.detail} · מסלול-אמון: בייטים → שורש-אצווה → שורש-מצטבר → רשומה → commit חתום → עד-טיפ שעתי על השרשרת. האיבר אינו מחזיק מפתחות ואינו משדר — החתימה באחריות המשמר בלבד.
+            {data?.detail} · מסלול-אמון: בייטים → שורש-אצווה → שורש-מצטבר → רשומה → commit חתום → עד-טיפ שעתי על השרשרת. האיבר אינו מחזיק מפתחות ואינו משדר, החתימה באחריות המשמר בלבד.
           </p>
         </>
       )}

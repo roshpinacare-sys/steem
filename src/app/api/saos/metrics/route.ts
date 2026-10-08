@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ensureMetricsAlive, fetchSnapshot } from "@/lib/metrics-organ";
+import { deDashDeep } from "@/lib/clean-dashes";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export async function GET() {
       {
         ok: false,
         verdict: "ORGAN-DOWN",
-        note: "saos-metrics (:3042) לא עלה גם אחרי ניסיון-השתלה — אין נתונים מזויפים",
+        note: "saos-metrics (:3042) לא עלה גם אחרי ניסיון-השתלה, אין נתונים מזויפים",
         action: ensured.action,
       },
       { status: 503 }
@@ -26,10 +27,10 @@ export async function GET() {
       {
         ok: false,
         verdict: "ORGAN-UNRESPONSIVE",
-        note: "האיבר חי אך לא ענה בזמן — ייתכן עומס ראשוני, נסה שוב בעוד רגע",
+        note: "האיבר חי אך לא ענה בזמן, ייתכן עומס ראשוני, נסה שוב בעוד רגע",
       },
       { status: 503 }
     );
   }
-  return NextResponse.json({ ok: true, verdict: ensured.action, ...(snap as object) });
+  return NextResponse.json(deDashDeep({ ok: true, verdict: ensured.action, ...(snap as object) }));
 }
