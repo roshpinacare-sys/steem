@@ -78,8 +78,9 @@ function installCredentialHelper() {
 function sh(cmd, args, opts = {}) {
   return execFileSync(cmd, args, { cwd: ROOT, maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"], ...opts }).toString();
 }
+/* binary-safe: never round-trip encrypted blobs through a string */
 function gitShowBytes(ref, file) {
-  return Buffer.from(sh("git", ["show", `${ref}:${file}`]));
+  return execFileSync("git", ["show", `${ref}:${file}`], { cwd: ROOT, maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"] });
 }
 function resolveRef(file) {
   for (const ref of REF_CANDIDATES) {
@@ -130,10 +131,12 @@ export function sealGitCredential({ now = new Date().toISOString() } = {}) {
   const encFile = path.join(VAULT_DIR, "GIT-CRED-2026-10-08.enc");
   const tmp = `${encFile}.tmp`;
   fs.writeFileSync(tmp, Buffer.from(plaintext, "utf8"), { mode: 0o600 });
+  const sealEnv = { ...process.env, SAOS_VAULT_PASS: meta.keysZipPass };
   try {
     execFileSync("openssl", ["enc", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-      "-in", tmp, "-out", encFile, "-pass", `pass:${meta.keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
-  } finally { fs.rmSync(tmp, { force: true }); }
+      "-in", tmp, "-out", encFile, "-pass", "env:SAOS_VAULT_PASS"], { env: sealEnv, stdio: ["ignore", "ignore", "pipe"] });
+  } catch (e) { throw new Error("openssl-seal-failed (sanitized: passphrase never in argv/errno)"); }
+  finally { fs.rmSync(tmp, { force: true }); }
   fs.chmodSync(encFile, 0o644); /* in-tree artifact — content is the seal; permissions follow repo convention */
 
   const sealedSha = sha256(fs.readFileSync(encFile));
@@ -171,8 +174,9 @@ export function reviveGitCredential({ now = new Date().toISOString(), verifyOnly
     let plaintext = _plaintextOverride;
     if (!plaintext) {
       fs.writeFileSync(tmp, enc, { mode: 0o600 });
+      const revEnv = { ...process.env, SAOS_VAULT_PASS: meta.keysZipPass };
       execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-        "-in", tmp, "-out", `${tmp}.open`, "-pass", `pass:${meta.keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
+        "-in", tmp, "-out", `${tmp}.open`, "-pass", "env:SAOS_VAULT_PASS"], { env: revEnv, stdio: ["ignore", "ignore", "pipe"] });
       plaintext = fs.readFileSync(`${tmp}.open`, "utf8");
       fs.rmSync(tmp, { force: true }); fs.rmSync(`${tmp}.open`, { force: true });
     }
@@ -212,8 +216,9 @@ export function reviveSigningKey({ now = new Date().toISOString() } = {}) {
     const tmp = path.join("/tmp", `.w1key.${process.pid}`);
     fs.writeFileSync(tmp, enc, { mode: 0o600 });
     try {
+      const sigEnv = { ...process.env, SAOS_VAULT_PASS: meta.keysZipPass };
       const dec = execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-        "-in", tmp, "-pass", `pass:${meta.keysZipPass}`], { maxBuffer: 16 * 1024 * 1024 });
+        "-in", tmp, "-pass", "env:SAOS_VAULT_PASS"], { env: sigEnv, maxBuffer: 16 * 1024 * 1024 });
       execFileSync("gpg", ["--batch", "--yes", "--import"], { input: dec });
     } finally { fs.rmSync(tmp, { force: true }); }
     sh("gpg", ["--list-secret-keys", fp]); /* must exist now */
@@ -221,6 +226,57 @@ export function reviveSigningKey({ now = new Date().toISOString() } = {}) {
     return { ok: true, verdict: "SIGNING-KEY-REVIVED", fingerprint: fp, ref, ms: Date.now() - t0 };
   } catch (e) {
     return { ok: false, verdict: "SIGNING-REVIVE-FAIL", error: String(e?.message ?? e).slice(0, 160), ms: Date.now() - t0 };
+  }
+}
+
+/* ── RESEAL the r5 signing key under the CURRENT keysZipPass (rotation repair).
+ * Measured break (R284): ROT3/ROT4 re-sealed the keys-zip with a NEW pass but
+ * left W1-SIGNING-KEY-r5.enc sealed under the PRE-rotation pass — the meta
+ * formula (same pass as this meta) went false and the empty-keyring revive
+ * died "bad decrypt". Repair law: the LIVE keyring key (fingerprint-pinned)
+ * is exported, sealed with the CURRENT meta pass, and the pin is updated —
+ * roundtrip-proved against an empty GNUPGHOME before the meta is written. */
+export function resealSigningKey({ now = new Date().toISOString() } = {}) {
+  const meta = readJson(META);
+  const spec = meta?.gpgKey;
+  if (!spec?.keyFp || !spec?.sealedFile) return { ok: false, verdict: "RESEAL-ABSENT", error: "no gpgKey spec" };
+  const fp = spec.keyFp;
+  try {
+    sh("gpg", ["--list-secret-keys", fp]); /* the key must be alive in the keyring */
+    const sec = execFileSync("gpg", ["--batch", "--yes", "--export-secret-keys", fp], { maxBuffer: 32 * 1024 * 1024 });
+    if (sec.length < 100) return { ok: false, verdict: "RESEAL-FAIL", error: "export produced no secret material" };
+    const tmpSec = path.join("/tmp", `.w1sec.${process.pid}`);
+    const tmpEnc = path.join("/tmp", `.w1enc.${process.pid}`);
+    fs.writeFileSync(tmpSec, sec, { mode: 0o600 });
+    try {
+      const sealEnv = { ...process.env, SAOS_VAULT_PASS: meta.keysZipPass };
+      execFileSync("openssl", ["enc", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
+        "-in", tmpSec, "-out", tmpEnc, "-pass", "env:SAOS_VAULT_PASS"], { env: sealEnv, stdio: ["ignore", "ignore", "pipe"] });
+      const enc = fs.readFileSync(tmpEnc);
+      const newPin = sha256(enc);
+      /* roundtrip proof into an EMPTY keyring (isolated GNUPGHOME) */
+      const isoHome = path.join("/tmp", `.w1rt.${process.pid}`);
+      fs.mkdirSync(isoHome, { recursive: true, mode: 0o700 });
+      try {
+        const rtEnv = { ...process.env, GNUPGHOME: isoHome, SAOS_VAULT_PASS: meta.keysZipPass };
+        const dec = execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
+          "-in", tmpEnc, "-pass", "env:SAOS_VAULT_PASS"], { env: rtEnv, maxBuffer: 32 * 1024 * 1024 });
+        execFileSync("gpg", ["--batch", "--yes", "--import"], { input: dec, env: rtEnv });
+        execFileSync("gpg", ["--list-secret-keys", fp], { env: rtEnv });
+      } finally { fs.rmSync(isoHome, { recursive: true, force: true }); }
+      /* commit the new seal + pin */
+      fs.writeFileSync(path.join(ROOT, spec.sealedFile), enc);
+      spec.sealedSha256 = newPin;
+      spec.formula = "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass env:<keysZipPass> → gpg --import (the SAME keysZipPass of this meta)";
+      spec.resealedAt = now;
+      spec.resealNote = "R284: ROT4 rotation left the r5 blob under the pre-rotation pass (bad decrypt measured); re-sealed under the CURRENT meta pass, roundtrip-proved on an empty GNUPGHOME. Hygiene: passphrase travels via env, never argv.";
+      fs.writeFileSync(META, JSON.stringify(meta, null, 2) + "\n");
+      return { ok: true, verdict: "SIGNING-RESEALED-ROUNDTRIP-VERIFIED", fingerprint: fp, sealedSha256: newPin.slice(0, 12), sealedFile: spec.sealedFile };
+    } finally {
+      fs.rmSync(tmpSec, { force: true }); fs.rmSync(tmpEnc, { force: true });
+    }
+  } catch (e) {
+    return { ok: false, verdict: "RESEAL-FAIL", error: String(e?.message ?? e).slice(0, 120) };
   }
 }
 
@@ -251,6 +307,7 @@ if (isMain) {
   else if (cmd === "revive") jlog(reviveWriterIdentity());
   else if (cmd === "revive-git") jlog(reviveGitCredential());
   else if (cmd === "revive-signing") jlog(reviveSigningKey());
+  else if (cmd === "reseal-signing") jlog(resealSigningKey());
   else {
     const meta = readJson(META);
     const spec = meta?.gitCred;
