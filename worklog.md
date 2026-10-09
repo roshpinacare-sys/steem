@@ -137,3 +137,25 @@ Work Log:
 
 Stage Summary:
 - ה-anchor-טרי-על-השרשרת-ובריפו — ה-runner-יעמוד-מנגד (engine-alive→STANDBY) וה-takeover-יירת-רק-במוות-אמיתי.
+
+---
+Task ID: SB-PLANE-1 (sanbox sovereignty plane — build, verify, push)
+Agent: Z.ai Code (my-project sandbox session)
+Task: המפעיל: "אני לא עושה כלום — ודא שהריבונות והסוכנים יודעים לעשות מה שצריך בלי קשר אלי; כל מה שהיה תלוי בסנדבוקס יעבוד מ-sanbox תמידית בלי נפילות; נתח, תכנן, בצע, בדוק ודחוף."
+
+Work Log:
+- **אימות-מצב-אפס (ראיות, לא טענות)**: sanbox/ לא היה קיים בשום מקום (מקומי ו-origin כאחד, 0 קבצים נעקבים). הענף המקומי היה מפגר 663 קומיטים מאחורי origin עם 110 קבצים מקומיים-מטונפים.
+- **סנכרון אפס-אמון לפי AGENTS.md**: stash-ארכיון (pre-sync stale cache) → reset --hard origin/saos-cockpit → divergence-check 0/0 → doctrine-audit PASS (178 נכסים) → selftest 1218/1218 PASS → chain-anchor-probe anchored/drift=false.
+- **החייאה-מחדש של הצי מהעץ-המסונכרן**: engine/custodian/metrics/builder (3040-3043) הופעלו-מחדש על הקוד-החדש; כולם /health 200 + cockpit :3000.
+- **בניית sanbox/ (17 קבצים)**: README (התיקייה-האחת; הבהרת "2 תיקיות": agent/sovereign/mini-services הם איברים, לא שכפולים) · AGENT_BOOT.md (פרוטוקול-עלייה לסוכן: bootstrap→verify→commit-loop→tasks) · SOVEREIGNTY.md (5 חוקים) · SECURITY.md (מודל-איום כנה) · MANIFEST.json (6 רכיבים, קריא-מכונה) · autonomy/tasks.json+state.json · bootstrap.sh (חייאה idempotent: git-FF→התקנה→צי→אתר) · verify.sh (מטריצת-קבלה 22-בדיקות, סקשנים) · commit-loop.sh (snapshot ניטרלי + דחיפה-דרך-השער + מגן-סימני-קונפליקט) · operator-site/ (שרת bun: שער scrypt N=16384, חלון-אתחול 20 דק', rate-limit 5/5 דק' על נתיב-הסיסמה בלבד, cookie HttpOnly+SameSite=Strict, agent-token 192-bit git-ignored, whitelist פעולות bootstrap/verify/push, לוח-בקרה RTL) · auth/gen-hash.sh (אתחול-headless) · .gitignore (state/* לעולם לא נדחף).
+- **תיקונים-שנתגלו-במדידה**: (1) bootstrap סטש קבצים-לא-נעקבים והעלים את sanbox — שוחזר מ-stash^3 והוגדר stash-ממוקד-pathspec בלי -u; (2) self-deadlock ב-/operator/run: spawnSync חסם את לולאת-האירועים בזמן ש-verify בן-התהליך קרא לשרת — תוקן ל-spawn אסינכרוני; (3) gitInfo נשבר בעריכה — שוחזר; (4) verify-probe נפגע מ-rate-limit-עצמו — 429 ב-probe = WARN (הנעילה נמדדת ב-/status); token-סוכן לא נספר כ-brute-force.
+- **ריפוי-שער-הדחיפה**: הדחיפה נסרבה (exit=3) — סימני stash-conflict ("Updated upstream/Stashed changes") בשלושה פנקסי-JSONL חיים (events/exec-log/think). ריפוי-union לפי חוק-השער: 3 שורות-סימון בלבד לכל קובץ הוסרו (14065→14062 · 13126→13123 · 5001→4998), אפס-תוכן-אבוד, first/last JSON תקינים, בשמירת-inode (המנוע המשיך לכתוב).
+- **מטריצת-אבטחה שנמדדה (curl)**: /health ציבורי-מינימלי · /status נעול 401 · סיסמה-שגויה 401 · rate-limit 429 בניסיון-6 · token-סוכן 200 גם-בזמן-נעילה · cookie flags אומתו · setup e2e (303+cookie) · run=verify דרך-API exit=0 · יומן-ביקורת נכתב · דרך-השער :81 עם XTransformPort עובד.
+- **אימות-דפדפן (agent-browser)**: שער-האתחול מוצג דרך-ה-gateway → setup מלא בדפדפן → לוח-בקרה עם 6 פילים "חי" → לחיצת-verify בדפדפן → exit=0 מטריצה-ירוקה. לאחר-מכן סיסמת-ה-probe נמחקה (credentials.json) וחלון-אתחול-טרי פתוח למפעיל.
+- **verify.sh סופי: PASS=22 FAIL=0 WARN=0 — פעמיים ברצף, exit 0** (כולל persistence: commit-loop רץ, pid חי).
+
+Stage Summary:
+- sanbox/ הוא עכשיו מישור-ההתמדה האמיתי: תיקייה-אחת ממנה כל סוכן (והמפעיל) מחייה, מאמת, מקיים-התמדה ודוחף — בלי תלות במפעיל ובלי תלות בסנדבוקס-מסוים.
+- אוטונומיה-מוכחת: commit-loop יצר לבדו 2 קומיטי-snapshot תוך-כדי-העבודה; bootstrap/verify אידמפוטנטיים וקריאים-מכונה; תור-המשימות מגדיר עבודה-עומדת לסוכנים.
+- בטיחות: אפס-סודות-בריפו (state/ git-ignored נאכף ונבדק), שער-סיסמה עם כל-הדגלים, loopback בלבד, whitelist-פעולות, יומן-ביקורת.
+- פתוח למפעיל: קביעת-סיסמה בביקור-הראשון (חלון 20 דק' מעליית-האתר; אחר-כך auth/gen-hash.sh). פתוח לסוכנים: X-Op-Token מול state/agent-token.

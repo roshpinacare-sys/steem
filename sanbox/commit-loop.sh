@@ -35,6 +35,11 @@ case "${1:-status}" in
   _tick)
     (
       flock -n 9 || exit 0
+      # מגן-פרסום: אסור ליצור קומיט-התמדה על עץ עם סימני-קונפליקט (עצור-ותעד)
+      if rg -q '^(<{7} |={7}$|>{7} )' sanbox worklog.md 2>/dev/null; then
+        log "guard: סימני-קונפליקט ב-sanbox/worklog — snapshot נמנע (עצור-ותעד)"
+        exit 0
+      fi
       CHANGES=$(git status --porcelain -- sanbox worklog.md 2>/dev/null || true)
       if [ -n "$CHANGES" ]; then
         git add sanbox worklog.md 2>>"$LOG" || true
