@@ -229,9 +229,25 @@ async function tickInner() {
   }
 
   /* cycle-overlap guard: while a signing cycle is in flight its execute step
-   * owns the account's order surgery — one writer per moment (T-17 lineage) */
+   * owns the account's order surgery — one writer per moment (T-17 lineage).
+   * R299 · STALE-MARKER LAW (measured 21:25-21:52Z): a cycle whose await
+   * never settles (stalled socket) left running:true forever and the grid
+   * deferred every tick for 27 minutes — the book froze. A marker older
+   * than CYCLE_STALE_MS (2× the slowest measured healthy cycle) is a DEAD
+   * cycle: journal honestly, clear the marker, and trade. */
   const marker = readJson(path.join(STATE, "cycle-run.json"), null);
-  if (marker?.running === true) return finish({ lastVerdict: "CYCLE-IN-FLIGHT", lastVerdictAt: now.toISOString() });
+  const CYCLE_STALE_MS = Number(process.env.SAOS_CYCLE_STALE_MS) || 20 * 60_000;
+  const pidAlive = (pid) => { try { if (!pid || pid === process.pid) return true; process.kill(pid, 0); return true; } catch { return false; } };
+  if (marker?.running === true) {
+    const ageMs = Date.now() - (Date.parse(marker.startedAt) || 0);
+    const foreignDead = marker.pid && marker.pid !== process.pid && !pidAlive(marker.pid);
+    if (ageMs > CYCLE_STALE_MS || foreignDead) {
+      try { fs.rmSync(path.join(STATE, "cycle-run.json"), { force: true }); } catch { /* best-effort */ }
+      journalVerdict("CYCLE-MARKER-STALE-PROCEED", { staleMs: ageMs, startedAt: marker.startedAt, foreignDead, markerPid: marker.pid ?? null });
+    } else {
+      return finish({ lastVerdict: "CYCLE-IN-FLIGHT", lastVerdictAt: now.toISOString() });
+    }
+  }
 
   /* reads (parallel): RC + book + live orders */
   const [rc, book, liveR] = await Promise.all([readRc(), readBook(), readLiveHyper(account)]);
