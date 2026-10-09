@@ -353,6 +353,19 @@ export async function runContent({ now = new Date().toISOString(), force = false
     .map((id) => ({ account: id, brief: personaBrief(id, lifetimeOf(id)), owns: PERSONAS[id].owns }))
     .filter((p) => p.brief);
   const recentTitles = recentPublishedTitles(prev?.queue, 12);
+  /* R299 · THE SPENT-TITLES MEMORY (measured 96 selfSim refusals/24h): the
+   * queue is bounded (30) and rotates, but the CORPUS is static — titles that
+   * already published or were refused leave the queue and the floor re-served
+   * them forever; the spamgate then refused the identical body 100% of the
+   * time (chain truth: "I Tested It..." published 10-08, re-served 3× on 10-09).
+   * The memory outlives the queue rotation: spent = refused ∪ vetoed ∪
+   * published ∪ currently-queued, bounded, persisted in the doc itself. */
+  const spentTitles = [
+    ...new Set([
+      ...(Array.isArray(prev?.spentTitles) ? prev.spentTitles : []),
+      ...(Array.isArray(prev?.queue) ? prev.queue : []).map((d) => String(d?.title ?? "")).filter(Boolean),
+    ]),
+  ].slice(-60);
   const t0 = Date.now();
   let raw = null, bridgeError = null;
   /* R244: SAOS_OFFLINE=1 (CI / sovereign mode) never dials the bridge — the
@@ -406,7 +419,10 @@ export async function runContent({ now = new Date().toISOString(), force = false
    * topic-ownership round-robin; no voice writes twice in one batch. */
   const sanitized = assignPersonas((raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean));
   const exposureBlocked = (raw?.drafts ?? []).length - sanitized.length;
-  const { kept, dropped } = dedupeTitles(sanitized, recentTitles);
+  const { kept, dropped } = dedupeTitles(sanitized, [...new Set([...recentTitles, ...spentTitles])]);
+  /* honest count: how many of the drops were caused by the spent memory
+   * (a re-served spent title blocked BEFORE it could waste a spamgate run) */
+  const spentBlocked = dropped.filter((t) => spentTitles.some((s) => titleSimilarity(t, s) >= 0.55)).length;
   /* R270 · THE OPENING-VARIETY GATE: a draft that opens like an ALREADY
    * PUBLISHED post is the "same response every time" complaint in code form;
    * it is dropped here (counted honestly) before the queue ever sees it. */
@@ -438,15 +454,16 @@ export async function runContent({ now = new Date().toISOString(), force = false
     draftedAt: now,
     verdict: keptFinal.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
     source: raw && bridgeError?.startsWith("offline") ? "corpus" : raw ? "bridge" : "none",
-    draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, illustrated,
+    draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated,
     minPostWords: MIN_POST_WORDS,
+    spentTitles: [...new Set([...spentTitles, ...keptFinal.map((d) => String(d?.title ?? ""))])].slice(-60),
     queue,
     law: "R240: נושאים-אנושיים מסבב-יום + קול-אחד-לחשבון + הסרת-כפילויות; חשיפה = נחסמת בטהרת-הנוסח; שידור רק אחרי אימות-חתימה (דוקטרינת-שער)",
     bridgeError,
     ms: Date.now() - t0,
   };
   writeJson(FILE, doc);
-  return { verdict: doc.verdict, draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, illustrated, bridgeError };
+  return { verdict: doc.verdict, draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, bridgeError };
 }
 
 /** recruiter evidence: fresh drafts queued = the content team is really running */

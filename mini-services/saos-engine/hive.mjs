@@ -449,6 +449,12 @@ export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } 
     if (clash) { results.push({ account, verdict: "MONOCULTURE-VETO" }); continue; }
     const gate = spamVerdict(draft, { isComment: false, chain: "hive", ownRecentBodies: await ownRecentHiveBodies(account), postsToday: await postsTodayHive(account, day), dayCap: 1 });
     if (!gate.ok) {
+      /* R299 PARITY (measured 96 wasted refusals/24h on the sibling rail): the
+       * Steem rail marks the refused draft so a static draft is never re-picked
+       * forever; the Hive rail now does the same — refusal leaves the queue. */
+      draft.status = "refused-spam";
+      draft.spamgate = { at: now, reasons: gate.reasons.slice(0, 6) };
+      writeJson(path.join(DIR, "state", "content-ops.json"), c);
       results.push({ account, verdict: "SPAMGATE-REFUSED", reasons: gate.reasons.slice(0, 4) });
       appendLine(path.join(STATE, "events.jsonl"), { type: "hive.spamgate-refused", at: now, account, reasons: gate.reasons.slice(0, 5) });
       continue;

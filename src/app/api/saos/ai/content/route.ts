@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import { SYMBOL_PROMPT_LAW, enforceSymbolLaw } from "../_symbols";
 import { nvidiaKeyPresent, nvidiaChat } from "../_llm";
 import { runLlmChain, compactContext } from "@/lib/llm-chain";
@@ -187,7 +188,13 @@ export async function POST(req: Request) {
         return out;
       },
       timeoutMs: 55_000,
-      cacheKey: `content|${topics.map((t) => (t as { id?: string })?.id ?? "").join(",")}|${personas.map((p) => p.account).join(",")}`,
+      /* R299 · FRESHNESS IN THE KEY (measured 96 selfSim refusals/24h): the
+       * old key was static across runs (topics rotate by DAY, personas fixed),
+       * so a fastpath hit served the IDENTICAL drafts while the queue starved.
+       * The key now rotates when the engine's anti-duplicate memory moves
+       * (recentTitles) and at least every 30 minutes — a genuine same-tick
+       * retry still hits the fastpath, a next-round ask cannot. */
+      cacheKey: `content|${topics.map((t) => (t as { id?: string })?.id ?? "").join(",")}|${personas.map((p) => p.account).join(",")}|${createHash("sha256").update(`${recentTitles.join("\u0000")}|${Math.floor(Date.now() / (30 * 60_000))}`).digest("hex").slice(0, 12)}`,
     });
     if (!chain.ok || !chain.output) {
       return NextResponse.json(
