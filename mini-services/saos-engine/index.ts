@@ -457,6 +457,22 @@ try {
   };
   runProbe(); /* once at boot — fresh levers for the cockpit */
   intervals.push(setInterval(runProbe, 3 * 60 * 60_000));
+  /* R292 · deep probe cadence (3h, offset from the R290 probe): feeds the
+   * capital-router (yield-deep-R292.json) — delegation cursor truth, k
+   * calibration, author/pending scans, unclaimed sweep, routing matrix.
+   * Without this the router's inputs age; with it the routing stays live. */
+  const deepProbeScript = path.join(DIR, "..", "..", "download", "yield-deep-R292.mjs");
+  const runDeepProbe = () => {
+    try {
+      const { spawn: sp2 } = childProcess;
+      const child = sp2(process.execPath, [deepProbeScript], { stdio: ["ignore", "ignore", "inherit"], detached: false });
+      child.on("exit", (code) => { if (code !== 0) console.error(`deep probe exited ${code}`); });
+    } catch (e) {
+      console.error(`deep probe spawn failed: ${String((e as Error)?.message ?? e).slice(0, 120)}`);
+    }
+  };
+  runDeepProbe(); /* once at boot — the router computes from fresh truth */
+  intervals.push(setInterval(runDeepProbe, 3 * 60 * 60_000));
   /* R291 · MUTUAL GUARDIANSHIP (engine side): measured death 2026-10-09 — the
    * kernel OOM-killed next-server AND the keeper; nobody hatched the keeper,
    * so the cockpit stayed dark for hours. The engine is a surviving lineage
