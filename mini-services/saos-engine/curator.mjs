@@ -49,6 +49,7 @@ export function curatorPolicy() {
     maxPerAuthorPerDay: 1,   // diversity: one vote per author per day
     ageMinMinutes: 10,       // too fresh = possibly unfinished spam
     ageMaxMinutes: 240,      // R289: 1200min (20h) votes earn ~dust — the curation share decays with every later voter; 4h window concentrates the same VP where returns live
+    maxPostVotes: 100,       // T-35 MEASURED (docs/measured/t35-probe.json, 96 chain ops): SP-per-G-rshare peaks at 10–30 votes on the post (0.000416) and collapses to 0.000187 (−55%) at 150+ votes — whale-saturated posts are yield dead-zones. Cap kills the flop tail; maxPendingSbd alone can't see it early.
     minBodyChars: 600,       // real content, not micro-dust
     maxPendingSbd: 30,       // bandwagon guard — late votes on hot posts earn little
     maxVotesPerCycle: 3,     // T-85: spread the day's votes across random windows
@@ -150,6 +151,10 @@ export function filterCandidates({ posts, voter, policy, nowMs, votedPermlinks =
     if (!(ageMin >= p.ageMinMinutes)) { reject("too-young"); continue; }
     if (ageMin > p.ageMaxMinutes) { reject("too-old"); continue; }
     if ((post.bodyLen ?? 0) < p.minBodyChars) { reject("short-body"); continue; }
+    /* T-35 · CROWDED-POOL LAW (measured −55% SP/rshare at 150+ votes): skip
+     * whale-saturated posts; their pool slice is mathematically dust.
+     * Undefined voteCount (legacy fixtures) ⇒ gate passes — additive law. */
+    if (Number.isFinite(p.maxPostVotes) && (post.voteCount ?? 0) > p.maxPostVotes) { reject("crowded"); continue; }
     if (!post.title || post.title === post.title.toUpperCase() && post.title.length > 8) { reject("spam-title"); continue; }
     if ((post.pendingSbd ?? 0) > p.maxPendingSbd) { reject("bandwagon"); continue; }
     if (post.archived === true) { reject("payout-closed"); continue; }
@@ -179,6 +184,7 @@ export function normalizePost(raw, tag, voter, nowMs) {
     author: raw.author, permlink: raw.permlink, tag: tag ?? null,
     createdMs, title: String(raw.title ?? ""),
     bodyLen: String(raw.body ?? "").length,
+    voteCount: (raw.active_votes ?? []).length, // T-35: competition dilution gate
     pendingSbd: num(raw.pending_payout_value),
     archived: raw.cashout_time === "1969-12-31T23:59:59" || raw.cashout_time === "1970-01-01T00:00:00",
     votedByUs: (raw.active_votes ?? []).some((v) => v?.voter === voter),

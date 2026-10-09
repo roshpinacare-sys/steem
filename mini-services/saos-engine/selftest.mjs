@@ -2665,6 +2665,36 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   await fsp.unlink(ledger).catch(() => {});
 }
 
+/* ── T-35 · CROWDED-POOL LAW (curation dilution, measured from 96 chain ops) ──
+ * docs/measured/t35-probe.json: SP-per-G-rshare peaks at 10–30 votes/post
+ * (0.000416), collapses −55% to 0.000187 at 150+. The gate must kill the
+ * flop tail without touching legacy fixtures (voteCount undefined ⇒ pass). */
+import { normalizePost } from "./curator.mjs";
+{
+  const CP35 = curatorPolicy();
+  ok("T-35 policy: maxPostVotes=100 default armed (master law)", CP35.maxPostVotes === 100);
+  const AP35 = armyCuratorPolicy();
+  ok("T-35 policy: army inherits the crowded-pool cap", AP35.maxPostVotes === 100);
+
+  const crowd = mkPost("whale-bait", "saturated", 60, { voteCount: 187 });   // measured dead-zone
+  const sweet = mkPost("rising", "sweet-spot", 45, { voteCount: 24 });       // measured sweet spot
+  const legacy = mkPost("oldworld", "no-count", 60);                          // voteCount undefined
+  const plan35 = filterCandidates({ posts: [crowd, sweet, legacy], voter: "headcorner", policy: CP35, nowMs: NOW });
+  ok("T-35 gate: saturated post rejected as crowded", plan35.rejected.some((r) => r.reason === "crowded" && r.key === "whale-bait/saturated"));
+  ok("T-35 gate: sweet-spot post selected", plan35.selected.some((v) => v.author === "rising"));
+  ok("T-35 gate: legacy fixture (no voteCount) still passes — additive law", plan35.selected.some((v) => v.author === "oldworld"));
+
+  /* normalizePost passthrough: chain active_votes → voteCount truth */
+  const np35 = normalizePost({ author: "a", permlink: "p", created: new Date(NOW - 30000).toISOString(), active_votes: [{ voter: "x" }, { voter: "y" }, { voter: "z" }] }, "steem", "headcorner", NOW);
+  eq("T-35 normalizePost: voteCount passthrough", np35?.voteCount, 3);
+
+  /* cap boundary: exactly-at-cap votes, cap+1 rejected — deterministic law, not vibes */
+  const atCap = mkPost("edge1", "at-cap", 60, { voteCount: CP35.maxPostVotes });
+  const over = mkPost("edge2", "over-cap", 60, { voteCount: CP35.maxPostVotes + 1 });
+  const edge35 = filterCandidates({ posts: [atCap, over], voter: "headcorner", policy: CP35, nowMs: NOW });
+  ok("T-35 boundary: at-cap selected, cap+1 crowded", edge35.selected.some((v) => v.author === "edge1") && edge35.rejected.some((r) => r.reason === "crowded" && r.key === "edge2/over-cap"));
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
