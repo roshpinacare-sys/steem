@@ -29,6 +29,7 @@ import { writePrediction, evaluateAndJournal, updateBelief, triggerWatch, resolv
 import { deploySoldiers, runSoldierGrids, soldiersState, verifySoldierCustody } from "./soldiers.mjs";
 import { postDailyReport } from "./promo.mjs";
 import { runCurator } from "./curator.mjs";
+import { runArmyCuration } from "./army-curation.mjs";
 import { runLearning } from "./learning.mjs";
 import { runDiscovery } from "./discovery.mjs";
 import { runRecruiter } from "./recruiter.mjs";
@@ -148,6 +149,14 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   const curateP = stepWrap("curate", async () => {
     const out = await runCurator({ now });
     return { verdict: out.verdict, votes: out.voted?.length ?? 0, txid: out.txid ?? null, vpEff: out.vpEff ?? null, votesToday: out.votesTodayCount ?? 0, error: out.error ?? null };
+  });
+
+  /* R290 · army-curation (parallel, fail-isolated): the structural multiplier —
+   * Σ SPᵢ × regen deployed on the SAME external candidates. Shared candidate
+   * fetch inside the rail; chain-truth day budget + VP floor per account. */
+  const armyCurateP = stepWrap("army-curate", async () => {
+    const out = await runArmyCuration({ now });
+    return { verdict: out.verdict, totalVotes: out.totalVotes ?? 0, accounts: (out.accounts ?? []).map((a) => `${a.account}:${a.verdict}`), error: out.error ?? null };
   });
 
   /* 1 · observe: parity + inventory + fills + rails fuel */
@@ -409,8 +418,9 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     return { verdict: plan.verdict, reason: plan.reason, powerUpSteem: plan.powerUpSteem, excessSteem: plan.excessSteem, ratios: plan.ratios, pacing: pacing.verdict ?? null, intel: intel ? { verdict: intel.verdict, scale: intel.scale, reason: intel.reason, urgency: intel.urgency } : null };
   });
 
-  /* join the parallel curate branch here (it never gates the front chain) */
+  /* join the parallel curate branches here (they never gate the front chain) */
   report.steps.curate = await curateP;
+  report.steps["army-curate"] = await armyCurateP;
 
   /* 6 · execute (SIGNING — the X-1 rail, engine-held, doctrine-capped).
    * T-16 CRED GATE FIRST: when the credential is missing this step used to
