@@ -185,12 +185,15 @@ export function normalizePost(raw, tag, voter, nowMs) {
   };
 }
 
-/* fetch fresh candidate stream across the tag whitelist (fail-closed) */
-async function fetchCandidates(policy, voter, nowMs) {
+/* fetch fresh candidate stream across the tag whitelist (fail-closed).
+ * policy.fetchLimit (R290) lets rails widen the shared pool without touching
+ * the curator default. */
+export async function fetchCandidates(policy, voter, nowMs) {
   const posts = [];
   let nodeOk = false;
+  const limit = Number.isFinite(policy.fetchLimit) ? Math.min(Math.max(policy.fetchLimit, 20), 50) : 20;
   for (const tag of policy.tags) {
-    const r = await rpcCall("condenser_api.get_discussions_by_created", [{ tag, limit: 20 }]);
+    const r = await rpcCall("condenser_api.get_discussions_by_created", [{ tag, limit }]);
     if (!r.ok) continue;
     nodeOk = true;
     for (const raw of (r.result ?? [])) {

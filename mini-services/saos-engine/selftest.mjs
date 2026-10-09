@@ -402,6 +402,31 @@ eq("vpEff math", vpEffPct(6.094470913801e12, 7123991.568646), 85.5);
 eq("vpEff zero vests", vpEffPct(100, 0), null);
 eq("day key", dayKeyOf("2026-09-29T19:00:00.000Z"), "2026-09-29");
 
+/* ── 15b · R290 army-curation: the structural multiplier (pure vectors) ── */
+import { armyCuratorPolicy, armyVpSustainable, vpEligible } from "./army-curation.mjs";
+
+const AP = armyCuratorPolicy();
+ok("R290 army policy: external-only law inherited (17-account exclusion)", Array.isArray(AP.excludeAccounts) && AP.excludeAccounts.length >= 17 && AP.excludeAccounts.includes("headcorner") && AP.excludeAccounts.includes("woq"));
+const avp = armyVpSustainable();
+eq("R290 army VP budget: burn%/day = maxPerDay × avgWeight / 100", avp.burnPerDayPct, (AP.maxPerDay * (AP.baseWeightPct + AP.minWeightPct)) / 2 / 100);
+ok("R290 army VP budget: sustainable < 20% regen", avp.sustainable === true && avp.burnPerDayPct < 20);
+ok("R290 army policy: pool widened (fetchLimit 30) + 2 community tags", AP.fetchLimit === 30 && AP.tags.length === curatorPolicy().tags.length + 2);
+eq("R290 vpEligible boundary: exactly-at-floor votes", vpEligible(35, 35), true);
+eq("R290 vpEligible: below floor refused", vpEligible(34.9, 35), false);
+eq("R290 vpEligible: null (no read) refused", vpEligible(null, 35), false);
+const planA = filterCandidates({ posts, voter: "cashmachine", policy: AP, nowMs: NOW });
+ok("R290 army selection: external-only (no roster author selected)", planA.selected.every((v) => !AP.excludeAccounts.includes(v.author)));
+ok("R290 army selection: weights inside [minWeight, baseWeight] band", planA.selected.every((v) => v.weight >= AP.minWeightPct * 100 && v.weight <= AP.baseWeightPct * 100));
+ok("R290 army selection: respects maxPerDay", planA.selected.length <= AP.maxPerDay);
+const armyAgain = filterCandidates({ posts, voter: "cashmachine", policy: AP, nowMs: NOW });
+eq("R290 army deterministic", armyAgain.selected, planA.selected);
+/* R290 WEIGHT-SERIALIZATION LAW (paid for in real chain damage): weightForAge
+ * already returns STEEM units — any army/curator broadcast weight must fit
+ * u16: 0 < weight ≤ 10000. The ×100 overflow wrapped 521700 → -2588 (a real
+ * downvote on an innocent author) — this vector pins the law forever. */
+ok("R290 weight law: weightForAge(30) inside u16 band", weightForAge(30, AP) > 0 && weightForAge(30, AP) <= 10000);
+ok("R290 weight law: minWeight floor maps to ≤10000 too", weightForAge(100000, AP) === AP.minWeightPct * 100 && AP.minWeightPct * 100 <= 10000);
+
 /* ── 16 · T-14 learning + discovery: evidence-based lessons, hard-clamped tunings ── */
 import {
   classifyCycleFailure, analyzeCycles, analyzeCurator, analyzeExec,

@@ -39,6 +39,7 @@ import { runFinanceDigest, financeDigestState } from "./finance-digest.mjs";
 import { runYieldDistribution, yieldState } from "./yield-distributor.mjs";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import * as childProcess from "node:child_process";
 
 const PORT = 3040;
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -422,6 +423,22 @@ try {
    * execution stays on the explicit POST /yield-run path). */
   intervals.push(setInterval(() => { Promise.resolve(runFinanceDigest()).catch(() => null); }, 30 * 60_000));
   intervals.push(setInterval(() => { Promise.resolve(runYieldDistribution({ execute: false })).catch(() => null); }, 10 * 60_000));
+  /* R290 · yieldmax probe cadence (3h, detached child — the walks are heavy
+   * and must never hold the engine's event loop): refreshes state/yield-
+   * levers.json (chain-sourced lever matrix the cockpit reads). Fire-and-
+   * forget with honest stderr; a failed probe leaves the previous file. */
+  const probeScript = path.join(DIR, "..", "..", "download", "yieldmax-probe-R290.mjs");
+  const runProbe = () => {
+    try {
+      const { spawn } = childProcess;
+      const child = spawn(process.execPath, [probeScript], { stdio: ["ignore", "ignore", "inherit"], detached: false });
+      child.on("exit", (code) => { if (code !== 0) console.error(`yieldmax probe exited ${code}`); });
+    } catch (e) {
+      console.error(`yieldmax probe spawn failed: ${String((e as Error)?.message ?? e).slice(0, 120)}`);
+    }
+  };
+  runProbe(); /* once at boot — fresh levers for the cockpit */
+  intervals.push(setInterval(runProbe, 3 * 60 * 60_000));
   for (const t of intervals) t.unref?.();
 } catch (e) {
   console.error(`revenue loops boot failed: ${String(e?.message ?? e)}`);
