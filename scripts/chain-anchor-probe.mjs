@@ -13,56 +13,113 @@ const ACCOUNT = process.env.SAOS_ACCOUNT ?? "headcorner";
  * the anchor tx was provably included (get_transaction block 110295906).
  * The probe now falls back across public nodes per page and times out per
  * request. Verdict law unchanged: only a tip that IS an ancestor of HEAD
- * passes; all-nodes-fail still exits 1 (no-anchor, fail-closed, honest). */
+ * passes; all-nodes-fail still exits 1 (no-anchor, fail-closed, honest).
+ * R298 · FRESHNESS LAW (measured live 2026-10-09 21:09Z): a STALE-but-valid
+ * history page is not an error, so the first-node answer silently hid a
+ * freshly anchored tip (anchor-ok txid d03c70b0 block 110299692 was
+ * chain-provable via get_transaction while get_account_history still served
+ * the 19:49 page). The probe now scans EACH node, keeps the FRESHEST anchor
+ * (by at/block), and only then ancestry-judges. A stale page can no longer
+ * convict; only an all-nodes-agreed stale tip declares drift. */
 const NODES = (process.env.SAOS_NODE ?? "https://api.steemit.com,https://api.steem.house,https://steemapi.boylikegirl.club")
   .split(",").map((s) => s.trim()).filter(Boolean);
 const ANCHOR_ID = "saos-git-custody-v1";
 const WINDOW = 25000; // history ops scanned (latest-first, 100-per-page)
 
+const rpcOn = async (NODE, method, params) => {
+  try {
+    const r = await fetch(NODE, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }),
+      signal: AbortSignal.timeout(15000),
+    }).then((x) => x.json());
+    if (r?.error) return null;
+    return r;
+  } catch { return null; }
+};
 const rpc = async (method, params) => {
   for (const NODE of NODES) {
-    try {
-      const r = await fetch(NODE, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }),
-        signal: AbortSignal.timeout(15000),
-      }).then((x) => x.json());
-      if (r?.error) continue; /* node-side RPC error → next node */
-      return r;
-    } catch { /* next node */ }
+    const r = await rpcOn(NODE, method, params);
+    if (r) return r;
   }
   return null;
 };
 
 const head = execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
 
+/* R298 FRESHNESS LAW: scan each node independently, keep the FRESHEST anchor.
+ * A stale-but-valid page from node[0] can no longer hide a fresh tip. */
+const fresher = (a, b) =>
+  !b || String(a?.at ?? "") > String(b?.at ?? "") ||
+  (String(a?.at ?? "") === String(b?.at ?? "") && Number(a?.block ?? 0) > Number(b?.block ?? 0));
+const scanNode = async (NODE) => {
+  /* R298 · FRESH-PATH LAW: condenser_api.get_account_history served a stale
+   * page (~15min lag) while account_history_api (hived plugin) served the
+   * fresh anchor on the same node. Try the plugin first, condenser fallback. */
+  const fresh = await scanPlugin(NODE);
+  if (fresh) return fresh;
+  return scanCondenser(NODE);
+};
+const scanPlugin = async (NODE) => {
+  try {
+    /* measured live: the plugin REFUSES limit>100 (error -32801, silent-empty
+     * for the caller) — cap at 100 (the anchor fires ≤1/hour; 100 master ops
+     * span hours). */
+    const r = await rpcOn(NODE, "account_history_api.get_account_history", { account: ACCOUNT, start: -1, limit: 100 });
+    const rows = r?.result?.history ?? [];
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const op = rows[i][1];
+      const t = op?.op;
+      if (t?.type === "custom_json_operation" && t?.value?.id === ANCHOR_ID) {
+        try {
+          const j = JSON.parse(t.value.json);
+          if (j.branch === "saos-cockpit" && j.tip) return { ...j, block: op.block, at: j.at ?? null };
+        } catch { /* skip malformed */ }
+      }
+    }
+  } catch { /* fall through */ }
+  return null;
+};
+const scanCondenser = async (NODE) => {
+  let latest = null;
+  let scanned = 0;
+  let start = -1;
+  const PAGE = 100;
+  for (let page = 0; page < 250 && !latest && scanned < WINDOW; page++) {
+    const hist = await rpcOn(NODE, "condenser_api.get_account_history", [ACCOUNT, start, PAGE]);
+    if (!hist?.result) break;
+    const rows = hist.result; // ascending by index
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const op = rows[i][1];
+      const t = op?.op;
+      if (t?.[0] === "custom_json" && t[1]?.id === ANCHOR_ID) {
+        try {
+          const j = JSON.parse(t[1].json);
+          if (j.branch === "saos-cockpit" && j.tip) { latest = { ...j, block: op.block, at: j.at ?? null }; break; }
+        } catch { /* skip malformed */ }
+      }
+    }
+    scanned += rows.length;
+    const minIdx = rows[0]?.[0];
+    if (minIdx === undefined || minIdx <= 0) break;
+    start = minIdx - 1;
+  }
+  return latest;
+};
+
 let latest = null;
 let scanned = 0;
-/* paginate newest→older (public nodes cap ~100 rows/page) */
-let start = -1;
-const PAGE = 100; /* public nodes cap this RPC at 100 rows */
-for (let page = 0; page < 250 && !latest && scanned < WINDOW; page++) {
-  const hist = await rpc("condenser_api.get_account_history", [ACCOUNT, start, PAGE]);
-  if (!hist?.result) break;
-  const rows = hist.result; // ascending by index
-  for (let i = rows.length - 1; i >= 0; i--) {
-    const op = rows[i][1];
-    const t = op?.op;
-    if (t?.[0] === "custom_json" && t[1]?.id === ANCHOR_ID) {
-      try {
-        const j = JSON.parse(t[1].json);
-        if (j.branch === "saos-cockpit" && j.tip) { latest = { ...j, block: op.block, at: j.at ?? null }; break; }
-      } catch { /* skip malformed */ }
-    }
+for (const NODE of NODES) {
+  const found = await scanNode(NODE);
+  if (found && fresher(found, latest)) latest = found;
+  /* early exit: a fresh-enough anchor that IS in HEAD lineage — verdict settled */
+  if (latest?.tip) {
+    try { execSync(`git merge-base --is-ancestor ${latest.tip} HEAD`, { stdio: "pipe" }); break; } catch { /* keep scanning */ }
   }
-  scanned += rows.length;
-  const minIdx = rows[0]?.[0];
-  if (minIdx === undefined || minIdx <= 0) break;
-  start = minIdx - 1;
 }
 
-if (!latest) { console.error(`NO-ANCHOR: no ${ANCHOR_ID} for ${ACCOUNT} in ${scanned} scanned ops`); process.exit(1); }
+if (!latest) { console.error(`NO-ANCHOR: no ${ANCHOR_ID} for ${ACCOUNT} across ${NODES.length} nodes`); process.exit(1); }
 
 const ancestor = (() => {
   try { execSync(`git merge-base --is-ancestor ${latest.tip} HEAD`, { stdio: "pipe" }); return true; }
