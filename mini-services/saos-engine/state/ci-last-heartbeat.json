@@ -1,21 +1,21 @@
 {
-  "at": "2026-10-09T11:50:26.986Z",
+  "at": "2026-10-09T12:11:42.388Z",
   "custody": "14/14",
-  "social": "SOCIAL-IDLE",
-  "socialExecuted": 0,
+  "social": "SOCIAL-EXECUTED",
+  "socialExecuted": 1,
   "content": "DRAFTS-QUEUED",
   "contentSource": null,
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-09T11:50:26.986Z",
+    "at": "2026-10-09T12:11:42.388Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 37342,
+        "ms": 30547,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -23,25 +23,24 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 188165,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 1,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 19484373
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 121748,
-        "verdict": "SOCIAL-IDLE",
-        "executed": 0,
+        "ms": 166313,
+        "verdict": "SOCIAL-EXECUTED",
+        "executed": 1,
         "refused": 0,
-        "due": 31
+        "due": 34
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 7,
+        "ms": 5,
         "verdict": "DRAFTS-QUEUED",
         "draftsQueued": 13,
         "exposureBlocked": 0,
