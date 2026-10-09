@@ -1,18 +1,26 @@
 {
-  "at": "2026-10-09T21:57:25.368Z",
-  "verdict": "55-FLAGGED",
+  "at": "2026-10-09T22:12:32.923Z",
+  "verdict": "56-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 14,
-      "signedPct": 86,
-      "signed": 12,
-      "unsigned": 2,
+      "scanned": 19,
+      "signedPct": 84,
+      "signed": 16,
+      "unsigned": 3,
       "invalid": 0,
       "flagged": [
+        {
+          "hash": "4497d113",
+          "gq": "N",
+          "sig": "UNSIGNED",
+          "author": "saos-runtime-ci",
+          "at": "2026-10-09T21:58:09Z",
+          "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]"
+        },
         {
           "hash": "0b5887a2",
           "gq": "N",
@@ -536,6 +544,15 @@
   ],
   "flagged": [
     {
+      "hash": "4497d113",
+      "gq": "N",
+      "sig": "UNSIGNED",
+      "author": "saos-runtime-ci",
+      "at": "2026-10-09T21:58:09Z",
+      "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "0b5887a2",
       "gq": "N",
       "sig": "UNSIGNED",
@@ -1036,5 +1053,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 7537
+  "ms": 7766
 }
