@@ -90,10 +90,23 @@ const readPacingState = (rsFile, today, nowIso, eventsFile = path.join(STATE, "e
 
 export { readPacingState };
 
+/* R299 · THE STEP DEADLINE (measured 2026-10-09 21:25-21:52Z): a step whose
+ * await never settles (stalled socket — 326 bytes frozen in the send queue
+ * of a Steem node connection) froze the WHOLE cycle forever: the marker
+ * stayed running:true and the grid deferred every tick (CYCLE-IN-FLIGHT) —
+ * 27 minutes without a single requote. stepWrap catches ERRORS but can
+ * never catch a HANG. Law: every step is wall-clock bounded (8min default,
+ * SAOS_STEP_DEADLINE_MS overrides); a timed-out step returns an honest
+ * ok:false and the cycle CONTINUES. The underlying promise stays pending
+ * (JS cannot cancel) — fail-isolated, bounded, never trusted again. */
+const STEP_DEADLINE_MS = Number(process.env.SAOS_STEP_DEADLINE_MS) || 8 * 60_000;
 const stepWrap = async (name, fn) => {
   const t0 = Date.now();
   try {
-    const out = await fn();
+    const out = await Promise.race([
+      fn(),
+      new Promise((_, rej) => setTimeout(() => rej(new Error(`step-timeout-after-${Math.round((Date.now() - t0) / 1000)}s (hang guard)`)), STEP_DEADLINE_MS).unref?.()),
+    ]);
     return { name, ok: true, ms: Date.now() - t0, ...out };
   } catch (e) {
     return { name, ok: false, ms: Date.now() - t0, error: String(e?.message ?? e).slice(0, 200) };
