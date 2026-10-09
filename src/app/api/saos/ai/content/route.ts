@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { SYMBOL_PROMPT_LAW, enforceSymbolLaw } from "../_symbols";
+import { nvidiaKeyPresent, nvidiaChat } from "../_llm";
 import { runLlmChain, compactContext } from "@/lib/llm-chain";
 
 export const dynamic = "force-dynamic";
@@ -141,6 +142,32 @@ export async function POST(req: Request) {
       candidates: [
         { name: "primary", call: () => callZai(userPrompt, `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`) },
         { name: "compact-retry", call: () => callZai(compactUser, compactContext(`${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`, 2200)) },
+        /* R298 · SECOND PROVIDER (env-gated, last): never delays the happy path. */
+        ...(nvidiaKeyPresent()
+          ? [
+              {
+                name: "nvidia-fallback",
+                call: async () => {
+                  const raw = await nvidiaChat({
+                    system: `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`,
+                    user: compactUser,
+                    maxTokens: 2000,
+                  });
+                  const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+                  let drafts: unknown = [];
+                  try {
+                    const parsed = JSON.parse(jsonText);
+                    drafts = Array.isArray(parsed?.drafts) ? parsed.drafts : [];
+                  } catch {
+                    throw new Error("unparseable nvidia output");
+                  }
+                  const arr = Array.isArray(drafts) ? (drafts as Record<string, unknown>[]).filter((d) => d && typeof d === "object") : [];
+                  if (!arr.length) throw new Error("empty drafts from nvidia provider");
+                  return { value: arr, tokens: 0 };
+                },
+              },
+            ]
+          : []),
       ],
       validate: (arr) => {
         if (!Array.isArray(arr) || !arr.length) return null;

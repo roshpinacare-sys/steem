@@ -276,6 +276,7 @@ async function fetchFleetPosts({ viewer, accounts, nowMs, p, excludePermlinks })
           excerpt: String(post.body ?? "").slice(0, 300),
           votes: (post.active_votes ?? []).length,
           rosterVotes: (post.active_votes ?? []).filter((v) => rosterSet.has(v.voter)).length,
+          myVote: (post.active_votes ?? []).some((v) => v.voter === viewer), /* R274: chain-truth — the chain remembers every vote */
           children: post.children ?? 0,
         });
       }
@@ -878,11 +879,11 @@ async function doPublish(account, st, p, now, day) {
 async function doFleetVote({ account, master, st, p, nowMs, now }) {
   if (st.done["fleet-vote"] >= p.maxFleetVotesPerDay) return false;
   const exclude = new Set((st.voted ?? []).map((v) => `${v.author}/${v.permlink}`));
-  const candidates = await fetchFleetPosts({
+  const candidates = (await fetchFleetPosts({
     viewer: account,
     accounts: [master, ...ARMY_ROSTER],
     nowMs, p, excludePermlinks: exclude,
-  });
+  })).filter((c) => !c.myVote); /* R274 CLONE GUARD: chain-truth skip — a rewound state never re-votes (the chain refuses identical weight) */
   if (!candidates.length) return false;
   /* T-87 ANTI-HERD PICK: rank by roster votes already carried (chain-truth
    * active_votes), then by total votes — the least-supported fleet post gets
