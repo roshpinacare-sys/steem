@@ -23,11 +23,10 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { rpcCall } from "./measure.mjs";
 import { executeAs, armedConf, execPaused, loadCredential } from "./signer.mjs";
-import {
-  curatorPolicy, filterCandidates, normalizePost, fetchCandidates,
-  effectiveVests, vpEffPct, weightForAge, hashSeed, dayKeyOf,
-} from "./curator.mjs";
+import { curatorPolicy, filterCandidates, normalizePost, fetchCandidates,
+  effectiveVests, vpEffPct, weightForAge, hashSeed, dayKeyOf } from "./curator.mjs";
 import { countDayVotesFromHistory } from "./lib.mjs";
+import { tagRoiState, orderTagsByRoi } from "./tag-roi.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -74,6 +73,15 @@ export function armyCurationState() { return readJson(AC_FILE, null); }
 export async function runArmyCuration({ now = new Date().toISOString() } = {}) {
   const conf = armedConf();
   const p = armyCuratorPolicy();
+  /* R291 · measured tag-ROI ordering: the whitelist stays the universe, only
+   * the ORDER follows what actually paid us (falls back to policy order when
+   * data-thin — the tag-roi law). */
+  const roi = tagRoiState();
+  if (roi?.tags) {
+    const ordered = orderTagsByRoi(p.tags, Object.values(roi.tags));
+    p.tags = ordered.tags;
+    p.tagsBasis = ordered.basis;
+  }
   const day = dayKeyOf(now);
   const nowMs = Date.parse(now);
   const base = { enabled: p.enabled, at: now, day, rail: "army-curation" };

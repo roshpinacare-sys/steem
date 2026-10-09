@@ -42,6 +42,18 @@ import path from "node:path";
 const PORT = 3044;
 const DEV_PORT = 3000;
 const ROOT = "/home/z/my-project";
+/* R291 · MUTUAL GUARDIANSHIP (measured death 2026-10-09): the kernel OOM-killed
+ * next-server AND the keeper itself sat dead for hours — no one owned the
+ * engine's life. The keeper now also guards the engine (probe :3040 →
+ * respawn after 3 dead ticks, cooldown 60s). The engine reciprocally hatches
+ * THIS keeper when both :3000 and :3044 are dark. Single-instance laws stay:
+ * each guardian spawns its ward only when the ward's port is dark. */
+const ENGINE_PORT = 3040;
+const ENGINE_DIR = "/home/z/my-project/mini-services/saos-engine";
+let engineUp: boolean | null = null;
+let engineDownTicks = 0;
+let engineSpawns = 0;
+let lastEngineSpawnMs = 0;
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const STATE_DIR = path.join(HERE, "state");
 const LOCK = path.join(STATE_DIR, "keeper.lock");
@@ -218,9 +230,10 @@ Bun.serve({
         ok: true, organ: "dev-keeper", pid: process.pid,
         uptimeSec: Math.round((Date.now() - startedAt) / 1000),
         devUp, spawns, lastSpawnAt, lastAction,
+        engineUp, engineDownTicks, engineSpawns,
         nextMB: Math.round(nextDirBytes() / 1048576),
         rssMB: lastRssMB, rssLimitMB: Math.round(RSS_LIMIT_KB / 1024), rssRespawns,
-        law: "R262 dev-keeper: fixed-command watchdog over :3000, R216-b surviving-lineage spawn, no secrets, no params; R287 pre-emptive RSS guard 1.6GB→SIGTERM→rebuild",
+        law: "R262 dev-keeper: fixed-command watchdog over :3000, R216-b surviving-lineage spawn, no secrets, no params; R287 pre-emptive RSS guard 1.6GB→SIGTERM→rebuild; R291 mutual guardianship: engine :3040 respawn after 3 dead ticks",
       });
     }
     return json({ ok: false, error: "not-found", routes: ["/health"] }, 404);
@@ -240,10 +253,49 @@ console.log(`[dev-keeper] up on :${PORT} — watching :${DEV_PORT} every ${LOOP_
 let lastSpawnMs = 0; // 0 = allow immediate spawn after boot-grace elapses
 const booted = Date.now();
 
+/* R291 · engine guardian — same fixed-command law as spawnDevServer */
+function spawnEngine(): boolean {
+  try {
+    const out = fs.openSync(path.join(ENGINE_DIR, "engine-stdout.log"), "a");
+    const child = spawn("bun", ["run", "dev"], {
+      cwd: ENGINE_DIR,
+      detached: true,
+      stdio: ["ignore", out, out],
+      env: process.env,
+    });
+    child.unref();
+    engineSpawns += 1;
+    lastEngineSpawnMs = Date.now();
+    lastAction = `engine-respawned pid=${child.pid}`;
+    log(`engine-guardian: respawn bun run dev (pid=${child.pid}, spawns=${engineSpawns})`);
+    return true;
+  } catch (e) {
+    lastAction = "engine-spawn-error";
+    log(`engine-spawn-error: ${String(e).slice(0, 160)}`);
+    return false;
+  }
+}
+
+async function engineHealthy(): Promise<boolean> {
+  try {
+    const r = await fetch(`http://127.0.0.1:${ENGINE_PORT}/health`, { signal: AbortSignal.timeout(6000) });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
 setInterval(async () => {
   heartbeat();
   devUp = await devHealthy();
   rssGuard(); /* R287: runs regardless of health — the ballooning process IS healthy-looking until it dies */
+  /* R291 · engine guardianship (3 dead ticks → respawn, own 60s cooldown) */
+  const engOk = await engineHealthy();
+  engineUp = engOk;
+  engineDownTicks = engOk ? 0 : engineDownTicks + 1;
+  if (!engOk && engineDownTicks >= 3 && Date.now() - lastEngineSpawnMs > 60_000 && Date.now() - booted > BOOT_GRACE_MS) {
+    spawnEngine();
+  }
   if (devUp) { lastAction = "dev-healthy"; return; }
   if (Date.now() - booted < BOOT_GRACE_MS) { lastAction = "boot-grace"; return; }
   if (Date.now() - lastSpawnMs < RESPAWN_COOLDOWN_MS) { lastAction = "cooldown"; return; }

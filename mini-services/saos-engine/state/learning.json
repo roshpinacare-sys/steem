@@ -1,21 +1,21 @@
 {
-  "at": "2026-10-09T00:28:11.969Z",
+  "at": "2026-10-09T01:21:29.863Z",
   "enabled": true,
-  "runsTotal": 483,
-  "verdict": "LEARNED",
+  "runsTotal": 486,
+  "verdict": "NO-NEW-LESSONS",
   "metrics": {
     "cycles": {
-      "window": 57,
-      "oks": 51,
+      "window": 50,
+      "oks": 45,
       "fails": 5,
-      "blocked": 1,
-      "okRate": 89.5,
-      "blockedRate": 1.8,
+      "blocked": 0,
+      "okRate": 90,
+      "blockedRate": 0,
       "failReasons": {
         "unknown": 5
       },
-      "msP50": 183276,
-      "msP90": 243246
+      "msP50": 185303,
+      "msP90": 252036
     },
     "curator": {
       "present": true,
@@ -37,34 +37,25 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 3137,
-      "downs": 117,
-      "heals": 58,
-      "healVerified": 48,
+      "checks": 3160,
+      "downs": 118,
+      "heals": 59,
+      "healVerified": 49,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-09T00:30:18.308Z",
+      "lastCheckAt": "2026-10-09T01:21:44.856Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-08T23:17:23.300Z",
-      "lastUpAt": "2026-10-09T00:30:18.317Z",
+      "lastSpawnAt": null,
+      "lastUpAt": "2026-10-09T01:21:44.859Z",
       "blips": 3
     }
   },
-  "lessons": [
-    {
-      "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×1/57 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    }
-  ],
+  "lessons": [],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 381,
+    "signing-cred-blocked": 382,
     "broadcast-fails": 130,
     "cycle-latency-tail": 119
   },

@@ -30,6 +30,7 @@ import { rpcCall, accountState } from "./measure.mjs";
 import { executeAs, masterAccount, armedConf, execPaused, loadCredential } from "./signer.mjs";
 import { learningTunings } from "./learning.mjs";
 import { mergeVoteState, countDayVotesFromHistory } from "./lib.mjs";
+import { tagRoiState, orderTagsByRoi } from "./tag-roi.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -222,6 +223,15 @@ export async function runCurator({ now = new Date().toISOString() } = {}) {
    * are untouchable by design. */
   const learned = learningTunings();
   const p = { ...curatorPolicy(), ...(conf.curate ?? {}), ...learned };
+  /* R291 · measured tag-ROI ordering: the whitelist stays the universe, only
+   * the ORDER follows what actually paid us (data-thin fallback = policy
+   * order). Never adds tags, never touches operator intent keys. */
+  const roi = tagRoiState();
+  if (roi?.tags) {
+    const ordered = orderTagsByRoi(p.tags, Object.values(roi.tags));
+    p.tags = ordered.tags;
+    p.tagsBasis = ordered.basis;
+  }
   const tuningsApplied = Object.keys(learned);
   const master = masterAccount();
   const day = dayKeyOf(now);

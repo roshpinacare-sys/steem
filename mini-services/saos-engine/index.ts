@@ -439,6 +439,30 @@ try {
   };
   runProbe(); /* once at boot — fresh levers for the cockpit */
   intervals.push(setInterval(runProbe, 3 * 60 * 60_000));
+  /* R291 · MUTUAL GUARDIANSHIP (engine side): measured death 2026-10-09 — the
+   * kernel OOM-killed next-server AND the keeper; nobody hatched the keeper,
+   * so the cockpit stayed dark for hours. The engine is a surviving lineage
+   * (re-parented to init) — it may HATCH the keeper (never the cockpit
+   * directly; the keeper owns the :3000 lifecycle by law). Fires only when
+   * BOTH :3000 and :3044 are dark — single-instance laws preserved. */
+  const keeperDir = path.join(DIR, "..", "dev-keeper");
+  const keeperGuardian = async () => {
+    try {
+      const cockpit = await fetch("http://127.0.0.1:3000/__keeper_probe", { signal: AbortSignal.timeout(4000) }).then((r) => r.ok).catch(() => false);
+      if (cockpit) return; /* cockpit alive — keeper's ward needs nothing */
+      const keeper = await fetch("http://127.0.0.1:3044/health", { signal: AbortSignal.timeout(4000) }).then((r) => r.ok).catch(() => false);
+      if (keeper) return; /* keeper alive — it owns the cockpit revival */
+      const { spawn: sp } = childProcess;
+      const out = fs.openSync(path.join(keeperDir, "keeper-stdout.log"), "a");
+      const child = sp(process.execPath, ["index.ts"], { cwd: keeperDir, detached: true, stdio: ["ignore", out, out], env: process.env });
+      child.unref();
+      console.log(`keeper-guardian: hatched dev-keeper pid=${child.pid} (both :3000 and :3044 dark — measured-dark law)`);
+    } catch (e) {
+      console.error(`keeper-guardian error: ${String((e as Error)?.message ?? e).slice(0, 120)}`);
+    }
+  };
+  keeperGuardian(); /* once at boot */
+  intervals.push(setInterval(() => { Promise.resolve(keeperGuardian()).catch(() => null); }, 60_000));
   for (const t of intervals) t.unref?.();
 } catch (e) {
   console.error(`revenue loops boot failed: ${String(e?.message ?? e)}`);
