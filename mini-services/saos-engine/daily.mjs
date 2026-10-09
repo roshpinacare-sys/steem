@@ -24,10 +24,14 @@ import {
 } from "./measure.mjs";
 import { tick as gridTick } from "./grid.mjs";
 import { runIntel } from "./intel.mjs";
-import { executeOps, executeAs, armedConf, execPaused, masterAccount, loadCredential, custodyOf } from "./signer.mjs";
+import { executeOps, executeAs, armedConf, execPaused, masterAccount, loadCredential, custodyOf, verifyRoles } from "./signer.mjs";
 import { writePrediction, evaluateAndJournal, updateBelief, triggerWatch, resolveClaimRole, journalClaimRefusal, claimChainTruth, reconcileOrphans } from "./adaptation.mjs";
 import { deploySoldiers, runSoldierGrids, soldiersState, verifySoldierCustody } from "./soldiers.mjs";
 import { postDailyReport } from "./promo.mjs";
+/* R292 · CAPITAL ROUTER: profit-maximization + routing engine — computes the
+ * ranked action matrix from the deep probe, executes pure-recall actions
+ * (zero-amount delegation — structurally unable to create exposure). */
+import { computeRouterReport, executeRouterActions } from "./capital-router.mjs";
 import { runCurator } from "./curator.mjs";
 import { runArmyCuration } from "./army-curation.mjs";
 import { runTagRoi } from "./tag-roi.mjs";
@@ -165,6 +169,16 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   const tagRoiP = stepWrap("tag-roi", async () => {
     const out = await runTagRoi({ now });
     return { verdict: out.verdict, tagsRanked: out.tagsRanked ?? 0, resolved: out.resolved ?? 0, top: out.top ?? null, error: out.error ?? null };
+  });
+
+  /* R292 · capital-route (parallel, fail-isolated): the profit-maximization
+   * matrix — reads the deep probe, computes the yield ladder + ranked
+   * actions, and executes pure-recall actions through the think gate. */
+  const capitalRouteP = stepWrap("capital-route", async () => {
+    const rep = computeRouterReport({ now });
+    if (rep.verdict !== "ROUTED") return rep;
+    const ex = await executeRouterActions({ now, plan: rep, executeAsFn: executeAs, verifyRolesFn: verifyRoles, masterAcct: masterAccount() });
+    return { verdict: rep.verdict, actions: rep.actions?.length ?? 0, ladderTop: rep.ladder?.stages?.[rep.ladder.stages.length - 1]?.spPerDay ?? null, executed: ex.executed ?? [] };
   });
 
   /* 1 · observe: parity + inventory + fills + rails fuel */
@@ -430,6 +444,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.curate = await curateP;
   report.steps["army-curate"] = await armyCurateP;
   report.steps["tag-roi"] = await tagRoiP;
+  report.steps["capital-route"] = await capitalRouteP;
 
   /* 6 · execute (SIGNING — the X-1 rail, engine-held, doctrine-capped).
    * T-16 CRED GATE FIRST: when the credential is missing this step used to
