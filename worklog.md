@@ -60,3 +60,21 @@ Stage Summary:
 - שתי ההכרעות ניתנו-והופעלו: (1) פריסת-הפנקסים = content-addressed drafts + metadata-only sent ledger, חסמים-מבניים לא-טרונקציה; (2) סטרימינג = כן, אך-בשערים: המסילה חיה ומוכחת ב-dryrun; המעבר-לחיים הוא שתי-החלטות-קבצים (mode=live + social-armed.json) בלי-שינוי-קוד, עם מכסות/kill-switch/dedupe כבר-אכופים.
 - Blurt נשאר-כנות: נאמד אך-לא-חובר — chain-id יימדד ולא-יונח; הטענה החיצונית "Blurt authorities מאומתות" לא-אומתה כאן (Steem: 13/13 מוכח).
 - עמדת-ה-OOM החדשה: השרת כבר-לא-מותיר-ל-kernel הכרעה — ה-keeper מחליף אותו מבוקר 100MB לפני-הקו-האדום.
+---
+Task ID: R290 (T-94 · yield maximization: levers measured + army-curation multiplier + damage repair)
+Agent: Z.ai Code (cockpit zai-web session)
+Task: המפעיל: "בדוק לעומק איך נקבל תגמולים גדולים בהרבה — מה היתרונות שלנו כחשבונות-פעילים, נקודות-פריצה, תכנן, בצע, בדוק, אמת ודחוף" (month of no income after $1000/day promises)
+
+Work Log:
+- **YieldMax probe** (download/yieldmax-probe-R290.mjs, zero-credentials, chain-sourced): headcorner effective 1211.28 SP (own 4024.37, delegated-out 3057.25 — recalls NOT landed yet, delta -0.05 SP), army Σ562.18 SP, curation MEASURED 42 ops/2.2d = 1.25 SP = **0.586 SP/day, APR 17.7%** (R289 tune already ×2.7 vs 0.216), VP 10% fleet-wide (battery burned by R289 utilization — regen cycle), feed 0.104$/STEEM, SBD premium -1.51% (no arb edge), Hive 0 HP/0 HBD (dust), Blurt 7605 vests (dust), delegation markets unreachable. 4 self-bugs caught and fixed mid-probe (vests-ratio inversion — the exact R289 warning, condenser op-type suffixes, reward_vests field name, feed ratio parse)
+- **army-curation.mjs — R289 §5.2 IMPLEMENTED (the structural multiplier)**: 10 army accounts vote the SAME external rising candidates (fetchCandidates shared, maxPerDay 12, weights 80/40 → 7.2%/day VP burn < 20% regen, VP floor 35, chain-truth day budget max(state,chain), one vote per broadcast 3.3s apart, incremental state writes, excludeAccounts 17 = EXTERNAL-ONLY law). Wired into daily.runCycle as parallel fail-isolated step "army-curate". First live run: **all 10 accounts voted, ~45 votes on external content, chain-verified positive rshares**
+- **REAL DAMAGE + REPAIR (full transparency)**: the first engine run broadcast with a ×100 weight bug (weightForAge already returns STEEM units) — u16 serialization wrapped 521700→-2588 = ONE REAL DOWNVOTE on innocent author fodigo (-210M rshares via tov) and one on focusframe (-35M via woq); 6 other votes landed positive by luck. Fixed the weight law + pinned it in selftest (u16 band 0<w≤10000). repair-votes-R290.mjs: same-magnitude positive replacement votes via the lawful key-cache path (0600 cache, memory-only WIF, GEN-1 vs GEN-2 authority-mismatch handling) — **both repairs chain-verified: rshares +210M / +33.9M POSITIVE, authors made whole**
+- **Cockpit**: /api/saos/yield-levers (thin reader, deDashDeep) + YieldLeversCard in the revenue section (probe freshness, headcorner live numbers, army rail verdicts, lever matrix, receipts with correct % display, honesty block). Probe cadence wired to engine boot + 3h (detached child). Browser-verified desktop+390px, 0 console errors, sticky footer intact
+- **selftest 1144/1144 PASS** (13 new vectors: external-only exclusion, VP budget burn<20, u16 weight law, vpEligible boundaries, determinism, fetchLimit/tags policy)
+- **Push**: signed (Good signature SAOS W1 signing r5) → rebase over custodian's moving origin (state JSON=live-wins, JSONL=union) → **64acd990..c52081e3 on origin/saos-cockpit**; lint clean; engine respawned twice lawfully via spawn-engine (single-instance law), custody 14/14 GREEN
+
+Stage Summary:
+- תשובה-מדודה לשאלת-המפעיל: ההצבעות כן משלמות בלי-שום-סף-2-סנט — APR 17.7% נמדד-חי; התשואה מדרגת-הון, לא-סף
+- המכפיל-המבני חי: Σ562 SP של-הצבא עובדים-עכשיו (היו 97-100% עצומים) — עם-החזרת-2462 SP (~10-11) headcorner עצמו מתייעל ×3
+- המטריצה הכנה: הדלק-היחיד-האמיתי = קיורציה+צבירת-SP; SBD/Hive/Blurt/האצלות = אפס-קצה-מדוד; ההבטחה-$1000/יום דורשת ~$40-70M הון ב-APR-הנמדד — הדרך-הריאלית: צבירה-מורכבת + תוכן-עם-הגעה + (רחוק) הצעת-DAO
+- שקיפות-מלאה: פגענו-בשני-כותבים-חפים בפעימה-הראשונה, תיקנו-מיד-מול-השרשרת, והחוק-נקבע-ב-selftest כדי-שהטעות-לא-תחזור
