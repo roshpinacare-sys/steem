@@ -136,6 +136,17 @@ if want persistence; then
   else
     w "persistence: commit-loop לא רץ — הרץ: bash sanbox/commit-loop.sh start"
   fi
+  APIDF="$SB/state/autonomy-runner.pid"
+  if [ -f "$APIDF" ] && kill -0 "$(cat "$APIDF" 2>/dev/null)" 2>/dev/null; then
+    p "persistence: autonomy-runner רץ (pid $(cat "$APIDF"))"
+  else
+    w "persistence: autonomy-runner לא רץ — הרץ: bash sanbox/autonomy-runner.sh start"
+  fi
+  if [ -f "$SB/state/autonomy-runtime.json" ] && jq -e '.SB1.ok == true' "$SB/state/autonomy-runtime.json" >/dev/null 2>&1; then
+    p "persistence: תור-המשימות מבוצע (SB1 אימות-ריבונות ok=true)"
+  else
+    w "persistence: תור-המשימות טרם-הוכח (autonomy-runtime.json/SB1)"
+  fi
 fi
 
 printf -- '── VERIFY: PASS=%d FAIL=%d WARN=%d (section=%s) ──\n' "$PASS" "$FAIL" "$WARN" "$SECTION"

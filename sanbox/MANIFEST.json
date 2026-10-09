@@ -1,7 +1,7 @@
 {
   "version": 1,
   "canonical": "sanbox/",
-  "generatedAt": "2026-10-09T17:05:00Z",
+  "generatedAt": "2026-10-09T20:40:00Z",
   "purpose": "תיקיית-העל של מישור-ההתמדה: חייאה, אימות, התמדה, שער-מפעיל",
   "laws": [
     "AGENTS.md",
@@ -13,6 +13,7 @@
     "bootstrap": "bash sanbox/bootstrap.sh",
     "verify": "bash sanbox/verify.sh",
     "persistence": "bash sanbox/commit-loop.sh start",
+    "autonomy": "bash sanbox/autonomy-runner.sh start",
     "operator": "http://127.0.0.1:3046/operator (דרך-השער: /operator?XTransformPort=3046)"
   },
   "components": [
@@ -28,6 +29,10 @@
     "doctrine": "scripts/doctrine-audit.mjs",
     "selftestState": "mini-services/saos-engine/state/selftest-last-run.json",
     "chainProbe": "scripts/chain-anchor-probe.mjs",
-    "verify": "bash sanbox/verify.sh"
-  }
+    "verify": "bash sanbox/verify.sh",
+    "taskQueue": "sanbox/autonomy/tasks.json → executed by sanbox/autonomy-runner.sh (SB1..SB5)"
+  },
+  "componentsRuntime": [
+    { "id": "autonomy-runner", "kind": "bash-daemon", "cwd": ".", "cmd": "bash sanbox/autonomy-runner.sh start", "intervalSec": 900, "critical": false, "note": "מבצע את תור-המשימות SB1..SB5 · רישום: sanbox/state/autonomy-runtime.json" }
+  ]
 }
