@@ -89,6 +89,22 @@ function resolveRef(file) {
   throw new Error(`no-carrying-ref-for-${file} (tried: ${REF_CANDIDATES.join(", ")})`);
 }
 
+/* R297 · SEALED-FILE SPEC LAW: recovery-meta gpgKey.sealedFile carries an
+ * inline container annotation — "<path> (member signing/w1-signing-key.asc)".
+ * Measured live 2026-10-09 17:38Z: the RAW string was used as a git path
+ * (resolveRef could never match — " (member …)" is not a filename) and the
+ * decrypted CONTAINER was imported into gpg directly (a zip is not a key).
+ * Cold-boot writer revival died SIGNING-REVIVE-FAIL while the warm keyring
+ * masked it as SIGNING-ALREADY-ALIVE for days. The spec now parses the
+ * annotation, verifies any pin that matches (gpgKey.sealedSha256 OR
+ * extras.outerSha256 for the same file — the R284 re-seal left a stale pin),
+ * and extracts the declared member per the pinned formula: openssl -d →
+ * unzip -p <member> → gpg --import. Fail-closed preserved. */
+function parseSealedFileSpec(raw) {
+  const m = String(raw ?? "").match(/^(.*?)\s*\(\s*member\s+([^()]+)\s*\)\s*$/);
+  return m ? { file: m[1].trim(), member: m[2].trim() } : { file: String(raw ?? "").trim(), member: null };
+}
+
 /* ── the working credential source: never printed, only consumed ──────────── */
 function extractWorkingToken() {
   /* 1) the sandbox-embedded remote URL token (proven push path) */
@@ -210,16 +226,40 @@ export function reviveSigningKey({ now = new Date().toISOString() } = {}) {
       sh("gpg", ["--list-secret-keys", fp]);
       return { ok: true, verdict: "SIGNING-ALREADY-ALIVE", fingerprint: fp, ms: Date.now() - t0 };
     } catch { /* import below */ }
-    const ref = resolveRef(spec.sealedFile);
-    const enc = gitShowBytes(ref, spec.sealedFile);
-    if (spec.sealedSha256 && sha256(enc) !== spec.sealedSha256) throw new Error(`signing-key-sha-mismatch (${sha256(enc).slice(0, 8)})`);
+    const sealed = parseSealedFileSpec(spec.sealedFile);
+    const ref = resolveRef(sealed.file);
+    const enc = gitShowBytes(ref, sealed.file);
+    /* pin law: the pin that VERIFIES is the pin of record — gpgKey.sealedSha256
+     * may trail the container era (R284 re-seal); extras.outerSha256 pins the
+     * same blob when the sealed file IS the extras container. No matching pin
+     * at all = refuse (fail-closed). */
+    const pins = [spec.sealedSha256, (meta.extras?.file === sealed.file ? meta.extras?.outerSha256 : null)]
+      .filter((p) => typeof p === "string" && p.length >= 32);
+    if (pins.length && !pins.includes(sha256(enc))) throw new Error(`signing-key-sha-mismatch (${sha256(enc).slice(0, 8)} vs pins ${pins.map((p) => p.slice(0, 8)).join("/")})`);
     const tmp = path.join("/tmp", `.w1key.${process.pid}`);
     fs.writeFileSync(tmp, enc, { mode: 0o600 });
     try {
       const sigEnv = { ...process.env, SAOS_VAULT_PASS: meta.keysZipPass };
       const dec = execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
         "-in", tmp, "-pass", "env:SAOS_VAULT_PASS"], { env: sigEnv, maxBuffer: 16 * 1024 * 1024 });
-      execFileSync("gpg", ["--batch", "--yes", "--import"], { input: dec });
+      /* container law: a zip container (PK\x03\x04) holds the key as a MEMBER
+       * (pinned formula: openssl -d → unzip -p <member> → gpg --import); a
+       * bare single-file seal imports as-is (pre-container era preserved) */
+      let keyBytes = dec;
+      const isZip = dec.length > 4 && dec[0] === 0x50 && dec[1] === 0x4b;
+      if (sealed.member || isZip) {
+        const tmpZip = path.join("/tmp", `.w1zip.${process.pid}`);
+        fs.writeFileSync(tmpZip, dec, { mode: 0o600 });
+        try {
+          let member = sealed.member ?? null;
+          const members = execFileSync("unzip", ["-Z1", tmpZip], { maxBuffer: 1024 * 1024 }).toString().split("\n").map((s) => s.trim()).filter(Boolean);
+          if (!member) member = members.find((x) => /^signing\/.*\.asc$/.test(x)) ?? null;
+          if (!member) throw new Error(`container-seal-has-no-signing-member (${members.length} entries)`);
+          keyBytes = execFileSync("unzip", ["-p", tmpZip, member], { maxBuffer: 16 * 1024 * 1024 });
+          if (!keyBytes || keyBytes.length < 100) throw new Error(`container-member-empty (${member})`);
+        } finally { fs.rmSync(tmpZip, { force: true }); }
+      }
+      execFileSync("gpg", ["--batch", "--yes", "--import"], { input: keyBytes });
     } finally { fs.rmSync(tmp, { force: true }); }
     sh("gpg", ["--list-secret-keys", fp]); /* must exist now */
     try { sh("git", ["config", "user.signingkey", fp]); sh("git", ["config", "commit.gpgsign", "true"]); } catch { /* best-effort */ }
@@ -264,8 +304,9 @@ export function resealSigningKey({ now = new Date().toISOString() } = {}) {
         execFileSync("gpg", ["--batch", "--yes", "--import"], { input: dec, env: rtEnv });
         execFileSync("gpg", ["--list-secret-keys", fp], { env: rtEnv });
       } finally { fs.rmSync(isoHome, { recursive: true, force: true }); }
-      /* commit the new seal + pin */
-      fs.writeFileSync(path.join(ROOT, spec.sealedFile), enc);
+      /* commit the new seal + pin (R297: parsed path — the annotation may
+       * never leak into a filename) */
+      fs.writeFileSync(path.join(ROOT, parseSealedFileSpec(spec.sealedFile).file), enc);
       spec.sealedSha256 = newPin;
       spec.formula = "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass env:<keysZipPass> → gpg --import (the SAME keysZipPass of this meta)";
       spec.resealedAt = now;
