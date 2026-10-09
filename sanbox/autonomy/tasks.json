@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-09T17:05:00Z",
+  "law": "בצע לפי AGENT_BOOT.md · תעד ב-worklog.md · דחוף דרך scripts/sovereign-push.sh",
+  "queue": [
+    { "id": "SB-1", "role": "any-agent", "priority": "high", "title": "אימות-ריבונות בפתיחת-סשן", "cmd": "bash sanbox/verify.sh", "expect": "exit 0", "recurrence": "per-session", "done": false },
+    { "id": "SB-2", "role": "any-agent", "priority": "high", "title": "הבטחת לולאת-התמדה", "cmd": "bash sanbox/commit-loop.sh start", "expect": "pid alive", "recurrence": "ensure-running", "done": false },
+    { "id": "SB-3", "role": "any-agent", "priority": "high", "title": "חייאה אם verify/bootstrap נכשל", "cmd": "bash sanbox/bootstrap.sh", "expect": "exit 0", "recurrence": "on-failure", "done": false },
+    { "id": "SB-4", "role": "auditor", "priority": "medium", "title": "סריקת-סודות יומית", "cmd": "bash sanbox/verify.sh secrets", "expect": "FAIL=0", "recurrence": "daily", "done": false },
+    { "id": "SB-5", "role": "any-agent", "priority": "medium", "title": "אימות-עוגן-שרשרת יומי", "cmd": "bash sanbox/verify.sh chain", "expect": "FAIL=0", "recurrence": "daily", "done": false }
+  ]
+}
