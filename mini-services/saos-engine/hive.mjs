@@ -43,10 +43,32 @@ const FLAG_PAUSES_FILE = path.join(STATE, "flag-pauses.json");
 const SECRETS = path.join(DIR, "..", "..", ".secrets");
 const TMP = path.join(SECRETS, "hive-vault-tmp");
 
-/* the GEN-1 vault commit — pinned by hash, never by a moving branch */
-const GEN1_COMMIT = "1c9f00d0";
+/* GEN-1 vault locator — R297 ADOPTS THE R278 ERA-META LAW (measured live
+ * 2026-10-09 17:10Z: the pinned short-sha 1c9f00d0 died out of history and
+ * the Hive hold fell to UNLOCK-FAIL while the army stayed 14/14 on the very
+ * same vault — vault-revival.mjs carried the fix, hive.mjs never got it).
+ * Resolution order: the era meta on any carrying ref (branch of record →
+ * main → HEAD), the historical (commit, recovery-meta) carrier LAST. The
+ * era meta OWNS the zip path + pass + both sha-pins (a re-seal moves file
+ * AND pass together — R265). Nothing trusts the locator: outer sha-pin,
+ * inner sha-pin, passphrase and the live-chain WIF verification below all
+ * still fail-closed. */
 const GEN1_ZIP = "agent/vault/KEYS-ZIP-2026-09-10.zip.enc";
 const GEN1_META = "agent/recovery-meta.json";
+const GEN1_ERA_META = "agent/vault/GEN-1-ERA-META.json";
+const GIT_REF_CANDIDATES = ["origin/saos-cockpit", "origin/main", "HEAD"];
+const GEN1_COMMIT = "1c9f00d0"; /* historical hint only — may be dead */
+
+function resolveGen1Spec() {
+  const candidates = [
+    ...GIT_REF_CANDIDATES.map((ref) => ({ ref, metaRef: GEN1_ERA_META })),
+    { ref: GEN1_COMMIT, metaRef: GEN1_META }, /* historical carrier */
+  ];
+  for (const c of candidates) {
+    try { gitShowBytes(c.ref, c.metaRef); return c; } catch { /* try next */ }
+  }
+  throw new Error(`no-carrying-ref-for-gen1-meta (tried ${candidates.length} carriers)`);
+}
 
 /* measured 2026-10-07: these 9 hold FULL custody on Hive (owner+active+
  * posting all match the GEN-1 pubs); tov/ynet/headcorner rotated there;
@@ -117,8 +139,12 @@ function unlockHiveKeysFromGitVault() {
   fs.rmSync(TMP, { recursive: true, force: true });
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
   try {
-    const meta = JSON.parse(gitShowBytes(GEN1_COMMIT, GEN1_META).toString("utf8"));
-    const enc = gitShowBytes(GEN1_COMMIT, GEN1_ZIP);
+    const spec = resolveGen1Spec();
+    const meta = JSON.parse(gitShowBytes(spec.ref, spec.metaRef).toString("utf8"));
+    /* R297/R265: the archive path is OWNED BY THE META of that era — a
+     * re-seal moves the file AND the pass together; GEN1_ZIP stays as a
+     * fallback for metas from before the field existed. */
+    const enc = gitShowBytes(spec.ref, String(meta.keysZipFile ?? GEN1_ZIP));
     if (sha256(enc) !== String(meta.keysZipSha256 ?? "")) throw new Error("gen1-outer-sha-mismatch");
     fs.writeFileSync(path.join(TMP, "k.enc"), enc, { mode: 0o600 });
     execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
