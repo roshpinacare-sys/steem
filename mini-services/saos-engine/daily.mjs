@@ -19,6 +19,7 @@ import {
   cycleHealth, cycleFailureBreakdown, signalDigest, measuredLayers, redeployIntel, blockageLedger,
 } from "./lib.mjs";
 import { runCouncil } from "./council.mjs";
+import { mmGate } from "./rail-doctrine.mjs"; /* T-37: arm the measured MM verdict on runtime truth */
 import {
   externalParity, internalFeed, accountState, openOrders, measureAll, fuelToUsdPerDay, marketPulse, rpcCall,
 } from "./measure.mjs";
@@ -187,6 +188,10 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       externalParity(), internalFeed(), accountState(ACCOUNT), openOrders(ACCOUNT), measureAll(ACCOUNT),
     ]);
     const fillsPnl = pnlFromFills(meas.fills);
+    /* T-37 · mm-gate truth file: the fill window the gate verdicts on
+     * (fail-open elsewhere — a missing/stale file never throttles) */
+    const firstFillAt = meas.fills.length ? new Date(Math.min(...meas.fills.map((f) => f.at))).toISOString() : null;
+    const mmGatePnl = { fills: fillsPnl.fills, realizedSbd: fillsPnl.realizedSbd, firstFillAt, lastFillAt: meas.lastFillAt, computedAt: now };
     const fuelUsd = acc.ok && acc.totalVestingShares && par.steemUsd > 0
       ? fuelToUsdPerDay(meas.fuel.curationVestsPerDay, acc.totalVestingShares, acc.totalVestingFund, par.steemUsd)
       : null;
@@ -207,6 +212,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     }
     if (persist) {
       writeJson(path.join(STATE, "observe.json"), { ...data, at: now });
+      writeJson(path.join(STATE, "mm-gate.json"), mmGatePnl);
       appendLine(path.join(STATE, "events.jsonl"), { type: "observe.done", at: now, fills: meas.fills.length, parity: par.parity });
     }
     return { ...data, summary: `parity ${par.parity || "?"} (${par.source}) · fills ${meas.fills.length} · fuel ${fuelUsd ?? "?"}$` };
@@ -532,8 +538,17 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     }
     // (b) fresh ladder from LIVE liquid, intel-capped (per-op CLAMPED to caps —
     // a cap must shrink an order, never silently skip the whole ladder side)
+    // T-37 · MM GATE: if the chain-measured window says BLEEDING, the ladder
+    // does not resume (fail-open gate — only a ≥30-fill/≥2-day measured bleed
+    // stops it; see rail-doctrine.mmGate). Throttle state is published so the
+    // cockpit and the next cycle see WHY the book went quiet.
     let createdIds = [];
-    if (offer?.plan) {
+    const mmG = mmGate({ pnl: readJson(path.join(STATE, "mm-gate.json"), null) });
+    if (mmG.action === "throttle") {
+      writeJson(path.join(STATE, "offer.json"), { verdict: "MM-THROTTLED", blocker: [mmG.reason], gate: mmG.verdict, at: now, publishedAt: now });
+      appendLine(path.join(STATE, "events.jsonl"), { type: "mm.throttled", at: now, reason: mmG.reason, verdict: mmG.verdict });
+      report.steps.mmGate = { action: "throttle", reason: mmG.reason };
+    } else if (offer?.plan) {
       const acc = await accountState(ACCOUNT);
       const liquidSteem = Math.max(0, acc.ok ? acc.steem ?? 0 : 0);
       const convAmt = report.steps.convert?.verdict === "CONVERT-PLAN" ? (report.steps.convert.amountSbd ?? 0) : 0;
