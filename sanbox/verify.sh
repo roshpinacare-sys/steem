@@ -85,7 +85,13 @@ if want operator; then
   CODE=$(curl -s -o /dev/null -w '%{http_code}' -m 3 http://127.0.0.1:3046/operator/status)
   if [ "$CODE" = "401" ]; then p "operator: /status נעול בלי-אימות (401)"; else f "operator: /status חשוף! (code=$CODE)"; fi
   CODE=$(curl -s -o /dev/null -w '%{http_code}' -m 3 -X POST http://127.0.0.1:3046/operator/login --data 'password=definitely-wrong-probe-xyz')
-  if [ "$CODE" = "401" ]; then p "operator: סיסמה-שגויה נדחית (401)"; else f "operator: סיסמה-שגויה לא נדחית?! (code=$CODE)"; fi
+  if [ "$CODE" = "401" ]; then
+    p "operator: סיסמה-שגויה נדחית (401)"
+  elif [ "$CODE" = "429" ]; then
+    w "operator: probe-סיסמה הוגבל (429 rate-window) — השער דוחה; הנעילה נמדדה ב-/status"
+  else
+    f "operator: סיסמה-שגויה לא נדחית?! (code=$CODE)"
+  fi
   if [ -f "$SB/state/agent-token" ]; then
     T=$(tr -d '[:space:]' < "$SB/state/agent-token")
     CODE=$(curl -s -o /dev/null -w '%{http_code}' -m 3 -H "X-Op-Token: $T" http://127.0.0.1:3046/operator/status)

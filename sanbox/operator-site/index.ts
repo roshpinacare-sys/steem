@@ -3,7 +3,7 @@
 // פורט: 3046 (דרך-השער: /operator?XTransformPort=3046)
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync } from "node:fs";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import path from "node:path";
 
 const SB = path.resolve(import.meta.dir, "..");            // sanbox/
@@ -117,8 +117,9 @@ async function fleetStatus(): Promise<Array<{ id: string; port: number; alive: b
   return out;
 }
 function gitInfo(): { branch: string; head: string; behind: string; ahead: string } {
+  // spawnSync כאן בטוח: קריאות-git קצרות ואינן קוראות לשרת-זה עצמו
   const g = (args: string[]): string | null => {
-    const r = spawnSync("git", args, { cwd: ROOT, encoding: "utf8", timeout: 8000 });
+    const r = spawnSync(args[0], args.slice(1), { cwd: ROOT, encoding: "utf8", timeout: 8000 });
     return r.status === 0 ? (r.stdout ?? "").trim() : null;
   };
   const branch = g(["rev-parse", "--abbrev-ref", "HEAD"]) ?? "?";
@@ -138,12 +139,24 @@ const ACTIONS: Record<string, { file: string; timeout: number }> = {
   verify: { file: path.join(SB, "verify.sh"), timeout: 240_000 },
   push: { file: path.join(ROOT, "scripts", "sovereign-push.sh"), timeout: 120_000 },
 };
-function runAction(action: string): { exit: number; tail: string } {
+function runAction(action: string): Promise<{ exit: number; tail: string }> {
   const a = ACTIONS[action];
-  if (!a || !existsSync(a.file)) return { exit: -1, tail: "פעולה לא מוכרת" };
-  const r = spawnSync("bash", [a.file], { cwd: ROOT, encoding: "utf8", timeout: a.timeout, maxBuffer: 4 * 1024 * 1024 });
-  const out = ((r.stdout ?? "") + (r.stderr ?? "")).trim();
-  return { exit: r.status ?? -1, tail: out.slice(-6000) };
+  if (!a || !existsSync(a.file)) return Promise.resolve({ exit: -1, tail: "פעולה לא מוכרת" });
+  // חובה spawn אסינכרוני: הסקריפטים קוראים חזרה לשרת-זה (health/status) —
+  // spawnSync היה חוסם את לולאת-האירועים ויוצר self-deadlock (מדוד 2026-10-09)
+  return new Promise((resolve) => {
+    try {
+      const child = spawn("bash", [a.file], { cwd: ROOT, timeout: a.timeout });
+      let out = "";
+      const add = (d: Buffer) => { if (out.length < 200_000) out += d.toString(); };
+      child.stdout?.on("data", add);
+      child.stderr?.on("data", add);
+      child.on("error", (e) => resolve({ exit: -1, tail: String(e) }));
+      child.on("close", (code) => resolve({ exit: code ?? -1, tail: out.trim().slice(-6000) }));
+    } catch (e) {
+      resolve({ exit: -1, tail: String(e) });
+    }
+  });
 }
 
 // ── html helpers ──
@@ -356,10 +369,14 @@ Bun.serve({
     }
 
     if (p === "/operator/login" && req.method === "POST") {
-      if (limited(ip)) { audit("login", ip, false, "rate-limited"); return json({ error: "rate-limited" }, 429); }
-      noteAttempt(ip);
       const tok = req.headers.get("x-op-token");
       const agentOk = !!(tok && tok.length > 0 && tok === agentToken());
+      // rate-limit על נתיב-הסיסמה בלבד — token-סוכן הוא זהות-מכונה (מי שקורא את
+      // קובץ-ה-token כבר חזק-מהשער) ואסור שייחסם בגלל ניסיונות-סיסמה של אחרים
+      if (!agentOk) {
+        if (limited(ip)) { audit("login", ip, false, "rate-limited"); return json({ error: "rate-limited" }, 429); }
+        noteAttempt(ip);
+      }
       let passwordOk = false;
       if (!agentOk) {
         try {
@@ -395,7 +412,7 @@ Bun.serve({
       if (!authorized(req)) { audit("run", ip, false); return json({ error: "unauthorized" }, 401); }
       let action = "";
       try { action = ((await req.json()) as { action?: string }).action ?? ""; } catch { action = ""; }
-      const res = runAction(action);
+      const res = await runAction(action);
       audit("run", ip, res.exit === 0, action);
       return json(res);
     }
