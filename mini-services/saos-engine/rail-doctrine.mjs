@@ -93,3 +93,27 @@ export function rcGate({ rcPct, floorPct = 15 }) {
   if (!(Number.isFinite(rcPct) && rcPct >= 0)) return { ok: false, reason: "rc-unread" };
   return { ok: rcPct >= floorPct, reason: rcPct >= floorPct ? "rc-ok" : `rc-starved (${rcPct}% < ${floorPct}%)` };
 }
+
+/* T-37 · MM GATE — arm the measured BLEEDING verdict on RUNTIME truth.
+ * daily.mjs writes state/mm-gate.json from measureAll's fill window
+ * ({fills, realizedSbd, firstFillAt, lastFillAt, computedAt}). The gate is
+ * FAIL-OPEN by law: without a real measured window (≥30 fills over ≥2 days —
+ * exactly mmVerdict's own evidence bar) the ladder behaves as before, so a
+ * gate bug can never mute a healthy rail; it only engages where the chain
+ * itself already proved a bleed (T-36: −0.146 SBD/day over 144 fills/2.9d).
+ * medianEdgeBps stays the T-36 probe's authority — the runtime gate acts on
+ * realized $ bleed (the bottom line), not a re-derived edge estimate. */
+export function mmGate({ pnl, nowMs = Date.now() }) {
+  if (!pnl || typeof pnl !== "object") return { action: "keep", verdict: "INSUFFICIENT-EVIDENCE", reason: "mm-gate-unwritten" };
+  const fills = Number.isFinite(pnl.fills) ? pnl.fills : 0;
+  if (!(fills >= 30)) return { action: "keep", verdict: "INSUFFICIENT-EVIDENCE", reason: `fills ${fills} < 30` };
+  const t0 = pnl.firstFillAt ? Date.parse(pnl.firstFillAt) : NaN;
+  const t1 = pnl.lastFillAt ? Date.parse(pnl.lastFillAt) : NaN;
+  const days = Number.isFinite(t0) && Number.isFinite(t1) && t1 > t0 ? (t1 - t0) / 86_400_000 : 0;
+  const realized = Number.isFinite(pnl.realizedSbd) ? pnl.realizedSbd : 0;
+  const verdict = mmVerdict({ realizedPerDaySbd: days > 0 ? realized / days : realized, fills, windowDays: days, medianEdgeBps: null });
+  if (verdict.verdict === "BLEEDING") {
+    return { action: "throttle", verdict, reason: `measured bleed ${(verdict.realizedPerDaySbd ?? 0).toFixed(4)} SBD/day over ${fills} fills/${days.toFixed(2)}d` };
+  }
+  return { action: "keep", verdict, reason: verdict.verdict };
+}

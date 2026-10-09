@@ -136,3 +136,35 @@ Stage Summary:
 - הניתוב-החכם-ביותר-התגלה כלא-העברת-הון אלא ניצולת: הסלוטים-כבר-שייכים-לכולם — מה-שחסר היה ההחזר-של-2513 SP (2463+50) לסוללות, והוא-בדרך/נמדד.
 - האורגניזם ביצע-לבד החלטת-ניתוב-ראשונה-מגובה-בראיות: גילוי→דירוג→הרשאה-מתועדת→שידור→אימות-שרשרת→פנקס.
 - המדרגה-חיה-בקוקפיט: כל-תרחיש מכופל-מול-היום עם-דרגת-ביטחון; המתות-כתובות-מתות.
+---
+Task ID: 36 (T-36 · rail doctrine — all rails measured in one currency) [retro-entry: session ended right after push; appended now under the union law]
+Agent: Z.ai Code (my-project sandbox session — parallel to cockpit twin, no-overwrite worktree protocol)
+Task: המפעיל: "תבדוק עוד לעומק, אבחן, הבחן — מקסם רווחיות על הכל, ניתוב-נכון בין הסוכנים; פתור, דחוף"
+
+Work Log:
+- פרוטוקול-אי-דריסה: rebase חי על 7da3d4c5 (R291 של התאום), union בלבד, אפס-נגיעה בקבציו.
+- **כל-המסילות במטבע-אחד (SP-per-VP)**: MM נמדדה-מדממת מ-pnlFromFills על אמת-fill_order (144 fills/2.9d, −0.146 SBD/יום, קצה-חציוני −9bps); פיצול-תשלום אמיתי author 52.6/curators 47.4 (n=18, לא 50/25 העממי); K=0.0206 מכייל-עצמו (3 הצבעות-טריות); **החוק-המנתב: קיורציה-חוץ ≈21× ערך-ההצבעה מול-טבעת 0.95×**.
+- army VP step-up 12→20 נמדד ונלקח (חיילים עמדו על VP 87-89% עם regen נשפך; 12%/יום < 20%).
+- rail-doctrine.mjs טהור (routeVpBattery/vpHeadroom/mmVerdict/rcGate) + 19 וקטורים; מטריצת-החזרה מדורגת (certain/likely/less/more/much-more).
+- **הפער-שנתפס-רק-עכשיו (T-37): החוק נכתב-אך-לא-חוטר** — אף-קובץ-ריצה לא ייבא את rail-doctrine; rcGate כבר היה-חי ב-signer (minRcPct 20) וזו-הייתה-כפילות-בריאה; mmVerdict נותר-בלתי-חמוש.
+
+Stage Summary:
+- התשואה-מנותבת-מדידה: VP זורם-לקיורציה-חוץ (21×), MM מסומנת-מדממת, הצבא עולה-ל-20/יום. selftest 1181/1181 חי (ה-1170 בהודעת-ה-commit הייתה-ספירה-שגויה — נמדד מחדש ב-T-37).
+---
+Task ID: 37 (T-37 · arming the measured verdicts + closing the guardianship deadlock + NOW-intelligence)
+Agent: Z.ai Code (my-project sandbox session — parallel to cockpit twin, no-overwrite worktree protocol)
+Task: המפעיל: "תבדוק עוד — ראה מה אתה יכול להבין עכשיו, ברגע זה, לא רק עוד 7 ימים. תמשיך ודחוף."
+
+Work Log (הכל נמדד חי):
+- **מוות-נמדד-ואפס-אמון-על-עצמי**: המנוע מת ~02:02Z (מיד-אחרי git-reset בעץ-החי — קריסת hot-reload), ה-keeper מת-איתו-קודם; רק הקוקפיט חי. רוח-רפאים (bun --hot של key-absorb, cwd קיים-לא) כמעט-הטעתה את האבחנה. **ואקום-השמירה הוכח-מבני**: חוק-R291 מחייה keeper רק כש-:3000+:3044 כהים-שניהם — קוקפיט-חי + keeper-כהה = מנוע-לעולם-לא-מוחיה.
+- **שורש-שני**: keeper מצביע על ENGINE_DIR=/home/z/my-project/mini-services/saos-engine — נתיב-שמת-אף-פעם-אחרי-מיחזור-הסנדבוקס. גם-keeper-חי היה-מצניח-לרפאים.
+- **שלוש-החקיקות (כולן הוכחו-חי באותו-שעה)**: (1) חוק-keeper-הכהה ב-index.ts: :3044 כהה ⇒ הצנחה (המופע-היחיד של keeper = הפורט-שלו-עצמו; פרוב-הקוקפיט נשאר-הקשר-לוג-בלבד). (2) מגן-אורגניזם בקוקפיט (fleet-state route): שני-הנמלים כהים ⇒ הצנחת מנוע detached (ערוץ-הלידה-היחיד-המוכח), cooldown 10min, fail-open. (3) שיחזור-ה-mount: symlink saos-engine → עץ-הריצה-החי.
+- **הטבעת-נסגרת-חיה**: המגן-של-הקוקפיט הצניח-מנוע (PPID 1158 chain-proven), המנוע הצניח-keeper דרך-החוק-החדש (stdout: "hatched dev-keeper — T-37 dark-keeper law"), ההצנחה-הכפולה-שלי יצאה-בכבוד ("duplicate-exit — single-instance law", 0 EADDRINUSE). custody 14/14.
+- **שער-MM מוחמש על-אמת-ריצה**: rail-doctrine.mmGate (טהור, fail-open בחוק: <30-fills או <2-ימים ⇒ keep — באג-שער-לא-יכול-להשתיק-מסילה-בריאה) + daily.mjs כותב state/mm-gate.json מ-measureAll + סולם-לא-נבנה-ב-BLEEDING (verdict MM-THROTTLED מפורסם). 6 וקטורים → **selftest 1187/1187** (1181+6 בדיקה-מדויקת stash/pop).
+- **פרוב-עכשיו (download/t37-now-probe.mjs, אפס-אישורים)**: ההחזרות 3057.25 SP **עוד-לא-נחתו** (effSp 1211.316 מול T-36 1211.31, Δ=+0.006 NO-CHANGE); דמי-לא-נתבעים **0** במאסטר+כל-הצבא (אין-דלק-עצום); צבא 562.185 SP; אף-חשבון לא ב-power-down. **נזק-חלון-החושך = 0-מדיד**: מאסטר היה-חסום-VP-FLOOR (59<60), הצבא מוצה-עד-תום (120/120 עד 01:17), MM אפס-דלק. אבל-זה-היה-אקדח-טעון — ההחזרות-עתידות-לנחות-בחלון-כזה.
+- באגי-פרוב-עצמיים (אפס-אמון): get_accounts מחזיר `name` לא `account`; condenser get_account_history מרים-assert חי עכשיו — ה-API-native (account_history_api) הוא-הצורה-העובדת עם **תקרה קשיחה של 100 ops** (זה-מה-שהמנוע-עוקף-בערוץ-ה-condenser).
+- מחזור-ראשון-אחרי-החייאה נמדד: mm-gate.json נכתב (fills=2 — שתי-פדיונות-אבק על-סדרות-ישנות ב-02:07), OFFER-EMPTY (אפס-דלק), VP 59 (regen חי, הרצפה-תיפתח-בעוד ~30 דק').
+
+Stage Summary:
+- מה-שאפשר-להבין-עכשיו: ההחזרות-בדרך-עוד-לא-כאן; אין-דלק-עצום-בשום-חשבון; המסילה-היחידה-הרווחית-המוכחת (קיורציה-חוץ 21×) תקבל-את-כל-ה-VP שיפתח; וואקום-השמירה-כמחלקה-נסגר-לתמיד — כל-תרחיש-מוות-בודד/כפול יש-לו-מחייה (קוקפיט→מנוע→keeper↔קוקפיט).
+- הכל-נדחף; המנוע-וה-keeper חיים-עכשיו על הקוד-החתום.

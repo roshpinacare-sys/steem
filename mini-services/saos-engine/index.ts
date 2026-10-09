@@ -461,20 +461,25 @@ try {
    * kernel OOM-killed next-server AND the keeper; nobody hatched the keeper,
    * so the cockpit stayed dark for hours. The engine is a surviving lineage
    * (re-parented to init) — it may HATCH the keeper (never the cockpit
-   * directly; the keeper owns the :3000 lifecycle by law). Fires only when
-   * BOTH :3000 and :3044 are dark — single-instance laws preserved. */
+   * directly; the keeper owns the :3000 lifecycle by law).
+   * T-37 DARK-KEEPER LAW (measured deadlock 2026-10-09 ~02:02Z): the engine
+   * died with the keeper already dead while the COCKPIT was alive — the old
+   * both-dark precondition is unreachable from a live engine whose cockpit
+   * lives, so an engine that later dies stays dead forever (state-proven:
+   * no engine process, :3040 dark, nobody to revive). Single-instance law
+   * for the keeper is its OWN port: :3044 dark ⇒ no keeper runs ⇒ hatch.
+   * The cockpit probe remains only as log context. */
   const keeperDir = path.join(DIR, "..", "dev-keeper");
   const keeperGuardian = async () => {
     try {
       const cockpit = await fetch("http://127.0.0.1:3000/__keeper_probe", { signal: AbortSignal.timeout(4000) }).then((r) => r.ok).catch(() => false);
-      if (cockpit) return; /* cockpit alive — keeper's ward needs nothing */
       const keeper = await fetch("http://127.0.0.1:3044/health", { signal: AbortSignal.timeout(4000) }).then((r) => r.ok).catch(() => false);
-      if (keeper) return; /* keeper alive — it owns the cockpit revival */
+      if (keeper) return; /* keeper alive — it owns the cockpit + engine revival */
       const { spawn: sp } = childProcess;
       const out = fs.openSync(path.join(keeperDir, "keeper-stdout.log"), "a");
       const child = sp(process.execPath, ["index.ts"], { cwd: keeperDir, detached: true, stdio: ["ignore", out, out], env: process.env });
       child.unref();
-      console.log(`keeper-guardian: hatched dev-keeper pid=${child.pid} (both :3000 and :3044 dark — measured-dark law)`);
+      console.log(`keeper-guardian: hatched dev-keeper pid=${child.pid} (:3044 dark — T-37 dark-keeper law; cockpit ${cockpit ? "alive" : "dark"})`);
     } catch (e) {
       console.error(`keeper-guardian error: ${String((e as Error)?.message ?? e).slice(0, 120)}`);
     }

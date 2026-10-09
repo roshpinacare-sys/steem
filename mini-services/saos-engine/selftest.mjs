@@ -2727,7 +2727,7 @@ import { normalizePost } from "./curator.mjs";
 /* ── T-36 · RAIL DOCTRINE: measured routing law (constants from chain probes) ──
  * docs/measured/t36-rails.json + t35-probe.json. Everything here pins a
  * MEASURED number or a pure decision on top of one — no vibes. */
-import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict, rcGate } from "./rail-doctrine.mjs";
+import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict, rcGate, mmGate } from "./rail-doctrine.mjs";
 {
   /* measured constants sanity — if a probe regenerates these, update HERE and the doc */
   ok("T-36 constants: author keep ≈ 0.526 measured (n=18)", M36.authorKeep > 0.45 && M36.authorKeep < 0.6);
@@ -2763,6 +2763,16 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("T-36 rc: measured siq 17.1% passes the 15 floor (monitored)", rcGate({ rcPct: 17.1 }).ok, true);
   eq("T-36 rc: starved below floor refused", rcGate({ rcPct: 12 }).ok, false);
   eq("T-36 rc: unread fail-closed", rcGate({}).ok, false);
+
+  /* T-37 mmGate: the fail-open arming of the measured bleed — runtime truth only */
+  const T37_DAY = 86_400_000;
+  ok("T-37 gate: unwritten file never throttles", mmGate({ pnl: null }).action === "keep");
+  ok("T-37 gate: thin window (<30 fills) fail-open keeps", mmGate({ pnl: { fills: 12, realizedSbd: -5, firstFillAt: "2026-10-07T00:00:00Z", lastFillAt: "2026-10-09T00:00:00Z" } }).action === "keep");
+  const bleed = mmGate({ pnl: { fills: 144, realizedSbd: -0.423, firstFillAt: "2026-10-06T06:00:00Z", lastFillAt: "2026-10-09T03:36:00Z" } });
+  eq("T-37 gate: measured 144-fill/2.9d bleed ⇒ throttle", bleed.action, "throttle");
+  ok("T-37 gate: throttle reason carries the measured numbers", /SBD\/day over 144 fills/.test(bleed.reason));
+  ok("T-37 gate: honest window (fills, no loss) keeps", mmGate({ pnl: { fills: 40, realizedSbd: 0.5, firstFillAt: "2026-10-06T00:00:00Z", lastFillAt: new Date(Date.parse("2026-10-06T00:00:00Z") + 3 * T37_DAY).toISOString() } }).action === "keep");
+  ok("T-37 gate: same-instant fills (days=0) keep — no fabricated denominator", mmGate({ pnl: { fills: 50, realizedSbd: -9, firstFillAt: "2026-10-09T00:00:00Z", lastFillAt: "2026-10-09T00:00:00Z" } }).action === "keep");
 }
 
 /* ═══ R292 · CAPITAL ROUTER — profit-maximization + routing laws ═══ */
