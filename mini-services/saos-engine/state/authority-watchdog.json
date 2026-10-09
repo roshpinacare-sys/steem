@@ -1,18 +1,26 @@
 {
-  "at": "2026-10-09T17:11:52.667Z",
-  "verdict": "69-FLAGGED",
+  "at": "2026-10-09T17:26:52.667Z",
+  "verdict": "67-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 16,
+      "scanned": 14,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 16,
+      "unsigned": 14,
       "invalid": 0,
       "flagged": [
+        {
+          "hash": "ef7f21b9",
+          "gq": "N",
+          "sig": "UNSIGNED",
+          "author": "Z User",
+          "at": "2026-10-09T17:21:44Z",
+          "subject": "e9215fef-e73c-40f4-ab70-614a567dd141"
+        },
         {
           "hash": "53b88595",
           "gq": "N",
@@ -115,30 +123,6 @@
           "sig": "UNSIGNED",
           "author": "saos-runtime-ci",
           "at": "2026-10-09T14:14:27Z",
-          "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]"
-        },
-        {
-          "hash": "913d135b",
-          "gq": "N",
-          "sig": "UNSIGNED",
-          "author": "saos-ci-bot",
-          "at": "2026-10-09T13:55:10Z",
-          "subject": "saos-ci: engine state persistence (public-minutes runner; FF law)"
-        },
-        {
-          "hash": "f381b854",
-          "gq": "N",
-          "sig": "UNSIGNED",
-          "author": "saos-runtime-ci",
-          "at": "2026-10-09T13:51:39Z",
-          "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]"
-        },
-        {
-          "hash": "a26f687b",
-          "gq": "N",
-          "sig": "UNSIGNED",
-          "author": "saos-runtime-ci",
-          "at": "2026-10-09T13:31:48Z",
           "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]"
         }
       ]
@@ -648,6 +632,15 @@
   ],
   "flagged": [
     {
+      "hash": "ef7f21b9",
+      "gq": "N",
+      "sig": "UNSIGNED",
+      "author": "Z User",
+      "at": "2026-10-09T17:21:44Z",
+      "subject": "e9215fef-e73c-40f4-ab70-614a567dd141",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "53b88595",
       "gq": "N",
       "sig": "UNSIGNED",
@@ -761,33 +754,6 @@
       "sig": "UNSIGNED",
       "author": "saos-runtime-ci",
       "at": "2026-10-09T14:14:27Z",
-      "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "913d135b",
-      "gq": "N",
-      "sig": "UNSIGNED",
-      "author": "saos-ci-bot",
-      "at": "2026-10-09T13:55:10Z",
-      "subject": "saos-ci: engine state persistence (public-minutes runner; FF law)",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "f381b854",
-      "gq": "N",
-      "sig": "UNSIGNED",
-      "author": "saos-runtime-ci",
-      "at": "2026-10-09T13:51:39Z",
-      "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "a26f687b",
-      "gq": "N",
-      "sig": "UNSIGNED",
-      "author": "saos-runtime-ci",
-      "at": "2026-10-09T13:31:48Z",
       "subject": "SAOS-runtime-ci: heartbeat state (offline conversation + content) [ci]",
       "repo": "steem.git(LOCAL)"
     },
@@ -1274,5 +1240,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 7646
+  "ms": 7353
 }
