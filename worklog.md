@@ -268,3 +268,21 @@ Work Log:
 Stage Summary:
 - משפט-ה-drift היה-כוזב (העוגן-על-השרשרת חי); ה-probe עכשיו כנה-לשני-הכיוונים: לא-מאמין לדף-ישן, וגם לא ממציא טריות — רק-טרי-מאומת-עובר.
 - המשולש נסגר: עוגן-על-השרשרת (custodian) ↔ עצמאות-ה-verifier (probe) ↔ אמת-המנוע (heartbeat) — שלושתם מדברים-אותה-אמת.
+
+---
+Task ID: R298-f
+Agent: Z.ai Code (saos-cockpit)
+Task: בחינת עבודת כל-הסוכנים על-הגיט (R298-c/d/e) · ציד-דריסות · אימות-חיות מלא · תיקון-בזבוז-מדוד · דחיפה
+
+Work Log:
+- סקירת-גיט: R298-c (clone-guard R274 + ספק-LLM שני nvidia env-gated), R298-d (snapshot לפני-סנכרון), R298-e (freshness-law ב-probe: per-node plugin-first, freshest-anchor-wins, limit≤100) — כולם נקראו ואומתו; חשד-דריסה ב-army-social.mjs התברר כאשליית-תצוגה (ANSI `[m` בפלט-rg), node --check עובר והקוד החי `accounts: [master, ...ARMY_ROSTER]` תקין.
+- ציד-דריסות: 0 סימני-קונפליקט בעץ-השם וב-worktree · 0 קבצי json שבורים · כל-ה-jsonl פריקים 100% (events 14796 · exec-log 14809 · think-log 5556 · alerts 403 · staging 473) · 4 שורות זהות בלבד = אירועי custody-heartbeat כפולים מהרצות-מקבילות (runner+verify+heartbeat) — רעש בלתי-מזיק, O_APPEND אטומי.
+- חיות: verify 24/24 · selftest 1218/1218 · עוגן-שרשרת drift=false · 6 פורטים UP · runner+commit-loop רצים · 2,915 אירועים/24h (fleet-vote 491, fleet-comment 493, deepen 493) · גריד hyper.requote כל-63ש · 0 fills (שוק שטוח — הריקוט-מתמשך הוא הפעילות).
+- החקירה-המדודה: 96 סירובי selfSim(100%>30%)/24h + 39 body-too-thin. שורש-אמיתי (מהשרשרת): "I Tested It..." פורסם ב-10-08 והקורפוס-הנייח (content-corpus.json, 13 פוסטים) הוגש שוב 3× ב-10-09; התור bounded-30 מסתובב, הקורפוס סטטי — dedupeTitles ראה רק 12 כותרות-אחרונות-מהתור → הקורפוס חזר לתור לנצח → spamgate דחה אותו לנצח.
+- התיקונים (R299): (A) content.mjs — זיכרון-כותרות-שנשרפו `spentTitles` (refused∪vetoed∪published∪queued, bounded-60, נשמר בדוק) שמגן גם-אחרי-סיבוב-התור + מדידה-כנה spentBlocked; (B) hive.mjs — parity: סירוב-spamgate מסמן עתה `refused-spam`+reasons וכותב content-ops (כמו הסטים-רייל) — טיוטה-נייחת לא-נבחרת-שוב-לנצח; (C) route.ts — מפתח-המטמון כולל עתה hash(recentTitles)+דלי-30דק (fastpath נשאר לריטרי-אמיתי-באותו-טיק); (D) T-G2 נסגר (done) — מומש-R253, סטטוס-review היה שיורי-שער.
+- הוכחות-חיות: ניסוי-עשן offline → spentBlocked=13 (כל-הקורפוס-השרוף נחסם בדדופ, אפס-בזבוז-spamgate) · קריאת-ברידג' ישירה → ok:true, 4 טיוטות-טריות, cacheHit:false, primary 13.9ש · הפעלה-מחדש-מבוקרת של-המנוע (SIGTERM→keeper-respawn 24ש) → hyper.boot 21:37:48, custody 9/14 מאומת מחדש.
+
+Stage Summary:
+- אין-דריסות: עץ-השם והיסטוריית-המיזוגים של-כל-הסוכנים נקיים; שלמות-פנקסים 100%.
+- שורש-96-הסירובים/יום אובחן-מהשרשרת ותוקן בשלוש-שכבות (זיכרון-שרופים · parity-hive · טריות-מפתח-מטמון) — נמדד: spentBlocked=13, ברידג' מייצר תוכן-טרי.
+- verify 24/24 + selftest 1218/1218 ירוקים-אחרי-השינויים; המנוע רץ-על-הקוד-החדש.
