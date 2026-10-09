@@ -1,31 +1,31 @@
 {
-  "startedAt": "2026-10-09T05:31:27.603Z",
+  "startedAt": "2026-10-09T06:47:28.603Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 1633,
+      "ms": 2740,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.060644,
-        "sbdUsd": 0.588464,
-        "parity": 0.10305473232007396,
+        "steemUsd": 0.060954,
+        "sbdUsd": 0.590181,
+        "parity": 0.10328018014812405,
         "source": "coingecko"
       },
-      "feed": 0.10409461361915624,
+      "feed": 0.1040945745560567,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": -100
+        "bps": -78
       },
-      "steemUsd": 0.060644,
-      "sbdUsd": 0.588464,
+      "steemUsd": 0.060954,
+      "sbdUsd": 0.590181,
       "inventory": {
-        "steem": 4.151,
+        "steem": 4.651,
         "sbd": 0.824,
-        "spOwn": 1656.0411153766559,
-        "rcPct": 58.4
+        "spOwn": 1656.047026628709,
+        "rcPct": 59.6
       },
       "ordersOk": true,
       "orders": [
@@ -140,14 +140,6 @@
           "quote": "190.910 STEEM",
           "unit": 10.467131,
           "created": "2026-10-07T17:46:30"
-        },
-        {
-          "orderid": 2100000001,
-          "side": "ask",
-          "base": "0.500 STEEM",
-          "quote": "0.053 SBD",
-          "unit": 0.106,
-          "created": "2026-10-09T05:07:45"
         }
       ],
       "fills": 0,
@@ -182,32 +174,31 @@
         "node": "https://api.justyy.com",
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
-      "summary": "parity 0.10305473232007396 (coingecko) · fills 0 · fuel 0$"
+      "summary": "parity 0.10328018014812405 (coingecko) · fills 0 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1776,
-      "verdict": "DECISIONS:5",
+      "ms": 938,
+      "verdict": "DECISIONS:4",
       "decisions": [
         "book-depth:hold-shape",
-        "parity-drift:monitor",
         "soldiers:grids-live",
         "rc-health:healthy",
-        "curation:curator-armed"
+        "curation:curator-live"
       ],
-      "spreadBpsRec": 420,
+      "spreadBpsRec": 315,
       "book": {
-        "bestAsk": 0.10434339389085084,
+        "bestAsk": 0.1032511741362362,
         "bestBid": 0.10005,
-        "spreadBps": 420
+        "spreadBps": 315
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 1,
-      "runCount": 179,
+      "runCount": 180,
       "signals": 3,
       "retiredFills": 2,
       "arbSignal": null,
@@ -216,29 +207,29 @@
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 762,
-      "verdict": "OFFER-EMPTY",
-      "asks": 0,
+      "ms": 1104,
+      "verdict": "OFFER-READY",
+      "asks": 1,
       "bids": 0,
-      "flowAsks": 0,
+      "flowAsks": 1,
       "flowBids": 0,
       "staleCount": 5,
-      "skew": -0.094958,
+      "skew": -0.079038,
       "book": {
-        "bestAsk": 0.10434339389085084,
+        "bestAsk": 0.1032511741362362,
         "bestBid": 0.10005,
-        "askDepthSteem": 64.191,
+        "askDepthSteem": 63.836,
         "bidDepthSbd": 2937.042,
-        "at": "2026-10-09T05:31:27.603Z"
+        "at": "2026-10-09T06:47:28.603Z"
       },
       "market": {
-        "tradesPerDay": 213,
-        "spreadBps": 429.12
+        "tradesPerDay": 209,
+        "spreadBps": 319.96
       },
       "liquidity": {
-        "deployedAsks": 5.114,
+        "deployedAsks": 4.614,
         "deployedBids": 91.195,
-        "askBudget": 0.445,
+        "askBudget": 0.945,
         "bidBudget": 0,
         "bidBudgetUncapped": 0,
         "buyBookCapSbd": 0.162,
@@ -249,12 +240,12 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": -100,
-      "marketSbdUsd": 0.588464,
-      "impliedSbdUsd": 0.582585,
+      "edgeBps": -78,
+      "marketSbdUsd": 0.590181,
+      "impliedSbdUsd": 0.585564,
       "marketSourceNote": "external-measured"
     },
     "redeploy": {
@@ -276,38 +267,38 @@
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 15178,
+      "ms": 17205,
       "verdict": "VOTED",
       "votes": 3,
-      "txid": "78d81be5b285df581378a0e3a84b8865973190f6",
-      "vpEff": 75.5,
-      "votesToday": 3,
+      "txid": "a08ba0eeeac772b3861327ca3abe0f8ec34db04d",
+      "vpEff": 73.9,
+      "votesToday": 6,
       "error": null
     },
     "army-curate": {
       "name": "army-curate",
       "ok": true,
-      "ms": 156007,
-      "verdict": "VOTED",
-      "totalVotes": 40,
+      "ms": 18031,
+      "verdict": "IDLE",
+      "totalVotes": 0,
       "accounts": [
-        "cashmachine:VOTED",
-        "haran:VOTED",
-        "israelnews:VOTED",
-        "lsa:VOTED",
-        "macrame:VOTED",
-        "siq:VOTED",
-        "tov:VOTED",
-        "wic:VOTED",
-        "wog:VOTED",
-        "woq:VOTED"
+        "cashmachine:NO-CANDIDATES",
+        "haran:NO-CANDIDATES",
+        "israelnews:NO-CANDIDATES",
+        "lsa:NO-CANDIDATES",
+        "macrame:NO-CANDIDATES",
+        "siq:NO-CANDIDATES",
+        "tov:NO-CANDIDATES",
+        "wic:NO-CANDIDATES",
+        "wog:NO-CANDIDATES",
+        "woq:NO-CANDIDATES"
       ],
       "error": null
     },
     "tag-roi": {
       "name": "tag-roi",
       "ok": true,
-      "ms": 12,
+      "ms": 6,
       "verdict": "DAY-ALREADY-WALKED",
       "tagsRanked": 22,
       "resolved": 0,
@@ -317,7 +308,7 @@
     "capital-route": {
       "name": "capital-route",
       "ok": true,
-      "ms": 11,
+      "ms": 6,
       "verdict": "ROUTED",
       "actions": 7,
       "ladderTop": 2.544197,
@@ -331,11 +322,25 @@
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 2410,
-      "verdict": "NO-OPS",
-      "ops": 0,
-      "opsToday": 13,
-      "opsDayCap": 1500
+      "ms": 4236,
+      "verdict": "BROADCAST",
+      "txid": "98dccadc4c2f6bdfd64bda6fcf76f9da5a7e5da7",
+      "ops": 1,
+      "opNames": [
+        "limit_order_create"
+      ],
+      "node": "https://api.justyy.com",
+      "error": null,
+      "promo": {
+        "verdict": "LEDGER-CRAFT-REFUSED",
+        "error": "ledger-body-exposure",
+        "permlink": "daily-ledger-20261009"
+      },
+      "opsToday": 14,
+      "opsDayCap": 1500,
+      "cancels": 0,
+      "created": 1,
+      "hyperLayer": "hypergrid-owns-flow"
     },
     "soldiers": {
       "name": "soldiers",
@@ -356,7 +361,7 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 1755,
+      "ms": 1537,
       "verdict": "NO-NEW-LESSONS",
       "lessons": [],
       "tunings": [],
@@ -383,16 +388,16 @@
       "verdict": "CADENCE-GATED",
       "draftsQueued": 30,
       "exposureBlocked": 0,
-      "lastAt": "2026-10-09T05:15:17.999Z"
+      "lastAt": "2026-10-09T06:39:07.408Z"
     },
     "social": {
       "name": "social",
       "ok": true,
       "ms": null,
-      "verdict": "SOCIAL-IDLE",
-      "executed": 0,
+      "verdict": "SOCIAL-EXECUTED",
+      "executed": 3,
       "refused": 0,
-      "due": 0
+      "due": 8
     },
     "organic": {
       "name": "organic",
@@ -405,7 +410,7 @@
     "profiles": {
       "name": "profiles",
       "ok": true,
-      "ms": 5121,
+      "ms": 6684,
       "verdict": "SYNCED",
       "updated": 0,
       "skipped": 14,
@@ -414,7 +419,7 @@
     "hive": {
       "name": "hive",
       "ok": true,
-      "ms": 1229,
+      "ms": 2477,
       "verdict": "HIVE-IDLE",
       "executed": 0,
       "custody": {
@@ -426,7 +431,7 @@
     "hiveProfiles": {
       "name": "hiveProfiles",
       "ok": true,
-      "ms": 486,
+      "ms": 2054,
       "verdict": "DEFERRED",
       "updated": 0,
       "skipped": 8,
@@ -435,70 +440,70 @@
     "rcPool": {
       "name": "rcPool",
       "ok": true,
-      "ms": 1644,
+      "ms": 2013,
       "verdict": "POOL-PENDING-REGEN",
       "lifts": 1,
       "measured": {
         "cashmachine": {
           "maxB": 2.105,
           "curB": 0.001,
-          "availB": 0.036,
+          "availB": 0.058,
           "canPost": false,
           "structural": true
         },
         "haran": {
           "maxB": 2.265,
           "curB": 0.002,
-          "availB": 0.074,
+          "availB": 0.098,
           "canPost": false,
           "structural": true
         },
         "israelnews": {
           "maxB": 2.227,
           "curB": 0.013,
-          "availB": 0.208,
+          "availB": 0.232,
           "canPost": false,
           "structural": true
         },
         "lsa": {
           "maxB": 3.891,
           "curB": 0.007,
-          "availB": 0.249,
+          "availB": 0.289,
           "canPost": false,
           "structural": false
         },
         "macrame": {
           "maxB": 4.178,
           "curB": 0.005,
-          "availB": 0.179,
+          "availB": 0.222,
           "canPost": false,
           "structural": false
         },
         "siq": {
           "maxB": 2.29,
           "curB": 0.001,
-          "availB": 0.112,
+          "availB": 0.136,
           "canPost": false,
           "structural": true
         },
         "wic": {
           "maxB": 3.086,
           "curB": 0.003,
-          "availB": 0.159,
+          "availB": 0.191,
           "canPost": false,
           "structural": false
         },
         "wog": {
           "maxB": 3.273,
           "curB": 0.004,
-          "availB": 0.186,
+          "availB": 0.22,
           "canPost": false,
           "structural": false
         },
         "woq": {
           "maxB": 2.273,
           "curB": 0.001,
-          "availB": 0.153,
+          "availB": 0.176,
           "canPost": false,
           "structural": true
         }
@@ -508,7 +513,7 @@
     "hiveSocial": {
       "name": "hiveSocial",
       "ok": true,
-      "ms": 1265,
+      "ms": 1368,
       "verdict": "HIVE-SOCIAL-IDLE",
       "executed": 0,
       "custody": {
@@ -520,7 +525,7 @@
     "bus": {
       "name": "bus",
       "ok": true,
-      "ms": 1638,
+      "ms": 3652,
       "verdict": "BUS-LIVE",
       "delivered": 0,
       "published": 1
@@ -528,7 +533,7 @@
     "rctank": {
       "name": "rctank",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "MEASURED",
       "maxRc": 1955401371088,
       "opsPerDayEquilibrium": 10220,
@@ -548,7 +553,7 @@
     "soldierClaims": {
       "name": "soldierClaims",
       "ok": true,
-      "ms": 11484,
+      "ms": 17920,
       "verdict": "NOTHING-PENDING",
       "scanned": 10,
       "rosterSize": 10,
@@ -570,17 +575,17 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "CADENCE-GATED",
       "pass": 1218,
       "fail": 0,
-      "at": "2026-10-09T05:31:27.245Z"
+      "at": "2026-10-09T06:47:23.177Z"
     },
     "economics": {
       "name": "economics",
       "ok": true,
-      "ms": 2,
-      "totalMeasuredUsdPerDay": 0.037917,
+      "ms": 1,
+      "totalMeasuredUsdPerDay": 0.038111,
       "totalEstUsdPerDay": 0,
       "rails": 6,
       "measuredCount": 2,
@@ -598,7 +603,7 @@
     "council": {
       "name": "council",
       "ok": true,
-      "ms": 5,
+      "ms": 2,
       "verdict": "MESH-DARK",
       "organs": [
         "custodian:DOWN",
@@ -615,12 +620,12 @@
     "report": {
       "name": "report",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "realizedSbd": 0,
       "positionSteem": 0,
       "positionAvgCost": null,
       "unbasedSteem": 0,
-      "deployedSteem": 5.114,
+      "deployedSteem": 4.614,
       "fuelUsdPerDay": 0,
       "authorUsdPerDay": 0,
       "measuredTotalUsdPerDay": 0,
@@ -632,7 +637,7 @@
     "positionSteem": 0,
     "positionAvgCost": null,
     "unbasedSteem": 0,
-    "deployedSteem": 5.114,
+    "deployedSteem": 4.614,
     "fuelUsdPerDay": 0,
     "authorUsdPerDay": 0,
     "measuredTotalUsdPerDay": 0,
@@ -658,5 +663,5 @@
       "reason": "at-or-below-floor"
     }
   ],
-  "finishedAt": "2026-10-09T05:35:02.030Z"
+  "finishedAt": "2026-10-09T06:49:54.399Z"
 }
