@@ -2724,6 +2724,47 @@ import { normalizePost } from "./curator.mjs";
   ok("T-35 boundary: at-cap selected, cap+1 crowded", edge35.selected.some((v) => v.author === "edge1") && edge35.rejected.some((r) => r.reason === "crowded" && r.key === "edge2/over-cap"));
 }
 
+/* ── T-36 · RAIL DOCTRINE: measured routing law (constants from chain probes) ──
+ * docs/measured/t36-rails.json + t35-probe.json. Everything here pins a
+ * MEASURED number or a pure decision on top of one — no vibes. */
+import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict, rcGate } from "./rail-doctrine.mjs";
+{
+  /* measured constants sanity — if a probe regenerates these, update HERE and the doc */
+  ok("T-36 constants: author keep ≈ 0.526 measured (n=18)", M36.authorKeep > 0.45 && M36.authorKeep < 0.6);
+  ok("T-36 constants: external curation ≈ 20× ring per rshare (chain truth)", M36.externalVsRingRatio >= 15 && M36.externalVsRingRatio <= 25);
+
+  /* vpHeadroom: the army case — 12/day burned 7.2% vs 20% regen ⇒ HEADROOM */
+  const h12 = vpHeadroom({ maxPerDay: 12, baseWeightPct: 80, minWeightPct: 40 });
+  eq("T-36 headroom: army@12 burn 7.2%/day", h12.burnPerDayPct, 7.2);
+  eq("T-36 headroom: army@12 maxScale 2.77 (20/7.2 floored to c)", Math.round(h12.maxScale * 100) / 100, 2.77);
+  const h20 = vpHeadroom({ maxPerDay: 20, baseWeightPct: 80, minWeightPct: 40 });
+  eq("T-36 headroom: army@20 burn 12%/day — still under regen", h20.burnPerDayPct, 12);
+  ok("T-36 headroom: army@20 remains HEADROOM", h20.verdict === "HEADROOM" && h20.burnPerDayPct < M36.regenPctPerDay);
+  const hAtCap = vpHeadroom({ maxPerDay: 34, baseWeightPct: 80, minWeightPct: 40 });
+  eq("T-36 headroom: 20.4%/day > 20% regen ⇒ AT-CAP", hAtCap.verdict, "AT-CAP");
+
+  /* routing: external beats ring on EVERY battery (measured ~21×) */
+  const rMaster = routeVpBattery({ effSp: 1211.31, maxPerDay: 30 });
+  eq("T-36 route master: EXTERNAL-WINS", rMaster.verdict, "EXTERNAL-WINS");
+  ok("T-36 route master: ratio ≈ 21/ringKeep ≈ 22", rMaster.ratio > 18 && rMaster.ratio < 26);
+  const rSoldier = routeVpBattery({ effSp: 31.14, maxPerDay: 20 });
+  const rMasterSame = routeVpBattery({ effSp: 1211.31, maxPerDay: 20 }); // SAME day budget — isolation for the SP-scaling law
+  eq("T-36 route soldier: EXTERNAL-WINS at 31 SP too", rSoldier.verdict, "EXTERNAL-WINS");
+  ok("T-36 route: yields scale with SP at equal budget (1e-4 — module rounds at 5dp)", Math.abs(rSoldier.externalSpPerDay / rMasterSame.externalSpPerDay - 31.14 / 1211.31) < 1e-4);
+  ok("T-36 route: unusable battery refused", routeVpBattery({ effSp: 0, maxPerDay: 5 }).verdict === "UNUSABLE");
+
+  /* mmVerdict: the measured bleeding rail pins the thresholds */
+  eq("T-36 mm: measured numbers ⇒ BLEEDING", mmVerdict({ realizedPerDaySbd: -0.1459, fills: 144, windowDays: 2.9, medianEdgeBps: -9 }).verdict, "BLEEDING");
+  eq("T-36 mm: thin evidence refuses to judge", mmVerdict({ realizedPerDaySbd: -1, fills: 10, windowDays: 1 }).verdict, "INSUFFICIENT-EVIDENCE");
+  eq("T-36 mm: positive edge keeps", mmVerdict({ realizedPerDaySbd: 0.2, fills: 100, windowDays: 3, medianEdgeBps: 4 }).verdict, "POSITIVE");
+
+  /* rcGate: floor 15 — measured siq 17.1% passes (monitored), true starvation refuses */
+  eq("T-36 rc: healthy passes", rcGate({ rcPct: 79.3 }).ok, true);
+  eq("T-36 rc: measured siq 17.1% passes the 15 floor (monitored)", rcGate({ rcPct: 17.1 }).ok, true);
+  eq("T-36 rc: starved below floor refused", rcGate({ rcPct: 12 }).ok, false);
+  eq("T-36 rc: unread fail-closed", rcGate({}).ok, false);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
