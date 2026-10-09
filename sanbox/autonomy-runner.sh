@@ -65,9 +65,9 @@ case "${1:-status}" in
           *) [ "$rc" -eq 0 ] && ok="true" ;;
         esac
         [ "$ok" = "false" ] && log "task $id: FAIL (exit=$rc) — $cmd"
-        jq -n --arg id "$id" --arg at "$(now)" --argjson rc "$rc" --argjson ok "$ok" --argjson ms "$MS" --arg exp "$expect" \
-          '.[$id] = {at:$at, exit:$rc, ok:$ok, ms:$ms, expect:$exp}' \
-          "$RUNTIME" > "$RUNTIME.tmp" 2>/dev/null && mv "$RUNTIME.tmp" "$RUNTIME" || \
+        jq -n --arg id "$id" --arg at "$(now)" --argjson rc "$rc" --argjson ok "$ok" --argjson ms "$MS" --arg exp "$expect" --argjson base "$(cat "$RUNTIME" 2>/dev/null || echo '{}')" \
+          '$base * {($id): {at:$at, exit:$rc, ok:$ok, ms:$ms, expect:$exp}}' \
+          > "$RUNTIME.tmp" 2>/dev/null && mv "$RUNTIME.tmp" "$RUNTIME" || \
           printf '{"%s":{"at":"%s","exit":%s,"ok":%s,"ms":%s,"expect":"%s"}}\n' "$id" "$(now)" "$rc" "$ok" "$MS" "$expect" > "$RUNTIME"
         echo "$rc"
       }

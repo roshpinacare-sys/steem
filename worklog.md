@@ -214,3 +214,22 @@ Stage Summary:
 - divergence-check היחיד-שנכשל תוקן בשורש: LOCAL-BEHIND → merge-חוקי (union/alive-wins) → push מסונכרן → git PASS.
 - כל-הקונפליקטים הוכרעו לפי-החוק: jsonl איחוד-ts, json alive-wins, אפס-כפיות-אירועים.
 - מצב-סופי: origin/saos-cockpit == local 6d4f5df5; מטריצת-קבלה מלאה 22/22 ירוקה.
+
+---
+Task ID: R298-b
+Agent: Z.ai Code (orchestrator)
+Task: תמשיך לנסות ודחוף — סגירת-פער-האוטונומיה: רץ-המשימות הריבוני (autonomy-runner)
+
+Work Log:
+- **התאוששות-סשן**: כלי-העבודה חזרו לאחר-נפילה (403) — המשך מיידי ללא-המצאה.
+- **מיזוגי-הצפה**: behind=6 → קומיט-חי → מיזוג; קונפליקטים ×35 הוכרעו לפי-החוק (json=alive-wins ×29, jsonl=union-ts ×6 כולל events 14552/exec-log 14484/think-log 5488 שורות); **תיקון-זיהום-עצמי**: קומיט-מיזוג ראשון הכיל סימני-קונפליקט (ENOBUFS ב-execSync על events.jsonl >1MB) — זוהה, נכתב-מחדש מ-HEAD^1/HEAD^2 בקבצי-עזר, amend ×2; סריקת-סימנים גלובלית על-העץ-המקומט: **0 קבצים מזוהמים**.
+- **דחיפה** דרך-השער: 8d4f3952..27d8e8a3 → behind=0 ahead=0.
+- **פער-אוטונומיה סגור**: `sanbox/autonomy-runner.sh` — מבצע את תור SB1..SB5 (per-session/ensure-running/daily/on-failure), רישום-אמת-חיה ב-sanbox/state/autonomy-runtime.json, עדכון-בסיס אוטומטי ל-autonomy/state.json (lastVerify: null → 2026-10-09T20:22:28Z נמדד).
+- **תיקוני-באג-עצמיים** (נמדדו-ותוקנו): bash-אריתמטיקה `$((t1-t0)*1000)` → MS נפרד; jq `-n` דריסה → מיזוג `$base * {($id):…}`; מגני-מיזוג/קונפליקט ב-tick.
+- **חיווט**: bootstrap.sh שלב 4.5 (עליית-רץ + tick ראשון) · verify.sh persistence ×2 בדיקות-חדשות · AGENT_BOOT.md סעיף 3.5 · MANIFEST.json (entry.autonomy + componentsRuntime + acceptance.taskQueue).
+- **הוכחות**: runner דמון רץ (pid 3680, כל 900ש) · runtime: SB1/SB2/SB4/SB5 exit=0 ok=true · **verify.sh all: PASS=24 FAIL=0 WARN=0** (מ-22 → 24).
+
+Stage Summary:
+- לולאת-האוטונומיה סגורה: התור (tasks.json) ← מבוצע-אוטומטית (autonomy-runner) ← נרשם (runtime) ← מתעדכן-בסיס (state.json) ← מגובה (commit-loop) ← נדחף (sovereign-push) ← נאמת (verify.sh ×24).
+- הפער-שזוהה-בביקורת ("אין-מבצע לתור, אין-כותב לבסיס") נסגר בשורש — אפס-תלות-במפעיל.
+- מצב-סופי: behind=0 ahead=0 · מטריצה 24/24 ירוקה · רץ-האוטונומיה חי.

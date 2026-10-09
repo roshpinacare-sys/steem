@@ -23,8 +23,17 @@ bash sanbox/commit-loop.sh status # אם לא רץ:
 bash sanbox/commit-loop.sh start  # snapshot ניטרלי + דחיפה דרך scripts/sovereign-push.sh
 ```
 
+## 3.5 · רץ-המשימות הריבוני (האוטונומיה הפעילה)
+```bash
+bash sanbox/autonomy-runner.sh status  # אם לא רץ:
+bash sanbox/autonomy-runner.sh start   # מבצע את תור SB1..SB5 כל 15 דק (900ש)
+```
+- הרץ מבצע את `autonomy/tasks.json` לבד: אימות-ריבונות (per-session) · הבטחת-התמדה (ensure-running) · סריקת-סודות + עוגן-שרשרת (יומי) · חייאה-עצמית (on-failure → bootstrap.sh).
+- אמת-חיה: `sanbox/state/autonomy-runtime.json` (git-ignored) · בסיס: `autonomy/state.json` (lastVerify/lastBootstrap — מתעדכן-אוטומטית).
+- אין-צורך לבצע ידנית משימות שהרץ כבר מכסה — רק לוודא שהוא חי.
+
 ## 4 · עבודה אוטונומית (בלי לחכות למפעיל)
-- פתח `autonomy/tasks.json` → בצע את המשימה הגבוהה-עדיפות שעוד לא-בוצעה ומתאימה לתפקידך.
+- פתח `autonomy/tasks.json` → משימות-חד-פעמיות/מיוחדות בלבד (הרץ מכסה את SB1..SB5 הקבועות).
 - סיימת? עדכן `done`+`updatedAt`, תעד ב-`worklog.md` (**הוספה-בלבד**), קומיט + דחיפה דרך-השער.
 - משימה-חדשה? הוסף אותה לתור במקום לזכור "בראש" — התור הוא הזיכרון.
 
