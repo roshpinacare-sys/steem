@@ -30,6 +30,7 @@ import { deploySoldiers, runSoldierGrids, soldiersState, verifySoldierCustody } 
 import { postDailyReport } from "./promo.mjs";
 import { runCurator } from "./curator.mjs";
 import { runArmyCuration } from "./army-curation.mjs";
+import { runTagRoi } from "./tag-roi.mjs";
 import { runLearning } from "./learning.mjs";
 import { runDiscovery } from "./discovery.mjs";
 import { runRecruiter } from "./recruiter.mjs";
@@ -157,6 +158,13 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   const armyCurateP = stepWrap("army-curate", async () => {
     const out = await runArmyCuration({ now });
     return { verdict: out.verdict, totalVotes: out.totalVotes ?? 0, accounts: (out.accounts ?? []).map((a) => `${a.account}:${a.verdict}`), error: out.error ?? null };
+  });
+
+  /* R291 · tag-ROI walk (parallel, fail-isolated, day-guarded inside): which
+   * tags actually pay US — feeds the ORDER of both voting rails' tag lists. */
+  const tagRoiP = stepWrap("tag-roi", async () => {
+    const out = await runTagRoi({ now });
+    return { verdict: out.verdict, tagsRanked: out.tagsRanked ?? 0, resolved: out.resolved ?? 0, top: out.top ?? null, error: out.error ?? null };
   });
 
   /* 1 · observe: parity + inventory + fills + rails fuel */
@@ -421,6 +429,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   /* join the parallel curate branches here (they never gate the front chain) */
   report.steps.curate = await curateP;
   report.steps["army-curate"] = await armyCurateP;
+  report.steps["tag-roi"] = await tagRoiP;
 
   /* 6 · execute (SIGNING — the X-1 rail, engine-held, doctrine-capped).
    * T-16 CRED GATE FIRST: when the credential is missing this step used to

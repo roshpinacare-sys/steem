@@ -427,6 +427,35 @@ eq("R290 army deterministic", armyAgain.selected, planA.selected);
 ok("R290 weight law: weightForAge(30) inside u16 band", weightForAge(30, AP) > 0 && weightForAge(30, AP) <= 10000);
 ok("R290 weight law: minWeight floor maps to ≤10000 too", weightForAge(100000, AP) === AP.minWeightPct * 100 && AP.minWeightPct * 100 <= 10000);
 
+/* ── 15c · R291 tag-ROI learning loop (pure vectors) ── */
+import { firstTagOf, aggregateTagRoi, orderTagsByRoi } from "./tag-roi.mjs";
+
+eq("R291 firstTag: json tags win", firstTagOf({ json_metadata: '{"tags":["life","steem"]}' }), "life");
+eq("R291 firstTag: community fallback", firstTagOf({ community: "hive-123", parent_permlink: "life" }), "hive-123");
+eq("R291 firstTag: parent_permlink last resort", firstTagOf({ parent_permlink: "photography" }), "photography");
+eq("R291 firstTag: garbage is null (never guessed)", firstTagOf({ json_metadata: "not-json" }), null);
+const tagMap = new Map([["a/p1", "photo"], ["b/p2", "photo"], ["c/p3", "crypto"], ["d/p4", "crypto"], ["e/p5", "crypto"], ["f/p6", "trading"]]);
+const roiOps = [
+  { idx: 1, ts: "2026-10-08", author: "a", permlink: "p1", sp: 0.05 },
+  { idx: 2, ts: "2026-10-08", author: "b", permlink: "p2", sp: 0.03 },
+  { idx: 3, ts: "2026-10-08", author: "c", permlink: "p3", sp: 0.02 },
+  { idx: 4, ts: "2026-10-08", author: "d", permlink: "p4", sp: 0.02 },
+  { idx: 5, ts: "2026-10-08", author: "e", permlink: "p5", sp: 0.02 },
+  { idx: 6, ts: "2026-10-08", author: "f", permlink: "p6", sp: 0.09 },
+];
+const roiRows = aggregateTagRoi(roiOps, tagMap);
+eq("R291 tag-roi: measured aggregation is by avgSpPerOp", roiRows.map((r) => r.tag), ["trading", "photo", "crypto"]);
+eq("R291 tag-roi: crypto 3 ops @ 0.02 avg", roiRows.find((r) => r.tag === "crypto"), { tag: "crypto", sp: 0.06, ops: 3, avgSpPerOp: 0.02 });
+const oneQualified = orderTagsByRoi(["crypto", "photo", "trading", "ai"], roiRows);
+eq("R291 ordering: per-tag gate — crypto (3 ops) promoted, rest keep policy order", oneQualified.tags, ["crypto", "photo", "trading", "ai"]);
+eq("R291 ordering: basis records the ranked count", oneQualified.basis, "measured-roi (≥3 ops/tag, 1 ranked)");
+const thinCase = orderTagsByRoi(["crypto", "photo"], roiRows.slice(0, 1).map((r) => ({ ...r, ops: 1 })));
+eq("R291 ordering: zero qualifying tags falls back to policy order", thinCase.basis, "policy-order (data-thin)");
+const richRows = [...roiRows, { tag: "ai", sp: 0.3, ops: 4, avgSpPerOp: 0.075 }, { tag: "photo", sp: 0.08, ops: 2, avgSpPerOp: 0.04 }, { tag: "trading", sp: 0.09, ops: 1, avgSpPerOp: 0.09 }, { tag: "crypto", sp: 0.06, ops: 3, avgSpPerOp: 0.02 }];
+const orderedRich = orderTagsByRoi(["crypto", "photo", "trading", "ai"], richRows);
+eq("R291 ordering: ranked by measured avg (ai 0.075 first among ≥3-ops tags)", orderedRich.tags, ["ai", "crypto", "photo", "trading"]);
+ok("R291 ordering: whitelist is the universe — foreign tag never added", !orderTagsByRoi(["crypto", "photo"], [{ tag: "scamtag", sp: 9, ops: 9, avgSpPerOp: 1 }]).tags.includes("scamtag"));
+
 /* ── 16 · T-14 learning + discovery: evidence-based lessons, hard-clamped tunings ── */
 import {
   classifyCycleFailure, analyzeCycles, analyzeCurator, analyzeExec,

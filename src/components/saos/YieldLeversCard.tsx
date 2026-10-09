@@ -50,6 +50,15 @@ type LeversPayload = {
     note?: string | null
   }[] | null
   receipts?: { at?: string; account?: string; author?: string; permlink?: string; weight?: number }[] | null
+  tagRoi?: {
+    state?: string | null
+    day?: string | null
+    verdict?: string | null
+    tagsRanked?: number | null
+    opsSeen?: number | null
+    topTags?: { tag?: string; avgSpPerOp?: number | null; ops?: number | null }[] | null
+  } | null
+  scalingEvent?: { detected?: boolean; fromSp?: number; toSp?: number; deltaPct?: number; note?: string } | null
 }
 
 const n3 = (v?: number | null) => (typeof v === 'number' ? v.toFixed(3) : '-')
@@ -169,6 +178,32 @@ export function YieldLeversCard() {
               </p>
             )}
           </div>
+
+          {/* R291 · tag-ROI learning loop */}
+          {data.tagRoi && (
+            <div className="rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
+              <div className="flex flex-wrap items-center justify-between gap-1.5">
+                <span className="text-xs font-extrabold text-slate-100">לולאת-הלמידה · אילו-תגיות באמת משלמות לנו (R291)</span>
+                <StatusBadge tone={data.tagRoi.state === 'LIVE' ? 'emerald' : data.tagRoi.state === 'STALE' ? 'amber' : 'slate'}>
+                  {data.tagRoi.state === 'LIVE' ? 'חי' : data.tagRoi.state === 'STALE' ? 'מיושן' : 'טרם'}
+                </StatusBadge>
+              </div>
+              {data.tagRoi.topTags && data.tagRoi.topTags.length > 0 ? (
+                <div className="mt-1.5 flex flex-wrap gap-1" role="list" aria-label="תגיות-בעלות-תשואה">
+                  {data.tagRoi.topTags.map((t, i) => (
+                    <span key={`${t.tag}-${i}`} role="listitem" className="rounded border border-slate-700 bg-slate-950/50 px-1.5 py-0.5 text-[9px] text-slate-300" dir="ltr">
+                      #{t.tag}: <b className="text-emerald-400">{n3(t.avgSpPerOp)}</b> SP/op × {t.ops}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-[10px] text-slate-500">אין-נתונים-מיושבים עדיין — הלולאה צוברת מדידה.</p>
+              )}
+              <p className="mt-1 text-[10px] leading-relaxed text-slate-600">
+                {data.tagRoi.tagsRanked ?? 0} תגיות מדורגות מ-{data.tagRoi.opsSeen ?? 0} פעולות-קיורציה שהתיישבו · הסדר-ברשימת-הסינון עוקב-אחרי-התשואה-בפועל (הרשימה-עצמה לא נפתחת — זו-החלטת-מפעיל).
+              </p>
+            </div>
+          )}
 
           {/* lever matrix */}
           <div className="space-y-1.5">

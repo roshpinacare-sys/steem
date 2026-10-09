@@ -398,7 +398,28 @@ console.log(`[yieldmax-R290] measuring at ${now}`);
 const [steemM, hiveM, blurtM, delegationM] = await Promise.all([
   measureSteem(), measureHive(), measureBlurt(), probeDelegationMarket(),
 ]);
+/* R291 · SCALING-EVENT DETECTOR — the ×3 recall moment must be SEEN:
+ * compare effective SP against the previous probe run; a >15% jump is the
+ * delegation-return wave landing (or a delegation-in) — journaled + surfaced. */
+function detectScalingEvent(currentEffectiveSp) {
+  try {
+    const prev = JSON.parse(fs.readFileSync(OUT_FILE, "utf8"));
+    const from = prev?.steem?.headcorner?.effectiveSp;
+    if (!Number.isFinite(from) || !Number.isFinite(currentEffectiveSp) || from <= 0) return null;
+    const deltaPct = ((currentEffectiveSp - from) / from) * 100;
+    if (Math.abs(deltaPct) < 15) return null;
+    return {
+      detected: true, fromSp: Math.round(from * 100) / 100, toSp: Math.round(currentEffectiveSp * 100) / 100,
+      deltaPct: Math.round(deltaPct * 10) / 10,
+      note: deltaPct > 0
+        ? "capital-scaling event — effective SP jumped; the same rails now vote with the bigger battery (×3 wave expected ~10-11)"
+        : "capital-shrink event — effective SP dropped (delegation-out wave); rails self-throttle via VP floor",
+    };
+  } catch { return null; }
+}
+
 const report = { at: now, steem: steemM, hive: hiveM, blurt: blurtM, delegation: delegationM, levers: leverMatrix({ steem: steemM, hive: hiveM, blurt: blurtM, delegation: delegationM }) };
+report.scalingEvent = detectScalingEvent(steemM?.headcorner?.effectiveSp);
 fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
 fs.writeFileSync(OUT_FILE, JSON.stringify(report, null, 2));
 console.log(JSON.stringify({

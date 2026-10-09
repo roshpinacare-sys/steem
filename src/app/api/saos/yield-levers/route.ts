@@ -61,8 +61,11 @@ const r3 = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? Math.r
 
 export async function GET() {
   const probeFile = path.join(STATE, "yield-levers.json");
+  const tagRoiFile = path.join(STATE, "tag-roi.json");
   const armyFile = path.join(STATE, "army-curation.json");
   const probe = readJson(probeFile);
+  const tagRoi = readJson(tagRoiFile);
+  const tagRoiAge = ageMin(tagRoiFile);
   const army = readJson(armyFile);
   const probeAge = ageMin(probeFile);
   const armyAge = ageMin(armyFile);
@@ -136,6 +139,20 @@ export async function GET() {
       note: typeof l.note === "string" ? l.note : null,
     })),
     receipts: tailJsonl(path.join(RECEIPTS, "army-curation.jsonl"), 8).reverse(),
+    tagRoi: tagRoi
+      ? {
+          state: tagRoiAge === null ? "NEVER" : tagRoiAge > 1500 ? "STALE" : "LIVE",
+          day: typeof tagRoi.day === "string" ? tagRoi.day : null,
+          verdict: typeof tagRoi.verdict === "string" ? tagRoi.verdict : null,
+          tagsRanked: typeof tagRoi.tagsRanked === "number" ? tagRoi.tagsRanked : null,
+          opsSeen: typeof tagRoi.opsSeen === "number" ? tagRoi.opsSeen : null,
+          topTags: Object.values((tagRoi.tags ?? {}) as Row)
+            .sort((a, b) => (Number(b.avgSpPerOp) || 0) - (Number(a.avgSpPerOp) || 0))
+            .slice(0, 5)
+            .map((r) => ({ tag: String(r.tag ?? "?"), avgSpPerOp: r3(r.avgSpPerOp), ops: typeof r.ops === "number" ? r.ops : null })),
+        }
+      : null,
+    scalingEvent: (probe?.scalingEvent ?? null) as Row | null,
     law: "every number is chain-sourced by the yieldmax probe; the army rail votes EXTERNAL content only (17-account exclusion); VP budget < 20%/day regen; this route owns no keys and no logic",
   };
 
