@@ -178,3 +178,19 @@ Stage Summary:
 - ארבעה שורשים תוקנו בשרשרת-החיים-המלאה: unlock (hive) · trim (custodian) · alert-honesty (custodian) · cold-boot revival (selfcustody) — המטריצה חזרה למלואה ומוכחת-מדידה, לא-מוצהרת.
 - כל-התיקונים בנויים על חוק-קיים (R278/R265/R284/R285) ולא על-גביו — אפס-סתירות-חוק; fail-closed נשמר בכל-שכבה.
 - הלקח-המבני: warm-keyring/warm-memory הסתירו שברים-קרים; כל-התחלה-קרה מעכשיו מוכיחה את עצמה מול-הגיט ומול-השרשרת (בדיוק עצמאות-המפעיל שנדרשה).
+
+---
+Task ID: R297-ANCHOR (העוגן-על-השרשרת חזר לפרסם — השלמת-האזעקה)
+Agent: Z.ai Code (my-project sandbox session)
+Task: המשך R297 — ה-chain-section ב-verify.sh נכשל (anchored=false): העוגן היה ישן מ-13:49. אבחון, תיקון, הוכחה.
+
+Work Log:
+- **אבחון**: העוגן-האוטומטי היחיד = anchorWitness בקוסטודיאן, הדורש verifyRoles (גזירת-סיסמה) — אחרי כל-התחלה-קרה ה-cache מת והסירוב תמידי (ה-CREDENTIAL-MISMATCH הכרוני), ולכן העוגן נעצר ב-13:49 בעוד המנוע מחזיק WIFs-מאומתי-שרשרת (14/14).
+- **R297 · מסילת-קבלה שנייה** (custodian/index.ts): כשגזירת-הסיסמה מסרבת — אימוץ חד-פעמי-לתהליך של WIF מהכספת דרך adoptAccountPostingWif (חדשה ב-vault-revival.mjs): unlock שני-הדורות → role-exact מול-authority-חי → רק-WIF-שהשרשרת-מאשרת-נכנס-לזיכרון. אם-השרשרת דוחה כל-דור — העוגן נשאר סירוב-כנה.
+- **R273-COMPLETION** (vault-revival.mjs): כותב-ה-cache של הכספת דילג על חשבון-הריבון (loop על ARMY בלבד) — ה-unlock כלל-אותו מאז-R273 אבל ה-cache הוריד-אותו כל-פעם (נמדד: "account-not-in-vault"). תוקן: master+ARMY ב-cache, בקו-אחד-עם ספירת-ה-14/14.
+- **חוק-גיוון-nodes** (chain-anchor-probe.mjs): api.steemit.com השיב עמוד-היסטוריה ישן ואז-שגיאה בטווח-דקות בזמן-שה-tx מוכח-בשרשרת (get_transaction → block 110295906). ה-probe עכשיו נופל-בחזרה על 3 nodes ציבוריים + timeout לכל-בקשה; חוק-הפסיק לא-שונה (אכזרי-כשל).
+- **הוכחות**: probe אימוץ → {ok:true, gen:GEN-2, STM7RqZtbL…} · הקוסטודיאן (קר!) אימץ ושידר → anchor-adopt-ok + anchor-ok txid 94be6f2f… (block 110295906, tip c5ac251e) · chain-anchor-probe ×3 → anchored:true drift:false · **verify.sh סופי: PASS=22 FAIL=0 WARN=0**.
+
+Stage Summary:
+- שרשרת-החיים סגורה מקצה-לקצה: unlock→אימות→חתימה→דחיפה→עיגון-על-השרשרת — כולה מחייה-עצמית ללא-מפעיל, עם כשל-כנה בכל-שלב.
+- העוגן-המת-מ-13:49 חזר; מטריצת-האזעקה ירוקה-מלאה (14/14 · Hive 9/9 · selftest 1218/1218 · writer · עוגן-טרי).

@@ -6,6 +6,7 @@
 // NEVER: force, merge autonomy, non-canonical branches, commits of invalid (torn) JSON.
 import { spawnSync } from "node:child_process";
 import { thinkGate, executeAs, masterAccount, credentialFingerprint, verifyRoles } from "../saos-engine/signer.mjs";
+import { adoptAccountPostingWif } from "../saos-engine/vault-revival.mjs";
 import { appendFileSync, writeFileSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync, renameSync } from "node:fs";
 
 const REPO = "/home/z/my-project";
@@ -37,6 +38,7 @@ function appendAlert(kind: string, detail: string) {
 }
 
 let lastAnchorAt = 0;
+let vaultAdoptTried = false; /* R297: one in-process vault admission attempt max */
 /* R297 · ALERT-HONESTY LAW (anchor-refused dedupe): the CREDENTIAL-MISMATCH
  * verdict is a standing informational condition (signer guidance: signing
  * continues via vault revival; no operator action wanted) — but the custodian
@@ -80,7 +82,29 @@ async function anchorWitness(): Promise<void> {
      * (derive + chain read) and process-local cached — run it here, once,
      * before the gate. Fail-closed preserved: a bad credential still
      * refuses (verifyRoles.ok=false → alert, no broadcast). */
-    const ver: any = await verifyRoles(acct);
+    let ver: any = await verifyRoles(acct);
+    /* R297 · SECOND ADMISSION PATH (the anchor law, measured live: the chain
+     * anchor went stale at 13:49Z because every cold custodian restart leaves
+     * the password-derivation cache empty and verifyRoles honestly refuses a
+     * pasted-era credential — while the SAME vault's WIF for this account is
+     * chain-judged alive 14/14). Admission = the chain itself vouching for a
+     * WIF we can sign with: adoptAccountPostingWif runs the existing
+     * generation unlock + role-exact live-authority match (fail-closed, only
+     * a chain-accepted WIF enters memory). Tried ONCE per process; if the
+     * chain rejects every generation too, the anchor stays refused and the
+     * dedupe law records it. */
+    if (!ver?.ok && !vaultAdoptTried) {
+      vaultAdoptTried = true;
+      try {
+        const adopt: any = await adoptAccountPostingWif(acct);
+        if (adopt?.ok) {
+          appendAlert("anchor-adopt-ok", `${acct} posting WIF adopted via ${adopt.gen} (chain-judged, memory-only)`);
+          ver = await verifyRoles(acct);
+        } else {
+          appendAlert("anchor-adopt-fail", String(adopt?.reason ?? "unknown").slice(0, 140));
+        }
+      } catch (e) { appendAlert("anchor-adopt-fail", String(e).slice(0, 120)); }
+    }
     if (!ver?.ok) { appendAnchorRefusedDeduped(`verifyRoles: ${String(ver?.reason ?? ver?.verdict ?? "unverified").slice(0, 180)}`); return; }
     const tip = sh("git", ["rev-parse", "HEAD"]).out;
     const ops: any = [["custom_json", { required_auths: [], required_posting_auths: [acct], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "R216-custodian", fp: credentialFingerprint(acct) }) }]];

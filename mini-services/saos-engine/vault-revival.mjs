@@ -182,7 +182,13 @@ function pullArmyKeysFromVault() {
   }
   const accounts = [];
   const missing = [];
-  for (const name of ARMY) {
+  /* R273 COMPLETION (R297, measured): the unlock includes the account of
+   * record since R273, but this cache writer iterated ARMY only — the master
+   * was unlocked every time and dropped every time, so a cold custodian had
+   * no master candidate to adopt for the chain anchor ("account-not-in-vault").
+   * The custody census already counts master+ARMY (14/14); the cache now
+   * serves the same set. */
+  for (const name of [...new Set([masterAccount(), ...ARMY])]) {
     const gensFor = gens.map((g) => ({ gen: g.gen, ...(g.accounts[name] ?? {}) })).filter((g) => g.wif);
     if (!gensFor.length) { missing.push(name); continue; }
     accounts.push({ name, gens: gensFor });
@@ -226,6 +232,46 @@ async function adoptFromCache({ force = false } = {}) {
 }
 
 /* ── THE ENTRY POINT: idempotent, self-healing, journaled ────────────────── */
+/* R297 · NARROW ADOPTION RAIL: the custodian's anchor witness must not depend
+ * on a warm password-derivation cache (measured live 2026-10-09: every cold
+ * restart left the chain anchor stale — verifyRoles honestly refuses the
+ * pasted-era credential while the SAME vault's WIF for this account is
+ * chain-judged alive 14/14). This rail runs the EXISTING generation unlock +
+ * role-exact live-authority adoption for ONE account (posting role,
+ * fail-closed: only a WIF the live chain accepts enters memory). Never logs
+ * key material; verdict-only. */
+export async function adoptAccountPostingWif(account = null) {
+  try {
+    const acct = account ?? masterAccount();
+    let cache = readJson(CACHE_FILE, null);
+    if (!cache?.accounts?.length) {
+      const pulled = pullArmyKeysFromVault();
+      if (!pulled?.ok) return { ok: false, reason: `vault-pull-failed (${(pulled?.errors ?? []).join(" | ").slice(0, 120)})` };
+      cache = readJson(CACHE_FILE, null);
+    }
+    let a = (cache?.accounts ?? []).find((x) => x?.name === acct);
+    if (!a) {
+      /* R255 STALE-CACHE LAW applied narrowly: a cache that cannot serve the
+       * account of record (measured: pre-R273 caches lack the master entry)
+       * is re-pulled from the git vault (sha-pinned) and adoption re-judged —
+       * the vault re-pulls until the chain says yes. */
+      const pulled = pullArmyKeysFromVault();
+      if (!pulled?.ok) return { ok: false, reason: `vault-pull-failed (${(pulled?.errors ?? []).join(" | ").slice(0, 120)})` };
+      cache = readJson(CACHE_FILE, null);
+      a = (cache?.accounts ?? []).find((x) => x?.name === acct);
+      if (!a) return { ok: false, reason: "account-not-in-vault-after-repull" };
+    }
+    for (const g of (a.gens ?? [])) {
+      if (!g?.wif) continue;
+      const r = await adoptVerifiedWifIdentity(acct, g.wif, { role: "posting" });
+      if (r?.ok) return { ok: true, gen: g.gen, pubkey: r.pubkey ?? null };
+    }
+    return { ok: false, reason: "no-generation-verified-vs-chain" };
+  } catch (e) {
+    return { ok: false, reason: String(e?.message ?? e).slice(0, 120) };
+  }
+}
+
 export async function reviveArmyCustody({ now = new Date().toISOString() } = {}) {
   const t0 = Date.now();
   const roster = [masterAccount(), ...ARMY];
