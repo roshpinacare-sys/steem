@@ -37,6 +37,27 @@ function appendAlert(kind: string, detail: string) {
 }
 
 let lastAnchorAt = 0;
+/* R297 · ALERT-HONESTY LAW (anchor-refused dedupe): the CREDENTIAL-MISMATCH
+ * verdict is a standing informational condition (signer guidance: signing
+ * continues via vault revival; no operator action wanted) — but the custodian
+ * re-alerted it EVERY 10-min tick, burying the alert rail in noise (measured:
+ * anchor-refused every tick since 2026-10-07). Fail-honest dedupe: alert on
+ * TRANSITION and then a 6h heartbeat only; the stamp state file keeps the
+ * condition + suppressed count so silence is never lost information. */
+const ANCHOR_VERDICT_STAMP = `${STATE_DIR}/anchor-verdict.json`;
+function appendAnchorRefusedDeduped(detail: string) {
+  let prev: any = null;
+  try { prev = JSON.parse(readFileSync(ANCHOR_VERDICT_STAMP, "utf8")); } catch {}
+  const now = Date.now();
+  const same = prev?.ok === false && prev?.detail === detail;
+  const heartbeatDue = !prev?.at || now - Number(prev.at) >= 6 * 3600000;
+  if (same && !heartbeatDue) {
+    try { writeFileSync(ANCHOR_VERDICT_STAMP, JSON.stringify({ ok: false, detail, at: now, suppressed: (Number(prev?.suppressed) || 0) + 1 })); } catch {}
+    return;
+  }
+  appendAlert("anchor-refused", detail);
+  try { writeFileSync(ANCHOR_VERDICT_STAMP, JSON.stringify({ ok: false, detail, at: now, suppressed: 0 })); } catch {}
+}
 /* R217 · DURABLE ANCHOR RATE-LIMIT: the in-memory lastAnchorAt resets on every
  * custodian restart — measured live 22:49→22:51Z: two custody witnesses 9 min
  * apart (implant + watchdog heal each fired a first-push anchor). The ≤1/h law
@@ -60,7 +81,7 @@ async function anchorWitness(): Promise<void> {
      * before the gate. Fail-closed preserved: a bad credential still
      * refuses (verifyRoles.ok=false → alert, no broadcast). */
     const ver: any = await verifyRoles(acct);
-    if (!ver?.ok) { appendAlert("anchor-refused", `verifyRoles: ${String(ver?.reason ?? ver?.verdict ?? "unverified").slice(0, 180)}`); return; }
+    if (!ver?.ok) { appendAnchorRefusedDeduped(`verifyRoles: ${String(ver?.reason ?? ver?.verdict ?? "unverified").slice(0, 180)}`); return; }
     const tip = sh("git", ["rev-parse", "HEAD"]).out;
     const ops: any = [["custom_json", { required_auths: [], required_posting_auths: [acct], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "R216-custodian", fp: credentialFingerprint(acct) }) }]];
     const gate: any = thinkGate(acct, ops, { source: "custody-witness" });
@@ -90,10 +111,18 @@ function boundLedgers() {
     try {
       const st = statSync(`${REPO}/${l.path}`);
       if (st.size <= l.maxBytes) continue;
-      const src = openSync(`${REPO}/${l.path}`, "r");
-      const tail = readSync(src, Buffer.alloc(Math.min(st.size, l.maxBytes)), 0, Math.min(st.size, l.maxBytes), st.size - Math.min(st.size, l.maxBytes));
-      closeSync(src);
-      const lines = tail.toString("utf8", 0, tail.bytesRead).split("\n").filter((x) => x.trim());
+      /* R297 FIX (measured live: 93.8MB quarantine never trimmed since R285
+       * — every tick died RangeError before writing): fs.readSync returns
+       * the NUMBER of bytes read, not a buffer. The old code called
+       * tail.toString("utf8", …) on that number → Number.prototype.toString
+       * with an invalid radix → RangeError on EVERY trim, so the 64MB cap
+       * never executed. The buffer is now held explicitly. */
+      const buf = Buffer.alloc(Math.min(st.size, l.maxBytes));
+      const start = st.size - buf.length;
+      const fd = openSync(`${REPO}/${l.path}`, "r");
+      let bytesRead = 0;
+      try { bytesRead = readSync(fd, buf, 0, buf.length, start); } finally { closeSync(fd); }
+      const lines = buf.toString("utf8", 0, bytesRead).split("\n").filter((x) => x.trim());
       const keep = lines.slice(-l.tailLines);
       const tmp = `${REPO}/${l.path}.bound-tmp`;
       writeFileSync(tmp, keep.join("\n") + "\n");
