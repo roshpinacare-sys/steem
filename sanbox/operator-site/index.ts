@@ -119,7 +119,7 @@ async function fleetStatus(): Promise<Array<{ id: string; port: number; alive: b
 function gitInfo(): { branch: string; head: string; behind: string; ahead: string } {
   // spawnSync כאן בטוח: קריאות-git קצרות ואינן קוראות לשרת-זה עצמו
   const g = (args: string[]): string | null => {
-    const r = spawnSync(args[0], args.slice(1), { cwd: ROOT, encoding: "utf8", timeout: 8000 });
+    const r = spawnSync("git", args, { cwd: ROOT, encoding: "utf8", timeout: 8000 });
     return r.status === 0 ? (r.stdout ?? "").trim() : null;
   };
   const branch = g(["rev-parse", "--abbrev-ref", "HEAD"]) ?? "?";
