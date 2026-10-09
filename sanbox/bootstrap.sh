@@ -21,9 +21,10 @@ say "── sanbox/bootstrap @ $(now) ──" | tee -a "$LOG"
 git fetch origin saos-cockpit >/dev/null 2>&1 || warn "fetch נכשל (אופליין? ממשיך מקומי)"
 BEHIND=$(git rev-list --count HEAD..origin/saos-cockpit 2>/dev/null || echo 0)
 if [ "${BEHIND:-0}" -gt 0 ]; then
-  if [ -n "$(git status --porcelain -- sanbox worklog.md)" ]; then
-    git stash push -u -m "sanbox prebootstrap $(now)" >/dev/null 2>&1 \
-      && warn "שינויים-מקומיים ב-sanbox/worklog אורכבו ל-stash (לא נמחקו)"
+  # רק שינויים-נעקבים בשני-הנתיבים (untracked לא נוגעים — שלא ייעלמו!)
+  if [ -n "$(git status --porcelain --untracked-files=no -- sanbox worklog.md)" ]; then
+    git stash push -m "sanbox prebootstrap $(now)" -- sanbox worklog.md >/dev/null 2>&1 \
+      && warn "שינויים-נעקבים ב-sanbox/worklog אורכבו ל-stash (לא נמחקו)"
   fi
   if git merge --ff-only origin/saos-cockpit >/dev/null 2>&1; then
     ok "גיט: סונכרן לטיפ origin (FF, ${BEHIND} קומיטים)"
