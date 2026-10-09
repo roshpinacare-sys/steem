@@ -159,3 +159,22 @@ Stage Summary:
 - אוטונומיה-מוכחת: commit-loop יצר לבדו 2 קומיטי-snapshot תוך-כדי-העבודה; bootstrap/verify אידמפוטנטיים וקריאים-מכונה; תור-המשימות מגדיר עבודה-עומדת לסוכנים.
 - בטיחות: אפס-סודות-בריפו (state/ git-ignored נאכף ונבדק), שער-סיסמה עם כל-הדגלים, loopback בלבד, whitelist-פעולות, יומן-ביקורת.
 - פתוח למפעיל: קביעת-סיסמה בביקור-הראשון (חלון 20 דק' מעליית-האתר; אחר-כך auth/gen-hash.sh). פתוח לסוכנים: X-Op-Token מול state/agent-token.
+
+---
+Task ID: R297-ALARM (hive UNLOCK-FAIL + ledger-bound + writer revival — אזעקת-החזקה 20:24)
+Agent: Z.ai Code (my-project sandbox session)
+Task: המפעיל: "אזעקת-החזקה · המטריצה ירדה ממלואה (14/14) · החזקת-ה-Hive UNLOCK-FAIL · anchor-refused · ledger-bound-fail — תמשיך ודחוף, וודא הכל כמו שצריך ודחוף."
+
+Work Log:
+- **מדידת-מצב-אפס**: מסילת custody-alert חיה — וקטור-מת אחד בלבד: hive-custody UNLOCK-FAIL (הצי 14/14 חי, selftest 1218/1218, כותב חי). התראות-לוואי: anchor-refused כל-10-דק' + ledger-bound-fail כל-tick.
+- **שורש-1 · hive UNLOCK-FAIL** (hive.mjs): GEN1_COMMIT="1c9f00d0" מת מההיסטוריה (invalid object) — וגם זיווג ה-meta שגוי: recovery-meta-3 (ROT4) מצביע על zip אחר לגמרי. תיקון R297: hive.mjs מאמץ את חוק R278 (era-meta על ענף-הרשומה origin/saos-cockpit→origin/main→HEAD, ה-meta בעל הנתיב+הסיסמה+pins), כל-השכבות fail-closed נשארו (sha-pins חוץ+פנים, passphrase, אימות-מול-השרשרת). **הוכחה: probe חד-פעמי → HIVE-CUSTODY-ALIVE 9/9 (posting+active) מול api.hive.blog.**
+- **שורש-2 · ledger-bound-fail** (saos-custodian/index.ts): `fs.readSync` מחזיר מספר-בייטים, לא-באפר — `tail.toString("utf8")` = Number.toString עם radix לא-חוקי → RangeError בכל-trim מאז R285, קובץ-ההסגר גדל ל-93.8MB ללא-תקרה. תיקון: הבאפר מוחזק מפורש. **הוכחה: trim בפועל 93,849,576 → 790,000 בייטים, התראת ledger-bound-הצלחה.**
+- **שורש-3 · anchor-refused ספאם**: CREDENTIAL-MISMATCH הוא מצב-מידע כרוני (החתימה ממשיכה דרך vault-revival) — התראה כל-tick קוברת את המסילה. חוק-כנות-התראות R297: dedupe על-מעבר + דופק-6ש, stamp ב-state (suppressed-count) — שקט לעולם לא אובדן-מידע.
+- **שורש-4 · חשיפת-שבר-סמוי בהתחלה-קרה**: ההפעלה-מחדש של המנוע חשפה writer-identity SIGNING-REVIVE-FAIL — gpgKey.sealedFile ב-recovery-meta נושא הערה-בתוך-הנתיב ("…zip.enc (member signing/w1-signing-key-r5.asc)"), הקוד התייחס אליה כנתיב-גיט, וגם ייבא ישירות ל-gpg בלוק שהוא ZIP-מכיל-חבר, וה-pin שלו (ee465a07) נשאר מעידן-איטום קודם. תיקון R297 ב-sovereign-selfcustody.mjs: parseSealedFileSpec (פיענוח-הערה), חוק-pin-מאמת (gpgKey.sealedSha256 או extras.outerSha256 — מה שבאמת תואם), וחילוץ-חבר לפי הנוסחה-החתומה (openssl -d → unzip -p → gpg --import), עם-גילוי-צורה (PK-magic) לשמירת-עידן-הקובץ-הבודד. reseal משתמש בנתיב-המפוענח. **הוכחה: revive-signing → secret key imported (fp 301E…3424 תואם-pin) → WRITER-IDENTITY-ALIVE.**
+- **הפעלה-מחדש מבוקרת**: engine (:3040) + custodian (:3041) נהרגו → keeper החזיר אותם ≤30s על הקוד-המתוקן; המנוע עצמו מדד מחדש וכתב HIVE-CUSTODY-ALIVE.
+- **מטריצה סופית**: custody-alert → **STATUS: GREEN · 14/14 FLEET-CUSTODY-ALIVE · selftest 1218/1218 · WRITER-IDENTITY-ALIVE · failing: NONE**. sanbox/verify.sh: PASS=21 FAIL=1 (ה-FAIL היחיד = chain-DRIFT לפני-הדחיפה — מצופה, ייסגר בדחיפה עצמה).
+
+Stage Summary:
+- ארבעה שורשים תוקנו בשרשרת-החיים-המלאה: unlock (hive) · trim (custodian) · alert-honesty (custodian) · cold-boot revival (selfcustody) — המטריצה חזרה למלואה ומוכחת-מדידה, לא-מוצהרת.
+- כל-התיקונים בנויים על חוק-קיים (R278/R265/R284/R285) ולא על-גביו — אפס-סתירות-חוק; fail-closed נשמר בכל-שכבה.
+- הלקח-המבני: warm-keyring/warm-memory הסתירו שברים-קרים; כל-התחלה-קרה מעכשיו מוכיחה את עצמה מול-הגיט ומול-השרשרת (בדיוק עצמאות-המפעיל שנדרשה).
