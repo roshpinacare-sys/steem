@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { withVoice } from "../_llm";
+import { withVoice, nvidiaKeyPresent, nvidiaChat } from "../_llm";
 import { SYMBOL_PROMPT_LAW, ANTI_TEMPLATE_LAW, validateDraftBody } from "../_symbols";
 import { runLlmChain, compactContext } from "@/lib/llm-chain";
 
@@ -100,6 +100,27 @@ export async function POST(req: Request) {
               "short",
             ),
         },
+        /* R298 · SECOND PROVIDER (env-gated, last): never delays the happy path;
+         * fails honestly to metadata when NVIDIA has no deployed function. */
+        ...(nvidiaKeyPresent()
+          ? [
+              {
+                name: "nvidia-fallback",
+                call: async () => {
+                  const raw = await nvidiaChat({ system, user: userPrompt, maxTokens: 500 });
+                  const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+                  let body = "";
+                  try {
+                    body = String(JSON.parse(jsonText)?.comment?.body ?? "");
+                  } catch {
+                    body = raw.trim();
+                  }
+                  if (!body.trim()) throw new Error("empty comment from nvidia provider");
+                  return { value: body.trim().slice(0, 600), tokens: 0 };
+                },
+              },
+            ]
+          : []),
       ],
       validate: (s) => (s && s.trim() ? s.trim() : null),
       timeoutMs: 45_000,

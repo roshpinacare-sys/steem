@@ -1,36 +1,36 @@
 {
-  "at": "2026-10-09T17:38:10.227Z",
+  "at": "2026-10-09T20:43:21.633Z",
   "steem": {
     "chain": "steem",
     "ok": true,
     "levers": {},
-    "vestsPerSp": 1612.58,
+    "vestsPerSp": 1612.56,
     "steemPerRshare": null,
-    "headBlock": 110295491,
-    "time": "2026-10-09T17:38:09",
+    "headBlock": 110299178,
+    "time": "2026-10-09T20:43:21",
     "headcorner": {
-      "ownSp": 4025.17,
-      "effectiveSp": 2105.73,
-      "delegatedOutSp": 2163.61,
+      "ownSp": 4025.21,
+      "effectiveSp": 3656.57,
+      "delegatedOutSp": 612.81,
       "receivedSp": 244.17,
       "vpEffPct": 10,
       "liquidSteem": 4.151,
       "liquidSbd": 0.824,
       "rcPct": null,
-      "delegatedOutDeltaVsR289": 893.59,
+      "delegatedOutDeltaVsR289": 2444.39,
       "historyScan": {
         "opsRead": 6060,
         "error": null,
-        "oldestTs": "2026-10-06T21:47:21"
+        "oldestTs": "2026-10-06T21:52:51"
       },
       "opsHistogram": {
-        "limit_order_cancel": 1897,
-        "custom_json": 1534,
-        "limit_order_create": 2049,
+        "custom_json": 1538,
+        "limit_order_cancel": 1884,
+        "limit_order_create": 2041,
         "transfer": 27,
         "vote": 100,
         "transfer_to_vesting": 5,
-        "comment": 125,
+        "comment": 130,
         "fill_convert_request": 3,
         "fill_order": 146,
         "curation_reward": 78,
@@ -40,7 +40,7 @@
         "convert": 3,
         "account_create": 1,
         "account_update2": 17,
-        "return_vesting_delegation": 31
+        "return_vesting_delegation": 43
       },
       "transfersWindow": [
         {
@@ -233,11 +233,11 @@
           "memo": "R234 fleet-grid funding · operator trace 1a113f67a0ed4be9 (f"
         }
       ],
-      "measuredWindowDays": 2.8,
+      "measuredWindowDays": 3,
       "curation7d": {
         "ops": 78,
         "sp": 1.854,
-        "perDay": 0.656
+        "perDay": 0.628
       },
       "author7d": {
         "ops": 0,
@@ -276,12 +276,12 @@
           "comment": "ekatirina/5rmssb-kot"
         }
       ],
-      "aprPct": 11.4
+      "aprPct": 6.3
     },
     "army": [
       {
         "account": "cashmachine",
-        "effectiveSp": 75.22,
+        "effectiveSp": 75.23,
         "vpEffPct": 10
       },
       {
@@ -331,7 +331,7 @@
       }
     ],
     "armyTotals": {
-      "effectiveSp": 562.2,
+      "effectiveSp": 562.21,
       "vpIdlePct": 10
     },
     "market": {
@@ -341,8 +341,8 @@
       "percentChange": -0.4924386351546528
     },
     "feed": {
-      "steemSbdFeed": 0.10409438559533273,
-      "steemUsd": 0.10409438559533273,
+      "steemSbdFeed": 0.10409432643054883,
+      "steemUsd": 0.10409432643054883,
       "sbdUsd": 1
     },
     "sbdPremiumPct": 1.7,
@@ -496,19 +496,19 @@
     {
       "id": "steem-curation-headcorner",
       "state": "LIVE",
-      "measuredSpPerDay": 0.656,
-      "measuredUsdPerDay": 0.0683,
-      "aprPct": 11.4,
-      "note": "7d measured 78 ops; effective 2105.73 SP; R289 tune ×4 VP utilization + recalls 893.59 SP already back"
+      "measuredSpPerDay": 0.628,
+      "measuredUsdPerDay": 0.0654,
+      "aprPct": 6.3,
+      "note": "7d measured 78 ops; effective 3656.57 SP; R289 tune ×4 VP utilization + recalls 2444.39 SP already back"
     },
     {
       "id": "steem-curation-army",
       "state": "R290-NEW",
-      "armySp": 562.2,
+      "armySp": 562.21,
       "vpIdlePct": 10,
       "sustainableVotesPerDay": 120,
-      "projectedSpPerDay": 0.063,
-      "projectedUsdPerDay": 0.0066,
+      "projectedSpPerDay": 0.035,
+      "projectedUsdPerDay": 0.0036,
       "note": "10 accounts × 12 votes/day × ~60% weight = 7.2%/day VP burn < 20% regen (external-only, VP-floor 35)"
     },
     {
@@ -564,11 +564,5 @@
       "note": "11 broadcast-ready packages compiled; same content → Steem+Hive+Blurt triples the author-reward surface; reach requires external curators"
     }
   ],
-  "scalingEvent": {
-    "detected": true,
-    "fromSp": 1211.32,
-    "toSp": 2105.73,
-    "deltaPct": 73.8,
-    "note": "capital-scaling event — effective SP jumped; the same rails now vote with the bigger battery (×3 wave expected ~10-11)"
-  }
+  "scalingEvent": null
 }
