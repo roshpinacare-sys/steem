@@ -61,6 +61,18 @@ else
   if port_ok 3046 /health; then ok "אתר-מפעיל: עלה (:3046)"; else bad "אתר-מפעיל: לא עלה"; CRIT_FAIL=1; fi
 fi
 
+# ── 4.5 · רץ-המשימות הריבוני (לולאת-האוטונומיה) ──
+if bash "$SB/autonomy-runner.sh" status >/dev/null 2>&1; then
+  ok "אוטונומיה: רץ-המשימות כבר-חי"
+else
+  bash "$SB/autonomy-runner.sh" start >/dev/null 2>&1 \
+    && ok "אוטונומיה: רץ-המשימות עלה" \
+    || warn "אוטונומיה: רץ-המשימות לא עלה (לא-קריטי — הצי חי)"
+fi
+bash "$SB/autonomy-runner.sh" run-once >/dev/null 2>&1 \
+  && ok "אוטונומיה: tick ראשון הושלם (תור-המשימות מבוצע)" \
+  || warn "אוטונומיה: tick ראשון נכשל — ראה sanbox/state/autonomy-runner.log"
+
 # ── 5 · בריאות + קוקפיט (לא-קריטי) ──
 if port_ok 3000 /; then ok "קוקפיט: חי (:3000)"; else warn "קוקפיט: לא חי (:3000) — מנוהל על-ידי dev-daemon, לא-קריטי"; fi
 
