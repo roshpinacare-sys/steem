@@ -2765,6 +2765,83 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("T-36 rc: unread fail-closed", rcGate({}).ok, false);
 }
 
+/* ═══ R292 · CAPITAL ROUTER — profit-maximization + routing laws ═══ */
+{
+  const {
+    sustainableVoteBudget, etaToVpFloorHours, voteValueSp, fleetYieldSpPerDay,
+    yieldLadder, sbdRoutingRule, rankActions, ROUTER_LAW, CONSTANTS,
+  } = await import("./capital-router.mjs");
+
+  /* regen law: 12 votes/day at 60% avg weight burns 14.4%/day < 20% regen → budget 12 */
+  eq("R292 budget: 12×60% at 2%/full-vote is regen-sustainable", sustainableVoteBudget({ maxPerDay: 12, avgWeightPct: 60 }), 12);
+  /* 20 full-weight votes/day would burn 40% > 20% regen → clamped to 10 */
+  eq("R292 budget: full-weight clamp at regen", sustainableVoteBudget({ maxPerDay: 20, avgWeightPct: 100 }), 10);
+  eq("R292 budget: maxPerDay 0 → 0", sustainableVoteBudget({ maxPerDay: 0 }), 0);
+  eq("R292 budget: degenerate regen → 0", sustainableVoteBudget({ maxPerDay: 12, regenPctPerDay: 0 }), 0);
+
+  /* VP pacing: 57.4% at floor 60 → ~3.1h; at/above floor → 0 */
+  eq("R292 eta: VP below floor computes hours", Math.round(etaToVpFloorHours({ vpPct: 57.4, floorPct: 60 }) * 10) / 10, Math.round(((60 - 57.4) / 20) * 24 * 10) / 10);
+  eq("R292 eta: at floor → 0", etaToVpFloorHours({ vpPct: 60, floorPct: 60 }), 0);
+  eq("R292 eta: zero regen → Infinity", etaToVpFloorHours({ vpPct: 10, floorPct: 60, regenPctPerDay: 0 }), Infinity);
+
+  /* vote value: rshares = k × vests_µ × weight × VP, valued on the T35 curve.
+   * headcorner 1211 SP, vestsPerSp 1612.65, full vote, early curve:
+   * 1211×1612.65×1e6×0.02 = 3.906e10 rshares = 39.06 Grs × 0.000416 ≈ 0.01625 SP */
+  const vv = voteValueSp({ effectiveSp: 1211.31, vestsPerSp: 1612.65, vpPct: 100, weightPct: 100 });
+  ok("R292 vote value: headcorner full vote ≈ 0.0163 SP on the early curve", vv > 0.0155 && vv < 0.017);
+  eq("R292 vote value: half VP halves the value", voteValueSp({ effectiveSp: 1211.31, vestsPerSp: 1612.65, vpPct: 50, weightPct: 100 }), Math.round(vv / 2 * 1e6) / 1e6);
+  eq("R292 vote value: zero/negative SP → 0", voteValueSp({ effectiveSp: -5, vestsPerSp: 1612.65 }), 0);
+  eq("R292 vote value: absurd vestsPerSp rejected", voteValueSp({ effectiveSp: 100, vestsPerSp: 2e9 }), 0);
+
+  /* distribution-neutrality: Σ slots×SP invariant under capital redistribution */
+  const concentrated = fleetYieldSpPerDay({ accounts: [{ effectiveSp: 1782, maxPerDay: 12 }], vestsPerSp: 1612.65, vpPct: 90, weightPct: 60, spPerGrs: CONSTANTS.curveEarly });
+  const spread = fleetYieldSpPerDay({ accounts: [{ effectiveSp: 594, maxPerDay: 12 }, { effectiveSp: 594, maxPerDay: 12 }, { effectiveSp: 594, maxPerDay: 12 }], vestsPerSp: 1612.65, vpPct: 90, weightPct: 60, spPerGrs: CONSTANTS.curveEarly });
+  ok("R292 slots×SP: capital distribution is yield-neutral at full utilization", Math.abs(concentrated - spread) / concentrated < 0.01);
+
+  /* ladder: today → landing ×~3 → tags ×~4.3 → fleet; multipliers monotone */
+  const lad = yieldLadder({ headEffectiveSp: 1211.31, headAprPct: 17.7, tagBoostPct: 40, armyDailySp: 0.05, pendingLandingSp: 2463.02 });
+  eq("R292 ladder: stage count", lad.stages.length, 4);
+  ok("R292 ladder: landing ≈ ×3.03 measured", Math.abs(lad.stages[1].multiplierVsToday - 3.03) < 0.02);
+  ok("R292 ladder: multipliers monotone non-decreasing", lad.stages.every((s, i) => i === 0 || s.multiplierVsToday >= lad.stages[i - 1].multiplierVsToday));
+  ok("R292 ladder: compounding APR computed positive", (lad.compoundAprPct ?? 0) > 0);
+  const ladZero = yieldLadder({ headEffectiveSp: 0, headAprPct: 17.7 });
+  eq("R292 ladder: zero battery → multipliers 0-guarded", ladZero.stages[0].spPerDay, 0);
+
+  /* SBD routing: dust holds; discount ≥1% routes via book; else hold */
+  eq("R292 sbd: dust inventory holds", sbdRoutingRule({ inventorySbd: 0.72, bookBid: 0.10005, feedSteemSbd: 0.104095 }).verdict, "DUST-HOLD");
+  eq("R292 sbd: 3.9% book discount routes", sbdRoutingRule({ inventorySbd: 50, bookBid: 0.10005, feedSteemSbd: 0.104095 }).verdict, "ROUTE-VIA-BOOK");
+  eq("R292 sbd: book at feed holds", sbdRoutingRule({ inventorySbd: 50, bookBid: 0.104095, feedSteemSbd: 0.104095 }).verdict, "HOLD");
+  eq("R292 sbd: unreadable book → NO-BOOK", sbdRoutingRule({ inventorySbd: 50, bookBid: NaN, feedSteemSbd: 0.104 }).verdict, "NO-BOOK");
+
+  /* think-gate pure-recall exception: zero-amount delegation passes ONLY when armed */
+  const { thinkGate } = await import("./signer.mjs");
+  const recOp = [["delegate_vesting_shares", { delegator: "headcorner", delegatee: "powerspan", vesting_shares: "0.000000 VESTS" }]];
+  const incOp = [["delegate_vesting_shares", { delegator: "headcorner", delegatee: "powerspan", vesting_shares: "100.000000 VESTS" }]];
+  const baseConf = { policy: { allowTransfersOut: false, allowDelegation: false, transferAllowlist: [] } };
+  const armedRecallConf = { policy: { allowTransfersOut: false, allowDelegation: false, allowDelegationRecall: true, transferAllowlist: [] } };
+  const gate = (ops, conf) => thinkGate("headcorner", ops, { source: "selftest", conf: { ...conf, armed: true }, custodyOverride: "master-verified", journal: false });
+  ok("R292 gate: pure recall allowed when armed", gate(recOp, armedRecallConf).verdict === "ALLOW");
+  ok("R292 gate: pure recall blocked when NOT armed", gate(recOp, baseConf).verdict === "REFUSED");
+  ok("R292 gate: exposure-increasing delegation still REFUSED even with recall armed", gate(incOp, armedRecallConf).verdict === "REFUSED");
+  ok("R292 gate: non-delegation ops unaffected by the new bit", gate([["vote", { voter: "headcorner", author: "a", permlink: "p", weight: 1000 }]], armedRecallConf).verdict === "ALLOW");
+
+  /* rankActions on a synthetic deep probe: shell recall ranked execute-now with evidence */
+  const fakeDeep = {
+    accounts: { headcorner: { effectiveSp: 1211.31, delegatedOutSp: 3057.26, vpPct: 57.4, liquidSbd: 0.72 }, a1: { effectiveSp: 571 } },
+    chain: { vestsPerSp: 1612.65, steemSbdFeed: 0.104095, hbdInterestPct: 0 },
+    headcornerDelegations: { outFlows: [{ delegatee: "powerspan", vests: 80820 }, { delegatee: "siq", vests: 48393 }], expiring: [] },
+    pendingScan: { totalPendingUsd: 0, posts: [{}, {}, {}] },
+    routing: { capital: { unclaimedSp: 0.42, unclaimedSbd: 0, unclaimedSteem: 0 }, lanes: { sbdArb: { premiumPct: -1.51, orderBook: { bestBid: 0.10005 } } } },
+  };
+  const ranked = rankActions({ deep: fakeDeep, custodyOk: true, headVpPct: 57.4 });
+  ok("R292 rank: unclaimed → claim-rewards execute-now", ranked.actions.some((a) => a.id === "claim-rewards" && a.class === "execute-now"));
+  ok("R292 rank: powerspan → recall-shell execute-now", ranked.actions.some((a) => a.id === "recall-shell-powerspan" && a.class === "execute-now"));
+  ok("R292 rank: army/community delegations NOT flagged as shells", !ranked.actions.some((a) => /recall-shell-(siq|hive-\d+)/.test(a.id)));
+  ok("R292 rank: VP-FLOOR → pace action with ETA", ranked.actions.some((a) => a.id === "vp-pace-headcorner" && a.evidence?.etaHours > 0));
+  ok("R292 rank: author-reach dormant-lane verdict present", ranked.actions.some((a) => a.id === "author-reach" && a.class === "dormant-lane"));
+  ok("R292 rank: law string present", typeof ROUTER_LAW === "string" && ROUTER_LAW.includes("slots"));
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

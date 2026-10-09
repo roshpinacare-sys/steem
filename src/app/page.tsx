@@ -43,6 +43,7 @@ import { RevenueRailCard } from '@/components/saos/RevenueRailCard'
 import { WatchdogCard } from '@/components/saos/WatchdogCard'
 import { YieldCard } from '@/components/saos/YieldCard'
 import { YieldLeversCard } from '@/components/saos/YieldLeversCard'
+import { CapitalRouterCard } from '@/components/saos/CapitalRouterCard'
 import type { Status, Sovereign } from '@/components/saos/types'
 
 /* T-21d · the cockpit is now a composition: data plumbing (this file, verbatim behavior)
@@ -888,6 +889,7 @@ export default function Home() {
             {renderSection('revenue', (
               <>
                 <RevenueRailCard />
+                <CapitalRouterCard />
                 <YieldLeversCard />
                 <YieldCard />
                 <WatchdogCard />

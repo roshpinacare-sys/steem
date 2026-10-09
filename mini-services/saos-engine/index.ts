@@ -6,7 +6,7 @@
  */
 import { runCycle, cycleRunning, cycleMarker } from "./daily.mjs";
 import { externalParity, internalFeed, accountState, openOrders, measureAll, rpcCall } from "./measure.mjs";
-import { execStatus, credentialState, armedConf, adoptCredentialText, verifyRoles, spoilagePublic, armyCustodyState } from "./signer.mjs";
+import { execStatus, credentialState, armedConf, adoptCredentialText, verifyRoles, spoilagePublic, armyCustodyState, executeAs } from "./signer.mjs";
 import { reviveArmyCustody, ARMY_ROSTER_VAULT } from "./vault-revival.mjs";
 import { reviveWriterIdentity } from "../../scripts/sovereign-selfcustody.mjs";
 import { soldiersPublic } from "./soldiers.mjs";
@@ -37,6 +37,9 @@ import { runWatchdog, watchdogState, runNodeHealth, nodeHealthState } from "./au
  * secondary fleet wallets (operator question #2) — both native, gated. */
 import { runFinanceDigest, financeDigestState } from "./finance-digest.mjs";
 import { runYieldDistribution, yieldState } from "./yield-distributor.mjs";
+/* R292 · CAPITAL ROUTER: profit-maximization + routing matrix + pure-recall
+ * executor (recall-shell only — zero-amount delegation cannot create exposure) */
+import { computeRouterReport, executeRouterActions, routerState } from "./capital-router.mjs";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as childProcess from "node:child_process";
@@ -250,6 +253,21 @@ async function handle(req) {
     if (req.method !== "POST") return json({ ok: false, error: "POST required" }, 405);
     try { return json({ ok: true, at: new Date().toISOString(), yieldRail: await runYieldDistribution({ execute: true }) }); }
     catch (e) { return json({ ok: false, error: String(e?.message ?? e).slice(0, 160) }, 500); }
+  }
+  /* R292 · the capital router rail — GET is the computed matrix (ladder +
+   * ranked actions); POST /capital-run recomputes and executes the pure-recall
+   * execute-now actions through the think gate (single-body law). */
+  if (p === "/capital-route") {
+    return json({ ok: true, at: new Date().toISOString(), router: routerState() });
+  }
+  if (p === "/capital-run") {
+    if (req.method !== "POST") return json({ ok: false, error: "POST required" }, 405);
+    try {
+      const rep = computeRouterReport({ now: new Date().toISOString() });
+      if (rep.verdict !== "ROUTED") return json({ ok: false, router: rep });
+      const ex = await executeRouterActions({ now: new Date().toISOString(), plan: rep, executeAsFn: executeAs, verifyRolesFn: verifyRoles, masterAcct: ACCOUNT });
+      return json({ ok: true, at: new Date().toISOString(), router: rep, executed: ex });
+    } catch (e) { return json({ ok: false, error: String(e?.message ?? e).slice(0, 160) }, 500); }
   }
   if (p === "/live") {
     try {

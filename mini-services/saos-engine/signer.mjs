@@ -137,6 +137,10 @@ export function thinkGate(account, ops, { source = "execute", conf = null, journ
   const pol = {
     allowTransfersOut: c.policy?.allowTransfersOut === true,
     allowDelegation: c.policy?.allowDelegation === true,
+    /* R292 · pure-recall exception: a delegate_vesting_shares op with amount 0
+     * removes an existing delegation — it can NEVER create or raise exposure.
+     * Still requires its own policy bit so arming is a recorded decision. */
+    allowDelegationRecall: c.policy?.allowDelegationRecall === true,
     transferAllowlist: Array.isArray(c.policy?.transferAllowlist) ? c.policy.transferAllowlist : [],
   };
   const custody = custodyOverride ?? custodyOf(account);
@@ -168,9 +172,15 @@ export function thinkGate(account, ops, { source = "execute", conf = null, journ
       const allowed = pol.allowTransfersOut || pol.transferAllowlist.includes(op.to);
       if (!allowed) reasons.push(`transfer→${op.to} (${op.amount ?? "?"}): outbound funds FORBIDDEN by standing policy (allowTransfersOut=false, not in allowlist)`);
     }
-    // 3 · delegation policy
+    // 3 · delegation policy — forbidden by default; the ONLY crack is a
+    // pure recall (amount exactly 0) when allowDelegationRecall is armed:
+    // zero-amount delegation removes exposure and cannot forge exposure.
     if (opName === "delegate_vesting_shares" && !pol.allowDelegation) {
-      reasons.push(`delegate_vesting_shares→${op?.delegatee ?? "?"} (${op?.vesting_shares ?? "?"}): delegation FORBIDDEN by standing policy (allowDelegation=false)`);
+      const amt = parseFloat(String(op?.vesting_shares ?? "").replace(/[^0-9.\-]/g, "")) || 0;
+      const isPureRecall = amt === 0;
+      if (!(isPureRecall && pol.allowDelegationRecall)) {
+        reasons.push(`delegate_vesting_shares→${op?.delegatee ?? "?"} (${op?.vesting_shares ?? "?"}): delegation FORBIDDEN by standing policy (allowDelegation=false${isPureRecall ? "; zero-amount recall also blocked — allowDelegationRecall not armed" : "; only zero-amount recalls may pass when allowDelegationRecall is armed"})`);
+      }
     }
     // 4 · T-91 power-up policy: transfer_to_vesting must be SELF-directed
     // (from=to=account — value never leaves) AND explicitly armed by the
