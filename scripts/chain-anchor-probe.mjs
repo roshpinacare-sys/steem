@@ -7,16 +7,33 @@
 import { execSync } from "node:child_process";
 
 const ACCOUNT = process.env.SAOS_ACCOUNT ?? "headcorner";
-const NODE = process.env.SAOS_NODE ?? "https://api.steemit.com";
+/* R297 · NODE-DIVERSITY LAW: measured live 2026-10-09 18:02Z — a single
+ * public endpoint (api.steemit.com load-balancer) answered the SAME
+ * get_account_history with a stale page, then an error, minutes apart, while
+ * the anchor tx was provably included (get_transaction block 110295906).
+ * The probe now falls back across public nodes per page and times out per
+ * request. Verdict law unchanged: only a tip that IS an ancestor of HEAD
+ * passes; all-nodes-fail still exits 1 (no-anchor, fail-closed, honest). */
+const NODES = (process.env.SAOS_NODE ?? "https://api.steemit.com,https://api.steem.house,https://steemapi.boylikegirl.club")
+  .split(",").map((s) => s.trim()).filter(Boolean);
 const ANCHOR_ID = "saos-git-custody-v1";
 const WINDOW = 25000; // history ops scanned (latest-first, 100-per-page)
 
-const rpc = (method, params) =>
-  fetch(NODE, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }),
-  }).then((r) => r.json());
+const rpc = async (method, params) => {
+  for (const NODE of NODES) {
+    try {
+      const r = await fetch(NODE, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }),
+        signal: AbortSignal.timeout(15000),
+      }).then((x) => x.json());
+      if (r?.error) continue; /* node-side RPC error → next node */
+      return r;
+    } catch { /* next node */ }
+  }
+  return null;
+};
 
 const head = execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
 
