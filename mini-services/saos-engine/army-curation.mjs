@@ -44,11 +44,11 @@ export function armyCuratorPolicy() {
   const base = curatorPolicy();
   return {
     ...base,
-    maxPerDay: 12,         // 12 × ~60% avg weight ≈ 7.2%/day VP burn (curator-law: Σweights/100) — 36% of regen; RC-safe start for small accounts, step-up after a measured day
+    maxPerDay: 20,         // T-36 STEP-UP (measured): 12/day burned 7.2%/day vs 20% regen while soldiers sat at VP 87-89% (t36-rails.json) — regen spilled to the floor. 20 × ~60% = 12%/day < 20% regen; the "step-up after a measured day" this comment promised is now measured & taken
     baseWeightPct: 80,     // heavy early votes — curation share ∝ rshares × timing, not spread
     minWeightPct: 40,
     maxVotesPerCycle: 4,   // spread RC across the day's cycle runs
-    fetchLimit: 30,        // bigger shared candidate pool: 10 accounts × 12 votes/day needs it
+    fetchLimit: 30,        // bigger shared candidate pool: 10 accounts × 20 votes/day needs it (T-36 step-up)
     tags: [...base.tags, "life", "photography"], // +2 measured-active community tags
     note: "R290 structural multiplier: Σ SPᵢ × regen deployed on the same external candidates; excludeAccounts inherited = external-only law; VP floor 35 governs",
   };
