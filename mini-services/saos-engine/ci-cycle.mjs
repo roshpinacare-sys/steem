@@ -32,7 +32,10 @@
  * only a broken gate (selftest handled in workflow) or a hard crash exits 1.
  */
 
-process.env.SAOS_OFFLINE = "1";
+/* T-61 (trace 1a12632b71721ef9): SAOS_ONLINE_CONTENT=1 lets a LOCAL heartbeat
+ * feed the live bridge (the sandbox's own LLM at :3000). Default remains the
+ * CI law — offline, corpus floor — so the cloud behavior is byte-unchanged. */
+if (process.env.SAOS_ONLINE_CONTENT !== "1") process.env.SAOS_OFFLINE = "1";
 process.env.SAOS_CI_SKIP_MASTER = "1";
 
 import * as fs from "node:fs";
@@ -100,6 +103,17 @@ async function main() {
     return { verdict: r.verdict, draftsQueued: r.draftsQueued ?? 0, exposureBlocked: r.exposureBlocked ?? 0, source: r.source ?? null };
   });
 
+  /* T-61 · THE CONTINUOUS POSTING STREAM: one bounded broadcast attempt per
+   * heartbeat (stage → mode → armed → caps → dedupe → signature-verified →
+   * broadcast). Fail-closed everywhere; a refusal is a verdict, never an
+   * error. The ledger (content/sent) travels in the repo so caps + dedupe
+   * hold across machines and across sandbox deaths. */
+  report.steps.post = await stepWrap("post", async () => {
+    const { runOnce } = await import("./social-streamer.mjs");
+    const r = await runOnce();
+    return { verdict: r.verdict, account: r.account ?? null, permlink: r.permlink ?? null, mode: r.mode ?? null, note: r.note ?? null };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -118,6 +132,9 @@ async function main() {
     socialExecuted: report.steps.social?.executed ?? 0,
     content: report.steps.content?.verdict ?? "STEP-FAIL",
     contentSource: report.steps.content?.source ?? null,
+    post: report.steps.post?.verdict ?? "STEP-FAIL",
+    postAccount: report.steps.post?.account ?? null,
+    postPermlink: report.steps.post?.permlink ?? null,
     dex: report.steps.dex?.verdict ?? "STEP-FAIL",
     dexReason: report.steps.dex?.reason ?? null,
   };
