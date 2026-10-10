@@ -51,6 +51,7 @@ const WHITELIST = new Map([
   ["recovery-meta.gitCred", "recovery-meta.json field fragment (R284 writer-custody spec, not a tree file)"],
   ["gitCred.tokenExpiresAt", "recovery-meta.json field fragment (R284 token-expiry, not a tree file)"],
   ["engine.pid", "runtime pid file — written by engine startup (index.ts:315), may be consumed by the live state materializer mid-run; absence on disk is legal (R258, measured)"],
+  ["cycle-run.json", "runtime single-flight marker — created by the hyper-grid cycle START and cleaned by the stale-marker guard (R299-b); absence BETWEEN cycles is the healthy steady state (R302, measured)"],
 ]);
 function resolveToken(tok) {
   const bases = [ROOT, ENGINE, path.join(ENGINE, "state"), path.join(ENGINE, ".."), path.join(ROOT, "scripts"), path.join(ROOT, "docs"), path.join(ROOT, "agent", "vault"), path.join(ROOT, "agent")];
