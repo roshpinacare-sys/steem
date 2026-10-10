@@ -1,21 +1,21 @@
 {
-  "at": "2026-10-10T07:23:52.724Z",
+  "at": "2026-10-10T04:36:22.499Z",
   "custody": "14/14",
   "social": "SOCIAL-IDLE",
   "socialExecuted": 0,
-  "content": "STEP-FAIL",
+  "content": "BRIDGE-DOWN",
   "contentSource": null,
   "dex": "STANDBY",
   "dexReason": "engine-alive",
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-10T07:23:52.724Z",
+    "at": "2026-10-10T04:36:22.499Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 37006,
+        "ms": 37106,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -26,22 +26,25 @@
         "ms": 1,
         "verdict": "STANDBY",
         "reason": "engine-alive",
-        "anchorAgeMs": 863534
+        "anchorAgeMs": 2733351
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 86286,
+        "ms": 28738,
         "verdict": "SOCIAL-IDLE",
         "executed": 0,
         "refused": 0,
-        "due": 15
+        "due": 0
       },
       "content": {
         "name": "content",
-        "ok": false,
-        "ms": 1969,
-        "error": "appendLine is not defined"
+        "ok": true,
+        "ms": 7,
+        "verdict": "BRIDGE-DOWN",
+        "draftsQueued": 0,
+        "exposureBlocked": 0,
+        "source": null
       }
     }
   }
