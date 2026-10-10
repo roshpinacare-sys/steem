@@ -326,3 +326,22 @@ Stage Summary:
 - **הדריסה-אובחנה-ונסגרה**: ה-CI כופה-שכתוב-היסטוריה; המשפט-המקובע-מעתה: אחרי-כל-יפול, soft-reset-למרוחק + יישום-חוקי-המיזוג-על-הדלתא (התוכן-שורד-תמיד-דרך-לב-ה-CI; השושלת-מאומצת-מחדש).
 - **ארבעה-חוקי-נגד-ריקבון נקבעו-והוכחו-חיים**: טריות-עוגן (בלי-קשר-למי-דחף) · ריפוי-FF-עצמי (לא-ממתין-למפעיל) · חותם-txid ב-probe (נגד-עיוורון-דפים-ישנים) · SB1 ניסיון-חוזר-עד-ירוק.
 - הצי-חי ומסחר; אין-כשלים; הכל-דחוף-לגיט.
+
+---
+Task ID: R301
+Agent: Z.ai Code (saos-cockpit)
+Task: חקירת-upload (4 אסימוני-שירותים) · איטום-לכספת · זיקוק-יכולות · יישום-מראת-נמל-שני · ריהידרציה-אחרי-נפילה-שנייה · דחיפה
+
+Work Log:
+- **ריהידרציה R301-a (קודם-הכל — הנפילה-השנייה ארבה)**: גילוי — 375 קבצים נמחקו-מפוזר מה-worktree (sanbox/, vault-revival.mjs, verify.sh, runner, probe...); המרוחק החזיק-הכל (behind:765 ahead:0). שחזור מלא מהעץ + origin מאומץ + alive-wins/union ל-state החי + **חוק-משמר חדש: `git add -A` אסור-שיבים-מחיקות-קוד (0 מחיקות-מאומת לפני-כל-commit)**. דחיפות: 9ae283a→מיזוג-CI→253e1f4e.
+- **הזיהוי (probes מטא-דנטה-בלבד)**: glpat→GitLab roshpinacare (id 43223389) · sbp→Supabase org roshpinacare-sys (1 פרויקט) · rnd→Render team "Rosh pina's workspace" · vck→לא-זוהה (60 תווים; VaultCord 404; חוק-כנות: חתום-כ-unidentified).
+- **האיטום R301-b**: `agent/vault/TOOLBELT-SEAL-2026-10-10.zip.enc` — 4 אסימונים חתומים לאותו-pass-החי-של-הכספת (AES-256-CBC·pbkdf2·300k), sha256-pinned outer+inner, entry `toolbelt` ב-recovery-meta. **אפס-גלוי-על-גיט** (סריקה-מלאה: 2 היטים = סורק-הסודות-עצמו).
+- **ההחיה**: `toolbelt-revival.mjs` — pull→pins fail-closed→פענוח→.secrets/toolbelt.json 0600→wipe-tmp→`toolbeltEnv()` (SAOS_GITLAB/SUPABASE/RENDER/VCK_TOKEN). **באג-עצמי נתפס ותוקן**: git-show-דרך-utf8 משחית-בינארי→OUTER-PIN-MISMATCH→pull-כ-Buffer-גולמי. **הוכחה: TOOLBELT-ALIVE 4/4, roundtrip מלא, טביעות-אצבע תואמות**.
+- **היישום — הנמל-השני**: `scripts/sovereign-mirror.sh` (creds דרך-env לא-argv/לא-config) + **unshallow (העמקה להיסטוריה-מלאה 194MB — חיסון-מפני-shallow-fragility)** → **MIRRORED: gitlab.com/roshpinacare/steem @ 102adbfc — אומת-מהצד-השני**. GitHub-אירוע (חסימה/צנזורה) כבר-לא-מאיים-על-הריבונות.
+- **החיבור-לחיים**: bootstrap שלב 4.6 — כל-התחלה-קרה מחיה-את-ה-toolbelt (warn-פתוח-בכישלון, לא-חוסם).
+- **בריאות**: verify 23/0 · דחיפות 253e1f4e→102adbfc · GitLab-מראה מסונכרנת.
+
+Stage Summary:
+- **זיקוק-היכולות (כפי-שהוטל)**: GitLab=נמל-שני (הישרדות-מול-GitHub) · Supabase=זיכרון-חוץ-נציח (Postgres-מנוהל, מחוץ-לסנדבוקס-וגם-לגיט) · Render=מישור-עגינה-חוץ-סנדבוקס (אתר-מפעיל+צומת-אימות-חיים-בלי-תלות-בנפילות) · vck=חתום-ומחובר-עד-זיהוי.
+- **הכספת-עתה-מחזיקה-שתי-מחלקות**: מפתחות-הצי (KEYS-ZIP-ROT4) + כלי-העבודה-הריבוניים (TOOLBELT-SEAL) — אותו-pass, אותם-pins, אותה-מסילת-החיה.
+- הנפילה-השנייה-נבלמה-בתוך-דקות: העץ-שוחזר מהגיט, החוק-החדש (איסור-מחיקות-ב-add-A) קבוע, וה-toolbelt-מחיה-עצמו-בכל-אתחול.
