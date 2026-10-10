@@ -1,30 +1,31 @@
 {
-  "startedAt": "2026-10-10T04:34:22.583Z",
+  "startedAt": "2026-10-10T04:39:57.003Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 4270,
+      "ms": 5779,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.06101,
-        "sbdUsd": 0.608594,
-        "parity": 0.1002474556108013,
-        "source": "coingecko"
+        "steemUsd": 0.06103,
+        "sbdUsd": 0.5862959728743881,
+        "parity": 0.10409418250102065,
+        "source": "internal-feed-fallback+derived-sbd",
+        "lowConfidence": true
       },
       "feed": 0.10409418250102065,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": -370
+        "bps": 0
       },
-      "steemUsd": 0.06101,
-      "sbdUsd": 0.608594,
+      "steemUsd": 0.06103,
+      "sbdUsd": 0.5862959728743881,
       "inventory": {
         "steem": 4.53,
         "sbd": 0.824,
-        "spOwn": 3412.4756675588164,
+        "spOwn": 3412.4765634688915,
         "rcPct": 90.4
       },
       "ordersOk": true,
@@ -173,16 +174,15 @@
         "histLen": 101,
         "node": "https://api.justyy.com"
       },
-      "summary": "parity 0.1002474556108013 (coingecko) · fills 0 · fuel 0.0064$"
+      "summary": "parity 0.10409418250102065 (internal-feed-fallback+derived-sbd) · fills 0 · fuel 0.0064$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1998,
-      "verdict": "DECISIONS:6",
+      "ms": 1332,
+      "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
-        "parity-drift:monitor",
         "soldiers:grids-live",
         "rewards:claim",
         "rc-health:healthy",
@@ -198,29 +198,29 @@
     "tick": {
       "name": "tick",
       "ok": true,
-      "ms": 1,
-      "runCount": 265,
+      "ms": 0,
+      "runCount": 266,
       "simFills": 23,
       "simFeesMu": 11500,
-      "events": 6
+      "events": 3
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 670,
+      "ms": 652,
       "verdict": "OFFER-READY",
       "asks": 1,
       "bids": 0,
       "flowAsks": 1,
       "flowBids": 0,
-      "staleCount": 5,
-      "skew": -0.086818,
+      "staleCount": 9,
+      "skew": -0.081615,
       "book": {
         "bestAsk": 0.10192640913260625,
         "bestBid": 0.10005,
         "askDepthSteem": 164.05,
         "bidDepthSbd": 2905.13,
-        "at": "2026-10-10T04:34:22.583Z"
+        "at": "2026-10-10T04:39:57.003Z"
       },
       "market": {
         "tradesPerDay": 25,
@@ -240,15 +240,15 @@
       "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 6431,
-      "marketSbdUsd": 0.608594,
-      "impliedSbdUsd": 0.586104,
+      "edgeBps": 7056,
+      "marketSbdUsd": 0.586296,
+      "impliedSbdUsd": 0.586296,
       "marketSourceNote": "external-measured"
     },
     "curate": {
       "name": "curate",
       "ok": false,
-      "ms": 0,
+      "ms": 1,
       "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). Revival (self-service, zero restart): drop the account's CURRENT master-password file as upload/hea"
     },
     "execute": {
@@ -266,7 +266,7 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 5,
+      "ms": 14,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked"
@@ -332,16 +332,16 @@
       "ok": true,
       "ms": 0,
       "verdict": "CADENCE-GATED",
-      "pass": 311,
+      "pass": 1218,
       "fail": 0,
-      "at": "2026-10-10T04:25:24.079Z"
+      "at": "2026-10-10T04:39:12.399Z"
     },
     "economics": {
       "name": "economics",
       "ok": true,
       "ms": 1,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.543941,
+      "totalEstUsdPerDay": 0.544117,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -350,7 +350,7 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "RECRUITED",
       "active": 9,
       "total": 11
@@ -358,7 +358,7 @@
     "report": {
       "name": "report",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "realizedSbd": 0,
       "positionSteem": 0,
       "positionAvgCost": null,
@@ -393,5 +393,5 @@
       "execute"
     ]
   },
-  "finishedAt": "2026-10-10T04:34:29.530Z"
+  "finishedAt": "2026-10-10T04:40:04.783Z"
 }

@@ -66,5 +66,17 @@
     "tokenShaSlice": "c029b0b76b18",
     "sealedAt": "2026-10-08T20:30:05.966Z",
     "note": "R284: the push credential joins the self-reviving custody set. upload/pat.env measured 401 this day; the live remote-url token was sealed instead. Rotation law: re-run `seal` before expiry — minting a NEW GitHub token remains an operator/GitHub-account act, but the transition is one command, not hours of archaeology."
+  },
+  "toolbelt": {
+    "file": "agent/vault/TOOLBELT-SEAL-2026-10-10.zip.enc",
+    "passRef": "keysZipPass (this same meta)",
+    "outerSha256": "8f0978b64f1118fe1e5fe10267fa122f0f722652e99e9786f06a355187840e13",
+    "innerSha256": "8e10f0c4c9e092839c35a1d368826585208f7283e2cf52975b2188c6811602cf",
+    "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> | unzip (toolbelt.json)",
+    "contents": [
+      "toolbelt.json (gitlab+supabase+render+vck sovereign tokens, env-wired)"
+    ],
+    "sealedAt": "2026-10-10T04:48:00Z (R301-b)",
+    "law": "every secret class sealed to the ONE live pass of this meta; zero plaintext secrets tracked; fingerprints-only in logs"
   }
 }
