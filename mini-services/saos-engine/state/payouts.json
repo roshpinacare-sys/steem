@@ -1,82 +1,66 @@
 {
   "day": "2026-10-10",
-  "at": "2026-10-10T00:05:21.431Z",
+  "at": "2026-10-10T04:25:07.585Z",
   "account": "headcorner",
-  "verdict": "MEASURED",
+  "verdict": "MEASURED-PENDING",
   "pending": {
     "steem": 0,
     "sbd": 0,
-    "vests": 0,
-    "any": false
+    "vests": 43.552529,
+    "any": true
   },
   "vp": {
-    "pct": 80.9,
-    "hrsToFull": 22.9,
+    "pct": 75.4,
+    "hrsToFull": 29.5,
     "regenPerSec": 15025229,
     "vests": 6490899.009228,
-    "basis": "voting_manabar at 2026-10-10T00:05:21.431Z"
+    "basis": "voting_manabar at 2026-10-10T04:25:07.585Z"
   },
-  "payout": {
-    "payoutDay": "2026-10-14",
-    "msRemaining": 345278569,
-    "hoursRemaining": 95.9,
-    "daysRemaining": 4,
-    "phase": "pre-payout",
-    "law": "פאייאוט-קיורציה מתיישב ~7 ימים אחרי-ההצבעה — השעון מדוד, לא מונח"
-  },
+  "payout": null,
   "rollup": {
-    "opsCount": 85,
-    "claims": 30,
-    "curationVests": 2205.212409,
+    "opsCount": 0,
+    "claims": 0,
+    "curationVests": 0,
     "authorSbd": 0,
     "authorSteem": 0,
     "authorVests": 0,
-    "windowDays": 2,
-    "oldestTs": "2026-10-07T17:13:03.000Z",
-    "newestTs": "2026-10-09T14:29:09.000Z",
-    "curationSteemPerDay": 0.683767,
-    "authorSbdPerDay": null,
+    "windowDays": null,
+    "oldestTs": null,
+    "newestTs": null,
     "curationUsdPerDay": null,
     "authorUsdPerDay": null,
-    "confidence": "measured",
-    "note": "settled chain rewards MEASURED (0.683767 STEEM/day) — unpriced here, economics prices"
+    "confidence": "blocked",
+    "note": "no settled reward ops in the scanned window yet — the payout clock decides when this flips to measured"
   },
   "scan": {
-    "rewardOps": 85,
-    "rewardApi": "condenser-walk",
-    "rewardCoverage": {
-      "verdict": "SCAN-PARTIAL",
-      "reason": "time-budget",
-      "rows": 3838,
-      "windows": 38,
-      "oldestTsRead": "2026-10-07T16:27:15.000Z",
-      "maxAgeMs": 1209600000
-    },
-    "voteOps": 75,
-    "votesScanned": 75,
-    "voteCoverage": {
-      "verdict": "SCAN-PARTIAL",
-      "reason": "time-budget",
-      "rows": 3737,
-      "windows": 37,
-      "oldestTsRead": "2026-10-07T16:40:33.000Z",
-      "maxAgeMs": 1209600000
-    },
-    "firstVoteDay": "2026-10-07",
-    "unpaidTranches": 75,
-    "unpaidCutoff": "2026-10-03T00:05:21.431Z",
+    "rewardOps": 0,
+    "rewardApi": null,
+    "voteOps": 0,
+    "votesScanned": 0,
+    "firstVoteDay": null,
+    "unpaidTranches": 0,
+    "unpaidCutoff": "2026-10-03T04:25:07.585Z",
     "node": "https://steemapi.boylikegirl.club"
   },
   "law": "מסילת-הקיורציה נשארת מוערכת עד-שהשרשרת משלמת — השעון עוקב אחרי הטרנס-הבלתי-משולם-הבא, לא אחרי הצבעות-עבר שכבר התיישבו",
-  "scanLaw": "R282: אפס-תגמולים עם כיסוי-כושל הוא SCAN-FAILED — לעולם לא 'אין-תגמולים' (האפס-השקרי נמדד חי 2026-10-08)",
   "history": [
     {
-      "day": "2026-10-09",
+      "day": "2026-10-06",
+      "pendingVests": 0,
+      "phase": "paid-window"
+    },
+    {
+      "day": "2026-10-05",
       "pendingVests": 0,
       "phase": "pre-payout"
     },
     {
-      "day": "2026-10-08",
+      "day": "2026-10-04",
+      "pendingVests": 0,
+      "phase": "paid-window"
+    },
+    {
+      "day": "2026-10-02",
       "pendingVests": 0,
       "phase": "pre-payout"
     }
