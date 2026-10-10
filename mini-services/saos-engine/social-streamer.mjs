@@ -72,6 +72,7 @@ const CHAINS = {
 const sha256 = (s) => createHash("sha256").update(String(s)).digest("hex");
 const out = (o) => console.log(JSON.stringify(o, null, 2));
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
+const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); };
 
 function appendSent(row) {
   fs.mkdirSync(path.dirname(SENT), { recursive: true });
@@ -95,6 +96,10 @@ export function stageDrafts() {
   fs.mkdirSync(DRAFTS, { recursive: true });
   let staged = 0, skipped = 0;
   for (const d of queue) {
+    /* R308 · OLD-STOCK VETO ALIGNMENT (army-social R243 law): only LIVE
+     * drafts enter broadcast staging — retired-old-stock / published rows
+     * never reach the signing path through the side door. */
+    if (d?.status && d.status !== "drafted") { skipped += 1; continue; }
     const title = String(d.title ?? "").trim();
     const body = String(d.body ?? "").trim();
     if (!title || !body) continue;
@@ -234,6 +239,19 @@ export async function runOnce({ stagingOnly = false } = {}) {
   const b = await rpcCall("network_broadcast_api.broadcast_transaction", [tx.json], 20000);
   const broadcasted = b.ok;
   appendSent({ ...base, kind: "post", mode: "live", account: pick.acc.name, chain: chainName, permlink, sha8: draft.sha8, txid: broadcasted ? txid : null, verdict: broadcasted ? "BROADCASTED" : "BROADCAST-FAILED", node: b.node ?? null, error: broadcasted ? undefined : String(b.error ?? "").slice(0, 120), ms: Date.now() - t0 });
+  /* R308 · QUEUE-TRUTH SYNC: the work queue reflects reality — the row that
+   * just went live is marked published (title match), so the operator never
+   * sees a "drafted" row that is already on the chain. Fail-soft: the chain
+   * and the sent-ledger remain the anchors of truth. */
+  if (broadcasted) {
+    try {
+      const ops = readJson(OPS_FILE, null);
+      if (ops && Array.isArray(ops.queue)) {
+        const row = ops.queue.find((q) => String(q?.title ?? "").trim() === String(draft.title).trim() && q?.status === "drafted");
+        if (row) { row.status = "published"; row.publishedAt = base.at; row.account = pick.acc.name; row.permlink = permlink; row.txid = txid; writeJson(OPS_FILE, ops); }
+      }
+    } catch { /* fail-soft by law */ }
+  }
   return {
     ...base, ok: broadcasted, verdict: broadcasted ? "BROADCASTED" : "BROADCAST-FAILED",
     account: pick.acc.name, permlink, txid: broadcasted ? txid : null, node: b.node ?? null,

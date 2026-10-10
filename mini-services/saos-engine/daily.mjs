@@ -35,6 +35,7 @@ import { postDailyReport } from "./promo.mjs";
 import { computeRouterReport, executeRouterActions } from "./capital-router.mjs";
 import { runCurator } from "./curator.mjs";
 import { runArmyCuration } from "./army-curation.mjs";
+import { runOnce as runStreamer } from "./social-streamer.mjs"; /* R308: THE POSTING STREAM — wired at last */
 import { runTagRoi } from "./tag-roi.mjs";
 import { runLearning } from "./learning.mjs";
 import { runDiscovery } from "./discovery.mjs";
@@ -855,6 +856,18 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.social = await stepWrap("social", async () => {
     const out = await runSocial({ now });
     return { verdict: out.verdict, executed: out.executed ?? 0, refused: out.refused ?? 0, due: out.due ?? 0, ms: out.ms ?? null };
+  });
+
+  /* R308 · THE POSTING STREAM, WIRED (operator order: release the rails to
+   * full activity — R287 built the bounded broadcast path and no loop ever
+   * called it: BROADCAST-READY sat staged while the operator saw no posts).
+   * The gate order is UNCHANGED (mode → armed → kill-switch → daily cap →
+   * per-account gap → dedupe → live-authority sig-verify); caps bind both
+   * modes; the chain is the anchor, the sent-ledger is the trace.
+   * Fail-isolated like every rail. */
+  report.steps.streamer = await stepWrap("streamer", async () => {
+    const out = await runStreamer({ now: now ?? undefined });
+    return { verdict: out.verdict, mode: out.mode ?? null, account: out.account ?? null, txid: out.txid ?? null, permlink: out.permlink ?? null, staged: out.stage?.staged ?? null, drafts: out.stage?.totalInQueue ?? null, ms: out.ms ?? null };
   });
 
   /* R254 · THE ORGANIC WATCH (wired at last — it existed since R243 but no
