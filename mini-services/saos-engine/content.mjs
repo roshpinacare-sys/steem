@@ -23,6 +23,7 @@ import { readCorpus } from "./intel-pack.mjs";
 import { illustrateDraft } from "./illustrate.mjs";
 import { PERSONAS, PERSONA_IDS, assignPersonas, personaBrief, personaOf } from "./personas.mjs";
 import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
+import { broadcastTitles } from "./social-streamer.mjs"; /* R311: the FULL anti-twin shield — every title that ever breathed on-chain blocks its twins */
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -102,7 +103,13 @@ export function voiceOf(account) { return VOICES[account] ?? "clear, friendly, c
 /* ── R240 · TITLE DEDUPE (pure) — kill the duplicate-topic bug ─────────────── */
 const STOP = new Set(["a", "an", "the", "of", "on", "in", "to", "for", "and", "or", "is", "are", "your", "you", "how", "what", "why", "with", "that", "this", "it", "its", "at", "from", "my", "we", "our"]);
 export function titleTokens(t) {
-  return new Set(String(t ?? "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w)));
+  /* R311 · THE STEM (measured escape: "Understanding Blockchain Curation
+   * Rewards" vs "Understanding Steem's Curation Reward System" scored 0.5
+   * (below the 0.55 gate) because reward/rewards didn't match — the pair
+   * PUBLISHED as near-twins. Stripping the plural 's' scores 0.75: caught. */
+  return new Set(String(t ?? "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/)
+    .map((w) => (w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w))
+    .filter((w) => w.length > 2 && !STOP.has(w)));
 }
 export function titleSimilarity(a, b) {
   const A = titleTokens(a), B = titleTokens(b);
@@ -319,7 +326,7 @@ export function sanitizeDraft(d) {
 }
 
 /** pure: the already-published titles from the queue (dedupe memory) */
-export function recentPublishedTitles(queue, n = 12) {
+export function recentPublishedTitles(queue, n = 60) {
   return (Array.isArray(queue) ? queue : [])
     .filter((d) => d?.status === "published" && d?.title)
     .map((d) => String(d.title))
@@ -357,7 +364,12 @@ export async function runContent({ now = new Date().toISOString(), force = false
   const personas = PERSONA_IDS
     .map((id) => ({ account: id, brief: personaBrief(id, lifetimeOf(id)), owns: PERSONAS[id].owns }))
     .filter((p) => p.brief);
-  const recentTitles = recentPublishedTitles(prev?.queue, 12);
+  const recentTitles = [
+    ...new Set([
+      ...recentPublishedTitles(prev?.queue, 60),
+      ...broadcastTitles(80), /* R311 · FULL-PUBLISHED SHIELD: the sent ledger is the truth of what already aired; the old 12-title window let corpus twins through */
+    ]),
+  ].slice(0, 140);
   /* R299 · THE SPENT-TITLES MEMORY (measured 96 selfSim refusals/24h): the
    * queue is bounded (30) and rotates, but the CORPUS is static — titles that
    * already published or were refused leave the queue and the floor re-served

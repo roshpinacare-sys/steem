@@ -320,6 +320,21 @@ export async function runOnce({ stagingOnly = false } = {}) {
   };
 }
 
+/* R311 · BROADCAST TITLES (the anti-twin memory, one-body): every title that
+ * ever breathed on-chain (BROADCASTED rows, resolved from the content-
+ * addressed drafts). The content dedupe feeds on this — the old 12-title
+ * window let corpus twins through (measured live: two near-identical
+ * "Curation Reward" posts both aired). Bounded by `n`. */
+export function broadcastTitles(n = 80) {
+  return readSent().filter((r) => r.verdict === "BROADCASTED")
+    .sort((a, b) => String(a.at).localeCompare(String(b.at)))
+    .slice(-n)
+    .map((r) => {
+      try { return readJson(path.join(DRAFTS, `${r.sha8}.json`), null)?.title ?? null; } catch { return null; }
+    })
+    .filter(Boolean);
+}
+
 /* ── R310 · THE LIVE STREAM (the missing sight-channel) ───────────────────
  * The operator's measured complaint: "אני לא רואה פוסטים" — posts breathe
  * on-chain and NO surface showed them (the cockpit had no posts panel at
