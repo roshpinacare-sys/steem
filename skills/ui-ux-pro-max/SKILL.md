@@ -25,7 +25,7 @@ Always be concrete: name components, states, spacing, typography, and interactio
 ## 3) Use Bundled Assets
 This skill bundles data you can cite for inspiration/standards.
 
-- **Design intelligence data**: Read from `skills/ui-ux-pro-max/assets/data/` when you need palettes, patterns, or UI/UX heuristics.
+- **Design intelligence data**: Read from `skills/ui-ux-pro-max/data/` when you need palettes, patterns, or UI/UX heuristics.
 - **Upstream reference**: If you need more phrasing/examples, consult `skills/ui-ux-pro-max/references/upstream-skill-content.md`.
 
 ## 4) Optional Script (Design System Generator)
