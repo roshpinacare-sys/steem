@@ -34,6 +34,11 @@ const BRIDGE = process.env.SAOS_AI_BRIDGE || "http://127.0.0.1:3000";
  * atomic-write style, identical to army-social.mjs. */
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); };
+/* R308 FIX: appendLine was lost in the same pre-R243 refactor that dropped
+ * readJson/writeJson — the variety-dropped / thin-purged / sanitize-rejected
+ * event rows could never fire (a crash inside runContent, silently eaten by
+ * the step-wrap). Restored, identical to army-social.mjs. */
+const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
 /* R240: 4h → 2h — 11 publishers × ≤1 post/day need a deeper queue, and the
  * dedupe gate now makes a bigger queue SAFE (junk can no longer slip in as
  * "the only option"). */
@@ -137,7 +142,7 @@ const EXPOSURE_LAW = [
   "no financial advice, no profit promises, no price targets",
   "no fabricated personal identities: no invented family members, no named real places as personal history; write as a general human observer",
   "no AI telltales: never open with 'In today's world', never close with 'In conclusion'",
-  "NEVER use em dashes or en dashes (— or –): rewrite with commas, colons, or parentheses instead",
+  "NEVER use em dashes or en dashes (— or –), double quotes, or colons ANYWHERE — the symbol law (R283 operator order) rewrites them (dashes to comma pauses, quotes dropped, colons to periods): write clean from the start with periods, commas, and parentheses",
   "professional developer slang is welcome in moderation: ship it, under the hood, edge case, back-of-envelope math, debug, iterate, close the loop, race condition, the happy path, tech debt — used naturally, never forced",
   "supportive community tone — teach, ask, answer; public knowledge only",
   "SEO: concrete curiosity title, 3-5 topical tags, first paragraph must stand alone",
@@ -148,7 +153,7 @@ const EXPOSURE_LAW = [
  * לשפר עוד". The bridge gets it in the payload; the pure normalizer
  * ENFORCES it in code (see normalizeDashes + sanitizeDraft). */
 export const STYLE_LAW = {
-  dashes: "never emit em/en dashes (—, –); use commas, colons, or parentheses",
+  dashes: "never emit em/en dashes (—, –), double quotes, or colons: write with periods, commas, and parentheses (the symbol law rewrites any stragglers)",
   slang: [
     "ship it", "under the hood", "edge case", "back-of-envelope math", "debug",
     "iterate", "close the loop", "race condition", "the happy path", "tech debt",
@@ -417,8 +422,29 @@ export async function runContent({ now = new Date().toISOString(), force = false
   }
   /* R255: personas assigned at the gate — explicit draft.persona wins, else
    * topic-ownership round-robin; no voice writes twice in one batch. */
-  const sanitized = assignPersonas((raw?.drafts ?? []).map(sanitizeDraft).filter(Boolean));
-  const exposureBlocked = (raw?.drafts ?? []).length - sanitized.length;
+  const rawDrafts = raw?.drafts ?? [];
+  /* R308 · REJECTION DIAGNOSIS LAW: a blocked draft is never blind again —
+   * every sanitize refusal is reason-coded into events (the exposure gate
+   * stays fail-closed; only the silence dies). */
+  const sanitizeReasons = {};
+  const sanitized = assignPersonas(rawDrafts.map((d) => {
+    const ok = sanitizeDraft(d);
+    if (!ok) {
+      const t = enforceSymbolLaw(String(d?.title ?? ""));
+      const b = enforceSymbolLaw(String(d?.body ?? ""));
+      const r = t === null || b === null ? "symbol-law"
+        : t.length < 12 || wordCount(b) < MIN_POST_WORDS ? "thin"
+        : (Array.isArray(d?.tags) ? d.tags.filter(Boolean) : []).length < 2 ? "tags"
+        : "banned-or-generic";
+      sanitizeReasons[r] = (sanitizeReasons[r] ?? 0) + 1;
+      return null;
+    }
+    return ok;
+  }).filter(Boolean));
+  const exposureBlocked = rawDrafts.length - sanitized.length;
+  if (exposureBlocked > 0) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "content.sanitize-rejected", at: now, blocked: exposureBlocked, reasons: sanitizeReasons });
+  }
   const { kept, dropped } = dedupeTitles(sanitized, [...new Set([...recentTitles, ...spentTitles])]);
   /* honest count: how many of the drops were caused by the spent memory
    * (a re-served spent title blocked BEFORE it could waste a spamgate run) */
@@ -458,7 +484,19 @@ export async function runContent({ now = new Date().toISOString(), force = false
   if (thinPurged > 0) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "content.thin-purged", at: now, dropped: thinPurged });
   }
-  const carriedLive = carried.filter((d) => d?.status !== "drafted" || wordCount(d?.body ?? "") >= MIN_POST_WORDS);
+  /* R308 · BOUNDED-QUEUE LAW: terminal rows leave the work queue —
+   * retired-old-stock drops at once (history lives in the git ledger, not
+   * the live queue the operator reads); published rows stay as the opening-
+   * variety memory (bounded by the 30 cap). */
+  const queueExpired = carried.filter((d) => d?.status === "retired-old-stock").length;
+  if (queueExpired > 0) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "content.queue-expired", at: now, dropped: queueExpired });
+  }
+  const carriedLive = carried.filter((d) => {
+    if (d?.status === "drafted") return wordCount(d?.body ?? "") >= MIN_POST_WORDS; /* THIN-PURGE (R303) */
+    if (d?.status === "retired-old-stock") return false; /* BOUNDED-QUEUE (R308) */
+    return true; /* published rows: opening-variety memory */
+  });
   const queue = [
     ...keptFinal.map((d, i) => ({ ...d, id: `d${Date.parse(now)}-${i}`, status: "drafted", draftedAt: now })),
     ...carriedLive,
