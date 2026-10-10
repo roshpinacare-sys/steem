@@ -29,7 +29,14 @@ case "${1:-status}" in
     if running; then echo "autonomy-runner: התחיל (pid $(cat "$PIDF"), כל ${INTERVAL}ש)"; exit 0; else echo "autonomy-runner: נכשל-העלאה — ראה $LOG"; exit 1; fi
     ;;
   stop)
-    if running; then kill "$(cat "$PIDF")" 2>/dev/null; rm -f "$PIDF"; echo "autonomy-runner: נעצר"; else echo "autonomy-runner: לא-רץ"; fi
+    if running; then kill "$(cat "$PIDF")" 2>/dev/null; rm -f "$PIDF"; fi
+    # R303 · ORPHAN-TICK LAW (measured 04:40→05:50 blackout: the daemon was
+    # stopped but its in-flight _tick survived as an orphan STILL HOLDING the
+    # flock — every future tick silently skipped (flock -n) and the autonomy
+    # queue died with zero alerts for over an hour). A tick never outlives
+    # its daemon: stop reaps running ticks so the lock dies with them.
+    pkill -f "autonomy-runner.sh _tick" 2>/dev/null || true
+    echo "autonomy-runner: נעצר"
     ;;
   status)
     if running; then echo "autonomy-runner: רץ (pid $(cat "$PIDF"))"; exit 0; else echo "autonomy-runner: לא-רץ"; exit 1; fi
@@ -38,11 +45,22 @@ case "${1:-status}" in
   daemon)
     SESSION=$(now)
     echo "$SESSION" > "$SB/state/autonomy-session.id"
-    while true; do bash "$0" _tick >/dev/null 2>&1 || true; sleep "$INTERVAL"; done
+    # R303 · BOUNDED-TICK LAW: a tick is bounded at 14min (+30s SIGKILL grace).
+    # Measured disease: one hung task (mirror push to a blocked IP) froze the
+    # tick holding the flock; with `flock -n || exit 0` every later tick
+    # silently skipped — the queue died with zero alerts. Now a hang can only
+    # cost one cycle: the lock dies with the timed-out tick and the loop
+    # ALWAYS continues, with the bounded-exit recorded honestly in the log.
+    while true; do
+      timeout --kill-after=30 840 bash "$0" _tick >>"$LOG" 2>&1 \
+        || log "tick: bounded-exit rc=$? (hang or error — loop continues)"
+      sleep "$INTERVAL"
+    done
     ;;
   _tick)
     (
       flock -n 9 || exit 0
+      log "tick: מתחיל"  # R303 observability: a tick-start with no tick-done = a hung tick (provable from the log)
       # מגן-מיזוג: במהלך-מיזוג בלתי-פתור — לא מריצים-כלום (עצור-ותעד)
       if [ -f .git/MERGE_HEAD ]; then log "guard: מיזוג בעיצומו — tick נמנע"; exit 0; fi
       # מגן-קונפליקט: סימנים ב-sanbox — לא מריצים
