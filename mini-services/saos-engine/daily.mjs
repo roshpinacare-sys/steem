@@ -867,7 +867,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
    * Fail-isolated like every rail. */
   report.steps.streamer = await stepWrap("streamer", async () => {
     const out = await runStreamer({ now: now ?? undefined });
-    return { verdict: out.verdict, mode: out.mode ?? null, account: out.account ?? null, txid: out.txid ?? null, permlink: out.permlink ?? null, staged: out.stage?.staged ?? null, drafts: out.stage?.totalInQueue ?? null, ms: out.ms ?? null };
+    return { verdict: out.verdict, mode: out.mode ?? null, account: out.account ?? null, txid: out.txid ?? null, permlink: out.permlink ?? null, staged: out.stage?.staged ?? null, stagedRevenue: out.stage?.stagedRevenue ?? null, revenuePublished: out.stage?.revenuePublished ?? null, drafts: out.stage?.totalInQueue ?? null, ms: out.ms ?? null };
   });
 
   /* R254 · THE ORGANIC WATCH (wired at last — it existed since R243 but no
