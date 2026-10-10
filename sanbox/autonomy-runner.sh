@@ -59,7 +59,7 @@ case "${1:-status}" in
     ;;
   _tick)
     (
-      flock -n 9 || exit 0
+      flock -n 9 || { log "tick: נעילה-תפוסה — דילוג (חוקיות-מטוס-אחד) — בדוק מחזיקי-fd אם זה חוזר"; exit 0; }
       log "tick: מתחיל"  # R303 observability: a tick-start with no tick-done = a hung tick (provable from the log)
       # מגן-מיזוג: במהלך-מיזוג בלתי-פתור — לא מריצים-כלום (עצור-ותעד)
       if [ -f .git/MERGE_HEAD ]; then log "guard: מיזוג בעיצומו — tick נמנע"; exit 0; fi
@@ -72,7 +72,14 @@ case "${1:-status}" in
       run_task() { # $1=id $2=cmd $3=expect
         local id="$1" cmd="$2" expect="$3" t0 t1 rc out
         t0=$(date +%s)
-        out=$(bash -c "$cmd" 2>&1); rc=$?
+        # R303 · LOCK-FD-INHERITANCE LAW (the deep root of the 04:40→05:50
+        # autonomy blackout, measured live): the tick holds fd 9 (the flock);
+        # `bash -c "$cmd"` children INHERIT it, and any long-lived child they
+        # spawn (bootstrap, commit-loop, operator-site) keeps the lock alive
+        # FOREVER — even after the tick dies. Every future tick then silently
+        # skips (flock -n) with zero alerts. Task children get fd 9 closed:
+        # the lock lives and dies with the tick process alone.
+        out=$(bash -c "$cmd" 9>&- 2>&1); rc=$?
         t1=$(date +%s)
         MS=$(( (t1 - t0) * 1000 ))
         local ok="false"
