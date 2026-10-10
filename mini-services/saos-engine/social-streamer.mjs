@@ -31,13 +31,16 @@
  * Cross-fleet law (unchanged, the house merge doctrine): JSON=live-wins,
  * JSONL=union-ts-ordered; the chain is the anchor of truth, the ledger is trace.
  *
- * CAPS (enforced in BOTH modes so dry-run telemetry stays honest):
- *   T-62 release (trace 1a1268338e36d0ed): the old fleet-wide 4/day cap was a
- *   FALSE self-limit — measured live choking the stream (DAILY-CAP verdicts
- *   while most custody accounts sat idle). The REAL external law is anti-spam
- *   pacing per account: ≤4 posts/day/account, ≥90min spacing (doctrine),
- *   sha8 dedupe. Fleet ceiling = 16/day across all custody-live accounts.
- *   minGapMinutesPerAccount = 90 (was 180; doctrine L-26 boss value).
+ * CAPS (enforced in BOTH modes so dry-run telemetry stays honest; T-62 UNION
+ * release — the false caps died twice, locally AND in the cloud R309/R310):
+ *   the old 4/day-fleet cap was FALSE (measured: DAILY-CAP verdicts while
+ *   custody accounts sat idle); the old 180min gap was FALSE; the cloud's
+ *   12/day was also surpassed by the same order. One law now: fleet ceiling
+ *   16/day (14 custody accounts + headroom), per-account hard ceiling ≤4/day
+ *   (anti-spam doctrine), 45-minute per-account gap = 9× the chain's real
+ *   5-minute posting window. Rotation picks the least-used account; dedupe,
+ *   sig-verify, custody and kill-switch are UNTOUCHED. Every cap carries its
+ *   measurement line — a cap without a measurement is value theft (R309).
  *   dedupe: a draft sha (title+body) that appears ANYWHERE in the sent ledger
  *   is never signed again — resubmission cannot double-post.
  *
@@ -66,11 +69,14 @@ const PAUSE_FILE = path.join(STATE, "social-pause.json");
 const ARMED_FILE = path.join(ROOT, ".secrets", "social-armed.json");
 const KEY_CACHE = path.join(ROOT, ".secrets", "army-keys.json");
 const OPS_FILE = path.join(STATE, "content-ops.json");
+const REV_STATE = path.join(STATE, "revenue-staging.json");
 
-/* T-62 release: fleet ceiling 16/day (was false 4) + per-account gap 90min (was false 180).
- * Real external bounds kept: ≤4/day/account, ≥90min spacing, sha8 dedupe, sig gate. */
-const MAX_POSTS_PER_DAY = 16;
-const MIN_GAP_MIN_PER_ACCOUNT = 90;
+/* T-62 UNION release (local T-62 + cloud R309/R310 — one law, dual evidence):
+ * fleet ceiling 16/day (superset of cloud 14), per-account ≤4/day hard
+ * ceiling, 45min gap (9× chain's real 5-min window). Real external bounds
+ * kept: sha8 dedupe, sig gate, custody, kill-switch. */
+export const MAX_POSTS_PER_DAY = 16;
+export const MIN_GAP_MIN_PER_ACCOUNT = 45;
 const CHAINS = {
   steem: { chainId: STEEM_CHAIN_ID, parentPermlink: "steem" },
   hive: { chainId: HIVE_CHAIN_ID, parentPermlink: "hive-101100" }, /* node list must be wired before first use */
@@ -118,7 +124,45 @@ export function stageDrafts() {
     fs.renameSync(tmp, file); /* atomic: rename is the commit point (R235 law) */
     staged += 1;
   }
-  return { staged, skipped, totalInQueue: queue.length };
+  /* R309 · THE REVENUE INGEST (the last reader-less rail, same disease R308
+   * cured for the streamer): the compiler stages BROADCAST-READY packages
+   * (scrubbed, schema-passed, custody-gated GREEN) and NO loop ever consumed
+   * them — ready posts sat in the buffer forever while the operator saw no
+   * posts. The custody-gated broadcaster now ingests steem-chain packages
+   * through the SAME gates (mode → armed → kill-switch → caps → gap → dedupe
+   * → sig-verify). The compiler itself still never broadcasts; the law stands.
+   * Double-post is impossible by construction: content-addressed draft files
+   * + the BROADCASTED sha ledger. */
+  let stagedRevenue = 0, revenuePublished = 0;
+  const rev = readJson(REV_STATE, null);
+  if (rev && Array.isArray(rev.packages)) {
+    const liveShas = new Set(readSent().filter((r) => r.verdict === "BROADCASTED").map((r) => r.sha8));
+    let dirty = false;
+    for (const p of rev.packages) {
+      if (p?.state !== "BROADCAST-READY" || p?.chain !== "steem") continue;
+      const title = String(p.title ?? "").trim();
+      const body = String(p.body ?? "").trim();
+      if (!title || !body) continue;
+      const sha = sha256(title + "\n" + body);
+      if (liveShas.has(sha.slice(0, 8))) {
+        /* already on chain — sync the buffer to truth (fail-soft; the ledger
+         * is the anchor, this marker is only what the operator reads) */
+        if (p.state !== "PUBLISHED") { p.state = "PUBLISHED"; p.publishedSyncedAt = new Date().toISOString(); dirty = true; }
+        revenuePublished += 1;
+        continue;
+      }
+      const file = path.join(DRAFTS, `${sha.slice(0, 8)}.json`);
+      if (fs.existsSync(file)) continue;
+      const rtmp = `${file}.${process.pid}.tmp`;
+      fs.writeFileSync(rtmp, JSON.stringify({ stagedAt: new Date().toISOString(), sha256: sha, sha8: sha.slice(0, 8), title, body, tags: Array.isArray(p.tags) ? p.tags : [], source: "revenue-digest" }, null, 2));
+      fs.renameSync(rtmp, file);
+      stagedRevenue += 1;
+    }
+    if (dirty) {
+      try { const st = `${REV_STATE}.${process.pid}.tmp`; fs.writeFileSync(st, JSON.stringify(rev, null, 2)); fs.renameSync(st, REV_STATE); } catch { /* fail-soft by law */ }
+    }
+  }
+  return { staged, skipped, totalInQueue: queue.length, stagedRevenue, revenuePublished };
 }
 
 function slugify(title) {
@@ -258,12 +302,63 @@ export async function runOnce({ stagingOnly = false } = {}) {
         if (row) { row.status = "published"; row.publishedAt = base.at; row.account = pick.acc.name; row.permlink = permlink; row.txid = txid; writeJson(OPS_FILE, ops); }
       }
     } catch { /* fail-soft by law */ }
+    /* R309 · REVENUE-TRUTH SYNC: a digest that just went live is marked
+     * PUBLISHED in the staging buffer with its chain proof — the operator
+     * never sees a READY package that already breathes on the chain. */
+    try {
+      const rev = readJson(REV_STATE, null);
+      if (rev && Array.isArray(rev.packages)) {
+        const prow = rev.packages.find((p) => p?.state === "BROADCAST-READY" && String(p?.title ?? "").trim() === String(draft.title).trim());
+        if (prow) { prow.state = "PUBLISHED"; prow.publishedAt = base.at; prow.account = pick.acc.name; prow.permlink = permlink; prow.txid = txid; const st = `${REV_STATE}.${process.pid}.tmp`; fs.writeFileSync(st, JSON.stringify(rev, null, 2)); fs.renameSync(st, REV_STATE); }
+      }
+    } catch { /* fail-soft by law */ }
   }
   return {
     ...base, ok: broadcasted, verdict: broadcasted ? "BROADCASTED" : "BROADCAST-FAILED",
     account: pick.acc.name, permlink, txid: broadcasted ? txid : null, node: b.node ?? null,
     error: broadcasted ? undefined : String(b.error ?? "").slice(0, 120), stage,
   };
+}
+
+/* R311 · BROADCAST TITLES (the anti-twin memory, one-body): every title that
+ * ever breathed on-chain (BROADCASTED rows, resolved from the content-
+ * addressed drafts). The content dedupe feeds on this — the old 12-title
+ * window let corpus twins through (measured live: two near-identical
+ * "Curation Reward" posts both aired). Bounded by `n`. */
+export function broadcastTitles(n = 80) {
+  return readSent().filter((r) => r.verdict === "BROADCASTED")
+    .sort((a, b) => String(a.at).localeCompare(String(b.at)))
+    .slice(-n)
+    .map((r) => {
+      try { return readJson(path.join(DRAFTS, `${r.sha8}.json`), null)?.title ?? null; } catch { return null; }
+    })
+    .filter(Boolean);
+}
+
+/* ── R310 · THE LIVE STREAM (the missing sight-channel) ───────────────────
+ * The operator's measured complaint: "אני לא רואה פוסטים" — posts breathe
+ * on-chain and NO surface showed them (the cockpit had no posts panel at
+ * all). One-body law: the ENGINE serves the stream itself — broadcast rows
+ * from the sent ledger, titles resolved from the content-addressed drafts,
+ * steemit links, today count vs cap, and the queue/revenue runway. */
+export function streamState() {
+  const live = readSent().filter((r) => r.verdict === "BROADCASTED")
+    .sort((a, b) => String(a.at).localeCompare(String(b.at)));
+  const posts = live.slice(-12).reverse().map((r) => {
+    let title = null;
+    try { title = readJson(path.join(DRAFTS, `${r.sha8}.json`), null)?.title ?? null; } catch { /* missing draft file: the permlink still tells the story */ }
+    return {
+      at: r.at ?? null, account: r.account ?? null, permlink: r.permlink ?? null, txid: r.txid ?? null, title,
+      url: r.account && r.permlink ? `https://steemit.com/@${r.account}/${r.permlink}` : null,
+    };
+  });
+  const dayStart = new Date(); dayStart.setUTCHours(0, 0, 0, 0);
+  const todayCount = live.filter((r) => r.at && new Date(r.at) >= dayStart).length;
+  const ops = readJson(OPS_FILE, null);
+  const runwayDrafts = (Array.isArray(ops?.queue) ? ops.queue : []).filter((d) => d?.status === "drafted").length;
+  let readyRevenue = 0;
+  try { readyRevenue = (readJson(REV_STATE, null)?.packages ?? []).filter((p) => p?.state === "BROADCAST-READY").length; } catch { /* fail-soft */ }
+  return { posts, todayCount, cap: MAX_POSTS_PER_DAY, gapMin: MIN_GAP_MIN_PER_ACCOUNT, runwayDrafts, readyRevenue };
 }
 
 /* ── CLI ────────────────────────────────────────────────────────────────── */

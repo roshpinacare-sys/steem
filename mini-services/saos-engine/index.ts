@@ -22,6 +22,7 @@ import { fleetState } from "./fleet.mjs";
 import { startHyperGrid, hyperState } from "./hypergrid.mjs";
 import { webintelState } from "./webintel.mjs";
 import { contentState } from "./content.mjs";
+import { streamState } from "./social-streamer.mjs"; /* R310: the live posts stream (one-body: the engine computes, the cockpit shows) */
 import { personasPublic } from "./personas.mjs";
 import { bridgeGuardState } from "./bridge-guard.mjs";
 import { rcTankState } from "./rctank.mjs";
@@ -142,6 +143,8 @@ async function handle(req) {
       /* T-22 standing teams + the measured scaling curve */
       webintel: webintelState(),
       content: contentState(),
+      /* R310 · THE LIVE STREAM: posts on-chain, titles, steemit links, cap/runway — the operator's sight-channel */
+      stream: streamState(),
       rcTank: rcTankState(),
       /* T-23 · the payout instrument (estimated→measured converter) + the
        * weave handshake with the second signer (the one-body contract) */

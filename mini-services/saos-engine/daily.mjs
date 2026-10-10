@@ -866,8 +866,22 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
    * modes; the chain is the anchor, the sent-ledger is the trace.
    * Fail-isolated like every rail. */
   report.steps.streamer = await stepWrap("streamer", async () => {
-    const out = await runStreamer({ now: now ?? undefined });
-    return { verdict: out.verdict, mode: out.mode ?? null, account: out.account ?? null, txid: out.txid ?? null, permlink: out.permlink ?? null, staged: out.stage?.staged ?? null, drafts: out.stage?.totalInQueue ?? null, ms: out.ms ?? null };
+    /* R310 · THE PER-CYCLE BURST (engineering: the cycle fires every few
+     * minutes; ONE broadcast per cycle left the released 14/day cap mostly
+     * unspent while fat drafts piled up — artificial quiet. Up to 3
+     * broadcasts per cycle now, EVERY one through the FULL gate stack —
+     * mode → armed → kill-switch → daily cap → per-account gap → dedupe →
+     * sig-verify still bind per post; the burst only stops at the first
+     * non-BROADCASTED verdict). */
+    const outs = [];
+    for (let i = 0; i < 3; i++) {
+      const o = await runStreamer({ now: now ?? undefined });
+      outs.push(o);
+      if (o?.verdict !== "BROADCASTED") break;
+    }
+    const last = outs[outs.length - 1] ?? {};
+    const broadcasts = outs.filter((o) => o?.verdict === "BROADCASTED").length;
+    return { verdict: last?.verdict ?? null, mode: last?.mode ?? null, account: last?.account ?? null, txid: last?.txid ?? null, permlink: last?.permlink ?? null, broadcasts, txids: outs.filter((o) => o?.txid).map((o) => String(o.txid).slice(0, 12)), staged: last?.stage?.staged ?? null, stagedRevenue: last?.stage?.stagedRevenue ?? null, revenuePublished: last?.stage?.revenuePublished ?? null, drafts: last?.stage?.totalInQueue ?? null, ms: last?.ms ?? null };
   });
 
   /* R254 · THE ORGANIC WATCH (wired at last — it existed since R243 but no

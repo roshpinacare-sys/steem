@@ -443,7 +443,12 @@ export function defaultArmedConf() {
     promo: { armed: true, perDay: 1, tags: ["steem", "defi", "marketmaking", "saos"] },
     // T-13: the measured fuel rail — VP put to work (posting key only, vote op
     // can never move funds). The operator ordered it implemented and running.
-    curate: { enabled: true, maxPerDay: 10, baseWeightPct: 50, minWeightPct: 20, minVpEffPct: 60 },
+    // R311 ALIGNMENT: these values now mirror curatorPolicy() (R289 measured
+    // yield-tune). The old embedded 10/60 (T-13-era) persisted into
+    // exec-armed.json on first write and OVERRODE the measured 30/35 forever —
+    // two policy layers disagreeing, the stale one winning: exactly the
+    // "limitations without a reason" disease. One source of truth per number.
+    curate: { enabled: true, maxPerDay: 30, baseWeightPct: 70, minWeightPct: 35, minVpEffPct: 35 },
     // T-19b HYPER-GRID: the measured volume layer (rc-probe economics:
     // equilibrium ≈32k ops/day at current SP; cap = the measured equilibrium,
     // not an arbitrary number). Governor + RC-floor + id-partition inside.

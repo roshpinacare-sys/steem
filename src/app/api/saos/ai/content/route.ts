@@ -110,6 +110,12 @@ export async function POST(req: Request) {
           { role: "user", content: user },
         ],
         thinking: { type: "disabled" },
+        /* R309 · THE TOKEN BUDGET MATCHES THE ASK (measured 15:2xZ: both
+         * chain candidates returned "invalid" — parseable JSON, thin bodies —
+         * because the SDK's implicit output cap made 4×450-700-word bodies
+         * physically impossible; the model compressed to fit. 8192 tokens
+         * fits 4 full drafts with room for the JSON envelope). */
+        max_tokens: 8192,
       }).then((completion: unknown) => {
         const raw = (completion as { choices?: { message?: { content?: string } }[] })?.choices?.[0]?.message?.content ?? "";
         const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
@@ -125,8 +131,18 @@ export async function POST(req: Request) {
         return { value: arr, tokens: (completion as { usage?: { total_tokens?: number } })?.usage?.total_tokens ?? 0 };
       });
 
-    const compactUser = compactContext(userPrompt, 2600)
-      + "\nDraft ONLY 2 posts this time (the two strongest topics), same HARD LAW, bodies 450 to 550 words. Return STRICT JSON only.";
+    /* R309 · THE SINGLE-DRAFT UNIT (measured 15:2x-15:3xZ: the 4-draft ask
+     * returns thin bodies from the primary provider even with a full token
+     * budget, while the single-draft ask returned a full 450-700-word piece
+     * — the bench proof. The chain now runs ONE candidate per topic, every
+     * unit the proven-reliable shape; thin has nowhere to hide). */
+    const singleDraftUser = (topic: { id?: string; hint?: string; tags?: string[] } | undefined, personaBrief: string | null | undefined, n: number) => [
+      `Write ONE post (exactly one draft) for a general Steem audience. NOT about Steem itself: about life, work, mind, streets, craft, food, nature, ideas.`,
+      `TOPIC #${n}: ${topic?.id ?? "?"}: ${topic?.hint ?? ""} (suggested tags: ${(topic?.tags ?? []).join(", ")})`,
+      personaBrief ? `THIS ROUND'S AUTHOR (write IN this voice, AT this development stage, slang honored at most once and never forced):\n${personaBrief}` : ``,
+      `Body 450-700 words (under 300 words is auto-rejected at the publish gate: write deep, not thin). Title ≤90 chars, curiosity gap, concrete nouns, no listicle vibes. 3-5 lowercase hyphenated tags (one broad topical + 2-3 niche). Open inside a scene, a question, or a mildly surprising claim; never a meta-introduction. End with one genuine, specific question to the reader.`,
+      `Return STRICT JSON only, no markdown fences: {"drafts":[{...one draft...}]}`,
+    ].filter(Boolean).join("\n");
 
     const titleTokens = (t: string) => String(t ?? "").toLowerCase().split(/[^a-z0-9\u0590-\u05ff]+/).filter(Boolean);
     const titleSim = (a: string, b: string) => {
@@ -140,19 +156,24 @@ export async function POST(req: Request) {
 
     const chain = await runLlmChain<Record<string, unknown>[]>({
       purpose: "content",
+      /* R309 · ONE CANDIDATE PER TOPIC: every unit is the single-draft
+       * shape the provider provably writes fat; the merge collects distinct
+       * survivors and satisfied stops as soon as the round is healthy. */
       candidates: [
-        { name: "primary", call: () => callZai(userPrompt, `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`) },
-        { name: "compact-retry", call: () => callZai(compactUser, compactContext(`${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`, 2200)) },
+        ...topics.slice(0, 4).map((t: { id?: string; hint?: string; tags?: string[] }, i) => ({
+          name: `single-${i + 1}`,
+          call: () => callZai(singleDraftUser(t, personas[i]?.brief ?? null, i + 1), `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`),
+        })),
         /* R298 · SECOND PROVIDER (env-gated, last): never delays the happy path. */
-        ...(nvidiaKeyPresent()
+        ...(nvidiaKeyPresent() && topics.length
           ? [
               {
                 name: "nvidia-fallback",
                 call: async () => {
                   const raw = await nvidiaChat({
                     system: `${SYSTEM_PROMPT}\n\n${SYMBOL_PROMPT_LAW}`,
-                    user: compactUser,
-                    maxTokens: 2000,
+                    user: singleDraftUser(topics[0] as { id?: string; hint?: string; tags?: string[] }, null, 1),
+                    maxTokens: 2500,
                   });
                   const jsonText = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
                   let drafts: unknown = [];
@@ -170,15 +191,23 @@ export async function POST(req: Request) {
             ]
           : []),
       ],
+      /* R309 · THE WORD FLOOR AT THE SOURCE (the measured root cause of the
+       * thin-forever loop: the chain was "satisfied" with drafts the engine
+       * then rejected as thin — a gate that healed nothing, every cycle).
+       * The same law the engine enforces (MIN_POST_WORDS 300) now binds the
+       * providers — but as a FILTER, not a poison: the fat drafts of every
+       * candidate survive, thin ones die here, and if a candidate is all
+       * thin the chain re-asks. Self-healing instead of silent death. */
       validate: (arr) => {
         if (!Array.isArray(arr) || !arr.length) return null;
-        for (const d of arr) {
+        const fat = (arr as Record<string, unknown>[]).filter((d) => {
           const o = d as { title?: unknown; body?: unknown };
-          if (typeof o?.title !== "string" || typeof o?.body !== "string") return null;
-        }
-        return arr;
+          if (typeof o?.title !== "string" || typeof o?.body !== "string") return false;
+          return String(o.body).trim().split(/\s+/).filter(Boolean).length >= 300;
+        });
+        return fat.length ? (fat as Record<string, unknown>[]) : null;
       },
-      satisfied: (merged) => ((merged?.length ?? 0)) >= 4,
+      satisfied: (merged) => ((merged?.length ?? 0)) >= 3,
       merge: (acc, next) => {
         const out = [...(acc ?? [])];
         for (const d of next) {
@@ -187,7 +216,7 @@ export async function POST(req: Request) {
         }
         return out;
       },
-      timeoutMs: 55_000,
+      timeoutMs: 30_000,
       /* R299 · FRESHNESS IN THE KEY (measured 96 selfSim refusals/24h): the
        * old key was static across runs (topics rotate by DAY, personas fixed),
        * so a fastpath hit served the IDENTICAL drafts while the queue starved.
