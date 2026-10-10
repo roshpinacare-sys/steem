@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-10T16:39:12.177Z",
+  "at": "2026-10-10T16:49:12.180Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 12bps → dragK 1.006",
+      "reason": "spread 0bps → dragK 1",
       "action": {
-        "spreadBpsRec": 12,
-        "bestAsk": 0.1016880211511084,
-        "bestBid": 0.10156305542295935
+        "spreadBpsRec": 0,
+        "bestAsk": 0.102,
+        "bestBid": 0.10199502264289503
       },
-      "at": "2026-10-10T16:39:12.177Z"
+      "at": "2026-10-10T16:49:12.180Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -234bps from external parity",
+      "action": {
+        "bps": -234
+      },
+      "at": "2026-10-10T16:49:12.180Z"
     },
     {
       "kind": "soldiers",
@@ -19,7 +28,20 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-10T16:39:12.177Z"
+      "at": "2026-10-10T16:49:12.180Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 40.324669 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 40.324669,
+        "any": true
+      },
+      "at": "2026-10-10T16:49:12.180Z"
     },
     {
       "kind": "rc-health",
@@ -28,24 +50,24 @@
       "action": {
         "rcPct": 99.8
       },
-      "at": "2026-10-10T16:39:12.177Z"
+      "at": "2026-10-10T16:49:12.180Z"
     },
     {
       "kind": "curation",
       "decision": "curator-live",
-      "reason": "voted 3 today (55 total) · VP 82.8% · txid 76c488742d77",
+      "reason": "voted 3 today (58 total) · VP 77.7% · txid debdd183dda8",
       "action": {
-        "votesToday": 16,
-        "vpEff": 82.8,
+        "votesToday": 19,
+        "vpEff": 77.7,
         "verdict": "VOTED"
       },
-      "at": "2026-10-10T16:39:12.177Z"
+      "at": "2026-10-10T16:49:12.180Z"
     }
   ],
-  "spreadBpsRec": 12,
+  "spreadBpsRec": 0,
   "book": {
-    "bestAsk": 0.1016880211511084,
-    "bestBid": 0.10156305542295935,
-    "spreadBps": 12
+    "bestAsk": 0.102,
+    "bestBid": 0.10199502264289503,
+    "spreadBps": 0
   }
 }
