@@ -1,53 +1,57 @@
 {
-  "at": "2026-10-10T15:49:12.163Z",
+  "at": "2026-10-10T16:09:12.170Z",
   "enabled": true,
-  "runsTotal": 283,
+  "runsTotal": 284,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 69,
+      "window": 70,
       "oks": 33,
-      "fails": 31,
+      "fails": 32,
       "blocked": 5,
-      "okRate": 47.8,
-      "blockedRate": 7.2,
+      "okRate": 47.1,
+      "blockedRate": 7.1,
       "failReasons": {
         "unknown": 1,
-        "timeout": 2,
+        "timeout": 3,
         "none": 28
       },
-      "msP50": 276907,
-      "msP90": 526813
+      "msP50": 285024,
+      "msP90": 535621
     },
     "curator": {
       "present": true,
-      "totalVotes": 49,
+      "totalVotes": 52,
       "window": 30,
       "verdicts": {
         "VOTED": 29,
         "BROADCAST-FAIL": 1
       },
-      "vpEff": null,
-      "meanAgeMinutes": null,
-      "tagsVoted": {},
+      "vpEff": 87.5,
+      "meanAgeMinutes": 139.3,
+      "tagsVoted": {
+        "defi": 1,
+        "crypto": 1,
+        "steem": 1
+      },
       "dayCapsInRow": 0,
-      "maxPerDay": 10
+      "maxPerDay": 30
     },
     "exec": {
-      "window": 1,
+      "window": 0,
       "fails": 0,
       "lastError": null
     },
     "watchdog": {
-      "checks": 2829,
-      "downs": 105,
-      "heals": 41,
-      "healVerified": 40,
+      "checks": 2849,
+      "downs": 106,
+      "heals": 43,
+      "healVerified": 42,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-10T15:49:12.574Z",
+      "lastCheckAt": "2026-10-10T16:09:12.585Z",
       "engineUp": true,
-      "lastSpawnAt": "2026-10-10T15:31:04.332Z",
-      "lastUpAt": "2026-10-10T15:49:12.576Z",
+      "lastSpawnAt": "2026-10-10T15:51:28.386Z",
+      "lastUpAt": "2026-10-10T16:09:12.587Z",
       "blips": 2
     }
   },
@@ -56,7 +60,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×5/69 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×5/70 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
@@ -72,8 +76,8 @@
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
-    "unclassified-fail-legacy": 155,
-    "signing-cred-blocked": 201,
+    "unclassified-fail-legacy": 156,
+    "signing-cred-blocked": 202,
     "broadcast-fails": 65
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
