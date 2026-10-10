@@ -405,7 +405,10 @@ try {
 // that left every fresh sandbox able to THINK and SIGN but unable to PUSH
 // without an operator re-supplying the PAT. Zero secret ever logged.
 try {
-  reviveWriterIdentity().then((r) => console.log(`writer identity revival: ${r.verdict} (git=${r.git.verdict}, signing=${r.signing.verdict})`)).catch((e) => console.error(`writer revival error: ${String(e?.message ?? e).slice(0, 120)}`));
+  /* R302 · Promise.resolve() wrapper (the R291-measured law, same as line 431:
+   * reviveWriterIdentity is SYNC and a bare .then crashed the boot line —
+   * measured again live 2026-10-10 05:09). */
+  Promise.resolve(reviveWriterIdentity() as any).then((r) => console.log(`writer identity revival: ${r.verdict} (git=${r.git?.verdict ?? "?"}, signing=${r.signing?.verdict ?? "?"})`)).catch((e) => console.error(`writer revival error: ${String(e?.message ?? e).slice(0, 120)}`));
 } catch (e) {
   console.error(`writer revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
 }

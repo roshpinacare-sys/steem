@@ -109,6 +109,17 @@ case "${1:-status}" in
         jq --arg d "$(day)" '.SB5.day = $d' "$RUNTIME" > "$RUNTIME.tmp" && mv "$RUNTIME.tmp" "$RUNTIME"
       fi
 
+      # ── SB-6 · מראת-הנמל-השני (יומי · R302) ──
+      # ריבונות-ששוקעת-בנמל-אחד אינה-ריבונות: המראה ל-GitLab מבטיחה שכל-קומיט
+      # שרד-גם-מעבר-ל-GitHub (חסימה/צנזורה/השתתות). האסימון-מהכספת-החתומה
+      # (toolbelt-revival, בתוך-הסקריפט), אפס-סוד-ב-argv/config/לוגים,
+      # fail-honest — כישלון-נרשם-וחוזר-מחר (ולא-מזויף-כהצלחה).
+      SB6_LAST_DAY=$(get '.SB6.day // ""')
+      if [ "$SB6_LAST_DAY" != "$(day)" ]; then
+        RC=$(run_task SB6 "bash scripts/sovereign-mirror.sh" "MIRRORED")
+        jq --arg d "$(day)" '.SB6.day = $d' "$RUNTIME" > "$RUNTIME.tmp" && mv "$RUNTIME.tmp" "$RUNTIME"
+      fi
+
       # ── SB-3 · חייאה (on-failure — רק כשאימות נכשל) ──
       if [ "$VERIFY_FAIL" = "1" ]; then
         log "SB3: verify נכשל — מריץ bootstrap (חייאה-עצמית)"

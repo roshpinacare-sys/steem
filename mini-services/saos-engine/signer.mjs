@@ -253,9 +253,28 @@ export function syncCredential() {
       // stale verified:false (or worse, verified wifs) must never outlive the
       // credential it was derived from. Wipe so the next verifyRoles hits
       // loadCredential → typed CREDENTIAL-MISSING → the honest alarm state.
+      /* R302 · VAULT-ADOPTED-CUSTODY LAW (caught live 2026-10-10: t38 adopted
+       * the vault WIF chain-judged GEN-2 → the immediately-following
+       * verifyRoles called syncCredential → KEY_FILE missing → the wipe
+       * DESTROYED the just-adopted chain-proven identity → CUSTODY-REFUSED
+       * loop forever while the vault's WIF is alive 14/14 on-chain). The
+       * T-16 hazard is a credential DERIVED FROM THE KEY FILE outliving it.
+       * A wif-direct adoption is NOT derived from the key file — it is
+       * derived from the sha-pinned git vault and judged by the CHAIN
+       * itself (adoptVerifiedWifIdentity role-exact live-authority match).
+       * Its validity is independent of the key file. Such evidence-backed
+       * identities are EXEMPT from key-file-missing wipes; the chain gate
+       * (verifyRoles → get_accounts → authority match) remains the only
+       * admission, and a broadcast failure still fail-closes. */
+      const vaultAdopted = Object.entries(mem.identities)
+        .filter(([, id]) => id?.verified?.ok && id?.verified?.matchedOrder === "wif-direct")
+        .map(([k]) => k);
       if (Object.keys(mem.identities).length || mem.master) {
-        for (const k of Object.keys(mem.identities)) delete mem.identities[k];
-        mem.master = null;
+        for (const k of Object.keys(mem.identities)) {
+          if (vaultAdopted.includes(k)) continue; // chain-judged custody survives key-file loss
+          delete mem.identities[k];
+        }
+        if (Object.keys(mem.identities).length === 0) { mem.master = null; }
         mem.keyFileFp = null;
       }
       return false;
@@ -468,6 +487,22 @@ export function loadCredential(account = null) {
       // soldiers all rotting with raw ENOENT). A missing credential is a
       // TYPED, actionable state — never a generic ENOENT again:
       if (/ENOENT|no such file/i.test(String(e?.message ?? e))) {
+        /* R302 · VAULT-ADOPTED-CREDENTIAL LAW (measured live 2026-10-10 05:11:
+         * after the sandbox fall the grid kept journaling CREDENTIAL-MISSING
+         * every 45s WHILE the same process held 29 chain-verified vault WIFs
+         * (posting+active VERIFIED-VS-CHAIN) — the gate read the FILE, the
+         * evidence sat in MEMORY). The file is ONE delivery channel, never
+         * the custody itself. If a chain-judged wif-direct identity for this
+         * account is already in memory (adoptVerifiedWifIdentity → the
+         * chain matched its own live authority), the credential EXISTS —
+         * hasPassword:false (no derivation path needed; signing uses the
+         * adopted role WIFs and fail-closes per-broadcast). Without such an
+         * identity the typed alarm still throws — fail-closed preserved. */
+        const probe = account ?? masterAccount();
+        const mid = mem.identities[probe];
+        if (mid?.verified?.ok && mid?.verified?.matchedOrder === "wif-direct") {
+          return { account: probe, hasPassword: false };
+        }
         noteCredMissing();
         throw new Error(
           "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). " +
