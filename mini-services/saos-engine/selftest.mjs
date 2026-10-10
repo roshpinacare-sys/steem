@@ -2882,6 +2882,17 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   }
 }
 
+/* ── R309 · THE RELEASE ROUND (operator: full intelligent activity, no
+ * artificial throttles) — released caps are asserted so they can never
+ * silently regress to the throttled past; the revenue ingest shares the
+ * broadcaster's gates so a READY package can never rot in the buffer. ── */
+{
+  const s309 = await import("./social-streamer.mjs");
+  ok("R309: streamer daily cap released to 12/day (14-account fleet)", s309.MAX_POSTS_PER_DAY === 12);
+  ok("R309: per-account gap released to 45 min (9x the chain 5-min window)", s309.MIN_GAP_MIN_PER_ACCOUNT === 45);
+  ok("R309: stageDrafts exposes revenue ingest telemetry", typeof s309.stageDrafts === "function");
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

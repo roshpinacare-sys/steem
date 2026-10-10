@@ -31,8 +31,11 @@
  * Cross-fleet law (unchanged, the house merge doctrine): JSON=live-wins,
  * JSONL=union-ts-ordered; the chain is the anchor of truth, the ledger is trace.
  *
- * CAPS (enforced in BOTH modes so dry-run telemetry stays honest):
- *   maxPostsPerDay = 4 fleet-wide        minGapMinutesPerAccount = 180
+ * CAPS (enforced in BOTH modes so dry-run telemetry stays honest; R309
+ * release: the caps bind THROUGHPUT, never truth — 12/day across a 14-account
+ * fleet is one post per account per day, the chain's own 5-minute posting
+ * window is the real limit, and every other gate still stands):
+ *   maxPostsPerDay = 12 fleet-wide       minGapMinutesPerAccount = 45
  *   dedupe: a draft sha (title+body) that appears ANYWHERE in the sent ledger
  *   is never signed again — resubmission cannot double-post.
  *
@@ -61,9 +64,15 @@ const PAUSE_FILE = path.join(STATE, "social-pause.json");
 const ARMED_FILE = path.join(ROOT, ".secrets", "social-armed.json");
 const KEY_CACHE = path.join(ROOT, ".secrets", "army-keys.json");
 const OPS_FILE = path.join(STATE, "content-ops.json");
+const REV_STATE = path.join(STATE, "revenue-staging.json");
 
-const MAX_POSTS_PER_DAY = 4;
-const MIN_GAP_MIN_PER_ACCOUNT = 180;
+/* R309 · RELEASED CAPS (operator order: full intelligent activity, no
+ * artificial throttles). Engineering grounds: 14 fleet accounts × 1 post/day
+ * = 14; cap 12 keeps a margin; 45-minute per-account gap is 9× the chain's
+ * real 5-minute posting window. Rotation still picks the least-used account;
+ * dedupe, sig-verify, custody and kill-switch are UNTOUCHED. */
+export const MAX_POSTS_PER_DAY = 12;
+export const MIN_GAP_MIN_PER_ACCOUNT = 45;
 const CHAINS = {
   steem: { chainId: STEEM_CHAIN_ID, parentPermlink: "steem" },
   hive: { chainId: HIVE_CHAIN_ID, parentPermlink: "hive-101100" }, /* node list must be wired before first use */
@@ -111,7 +120,45 @@ export function stageDrafts() {
     fs.renameSync(tmp, file); /* atomic: rename is the commit point (R235 law) */
     staged += 1;
   }
-  return { staged, skipped, totalInQueue: queue.length };
+  /* R309 · THE REVENUE INGEST (the last reader-less rail, same disease R308
+   * cured for the streamer): the compiler stages BROADCAST-READY packages
+   * (scrubbed, schema-passed, custody-gated GREEN) and NO loop ever consumed
+   * them — ready posts sat in the buffer forever while the operator saw no
+   * posts. The custody-gated broadcaster now ingests steem-chain packages
+   * through the SAME gates (mode → armed → kill-switch → caps → gap → dedupe
+   * → sig-verify). The compiler itself still never broadcasts; the law stands.
+   * Double-post is impossible by construction: content-addressed draft files
+   * + the BROADCASTED sha ledger. */
+  let stagedRevenue = 0, revenuePublished = 0;
+  const rev = readJson(REV_STATE, null);
+  if (rev && Array.isArray(rev.packages)) {
+    const liveShas = new Set(readSent().filter((r) => r.verdict === "BROADCASTED").map((r) => r.sha8));
+    let dirty = false;
+    for (const p of rev.packages) {
+      if (p?.state !== "BROADCAST-READY" || p?.chain !== "steem") continue;
+      const title = String(p.title ?? "").trim();
+      const body = String(p.body ?? "").trim();
+      if (!title || !body) continue;
+      const sha = sha256(title + "\n" + body);
+      if (liveShas.has(sha.slice(0, 8))) {
+        /* already on chain — sync the buffer to truth (fail-soft; the ledger
+         * is the anchor, this marker is only what the operator reads) */
+        if (p.state !== "PUBLISHED") { p.state = "PUBLISHED"; p.publishedSyncedAt = new Date().toISOString(); dirty = true; }
+        revenuePublished += 1;
+        continue;
+      }
+      const file = path.join(DRAFTS, `${sha.slice(0, 8)}.json`);
+      if (fs.existsSync(file)) continue;
+      const rtmp = `${file}.${process.pid}.tmp`;
+      fs.writeFileSync(rtmp, JSON.stringify({ stagedAt: new Date().toISOString(), sha256: sha, sha8: sha.slice(0, 8), title, body, tags: Array.isArray(p.tags) ? p.tags : [], source: "revenue-digest" }, null, 2));
+      fs.renameSync(rtmp, file);
+      stagedRevenue += 1;
+    }
+    if (dirty) {
+      try { const st = `${REV_STATE}.${process.pid}.tmp`; fs.writeFileSync(st, JSON.stringify(rev, null, 2)); fs.renameSync(st, REV_STATE); } catch { /* fail-soft by law */ }
+    }
+  }
+  return { staged, skipped, totalInQueue: queue.length, stagedRevenue, revenuePublished };
 }
 
 function slugify(title) {
@@ -249,6 +296,16 @@ export async function runOnce({ stagingOnly = false } = {}) {
       if (ops && Array.isArray(ops.queue)) {
         const row = ops.queue.find((q) => String(q?.title ?? "").trim() === String(draft.title).trim() && q?.status === "drafted");
         if (row) { row.status = "published"; row.publishedAt = base.at; row.account = pick.acc.name; row.permlink = permlink; row.txid = txid; writeJson(OPS_FILE, ops); }
+      }
+    } catch { /* fail-soft by law */ }
+    /* R309 · REVENUE-TRUTH SYNC: a digest that just went live is marked
+     * PUBLISHED in the staging buffer with its chain proof — the operator
+     * never sees a READY package that already breathes on the chain. */
+    try {
+      const rev = readJson(REV_STATE, null);
+      if (rev && Array.isArray(rev.packages)) {
+        const prow = rev.packages.find((p) => p?.state === "BROADCAST-READY" && String(p?.title ?? "").trim() === String(draft.title).trim());
+        if (prow) { prow.state = "PUBLISHED"; prow.publishedAt = base.at; prow.account = pick.acc.name; prow.permlink = permlink; prow.txid = txid; const st = `${REV_STATE}.${process.pid}.tmp`; fs.writeFileSync(st, JSON.stringify(rev, null, 2)); fs.renameSync(st, REV_STATE); }
       }
     } catch { /* fail-soft by law */ }
   }
