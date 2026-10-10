@@ -1,6 +1,6 @@
 {
-  "verdict": "RECRUITED",
-  "active": 10,
+  "verdict": "FULL-STRENGTH",
+  "active": 11,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -33,11 +33,11 @@
       "role": "מבקר-עסקאות",
       "lane": "truth",
       "capability": "chain-truth fill/op counters over account history (max(state, chain-truth))",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": null,
+      "evidence": "state/observe.json: 5 chain-truth fills counted (last 2026-10-09T02:07:06.000Z)",
       "priorStatus": "planned"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -309bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -315bps)",
       "priorStatus": "active"
     },
     {
@@ -73,7 +73,7 @@
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/curator.json: NO-CANDIDATES (budgetCounted ?, basis state)",
+      "evidence": "state/curator.json: DAY-CAP (budgetCounted 10, basis max(state, chain-truth))",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-10T11:09:12.081Z",
+  "at": "2026-10-10T11:19:12.080Z",
   "pid": 22809
 }
