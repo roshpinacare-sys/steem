@@ -73,6 +73,23 @@ bash "$SB/autonomy-runner.sh" run-once >/dev/null 2>&1 \
   && ok "אוטונומיה: tick ראשון הושלם (תור-המשימות מבוצע)" \
   || warn "אוטונומיה: tick ראשון נכשל — ראה sanbox/state/autonomy-runner.log"
 
+# ── 4.55 · שומר-שאריות-החתימה (R304 · R302 ממוכן) ──
+# הנפילה-משחזרת את הקונפיג של הפלטפורמה: commit.gpgsign=true. אם מפתח-הסוד
+# חסר — כל-קומיט-אוטונומי נכשל ("No secret key", נמדד-חי 04:44-04:54 R302) —
+# השומר מכבה-חתימה-בכנות. אם המפתח-חי (מפתח-הגוף-עצמו, "SAOS W1") — האמון
+# נעוגן (ownertrust) כדי-שהחתימות-יאומתו-מקומית כ-G/SIGNED ולא-U (R304).
+if [ "$(git config commit.gpgsign 2>/dev/null)" = "true" ]; then
+  SK="$(git config user.signingkey 2>/dev/null || true)"
+  if [ -n "$SK" ] && gpg --list-secret-keys "$SK" >/dev/null 2>&1; then
+    printf '%s:6:\n' "$SK" | gpg --import-ownertrust >/dev/null 2>&1 \
+      && ok "חותם: מפתח-הגוף חי ונסמך (${SK:0:8}… — R304 TRUST-ANCHOR)" \
+      || ok "חותם: מפתח-הגוף חי (${SK:0:8}…) — עוגן-אמון כבר-קיים"
+  else
+    git config commit.gpgsign false \
+      && warn "חותם: gpgsign=true בלי-מפתח-סודי → false (שומר-R302; קומיטים-אוטונומיים-לא-ייכשלו)"
+  fi
+fi
+
 # ── 4.6 · איטום-כלי-העבודה: החיית-ה-toolbelt מהכספת (R301-b) ──
 # כל-התחלה-קרה מחיה את ארבעת-היכולות (gitlab/supabase/render/vck) מהכספת-
 # החתומה — pins fail-closed; כישלון-מדווח-בכנות ולא-חוסם (קריטיות-חלקית).
