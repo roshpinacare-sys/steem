@@ -53,7 +53,18 @@ for f in "${DIRTY[@]}"; do
     *.jsonl)
       REM="$(mktemp)"
       git show "origin/$BR:$f" > "$REM" 2>/dev/null || : > "$REM"
-      if sort -u "$f" "$REM" 2>/dev/null | jq -cs 'sort_by(.at // "") | .[] | tojson' > "$f.r303tmp" 2>/dev/null && [ -s "$f.r303tmp" ]; then
+      # R303 · DECODE-UNION LAW (the R299 disease, cured at the door): the CI
+      # host's ledger copies absorbed double-encoded lines (JSON strings
+      # instead of objects) and re-delivered them on every push-back; unions
+      # that only dedupe/sort PRESERVE the disease forever. The union now
+      # DECODES: any line that parses to a string gets fromjson'd into the
+      # object it carries; undecodable lines stay verbatim (honest, rare).
+      # THE -r LAW (R299-b, re-measured on myself today): a pipeline ending in
+      # `tojson` MUST use jq -rs — without -r jq prints the string value
+      # QUOTED, re-double-encoding every line it touches. Measured live
+      # 2026-10-10 05:47: my own first union ran `jq -cs '…| tojson'` and
+      # turned 99% of the ledgers into strings in one pass.
+      if cat "$f" "$REM" 2>/dev/null | jq -rs 'map(if type=="string" then (try fromjson catch .) else . end) | unique_by(tojson) | sort_by(.at // "") | .[] | tojson' > "$f.r303tmp" 2>/dev/null && [ -s "$f.r303tmp" ]; then
         mv "$f.r303tmp" "$f"; UNIONED=$((UNIONED+1))
       else
         rm -f "$f.r303tmp"  # G4 fallback: local content stands, honest

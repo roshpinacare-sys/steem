@@ -37,13 +37,17 @@ case "$code" in
 esac
 
 # 2) push with retry/backoff (the push itself is the mirror law)
+# R303 · BOUNDED-PUSH LAW: a push to a blocked/hostile plane used to hang on
+# TCP connect for minutes per attempt — measured live: it froze the runner's
+# tick for 15min and (via the then-unbounded tick) blacked out the autonomy
+# queue for an hour. Every attempt is now bounded at 240s.
 ok=0
 for attempt in 1 2 3; do
-  if git -c credential.helper="$CREDS" push "$GL_URL" "$REF:$REF" --force-with-lease=:"$REF" 2>/tmp/mirror-git.err; then
+  if timeout 240 git -c credential.helper="$CREDS" push "$GL_URL" "$REF:$REF" --force-with-lease=:"$REF" 2>/tmp/mirror-git.err; then
     ok=1; break
   fi
   # first push to an empty repo: force-with-lease vs nothing fails — plain push retry
-  if git -c credential.helper="$CREDS" push "$GL_URL" "$REF:$REF" 2>>/tmp/mirror-git.err; then
+  if timeout 240 git -c credential.helper="$CREDS" push "$GL_URL" "$REF:$REF" 2>>/tmp/mirror-git.err; then
     ok=1; break
   fi
   sleep $((attempt * 20))
