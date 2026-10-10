@@ -74,3 +74,18 @@ HIVE/BLURT law stands; Domain's blurt-curate is votes-only and STASIS-frozen).
 
 52 deterministic selftest vectors (R243) cover every check, the cross-chain
 refusal, the organic loop, and the full gate integration: SELFTEST 479/479.
+
+## 6 · T-62 RELEASE ADDENDUM (2026-10-10, trace 1a1268338e36d0ed)
+
+The §4 probe protocol (1 probe/day max) was the R243 experiment phase. Measured
+since: the posting stream is LIVE from custody-verified accounts (6 real
+broadcasts on 2026-10-10, 14/14 custody alive) and the protocol's job is done.
+
+**Standing frequency law after the release** (see SPAMINATOR-DOCTRINE.md §6):
+≤4 posts/day/account, ≥90min per-account spacing (anti-spam spacing stays —
+only the count cap was false), fleet target 8–16/day across the custody-alive
+roster. Every structural check in §2 remains the boss, unchanged.
+
+**Kept (real external constraints, not self-limits):** the cross-chain pause
+(§4, operator stop order), the FLAGGED-STOP loop (§3), and the fail-closed
+refusal journaling (§2).
