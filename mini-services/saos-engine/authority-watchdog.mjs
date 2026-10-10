@@ -47,10 +47,27 @@ const LOCAL_BRANCH = "saos-cockpit";
 
 /* ── pure: %G? → verdict (selftest-covered) ──────────────────────────────── */
 export function classifySig(gq) {
+  /* R304 · HONEST-SIG-TAXONOMY (measured live: the matrix bled 62-73 flags
+   * around the clock — every platform-signed commit (%G?=U: a CRYPTOGRAPHICALLY
+   * GOOD signature whose key trust is not established in this keyring) was
+   * mapped to INVALID. Alarm fatigue IS a security failure: the operator reads
+   * "64-FLAGGED" as noise and stops trusting the matrix. The honest map:
+   *   G     → SIGNED            (good + trusted)
+   *   U     → SIGNED-UNTRUSTED  (good signature, trust not established — never
+   *                             an integrity failure; cured at the root by the
+   *                             R304 TRUST-ANCHOR law: the body's own signing
+   *                             key gets ownertrust → new commits verify G)
+   *   N     → UNSIGNED          (measured + shown per-repo; by-design classes
+   *                             live in the gate's own taxonomy — R249 clause
+   *                             2.5: state checkpoint noise is publishable)
+   *   B/E/X → INVALID           (the ONLY true integrity anomaly: bad/expired)
+   * The verdict counts INTEGRITY flags only (INVALID + SIGNED-UNTRUSTED);
+   * unsigned stays fully visible in the per-repo matrix and counts. */
   switch (gq) {
     case "G": return "SIGNED";
+    case "U": return "SIGNED-UNTRUSTED";
     case "N": return "UNSIGNED";
-    case "B": case "E": case "X": case "U": return "INVALID";
+    case "B": case "E": case "X": return "INVALID";
     default: return "UNKNOWN";
   }
 }
@@ -86,7 +103,9 @@ function scanLocalLineage(n = 30) {
     ok: true, branch: LOCAL_BRANCH, scanned: commits.length,
     signedPct: commits.length ? Math.round((signed / commits.length) * 100) : 0,
     signed, unsigned: commits.filter((c) => c.sig === "UNSIGNED").length, invalid: commits.filter((c) => c.sig === "INVALID").length,
-    flagged: commits.filter((c) => c.sig !== "SIGNED").slice(0, 20),
+    untrusted: commits.filter((c) => c.sig === "SIGNED-UNTRUSTED").length,
+    /* R304: integrity flags only — unsigned is measured above, never hidden */
+    flagged: commits.filter((c) => c.sig === "INVALID" || c.sig === "SIGNED-UNTRUSTED").slice(0, 20),
   };
 }
 
@@ -119,9 +138,11 @@ function scanFleetRepoGitNative(repo, perRepo = 10) {
     return {
       repo, coverage: "MEASURED", method: "git-native", scanned: commits.length, signed,
       unsigned: commits.filter((c) => c.sig === "UNSIGNED").length, invalid: commits.filter((c) => c.sig === "INVALID").length,
+      untrusted: commits.filter((c) => c.sig === "SIGNED-UNTRUSTED").length,
       unknown: commits.filter((c) => c.sig === "UNKNOWN").length,
       signedPct: commits.length ? Math.round((signed / commits.length) * 100) : 0,
-      flagged: commits.filter((c) => c.sig !== "SIGNED").slice(0, 10),
+      /* R304: integrity flags only — unsigned is measured above, never hidden */
+      flagged: commits.filter((c) => c.sig === "INVALID" || c.sig === "SIGNED-UNTRUSTED").slice(0, 10),
     };
   } catch (e) {
     return { repo, coverage: "ERROR", reason: String(e?.message ?? e).slice(0, 80) };
