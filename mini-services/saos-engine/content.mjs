@@ -445,16 +445,30 @@ export async function runContent({ now = new Date().toISOString(), force = false
       } catch { /* fail-soft per draft */ }
     }
   }
+  /* R303 · THIN-PURGE LAW (measured 06:23Z: 9 sub-floor drafts — 108-155
+   * words, pre-R244 residue from Oct 1-6 — sat in the bounded queue with
+   * status "drafted" and were re-rejected by the revenue compiler's schema
+   * gate EVERY cycle: honest SCHEMA-REJECTED rows, zero progress, pure
+   * waste). The R244 floor blocks NEW thin drafts at enqueue (sanitizeDraft
+   * returns null); this law heals the QUEUE itself: a carried-forward
+   * drafted entry survives only if it clears the floor NOW. Stale-thin rows
+   * are purged on contact and counted honestly. */
+  const carried = Array.isArray(prev?.queue) ? prev.queue : [];
+  const thinPurged = carried.filter((d) => d?.status === "drafted" && wordCount(d?.body ?? "") < MIN_POST_WORDS).length;
+  if (thinPurged > 0) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "content.thin-purged", at: now, dropped: thinPurged });
+  }
+  const carriedLive = carried.filter((d) => d?.status !== "drafted" || wordCount(d?.body ?? "") >= MIN_POST_WORDS);
   const queue = [
     ...keptFinal.map((d, i) => ({ ...d, id: `d${Date.parse(now)}-${i}`, status: "drafted", draftedAt: now })),
-    ...(Array.isArray(prev?.queue) ? prev.queue : []),
+    ...carriedLive,
   ].slice(0, 30); // bounded queue — the rail posts per doctrine caps, never floods
 
   const doc = {
     draftedAt: now,
     verdict: keptFinal.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
     source: raw && bridgeError?.startsWith("offline") ? "corpus" : raw ? "bridge" : "none",
-    draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated,
+    draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged,
     minPostWords: MIN_POST_WORDS,
     spentTitles: [...new Set([...spentTitles, ...keptFinal.map((d) => String(d?.title ?? ""))])].slice(-60),
     queue,
@@ -463,7 +477,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     ms: Date.now() - t0,
   };
   writeJson(FILE, doc);
-  return { verdict: doc.verdict, draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, bridgeError };
+  return { verdict: doc.verdict, draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged, bridgeError };
 }
 
 /** recruiter evidence: fresh drafts queued = the content team is really running */

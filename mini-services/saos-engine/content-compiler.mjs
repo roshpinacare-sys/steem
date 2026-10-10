@@ -41,7 +41,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { createHash } from "node:crypto";
-import { enforceSymbolLaw, titleSimilarity, MIN_POST_WORDS } from "./content.mjs";
+import { enforceSymbolLaw, titleSimilarity, wordCount, MIN_POST_WORDS } from "./content.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 /* R275 merge law: state dir resolved PER CALL — the selftest may run while
@@ -166,8 +166,15 @@ export function compileRevenue({ now = new Date().toISOString() } = {}) {
   const army = readJson(path.join(S, "army-custody.json"), null);
   const custodyGreen = Boolean(army && army.verdict === "FLEET-CUSTODY-ALIVE" && Number(army?.after?.verified ?? 0) >= Number(army?.after?.total ?? 14) && Number(army?.after?.total ?? 0) > 0);
 
-  /* intake 1: the reasoning gateway's sanitized drafts queue */
-  const drafts = (Array.isArray(ops?.queue) ? ops.queue : []).filter((d) => d?.status === "drafted" && d?.title && d?.body);
+  /* intake 1: the reasoning gateway's sanitized drafts queue.
+   * R303 · THIN-DRAFT FLOOR (measured 06:23Z: 9 sub-floor drafts — 108-155
+   * words, pre-R244 residue — sat in the bounded queue and were re-rejected
+   * by the schema gate EVERY compile: honest SCHEMA-REJECTED rows, zero
+   * progress, pure waste). Parity with hive.mjs's own floor: a draft under
+   * the 300-word doctrine floor never becomes a candidate here. The queue
+   * itself is healed by content.mjs's THIN-PURGE law — this is defense in
+   * depth, so the compiler stays clean even against a dirty queue. */
+  const drafts = (Array.isArray(ops?.queue) ? ops.queue : []).filter((d) => d?.status === "drafted" && d?.title && d?.body && wordCount(d.body) >= MIN_POST_WORDS);
   /* intake 2: raw text arrays pushed directly by any LLM rail */
   const intake = readLines(path.join(S, "revenue-intake.jsonl"), 100)
     .map((row, i) => ({ row, i }))

@@ -134,15 +134,28 @@ case "${1:-status}" in
         jq --arg d "$(day)" '.SB5.day = $d' "$RUNTIME" > "$RUNTIME.tmp" && mv "$RUNTIME.tmp" "$RUNTIME"
       fi
 
-      # ── SB-6 · מראת-הנמל-השני (יומי · R302) ──
+      # ── SB-6 · מראת-הנמל-השני (יומי-עד-ירוק · R302, חוק-ניסיון-חוזר R303) ──
       # ריבונות-ששוקעת-בנמל-אחד אינה-ריבונות: המראה ל-GitLab מבטיחה שכל-קומיט
       # שרד-גם-מעבר-ל-GitHub (חסימה/צנזורה/השתתות). האסימון-מהכספת-החתומה
       # (toolbelt-revival, בתוך-הסקריפט), אפס-סוד-ב-argv/config/לוגים,
-      # fail-honest — כישלון-נרשם-וחוזר-מחר (ולא-מזויף-כהצלחה).
-      SB6_LAST_DAY=$(get '.SB6.day // ""')
-      if [ "$SB6_LAST_DAY" != "$(day)" ]; then
+      # fail-honest.
+      # R303 · נמדד-חי 06:03Z: ה-day-guard נחתם-גם-בכישלון (SB6 FAIL, GitLab
+      # 403) → המראה-נעולה-עד-מחר על-אף-חוק-"עד-ירוק" של-SB1 (R300-c). התיקון:
+      # היום-נחתם-רק-בהצלחה; כישלון = ניסיון-חוזר בבק-אוף 4 שעות
+      # (SAOS_SB6_RETRY_SEC) — חסימת-IP לא גונבת-יום-שלם של מראה.
+      SB6_DAY=$(get '.SB6.day // ""')
+      SB6_NEXT_TRY=$(get '.SB6.nextTry // 0')
+      SB6_NEXT_TRY=${SB6_NEXT_TRY:-0}
+      NOW_EPOCH=$(date -u +%s)
+      if [ "$SB6_DAY" != "$(day)" ] && [ "$NOW_EPOCH" -ge "$SB6_NEXT_TRY" ]; then
         RC=$(run_task SB6 "bash scripts/sovereign-mirror.sh" "MIRRORED")
-        jq --arg d "$(day)" '.SB6.day = $d' "$RUNTIME" > "$RUNTIME.tmp" && mv "$RUNTIME.tmp" "$RUNTIME"
+        if [ "$RC" = "0" ]; then
+          jq --arg d "$(day)" '.SB6.day = $d | .SB6.nextTry = 0' "$RUNTIME" > "$RUNTIME.tmp" && mv "$RUNTIME.tmp" "$RUNTIME"
+        else
+          RETRY_SEC="${SAOS_SB6_RETRY_SEC:-14400}"
+          jq --argjson t "$((NOW_EPOCH + RETRY_SEC))" '.SB6.nextTry = $t' "$RUNTIME" > "$RUNTIME.tmp" && mv "$RUNTIME.tmp" "$RUNTIME"
+          log "SB6: כישלון — ניסיון-חוזר בעוד ${RETRY_SEC}s (חוק-עד-ירוק · R303)"
+        fi
       fi
 
       # ── SB-3 · חייאה (on-failure — רק כשאימות נכשל) ──
