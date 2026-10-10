@@ -58,10 +58,10 @@ const readLines = (p, n = 200) => {
 
 /* ── LAW L-26 · THE REVENUE CADENCE MATRIX (operator question #1, answered
  *    in code) ──────────────────────────────────────────────────────────────
- * POST   ≥300s between two posts of the same account (chain rule-compliant:
- *        both Steem and Hive penalize faster self-posting), ±45s jitter so
- *        the fleet never fires metronome-shaped; ≤1 publish/day/account (the
- *        existing doctrine cap stays the boss).
+ * POST   ≥5400s (90min) between two posts of the same account (T-62 release:
+ *        the old 300s + 1-per-day pair was a false self-limit; the real
+ *        external law is anti-spam spacing — doctrine: ≤4/day/account,
+ *        ≥90min, ±45s jitter so the fleet never fires metronome-shaped).
  * COMMENT ≥180s between two comments of the same account.
  * VOTE   ≥15s between two votes of the same account, ≤3 votes/day/account
  *        (R283 caps stand).
@@ -69,7 +69,7 @@ const readLines = (p, n = 200) => {
  *        other existing gate stay owned by the rails that broadcast. */
 export const CADENCE = {
   law: "L-26",
-  post: { minIntervalSec: 300, jitterSec: 45, perDayPerAccount: 1 },
+  post: { minIntervalSec: 5400, jitterSec: 45, perDayPerAccount: 4 }, /* T-62 release: 300s/1-per-day → 90min/4-per-day (real anti-spam bound) */
   comment: { minIntervalSec: 180 },
   vote: { minIntervalSec: 15, perDayPerAccount: 3 },
   freezeOnCustodyRed: true,

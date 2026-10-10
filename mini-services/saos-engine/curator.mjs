@@ -198,7 +198,7 @@ export function normalizePost(raw, tag, voter, nowMs) {
 export async function fetchCandidates(policy, voter, nowMs) {
   const posts = [];
   let nodeOk = false;
-  const limit = Number.isFinite(policy.fetchLimit) ? Math.min(Math.max(policy.fetchLimit, 20), 50) : 20;
+  const limit = Number.isFinite(policy.fetchLimit) ? Math.min(Math.max(policy.fetchLimit, 20), 100) : 20; /* T-62 release: ceiling 50→100 — the real bound is the RPC page size */
   for (const tag of policy.tags) {
     const r = await rpcCall("condenser_api.get_discussions_by_created", [{ tag, limit }]);
     if (!r.ok) continue;
