@@ -22,18 +22,38 @@ TOKEN=$(jq -r '.items[] | select(.id=="gitlab") | .token' "$TB" 2>/dev/null)
 export SAOS_GITLAB_TOKEN="$TOKEN"
 export GIT_TERMINAL_PROMPT=0
 export GIT_ASKPASS=/bin/true
-CREDS='!f() { echo username=oauth2; echo password=$SAOS_GITLAB_TOKEN; }; f'
+# R306-b TRANSPORT LAW (measured live 11:05-11:15Z, seven probes — the
+# chronic SB6 killer found and closed): the "!f(){...};f" credential-helper
+# idiom NEVER worked in this plane — /bin/sh is dash and rejects it with
+# "Syntax error: Bad function name", so git ran ANONYMOUS and GitLab answered
+# 403 "HTTP Basic: Access denied" — misread for two rounds as an IP block
+# (the old API probe hitting the projects COLLECTION endpoint reinforced it).
+# Measured further: the token was ALWAYS valid (62-char dot-segment form,
+# API /user 200, scopes full incl. write_repository); curl basic-auth with a
+# generic username passes both info/refs and git-receive-pack.
+# WORKING TRANSPORT (measured ls-remote 200): HTTP Basic via GIT_CONFIG_*
+# environment config — zero secret in argv, files, or logs. The API judges;
+# the push is the law.
+AUTH=$(printf 'x:%s' "$SAOS_GITLAB_TOKEN" | base64 -w0)
+export GIT_CONFIG_COUNT=1
+export GIT_CONFIG_KEY_0=http.extraheader
+export GIT_CONFIG_VALUE_0="Authorization: Basic $AUTH"
+unset AUTH
 
-# 1) best-effort project ensure (API may rate-limit from sandbox IPs — push is the truth)
-code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST \
-  -H "PRIVATE-TOKEN: $SAOS_GITLAB_TOKEN" -H "Content-Type: application/json" \
-  -d '{"name":"steem","path":"steem","visibility":"private"}' \
-  "https://gitlab.com/api/v4/projects" 2>/dev/null || echo 000)
+# 1) best-effort project ensure — R306-b: probe the SCOPED project endpoint
+# (measured 200) instead of the collection endpoint (403 red herring).
+# The push itself remains the only judge.
+code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 \
+  -H "PRIVATE-TOKEN: $SAOS_GITLAB_TOKEN" \
+  "https://gitlab.com/api/v4/projects/roshpinacare%2Fsteem" 2>/dev/null || echo 000)
 case "$code" in
-  201) echo "mirror: project created" ;;
-  400|409) echo "mirror: project exists" ;;
-  000|429|403) echo "mirror: API blocked from this plane (code=$code) — push will judge" ;;
-  *) echo "mirror: API code=$code (continuing)" ;;
+  200) echo "mirror: project exists" ;;
+  404) c2=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST \
+        -H "PRIVATE-TOKEN: $SAOS_GITLAB_TOKEN" -H "Content-Type: application/json" \
+        -d '{"name":"steem","path":"steem","visibility":"private"}' \
+        "https://gitlab.com/api/v4/projects" 2>/dev/null || echo 000) \
+       echo "mirror: project ensure code=$c2" ;;
+  *) echo "mirror: API code=$code (informational) — push will judge" ;;
 esac
 
 # 2) push with retry/backoff (the push itself is the mirror law)
@@ -43,11 +63,11 @@ esac
 # queue for an hour. Every attempt is now bounded at 240s.
 ok=0
 for attempt in 1 2 3; do
-  if timeout 240 git -c credential.helper="$CREDS" push "$GL_URL" "$REF:$REF" --force-with-lease=:"$REF" 2>/tmp/mirror-git.err; then
+  if timeout 240 git push "$GL_URL" "$REF:$REF" --force-with-lease=:"$REF" 2>/tmp/mirror-git.err; then
     ok=1; break
   fi
   # first push to an empty repo: force-with-lease vs nothing fails — plain push retry
-  if timeout 240 git -c credential.helper="$CREDS" push "$GL_URL" "$REF:$REF" 2>>/tmp/mirror-git.err; then
+  if timeout 240 git push "$GL_URL" "$REF:$REF" 2>>/tmp/mirror-git.err; then
     ok=1; break
   fi
   sleep $((attempt * 20))
