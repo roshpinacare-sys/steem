@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-10T14:49:12.101Z",
-  "lastFullScanAt": "2026-10-10T14:39:12.099Z",
+  "at": "2026-10-10T15:09:12.157Z",
+  "lastFullScanAt": "2026-10-10T15:09:12.157Z",
   "verdict": "OPTIONS-FOUND",
   "tagBoard": [
     {
       "tag": "hive-129948",
-      "payoutsSbd": 6861.446
+      "payoutsSbd": 6851.283
     },
     {
       "tag": "kr",
-      "payoutsSbd": 2973.158
+      "payoutsSbd": 2973.296
     },
     {
       "tag": "hive-150122",
@@ -17,15 +17,15 @@
     },
     {
       "tag": "hive-196917",
-      "payoutsSbd": 1261.106
+      "payoutsSbd": 1273.851
     },
     {
       "tag": "steem",
-      "payoutsSbd": 1128.671
+      "payoutsSbd": 1113.214
     },
     {
       "tag": "life",
-      "payoutsSbd": 1016.416
+      "payoutsSbd": 1010.136
     },
     {
       "tag": "hive-180932",
@@ -36,26 +36,26 @@
       "payoutsSbd": 987.829
     },
     {
-      "tag": "hive-188619",
-      "payoutsSbd": 907.964
-    },
-    {
       "tag": "hive-193637",
-      "payoutsSbd": 907.554
+      "payoutsSbd": 908.468
     },
     {
       "tag": "hive-183397",
-      "payoutsSbd": 903.521
+      "payoutsSbd": 907.457
     },
     {
       "tag": "atomy",
-      "payoutsSbd": 899.755
+      "payoutsSbd": 899.723
+    },
+    {
+      "tag": "hive-188619",
+      "payoutsSbd": 880.575
     }
   ],
   "curationEst": {
-    "dailyPoolSteem": 934313.288,
-    "voteVestsShare": 0.000009515984898552845,
-    "estimatedSteemPerDay": 8.8909,
+    "dailyPoolSteem": 934130.89,
+    "voteVestsShare": 0.000009514453389443198,
+    "estimatedSteemPerDay": 8.8877,
     "note": "linear approx over reward-fund window — ESTIMATED class, never claimed as measured"
   },
   "vpEff": 78.9,
@@ -64,17 +64,17 @@
       "id": "book-cold",
       "kind": "fills-velocity",
       "potentialClass": "measured",
-      "evidence": "last fill 36.5h ago (2 fills in measured window)",
+      "evidence": "last fill 37h ago (2 fills in measured window)",
       "potential": "cold book → review placement breadth, not price floor",
       "gate": "price law untouched — breadth within per-cycle caps only",
       "effort": "monitor"
     },
     {
-      "id": "spread-wide",
+      "id": "spread-normal",
       "kind": "book-spread",
       "potentialClass": "measured",
-      "evidence": "spread 191bps (bestAsk 0.10192640913260625 / bestBid 0.100002)",
-      "potential": "wide spread = richer maker margins for the ladder",
+      "evidence": "spread 56bps (bestAsk 0.10171095740808155 / bestBid 0.10114291493880853)",
+      "potential": "spread inside normal band — hold shape",
       "gate": "VF1 floor law: never sell below external value",
       "effort": "dragK already intel-fed"
     },
@@ -82,7 +82,7 @@
       "id": "tags-realloc",
       "kind": "curation-tags",
       "potentialClass": "measured",
-      "evidence": "top trending tag \"hive-129948\" carries 6861.446 SBD total payouts (get_trending_tags)",
+      "evidence": "top trending tag \"hive-129948\" carries 6851.283 SBD total payouts (get_trending_tags)",
       "potential": "better vote placement inside the SAME 10-vote/day quota",
       "gate": "learning may add ≤1 tag, total ≤8 — daily caps & VP floor untouched",
       "effort": "already wired via learning tunings"
@@ -91,8 +91,8 @@
       "id": "curation-share",
       "kind": "curation-yield",
       "potentialClass": "estimated",
-      "evidence": "reward-fund pool 934313.288 STEEM/window · our vests share 0.0010% → ~8.8909 STEEM/day",
-      "potential": 8.8909,
+      "evidence": "reward-fund pool 934130.89 STEEM/window · our vests share 0.0010% → ~8.8877 STEEM/day",
+      "potential": 8.8877,
       "gate": "measured truth only lands via curation_reward ops (measureAll) — estimator never claims payout",
       "effort": "rail live since T-13"
     },
@@ -107,6 +107,5 @@
     }
   ],
   "learningConsumer": [],
-  "honesty": "ranked options, zero execution · classes: measured>estimated>potential · gates own the decisions",
-  "freshCached": true
+  "honesty": "ranked options, zero execution · classes: measured>estimated>potential · gates own the decisions"
 }
