@@ -1,21 +1,24 @@
 {
-  "at": "2026-10-10T04:36:22.499Z",
+  "at": "2026-10-10T15:04:01.268Z",
   "custody": "14/14",
   "social": "SOCIAL-IDLE",
   "socialExecuted": 0,
-  "content": "BRIDGE-DOWN",
+  "content": "DRAFTS-QUEUED",
   "contentSource": null,
+  "post": "LIVE-REFUSED-NOT-ARMED",
+  "postAccount": null,
+  "postPermlink": null,
   "dex": "STANDBY",
   "dexReason": "engine-alive",
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-10T04:36:22.499Z",
+    "at": "2026-10-10T15:04:01.268Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 37106,
+        "ms": 45102,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -23,28 +26,38 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 1,
+        "ms": 0,
         "verdict": "STANDBY",
         "reason": "engine-alive",
-        "anchorAgeMs": 2733351
+        "anchorAgeMs": 5095705
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 28738,
+        "ms": 224393,
         "verdict": "SOCIAL-IDLE",
         "executed": 0,
         "refused": 0,
-        "due": 0
+        "due": 61
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 7,
-        "verdict": "BRIDGE-DOWN",
-        "draftsQueued": 0,
+        "ms": 2459,
+        "verdict": "DRAFTS-QUEUED",
+        "draftsQueued": 5,
         "exposureBlocked": 0,
         "source": null
+      },
+      "post": {
+        "name": "post",
+        "ok": true,
+        "ms": 2,
+        "verdict": "LIVE-REFUSED-NOT-ARMED",
+        "account": null,
+        "permlink": null,
+        "mode": null,
+        "note": "mode=live but .secrets/social-armed.json missing — fail-closed"
       }
     }
   }
