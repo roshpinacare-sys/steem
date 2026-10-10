@@ -40,10 +40,7 @@ const CANDIDATE_ENVS = [
   "CI_HEADCORNER_CRED", "CI_MAIN_KEY", "CI_STEEM_POSTING_WIF", "CI_SA_HEAD_ACTIVE", "CI_WEAVE_STEEM_WIF",
 ];
 
-/* T-57 (measured live): compressed WIFs start with K **or L** — [5JK] silently
- * refused every L-prefixed key (two L-starting WIFs in the intake were
- * invisible to classify). Length widened to {50,52} for both encodings. */
-const WIF_RE = /^[5JKL][1-9A-HJ-NP-Za-km-z]{50,52}$/;
+const WIF_RE = /^[5JK][1-9A-HJ-NP-Za-km-z]{50,51}$/;
 
 function sh(cmd, args, cwd = REPO) {
   try { return { out: execFileSync(cmd, args, { cwd, encoding: "utf8" }).trim(), code: 0 }; }
