@@ -68,15 +68,43 @@
     "note": "R284: the push credential joins the self-reviving custody set. upload/pat.env measured 401 this day; the live remote-url token was sealed instead. Rotation law: re-run `seal` before expiry — minting a NEW GitHub token remains an operator/GitHub-account act, but the transition is one command, not hours of archaeology."
   },
   "toolbelt": {
-    "file": "agent/vault/TOOLBELT-SEAL-2026-10-10.zip.enc",
+    "file": "agent/vault/TOOLBELT-SEAL-20261010T105634Z.zip.enc",
     "passRef": "keysZipPass (this same meta)",
-    "outerSha256": "8f0978b64f1118fe1e5fe10267fa122f0f722652e99e9786f06a355187840e13",
-    "innerSha256": "8e10f0c4c9e092839c35a1d368826585208f7283e2cf52975b2188c6811602cf",
+    "outerSha256": "97f507be58c52ea134fefd3561c6a5d578a41c631d7c024d6a3d6cdb5f0c2e4f",
+    "innerSha256": "0ae9b78f954090db00a11fbd953101d68ca427dbb738154de1cf9dacb7a951a3",
     "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> | unzip (toolbelt.json)",
     "contents": [
       "toolbelt.json (gitlab+supabase+render+vck sovereign tokens, env-wired)"
     ],
-    "sealedAt": "2026-10-10T04:48:00Z (R301-b)",
-    "law": "every secret class sealed to the ONE live pass of this meta; zero plaintext secrets tracked; fingerprints-only in logs"
+    "sealedAt": "2026-10-10T10:56:34Z",
+    "law": "every secret class sealed to the ONE live pass of this meta; zero plaintext secrets tracked; fingerprints-only in logs",
+    "replacedArchive": "agent/vault/TOOLBELT-SEAL-2026-10-10.zip.enc",
+    "note": "R306 operator rotation: gitlab: ROTATED glpat-…h9sy(62) → glpat-…kcA8(49) · supabase: unchanged sbp_fc…a3fd(44) · vck: unchanged vck_1C…9f67(60) · render: unchanged rnd_NT…wMcS(32)"
+  },
+  "integrationsVault": {
+    "file": "agent/vault/INTEGRATIONS-SEAL-20261010T105634Z.zip.enc",
+    "passRef": "integrationsVault.pass (this same meta)",
+    "pass": "FAK1whlwn2hURNpwpOzakRQjfok87bwY",
+    "outerSha256": "c29a6a783be4ad6a9ab8ed61e005755f867e2165d6c7c08483587078ce175c28",
+    "innerSha256": "6888702fa2cf64f35cc25b3eac161cd67339dc2c64bc6d09b2af204f8565c668",
+    "formula": "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<integrationsVault.pass> | unzip (integrations.json)",
+    "contents": [
+      "tavily",
+      "tavily-2",
+      "tavily-mcp-endpoint",
+      "jina",
+      "unknown-id",
+      "unknown-secret"
+    ],
+    "source": "upload/איפאי.txt (operator drop 2026-10-10 12:42-13:20)",
+    "devMap": [
+      "https://github.com/vllm-project/vllm",
+      "https://github.com/Skyvern-AI/Skyvern",
+      "https://github.com/browser-use/browser-use",
+      "https://github.com/langsearch-ai/langsearch",
+      "https://github.com/topics/free-web-search"
+    ],
+    "sealedAt": "2026-10-10T10:56:34Z",
+    "law": "search/AI capability class — web powers only, ZERO chain authority; unidentified items stay labeled until the operator names them"
   }
 }

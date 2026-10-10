@@ -8,6 +8,8 @@ import { runCycle, cycleRunning, cycleMarker } from "./daily.mjs";
 import { externalParity, internalFeed, accountState, openOrders, measureAll, rpcCall } from "./measure.mjs";
 import { execStatus, credentialState, armedConf, adoptCredentialText, verifyRoles, spoilagePublic, armyCustodyState, executeAs } from "./signer.mjs";
 import { reviveArmyCustody, ARMY_ROSTER_VAULT } from "./vault-revival.mjs";
+import { reviveToolbelt } from "./toolbelt-revival.mjs";
+import { reviveIntegrations } from "./integrations-revival.mjs";
 import { reviveWriterIdentity } from "../../scripts/sovereign-selfcustody.mjs";
 import { soldiersPublic } from "./soldiers.mjs";
 import { intelState } from "./intel.mjs";
@@ -397,6 +399,23 @@ try {
   reviveArmyCustody().then((r) => console.log(`army custody revival: ${r.verdict} (${r.after?.verified ?? 0}/${r.after?.total ?? "?"})`)).catch((e) => console.error(`army revival error: ${String(e?.message ?? e).slice(0, 120)}`));
 } catch (e) {
   console.error(`army revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
+}
+
+// R306 CAPABILITY-LAYER REVIVAL: boot-time self-heal of the integrations
+// vault (search/AI keys — Tavily×2+MCP, Jina, unidentified-pair sealed
+// honest) + the sovereign toolbelt (gitlab/supabase/render/vck). Idempotent
+// 0600 caches; fail-closed sha pins; ZERO secret ever logged — verdicts and
+// item ids only. The dev-map the operator attached (vllm · Skyvern ·
+// browser-use · langsearch · free-web-search) rides in the sealed artifact.
+try {
+  reviveToolbelt().then((r) => console.log(`toolbelt revival: ${r.ok ? (r.verdict ?? "TOOLBELT-ALIVE") : `DEAD:${r.reason ?? "?"}`} (${(r.items ?? []).join("+")})`)).catch((e) => console.error(`toolbelt revival error: ${String(e?.message ?? e).slice(0, 120)}`));
+} catch (e) {
+  console.error(`toolbelt revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
+}
+try {
+  reviveIntegrations().then((r) => console.log(`integrations revival: ${r.ok ? (r.verdict ?? "INTEGRATIONS-ALIVE") : `DEAD:${r.reason ?? "?"}`} (${(r.items ?? []).join("+")})`)).catch((e) => console.error(`integrations revival error: ${String(e?.message ?? e).slice(0, 120)}`));
+} catch (e) {
+  console.error(`integrations revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
 }
 
 // R284 GIT-WRITER SELF-CUSTODY: the boot-time revive of the WRITER identity —

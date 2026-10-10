@@ -2853,6 +2853,35 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   ok("R292 rank: law string present", typeof ROUTER_LAW === "string" && ROUTER_LAW.includes("slots"));
 }
 
+/* R306 · INTEGRATIONS VAULT — the seal-formula roundtrip + pin fail-closed
+ * (the same AES-256-CBC·pbkdf2·300k + sha256 outer/inner discipline as the
+ * army vault, now covering the operator's search/AI capability drops). The
+ * pure unlockFromBytes is exercised against a live-sealed fixture: happy
+ * path opens, tampered outer pin refuses, wrong pass refuses. */
+{
+  const { unlockFromBytes } = await import("./integrations-revival.mjs");
+  const fs306 = await import("node:fs");
+  const cp306 = await import("node:child_process");
+  const crypto306 = await import("node:crypto");
+  const p306 = await import("node:path");
+  const dir = fs306.mkdtempSync("/tmp/r306-selftest-");
+  fs306.chmodSync(dir, 0o700);
+  try {
+    fs306.writeFileSync(p306.join(dir, "integrations.json"), JSON.stringify({ items: [{ id: "tavily", token: "tvly-selftest-token-value-0001", env: "SAOS_TAVILY_TOKEN" }] }));
+    cp306.execFileSync("zip", ["-q", "-j", p306.join(dir, "inner.zip"), p306.join(dir, "integrations.json")], { stdio: ["ignore", "ignore", "pipe"] });
+    const pass306 = "r306-selftest-pass";
+    cp306.execFileSync("openssl", ["enc", "-aes-256-cbc", "-pbkdf2", "-iter", "300000", "-in", p306.join(dir, "inner.zip"), "-out", p306.join(dir, "sealed.enc"), "-pass", `pass:${pass306}`], { stdio: ["ignore", "ignore", "pipe"] });
+    const enc306 = fs306.readFileSync(p306.join(dir, "sealed.enc"));
+    const sha306 = (b) => crypto306.createHash("sha256").update(b).digest("hex");
+    const good306 = unlockFromBytes(enc306, { outerSha256: sha306(enc306), pass: pass306, innerName: "integrations.json" });
+    ok("R306 integrations: seal→unlock roundtrip alive", good306.ok === true && good306.data?.items?.[0]?.id === "tavily");
+    ok("R306 integrations: tampered outer pin fails closed", unlockFromBytes(enc306, { outerSha256: "0".repeat(64), pass: pass306, innerName: "integrations.json" }).ok === false);
+    ok("R306 integrations: wrong pass fails closed", unlockFromBytes(enc306, { outerSha256: sha306(enc306), pass: "wrong-pass", innerName: "integrations.json" }).ok === false);
+  } finally {
+    try { fs306.rmSync(dir, { recursive: true, force: true }); } catch { /* tmp best-effort */ }
+  }
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
