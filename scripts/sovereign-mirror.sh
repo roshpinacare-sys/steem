@@ -40,37 +40,40 @@ export GIT_CONFIG_KEY_0=http.extraheader
 export GIT_CONFIG_VALUE_0="Authorization: Basic $AUTH"
 unset AUTH
 
-# 1) best-effort project ensure — R306-b: probe the SCOPED project endpoint
-# (measured 200) instead of the collection endpoint (403 red herring).
-# The push itself remains the only judge.
-code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 \
-  -H "PRIVATE-TOKEN: $SAOS_GITLAB_TOKEN" \
-  "https://gitlab.com/api/v4/projects/roshpinacare%2Fsteem" 2>/dev/null || echo 000)
-case "$code" in
-  200) echo "mirror: project exists" ;;
-  404) c2=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST \
-        -H "PRIVATE-TOKEN: $SAOS_GITLAB_TOKEN" -H "Content-Type: application/json" \
-        -d '{"name":"steem","path":"steem","visibility":"private"}' \
-        "https://gitlab.com/api/v4/projects" 2>/dev/null || echo 000) \
-       echo "mirror: project ensure code=$c2" ;;
-  *) echo "mirror: API code=$code (informational) — push will judge" ;;
-esac
+# 1) NO API PROBE (R306-b): every request spends the plane's rate budget and
+# Cloudflare throttles this datacenter IP probabilistically (measured: the
+# same endpoint 200 then 403 within minutes, cf-ray HKG). The CAS ls-remote
+# + the push itself are the only judges.
 
 # 2) push with retry/backoff (the push itself is the mirror law)
-# R303 · BOUNDED-PUSH LAW: a push to a blocked/hostile plane used to hang on
-# TCP connect for minutes per attempt — measured live: it froze the runner's
-# tick for 15min and (via the then-unbounded tick) blacked out the autonomy
-# queue for an hour. Every attempt is now bounded at 240s.
+# R303 · BOUNDED-PUSH LAW: every attempt is bounded at 240s.
+# R306-b MIRROR-CAS LAW (measured live 11:45Z): the GitLab project carries
+# PRE-EXISTING foreign history (remote saos-cockpit = 2d8a01cf, not an
+# ancestor of the branch of record) — a mirror's law is CAS-overwrite:
+# measure the remote sha, then force-with-lease against THAT exact value —
+# safe against racing pushes, decisive against stale history.
+# R306-b THROTTLE-AWARE LAW: ls-remote is retried (the plane 403s
+# probabilistically — an empty read is NOT proof of absence), and push
+# retries space out 45s/90s to respect the cooldown window.
+RSHA=""
+for i in 1 2 3; do
+  RSHA=$(timeout 60 git ls-remote "$GL_URL" "refs/heads/$REF" 2>/dev/null | awk '{print $1}')
+  [ -n "$RSHA" ] && break
+  sleep 15
+done
+if [ -n "$RSHA" ]; then
+  LEASE="--force-with-lease=refs/heads/$REF:$RSHA"
+  echo "mirror: remote=$RSHA → CAS-overwrite"
+else
+  LEASE="--force-with-lease=:$REF"
+  echo "mirror: remote read empty ×3 → create-if-absent"
+fi
 ok=0
 for attempt in 1 2 3; do
-  if timeout 240 git push "$GL_URL" "$REF:$REF" --force-with-lease=:"$REF" 2>/tmp/mirror-git.err; then
+  if timeout 240 git push "$GL_URL" "$REF:$REF" $LEASE 2>/tmp/mirror-git.err; then
     ok=1; break
   fi
-  # first push to an empty repo: force-with-lease vs nothing fails — plain push retry
-  if timeout 240 git push "$GL_URL" "$REF:$REF" 2>>/tmp/mirror-git.err; then
-    ok=1; break
-  fi
-  sleep $((attempt * 20))
+  sleep $((attempt * 45))
 done
 
 if [ "$ok" = "1" ]; then
