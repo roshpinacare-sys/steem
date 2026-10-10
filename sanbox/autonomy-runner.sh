@@ -103,6 +103,19 @@ case "${1:-status}" in
       }
       ensure_runtime
 
+      # ── R304 · שומר-שאריות-החתימה (בכל-טיק · R302 ממוכן) ──
+      # נמדד-חי: נפילה-משחזרת commit.gpgsign=true; בלי-מפתח-סודי כל-הקומיטים-
+      # האוטונומיים נכשלים. עם-המפתח-החי של-הגוף — עוגנים-אמון (ownertrust)
+      # כדי-שהחתימות-יאומתו-כ-G/SIGNED ולא-U (חוק-TRUST-ANCHOR R304).
+      if [ "$(git config commit.gpgsign 2>/dev/null)" = "true" ]; then
+        SK="$(git config user.signingkey 2>/dev/null || true)"
+        if [ -n "$SK" ] && gpg --list-secret-keys "$SK" >/dev/null 2>&1; then
+          printf '%s:6:\n' "$SK" | gpg --import-ownertrust >/dev/null 2>&1 || true
+        else
+          git config commit.gpgsign false && log "R304: gpgsign=true בלי-מפתח-סודי → false (שומר-שאריות)"
+        fi
+      fi
+
       get() { jq -r "$1" "$RUNTIME" 2>/dev/null; }
 
       # ── SB-1 · אימות-ריבונות (per-session + חוק-ניסיון-חוזר R300-c:
