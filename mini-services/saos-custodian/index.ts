@@ -196,6 +196,23 @@ function tick() {
       if (ff.code === 0) {
         appendAlert("divergence-ff-healed", `fast-forwarded to ${sh("git", ["rev-parse", "--short", "HEAD"]).out}`);
         res.divergenceExit = 0;
+      } else {
+        /* R303 · SELF-RECONCILIATION LAW (measured 2026-10-10: 56 divergence
+         * alerts/24h — the CI heartbeat advances every ~15min while the live
+         * state files are always dirty, so ff-only collides and the tree
+         * drifts until an agent ran the by-hand dance). The dance is now a
+         * fail-closed script (scripts/reconcile-now.sh: G0-G7 — ahead==0
+         * guard, soft-reset only, alive-wins json, union jsonl, jq-validate,
+         * 0 code deletions, push through the gate). Proven live twice by
+         * hand (R300 8da78332, R302 987f0664) and once as a script before
+         * wiring. Nothing waits for a human operator. */
+        const rec = sh("bash", ["scripts/reconcile-now.sh"]);
+        if (rec.code === 0 && (rec.out || "").includes('"ok":true')) {
+          appendAlert("reconcile-ok", (rec.out || "").slice(0, 160));
+          res.divergenceExit = 0;
+        } else {
+          appendAlert("reconcile-fail", `${((rec.out || "") + " " + (rec.err || "")).slice(0, 180)}`);
+        }
       }
     } else if (res.dirty > 0) {
       // 3) validate every state JSON — never persist torn state to the chain of record
