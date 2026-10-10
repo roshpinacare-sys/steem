@@ -2462,7 +2462,8 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
 
   eq("watchdog sig: G is SIGNED", classifySig("G"), "SIGNED");
   eq("watchdog sig: N is UNSIGNED", classifySig("N"), "UNSIGNED");
-  ok("watchdog sig: B/E/X/U are INVALID", ["B", "E", "X", "U"].every((g) => classifySig(g) === "INVALID"));
+  ok("watchdog sig: B/E/X are INVALID", ["B", "E", "X"].every((g) => classifySig(g) === "INVALID"));
+  eq("watchdog sig: U is SIGNED-UNTRUSTED (good sig, trust pending — R304)", classifySig("U"), "SIGNED-UNTRUSTED");
   eq("watchdog sig: unknown glyph is UNKNOWN", classifySig("?"), "UNKNOWN");
 
   const now = 1759996800000;
