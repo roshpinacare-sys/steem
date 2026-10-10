@@ -1,21 +1,24 @@
 {
-  "at": "2026-10-10T04:36:22.499Z",
+  "at": "2026-10-10T14:55:17.238Z",
   "custody": "14/14",
-  "social": "SOCIAL-IDLE",
-  "socialExecuted": 0,
-  "content": "BRIDGE-DOWN",
+  "social": "SOCIAL-EXECUTED",
+  "socialExecuted": 17,
+  "content": "DRAFTS-QUEUED",
   "contentSource": null,
-  "dex": "STANDBY",
-  "dexReason": "engine-alive",
+  "post": "DAILY-CAP",
+  "postAccount": null,
+  "postPermlink": null,
+  "dex": "TAKEOVER-BLOCKED-NO-CREDENTIAL",
+  "dexReason": "anchor-stale",
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-10T04:36:22.499Z",
+    "at": "2026-10-10T14:55:17.238Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 37106,
+        "ms": 43915,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -24,27 +27,36 @@
         "name": "dex-takeover",
         "ok": true,
         "ms": 1,
-        "verdict": "STANDBY",
-        "reason": "engine-alive",
-        "anchorAgeMs": 2733351
+        "verdict": "TAKEOVER-BLOCKED-NO-CREDENTIAL",
+        "reason": "anchor-stale"
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 28738,
-        "verdict": "SOCIAL-IDLE",
-        "executed": 0,
+        "ms": 495544,
+        "verdict": "SOCIAL-EXECUTED",
+        "executed": 17,
         "refused": 0,
-        "due": 0
+        "due": 80
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 7,
-        "verdict": "BRIDGE-DOWN",
-        "draftsQueued": 0,
+        "ms": 36771,
+        "verdict": "DRAFTS-QUEUED",
+        "draftsQueued": 3,
         "exposureBlocked": 0,
         "source": null
+      },
+      "post": {
+        "name": "post",
+        "ok": true,
+        "ms": 4,
+        "verdict": "DAILY-CAP",
+        "account": null,
+        "permlink": null,
+        "mode": null,
+        "note": null
       }
     }
   }
