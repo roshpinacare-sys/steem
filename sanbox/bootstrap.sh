@@ -73,6 +73,15 @@ bash "$SB/autonomy-runner.sh" run-once >/dev/null 2>&1 \
   && ok "אוטונומיה: tick ראשון הושלם (תור-המשימות מבוצע)" \
   || warn "אוטונומיה: tick ראשון נכשל — ראה sanbox/state/autonomy-runner.log"
 
+# ── 4.6 · איטום-כלי-העבודה: החיית-ה-toolbelt מהכספת (R301-b) ──
+# כל-התחלה-קרה מחיה את ארבעת-היכולות (gitlab/supabase/render/vck) מהכספת-
+# החתומה — pins fail-closed; כישלון-מדווח-בכנות ולא-חוסם (קריטיות-חלקית).
+TB=$(node mini-services/saos-engine/toolbelt-revival.mjs 2>/dev/null || true)
+case "$TB" in
+  *'"ok":true'*) ok "toolbelt: חי ($(printf '%s' "$TB" | jq -r '.items | join(",")' 2>/dev/null)) — יכולות-חוץ-מקוונות" ;;
+  *) warn "toolbelt: לא הוחיה ($TB) — היכולות-החוץ-מקוונות מושהות, אין-חסימת-אתחול" ;;
+esac
+
 # ── 5 · בריאות + קוקפיט (לא-קריטי) ──
 if port_ok 3000 /; then ok "קוקפיט: חי (:3000)"; else warn "קוקפיט: לא חי (:3000) — מנוהל על-ידי dev-daemon, לא-קריטי"; fi
 
