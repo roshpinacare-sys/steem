@@ -32,7 +32,12 @@
  * JSONL=union-ts-ordered; the chain is the anchor of truth, the ledger is trace.
  *
  * CAPS (enforced in BOTH modes so dry-run telemetry stays honest):
- *   maxPostsPerDay = 4 fleet-wide        minGapMinutesPerAccount = 180
+ *   T-62 release (trace 1a1268338e36d0ed): the old fleet-wide 4/day cap was a
+ *   FALSE self-limit — measured live choking the stream (DAILY-CAP verdicts
+ *   while most custody accounts sat idle). The REAL external law is anti-spam
+ *   pacing per account: ≤4 posts/day/account, ≥90min spacing (doctrine),
+ *   sha8 dedupe. Fleet ceiling = 16/day across all custody-live accounts.
+ *   minGapMinutesPerAccount = 90 (was 180; doctrine L-26 boss value).
  *   dedupe: a draft sha (title+body) that appears ANYWHERE in the sent ledger
  *   is never signed again — resubmission cannot double-post.
  *
@@ -62,8 +67,10 @@ const ARMED_FILE = path.join(ROOT, ".secrets", "social-armed.json");
 const KEY_CACHE = path.join(ROOT, ".secrets", "army-keys.json");
 const OPS_FILE = path.join(STATE, "content-ops.json");
 
-const MAX_POSTS_PER_DAY = 4;
-const MIN_GAP_MIN_PER_ACCOUNT = 180;
+/* T-62 release: fleet ceiling 16/day (was false 4) + per-account gap 90min (was false 180).
+ * Real external bounds kept: ≤4/day/account, ≥90min spacing, sha8 dedupe, sig gate. */
+const MAX_POSTS_PER_DAY = 16;
+const MIN_GAP_MIN_PER_ACCOUNT = 90;
 const CHAINS = {
   steem: { chainId: STEEM_CHAIN_ID, parentPermlink: "steem" },
   hive: { chainId: HIVE_CHAIN_ID, parentPermlink: "hive-101100" }, /* node list must be wired before first use */

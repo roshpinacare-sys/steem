@@ -2449,11 +2449,11 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
 
   /* cadence L-26: the law itself + the slot math */
   eq("compiler cadence: the law is L-26", CADENCE.law, "L-26");
-  eq("compiler cadence: post interval 300s", CADENCE.post.minIntervalSec, 300);
+  eq("compiler cadence: post interval 90min", CADENCE.post.minIntervalSec, 5400); /* T-62 release: contract follows the released cadence */
   ok("compiler cadence: custody red freezes", CADENCE.freezeOnCustodyRed === true);
-  eq("compiler cadence: slot honors interval + jitter", cadenceNextEligible("2026-10-09T10:00:00Z", Date.parse("2026-10-09T10:01:00Z"), 45000), "2026-10-09T10:05:45.000Z");
+  eq("compiler cadence: slot honors interval + jitter", cadenceNextEligible("2026-10-09T10:00:00Z", Date.parse("2026-10-09T10:01:00Z"), 45000), "2026-10-09T11:30:45.000Z"); /* T-62: expectation follows released 90min law */
   eq("compiler cadence: no last post → eligible now", cadenceNextEligible(null, 1759996800000, 0), new Date(1759996800000).toISOString());
-  eq("compiler cadence: fresh post pushes slot forward", cadenceNextEligible("2026-10-09T10:00:00Z", Date.parse("2026-10-09T10:02:00Z"), 0), "2026-10-09T10:05:00.000Z");
+  eq("compiler cadence: fresh post pushes slot forward", cadenceNextEligible("2026-10-09T10:00:00Z", Date.parse("2026-10-09T10:02:00Z"), 0), "2026-10-09T11:30:00.000Z"); /* T-62: expectation follows released 90min law */
 }
 
 /* ═══ R287 · THE LIVE AUTHORITY WATCHDOG (pure layer) ═════════════════════ */
