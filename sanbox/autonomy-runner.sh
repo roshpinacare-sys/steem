@@ -80,9 +80,13 @@ case "${1:-status}" in
 
       get() { jq -r "$1" "$RUNTIME" 2>/dev/null; }
 
-      # ── SB-1 · אימות-ריבונות (per-session, ואז כל-tick כבקרה זולה דרך סעיפים) ──
+      # ── SB-1 · אימות-ריבונות (per-session + חוק-ניסיון-חוזר R300-c:
+      # כישלון-טרנזיטורי (מיזוג-בעיצומו / עוגן-טרם-נחסם) לא ננעל-עד-הפעלה-מחדש —
+      # נמדד-חי 03:39Z: SB1 נכשל פעם-אחת בזמן-ריקון והסשן נעל אותו ל-נצח.
+      # מריצים שוב בכל-tick עד-ירוק) ──
       SB1_LAST_SESSION=$(get '.SB1.session // ""')
-      if [ "$SB1_LAST_SESSION" != "$SESSION" ]; then
+      SB1_LAST_OK=$(get '.SB1.ok // false')
+      if [ "$SB1_LAST_SESSION" != "$SESSION" ] || [ "$SB1_LAST_OK" != "true" ]; then
         RC=$(run_task SB1 "bash sanbox/verify.sh all" "exit 0")
         jq --arg s "$SESSION" '.SB1.session = $s' "$RUNTIME" > "$RUNTIME.tmp" && mv "$RUNTIME.tmp" "$RUNTIME"
         [ "$RC" != "0" ] && VERIFY_FAIL=1

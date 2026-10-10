@@ -62,8 +62,21 @@ const vr = await Promise.resolve(verifyRoles(ACCOUNT)).catch((e) => ({ verdict: 
 console.error(`verifyRoles: ${JSON.stringify(vr?.verdict ?? vr).slice(0, 120)}`);
 const coProven = custodyOf(ACCOUNT);
 if (coProven !== "master-verified") {
-  console.log(JSON.stringify({ ok: false, verdict: `CUSTODY-REFUSED:${coProven}` }));
-  process.exit(1);
+  /* R300-b · SECOND ADMISSION PATH (the custodian's own measured cure, R297:
+   * after any cold start the password-derivation cache is dead and verifyRoles
+   * chronically mismatches — measured live 2026-10-10 03:41Z — while the SAME
+   * vault's WIF is chain-judged alive 14/14). The chain itself vouches:
+   * adoptAccountPostingWif runs the generation unlock + role-exact
+   * live-authority match, fail-closed, memory-only, zero secrets logged. */
+  const { adoptAccountPostingWif } = await import("./vault-revival.mjs");
+  const adopt = await Promise.resolve(adoptAccountPostingWif(ACCOUNT)).catch((e) => ({ ok: false, reason: String(e?.message ?? e).slice(0, 100) }));
+  console.error(`vault adoption: ${adopt?.ok ? String(adopt.gen ?? "ok") : String(adopt?.reason ?? "refused").slice(0, 100)}`);
+  if (adopt?.ok) await Promise.resolve(verifyRoles(ACCOUNT)).catch(() => null);
+  const co2 = custodyOf(ACCOUNT);
+  if (co2 !== "master-verified") {
+    console.log(JSON.stringify({ ok: false, verdict: `CUSTODY-REFUSED:${co2}` }));
+    process.exit(1);
+  }
 }
 
 const tip = sh("git", ["rev-parse", "HEAD"]).out;

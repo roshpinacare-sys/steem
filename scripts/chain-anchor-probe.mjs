@@ -20,7 +20,16 @@ const ACCOUNT = process.env.SAOS_ACCOUNT ?? "headcorner";
  * chain-provable via get_transaction while get_account_history still served
  * the 19:49 page). The probe now scans EACH node, keeps the FRESHEST anchor
  * (by at/block), and only then ancestry-judges. A stale page can no longer
- * convict; only an all-nodes-agreed stale tip declares drift. */
+ * convict; only an all-nodes-agreed stale tip declares drift.
+ * R300-c · STAMP-TXID LAW (measured live 2026-10-10 03:55Z: anchor-ok txid
+ * cd7ea39d provably included at block 110307710 via get_transaction while
+ * ALL THREE public nodes' history pages still served the 23:29 anchor —
+ * the third recurrence of the stale-page lag). The local custody stamp
+ * (state/custody-anchor.json) carries the txid of the last broadcast.
+ * get_transaction is inclusion-provable immediately; the chain itself
+ * supplies the op payload (branch+tip) — the stamp only supplies the
+ * POINTER, never the verdict. Fail-closed unchanged: an unprovable/wrong
+ * stamp is ignored, ancestry judgment stays exact. */
 const NODES = (process.env.SAOS_NODE ?? "https://api.steemit.com,https://api.steem.house,https://steemapi.boylikegirl.club")
   .split(",").map((s) => s.trim()).filter(Boolean);
 const ANCHOR_ID = "saos-git-custody-v1";
@@ -116,6 +125,38 @@ for (const NODE of NODES) {
   /* early exit: a fresh-enough anchor that IS in HEAD lineage — verdict settled */
   if (latest?.tip) {
     try { execSync(`git merge-base --is-ancestor ${latest.tip} HEAD`, { stdio: "pipe" }); break; } catch { /* keep scanning */ }
+  }
+}
+
+/* R300-c · STAMP-TXID PATH: if history scan found only an older anchor (or
+ * none), prove the stamped txid directly — get_transaction reads the op
+ * payload FROM THE CHAIN, so a match is chain-truth, not self-attestation. */
+const stampTx = (() => {
+  try {
+    const p = new URL("../mini-services/saos-engine/state/custody-anchor.json", import.meta.url);
+    const s = JSON.parse(execSync(`cat ${p.pathname} 2>/dev/null`, { encoding: "utf8" }));
+    return s?.txid && s?.at ? { txid: s.txid, at: new Date(s.at).toISOString() } : null;
+  } catch { return null; }
+})();
+if (stampTx && (!latest || fresher({ at: stampTx.at }, latest))) {
+  for (const NODE of NODES) {
+    const r = await rpcOn(NODE, "condenser_api.get_transaction", [stampTx.txid]);
+    const ops = r?.result?.operations ?? [];
+    let stampProven = false;
+    for (const op of ops) {
+      const t = op?.op;
+      if (t?.[0] === "custom_json" && t?.[1]?.id === ANCHOR_ID) {
+        try {
+          const j = JSON.parse(t[1].json);
+          if (j.branch === "saos-cockpit" && j.tip) {
+            const cand = { ...j, block: r.result.block_num, at: j.at ?? stampTx.at };
+            if (fresher(cand, latest)) latest = cand;
+            stampProven = true;
+          }
+        } catch { /* skip malformed */ }
+      }
+    }
+    if (stampProven) break; /* the stamped txid is chain-proven — verdict input settled */
   }
 }
 

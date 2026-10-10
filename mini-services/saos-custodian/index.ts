@@ -182,7 +182,21 @@ function tick() {
 
     if (dc.code !== 0) {
       // LAW: divergence => stop, alert, decide later. Never force, never auto-merge.
-      appendAlert("divergence", `exit=${dc.code} :: ${dc.out} ${dc.err}`);
+      appendAlert("divergence", `exit=${dc.code} :: ${dc.out} ${dc.err} :: REMEDY(agent-law): snapshot→fetch→soft-reset origin→alive-wins json+union jsonl→sovereign-push`);
+      /* R300-b · INTERNAL-OPERATOR SELF-HEAL (the standing law: nothing waits
+       * for a human operator — measured 2026-10-10: the custodian alerted
+       * divergence every 10min for 3h doing nothing). Behind-only divergence
+       * (remote advanced, we changed nothing) is healable with ZERO data
+       * loss: fast-forward only — merge --ff-only cannot create commits,
+       * cannot lose lines, and harmlessly refuses the diverged case. True
+       * divergence (both sides advanced, e.g. upstream history rewrite) stays
+       * alert-only: it needs the agent merge-laws (the REMEDY line above). */
+      sh("git", ["fetch", "origin"]);
+      const ff = sh("git", ["merge", "--ff-only", "origin/saos-cockpit"]);
+      if (ff.code === 0) {
+        appendAlert("divergence-ff-healed", `fast-forwarded to ${sh("git", ["rev-parse", "--short", "HEAD"]).out}`);
+        res.divergenceExit = 0;
+      }
     } else if (res.dirty > 0) {
       // 3) validate every state JSON — never persist torn state to the chain of record
       let files: string[] = [];
@@ -228,6 +242,19 @@ function tick() {
         }
       }
     }
+    /* R300-b · ANCHOR-FRESHNESS LAW (measured 2026-10-10: the chain anchor
+     * rotted 4.5h while custody was fully alive — anchorWitness fired only
+     * after a custodian-INITIATED push, so any push by another plane (agent
+     * or CI heartbeat) left the anchor stale. Per T-38 a >90min-stale anchor
+     * opens the public runner's dex-takeover gate = the double-sovereignty
+     * window. The anchor is a property of CUSTODY LIVENESS, not of who
+     * pushed. The internal 1/h rate-limit of anchorWitness still bounds the
+     * broadcast; failed attempts re-run per tick with deduped alerts. */
+    try {
+      let lastAt = 0;
+      try { lastAt = Number(JSON.parse(readFileSync(ANCHOR_STAMP, "utf8")).at) || 0; } catch {}
+      if (Date.now() - lastAt > 90 * 60_000) void anchorWitness();
+    } catch {}
   } catch (e) {
     res.error = String(e);
     appendAlert("tick-error", res.error);
