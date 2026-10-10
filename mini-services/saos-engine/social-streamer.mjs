@@ -35,7 +35,8 @@
  * release: the caps bind THROUGHPUT, never truth — 12/day across a 14-account
  * fleet is one post per account per day, the chain's own 5-minute posting
  * window is the real limit, and every other gate still stands):
- *   maxPostsPerDay = 12 fleet-wide       minGapMinutesPerAccount = 45
+ *   maxPostsPerDay = 14 fleet-wide (L-26: 1/account × 14 accounts)
+ *   minGapMinutesPerAccount = 45
  *   dedupe: a draft sha (title+body) that appears ANYWHERE in the sent ledger
  *   is never signed again — resubmission cannot double-post.
  *
@@ -66,12 +67,15 @@ const KEY_CACHE = path.join(ROOT, ".secrets", "army-keys.json");
 const OPS_FILE = path.join(STATE, "content-ops.json");
 const REV_STATE = path.join(STATE, "revenue-staging.json");
 
-/* R309 · RELEASED CAPS (operator order: full intelligent activity, no
- * artificial throttles). Engineering grounds: 14 fleet accounts × 1 post/day
- * = 14; cap 12 keeps a margin; 45-minute per-account gap is 9× the chain's
- * real 5-minute posting window. Rotation still picks the least-used account;
- * dedupe, sig-verify, custody and kill-switch are UNTOUCHED. */
-export const MAX_POSTS_PER_DAY = 12;
+/* R309/R310 · RELEASED CAPS (operator order: full intelligent activity, no
+ * artificial throttles). Engineering grounds: the fleet holds 14 custody-
+ * verified accounts and L-26 binds perDayPerAccount=1 — so the fleet cap is
+ * exactly 14 (one post per account per day); 45-minute per-account gap is
+ * 9× the chain's real 5-minute posting window. Rotation still picks the
+ * least-used account; dedupe, sig-verify, custody and kill-switch are
+ * UNTOUCHED. Every cap here carries its measurement line — a cap without a
+ * measurement is value theft (R309 lesson). */
+export const MAX_POSTS_PER_DAY = 14;
 export const MIN_GAP_MIN_PER_ACCOUNT = 45;
 const CHAINS = {
   steem: { chainId: STEEM_CHAIN_ID, parentPermlink: "steem" },
@@ -314,6 +318,32 @@ export async function runOnce({ stagingOnly = false } = {}) {
     account: pick.acc.name, permlink, txid: broadcasted ? txid : null, node: b.node ?? null,
     error: broadcasted ? undefined : String(b.error ?? "").slice(0, 120), stage,
   };
+}
+
+/* ── R310 · THE LIVE STREAM (the missing sight-channel) ───────────────────
+ * The operator's measured complaint: "אני לא רואה פוסטים" — posts breathe
+ * on-chain and NO surface showed them (the cockpit had no posts panel at
+ * all). One-body law: the ENGINE serves the stream itself — broadcast rows
+ * from the sent ledger, titles resolved from the content-addressed drafts,
+ * steemit links, today count vs cap, and the queue/revenue runway. */
+export function streamState() {
+  const live = readSent().filter((r) => r.verdict === "BROADCASTED")
+    .sort((a, b) => String(a.at).localeCompare(String(b.at)));
+  const posts = live.slice(-12).reverse().map((r) => {
+    let title = null;
+    try { title = readJson(path.join(DRAFTS, `${r.sha8}.json`), null)?.title ?? null; } catch { /* missing draft file: the permlink still tells the story */ }
+    return {
+      at: r.at ?? null, account: r.account ?? null, permlink: r.permlink ?? null, txid: r.txid ?? null, title,
+      url: r.account && r.permlink ? `https://steemit.com/@${r.account}/${r.permlink}` : null,
+    };
+  });
+  const dayStart = new Date(); dayStart.setUTCHours(0, 0, 0, 0);
+  const todayCount = live.filter((r) => r.at && new Date(r.at) >= dayStart).length;
+  const ops = readJson(OPS_FILE, null);
+  const runwayDrafts = (Array.isArray(ops?.queue) ? ops.queue : []).filter((d) => d?.status === "drafted").length;
+  let readyRevenue = 0;
+  try { readyRevenue = (readJson(REV_STATE, null)?.packages ?? []).filter((p) => p?.state === "BROADCAST-READY").length; } catch { /* fail-soft */ }
+  return { posts, todayCount, cap: MAX_POSTS_PER_DAY, gapMin: MIN_GAP_MIN_PER_ACCOUNT, runwayDrafts, readyRevenue };
 }
 
 /* ── CLI ────────────────────────────────────────────────────────────────── */
