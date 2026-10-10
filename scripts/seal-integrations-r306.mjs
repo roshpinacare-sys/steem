@@ -107,8 +107,14 @@ const integrations = {
 /* ---------- parse drop 2: apiii.txt (sovereign toolbelt rotation) ---------- */
 const apiiiLines = readUpload("apiii.txt").split("\n").map((l) => l.trim()).filter(Boolean);
 const aToks = apiiiLines.map(tokensInLine);
+/* R306-b CORRECTION (measured live 11:07Z): the gitlab token's dot-segment
+ * suffix (.01.########) is PART OF THE TOKEN — the 62-char form authenticates
+ * (API 200, account roshpinacare) while the "clean" 49-char cut fails 401.
+ * Token regex for gitlab therefore spans dots; the other services stay
+ * dot-free classes. Honesty law: the chain/API judges, never the shape. */
+const aToksGitlab = apiiiLines.map((l) => (l.match(/glpat-[A-Za-z0-9_.-]+/g) ?? []));
 const rot = {
-  gitlab: aToks[0]?.find((t) => t.startsWith("glpat-")) ?? null,
+  gitlab: aToksGitlab[0]?.find((t) => t.startsWith("glpat-")) ?? null,
   supabase: aToks[1]?.find((t) => t.startsWith("sbp_")) ?? null,
   vck: aToks[2]?.find((t) => t.startsWith("vck_")) ?? null,
   render: aToks[3]?.find((t) => t.startsWith("rnd_")) ?? null,
