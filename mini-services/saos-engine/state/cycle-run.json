@@ -1,10 +1,10 @@
 {
   "running": false,
-  "startedAt": "2026-10-10T00:20:20.052Z",
-  "finishedAt": "2026-10-10T00:22:19.288Z",
-  "ms": 117924,
-  "health": "ok",
-  "ok": true,
+  "startedAt": "2026-10-10T01:03:43.760Z",
+  "finishedAt": "2026-10-10T01:05:36.491Z",
+  "ms": 82768,
+  "health": "blocked",
+  "ok": false,
   "steps": {
     "observe": true,
     "intel": true,
@@ -12,11 +12,11 @@
     "peg": true,
     "convert": true,
     "redeploy": true,
-    "curate": true,
+    "curate": false,
     "army-curate": true,
     "tag-roi": true,
-    "capital-route": true,
-    "execute": true,
+    "capital-route": false,
+    "execute": false,
     "soldiers": true,
     "community": true,
     "learn": true,
@@ -40,7 +40,15 @@
     "council": true,
     "report": true
   },
-  "blockedSteps": [],
-  "failedSteps": [],
+  "blockedSteps": [
+    "curate",
+    "capital-route",
+    "execute"
+  ],
+  "failedSteps": [
+    "curate",
+    "capital-route",
+    "execute"
+  ],
   "error": null
 }
