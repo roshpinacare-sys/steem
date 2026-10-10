@@ -242,6 +242,8 @@ export async function GET() {
       : null,
     webintel: s.webintel ?? null,
     content: s.content ?? null,
+    /* R310: זרם-חי — הפוסטים על השרשרת (passthrough, המנוע מחשב) */
+    stream: s.stream ?? null,
     /* R246: הקהילה-הריבונית + מסילת-ההמרות-באוויר (passthrough, המנוע מחשב, השכבה מציגה) */
     community: s.community ?? null,
     conversions: s.conversions ?? null,

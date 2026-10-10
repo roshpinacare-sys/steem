@@ -2882,6 +2882,29 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   }
 }
 
+/* ── R309 · THE RELEASE ROUND (operator: full intelligent activity, no
+ * artificial throttles) — released caps are asserted so they can never
+ * silently regress to the throttled past; the revenue ingest shares the
+ * broadcaster's gates so a READY package can never rot in the buffer. ── */
+{
+  const s309 = await import("./social-streamer.mjs");
+  ok("T-62 union: streamer daily cap = 16 (14 custody accounts + headroom; per-account ≤4 hard ceiling)", s309.MAX_POSTS_PER_DAY === 16);
+  ok("R309: per-account gap released to 45 min (9x the chain 5-min window)", s309.MIN_GAP_MIN_PER_ACCOUNT === 45);
+  ok("R309: stageDrafts exposes revenue ingest telemetry", typeof s309.stageDrafts === "function");
+  ok("R311: broadcastTitles serves the anti-twin memory", Array.isArray(s309.broadcastTitles(5)));
+}
+
+/* ── R311 · THE ANTI-TWIN SHIELD (measured escape: reward/rewards plural
+ * dodged the 0.55 gate and a near-twin PAIR published; the stem closes it) ── */
+{
+  const c311 = await import("./content.mjs");
+  ok("R311: stem closes the reward/rewards twin escape", c311.titleSimilarity("Understanding Blockchain Curation Rewards", "Understanding Steem's Curation Reward System") >= 0.55);
+  ok("R311: distinct topics still pass the shield", c311.titleSimilarity("The Bench That Teaches Patience", "What the Street Market Knows at Dawn") < 0.55);
+  const twin = { title: "Understanding Blockchain Curation Rewards", body: "x".repeat(400) };
+  const ded = c311.dedupeTitles([twin], ["Understanding Steem's Curation Reward System"]);
+  ok("R311: dedupeTitles blocks the near-twin of an aired title", ded.kept.length === 0 && ded.dropped.length === 1);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

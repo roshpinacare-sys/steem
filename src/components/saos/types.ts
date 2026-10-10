@@ -202,6 +202,15 @@ export type Status = {
     bridgeError?: string | null
     ms?: number | null
   } | null
+  /* R310 · זרם-חי: הפוסטים החיים על השרשרת (המנוע מחשב, הקוקפיט מציג) */
+  stream?: {
+    posts?: { at?: string | null; account?: string | null; permlink?: string | null; txid?: string | null; title?: string | null; url?: string | null }[]
+    todayCount?: number
+    cap?: number | null
+    gapMin?: number | null
+    runwayDrafts?: number
+    readyRevenue?: number
+  } | null
   /* R255 · מנוע-הפרסונות: קאנון + סנכרון-פרופילים-על-השרשרת + קשתות-התפתחות */
   personas?: {
     at?: string | null
