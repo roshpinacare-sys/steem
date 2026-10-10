@@ -31,6 +31,7 @@ import type { FleetEvidence } from '@/components/saos/FleetEvidence'
 import { PersonasCard } from '@/components/saos/PersonasCard'
 import { RolesCard } from '@/components/saos/RolesCard'
 import { TeamsCard } from '@/components/saos/TeamsCard'
+import { StreamCard } from '@/components/saos/StreamCard'
 import { RcTankCard } from '@/components/saos/RcTankCard'
 import { EconomicsRailsCard } from '@/components/saos/EconomicsRailsCard'
 import { PayoutsCard } from '@/components/saos/PayoutsCard'
@@ -640,6 +641,9 @@ export default function Home() {
 
                 {/* T-22f · הצוותים-העומדים: מודיעין-רשת + טיוטות-תוכן; אופציונלי, נטען רק כשהמנוע מדווח */}
                 <TeamsCard webintel={s.webintel} content={s.content} />
+
+                {/* R310 · זרם-חי: הפוסטים החיים על השרשרת — ערוץ-הראייה שהיה חסר ("אני לא רואה פוסטים") */}
+                <StreamCard stream={s.stream ?? null} />
 
                 {/* T-23f · אריגה · חוזה-הגוף-האחד עם-החותם-השני; אופציונלי, נטען רק כשהמנוע מדווח */}
                 <WeaveCard weave={s.weave} />

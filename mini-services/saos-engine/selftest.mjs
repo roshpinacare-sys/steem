@@ -2888,7 +2888,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
  * broadcaster's gates so a READY package can never rot in the buffer. ── */
 {
   const s309 = await import("./social-streamer.mjs");
-  ok("R309: streamer daily cap released to 12/day (14-account fleet)", s309.MAX_POSTS_PER_DAY === 12);
+  ok("R309/R310: streamer daily cap = fleet size 14 (L-26: 1/account/day)", s309.MAX_POSTS_PER_DAY === 14);
   ok("R309: per-account gap released to 45 min (9x the chain 5-min window)", s309.MIN_GAP_MIN_PER_ACCOUNT === 45);
   ok("R309: stageDrafts exposes revenue ingest telemetry", typeof s309.stageDrafts === "function");
 }
