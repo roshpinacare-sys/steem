@@ -1,21 +1,21 @@
 {
-  "at": "2026-10-10T04:39:57.003Z",
+  "at": "2026-10-10T04:49:12.004Z",
   "enabled": true,
-  "runsTotal": 224,
+  "runsTotal": 225,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 10,
+      "window": 11,
       "oks": 7,
       "fails": 1,
-      "blocked": 2,
-      "okRate": 70,
-      "blockedRate": 20,
+      "blocked": 3,
+      "okRate": 63.6,
+      "blockedRate": 27.3,
       "failReasons": {
         "unknown": 1
       },
-      "msP50": 244251,
-      "msP90": 596644
+      "msP50": 147702,
+      "msP90": 306620
     },
     "curator": {
       "present": true,
@@ -37,15 +37,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 2159,
+      "checks": 2169,
       "downs": 104,
       "heals": 37,
       "healVerified": 36,
       "healFailed": 0,
-      "lastCheckAt": "2026-10-10T04:39:11.997Z",
+      "lastCheckAt": "2026-10-10T04:49:12.007Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-10T04:39:12.032Z",
+      "lastUpAt": "2026-10-10T04:49:12.008Z",
       "blips": 1
     }
   },
@@ -53,7 +53,7 @@
     {
       "id": "signing-cred-blocked",
       "severity": "high",
-      "evidence": "cycle-blocked ×2/10 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "evidence": "cycle-blocked ×3/11 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
       "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
       "action": "OPERATOR REVIVAL (T-16 self-service): paste the credential in the cockpit banner → engine adopts (0600) + chain-verifies instantly; or drop upload/headcorner.txt"
     }
@@ -63,7 +63,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 107,
-    "signing-cred-blocked": 143,
+    "signing-cred-blocked": 144,
     "broadcast-fails": 65
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"

@@ -74,9 +74,16 @@ export function reviveToolbelt() {
   const TMP = fs.mkdtempSync("/tmp/toolbelt-");
   fs.chmodSync(TMP, 0o700);
   try {
-    const pull = sh("git", ["show", `HEAD:${tb.file}`]);
-    if (!pull.out && pull.err) return { ok: false, reason: `vault pull failed: ${pull.err.slice(0, 80)}` };
-    const enc = Buffer.from(pull.out, "binary");
+    /* R301-b SELF-CATCH (honesty law): reading the sealed archive through a
+     * utf8 filter corrupts binary bytes → the outer pin can never match
+     * (measured live: OUTER-PIN-MISMATCH on first revival). The pull is a
+     * raw Buffer, never transcoded. */
+    let enc;
+    try {
+      enc = execFileSync("git", ["show", `HEAD:${tb.file}`], { cwd: REPO, maxBuffer: 64 * 1024 * 1024 });
+    } catch (e) {
+      return { ok: false, reason: `vault pull failed: ${String(e?.message ?? e).slice(0, 90)}` };
+    }
     if (sha256(enc) !== tb.outerSha256) return { ok: false, reason: "OUTER-PIN-MISMATCH — vault tampered or stale checkout" };
 
     const encPath = path.join(TMP, "toolbelt.zip.enc");

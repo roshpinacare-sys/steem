@@ -1,31 +1,30 @@
 {
-  "startedAt": "2026-10-10T04:39:57.003Z",
+  "startedAt": "2026-10-10T04:49:12.004Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 5779,
+      "ms": 3204,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.06103,
-        "sbdUsd": 0.5862959728743881,
-        "parity": 0.10409418250102065,
-        "source": "internal-feed-fallback+derived-sbd",
-        "lowConfidence": true
+        "steemUsd": 0.06106,
+        "sbdUsd": 0.608718,
+        "parity": 0.10030917436316981,
+        "source": "coingecko"
       },
-      "feed": 0.10409418250102065,
+      "feed": 0.10409416223962721,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 0
+        "bps": -364
       },
-      "steemUsd": 0.06103,
-      "sbdUsd": 0.5862959728743881,
+      "steemUsd": 0.06106,
+      "sbdUsd": 0.608718,
       "inventory": {
         "steem": 4.53,
         "sbd": 0.824,
-        "spOwn": 3412.4765634688915,
+        "spOwn": 3412.4780561596526,
         "rcPct": 90.4
       },
       "ordersOk": true,
@@ -174,15 +173,16 @@
         "histLen": 101,
         "node": "https://api.justyy.com"
       },
-      "summary": "parity 0.10409418250102065 (internal-feed-fallback+derived-sbd) · fills 0 · fuel 0.0064$"
+      "summary": "parity 0.10030917436316981 (coingecko) · fills 0 · fuel 0.0064$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1332,
-      "verdict": "DECISIONS:5",
+      "ms": 2868,
+      "verdict": "DECISIONS:6",
       "decisions": [
         "book-depth:hold-shape",
+        "parity-drift:monitor",
         "soldiers:grids-live",
         "rewards:claim",
         "rc-health:healthy",
@@ -199,28 +199,28 @@
       "name": "tick",
       "ok": true,
       "ms": 0,
-      "runCount": 266,
-      "simFills": 23,
-      "simFeesMu": 11500,
-      "events": 3
+      "runCount": 267,
+      "simFills": 24,
+      "simFeesMu": 12000,
+      "events": 6
     },
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 652,
+      "ms": 732,
       "verdict": "OFFER-READY",
       "asks": 1,
       "bids": 0,
       "flowAsks": 1,
       "flowBids": 0,
-      "staleCount": 9,
-      "skew": -0.081615,
+      "staleCount": 5,
+      "skew": -0.086733,
       "book": {
         "bestAsk": 0.10192640913260625,
         "bestBid": 0.10005,
         "askDepthSteem": 164.05,
         "bidDepthSbd": 2905.13,
-        "at": "2026-10-10T04:39:57.003Z"
+        "at": "2026-10-10T04:49:12.004Z"
       },
       "market": {
         "tradesPerDay": 25,
@@ -240,9 +240,9 @@
       "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 7056,
-      "marketSbdUsd": 0.586296,
-      "impliedSbdUsd": 0.586296,
+      "edgeBps": 6428,
+      "marketSbdUsd": 0.608718,
+      "impliedSbdUsd": 0.586584,
       "marketSourceNote": "external-measured"
     },
     "curate": {
@@ -266,13 +266,13 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 14,
+      "ms": 1369,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked"
       ],
       "tunings": [],
-      "discoveryVerdict": "FRESH-CACHED",
+      "discoveryVerdict": "OPTIONS-FOUND",
       "topOpportunities": [
         "spread-wide(measured)",
         "tags-realloc(measured)",
@@ -339,9 +339,9 @@
     "economics": {
       "name": "economics",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "totalMeasuredUsdPerDay": 0,
-      "totalEstUsdPerDay": 0.544117,
+      "totalEstUsdPerDay": 0.545487,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -350,7 +350,7 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "RECRUITED",
       "active": 9,
       "total": 11
@@ -358,7 +358,7 @@
     "report": {
       "name": "report",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "realizedSbd": 0,
       "positionSteem": 0,
       "positionAvgCost": null,
@@ -393,5 +393,5 @@
       "execute"
     ]
   },
-  "finishedAt": "2026-10-10T04:40:04.783Z"
+  "finishedAt": "2026-10-10T04:49:20.180Z"
 }
