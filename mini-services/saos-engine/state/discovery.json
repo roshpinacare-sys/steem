@@ -1,39 +1,47 @@
 {
-  "at": "2026-10-10T16:39:12.177Z",
-  "lastFullScanAt": "2026-10-10T16:29:12.171Z",
+  "at": "2026-10-10T17:50:47.867Z",
+  "lastFullScanAt": "2026-10-10T17:50:47.867Z",
   "verdict": "OPTIONS-FOUND",
   "tagBoard": [
     {
       "tag": "hive-129948",
-      "payoutsSbd": 6532.744
+      "payoutsSbd": 6868.556
     },
     {
       "tag": "kr",
-      "payoutsSbd": 2943.804
+      "payoutsSbd": 2946.094
     },
     {
       "tag": "hive-150122",
-      "payoutsSbd": 1728.573
+      "payoutsSbd": 1830.116
     },
     {
       "tag": "hive-196917",
-      "payoutsSbd": 1269.042
+      "payoutsSbd": 1268.639
     },
     {
       "tag": "steem",
-      "payoutsSbd": 1092.697
+      "payoutsSbd": 1092.269
     },
     {
       "tag": "hive-180932",
-      "payoutsSbd": 1010.306
-    },
-    {
-      "tag": "life",
-      "payoutsSbd": 964.619
+      "payoutsSbd": 1010.504
     },
     {
       "tag": "hive-144064",
-      "payoutsSbd": 945.803
+      "payoutsSbd": 995.184
+    },
+    {
+      "tag": "life",
+      "payoutsSbd": 969.668
+    },
+    {
+      "tag": "hive-188619",
+      "payoutsSbd": 909.12
+    },
+    {
+      "tag": "hive-183397",
+      "payoutsSbd": 907.871
     },
     {
       "tag": "atomy",
@@ -41,30 +49,22 @@
     },
     {
       "tag": "hive-193637",
-      "payoutsSbd": 893.632
-    },
-    {
-      "tag": "hive-188619",
-      "payoutsSbd": 881.096
-    },
-    {
-      "tag": "hive-183397",
-      "payoutsSbd": 869.377
+      "payoutsSbd": 892.633
     }
   ],
   "curationEst": {
-    "dailyPoolSteem": 925596.32,
-    "voteVestsShare": 0.000009424548394441848,
-    "estimatedSteemPerDay": 8.7233,
+    "dailyPoolSteem": 926505.669,
+    "voteVestsShare": 0.000009435023568235778,
+    "estimatedSteemPerDay": 8.7416,
     "note": "linear approx over reward-fund window — ESTIMATED class, never claimed as measured"
   },
-  "vpEff": 71.3,
+  "vpEff": 65.5,
   "opportunities": [
     {
       "id": "book-cold",
       "kind": "fills-velocity",
       "potentialClass": "measured",
-      "evidence": "last fill 38.4h ago (2 fills in measured window)",
+      "evidence": "last fill 39.7h ago (2 fills in measured window)",
       "potential": "cold book → review placement breadth, not price floor",
       "gate": "price law untouched — breadth within per-cycle caps only",
       "effort": "monitor"
@@ -73,7 +73,7 @@
       "id": "spread-normal",
       "kind": "book-spread",
       "potentialClass": "measured",
-      "evidence": "spread 12bps (bestAsk 0.1016880211511084 / bestBid 0.10156305542295935)",
+      "evidence": "spread 29bps (bestAsk 0.102 / bestBid 0.10170249984744625)",
       "potential": "spread inside normal band — hold shape",
       "gate": "VF1 floor law: never sell below external value",
       "effort": "dragK already intel-fed"
@@ -82,7 +82,7 @@
       "id": "tags-realloc",
       "kind": "curation-tags",
       "potentialClass": "measured",
-      "evidence": "top trending tag \"hive-129948\" carries 6532.744 SBD total payouts (get_trending_tags)",
+      "evidence": "top trending tag \"hive-129948\" carries 6868.556 SBD total payouts (get_trending_tags)",
       "potential": "better vote placement inside the SAME 10-vote/day quota",
       "gate": "learning may add ≤1 tag, total ≤8 — daily caps & VP floor untouched",
       "effort": "already wired via learning tunings"
@@ -91,8 +91,8 @@
       "id": "curation-share",
       "kind": "curation-yield",
       "potentialClass": "estimated",
-      "evidence": "reward-fund pool 925596.32 STEEM/window · our vests share 0.0009% → ~8.7233 STEEM/day",
-      "potential": 8.7233,
+      "evidence": "reward-fund pool 926505.669 STEEM/window · our vests share 0.0009% → ~8.7416 STEEM/day",
+      "potential": 8.7416,
       "gate": "measured truth only lands via curation_reward ops (measureAll) — estimator never claims payout",
       "effort": "rail live since T-13"
     },
@@ -107,6 +107,5 @@
     }
   ],
   "learningConsumer": [],
-  "honesty": "ranked options, zero execution · classes: measured>estimated>potential · gates own the decisions",
-  "freshCached": true
+  "honesty": "ranked options, zero execution · classes: measured>estimated>potential · gates own the decisions"
 }
