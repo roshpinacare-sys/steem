@@ -49,6 +49,17 @@ fi
 # ── chain ──
 if want chain; then
   OUT=$(timeout 60 node scripts/chain-anchor-probe.mjs 2>/dev/null || true)
+  # R304 · TRANSIENT-LAG LAW (measured live 07:12Z: all 3 nodes flaked in the
+  # same second while the stamp txid was chain-proven 60s later — one probe
+  # pass is not truth, it is one SAMPLE). The probe runs twice; a green on
+  # either pass settles the verdict. Two consecutive reds = real drift.
+  if ! printf '%s' "$OUT" | jq -e '.drift == false and .anchored == true' >/dev/null 2>&1; then
+    sleep 20
+    OUT2=$(timeout 60 node scripts/chain-anchor-probe.mjs 2>/dev/null || true)
+    if printf '%s' "$OUT2" | jq -e '.drift == false and .anchored == true' >/dev/null 2>&1; then
+      OUT="$OUT2"
+    fi
+  fi
   if printf '%s' "$OUT" | jq -e '.drift == false and .anchored == true' >/dev/null 2>&1; then
     p "chain: עוגן-ה-git מפורסם על-השרשרת (anchored, drift=false)"
   elif [ -z "$OUT" ]; then
