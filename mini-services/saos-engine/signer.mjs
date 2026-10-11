@@ -677,6 +677,43 @@ async function broadcastTx(json) {
   return { ok: false, error: lastErr || "all-nodes-failed" };
 }
 
+/* ── R293 · THE AUTHORITY-SPLIT LAW (pure, offline-testable core) ────────── */
+
+/** Ops the chain authorizes with the POSTING authority alone. Everything
+ * else (orders, transfers, converts, vesting, custom_json — which can ride
+ * either authority depending on the op id) belongs to the main leg and is
+ * signed under the caller's requested role, exactly as before this law. */
+export const POSTING_ONLY_OPS = new Set([
+  "claim_reward_balance",
+  "vote",
+  "comment",
+  "delete_comment",
+  "reblog",
+]);
+
+/**
+ * Partition a batch into { postingOps, restOps }.
+ *
+ * `dropClaimReason` (the R293 §XIII reinterpretation): when the claim
+ * adaptation rule fail-closes, the claim ops are DROPPED (not sent, reason
+ * journaled by the caller) while the rest of the batch proceeds — the rule
+ * refusal must never strand financial ops that share a batch with it.
+ *
+ * Pure function — no I/O, deterministic, covered by offline vectors
+ * (test-claim-role-split.mjs). Unknown op names default to the MAIN leg
+ * (fail-safe: unknown never silently gains posting authority).
+ */
+export function splitOpsByAuthority(ops, dropClaimReason = null) {
+  const postingOps = [];
+  const restOps = [];
+  for (const op of ops) {
+    const name = op[0];
+    if (name === "claim_reward_balance" && dropClaimReason != null) continue;
+    (POSTING_ONLY_OPS.has(name) ? postingOps : restOps).push(op);
+  }
+  return { postingOps, restOps };
+}
+
 /* ── the one execution entry-point: sign & broadcast a capped, atomic tx ── */
 /* T-17 fast path: callers that ALREADY measured RC (curator's VP read) and
  * hold a fresh DGPO (≤60s) pass them in — the per-vote accountState + DGPO
@@ -704,13 +741,124 @@ export async function executeAs(account, ops, { tag = "cycle", role = "active", 
    * credential) — learning never creates authority (§XI absolute boundary).
    * A superseded/refuted rule fail-closes claim ops entirely (§XIII). */
   let adaptationMeta = null;
+  let rr = null;
   const hasClaim = ops.some(([n]) => n === "claim_reward_balance");
   if (hasClaim) {
-    const rr = resolveClaimRole(); // hot-path consumption — counted
+    rr = resolveClaimRole(); // hot-path consumption — counted
     if (rr.failClosed) {
       appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: "CLAIM-FAIL-CLOSED", ops: ops.map(([n]) => n), reason: rr.reason, adaptationId: rr.adaptationId, status: rr.status, roleSource: rr.roleSource, ruleVersion: rr.ruleVersion, predictionId });
-      return { ok: false, verdict: "CLAIM-FAIL-CLOSED", reason: rr.reason, ops: 0 };
+      /* R293 · SPLIT LAW (§XIII reinterpretation): "fail-closes claim ops
+       * entirely" means the CLAIM OPS are dropped — not the whole batch.
+       * Dropping the batch here is what wedged the economy: the claim's
+       * posting-role refusal took the order ladder down with it. The claim
+       * ops are removed below by the authority split; the rest proceed. */
+      journalThink({ account, source: tag, verdict: "CLAIM-FAIL-CLOSED-SPLIT", reasons: [`claim dropped (${rr.reason}); remaining ${ops.filter(([n]) => n !== "claim_reward_balance").length} op(s) proceed under the caller's role`], shown: [] });
     }
+  }
+
+  /* R293 · THE AUTHORITY-SPLIT LAW — one tx, one key.
+   *
+   * A Steem/Hive tx is signed by a SINGLE key; the chain rejects any batch
+   * whose ops require a different authority than the signing key
+   * (`Assert Exception: required_active.size() == 0` — measured twice daily
+   * on 2026-10-11 exec-log when a claim[posting] rode with an order
+   * ladder[active]). Splitting at the chokepoint: posting-only ops broadcast
+   * in their OWN tx under the adaptation-selected posting role; every other
+   * op broadcasts under the caller's requested role. Two atomic txs, two
+   * complete ledger rows, one honest combined verdict — a claim failure can
+   * never again strand the ladder, and the ladder can never poison a claim. */
+  const { postingOps, restOps } = splitOpsByAuthority(ops, hasClaim && rr?.failClosed ? rr.reason : null);
+  if (postingOps.length > 0 && restOps.length > 0) {
+    const callerRole = role; // caller's requested role for the main leg
+    const ver = await verifyRoles(account);
+    if (!ver.ok) {
+      if (adaptationMeta) appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: "KEY-UNVERIFIED", ops: ops.map(([n]) => n), reason: ver.reason ?? "no-match", adaptation: adaptationMeta, predictionId });
+      return { ok: false, verdict: "KEY-UNVERIFIED", reason: ver.reason ?? "no-match" };
+    }
+    const id = identity(account);
+    const postingRole = (hasClaim && rr && !rr.failClosed) ? rr.role : "posting";
+    const missingLegs = [];
+    if (!id.wifs[postingRole]) missingLegs.push({ leg: "posting", role: postingRole });
+    if (!id.wifs[callerRole]) missingLegs.push({ leg: "main", role: callerRole });
+    if (missingLegs.length === 2) {
+      appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: "ROLE-KEY-ABSENT", ops: ops.map(([n]) => n), role: callerRole, postingRole, missing: missingLegs, predictionId });
+      return { ok: false, verdict: "ROLE-KEY-ABSENT", role: callerRole, postingRole, missing: missingLegs };
+    }
+    journalThink({ account, source: tag, verdict: "AUTHORITY-SPLIT", reasons: [`${postingOps.length} posting-only op(s) → own tx under ${postingRole}; ${restOps.length} op(s) → own tx under ${callerRole}`], shown: [] });
+
+    // Shared DGPO — both legs broadcast within seconds of one head read.
+    let dgpoRes = dgpo && Number.isFinite(dgpoAt) && Date.now() - dgpoAt < 60_000 ? dgpo : null;
+    if (!dgpoRes) {
+      const dgpoR = await rpcCall("condenser_api.get_dynamic_global_properties", []);
+      if (!dgpoR.ok) return { ok: false, verdict: "NO-DGPO" };
+      dgpoRes = dgpoR.result;
+    }
+
+    // RC floor — evaluated once for the account; both legs ride the same
+    // evidence (identical account, sub-minute window — same as the single-tx
+    // path where one check covers the whole batch).
+    let rcBlock = null;
+    if (account === masterAccount()) {
+      let rcNow = rcPct;
+      if (rcNow == null) {
+        const acc = await accountState(account);
+        if (acc.ok && acc.rcPct != null) rcNow = acc.rcPct;
+      }
+      if (rcNow != null && rcNow < conf.minRcPct) {
+        rcBlock = { verdict: "RC-FLOOR", rcPct: rcNow, reason: `rc below ${conf.minRcPct}%` };
+      }
+    }
+
+    const execAt = new Date().toISOString();
+    const crypto = await import("node:crypto");
+    const out = { split: true, legs: [], ok: true, verdict: "BROADCAST-SPLIT", adaptation: adaptationMeta, execAt };
+
+    // LEG 1 · posting-only tx (claim/comment/vote).
+    if (id.wifs[postingRole] && !rcBlock) {
+      const t = buildTx({ ops: postingOps, dgpo: dgpoRes, wifs: [id.wifs[postingRole]] });
+      const txid = crypto.createHash("sha256").update(Buffer.from(t.serializedHex, "hex")).digest("hex").slice(0, 40);
+      const res = await broadcastTx(t.json);
+      appendLine(LOG_FILE, { at: execAt, tag: `${tag}:claim-leg`, account, ok: res.ok, txid, ops: postingOps.map(([n]) => n), node: res.node ?? null, error: res.error ?? null, fingerprint: ver.fingerprint, role: postingRole, serialization: { claimOpId: postingOps.some(([n]) => n === "claim_reward_balance") ? OP_IDS.claim_reward_balance : null }, adaptation: adaptationMeta, predictionId });
+      out.legs.push({ leg: "posting", role: postingRole, ok: res.ok, txid, ops: postingOps.length, error: res.error ?? null });
+      out.postingTxid = res.ok ? txid : null;
+      out.postingVerdict = res.ok ? "BROADCAST" : "BROADCAST-FAIL";
+      out.postingOps = postingOps.map(([n]) => n);
+      if (!res.ok) out.ok = false;
+    } else {
+      const why = rcBlock ? `rc ${rcBlock.rcPct} below floor` : `no ${postingRole} key on credential`;
+      appendLine(LOG_FILE, { at: execAt, tag: `${tag}:claim-leg`, account, ok: false, verdict: "CLAIM-LEG-DEFERRED", ops: postingOps.map(([n]) => n), reason: why, predictionId });
+      out.legs.push({ leg: "posting", role: postingRole, ok: false, txid: null, ops: postingOps.length, deferred: true, reason: why });
+      out.postingVerdict = "CLAIM-LEG-DEFERRED";
+      out.postingOps = postingOps.map(([n]) => n);
+      out.ok = false;
+    }
+
+    // LEG 2 · main tx under the caller's role (orders/transfers/converts…).
+    if (id.wifs[callerRole] && !rcBlock) {
+      const t = buildTx({ ops: restOps, dgpo: dgpoRes, wifs: [id.wifs[callerRole]] });
+      const txid = crypto.createHash("sha256").update(Buffer.from(t.serializedHex, "hex")).digest("hex").slice(0, 40);
+      const res = await broadcastTx(t.json);
+      appendLine(LOG_FILE, { at: execAt, tag: `${tag}:main-leg`, account, ok: res.ok, txid, ops: restOps.map(([n]) => n), node: res.node ?? null, error: res.error ?? null, fingerprint: ver.fingerprint, role: callerRole, serialization: { claimOpId: null }, adaptation: adaptationMeta, predictionId });
+      out.legs.push({ leg: "main", role: callerRole, ok: res.ok, txid, ops: restOps.length, error: res.error ?? null });
+      out.txid = res.ok ? txid : null;
+      out.mainVerdict = res.ok ? "BROADCAST" : "BROADCAST-FAIL";
+      out.opNames = restOps.map(([n]) => n);
+      out.ops = restOps.length;
+      if (!res.ok) out.ok = false;
+    } else {
+      const why = rcBlock ? rcBlock.reason : `no ${callerRole} key on credential`;
+      appendLine(LOG_FILE, { at: execAt, tag: `${tag}:main-leg`, account, ok: false, verdict: rcBlock ? "RC-FLOOR" : "ROLE-KEY-ABSENT", ops: restOps.map(([n]) => n), role: callerRole, reason: why, missing: rcBlock ? undefined : { leg: "main", role: callerRole }, rcPct: rcBlock?.rcPct, predictionId });
+      out.legs.push({ leg: "main", role: callerRole, ok: false, txid: null, ops: restOps.length, deferred: true, reason: why });
+      out.mainVerdict = rcBlock ? "RC-FLOOR" : "ROLE-KEY-ABSENT";
+      out.ok = false;
+      if (rcBlock) out.rcPct = rcBlock.rcPct;
+    }
+    return out;
+  }
+
+  /* Single-leg path (one authority class only). If a claim rides alone (or
+   * with other posting ops), the adaptation rule still selects its role. */
+  if (hasClaim && rr && !rr.failClosed) {
     if (role !== rr.role) {
       journalThink({ account, source: tag, verdict: "ADAPTATION-ROLE-OVERRIDE", reasons: [`claim_reward_balance role ${role} → ${rr.role} via ${rr.roleSource} (within already-authorized space — no new authority)`], shown: [] });
       role = rr.role;

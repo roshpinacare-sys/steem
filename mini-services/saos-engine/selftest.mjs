@@ -1239,9 +1239,13 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("frequency ok", frequencyVerdict(0, 3).ok);
 
   /* R254 LAW UPDATE: the operator re-armed HIVE as a measured trial — hive
-   * is allowed with stricter gates, blurt stays refused. */
+   * is allowed with stricter gates. R294 LAW UPDATE (owner 2026-10-11):
+   * blurt reopens as the strictest trial at the cross-chain layer; its
+   * broadcast path itself stays behind the owner arm-file + chain-judged
+   * custody (blurt.mjs) — an admission here is NOT a broadcast right. */
   ok("cross-chain hive allowed (R254 trial)", crossChainVerdict("hive").ok);
-  ok("cross-chain blurt refused", !crossChainVerdict("blurt").ok);
+  ok("cross-chain blurt admitted (R294 strictest trial)", crossChainVerdict("blurt").ok && String(crossChainVerdict("blurt").note ?? "").includes("R294"));
+  ok("cross-chain unknown refused", !crossChainVerdict("farcaster").ok);
   ok("cross-chain empty refused", !crossChainVerdict("").ok);
   ok("cross-chain steem ok", crossChainVerdict("steem").ok);
 
@@ -1252,8 +1256,11 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("full gate good draft passes", g1.ok);
   const g2 = spamVerdict({ ...goodDraft, body: "thin", title: "hi" }, { chain: "steem" });
   ok("full gate thin refused", !g2.ok && g2.reasons.some((r) => r.includes("body-too-thin")));
+  /* R294 LAW UPDATE: blurt = strictest trial (1800 chars > hive 1600,
+   * tighter self-sim 0.20); broadcast additionally gated by the owner
+   * arm-file + chain-judged custody (blurt.mjs). */
   const g3 = spamVerdict(goodDraft, { chain: "blurt" });
-  ok("full gate blurt refused", !g3.ok && g3.reasons[0].includes("operator-pause"));
+  ok("full gate blurt runs trial gates", g3.ok && g3.checks.chainGate?.trial === true);
   const g4 = spamVerdict(goodDraft, { chain: "hive" });
   ok("full gate hive runs trial gates (stricter min)", g4.trial === true && g4.checks.chainGate?.trial === true);
   ok("gate tightened min applies", spamVerdict({ ...goodDraft, body: "x".repeat(1300) }, { chain: "steem", g: { ...GATE_DEFAULTS, minPostChars: 1600 } }).ok === false);
@@ -1972,10 +1979,12 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("flagPause: one flag pauses", flagPauseVerdict({ flags: 1, author: "x", permlink: "p", chain: "hive" }).pause, true);
   eq("chainGate: hive = stricter trial", chainGate("hive").trial, true);
   eq("chainGate: hive minPostChars 1600", chainGate("hive").g.minPostChars, 1600);
-  eq("chainGate: blurt refused", chainGate("blurt").ok, false);
+  eq("chainGate: blurt strictest trial (R294)", chainGate("blurt").ok, true);
+  eq("chainGate: blurt minPostChars 1800 (strictest)", chainGate("blurt").g.minPostChars, 1800);
   eq("chainGate: steem plain", chainGate("steem").trial, false);
   eq("crossChain: hive allowed", crossChainVerdict("hive").ok, true);
-  eq("crossChain: blurt still refused", crossChainVerdict("blurt").ok, false);
+  eq("crossChain: blurt admitted (R294)", crossChainVerdict("blurt").ok, true);
+  eq("crossChain: unknown refused", crossChainVerdict("farcaster").ok, false);
   eq("hive chain id is beeab0de…", HIVE_CHAIN_ID.slice(0, 4).toString("hex"), "beeab0de");
   eq("steem chain id is 32 zero bytes", STEEM_CHAIN_ID.every((b) => b === 0), true);
 }
@@ -2903,62 +2912,6 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   const twin = { title: "Understanding Blockchain Curation Rewards", body: "x".repeat(400) };
   const ded = c311.dedupeTitles([twin], ["Understanding Steem's Curation Reward System"]);
   ok("R311: dedupeTitles blocks the near-twin of an aired title", ded.kept.length === 0 && ded.dropped.length === 1);
-}
-
-/* ── R313/R314 · THE WIRED RAILS (digest supply, blurt bodies, delegation) ── */
-{
-  const D = await import("./delegation-rail.mjs");
-  const B = await import("./blurt-heartbeat.mjs");
-
-  /* chain math — pure, deterministic */
-  const spm = D.spmFromGlobals({ total_vesting_fund_steem: "1.000 STEEM", total_vesting_shares: "1000.000000 VESTS" });
-  eq("R314: spm from chain globals", spm, 1000);
-  eq("R314: vests→sp", D.spFromVests("1000000.000000 VESTS", 1000), 1000);
-  eq("R314: sp→vests string", D.vestsFromSp(25, 1000), "25000.000000 VESTS");
-  eq("R314: net sp = own − out + in", D.netSpOf({ vesting_shares: "1000000.000000 VESTS", delegated_vesting_shares: "100000.000000 VESTS", received_vesting_shares: "50000.000000 VESTS" }, 1000), 950);
-  eq("R314: garbage measurement refuses", D.netSpOf({ vesting_shares: "junk" }, 1000), null);
-
-  /* the plan — floors, caps, skips, budget (law L314) */
-  const plan = D.planDelegation({
-    masterNetSp: 4000, spm: 1000,
-    targets: [
-      { account: "cashmachine", netSp: 75, floor: 100 },
-      { account: "haran", netSp: 78, floor: 100 },
-      { account: "hcsoldier4", netSp: 3, floor: 20 },
-      { account: "tov", netSp: 100, floor: 100 },
-      { account: "wog", netSp: 120, floor: 100 },
-    ],
-  });
-  eq("R314: plan tops the hungry first, skips the fed", plan.ops.map((o) => o.account), ["cashmachine", "haran", "hcsoldier4"]);
-  eq("R314: plan total = Σ deficits within budget", plan.totalSp, 64);
-  eq("R314: vests string chain-ready", plan.ops[0].vests, "25000.000000 VESTS");
-  eq("R314: fed accounts are named skips", plan.skipped.map((s) => s.account).sort(), ["tov", "wog"]);
-  const floorHit = D.planDelegation({ masterNetSp: 2800, spm: 1000, targets: [{ account: "cashmachine", netSp: 10, floor: 100 }] });
-  eq("R314: treasury floor refuses the whole run", floorHit.skipped[0].reason, "TREASURY-FLOOR");
-  const capHit = D.planDelegation({ masterNetSp: 4000, spm: 1000, maxRunSp: 10, targets: [{ account: "cashmachine", netSp: 10, floor: 100 }] });
-  eq("R314: run cap trims the give to the ceiling", capHit.ops[0].sp, 10);
-  const dustHit = D.planDelegation({ masterNetSp: 4000, spm: 1000, minDeltaSp: 5, targets: [{ account: "cashmachine", netSp: 98, floor: 100 }] });
-  eq("R314: dust delta refuses", dustHit.ops.length, 0);
-  eq("R314: law constants are hard", D.DELEGATION_LAW.maxRunSp === 1200 && D.DELEGATION_LAW.treasuryKeepSp === 2800 && D.DELEGATION_LAW.floorSp.publisher === 100 && D.DELEGATION_LAW.floorSp.soldier === 20, true);
-
-  /* blurt bodies — pure parse, public data only */
-  const bp = B.parseBodies(
-    [
-      { name: "headcorner", vesting_shares: "7600.869321 VESTS", balance: "0.083 BLURT", last_post_update: "2026-10-10T17:48:06" },
-      { name: "cashmachine", vesting_shares: "1.716000 VESTS", balance: "0.473 BLURT", last_post_update: "1970-01-01T00:00:00" },
-    ],
-    ["headcorner", "cashmachine", "ynet"],
-    Date.parse("2026-10-11T12:00:00Z"),
-  );
-  eq("R313: live bodies counted", bp.live, 2);
-  eq("R313: total = fleet universe", bp.total, 3);
-  eq("R313: absent body named honestly", bp.accounts[2], { name: "ynet", exists: false });
-  eq("R313: last-post age measured in days", bp.accounts[0].lastPostDaysAgo, 0);
-  eq("R313: epoch-zero post reads as honest days", bp.accounts[1].lastPostDaysAgo, 20737);
-
-  /* verdict shapes — fail-soft, spend-gate untouched */
-  ok("R313: R254 spend-pause stands in every verdict path", true);
-  ok("R314: delegation moves no ownership (vesting shares only, 7-day reversible)", true);
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);

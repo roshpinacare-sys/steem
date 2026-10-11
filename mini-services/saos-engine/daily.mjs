@@ -45,6 +45,7 @@ import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
 import { runSocial, runOrganicWatch, runProfiles } from "./army-social.mjs";
 import { runHiveRail } from "./hive.mjs";
+import { runBlurtOrgan } from "./blurt.mjs";
 import { runHiveProfiles } from "./hive-profiles.mjs";
 import { runRcPool } from "./rc-pool.mjs";
 import { runHiveSocial } from "./hive-social.mjs";
@@ -903,10 +904,19 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   /* R254 · THE HIVE ORGAN (operator-approved trial, verbatim: "אני מאשר
    * ניסיון ובחינה פתיחה בhive"): probe-sized sovereign rounds on the sister
    * chain from the GEN-1 vault keys, stricter gates, RC-gated, veto-armed.
-   * BLURT STAYS PAUSED (operator: "לגבי blurt תמתין"). Fail-isolated. */
+   * BLURT (R294, owner order 2026-10-11 — supersedes the R254 pause
+   * "לגבי blurt תמתין"): the line lives as a measured keyless probe every
+   * cycle (accounts + posting authorities + mana, public data only);
+   * broadcasting stays behind the deliberate owner arm-file AND the general
+   * blurt tx serializer. Fail-isolated. */
   report.steps.hive = await stepWrap("hive", async () => {
     const out = await runHiveRail({ now, limit: 2 });
     return { verdict: out.verdict, executed: out.executed ?? 0, custody: out.custody ?? null, reason: out.reason ?? null, ms: out.ms ?? null };
+  });
+
+  report.steps.blurt = await stepWrap("blurt", async () => {
+    const out = await runBlurtOrgan({ now });
+    return { verdict: out.verdict, mode: out.mode ?? null, reason: out.reason ?? null, existing: out.probe?.existing ?? null, roster: out.probe?.roster ?? null, ms: null };
   });
 
   /* R262 · HIVE PROFILES (operator order: professional profile + image for
