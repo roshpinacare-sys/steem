@@ -166,6 +166,19 @@ export function thinkGate(account, ops, { source = "execute", conf = null, journ
     reasons.push(`custody:${account}=keyed-but-unverified — master credential present but never chain-proven this run; refusing until verifyRoles passes`);
     return finishThink({ account, source, verdict: "REFUSED", reasons, shown }, journal);
   }
+  // 6 · BRAND-DENYLIST (P0-2 · master plan 2026-10-11 · session 8fa4709b):
+  // an account named after a real-world brand we do not own must never be a
+  // signing subject nor an op counterparty. One accidental broadcast from
+  // "ynet" creates real-world attribution to a major news outlet. Unconditional,
+  // fail-closed, no policy bit can arm it — only the owner DecisionQueue may
+  // ever change this list (divest: transfer or abandon the name entirely).
+  const BRAND_DENYLIST = new Set(["ynet"]);
+  const opActors = ops.flatMap(([, o]) => [o?.to, o?.delegatee, o?.voter, o?.author, o?.from, o?.new_account_name].filter(Boolean));
+  const brandHit = [...opActors].find((a) => BRAND_DENYLIST.has(String(a)));
+  if (BRAND_DENYLIST.has(account) || brandHit) {
+    reasons.push(`brand-denylist: ${BRAND_DENYLIST.has(account) ? `subject account "${account}"` : `op counterparty "${brandHit}"`} is a protected real-world brand — signing or interacting as/with it is FORBIDDEN unconditionally (P0-2; impersonation exposure per disclosure-policy)`);
+    return finishThink({ account, source, verdict: "REFUSED", reasons, shown }, journal);
+  }
   // 2 · outbound funds policy
   for (const [opName, op] of ops) {
     if (opName === "transfer" && op?.to && op.to !== account) {
