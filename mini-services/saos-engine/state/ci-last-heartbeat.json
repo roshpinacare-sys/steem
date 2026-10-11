@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-11T19:07:48.652Z",
+  "at": "2026-10-11T19:34:27.762Z",
   "custody": "14/14",
   "social": "SOCIAL-EXECUTED",
   "socialExecuted": 3,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
-  "post": "BROADCASTED",
-  "postAccount": "woq",
-  "postPermlink": "words-that-refuse-to-move-notes-on-the-l-20261011-797340bb",
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "post": "DAILY-CAP",
+  "postAccount": null,
+  "postPermlink": null,
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-BODIES-LIVE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T19:07:48.652Z",
+    "at": "2026-10-11T19:34:27.762Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 28087,
+        "ms": 26685,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,25 +33,24 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 328745,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 1,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 21650175
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 226722,
+        "ms": 231445,
         "verdict": "SOCIAL-EXECUTED",
         "executed": 3,
         "refused": 0,
-        "due": 73
+        "due": 75
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 27,
+        "ms": 29,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -69,17 +68,17 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 2518,
-        "verdict": "BROADCASTED",
-        "account": "woq",
-        "permlink": "words-that-refuse-to-move-notes-on-the-l-20261011-797340bb",
+        "ms": 3,
+        "verdict": "DAILY-CAP",
+        "account": null,
+        "permlink": null,
         "mode": null,
         "note": null
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 186,
+        "ms": 206,
         "verdict": "BLURT-BODIES-LIVE",
         "live": 12,
         "total": 12,
@@ -97,6 +96,6 @@
     }
   },
   "truthrail": "PASS",
-  "truthrailPosts24h": 38,
+  "truthrailPosts24h": 41,
   "truthrailOutsideVotes": 2
 }
