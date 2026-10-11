@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-11T05:03:10.776Z",
+  "at": "2026-10-11T05:24:41.773Z",
   "custody": "14/14",
   "social": "SOCIAL-IDLE",
   "socialExecuted": 0,
@@ -8,17 +8,17 @@
   "post": "LIVE-REFUSED-NOT-ARMED",
   "postAccount": null,
   "postPermlink": null,
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T05:03:10.776Z",
+    "at": "2026-10-11T05:24:41.773Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 66353,
+        "ms": 53973,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -26,16 +26,15 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 276526,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 0,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 19967109
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 26034,
+        "ms": 16996,
         "verdict": "SOCIAL-IDLE",
         "executed": 0,
         "refused": 0,
@@ -44,7 +43,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 9,
+        "ms": 18,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -53,7 +52,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "LIVE-REFUSED-NOT-ARMED",
         "account": null,
         "permlink": null,
