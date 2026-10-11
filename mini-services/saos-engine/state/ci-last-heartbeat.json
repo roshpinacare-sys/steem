@@ -1,8 +1,8 @@
 {
-  "at": "2026-10-11T20:39:40.961Z",
+  "at": "2026-10-11T21:01:37.639Z",
   "custody": "14/14",
-  "social": "SOCIAL-EXECUTED",
-  "socialExecuted": 1,
+  "social": "SOCIAL-IDLE",
+  "socialExecuted": 0,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
   "post": "DAILY-CAP",
@@ -12,20 +12,20 @@
   "dexReason": "engine-alive",
   "digest": "COOLDOWN",
   "digestTitle": null,
-  "blurt": "BLURT-BODIES-LIVE",
-  "blurtLive": 12,
+  "blurt": "BLURT-RPC-UNREACHABLE",
+  "blurtLive": 0,
   "delegation": "ALREADY-TODAY",
   "delegationOps": 0,
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T20:39:40.961Z",
+    "at": "2026-10-11T21:01:37.639Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 28597,
+        "ms": 29665,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,24 +33,24 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 0,
+        "ms": 1,
         "verdict": "STANDBY",
         "reason": "engine-alive",
-        "anchorAgeMs": 1468639
+        "anchorAgeMs": 2786386
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 256160,
-        "verdict": "SOCIAL-EXECUTED",
-        "executed": 1,
+        "ms": 298350,
+        "verdict": "SOCIAL-IDLE",
+        "executed": 0,
         "refused": 0,
-        "due": 78
+        "due": 83
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 34,
+        "ms": 32,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -78,9 +78,9 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 116,
-        "verdict": "BLURT-BODIES-LIVE",
-        "live": 12,
+        "ms": 378,
+        "verdict": "BLURT-RPC-UNREACHABLE",
+        "live": 0,
         "total": 12,
         "spendGate": "R254-PAUSE-STANDS"
       },
