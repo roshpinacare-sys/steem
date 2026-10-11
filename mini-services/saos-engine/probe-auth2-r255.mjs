@@ -12,4 +12,4 @@ const j = await r.json();
 const sigData = j?.error?.data?.stack?.find((s) => s?.data?.sigs)?.data ?? null;
 console.log("verdict:", j?.result ? "ACCEPTED " + JSON.stringify(j.result).slice(0, 120) : (j?.error?.data?.message ?? j?.error?.message));
 console.log("node-recovered sigs:", sigData ? JSON.stringify(sigData.sigs) : "?");
-console.log("expected active key: STM59DR18EpsjTxqmTnH4SayD6dJkXpWyRtqKQJdqFFpYJfesMnDk");
+console.log("expected active key: derived at runtime from the in-memory wif (no key-shaped literals by law R-VAULTPASS-1)");

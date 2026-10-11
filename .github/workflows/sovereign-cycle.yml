@@ -24,6 +24,10 @@ jobs:
   heartbeat:
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    env:
+      # R-VAULTPASS-1 (2026-10-11, zai-code-3): vault unlock keys left the
+      # repo; the sealed bundle arrives as a secret (steem + saos-runtime).
+      STEEM_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
     steps:
       - uses: actions/checkout@v4
         with:

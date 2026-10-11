@@ -1,11 +1,12 @@
 {
   "format": "recovery-meta-3",
   "doctrine": "operator directive 2026-09-10: \"זה אצלך בקבצים לא אצלי\" — system custody, private repo. Supersedes chat-only passwords (the chat-only era stranded KEYS-ZIP-2026-09-09 forever).",
-  "keysZipPass": "p3Xoj4xEBmidkzmnO3VLa9tQZR4zifLk",
+  "keysZipUnlockRef": "recovery-3.keysZipUnlock",
+  "keysZipPassCustody": "R-VAULTPASS-1 (2026-10-11T22:5xZ, zai-code-3): pass left the repo; bundle = Actions secret STEEM_VAULT_PASSES on steem+saos-runtime; owner rotation P0 advised (material persists in pre-migration git history)",
   "keysZipFile": "agent/vault/KEYS-ZIP-2026-10-08-ROT4.zip.enc",
   "keysZipSha256": "be43a54ba27232ab9021eadeb579e1a89885f2aa8f1d5150acc071398fbbf076",
   "keysZipInnerSha256": "9da49108e36ca18cf578b8429bec8e31e30c40bce16732b21123631f1a087c37",
-  "keysBackupPass": "ww6TjNAL75hqc+6VXuSQloh8swKhiXiM",
+  "keysBackupUnlockRef": "recovery-3.keysBackupUnlock",
   "keysBackupFile": "agent/vault/KEYS-BACKUP-2026-09-09.tar.enc",
   "keysBackupSha256": "5753a90cdad893b2008e6a6abb4407d2a354ec89ac6be39adf6ea1d526fa8ac4",
   "replacedArchive": "KEYS-ZIP-2026-10-08.zip.enc (GEN-2 headcorner keys dead; army GEN-2 intact)",
@@ -36,7 +37,7 @@
   "rotationNote": "R284: vault-completion seal - all live secret classes now open with the ONE pass of this meta; pass rotation is a FULL-RESEAL operation, never a meta-edit alone",
   "extras": {
     "file": "agent/vault/EXTRA-SECRETS-2026-10-08-ROT4.zip.enc",
-    "passRef": "keysZipPass (this same meta)",
+    "passRef": "keysZipUnlockRef (R-VAULTPASS-1 bundle)",
     "outerSha256": "8e3b73443c6efc81270c6fc4fbbc1d748015c45f7269107d5fecde5c07116b3b",
     "innerSha256": "5e5d0a5312968bb7eac43b2f62c465c98b8535250b9496df7966dddeb25862b9",
     "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> | unzip -Z1 (signing/ pat/ dex/)",
@@ -69,7 +70,7 @@
   },
   "toolbelt": {
     "file": "agent/vault/TOOLBELT-SEAL-20261010T110842Z.zip.enc",
-    "passRef": "keysZipPass (this same meta)",
+    "passRef": "keysZipUnlockRef (R-VAULTPASS-1 bundle)",
     "outerSha256": "44180acffcdf911ae413a1043e694cbe42d2406ce76fa8102cac897037bacfeb",
     "innerSha256": "61459da3464ace92580f60b9cbc79ed44a188ed6ea7febe0f6db639d14fabf96",
     "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<keysZipPass> | unzip (toolbelt.json)",
