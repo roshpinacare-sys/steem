@@ -27,6 +27,11 @@
 # אפס-שידור, אפס-כתיבה (permissions: contents: read), אפס-תלות, אפס-actions-
 # צד-ג (חוק-Z74), תמיד exit 0 (fail-open — מצבה מדווחת, לא רודפת).
 #
+# דו-מגורים (תקדים-הבית: gitleaks.yml חי בשני-הענפים): main = מקור-האמת
+# (הצי קורא אותו); saos-cockpit (ענף-ברירת-המחדל) = כשירות-dispatch בלבד —
+# GitHub מאנדקס workflows מהענף-הראשי בלבד (נמדד: dispatch על ref=main
+# מחזיר 404 מבני). המדידה בכל-ריצה היא של ה-ref שממנו רצו + של main עצמו.
+#
 # מה-יפתח-את-המצבה (צעדי-בעלים, לא צעדי-סוכן):
 #   (א) מילת-owner המשחררת את חוק-CR-0065 למו"ל-גיבוי,
 #   (ב) הזרמת סוד SA_FLEET_KEYS לריפו-זה,
@@ -63,28 +68,29 @@ jobs:
         run: |
           set -u
           echo "SOCIAL-CADENCE-UNWIRED-BROADCAST-GATED: waiting-owner"
-          echo "--- measured state (all read-only) ---"
+          echo "--- measured state: this ref ($(git rev-parse --short HEAD)) ---"
           if [ -f agent/social/cadence-run.cjs ]; then
             echo "runner: present ($(wc -c < agent/social/cadence-run.cjs) bytes) at agent/social/cadence-run.cjs"
           else
-            echo "runner: MISSING at agent/social/cadence-run.cjs"
+            echo "runner: absent on this ref (main is the source of truth — measuring it next)"
           fi
-          bc=$(grep -c 'steem\.broadcast\.send' agent/social/cadence-run.cjs 2>/dev/null || true)
-          echo "broadcast-capable: ${bc:-0} broadcast call sites (steem.broadcast.send) — this is why the lane law gates it"
-          dc=$(grep -c -- '--dry' agent/social/cadence-run.cjs 2>/dev/null || true)
-          echo "dry-mode flag present: ${dc:-0} (--dry = plan-only, zero signatures)"
+          git fetch --depth 1 origin +refs/heads/main:refs/remotes/origin/main >/dev/null 2>&1 || echo "main-ref measure: unavailable (fetch failed) — honest degradation"
+          if git cat-file -e origin/main:agent/social/cadence-run.cjs 2>/dev/null; then
+            echo "runner on main ref: present ($(git cat-file -s origin/main:agent/social/cadence-run.cjs) bytes)"
+            bc=$(git show origin/main:agent/social/cadence-run.cjs | grep -c 'steem\.broadcast\.send' || true)
+            dc=$(git show origin/main:agent/social/cadence-run.cjs | grep -c -- '--dry' || true)
+            echo "broadcast-capable (main): ${bc:-0} broadcast call sites (steem.broadcast.send) — this is why the lane law gates it"
+            echo "dry-mode flag present (main): ${dc:-0} (--dry = plan-only, zero signatures)"
+          else
+            echo "runner on main ref: NOT FOUND (re-measure — the tombstone documents a real runner at agent/social/cadence-run.cjs)"
+          fi
           if [ -f agent/social/social-selftest.cjs ]; then
-            echo "selftest: present (measured locally 2026-10-11: 38 PASS / 0 FAIL)"
+            echo "selftest: present on this ref (measured locally 2026-10-11: 38 PASS / 0 FAIL)"
           else
-            echo "selftest: MISSING"
-          fi
-          if [ -f agent/social/SOCIAL-DOCTRINE.md ]; then
-            echo "doctrine: present (SOCIAL-DOCTRINE.md)"
-          else
-            echo "doctrine: MISSING"
+            echo "selftest: absent on this ref (measured on main)"
           fi
           if [ ! -e agents ]; then
-            echo "agents/ (plural): absent in-steem — the old workflow's plural path never existed here (dead pointer, 12-a census)"
+            echo "agents/ (plural): absent — the old workflow's plural path never existed (dead pointer, 12-a census)"
           else
             echo "agents/ (plural): present (unexpected — re-measure)"
           fi
