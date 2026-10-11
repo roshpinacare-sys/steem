@@ -1,31 +1,31 @@
 {
-  "at": "2026-10-11T13:18:27.993Z",
+  "at": "2026-10-11T14:00:12.785Z",
   "custody": "14/14",
   "social": "SOCIAL-EXECUTED",
-  "socialExecuted": 1,
-  "content": "DRAFTS-QUEUED",
+  "socialExecuted": 2,
+  "content": "BRIDGE-DOWN",
   "contentSource": null,
-  "post": "BROADCASTED",
-  "postAccount": "siq",
-  "postPermlink": "explaining-it-broke-it-what-teaching-a-s-20261011-040953fc",
+  "post": "BROADCAST-FAILED",
+  "postAccount": "tov",
+  "postPermlink": "tension-is-everything-what-knots-taught-20261011-059d16df",
   "dex": "STANDBY",
-  "dexReason": "takeover-gap",
+  "dexReason": "engine-alive",
   "digest": "DIGEST-READY",
-  "digestTitle": "Digest 7 curation and custody",
+  "digestTitle": "Digest 8 nodes and buffer",
   "blurt": "BLURT-BODIES-LIVE",
   "blurtLive": 12,
-  "delegation": "DELEGATION-DISARMED",
+  "delegation": "ADOPT-REFUSED",
   "delegationOps": 0,
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T13:18:27.993Z",
+    "at": "2026-10-11T14:00:12.785Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 42424,
+        "ms": 49490,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -35,50 +35,50 @@
         "ok": true,
         "ms": 0,
         "verdict": "STANDBY",
-        "reason": "takeover-gap",
-        "anchorAgeMs": 48381780
+        "reason": "engine-alive",
+        "anchorAgeMs": 1618001
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 286184,
+        "ms": 283201,
         "verdict": "SOCIAL-EXECUTED",
-        "executed": 1,
+        "executed": 2,
         "refused": 0,
-        "due": 49
+        "due": 50
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 2701,
-        "verdict": "DRAFTS-QUEUED",
-        "draftsQueued": 28,
+        "ms": 36,
+        "verdict": "BRIDGE-DOWN",
+        "draftsQueued": 0,
         "exposureBlocked": 0,
         "source": null
       },
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 17,
+        "ms": 13,
         "verdict": "DIGEST-READY",
-        "slot": 0,
-        "title": "Digest 7 curation and custody",
+        "slot": 1,
+        "title": "Digest 8 nodes and buffer",
         "compiled": "COMPILED"
       },
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 3033,
-        "verdict": "BROADCASTED",
-        "account": "siq",
-        "permlink": "explaining-it-broke-it-what-teaching-a-s-20261011-040953fc",
+        "ms": 5400,
+        "verdict": "BROADCAST-FAILED",
+        "account": "tov",
+        "permlink": "tension-is-everything-what-knots-taught-20261011-059d16df",
         "mode": null,
         "note": null
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 202,
+        "ms": 504,
         "verdict": "BLURT-BODIES-LIVE",
         "live": 12,
         "total": 12,
@@ -87,12 +87,15 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 2,
-        "verdict": "DELEGATION-DISARMED",
+        "ms": 1343,
+        "verdict": "ADOPT-REFUSED",
         "ops": 0,
         "totalSp": 0,
-        "reason": "CI_DELEGATION_ARMED secret absent — fail-closed by law"
+        "reason": "active-authority-mismatch"
       }
     }
-  }
+  },
+  "truthrail": "PASS",
+  "truthrailPosts24h": 19,
+  "truthrailOutsideVotes": 1
 }
