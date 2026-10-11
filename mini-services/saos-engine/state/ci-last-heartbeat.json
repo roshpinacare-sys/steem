@@ -1,31 +1,31 @@
 {
-  "at": "2026-10-11T14:00:12.785Z",
+  "at": "2026-10-11T16:05:30.200Z",
   "custody": "14/14",
   "social": "SOCIAL-EXECUTED",
   "socialExecuted": 2,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
-  "post": "BROADCAST-FAILED",
-  "postAccount": "tov",
-  "postPermlink": "tension-is-everything-what-knots-taught-20261011-059d16df",
-  "dex": "STANDBY",
-  "dexReason": "engine-alive",
-  "digest": "DIGEST-READY",
-  "digestTitle": "Digest 8 nodes and buffer",
+  "post": "BROADCASTED",
+  "postAccount": "hcsoldier4",
+  "postPermlink": "the-burned-pot-what-a-ruined-dinner-taug-20261011-2cbf5aee",
+  "dex": "TAKEOVER-EXECUTED",
+  "dexReason": "anchor-stale",
+  "digest": "COOLDOWN",
+  "digestTitle": null,
   "blurt": "BLURT-BODIES-LIVE",
   "blurtLive": 12,
-  "delegation": "ADOPT-REFUSED",
-  "delegationOps": 0,
-  "delegationSp": 0,
+  "delegation": "DELEGATED",
+  "delegationOps": 5,
+  "delegationSp": 175.745,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T14:00:12.785Z",
+    "at": "2026-10-11T16:05:30.200Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 49490,
+        "ms": 42812,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,24 +33,25 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 0,
-        "verdict": "STANDBY",
-        "reason": "engine-alive",
-        "anchorAgeMs": 1618001
+        "ms": 396615,
+        "verdict": "TAKEOVER-EXECUTED",
+        "reason": "anchor-stale",
+        "cycle": null,
+        "health": "ok"
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 283201,
+        "ms": 308005,
         "verdict": "SOCIAL-EXECUTED",
         "executed": 2,
         "refused": 0,
-        "due": 50
+        "due": 64
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 36,
+        "ms": 16,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -59,26 +60,26 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 13,
-        "verdict": "DIGEST-READY",
-        "slot": 1,
-        "title": "Digest 8 nodes and buffer",
-        "compiled": "COMPILED"
+        "ms": 2,
+        "verdict": "COOLDOWN",
+        "slot": 2,
+        "title": null,
+        "compiled": null
       },
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 5400,
-        "verdict": "BROADCAST-FAILED",
-        "account": "tov",
-        "permlink": "tension-is-everything-what-knots-taught-20261011-059d16df",
+        "ms": 3496,
+        "verdict": "BROADCASTED",
+        "account": "hcsoldier4",
+        "permlink": "the-burned-pot-what-a-ruined-dinner-taug-20261011-2cbf5aee",
         "mode": null,
         "note": null
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 504,
+        "ms": 106,
         "verdict": "BLURT-BODIES-LIVE",
         "live": 12,
         "total": 12,
@@ -87,15 +88,15 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 1343,
-        "verdict": "ADOPT-REFUSED",
-        "ops": 0,
-        "totalSp": 0,
-        "reason": "active-authority-mismatch"
+        "ms": 4549,
+        "verdict": "DELEGATED",
+        "ops": 5,
+        "totalSp": 175.745,
+        "reason": null
       }
     }
   },
   "truthrail": "PASS",
-  "truthrailPosts24h": 19,
+  "truthrailPosts24h": 29,
   "truthrailOutsideVotes": 1
 }
