@@ -31,6 +31,7 @@ import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { HIVE_CHAIN_ID, buildTx, wifDecode, pubkeyFromSeed } from "./steemtx.mjs";
+import { vaultPass } from "./vault-custody.mjs";
 import { spamVerdict, flagPauseVerdict } from "./spamgate.mjs";
 import { wordCount, MIN_POST_WORDS, titleSimilarity, recentPublishedTitles } from "./content.mjs";
 import { embedImage } from "./illustrate.mjs";
@@ -149,7 +150,7 @@ function unlockHiveKeysFromGitVault() {
     fs.writeFileSync(path.join(TMP, "k.enc"), enc, { mode: 0o600 });
     execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
       "-in", path.join(TMP, "k.enc"), "-out", path.join(TMP, "inner.zip"),
-      "-pass", `pass:${meta.keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
+      "-pass", `pass:${vaultPass(meta.keysZipUnlockRef ?? "gen1.keysZipUnlock")}`], { stdio: ["ignore", "ignore", "pipe"] });
     const inner = fs.readFileSync(path.join(TMP, "inner.zip"));
     if (sha256(inner) !== String(meta.keysZipInnerSha256 ?? "")) throw new Error("gen1-inner-sha-mismatch");
     fs.writeFileSync(path.join(TMP, "inner.zip"), inner, { mode: 0o600 });

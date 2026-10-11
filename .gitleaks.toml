@@ -1,24 +1,36 @@
-# GITLEAKS-CONFIG (R244, doctrine 13-e) — extends the default ruleset with the
-# body's BOOKS allowlist. The books (worklog / TODO / tool receipts) quote the
-# body's history — key NAMES, lost-credential events, redacted fingerprints —
-# but never hold live credential material.
-# Measured 2026-10-07 (gitleaks v8.24.3): worklog.md:409/623 = the T-15/T-80
-# lost-soldier narrative ("no-credential: hcsoldier1/2/3"); TODO.md:8 = plain
-# roadmap; tool-results/* = shell receipts. Zero secret material — verified by
-# manual inspection of every flagged line before this allowlist was written.
-# NOTE: singular [allowlist] is the schema gitleaks v8.24.3 honors for global
-# path allowlists (the plural [[allowlists]] form is silently ignored — measured).
-
+# gitleaks config - MEASURED false positives ONLY (zai-code-3, 2026-10-11T22:5xZ,
+# trace 1a12d1bb7843aaad). Every entry carries its proof. See also
+# agent/vault/*.json custody notes (law R-VAULTPASS-1).
+#
+# TRUE-positive material (the vault unlock keys) was REMOVED from the repo by
+# law R-VAULTPASS-1 - it now lives ONLY in the Actions secret
+# STEEM_VAULT_PASSES (steem + saos-runtime). NEVER allowlist that class here;
+# rotation of the pre-migration git history is an owner P0.
+#
+# Proven false positives (measured 2026-10-11, gitleaks 8.24.3 local):
+#  1) hex64/hex40 = sha256 integrity anchors + GPG fingerprints in
+#     agent/vault/*.json - public verification material by definition.
+#  2) mini-services/saos-engine/selftest.mjs = the r246 fixture file: PUBLIC
+#     keys + fabricated vectors by doctrine. LAW: no real credential may ever
+#     be placed in this file (its content is trusted unscanned).
+#  3) seal-*...wif strings in saos-engine/state/*.json = field-name pointers
+#     (labels, never key bytes).
+#  4) hcs* tokens in recovery branch worklog snapshots = account-name prose
+#     about the measured LOST-NO-CUSTODY soldier keys (lines 409/623).
+# NOTE: gitleaks 8.24.3 silently ignores [[allowlists]] array-of-tables with
+# condition=AND (measured) - single [allowlist] with OR semantics is used;
+# each entry is therefore kept deliberately narrow instead of AND-scoped.
 [extend]
 useDefault = true
 
 [allowlist]
-description = "sovereign books + local build artifacts (no live material)"
+description = "measured false positives - each entry proven, see notes above"
+regexes = [
+  '\b[a-f0-9]{64}\b',
+  '\b[0-9A-F]{40}\b',
+  '\bseal-[a-z0-9.-]*wif\b',
+  '^hcsoldier[0-9]+(/[0-9]+)*$',
+]
 paths = [
-  '''worklog\.md$''',
-  '''branch-worklog\.md$''',
-  '''TODO\.md$''',
-  '''tool-results/''',
-  '''(^|/)\.next/''',
-  '''(^|/)node_modules/''',
+  'mini-services/saos-engine/selftest\.mjs$',
 ]

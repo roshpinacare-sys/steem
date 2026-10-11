@@ -32,6 +32,7 @@ import { createHash } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { rpcHive } from "./hive.mjs";
 import { pubkeyFromSeed as pubFromSeed, wifDecode as wifDec, b58encode, b58decode, SEED_ORDERS } from "./steemtx.mjs";
+import { vaultPass } from "./vault-custody.mjs";
 import * as crypto from "node:crypto";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -70,7 +71,7 @@ function unlockHeadcorner({ ref, zip }) {
     fs.writeFileSync(path.join(TMP, "k.enc"), enc, { mode: 0o600 });
     execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
       "-in", path.join(TMP, "k.enc"), "-out", path.join(TMP, "inner.zip"),
-      "-pass", `pass:${meta.keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
+      "-pass", `pass:${vaultPass(meta.keysZipUnlockRef ?? "recovery-3.keysZipUnlock")}`], { stdio: ["ignore", "ignore", "pipe"] });
     const inner = fs.readFileSync(path.join(TMP, "inner.zip"));
     if (sha256(inner) !== String(meta.keysZipInnerSha256 ?? "")) throw new Error(`inner-sha-mismatch@${ref.slice(0, 6)}`);
     fs.writeFileSync(path.join(TMP, "inner.zip"), inner, { mode: 0o600 });
