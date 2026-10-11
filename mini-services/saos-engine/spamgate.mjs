@@ -113,11 +113,18 @@ const BANNED_TAGS = new Set(["nsfw", "porn", "airdrop", "giveaway", "free-steem"
  * → HIVE: ALLOWED as a measured trial, with STRICTER gates (rep-0 accounts
  *   on Hive are exactly what spaminator hunts — our posts must be BETTER
  *   there than on Steem, not equal).
- * → BLURT: still REFUSED (the pause stands until the operator re-arms it). */
+ * → BLURT (R294): reopened as the strictest trial by owner order
+ *   2026-10-11; broadcasting additionally gated by state/blurt-arm.json
+ *   (deliberate owner act) + chain-judged posting custody. */
 export const CHAIN_POLICY = Object.freeze({
   steem: { allowed: true },
   hive: { allowed: true, trial: true, minPostChars: 1600, maxSelfSimPost: 0.25, minCommentChars: 260, dayCap: 1 },
-  blurt: { allowed: false, reason: "operator-pause (R254: 'לגבי blurt תמתין')" },
+  /* R294 · owner order 2026-10-11 ("החשבונות blurt לא מחוברים... צריך לטפל
+   * בזה") supersedes the R254 pause ("לגבי blurt תמתין"). Blurt reopens as
+   * the STRICTEST trial — stricter than hive on every gate — and its
+   * broadcasting additionally requires the deliberate arm-file
+   * (state/blurt-arm.json) + chain-judged posting custody (blurt.mjs). */
+  blurt: { allowed: true, trial: true, minPostChars: 1800, maxSelfSimPost: 0.20, minCommentChars: 300, dayCap: 1, requiresArmFile: true },
 });
 
 export function chainGate(chain, g = GATE_DEFAULTS) {
@@ -210,13 +217,15 @@ export function frequencyVerdict(postsToday, cap, g = GATE_DEFAULTS) {
   return { ok, reasons: ok ? [] : [`day-cap-reached(${postsToday}>=${cap})`] };
 }
 
-/* the chain law — R254: steem + hive allowed (hive as measured trial with
- * stricter gates via chainGate), blurt still fail-closed. */
+/* the chain law — R254: steem + hive (hive as measured trial, stricter gates
+ * via chainGate). R294 (owner 2026-10-11): blurt reopens as the strictest
+ * trial — its broadcast path additionally requires the owner arm-file +
+ * chain-judged custody (see blurt.mjs). */
 export function crossChainVerdict(chain) {
   const c = String(chain ?? "").toLowerCase();
-  return c === "steem" || c === "hive"
-    ? { ok: true, reasons: [], chain: c }
-    : { ok: false, reasons: [`REFUSED-CROSS-CHAIN-PAUSE(chain=${chain || "unknown"}; allowed: steem + hive-trial · blurt waits per operator R254)`] };
+  return c === "steem" || c === "hive" || c === "blurt"
+    ? { ok: true, reasons: [], chain: c, note: c === "blurt" ? "R294 strictest trial — arm-file + custody additionally required (blurt.mjs)" : null }
+    : { ok: false, reasons: [`REFUSED-CROSS-CHAIN-PAUSE(chain=${chain || "unknown"}; allowed: steem + hive-trial + blurt-strictest-trial (R294))`] };
 }
 
 /* ── pure: the one gate ───────────────────────────────────────────────────── */

@@ -153,7 +153,7 @@ function scanFleetRepoGitNative(repo, perRepo = 10) {
 const NODES = [
   ...["https://api.steemit.com", "https://api.justyy.com", "https://steemapi.boylikegirl.club"].map((endpoint) => ({ chain: "steem", endpoint })),
   ...["https://api.hive.blog", "https://api.openhive.network", "https://api.deathwing.me"].map((endpoint) => ({ chain: "hive", endpoint })),
-  ...["https://blurt-rpc.saboin.com", "https://rpc.blurt.world"].map((endpoint) => ({ chain: "blurt", endpoint })),
+  ...["https://blurt-rpc.saboin.com", "https://rpc.blurt.blog"].map((endpoint) => ({ chain: "blurt", endpoint })), // R294: rpc.blurt.world measured NXDOMAIN 2026-10-11
 ];
 
 async function probeNode({ chain, endpoint }, now) {
