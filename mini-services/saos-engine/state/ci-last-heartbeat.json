@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-11T22:59:50.951Z",
-  "custody": "14/14",
-  "social": "SOCIAL-IDLE",
+  "at": "2026-10-11T23:22:49.194Z",
+  "custody": "0/14",
+  "social": "PART-GATED",
   "socialExecuted": 0,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
@@ -19,15 +19,15 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T22:59:50.951Z",
+    "at": "2026-10-11T23:22:49.194Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 29703,
-        "verdict": "FLEET-CUSTODY-ALIVE",
-        "verified": 14,
+        "ms": 381,
+        "verdict": "REVIVAL-FAIL",
+        "verified": 0,
         "total": 14
       },
       "dex": {
@@ -36,21 +36,21 @@
         "ms": 0,
         "verdict": "STANDBY",
         "reason": "takeover-gap",
-        "anchorAgeMs": 9879736
+        "anchorAgeMs": 11228657
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 326464,
-        "verdict": "SOCIAL-IDLE",
+        "ms": 379,
+        "verdict": "PART-GATED",
         "executed": 0,
-        "refused": 0,
-        "due": 93
+        "refused": 13,
+        "due": 0
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 32,
+        "ms": 37,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -68,7 +68,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 24,
+        "ms": 3,
         "verdict": "DAILY-CAP",
         "account": null,
         "permlink": null,
@@ -78,7 +78,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 287,
+        "ms": 199,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -87,7 +87,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "ALREADY-TODAY",
         "ops": 0,
         "totalSp": 0,
