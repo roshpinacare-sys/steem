@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-11T22:08:13.619Z",
+  "at": "2026-10-11T22:37:01.863Z",
   "custody": "14/14",
   "social": "SOCIAL-IDLE",
   "socialExecuted": 0,
@@ -8,8 +8,8 @@
   "post": "DAILY-CAP",
   "postAccount": null,
   "postPermlink": null,
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T22:08:13.619Z",
+    "at": "2026-10-11T22:37:01.863Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 28621,
+        "ms": 30267,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,25 +33,24 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 382192,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 0,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 8511212
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 301045,
+        "ms": 316832,
         "verdict": "SOCIAL-IDLE",
         "executed": 0,
         "refused": 0,
-        "due": 88
+        "due": 92
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 14,
+        "ms": 26,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -69,7 +68,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 1,
+        "ms": 3,
         "verdict": "DAILY-CAP",
         "account": null,
         "permlink": null,
@@ -79,7 +78,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 576,
+        "ms": 2425,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -88,7 +87,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "ALREADY-TODAY",
         "ops": 0,
         "totalSp": 0,
