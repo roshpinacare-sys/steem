@@ -1,13 +1,23 @@
 {
-  "at": "2026-10-11T20:15:40.957Z",
+  "at": "2026-10-11T22:08:13.619Z",
   "day": "2026-10-11",
-  "verdict": "HIVE-IDLE",
+  "verdict": "HIVE-EXECUTED",
   "custody": {
     "verified": 9,
     "total": 9
   },
-  "accounts": {},
-  "receipts": [],
+  "accounts": {
+    "siq": 1
+  },
+  "receipts": [
+    {
+      "account": "siq",
+      "verdict": "BROADCAST",
+      "error": null,
+      "permlink": "siq/the-18-bus-what-a-year-of-the-same-route-builds-in-a-person",
+      "digest8": "5d024540"
+    }
+  ],
   "fleetPaused": null,
   "results": [
     {
@@ -24,18 +34,9 @@
       "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
-      "account": "lsa",
-      "verdict": "RC-LOW-HONEST-DEFER"
-    },
-    {
       "account": "macrame",
       "verdict": "SCHEDULE-LATER",
       "postMinuteUtc": 1373
-    },
-    {
-      "account": "siq",
-      "verdict": "SCHEDULE-LATER",
-      "postMinuteUtc": 1258
     },
     {
       "account": "wic",
@@ -48,9 +49,23 @@
     {
       "account": "woq",
       "verdict": "RC-LOW-HONEST-DEFER"
+    },
+    {
+      "account": "lsa",
+      "verdict": "RC-DEFER",
+      "error": null,
+      "permlink": null,
+      "digest8": null
+    },
+    {
+      "account": "siq",
+      "verdict": "BROADCAST",
+      "error": null,
+      "permlink": "siq/the-18-bus-what-a-year-of-the-same-route-builds-in-a-person",
+      "digest8": "5d024540"
     }
   ],
-  "executed": 0,
+  "executed": 1,
   "caps": "probe: ≤1 post/day/account · ≤limit fleet · votes OFF · veto-armed",
-  "ms": 1864
+  "ms": 1989
 }
