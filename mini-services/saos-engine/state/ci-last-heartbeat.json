@@ -1,24 +1,31 @@
 {
-  "at": "2026-10-11T12:58:08.342Z",
+  "at": "2026-10-11T13:18:27.993Z",
   "custody": "14/14",
   "social": "SOCIAL-EXECUTED",
   "socialExecuted": 1,
-  "content": "BRIDGE-DOWN",
+  "content": "DRAFTS-QUEUED",
   "contentSource": null,
-  "post": "LIVE-REFUSED-NOT-ARMED",
-  "postAccount": null,
-  "postPermlink": null,
+  "post": "BROADCASTED",
+  "postAccount": "siq",
+  "postPermlink": "explaining-it-broke-it-what-teaching-a-s-20261011-040953fc",
   "dex": "STANDBY",
   "dexReason": "takeover-gap",
+  "digest": "DIGEST-READY",
+  "digestTitle": "Digest 7 curation and custody",
+  "blurt": "BLURT-BODIES-LIVE",
+  "blurtLive": 12,
+  "delegation": "DELEGATION-DISARMED",
+  "delegationOps": 0,
+  "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T12:58:08.342Z",
+    "at": "2026-10-11T13:18:27.993Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 39778,
+        "ms": 42424,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -29,35 +36,62 @@
         "ms": 0,
         "verdict": "STANDBY",
         "reason": "takeover-gap",
-        "anchorAgeMs": 47159483
+        "anchorAgeMs": 48381780
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 251453,
+        "ms": 286184,
         "verdict": "SOCIAL-EXECUTED",
         "executed": 1,
         "refused": 0,
-        "due": 44
+        "due": 49
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 18,
-        "verdict": "BRIDGE-DOWN",
-        "draftsQueued": 0,
+        "ms": 2701,
+        "verdict": "DRAFTS-QUEUED",
+        "draftsQueued": 28,
         "exposureBlocked": 0,
         "source": null
+      },
+      "digest": {
+        "name": "digest",
+        "ok": true,
+        "ms": 17,
+        "verdict": "DIGEST-READY",
+        "slot": 0,
+        "title": "Digest 7 curation and custody",
+        "compiled": "COMPILED"
       },
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 2,
-        "verdict": "LIVE-REFUSED-NOT-ARMED",
-        "account": null,
-        "permlink": null,
+        "ms": 3033,
+        "verdict": "BROADCASTED",
+        "account": "siq",
+        "permlink": "explaining-it-broke-it-what-teaching-a-s-20261011-040953fc",
         "mode": null,
-        "note": "mode=live but .secrets/social-armed.json missing — fail-closed"
+        "note": null
+      },
+      "blurt": {
+        "name": "blurt-custody",
+        "ok": true,
+        "ms": 202,
+        "verdict": "BLURT-BODIES-LIVE",
+        "live": 12,
+        "total": 12,
+        "spendGate": "R254-PAUSE-STANDS"
+      },
+      "delegation": {
+        "name": "delegation",
+        "ok": true,
+        "ms": 2,
+        "verdict": "DELEGATION-DISARMED",
+        "ops": 0,
+        "totalSp": 0,
+        "reason": "CI_DELEGATION_ARMED secret absent — fail-closed by law"
       }
     }
   }
