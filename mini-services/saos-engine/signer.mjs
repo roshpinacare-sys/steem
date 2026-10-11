@@ -307,6 +307,21 @@ export function syncCredential() {
 const mem = { identities: {}, master: null, keyFileFp: null }; // account → { password, wifs:{role:wif}, matchedOrder, verified }
 
 /**
+ * R314b · VAULT-CUSTODY ACCESSOR (2026-10-11): hands a chain-verified,
+ * in-memory adopted wif to a caller that chain-judges it AGAIN before any
+ * broadcast (the delegation rail gate 4 re-runs adoptVerifiedWifIdentity).
+ * Fail-closed: null unless THIS process verified the identity against the
+ * LIVE chain (verified.ok, matchedOrder "wif-direct"). The wif never
+ * reaches logs, state files, or ledgers — only the signing path.
+ */
+export function adoptedWifFor(account, role) {
+  const id = mem.identities[account];
+  if (!id?.verified?.ok || id?.verified?.matchedOrder !== "wif-direct") return null;
+  const w = id?.wifs?.[role];
+  return typeof w === "string" && w.length >= 51 ? w : null;
+}
+
+/**
  * T-16 · paste-revival (the fastest operator path — measured 2026-09-30: the
  * file-drop revival waited ~1 day with zero action; friction kills revival).
  * Validates the text (pure half in lib.mjs), secures it (0600, .secrets/),
