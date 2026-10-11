@@ -12,9 +12,14 @@
  *                  travels as a repo secret, same contract as CI_SOCIAL_ARMED).
  *   2. DAILY     — one run per UTC day (state/delegation-last.json).
  *   3. CUSTODY   — army-custody.json must read FLEET-CUSTODY-ALIVE, full.
- *   4. CREDENTIAL— env CI_ADOPT_WIF_ACTIVE (master ACTIVE WIF), chain-judged
- *                  via adoptVerifiedWifIdentity — the SAME lawful adoption
- *                  path R245 uses for the dex takeover. Key bytes never print.
+ *   4. CREDENTIAL— VAULT-FIRST (R314b, 2026-10-11): the custody step of THIS
+ *                  beat already chain-adopted the master's ACTIVE wif from the
+ *                  git vault (adoptedWifFor — verified.ok, wif-direct).
+ *                  Fallback: env CI_ADOPT_WIF_ACTIVE (measured 2026-10-11:
+ *                  its wif does NOT match headcorner's live active authority
+ *                  — verdict ADOPT-REFUSED @14:00:12Z). Either way the wif is
+ *                  chain-judged AGAIN via adoptVerifiedWifIdentity. Key bytes
+ *                  never print.
  *   5. MEASURED  — every number comes from the live chain (dgpo ratios +
  *                  get_accounts), never from books or estimates.
  *   6. CAPPED    — hard law: per-account floor top-up only, ≤ MAX_RUN_SP per
@@ -34,7 +39,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { buildTx, pubkeyBytes, STEEM_CHAIN_ID } from "./steemtx.mjs";
 import { rpcCall } from "./measure.mjs";
-import { masterAccount } from "./signer.mjs";
+import { masterAccount, adoptedWifFor } from "./signer.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const stateDir = () => process.env.SAOS_STATE_DIR || path.join(DIR, "state");
@@ -129,15 +134,24 @@ export async function runDelegationRail({ now = new Date().toISOString() } = {})
     ledger(out);
     return out;
   }
-  /* 4 · CREDENTIAL gate + chain-judged adoption */
-  const raw = String(process.env.CI_ADOPT_WIF_ACTIVE ?? "").trim();
+  /* 4 · CREDENTIAL gate + chain-judged adoption (R314b: VAULT-FIRST).
+   * The custody step of this same beat/process already chain-adopted the
+   * master's ACTIVE wif from the git vault (army-custody.json
+   * "ACTIVE-VERIFIED" GEN-2 → signer.mem, verified.ok wif-direct). The vault
+   * IS the credential delivery (ci-cycle.mjs law: zero key material in CI
+   * secrets). Fallback: the CI_ADOPT_WIF_ACTIVE secret — measured
+   * 2026-10-11 its wif does NOT match headcorner's live active authority
+   * (verdict ADOPT-REFUSED), so it is fallback only. EITHER source is
+   * chain-judged again below — a stale or wrong wif still fails closed. */
+  const master = masterAccount();
+  const vaultWif = adoptedWifFor(master, "active");
+  const raw = vaultWif ?? String(process.env.CI_ADOPT_WIF_ACTIVE ?? "").trim();
   if (!raw) {
-    const out = { ...base, verdict: "NO-CREDENTIAL", reason: "CI_ADOPT_WIF_ACTIVE absent" };
+    const out = { ...base, verdict: "NO-CREDENTIAL", reason: "no vault-adopted master ACTIVE wif; CI_ADOPT_WIF_ACTIVE absent" };
     writeJson(path.join(S, "delegation-last.json"), out);
     ledger(out);
     return out;
   }
-  const master = masterAccount();
   const bare = raw.startsWith("P") && raw.length >= 51 ? raw.slice(1) : raw;
   try {
     const { adoptVerifiedWifIdentity } = await import("./signer.mjs");
