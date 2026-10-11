@@ -103,6 +103,21 @@ async function main() {
     return { verdict: r.verdict, draftsQueued: r.draftsQueued ?? 0, exposureBlocked: r.exposureBlocked ?? 0, source: r.source ?? null };
   });
 
+  /* R312 · THE MEASURED-DIGEST SUPPLY (wires R288 — built 2026-10-10, never
+   * called in production: the exact built-but-not-running pattern). Measured
+   * 2026-10-11: the corpus burned out (R311 FULL-PUBLISHED SHIELD holds every
+   * entry) and the bridge is down (ECONNREFUSED since 2026-10-08) — so the
+   * posting stream starves while every gate stays green. The finance-digest
+   * rail composes measured telemetry into a deterministic digest document,
+   * appends it to the compiler intake and compiles it BROADCAST-READY
+   * (max 2/day, 28-pair topic rotation, honesty law, never broadcasts).
+   * Operator order 2026-10-11 (verbatim): "יש לך אישור להכל תמשיך בוא נתחיל לבצע". */
+  report.steps.digest = await stepWrap("digest", async () => {
+    const { runFinanceDigest } = await import("./finance-digest.mjs");
+    const r = await runFinanceDigest({ now });
+    return { verdict: r.verdict, slot: r.slot ?? null, title: r.title ?? null, compiled: r.compileVerdict ?? null };
+  });
+
   /* T-61 · THE CONTINUOUS POSTING STREAM: one bounded broadcast attempt per
    * heartbeat (stage → mode → armed → caps → dedupe → signature-verified →
    * broadcast). Fail-closed everywhere; a refusal is a verdict, never an
@@ -112,6 +127,31 @@ async function main() {
     const { runOnce } = await import("./social-streamer.mjs");
     const r = await runOnce();
     return { verdict: r.verdict, account: r.account ?? null, permlink: r.permlink ?? null, mode: r.mode ?? null, note: r.note ?? null };
+  });
+
+  /* R313 · BLURT BODIES PROBE (read-only, public RPC, zero keys). Operator
+   * question 2026-10-11: why do the blurt accounts read "not connected" while
+   * the vault holds their keys? Truth: R267 verified 11/12 blurt bodies
+   * FULL-ACCESS (2026-10-08), but no heartbeat step ever showed blurt — the
+   * wing was invisible. This step makes the bodies visible every beat
+   * (existence, stake, last post — public data only). The SPEND gate (R254
+   * operator pause) is untouched: visibility is not spend. */
+  report.steps.blurt = await stepWrap("blurt-custody", async () => {
+    const { runBlurtBodies } = await import("./blurt-heartbeat.mjs");
+    const r = await runBlurtBodies({ now });
+    return { verdict: r.verdict, live: r.live ?? 0, total: r.total ?? 0, spendGate: "R254-PAUSE-STANDS" };
+  });
+
+  /* R314 · THE DELEGATION RAIL (operator standing order 2026-10-11, verbatim:
+   * "אני רוצה להאציל sp לכלל החשבונות כדי לחלק את כוח העבודה וההצבעה ופוסטים
+   * בצורה נכונה" + "יש לך אישור להכל"). Tops the active publishers up to their
+   * floor from the treasury, chain-judged WIF adoption, hard caps, idempotent,
+   * ledgered, fully reversible (7-day undelegation, ownership never moves).
+   * Fail-closed when the CI_DELEGATION_ARMED secret is absent. */
+  report.steps.delegation = await stepWrap("delegation", async () => {
+    const { runDelegationRail } = await import("./delegation-rail.mjs");
+    const r = await runDelegationRail({ now });
+    return { verdict: r.verdict, ops: r.ops ?? 0, totalSp: r.totalSp ?? 0, reason: r.reason ?? null };
   });
 
   /* CI session ledger — the machine-independent life of the organ, appended
@@ -137,6 +177,13 @@ async function main() {
     postPermlink: report.steps.post?.permlink ?? null,
     dex: report.steps.dex?.verdict ?? "STEP-FAIL",
     dexReason: report.steps.dex?.reason ?? null,
+    digest: report.steps.digest?.verdict ?? "STEP-FAIL",
+    digestTitle: report.steps.digest?.title ?? null,
+    blurt: report.steps.blurt?.verdict ?? "STEP-FAIL",
+    blurtLive: report.steps.blurt?.live ?? null,
+    delegation: report.steps.delegation?.verdict ?? "STEP-FAIL",
+    delegationOps: report.steps.delegation?.ops ?? 0,
+    delegationSp: report.steps.delegation?.totalSp ?? 0,
   };
   console.log("CI-HEARTBEAT " + JSON.stringify(summary));
   fs.writeFileSync(path.join(STATE, "ci-last-heartbeat.json"), JSON.stringify({ ...summary, report }, null, 2));

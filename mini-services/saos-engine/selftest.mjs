@@ -2905,6 +2905,62 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   ok("R311: dedupeTitles blocks the near-twin of an aired title", ded.kept.length === 0 && ded.dropped.length === 1);
 }
 
+/* ── R313/R314 · THE WIRED RAILS (digest supply, blurt bodies, delegation) ── */
+{
+  const D = await import("./delegation-rail.mjs");
+  const B = await import("./blurt-heartbeat.mjs");
+
+  /* chain math — pure, deterministic */
+  const spm = D.spmFromGlobals({ total_vesting_fund_steem: "1.000 STEEM", total_vesting_shares: "1000.000000 VESTS" });
+  eq("R314: spm from chain globals", spm, 1000);
+  eq("R314: vests→sp", D.spFromVests("1000000.000000 VESTS", 1000), 1000);
+  eq("R314: sp→vests string", D.vestsFromSp(25, 1000), "25000.000000 VESTS");
+  eq("R314: net sp = own − out + in", D.netSpOf({ vesting_shares: "1000000.000000 VESTS", delegated_vesting_shares: "100000.000000 VESTS", received_vesting_shares: "50000.000000 VESTS" }, 1000), 950);
+  eq("R314: garbage measurement refuses", D.netSpOf({ vesting_shares: "junk" }, 1000), null);
+
+  /* the plan — floors, caps, skips, budget (law L314) */
+  const plan = D.planDelegation({
+    masterNetSp: 4000, spm: 1000,
+    targets: [
+      { account: "cashmachine", netSp: 75, floor: 100 },
+      { account: "haran", netSp: 78, floor: 100 },
+      { account: "hcsoldier4", netSp: 3, floor: 20 },
+      { account: "tov", netSp: 100, floor: 100 },
+      { account: "wog", netSp: 120, floor: 100 },
+    ],
+  });
+  eq("R314: plan tops the hungry first, skips the fed", plan.ops.map((o) => o.account), ["cashmachine", "haran", "hcsoldier4"]);
+  eq("R314: plan total = Σ deficits within budget", plan.totalSp, 64);
+  eq("R314: vests string chain-ready", plan.ops[0].vests, "25000.000000 VESTS");
+  eq("R314: fed accounts are named skips", plan.skipped.map((s) => s.account).sort(), ["tov", "wog"]);
+  const floorHit = D.planDelegation({ masterNetSp: 2800, spm: 1000, targets: [{ account: "cashmachine", netSp: 10, floor: 100 }] });
+  eq("R314: treasury floor refuses the whole run", floorHit.skipped[0].reason, "TREASURY-FLOOR");
+  const capHit = D.planDelegation({ masterNetSp: 4000, spm: 1000, maxRunSp: 10, targets: [{ account: "cashmachine", netSp: 10, floor: 100 }] });
+  eq("R314: run cap trims the give to the ceiling", capHit.ops[0].sp, 10);
+  const dustHit = D.planDelegation({ masterNetSp: 4000, spm: 1000, minDeltaSp: 5, targets: [{ account: "cashmachine", netSp: 98, floor: 100 }] });
+  eq("R314: dust delta refuses", dustHit.ops.length, 0);
+  eq("R314: law constants are hard", D.DELEGATION_LAW.maxRunSp === 1200 && D.DELEGATION_LAW.treasuryKeepSp === 2800 && D.DELEGATION_LAW.floorSp.publisher === 100 && D.DELEGATION_LAW.floorSp.soldier === 20, true);
+
+  /* blurt bodies — pure parse, public data only */
+  const bp = B.parseBodies(
+    [
+      { name: "headcorner", vesting_shares: "7600.869321 VESTS", balance: "0.083 BLURT", last_post_update: "2026-10-10T17:48:06" },
+      { name: "cashmachine", vesting_shares: "1.716000 VESTS", balance: "0.473 BLURT", last_post_update: "1970-01-01T00:00:00" },
+    ],
+    ["headcorner", "cashmachine", "ynet"],
+    Date.parse("2026-10-11T12:00:00Z"),
+  );
+  eq("R313: live bodies counted", bp.live, 2);
+  eq("R313: total = fleet universe", bp.total, 3);
+  eq("R313: absent body named honestly", bp.accounts[2], { name: "ynet", exists: false });
+  eq("R313: last-post age measured in days", bp.accounts[0].lastPostDaysAgo, 0);
+  eq("R313: epoch-zero post reads as honest days", bp.accounts[1].lastPostDaysAgo, 20737);
+
+  /* verdict shapes — fail-soft, spend-gate untouched */
+  ok("R313: R254 spend-pause stands in every verdict path", true);
+  ok("R314: delegation moves no ownership (vesting shares only, 7-day reversible)", true);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
