@@ -131,8 +131,8 @@ console.log('== תגובות: אין-עוד-גנרי ==');
 const postBody = '**נתוני-אמת:** 4057 SP כוח-רשת. הרשת מווסתת את עצמה, וכל-הצבעה עוברת סורג של אימות-מפתח לפני חתימה וקריאה-חוזרת אחריה.';
 rule('extractAnchor: מספר-עם-יחידה נתפס', () => cq.extractAnchor(postBody).kind === 'number' ? true : cq.extractAnchor(postBody));
 rule('extractAnchor: fail-closed על-גוף-ריק/קצר', () => cq.extractAnchor('קצר') === null);
-const c1 = cq.buildComment({ postBody, myStat: { sp: 30.2, vp: 42.9 }, rng: cq.ngrams ? undefined : undefined });
-const c1b = cq.buildComment({ postBody, myStat: { sp: 30.2, vp: 42.9 }, rng: undefined });
+const c1 = cq.buildComment({ postBody, myStat: { sp: 30.2, vp: 42.9 }, rng: content.mulberry32(17) });
+const c1b = cq.buildComment({ postBody, myStat: { sp: 30.2, vp: 42.9 }, rng: content.mulberry32(29) });
 rule('buildComment: עוגן מוטמע + תחום-אורך 140–420', () => c1 && c1.body.length >= 140 && c1.body.length <= 420 && c1.body.includes(c1.anchor.text) ? true : c1);
 rule('buildComment: fail-closed בלי-עוגן', () => cq.buildComment({ postBody: 'קצר מדי' }) === null);
 rule('guard תופס: שכפול-מדויק', () => cq.guardComment(c1.body, [c1.body]).includes('exact-dup'));
@@ -141,7 +141,8 @@ rule('generator: תגובה-לא-פוגעת תוך ≤5 זרעים (חוק-הנ�
   const mem = [c1.body, c1b.body];
   const stems = [c1.body];
   for (let seed = 1; seed <= 5; seed++) {
-    const c2 = cq.buildComment({ postBody: postBody + ' עוד מספר: 243 fills.', myStat: { sp: 31, vp: 41 }, rng: require('crypto').randomInt ? undefined : undefined }) || cq.buildComment({ postBody: postBody + ' עוד מספר: 243 fills.', myStat: { sp: 31, vp: 41 } });
+    /* זרעים-קבועים (mulberry32) — אותה-כוונה, בלי-אקראיות-של-Math.random שהפכה את-החוק למטלטל */
+    const c2 = cq.buildComment({ postBody: postBody + ' עוד מספר: 243 fills.', myStat: { sp: 31, vp: 41 }, rng: content.mulberry32(seed * 1013904223) });
     if (!c2) continue;
     if (cq.guardComment(c2.body, mem, stems).length === 0) return true;
   }
@@ -169,6 +170,66 @@ rule('5 ימים: רוטציית-נושאים + בנייה + lint נקי', () =>
   }
   return true;
 });
+
+console.log('== campaign-hygiene: נגד-דליפות-תפעול (9-a) ==');
+const hyg = require(path.join(__dirname, 'campaign-hygiene.cjs'));
+/* שחזור-מדויק של הדליפה החיה שנמדדה: @headcorner/saos-engineering-20261010 (ביקורת 9-a) */
+const LEAKY_CAMPAIGN = {
+  title: 'SAOS Open Engineering — 2026-10-10',
+  body: [
+    '# SAOS Open Engineering — 2026-10-10',
+    '',
+    '**Date:** 2026-10-10 (UTC) · **Voice:** @headcorner · **Layer:** cloud (GitHub Actions, Domain) · **Slot:** daily content campaign (C-3), 13:10 UTC',
+    '',
+    '## 1. How the autonomous cloud actually works',
+    '- every agent is a small, boring, verifiable program on a schedule.',
+    '',
+    '— SAOS · proof over promises · agents/content-campaign.mjs (engineering, C-3, R130)',
+  ].join('\n'),
+  jsonMetadata: JSON.stringify({ tags: ['saos', 'defi', 'network'], app: 'saos/content-campaign/1.0', format: 'markdown', community: 'saos', source: 'agent-z content campaign (C-3, R130) — theme engineering' }),
+};
+const leakyIssues = hyg.lintCampaignPost(LEAKY_CAMPAIGN);
+rule('hygiene: התבנית-הדולפת-החיה נופלת על כל-החוקים (slot/layer/קודים/דקה/תאריך/מקף/app)', () => {
+  const need = ['body-ops-slot', 'body-ops-layer', 'body-campaign-code', 'body-refresh-code', 'body-engine-path',
+    'body-fixed-minute', 'title-contains-date', 'title-em-dash', 'meta-app-meta-leak', 'meta-agent-trace'];
+  const missing = need.filter((n) => !leakyIssues.includes(n));
+  return missing.length === 0 ? true : { issues: leakyIssues, missing };
+});
+rule('hygiene: דליפת-נתיב-ריפו נתפסת (body-repo-path)', () => hyg.lintCampaignPost({
+  title: 'A clean and honest title', body: 'autonomous agent wrote this. Source: Domain/mirror.json ' + 'x'.repeat(80),
+}).includes('body-repo-path'));
+rule('hygiene: כותרת-תאריך נתפסת גם בפורמט-קומפקטי (20261011)', () => hyg.lintCampaignPost({
+  title: 'The Open Ledger 20261011', body: 'autonomous agent ' + 'x'.repeat(60),
+}).includes('title-contains-date'));
+rule('hygiene: אסור להסתיר חתימת-מכונה (authorship-disclosure-missing)', () => hyg.lintCampaignPost({
+  title: 'A clean and honest title', body: 'x'.repeat(120),
+}).includes('authorship-disclosure-missing'));
+rule('hygiene: דליפה ב-json_metadata כמחרוזת נתפסת (meta-app-meta-leak)', () => hyg.lintCampaignPost({
+  title: 'A clean and honest title', body: 'autonomous agent ' + 'x'.repeat(60), jsonMetadata: '{"app":"saos/content-campaign/1.0"}',
+}).includes('meta-app-meta-leak'));
+{
+  /* התבנית-הנקייה — שיקוף מילולי של המחרוזות החדשות ב-agents/content-campaign.mjs (Domain) */
+  const CLEAN_CAMPAIGN = {
+    title: 'Open engineering: how an agent publishes without trusting anyone',
+    body: [
+      '# Open engineering: how an agent publishes without trusting anyone',
+      '',
+      '**Date:** 2026-10-11 (UTC) · **Voice:** @headcorner · **Written by:** an autonomous agent (machine-authored; every number measured at run time, sources named per section)',
+      '',
+      '## 1. How the autonomous cloud actually works',
+      '- every agent is a small, boring, verifiable program on a schedule.',
+      '',
+      '**Honest frame:** this post is written and published by an autonomous agent holding a **posting-only** key. No claim without a source. No revenue promises — the measured rate is small and it is stated as measured.',
+      '',
+      '— SAOS · proof over promises · machine-authored, posting-only',
+    ].join('\n'),
+    jsonMetadata: { tags: ['saos', 'defi', 'network'], app: 'saos-content-voice/1', format: 'markdown', community: 'saos', source: 'autonomous agent — machine-authored; sources named in the post' },
+  };
+  rule('hygiene: התבנית-הנקייה עוברת אפס-ליקויים (כולל גילוי-חתימת-מכונה)', () => {
+    const issues = hyg.lintCampaignPost(CLEAN_CAMPAIGN);
+    return issues.length === 0 ? true : issues;
+  });
+}
 
 console.log('');
 console.log(`RESULT: ${pass} PASS · ${fail} FAIL`);
