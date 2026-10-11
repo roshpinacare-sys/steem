@@ -69,3 +69,8 @@ db/*.db
 !.env.example
 agent/keys/wallets-seed.json
 agent/keys/wallets-registry.json
+
+# runner junk (measured 2026-10-11, saos-runtime run 249): `npm i --no-save`
+# still writes package-lock.json; the engine's canonical lock is bun.lock. A
+# stray untracked lockfile must never block a rebase during a push race.
+package-lock.json
