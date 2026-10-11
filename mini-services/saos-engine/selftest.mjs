@@ -231,6 +231,18 @@ ok("thinkgate outbound-reason", (tgOut.reasons[0] ?? "").includes("FORBIDDEN"));
 /* 8 · policy class 2: allowlisted recipient → ALLOW */
 eq("thinkgate allowlisted-transfer-allow", thinkGate(TG_ACC, [["transfer", { from: TG_ACC, to: "hcs1", amount: "1.000 STEEM" }]], { ...tgVerified, conf: { policy: { transferAllowlist: ["hcs1"] } } }).verdict, "ALLOW");
 
+/* P0-2 · clause 6 law (master plan 2026-10-11): BRAND-DENYLIST — a real-world
+ * brand name is never a signing subject nor an op counterparty. Unconditional
+ * fail-closed: no policy bit, no custody state, no arming can override it. */
+const tgBrandSubject = thinkGate("ynet", [["transfer", { from: "ynet", to: "ynet", amount: "1.000 STEEM" }]], { ...tgVerified, conf: { operator: { allowPowerUp: true } } });
+eq("thinkgate brand-denylist-subject-refused", tgBrandSubject.verdict, "REFUSED");
+ok("thinkgate brand-subject-reason", (tgBrandSubject.reasons[0] ?? "").includes("brand-denylist"));
+const tgBrandCounterparty = thinkGate(TG_ACC, [["transfer", { from: TG_ACC, to: "ynet", amount: "1.000 STEEM" }]], { ...tgVerified, conf: { policy: { transferAllowlist: ["ynet"] } } });
+eq("thinkgate brand-denylist-counterparty-refused", tgBrandCounterparty.verdict, "REFUSED");
+ok("thinkgate brand-counterparty-reason", (tgBrandCounterparty.reasons[0] ?? "").includes("brand-denylist"));
+/* delegation path too — the other route by which the brand could be touched */
+eq("thinkgate brand-denylist-delegation-refused", thinkGate(TG_ACC, [["delegate_vesting_shares", { from: TG_ACC, delegatee: "ynet", vesting_shares: "1000.000000 VESTS" }]], { ...tgVerified, conf: { policy: { allowDelegation: true } } }).verdict, "REFUSED");
+
 /* R246 · clause 5 law: account_create is a value move — ONLY a live,
  * single-use, fee-capped, name-bound operator order arms it. */
 const acctCreateOp = (fee, name) => [["account_create", { fee, creator: TG_ACC, new_account_name: name, owner: { weight_threshold: 1, account_auths: [], key_auths: [["STM7jA4xpCcN6Uwt6SmzK1MhTcmg7nmXrMEpiLok45GvqYLFQSSnX", 1]] }, active: { weight_threshold: 1, account_auths: [], key_auths: [["STM62FpckaXAdMmdD8abrFGhN8uE5wYm6tkUajmruJumrHNRNKfZL", 1]] }, posting: { weight_threshold: 1, account_auths: [], key_auths: [["STM8ZiWEgUYoYeQ3rWut6GKamgFsYccMCQ68QAR5WYQgvV9Aaihxb", 1]] }, memo_key: "STM5ncpsbHiHHhFJRZpmpQx8u5JwEjGUXmL45HRh6caC1NCZBTvwe", json_metadata: "" }]];
