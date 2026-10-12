@@ -54,7 +54,24 @@ const LOG_FILE = path.join(STATE, "exec-log.jsonl");
  * @ynet (posting-anchor only, keyless active) stays OUT by this law. */
 const ARMY = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq",
   "hcsoldier4", "hcsoldier5", "hcsoldier6"];
-const VAULT_ZIP = "agent/vault/KEYS-ZIP-2026-10-07.zip.enc"; /* R245-ROT2: the GEN-2 vault (previous archive kept in history — its keys are DEAD) */
+/* R-VAULTPASS-3 (22-e-1): GEN-2 zip was hard-coded to the PRE-rotation
+ * KEYS-ZIP-2026-10-07 archive; the 11:21Z MASTER-DERIVE rotation re-sealed the
+ * live fleet WIFs into KEYS-ZIP-2026-10-12-MASTER (meta.keysZipFile), so the
+ * stale-cache self-heal re-pulled DEAD army keys OVER the good ignition cache
+ * (measured: 13x GEN-2+GEN-1 REFUSED posting-authority-mismatch → 1/14 while
+ * ignition chain-matched 14/14). Law: resolve the SAME bundle of record the
+ * resolver reads — meta.keysZipFile, then newest KEYS-ZIP-*.zip.enc. */
+function resolveVaultZip() {
+  try {
+    const meta = JSON.parse(gitShowBytes(resolveGitRef(), META_REF).toString("utf8"));
+    if (typeof meta.keysZipFile === "string" && meta.keysZipFile) return meta.keysZipFile;
+  } catch { /* fall through */ }
+  try {
+    const out = execFileSync("git", ["ls-tree", "--name-only", resolveGitRef(), "agent/vault/"], { encoding: "utf8", maxBuffer: 8 * 1024 * 1024 });
+    const zips = out.split("\n").map((s) => s.trim()).filter((f) => /^agent\/vault\/KEYS-ZIP-.*\.zip\.enc$/.test(f)).sort();
+    if (zips.length) return zips[zips.length - 1];
+  } catch { /* fall through */ }
+  return "agent/vault/KEYS-ZIP-2026-10-07.zip.enc"; } /* last-resort legacy default */
 const META_REF = "agent/recovery-meta.json";
 /* R273-d · REF-RESOLUTION LAW (the measured gap that stranded the revival):
  * the meta/vault blobs were resolved from ONE hard-coded ref ("origin/main").
@@ -201,7 +218,7 @@ function pullArmyKeysFromVault() {
   const gens = [];
   const errors = [];
   for (const spec of [
-    { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
+    { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
     { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
   ]) {
     try { gens.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
@@ -336,7 +353,7 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       const gensM = [];
       const mErrors = [];
       for (const spec of [
-        { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
+        { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
         { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
       ]) {
         try { gensM.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
