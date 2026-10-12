@@ -1,22 +1,22 @@
 {
-  "at": "2026-10-12T21:40:19.055Z",
+  "at": "2026-10-12T21:50:19.050Z",
   "enabled": true,
-  "runsTotal": 312,
+  "runsTotal": 313,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 76,
-      "oks": 39,
+      "window": 77,
+      "oks": 40,
       "fails": 32,
       "blocked": 5,
-      "okRate": 51.3,
-      "blockedRate": 6.6,
+      "okRate": 51.9,
+      "blockedRate": 6.5,
       "failReasons": {
         "unknown": 1,
         "timeout": 3,
         "none": 28
       },
-      "msP50": 285024,
+      "msP50": 276907,
       "msP90": 535621
     },
     "curator": {
@@ -26,7 +26,7 @@
       "verdicts": {
         "VOTED": 30
       },
-      "vpEff": 51.6,
+      "vpEff": 49.9,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -38,15 +38,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 3812,
+      "checks": 3822,
       "downs": 122,
       "heals": 64,
       "healVerified": 53,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-12T21:40:19.048Z",
+      "lastCheckAt": "2026-10-12T21:50:19.053Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-12T21:40:19.054Z",
+      "lastUpAt": "2026-10-12T21:50:19.080Z",
       "blips": 7
     }
   },
@@ -55,7 +55,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×5/76 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×5/77 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
@@ -71,8 +71,8 @@
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
-    "unclassified-fail-legacy": 184,
-    "signing-cred-blocked": 230,
+    "unclassified-fail-legacy": 185,
+    "signing-cred-blocked": 231,
     "broadcast-fails": 73
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
