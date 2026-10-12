@@ -39,6 +39,7 @@ jobs:
           SRC_FLEET_TOKEN: ${{ secrets.FLEET_TOKEN }}
           SRC_GH_PAT_V2: ${{ secrets.GH_PAT_V2 }}
           SRC_ECO_WALLET_V2: ${{ secrets.ECO_WALLET_V2 }}
+          SRC_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
           WANT: ${{ inputs.secret_name }}
         run: |
           set -euo pipefail
@@ -79,6 +80,7 @@ jobs:
               FLEET_TOKEN)      measure FLEET_TOKEN      "${SRC_FLEET_TOKEN}" 1;;
               GH_PAT_V2)        measure GH_PAT_V2        "${SRC_GH_PAT_V2}" 1;;
               ECO_WALLET_V2)    measure ECO_WALLET_V2    "${SRC_ECO_WALLET_V2}" 1;;
+              VAULT_PASSES)     measure VAULT_PASSES     "${SRC_VAULT_PASSES}" 1;;
               *) echo "::error::${WANT} not in SRC_MAP — add one SRC_* env line to token-forge.yml, commit, then dispatch again"; exit 1;;
             esac
           else
@@ -87,6 +89,7 @@ jobs:
             measure FLEET_TOKEN   "${SRC_FLEET_TOKEN}"   0
             measure GH_PAT_V2     "${SRC_GH_PAT_V2}"     0
             measure ECO_WALLET_V2 "${SRC_ECO_WALLET_V2}" 0
+            measure VAULT_PASSES  "${SRC_VAULT_PASSES}"  0
           fi
 
       - name: Route source token to target repos (sealed-box) + fire truth arteries
@@ -98,6 +101,7 @@ jobs:
           SRC_FLEET_TOKEN: ${{ secrets.FLEET_TOKEN }}
           SRC_GH_PAT_V2: ${{ secrets.GH_PAT_V2 }}
           SRC_ECO_WALLET_V2: ${{ secrets.ECO_WALLET_V2 }}
+          SRC_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
           TARGETS: ${{ inputs.targets }}
         run: |
           set -euo pipefail
