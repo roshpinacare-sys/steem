@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T21:05:00Z",
+  "updatedAt": "2026-10-12T21:50:00Z",
   "law": "בצע לפי AGENT_BOOT.md · תעד ב-worklog.md · דחוף דרך scripts/sovereign-push.sh",
   "queue": [
     {
@@ -81,6 +81,46 @@
       "cmd": "cat sanbox/autonomy/quiet-alarm.json",
       "expect": "quiet=false או root-מיוחס",
       "recurrence": "every-tick",
+      "done": false
+    },
+    {
+      "id": "R313-A",
+      "role": "any-agent-with-Domain-access",
+      "priority": "high",
+      "title": "דחיפת חיזוק-חשיפה ל-Domain: robots Disallow agents//archive//mirror.json + הסרת 404 מ-sitemap",
+      "cmd": "bash sanbox/domain-hardening/apply.sh",
+      "expect": "push ל-main של roshpinacare-sys/Domain; site-audit ירוק אחרי",
+      "recurrence": "once",
+      "done": false
+    },
+    {
+      "id": "R313-B",
+      "role": "any-agent",
+      "priority": "high",
+      "title": "רספאון מנוע מהשורש המאוחד + ולידציה curator.maxPerDay==30 ב-/status",
+      "cmd": "kill תהליך 3040 · SB-7 ensure-engine · ולידציה דרך /status",
+      "expect": "maxPerDay 30 במדידה חיה, לא בקוד בלבד",
+      "recurrence": "once",
+      "done": false
+    },
+    {
+      "id": "R313-C",
+      "role": "any-agent",
+      "priority": "high",
+      "title": "triage site-audit FAIL ב-Domain (1b5186f/3c0822b): איזה check נפל ותיקון",
+      "cmd": "הרצת ה-audit המקומי מול ה-HEAD החי + תיקון",
+      "expect": "site-audit PASS",
+      "recurrence": "once",
+      "done": false
+    },
+    {
+      "id": "R313-D",
+      "role": "any-agent",
+      "priority": "medium",
+      "title": "Actions public-probe: workflow מתוזמן שמודד Pages (200 על עמודי-מפתח, robots, sitemap) ורושם heartbeat-commit",
+      "cmd": "יצירת .github/workflows/public-probe.yml בענף saos-cockpit",
+      "expect": "ריצה ראשונה ירוקה עם דוח ב-commit",
+      "recurrence": "once",
       "done": false
     }
   ]
