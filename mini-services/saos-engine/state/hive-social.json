@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-12T10:42:30.363Z",
+  "at": "2026-10-12T11:13:07.666Z",
   "day": "2026-10-12",
   "results": [
     {
@@ -21,9 +21,8 @@
     {
       "account": "haran",
       "lane": "fleet-vote",
-      "verdict": "BROADCAST",
-      "permlink": "siq/the-18-bus-what-a-year-of-the-same-route-builds-in-a-person",
-      "digest8": "709570d4"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "haran",
@@ -38,7 +37,8 @@
     {
       "account": "israelnews",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "israelnews",
@@ -149,9 +149,9 @@
     "verified": 9,
     "total": 9
   },
-  "verdict": "HIVE-SOCIAL-EXECUTED",
-  "executed": 1,
-  "ms": 13811,
+  "verdict": "HIVE-SOCIAL-IDLE",
+  "executed": 0,
+  "ms": 14755,
   "perAccount": {
     "cashmachine": {
       "done": {
@@ -166,7 +166,9 @@
       "said": []
     },
     "israelnews": {
-      "done": {},
+      "done": {
+        "fleetVote": 1
+      },
       "said": []
     },
     "lsa": {
