@@ -31,6 +31,7 @@ import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { masterAccount, adoptVerifiedWifIdentity, armyCustodyState } from "./signer.mjs";
+import { vaultPass } from "./vault-custody.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -125,7 +126,31 @@ function gitShowBytes(ref, file) {
  * unzip) and return per-account posting+active WIF material (memory only).
  * Both vault shapes are handled: flat keys.{role} (GEN-1) and the nested
  * keys.steem.{role} form. The plaintext tmp never outlives this function. */
-function unlockGeneration({ ref, zip, metaRef, genLabel }) {
+/* R-VAULTPASS-1 COMPLETION (2026-10-12, measured REVIVAL-FAIL 0/14:
+ * "openssl ... -pass pass:undefined" on BOTH generations). R-VAULTPASS-1
+ * moved the vault unlock passes into the STEEM_VAULT_PASSES secret and
+ * stripped them from the repo metas (keysZipPass absent on every current
+ * meta), but THIS module still decrypted with meta.keysZipPass only — the
+ * documented keysZipUnlockRef path (vault-custody.mjs) was never consumed
+ * by the engine. Resolution order, fail-loud: legacy inline meta.keysZipPass
+ * → the meta's OWN keysZipUnlockRef → the era's documented bundle refs.
+ * Verdict-only: the chosen REF NAME is journaled, never the material. */
+function resolveGenerationPass(meta, eraRefs = []) {
+  const inline = typeof meta.keysZipPass === "string" ? meta.keysZipPass : "";
+  if (inline.length >= 8) return { pass: inline, via: "meta.keysZipPass" };
+  const refs = [...new Set([
+    ...(typeof meta.keysZipUnlockRef === "string" && meta.keysZipUnlockRef ? [meta.keysZipUnlockRef] : []),
+    ...eraRefs,
+  ])];
+  const tried = [];
+  for (const r of refs) {
+    try { return { pass: vaultPass(r), via: `bundle.${r}` }; }
+    catch (e) { tried.push(`${r}(${String(e?.message ?? e).slice(0, 40)})`); }
+  }
+  throw new Error(`no-unlock-pass-resolves (tried: ${tried.join(" | ") || "none"})`);
+}
+
+function unlockGeneration({ ref, zip, metaRef, genLabel, eraRefs }) {
   fs.rmSync(TMP, { recursive: true, force: true });
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
   try {
@@ -137,10 +162,11 @@ function unlockGeneration({ ref, zip, metaRef, genLabel }) {
     const enc = gitShowBytes(ref, zipPath);
     const outerSha = sha256(enc);
     if (outerSha !== meta.keysZipSha256) throw new Error(`vault-outer-sha-mismatch (${outerSha.slice(0, 8)})`);
+    const { pass: keysZipPass, via: passVia } = resolveGenerationPass(meta, eraRefs ?? []);
     fs.writeFileSync(path.join(TMP, "keys-zip.enc"), enc, { mode: 0o600 });
     execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
       "-in", path.join(TMP, "keys-zip.enc"), "-out", path.join(TMP, "inner.zip"),
-      "-pass", `pass:${meta.keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
+      "-pass", `pass:${keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
     const innerBuf = fs.readFileSync(path.join(TMP, "inner.zip"));
     const innerSha = sha256(innerBuf);
     if (innerSha !== meta.keysZipInnerSha256) throw new Error(`vault-inner-sha-mismatch (${innerSha.slice(0, 8)})`);
@@ -161,7 +187,7 @@ function unlockGeneration({ ref, zip, metaRef, genLabel }) {
       const activePub = a?.keys?.steem?.active?.pub ?? a?.keys?.active?.pub ?? null;
       if (wif) out[name] = { wif, pub, activeWif, activePub };
     }
-    return { gen: genLabel, outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), accounts: out };
+    return { gen: genLabel, outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), passVia, accounts: out };
   } finally {
     fs.rmSync(TMP, { recursive: true, force: true });
   }
@@ -175,8 +201,8 @@ function pullArmyKeysFromVault() {
   const gens = [];
   const errors = [];
   for (const spec of [
-    { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF },
-    { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP },
+    { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
+    { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
   ]) {
     try { gens.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
   }
@@ -194,7 +220,7 @@ function pullArmyKeysFromVault() {
     accounts.push({ name, gens: gensFor });
   }
   if (!accounts.length) throw new Error(`vault-had-no-army-posting-keys (${errors.join(" | ")})`);
-  writeJson0600(CACHE_FILE, { extractedAt: new Date().toISOString(), generations: gens.map((g) => ({ gen: g.gen, outerSha: g.outerSha, innerSha: g.innerSha })), errors, accounts });
+  writeJson0600(CACHE_FILE, { extractedAt: new Date().toISOString(), generations: gens.map((g) => ({ gen: g.gen, outerSha: g.outerSha, innerSha: g.innerSha, passVia: g.passVia ?? null })), errors, accounts });
   return { ok: true, extracted: accounts.length, missing, errors };
 }
 
@@ -310,8 +336,8 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       const gensM = [];
       const mErrors = [];
       for (const spec of [
-        { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF },
-        { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP },
+        { gen: "GEN-2", ref: resolveGitRef(), zip: VAULT_ZIP, metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
+        { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
       ]) {
         try { gensM.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
       }
@@ -354,3 +380,4 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
 }
 
 export { ARMY as ARMY_ROSTER_VAULT, ARMY as ARMY_ROSTER };
+
