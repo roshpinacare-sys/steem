@@ -1,31 +1,31 @@
 {
-  "at": "2026-10-11T23:56:39.196Z",
+  "at": "2026-10-12T00:13:38.662Z",
   "custody": "0/14",
   "social": "PART-GATED",
   "socialExecuted": 0,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
-  "post": "DAILY-CAP",
+  "post": "STEP-FAIL",
   "postAccount": null,
   "postPermlink": null,
   "dex": "STANDBY",
   "dexReason": "takeover-gap",
-  "digest": "COOLDOWN",
-  "digestTitle": null,
+  "digest": "DIGEST-READY",
+  "digestTitle": "Digest 9 curation and custody",
   "blurt": "BLURT-RPC-UNREACHABLE",
   "blurtLive": 0,
-  "delegation": "ALREADY-TODAY",
+  "delegation": "CUSTODY-GATE-REFUSED",
   "delegationOps": 0,
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-11T23:56:39.196Z",
+    "at": "2026-10-12T00:13:38.662Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 389,
+        "ms": 381,
         "verdict": "REVIVAL-FAIL",
         "verified": 0,
         "total": 14
@@ -36,12 +36,12 @@
         "ms": 0,
         "verdict": "STANDBY",
         "reason": "takeover-gap",
-        "anchorAgeMs": 13258667
+        "anchorAgeMs": 14278124
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 388,
+        "ms": 391,
         "verdict": "PART-GATED",
         "executed": 0,
         "refused": 13,
@@ -50,7 +50,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 40,
+        "ms": 46,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -59,26 +59,22 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 3,
-        "verdict": "COOLDOWN",
-        "slot": 2,
-        "title": null,
-        "compiled": null
+        "ms": 8,
+        "verdict": "DIGEST-READY",
+        "slot": 0,
+        "title": "Digest 9 curation and custody",
+        "compiled": "COMPILED"
       },
       "post": {
         "name": "post",
-        "ok": true,
-        "ms": 2,
-        "verdict": "DAILY-CAP",
-        "account": null,
-        "permlink": null,
-        "mode": null,
-        "note": null
+        "ok": false,
+        "ms": 3,
+        "error": "ENOENT: no such file or directory, stat '/home/runner/work/saos-runtime/saos-runtime/engine/.secrets/army-keys.json'"
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 294,
+        "ms": 248,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -88,7 +84,7 @@
         "name": "delegation",
         "ok": true,
         "ms": 2,
-        "verdict": "ALREADY-TODAY",
+        "verdict": "CUSTODY-GATE-REFUSED",
         "ops": 0,
         "totalSp": 0,
         "reason": null
