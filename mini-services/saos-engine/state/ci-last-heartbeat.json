@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-12T03:03:57.978Z",
+  "at": "2026-10-12T03:25:41.362Z",
   "custody": "14/14",
   "social": "SOCIAL-IDLE",
   "socialExecuted": 0,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
   "post": "BROADCASTED",
-  "postAccount": "cashmachine",
-  "postPermlink": "getting-lost-on-purpose-what-an-old-pape-20261012-8d6d4b72",
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "postAccount": "haran",
+  "postPermlink": "concrete-canyons-wild-things-the-urban-n-20261012-93e28fa1",
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T03:03:57.978Z",
+    "at": "2026-10-12T03:25:41.362Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 17954,
+        "ms": 17245,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,16 +33,15 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 242124,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 0,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 7567389
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 11101,
+        "ms": 9784,
         "verdict": "SOCIAL-IDLE",
         "executed": 0,
         "refused": 0,
@@ -51,7 +50,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 30,
+        "ms": 36,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -60,7 +59,7 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 3,
+        "ms": 2,
         "verdict": "COOLDOWN",
         "slot": 2,
         "title": null,
@@ -69,17 +68,17 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 2661,
+        "ms": 2798,
         "verdict": "BROADCASTED",
-        "account": "cashmachine",
-        "permlink": "getting-lost-on-purpose-what-an-old-pape-20261012-8d6d4b72",
+        "account": "haran",
+        "permlink": "concrete-canyons-wild-things-the-urban-n-20261012-93e28fa1",
         "mode": null,
         "note": null
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 380,
+        "ms": 490,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -88,7 +87,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 658,
+        "ms": 650,
         "verdict": "ADOPT-REFUSED",
         "ops": 0,
         "totalSp": 0,
@@ -97,6 +96,6 @@
     }
   },
   "truthrail": "PASS",
-  "truthrailPosts24h": 48,
+  "truthrailPosts24h": 49,
   "truthrailOutsideVotes": 2
 }
