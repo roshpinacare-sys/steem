@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-12T00:30:34.218Z",
+  "at": "2026-10-12T00:47:33.916Z",
   "custody": "0/14",
   "social": "PART-GATED",
   "socialExecuted": 0,
@@ -10,8 +10,8 @@
   "postPermlink": null,
   "dex": "STANDBY",
   "dexReason": "takeover-gap",
-  "digest": "DIGEST-READY",
-  "digestTitle": "Digest 10 nodes and buffer",
+  "digest": "COOLDOWN",
+  "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
   "blurtLive": 0,
   "delegation": "CUSTODY-GATE-REFUSED",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T00:30:34.218Z",
+    "at": "2026-10-12T00:47:33.916Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 380,
+        "ms": 241,
         "verdict": "REVIVAL-FAIL",
         "verified": 0,
         "total": 14
@@ -36,12 +36,12 @@
         "ms": 1,
         "verdict": "STANDBY",
         "reason": "takeover-gap",
-        "anchorAgeMs": 15293681
+        "anchorAgeMs": 16313239
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 383,
+        "ms": 233,
         "verdict": "PART-GATED",
         "executed": 0,
         "refused": 13,
@@ -50,7 +50,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 42,
+        "ms": 24,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -59,22 +59,22 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 9,
-        "verdict": "DIGEST-READY",
-        "slot": 1,
-        "title": "Digest 10 nodes and buffer",
-        "compiled": "COMPILED"
+        "ms": 2,
+        "verdict": "COOLDOWN",
+        "slot": 2,
+        "title": null,
+        "compiled": null
       },
       "post": {
         "name": "post",
         "ok": false,
-        "ms": 4,
+        "ms": 2,
         "error": "ENOENT: no such file or directory, stat '/home/runner/work/saos-runtime/saos-runtime/engine/.secrets/army-keys.json'"
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 483,
+        "ms": 606,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
