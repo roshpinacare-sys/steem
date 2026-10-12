@@ -30,3 +30,18 @@ c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.jso
 7815d7c9406deb67c147d61a90f77f77531c735c:recovery/branch-saos-cockpit-e4cdfd6/branch-worklog.md:generic-api-key:623
 7815d7c9406deb67c147d61a90f77f77531c735c:worklog.md:generic-api-key:409
 7815d7c9406deb67c147d61a90f77f77531c735c:worklog.md:generic-api-key:623
+
+# GITLEAKS-TRIAGE (Task 17, 2026-10-12, org-gitleaks run 38305987568) — measured:
+# recovery-meta.json + GEN-1-ERA-META.json = custody METADATA labels (keysZipUnlockRef /
+# keysZipPassCustody names, zero key material); probe-auth2-r255.mjs:15 = plain
+# steemit broadcast API call (no credential). Static files — stable line fingerprints.
+083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/recovery-meta.json:generic-api-key:4
+083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/recovery-meta.json:generic-api-key:8
+agent/recovery-meta.json:generic-api-key:4
+agent/recovery-meta.json:generic-api-key:8
+083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/vault/GEN-1-ERA-META.json:generic-api-key:4
+083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/vault/GEN-1-ERA-META.json:generic-api-key:8
+agent/vault/GEN-1-ERA-META.json:generic-api-key:4
+agent/vault/GEN-1-ERA-META.json:generic-api-key:8
+083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:mini-services/saos-engine/probe-auth2-r255.mjs:generic-api-key:15
+mini-services/saos-engine/probe-auth2-r255.mjs:generic-api-key:15
