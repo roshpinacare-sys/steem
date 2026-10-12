@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-12T00:13:38.662Z",
+  "at": "2026-10-12T00:30:34.218Z",
   "custody": "0/14",
   "social": "PART-GATED",
   "socialExecuted": 0,
@@ -11,7 +11,7 @@
   "dex": "STANDBY",
   "dexReason": "takeover-gap",
   "digest": "DIGEST-READY",
-  "digestTitle": "Digest 9 curation and custody",
+  "digestTitle": "Digest 10 nodes and buffer",
   "blurt": "BLURT-RPC-UNREACHABLE",
   "blurtLive": 0,
   "delegation": "CUSTODY-GATE-REFUSED",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T00:13:38.662Z",
+    "at": "2026-10-12T00:30:34.218Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 381,
+        "ms": 380,
         "verdict": "REVIVAL-FAIL",
         "verified": 0,
         "total": 14
@@ -33,15 +33,15 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 0,
+        "ms": 1,
         "verdict": "STANDBY",
         "reason": "takeover-gap",
-        "anchorAgeMs": 14278124
+        "anchorAgeMs": 15293681
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 391,
+        "ms": 383,
         "verdict": "PART-GATED",
         "executed": 0,
         "refused": 13,
@@ -50,7 +50,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 46,
+        "ms": 42,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -59,22 +59,22 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 8,
+        "ms": 9,
         "verdict": "DIGEST-READY",
-        "slot": 0,
-        "title": "Digest 9 curation and custody",
+        "slot": 1,
+        "title": "Digest 10 nodes and buffer",
         "compiled": "COMPILED"
       },
       "post": {
         "name": "post",
         "ok": false,
-        "ms": 3,
+        "ms": 4,
         "error": "ENOENT: no such file or directory, stat '/home/runner/work/saos-runtime/saos-runtime/engine/.secrets/army-keys.json'"
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 248,
+        "ms": 483,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
