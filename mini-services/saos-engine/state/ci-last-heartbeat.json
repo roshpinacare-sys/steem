@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-12T01:04:27.991Z",
+  "at": "2026-10-12T01:21:26.603Z",
   "custody": "0/14",
   "social": "PART-GATED",
   "socialExecuted": 0,
@@ -9,7 +9,7 @@
   "postAccount": null,
   "postPermlink": null,
   "dex": "STANDBY",
-  "dexReason": "takeover-gap",
+  "dexReason": "engine-alive",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T01:04:27.991Z",
+    "at": "2026-10-12T01:21:26.603Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 241,
+        "ms": 401,
         "verdict": "REVIVAL-FAIL",
         "verified": 0,
         "total": 14
@@ -33,15 +33,15 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 1,
+        "ms": 0,
         "verdict": "STANDBY",
-        "reason": "takeover-gap",
-        "anchorAgeMs": 17327314
+        "reason": "engine-alive",
+        "anchorAgeMs": 95787
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 234,
+        "ms": 387,
         "verdict": "PART-GATED",
         "executed": 0,
         "refused": 13,
@@ -50,7 +50,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 24,
+        "ms": 37,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -68,13 +68,13 @@
       "post": {
         "name": "post",
         "ok": false,
-        "ms": 2,
+        "ms": 3,
         "error": "ENOENT: no such file or directory, stat '/home/runner/work/saos-runtime/saos-runtime/engine/.secrets/army-keys.json'"
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 267,
+        "ms": 670,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -83,7 +83,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "CUSTODY-GATE-REFUSED",
         "ops": 0,
         "totalSp": 0,
