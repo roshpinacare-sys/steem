@@ -31,6 +31,12 @@ function sh(cmd: string, args: string[], cwd: string = REPO): { code: number; ou
   return { code: r.status ?? -1, out: (r.stdout ?? "").trim(), err: (r.stderr ?? "").trim() };
 }
 
+/* R315 · lineage helper — the single ancestry question the anchor laws ask */
+function isAncestor(sha: string, of: string): boolean {
+  if (!sha || !of) return false;
+  return sh("git", ["merge-base", "--is-ancestor", sha, of]).code === 0;
+}
+
 function appendAlert(kind: string, detail: string) {
   try {
     appendFileSync(`${STATE_DIR}/custodian-alerts.jsonl`, JSON.stringify({ at: new Date().toISOString(), kind, detail: detail.slice(0, 300) }) + "\n");
@@ -38,6 +44,7 @@ function appendAlert(kind: string, detail: string) {
 }
 
 let lastAnchorAt = 0;
+let lastOrphanAlertAt = 0; /* R315: orphan-alert dedupe — one alarm per hour max */
 let vaultAdoptTried = false; /* R297: one in-process vault admission attempt max */
 /* R297 · ALERT-HONESTY LAW (anchor-refused dedupe): the CREDENTIAL-MISMATCH
  * verdict is a standing informational condition (signer guidance: signing
@@ -69,10 +76,12 @@ const ANCHOR_STAMP = `${STATE_DIR}/custody-anchor.json`;
 function lastAnchorMs(): number {
   try { return Number(JSON.parse(readFileSync(ANCHOR_STAMP, "utf8")).at) || 0; } catch { return 0; }
 }
-async function anchorWitness(): Promise<void> {
+/* R315 · `force` bypasses the ≤1/h durable rate-limit — reserved for the
+ * orphan-anchor law (a DEAD anchor is a new fact, not a repeat broadcast). */
+async function anchorWitness(force = false): Promise<void> {
   try {
     const last = Math.max(lastAnchorMs(), lastAnchorAt);
-    if (Date.now() - last < 3600000) { appendAlert("anchor-skip", `rate-limited durably (last ${new Date(last).toISOString()})`); return; }
+    if (!force && Date.now() - last < 3600000) { appendAlert("anchor-skip", `rate-limited durably (last ${new Date(last).toISOString()})`); return; }
     const acct: string = masterAccount() as any;
     /* R239 FIX (deadlock caught live): the gate refuses keyed-but-unverified
      * "until verifyRoles passes" — but no custodian path ever CALLED
@@ -106,8 +115,22 @@ async function anchorWitness(): Promise<void> {
       } catch (e) { appendAlert("anchor-adopt-fail", String(e).slice(0, 120)); }
     }
     if (!ver?.ok) { appendAnchorRefusedDeduped(`verifyRoles: ${String(ver?.reason ?? ver?.verdict ?? "unverified").slice(0, 180)}`); return; }
-    const tip = sh("git", ["rev-parse", "HEAD"]).out;
-    const ops: any = [["custom_json", { required_auths: [], required_posting_auths: [acct], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "R216-custodian", fp: credentialFingerprint(acct) }) }]];
+    /* R315 · PUSHED-TIP LAW (measured live 2026-10-12T22:16Z: reconcile refused
+     * `ahead=1` at :36 and anchorWitness broadcast the SAME unpushed tip at :39 —
+     * the chain then pointed at a lineage the divergence-heal dropped minutes
+     * later. Every verify tick read DRIFT-FAIL for 90+ minutes while every organ
+     * was alive — the exact self-quieting the network was accused of. Law: the
+     * chain anchors TRUTH (what origin/saos-cockpit holds), never ambition
+     * (unpushed local state). HEAD unpushed → anchor the pushed tip instead. */
+    let tip = sh("git", ["rev-parse", "HEAD"]).out;
+    if (!isAncestor(tip, "origin/saos-cockpit")) {
+      const originTip = sh("git", ["rev-parse", "origin/saos-cockpit"]).out;
+      if (originTip) {
+        appendAlert("anchor-tip-fallback", `HEAD ${tip.slice(0, 12)} unpushed/diverged — anchoring pushed truth ${originTip.slice(0, 12)}`);
+        tip = originTip;
+      } else { appendAnchorRefusedDeduped("no origin/saos-cockpit rev available (fetch dead?) — refused to guess"); return; }
+    }
+    const ops: any = [["custom_json", { required_auths: [], required_posting_auths: [acct], id: "saos-git-custody-v1", json: JSON.stringify({ branch: "saos-cockpit", tip, at: new Date().toISOString(), src: "R315-custodian", fp: credentialFingerprint(acct) }) }]];
     const gate: any = thinkGate(acct, ops, { source: "custody-witness" });
     if (gate.verdict !== "ALLOW") { appendAlert("anchor-refused", (gate.reasons ?? []).join(";")); return; }
     const r: any = await executeAs(acct, ops, { tag: "custody-witness", role: "posting" } as any);
@@ -269,8 +292,22 @@ function tick() {
      * broadcast; failed attempts re-run per tick with deduped alerts. */
     try {
       let lastAt = 0;
-      try { lastAt = Number(JSON.parse(readFileSync(ANCHOR_STAMP, "utf8")).at) || 0; } catch {}
-      if (Date.now() - lastAt > 90 * 60_000) void anchorWitness();
+      let stampTip = "";
+      try { const st = JSON.parse(readFileSync(ANCHOR_STAMP, "utf8")); lastAt = Number(st?.at) || 0; stampTip = String(st?.tip ?? ""); } catch {}
+      /* R315 · ORPHAN-ANCHOR LAW (measured 2026-10-12: the 22:16 anchor pointed
+       * at a lineage the reconcile dropped; four consecutive ticks answered
+       * `anchor-skip rate-limited` while the chain stayed orphaned and SB1 verify
+       * failed every 15-min tick). The freshness gate guards against MISSING
+       * anchors; this lineage gate guards against DEAD ones. A stamped tip that
+       * origin no longer contains = the anchor is a lie on chain — re-anchor
+       * immediately (force bypasses the rate-limit; dedupe bounded by the
+       * stamp itself: a successful broadcast heals the orphan condition). */
+      const orphaned = !!stampTip && !isAncestor(stampTip, "origin/saos-cockpit");
+      if (orphaned && Date.now() - lastOrphanAlertAt > 60 * 60_000) {
+        lastOrphanAlertAt = Date.now();
+        appendAlert("anchor-orphaned", `stamped tip ${stampTip.slice(0, 12)} NOT in origin/saos-cockpit lineage — chain anchor is a lie, re-anchoring pushed truth now`);
+      }
+      if (orphaned || Date.now() - lastAt > 90 * 60_000) void anchorWitness(orphaned);
     } catch {}
   } catch (e) {
     res.error = String(e);
