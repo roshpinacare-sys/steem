@@ -1,56 +1,57 @@
 {
-  "at": "2026-10-12T02:46:44.721Z",
-  "custody": "0/14",
-  "social": "PART-GATED",
+  "at": "2026-10-12T03:03:57.978Z",
+  "custody": "14/14",
+  "social": "SOCIAL-IDLE",
   "socialExecuted": 0,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
-  "post": "STEP-FAIL",
-  "postAccount": null,
-  "postPermlink": null,
-  "dex": "STANDBY",
-  "dexReason": "engine-alive",
+  "post": "BROADCASTED",
+  "postAccount": "cashmachine",
+  "postPermlink": "getting-lost-on-purpose-what-an-old-pape-20261012-8d6d4b72",
+  "dex": "TAKEOVER-EXECUTED",
+  "dexReason": "anchor-stale",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
   "blurtLive": 0,
-  "delegation": "CUSTODY-GATE-REFUSED",
+  "delegation": "ADOPT-REFUSED",
   "delegationOps": 0,
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T02:46:44.721Z",
+    "at": "2026-10-12T03:03:57.978Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 386,
-        "verdict": "REVIVAL-FAIL",
-        "verified": 0,
+        "ms": 17954,
+        "verdict": "FLEET-CUSTODY-ALIVE",
+        "verified": 14,
         "total": 14
       },
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 1,
-        "verdict": "STANDBY",
-        "reason": "engine-alive",
-        "anchorAgeMs": 5213891
+        "ms": 242124,
+        "verdict": "TAKEOVER-EXECUTED",
+        "reason": "anchor-stale",
+        "cycle": null,
+        "health": "ok"
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 421,
-        "verdict": "PART-GATED",
+        "ms": 11101,
+        "verdict": "SOCIAL-IDLE",
         "executed": 0,
-        "refused": 13,
+        "refused": 0,
         "due": 0
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 40,
+        "ms": 30,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -67,14 +68,18 @@
       },
       "post": {
         "name": "post",
-        "ok": false,
-        "ms": 3,
-        "error": "ENOENT: no such file or directory, stat '/home/runner/work/saos-runtime/saos-runtime/engine/.secrets/army-keys.json'"
+        "ok": true,
+        "ms": 2661,
+        "verdict": "BROADCASTED",
+        "account": "cashmachine",
+        "permlink": "getting-lost-on-purpose-what-an-old-pape-20261012-8d6d4b72",
+        "mode": null,
+        "note": null
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 1170,
+        "ms": 380,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -83,15 +88,15 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 2,
-        "verdict": "CUSTODY-GATE-REFUSED",
+        "ms": 658,
+        "verdict": "ADOPT-REFUSED",
         "ops": 0,
         "totalSp": 0,
-        "reason": null
+        "reason": "active-authority-mismatch"
       }
     }
   },
   "truthrail": "PASS",
-  "truthrailPosts24h": 45,
+  "truthrailPosts24h": 48,
   "truthrailOutsideVotes": 2
 }
