@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-12T22:44:48Z",
+  "updatedAt": "2026-10-12T22:53:18Z",
   "law": "בצע לפי AGENT_BOOT.md · תעד ב-worklog.md · דחוף דרך scripts/sovereign-push.sh",
   "queue": [
     {
@@ -91,7 +91,8 @@
       "cmd": "bash sanbox/domain-hardening/apply.sh",
       "expect": "push ל-main של roshpinacare-sys/Domain; site-audit ירוק אחרי",
       "recurrence": "once",
-      "done": false
+      "done": true,
+      "proof": "R314 · נדחף וחי — commit 6265baa+ · robots Disallow agents/archive/mirror מאומת חי ב-Pages"
     },
     {
       "id": "R313-B",
@@ -112,7 +113,8 @@
       "cmd": "הרצת ה-audit המקומי מול ה-HEAD החי + תיקון",
       "expect": "site-audit PASS",
       "recurrence": "once",
-      "done": false
+      "done": true,
+      "proof": "R314 · triage מלא — ה-audit מדד PASS, הכשל היה מירוץ-דחיפה; ה-workflow תוקן (6 ניסיונות סבלניים + סימון AUDIT-PASS-PUSH-RACE) commit b3b3068"
     },
     {
       "id": "R313-D",
@@ -137,7 +139,7 @@
       "priority": "high",
       "title": "חבילת-שפה ל-Domain — language-fix-r314.mjs (60 נקודותיים + 5 מרכאות נמדדו)",
       "done": true,
-      "proof": "R314 · הכלי מוכן ב-sanbox/domain-hardening · ההחלה ממתינה ל-token Domain"
+      "proof": "R314 · 22 תיקונים בטוחים נדחפו וחיים (e74840b) · הכלי תוקן אחרי תפיסה-עצמית בדיפר (מהדורה-2 בטוחה) · commit + אימות-חי"
     },
     {
       "id": "R314-C",
@@ -157,6 +159,13 @@
       "priority": "medium",
       "title": "סדר-המחסן ב-Domain — מבנה pages/feeds/ops + redirects (66 קבצים בשורש)",
       "done": false
+    },
+    {
+      "id": "R314-F",
+      "priority": "medium",
+      "title": "הפרדת כשל-מירוץ מכשל-תוכן ב-site-link-audit של Domain",
+      "done": true,
+      "proof": "R314 · commit b3b3068 · נדחף וחי"
     }
   ]
 }

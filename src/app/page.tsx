@@ -15,6 +15,8 @@ type SessionState = {
 };
 
 type Overview = Record<string, any>;
+type NetState = Record<string, any>;
+type NetState = Record<string, any>;
 
 const REFRESH_MS = 30_000;
 
@@ -67,7 +69,7 @@ function Pill({ label, tone, detail }: { label: string; tone: "ok" | "bad" | "wa
 
 function Card({ title, hint, children, className = "" }: { title: string; hint?: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`rounded-xl border border-zinc-800 bg-zinc-900/50 ${className}`}>
+    <section className={`min-w-0 rounded-xl border border-zinc-800 bg-zinc-900/50 ${className}`}>
       <header className="flex items-baseline justify-between gap-2 border-b border-zinc-800/80 px-4 py-3">
         <h2 className="text-sm font-semibold tracking-tight text-zinc-200">{title}</h2>
         {hint ? <span className="text-[11px] text-zinc-500">{hint}</span> : null}
@@ -156,7 +158,7 @@ function SetupGate({ onDone }: { onDone: () => void }) {
         {busy ? "קובע..." : "קביעת סיסמה וכניסה"}
       </button>
       <p className="mt-4 text-xs leading-5 text-zinc-500">
-        אותו שער משותף לכל אתרי המפעיל: hash אחד, מקור אמת אחד, sanbox/state/credentials.json.
+        אותו שער משותף לכל אתרי המפעיל · hash אחד · מקור אמת אחד · sanbox/state/credentials.json.
       </p>
     </form>
   );
@@ -204,7 +206,7 @@ function LoginGate({ onDone }: { onDone: () => void }) {
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-sm" dir="rtl">
       <h1 className="text-xl font-bold tracking-tight text-zinc-100">קונסולת המפעיל</h1>
-      <p className="mt-2 text-sm text-zinc-400">הזנת סיסמה. ההגבלה: 5 ניסיונות בחלון של 5 דקות.</p>
+      <p className="mt-2 text-sm text-zinc-400">הזנת סיסמה. ההגבלה · 5 ניסיונות בחלון של 5 דקות.</p>
       <label className="mt-6 block text-sm font-medium text-zinc-300">
         סיסמה
         <input
@@ -223,13 +225,65 @@ function LoginGate({ onDone }: { onDone: () => void }) {
         disabled={busy || lockLeft > 0}
         className="mt-6 w-full rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400 disabled:opacity-50"
       >
-        {lockLeft > 0 ? `נעול: ${lockLeft} שניות` : busy ? "מאמת..." : "כניסה"}
+        {lockLeft > 0 ? `נעול ${lockLeft} שניות` : busy ? "מאמת..." : "כניסה"}
       </button>
     </form>
   );
 }
 
 // ── לוח הבקרה ──
+
+function NetCard({ net, now }: { net: NetState | null; now: number }) {
+  if (!net) return <Empty text="מדידת הרשת החיצונית אינה זמינה כרגע" />;
+  const p = net.pulse ?? {};
+  const s = p.summary ?? {};
+  const repos = Array.isArray(net.repos) ? net.repos : [];
+  const office = net.office ?? {};
+  const toneCls = (v: string) =>
+    v === "ALIVE"
+      ? "border-emerald-800/60 bg-emerald-950/40 text-emerald-300"
+      : v === "STALE"
+        ? "border-amber-800/60 bg-amber-950/40 text-amber-300"
+        : "border-zinc-800 bg-zinc-900 text-zinc-400";
+  return (
+    <div className="space-y-3">
+      <p className="text-sm leading-6 text-zinc-300" dir="auto">{String(net.verdict ?? "")}</p>
+      <div className="grid grid-cols-4 gap-2 text-center">
+        <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2 py-2.5">
+          <div className="text-lg font-bold tabular-nums text-emerald-300">{s.ALIVE ?? "?"}</div>
+          <div className="text-[11px] text-zinc-500">חיים</div>
+        </div>
+        <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2 py-2.5">
+          <div className="text-lg font-bold tabular-nums text-amber-300">{s.STALE ?? "?"}</div>
+          <div className="text-[11px] text-zinc-500">רפות</div>
+        </div>
+        <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2 py-2.5">
+          <div className="text-lg font-bold tabular-nums text-zinc-300">{s.IDLE ?? "?"}</div>
+          <div className="text-[11px] text-zinc-500">מושהים</div>
+        </div>
+        <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2 py-2.5">
+          <div className="text-lg font-bold tabular-nums text-zinc-100">{p.totalRepos ?? "?"}</div>
+          <div className="text-[11px] text-zinc-500">ריפו במפה</div>
+        </div>
+      </div>
+      <ul className="max-h-52 space-y-1.5 overflow-y-auto pr-1">
+        {repos.length === 0 ? <li className="text-sm text-zinc-500">אין שורות ריפו בחלון התצוגה</li> : null}
+        {repos.map((r: any) => (
+          <li key={String(r.repo)} className="flex items-center justify-between gap-2 rounded-md border border-zinc-800/70 bg-zinc-950/40 px-2.5 py-1.5 text-xs">
+            <span dir="ltr" className="truncate font-mono text-zinc-300">{String(r.repo)}</span>
+            <span className="flex shrink-0 items-center gap-2">
+              <span className="tabular-nums text-zinc-500">{r.arteries} עורקים</span>
+              <span className={`rounded-md border px-1.5 py-0.5 text-[10px] font-semibold ${toneCls(String(r.verdict ?? ""))}`} dir="ltr">{String(r.verdict ?? "?")}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="text-[11px] text-zinc-600">
+        דופק חיצוני {relTime(p.generatedAt, now)} · משרד חי {relTime(office.capturedAt, now)}
+      </p>
+    </div>
+  );
+}
 
 function StreamCard({ o, now }: { o: Overview; now: number }) {
   const s = o.stream;
@@ -312,7 +366,7 @@ function CuratorCard({ o }: { o: Overview }) {
     <div className="grid grid-cols-3 gap-2 text-center">
       <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2 py-2.5">
         <div className="text-lg font-bold tabular-nums text-zinc-100">
-          {c.votesToday ?? 0}/{c.maxPerDay ?? "?"}
+          {c.votesToday ?? 0}/{c.liveCap ?? c.maxPerDay ?? "?"}
         </div>
         <div className="text-[11px] text-zinc-500">הצבעות היום</div>
       </div>
@@ -333,7 +387,7 @@ function TasksCard({ o }: { o: Overview }) {
   const open = Array.isArray(t?.open) ? t.open : [];
   return (
     <div className="space-y-2">
-      {open.length === 0 ? <Empty text="התור נקי: אין משימות פתוחות" /> : null}
+      {open.length === 0 ? <Empty text="התור נקי · אין משימות פתוחות" /> : null}
       <ul className="max-h-52 space-y-1.5 overflow-y-auto pr-1">
         {open.map((t: any, i: number) => (
           <li key={t.id ?? i} className="rounded-md border border-zinc-800/70 bg-zinc-950/40 px-2.5 py-2 text-xs">
@@ -352,6 +406,17 @@ function TasksCard({ o }: { o: Overview }) {
 function QuietCard({ o, now }: { o: Overview; now: number }) {
   const q = o.quietAlarm;
   if (!q || Array.isArray(q)) return <Empty text="ללא התראות שקט. ערוץ ההתראה חי ומדווח בכל מחזור." />;
+  /* R314 · הקובץ נושא דגל quiet — false משמעו מדידה-ירוקה ולא התראה */
+  if (q.quiet === false) {
+    return (
+      <div className="space-y-2 text-sm">
+        <p className="rounded-lg border border-emerald-900/60 bg-emerald-950/30 px-3 py-2 text-emerald-200" dir="auto">
+          מדידה ירוקה · הגשר פתוח · החתימה נוכחת · הסביבה נקייה. הערוץ מדווח בכל מחזור.
+        </p>
+        {q.at ? <p className="text-[11px] text-zinc-600">נמדד {relTime(String(q.at), now)}</p> : null}
+      </div>
+    );
+  }
   const root = q.rootCause ?? q.root ?? null;
   const remedy = q.remediation ?? q.remedy ?? q.path ?? null;
   return (
@@ -359,7 +424,7 @@ function QuietCard({ o, now }: { o: Overview; now: number }) {
       <p className="rounded-lg border border-red-900/60 bg-red-950/40 px-3 py-2 text-red-200" dir="auto">
         התראה פתוחה. {typeof root === "string" ? root : ""}
       </p>
-      {remedy ? <p className="rounded-lg border border-amber-900/60 bg-amber-950/30 px-3 py-2 text-amber-200" dir="auto">ערוץ חייאה: {typeof remedy === "string" ? remedy : JSON.stringify(remedy)}</p> : null}
+      {remedy ? <p className="rounded-lg border border-amber-900/60 bg-amber-950/30 px-3 py-2 text-amber-200" dir="auto">ערוץ חייאה · {typeof remedy === "string" ? remedy : JSON.stringify(remedy)}</p> : null}
       {q.at ? <p className="text-[11px] text-zinc-600">עודכן {relTime(String(q.at), now)}</p> : null}
     </div>
   );
@@ -434,9 +499,20 @@ function EventsCard({ o, now }: { o: Overview; now: number }) {
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [o, setO] = useState<Overview | null>(null);
+  const [net, setNet] = useState<NetState | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const now = useClock();
+
+  /* מדידת הרשת החיצונית בקצב עצמאי (60 שניות) — היא אינה תלויה במנוע המקומי */
+  const loadNet = useCallback(async () => {
+    try {
+      const r = await fetch("/api/operator/network", { cache: "no-store" });
+      if (r.ok) setNet(await r.json());
+    } catch {
+      /* fail-soft — הרשת מוצגת כלא-נמדדת ולא כשקט */
+    }
+  }, []);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = useCallback(async () => {
@@ -459,11 +535,14 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
   useEffect(() => {
     load();
+    loadNet();
     timer.current = setInterval(load, REFRESH_MS);
+    const netTimer = setInterval(loadNet, 60_000);
     return () => {
       if (timer.current) clearInterval(timer.current);
+      clearInterval(netTimer);
     };
-  }, [load]);
+  }, [load, loadNet]);
 
   const engineUp = !!o?.engine?.up;
   const signing = o?.engine?.signing;
@@ -495,20 +574,20 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <div className="flex flex-1 flex-wrap items-center gap-1.5">
             <Pill label={engineUp ? "מנוע חי" : "מנוע כבוי"} tone={engineUp ? "ok" : "bad"} />
             <Pill
-              label={signing === true ? "חתימה פעילה" : signing === false ? "חתימה מתה" : "חתימה: לא נמדד"}
+              label={signing === true ? "חתימה פעילה" : signing === false ? "חתימה מתה" : "חתימה לא נמדד"}
               tone={signing === true ? "ok" : signing === false ? "bad" : "idle"}
             />
             <Pill
-              label={fleetCounts ? `צי ${fleetCounts.alive}/${fleetCounts.total} חיים` : fleetVerdict ? String(fleetVerdict) : "צי: לא נמדד"}
+              label={fleetCounts ? `צי ${fleetCounts.alive}/${fleetCounts.total} חיים` : fleetVerdict ? String(fleetVerdict) : "צי לא נמדד"}
               tone={fleetTone as "ok" | "bad" | "warn" | "idle"}
               detail={fleetVerdict ? String(fleetVerdict) : undefined}
             />
             <Pill
-              label={selftest?.pass != null ? `בדיקות ${selftest.pass}${selftest.fail ? ` · כשלים ${selftest.fail}` : ""}` : "בדיקות: לא נמדד"}
+              label={selftest?.pass != null ? `בדיקות ${selftest.pass}${selftest.fail ? ` · כשלים ${selftest.fail}` : ""}` : "בדיקות לא נמדד"}
               tone={selftest?.pass != null && !selftest?.fail ? "ok" : selftest?.fail ? "bad" : "idle"}
               detail={selftest?.at ? relTime(selftest.at, now) : undefined}
             />
-            <Pill label={o?.git?.drift ? "גיט: סטייה" : "גיט: מיושר"} tone={o?.git?.drift ? "warn" : "ok"} />
+            <Pill label={o?.git?.drift ? "גיט סטייה" : "גיט מיושר"} tone={o?.git?.drift ? "warn" : "ok"} />
           </div>
           <button
             onClick={logout}
@@ -526,7 +605,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         {!o && !err ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-40 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/40" />
+              <div key={i} className="h-40 min-w-0 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/40" />
             ))}
           </div>
         ) : null}
@@ -534,6 +613,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Card title="זרם שידור" hint={`רענון ${REFRESH_MS / 1000} שניות`}>
               <StreamCard o={o} now={now} />
+            </Card>
+            <Card title="הרשת החיה" hint="מפת העורקים החיצונית">
+              <NetCard net={net} now={now} />
             </Card>
             <Card title="מסילות הכנסה">
               <RailsCard o={o} />
