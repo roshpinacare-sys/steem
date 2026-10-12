@@ -1,57 +1,56 @@
 {
-  "at": "2026-10-12T10:58:23.771Z",
-  "custody": "14/14",
-  "social": "SOCIAL-EXECUTED",
-  "socialExecuted": 1,
+  "at": "2026-10-12T11:29:02.448Z",
+  "custody": "0/14",
+  "social": "PART-GATED",
+  "socialExecuted": 0,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
   "post": "DAILY-CAP",
   "postAccount": null,
   "postPermlink": null,
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
   "blurtLive": 0,
-  "delegation": "ADOPT-REFUSED",
+  "delegation": "CUSTODY-GATE-REFUSED",
   "delegationOps": 0,
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T10:58:23.771Z",
+    "at": "2026-10-12T11:29:02.448Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 18485,
-        "verdict": "FLEET-CUSTODY-ALIVE",
-        "verified": 14,
+        "ms": 391,
+        "verdict": "REVIVAL-FAIL",
+        "verified": 0,
         "total": 14
       },
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 499428,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 1,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 8282256
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 267252,
-        "verdict": "SOCIAL-EXECUTED",
-        "executed": 1,
-        "refused": 0,
-        "due": 43
+        "ms": 398,
+        "verdict": "PART-GATED",
+        "executed": 0,
+        "refused": 13,
+        "due": 0
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 23,
+        "ms": 36,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -60,7 +59,7 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 3,
+        "ms": 2,
         "verdict": "COOLDOWN",
         "slot": 2,
         "title": null,
@@ -69,7 +68,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "DAILY-CAP",
         "account": null,
         "permlink": null,
@@ -79,7 +78,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 319,
+        "ms": 380,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -88,11 +87,11 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 612,
-        "verdict": "ADOPT-REFUSED",
+        "ms": 2,
+        "verdict": "CUSTODY-GATE-REFUSED",
         "ops": 0,
         "totalSp": 0,
-        "reason": "active-authority-mismatch"
+        "reason": null
       }
     }
   },
