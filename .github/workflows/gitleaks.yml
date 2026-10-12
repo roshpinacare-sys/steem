@@ -6,9 +6,17 @@ name: gitleaks
 # minutes) now re-scans every 2h, but in-repo scanning stays the first line.
 # Fail-closed: a finding reds the run.
 # ═══════════════════════════════════════════════════════════════════════════
+# TOMBSTONE-HONEST (exec-20, 03:2xZ — owner=active, house law zai-13b + the
+# social-cadence precedent): this repo is PRIVATE (467MB) and its Actions sit
+# behind the billing wall — every push-triggered run dies job-level BEFORE any
+# step (measured 2026-10-12: conclusion=failure, log blob BlobNotFound, zero
+# steps; 6/6 runs). A red that can never be green is false-alarm noise that
+# masks real failures — exactly the disease zai-13b outlawed. The SCAN ITSELF
+# IS ALIVE on the public artery (T-53 contract: external re-scan every 2h on
+# public minutes) + this file on main still scans PRs + workflow_dispatch.
+# Kept dispatch-only so the owner can always fire a full in-repo scan when
+# billing returns. Evidence: issue #29.
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
 permissions:
