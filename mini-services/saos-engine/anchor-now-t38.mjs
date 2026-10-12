@@ -79,7 +79,25 @@ if (coProven !== "master-verified") {
   }
 }
 
-const tip = sh("git", ["rev-parse", "HEAD"]).out;
+/* R315 · PUSHED-TIP LAW (same measured cure as the custodian): the chain
+ * anchors TRUTH (what origin/saos-cockpit holds), never ambition. HEAD
+ * unpushed/diverged → anchor the pushed tip instead of a lineage that a
+ * reconcile may lawfully drop. */
+function isAncestor(sha, of) {
+  if (!sha || !of) return false;
+  return sh("git", ["merge-base", "--is-ancestor", sha, of]).code === 0;
+}
+let tip = sh("git", ["rev-parse", "HEAD"]).out;
+if (!isAncestor(tip, "origin/saos-cockpit")) {
+  const originTip = sh("git", ["rev-parse", "origin/saos-cockpit"]).out;
+  if (originTip) {
+    console.error(`pushed-tip law: HEAD ${tip.slice(0, 12)} unpushed/diverged — anchoring pushed truth ${originTip.slice(0, 12)}`);
+    tip = originTip;
+  } else {
+    console.log(JSON.stringify({ ok: false, verdict: "NO-ORIGIN-REV — refused to anchor a guess" }));
+    process.exit(1);
+  }
+}
 const ops = [["custom_json", {
   required_auths: [],
   required_posting_auths: [ACCOUNT],
