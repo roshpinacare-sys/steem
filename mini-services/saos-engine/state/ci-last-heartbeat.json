@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-12T10:37:27.021Z",
+  "at": "2026-10-12T10:58:23.771Z",
   "custody": "14/14",
   "social": "SOCIAL-EXECUTED",
-  "socialExecuted": 3,
+  "socialExecuted": 1,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
   "post": "DAILY-CAP",
   "postAccount": null,
   "postPermlink": null,
-  "dex": "STANDBY",
-  "dexReason": "engine-alive",
+  "dex": "TAKEOVER-EXECUTED",
+  "dexReason": "anchor-stale",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T10:37:27.021Z",
+    "at": "2026-10-12T10:58:23.771Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 22435,
+        "ms": 18485,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,24 +33,25 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 1,
-        "verdict": "STANDBY",
-        "reason": "engine-alive",
-        "anchorAgeMs": 5208872
+        "ms": 499428,
+        "verdict": "TAKEOVER-EXECUTED",
+        "reason": "anchor-stale",
+        "cycle": null,
+        "health": "ok"
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 182918,
+        "ms": 267252,
         "verdict": "SOCIAL-EXECUTED",
-        "executed": 3,
+        "executed": 1,
         "refused": 0,
-        "due": 40
+        "due": 43
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 39,
+        "ms": 23,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -68,7 +69,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 2,
+        "ms": 1,
         "verdict": "DAILY-CAP",
         "account": null,
         "permlink": null,
@@ -78,7 +79,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 508,
+        "ms": 319,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -87,7 +88,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 639,
+        "ms": 612,
         "verdict": "ADOPT-REFUSED",
         "ops": 0,
         "totalSp": 0,
