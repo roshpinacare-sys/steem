@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 361 trades/24h measured (vol 1728.575 STEEM)",
+      "evidence": "state/market.json: 111 trades/24h measured (vol 1394.889 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -25,7 +25,7 @@
       "cadence": "3s tick",
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/hyper-grid.json: equilibrium 30986 ops/day measured (RC governor live)",
+      "evidence": "state/hyper-grid.json: equilibrium 23858 ops/day measured (RC governor live)",
       "priorStatus": "active"
     },
     {
@@ -37,7 +37,7 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/observe.json: 51 chain-truth fills counted (last 2026-10-12T04:44:00.000Z)",
+      "evidence": "state/observe.json: 31 chain-truth fills counted (last 2026-10-12T04:44:00.000Z)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -197bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -201bps)",
       "priorStatus": "active"
     },
     {
@@ -73,7 +73,7 @@
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/curator.json: VOTED (budgetCounted ?, basis state)",
+      "evidence": "state/curator.json: VP-FLOOR (budgetCounted ?, basis state)",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/selftest-last-run.json: 1265/1265 PASS at 2026-10-12T20:22:09.988Z",
+      "evidence": "state/selftest-last-run.json: 1265/1265 PASS at 2026-10-12T21:30:19.660Z",
       "priorStatus": "active"
     },
     {
@@ -109,8 +109,8 @@
       "cadence": "6h",
       "truthContract": "findings carry url+date from real search results; no finding without a source",
       "recruitedAt": "2026-10-01T22:23:08.223Z",
-      "evidence": "state/webintel.json: 16 sourced findings, age 0h — external recon live",
-      "priorStatus": "planned"
+      "evidence": "state/webintel.json: 16 sourced findings, age 1h — external recon live",
+      "priorStatus": "active"
     },
     {
       "id": "payout-auditor",
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-12T20:56:20.720Z",
+  "at": "2026-10-12T21:31:04.106Z",
   "pid": 9569
 }
