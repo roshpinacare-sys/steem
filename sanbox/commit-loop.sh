@@ -54,8 +54,19 @@ case "${1:-status}" in
         if bash scripts/sovereign-push.sh >> "$LOG" 2>&1; then
           log "push: OK (${AHEAD} קומיטים)"
         else
-          RC=$?
-          log "push: נדחה (exit=$RC) — סטייה/חוק; לא מאולץ; ממתין-הכרעה לפי AGENTS.md"
+          # R312 · SELF-RECONCILE LAW: remote moved (parallel agents + CI
+          # heartbeats — measured 3 moves in 20 minutes). DIVERGENCE-ABORT is
+          # not a terminal state for a standing agent: reconcile honestly
+          # (merge, union ledgers, alive-wins state) and retry ONCE.
+          if bash scripts/auto-reconcile.sh >> "$LOG" 2>&1; then
+            if bash scripts/sovereign-push.sh >> "$LOG" 2>&1; then
+              log "push: OK-אחרי-רקונסיליאציה (${AHEAD} קומיטים, R312)"
+            else
+              log "push: נדחה-גם-אחרי-רקונסיליאציה — ממתין-הכרעה (fail-honest)"
+            fi
+          else
+            log "push: נדחה (exit=$RC) — רקונסיליאציה-אוטומטית נכשלה; הכרעה-ידנית לפי AGENTS.md"
+          fi
         fi
       fi
     ) 9>"$LOCK"

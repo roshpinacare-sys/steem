@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-10T05:20:00Z",
+  "updatedAt": "2026-10-12T21:05:00Z",
   "law": "בצע לפי AGENT_BOOT.md · תעד ב-worklog.md · דחוף דרך scripts/sovereign-push.sh",
   "queue": [
     {
@@ -61,6 +61,26 @@
       "cmd": "bash scripts/sovereign-mirror.sh",
       "expect": "MIRRORED",
       "recurrence": "daily",
+      "done": false
+    },
+    {
+      "id": "SB-7",
+      "role": "any-agent",
+      "priority": "high",
+      "title": "הבטחת-מנוע-חי-על-האמת (R312)",
+      "cmd": "curl -sf -m 4 http://localhost:3040/health",
+      "expect": "exit 0",
+      "recurrence": "every-tick",
+      "done": false
+    },
+    {
+      "id": "SB-8",
+      "role": "any-agent",
+      "priority": "high",
+      "title": "גלאי-השקט — אזעקה-מיוחסת-עם-שורש-ותרופה (R312)",
+      "cmd": "cat sanbox/autonomy/quiet-alarm.json",
+      "expect": "quiet=false או root-מיוחס",
+      "recurrence": "every-tick",
       "done": false
     }
   ]

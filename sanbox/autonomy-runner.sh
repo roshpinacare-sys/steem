@@ -177,6 +177,32 @@ case "${1:-status}" in
         run_task SB3 "bash sanbox/bootstrap.sh" "exit 0" >/dev/null
       fi
 
+      # ── SB-7 · הבטחת-מנוע-חי-על-האמת (R312 · כל-טיק) ──
+      # נמדד-חי 20:5x: מאז-הפעלה-מחדש של הסנדבוקס המנוע קם offline וכך
+      # הרשת-שתקה. החוק: :3040 חייב לענות ok:true; אם-כבה — החיה מ-ROOT
+      # (עותק-מסונכרן לאמת). ה-keeper-של-my-project מהיר-מאיתנו (8ש) —
+      # הנו מונע-התנגשות: אנחנו יורים רק-אם-הפורט-כבה-לטיק-שלם.
+      if ! curl -sf -m 4 http://localhost:3040/health >/dev/null 2>&1; then
+        RC=$(run_task SB7 "(cd mini-services/saos-engine && nohup bun index.ts >> state/engine.log 2>&1 &) && sleep 6 && curl -sf -m 4 http://localhost:3040/health >/dev/null" "exit 0")
+        [ "$RC" != "0" ] && log "SB7: המנוע-כבה-והחייאה-נכשלה — אזעקה-לפי-SB8"
+      fi
+
+      # ── SB-8 · גלאי-השקט (R312 · כל-טיק · כנות-גלויה) ──
+      # "הרשת-כובה-את-עצמה" נמדד: השקט-לא-היה-מופשט — הוא-היה: SIGNING-DEAD
+      # (כספת-בלי-bundle מקומי) + BRIDGE-DOWN (SAOS_OFFLINE). הגלאי כותב
+      # quiet-alarm.json עם השורש-המדוד ונתיב-החייאה — כדי-ששקט-עתידי
+      # יהיה-נראה, מיוחס ובעל-תרופה מהטיק-הראשון.
+      ST=$(curl -sf -m 5 http://localhost:3040/status 2>/dev/null || echo '{}')
+      SIGNING=$(printf '%s' "$ST" | jq -r '.credential.present // "unknown"' 2>/dev/null)
+      BRIDGE=$(printf '%s' "$ST" | jq -r '.content.bridgeError // ""' 2>/dev/null)
+      QUEUE=$(printf '%s' "$ST" | jq -r '.content.queue | length' 2>/dev/null)
+      ALARM="$SB/autonomy/quiet-alarm.json"
+      QUIET="false"; ROOT="none"
+      [ "$SIGNING" = "false" ] && { QUIET="true"; ROOT="SIGNING-DEAD (vault bundle absent on host — revival: operator drops upload/headcorner.txt or routes STEEM_VAULT_PASSES via token-forge)"; }
+      case "$BRIDGE" in *offline*) QUIET="true"; ROOT="$ROOT + BRIDGE-OFFLINE (SAOS_OFFLINE set — revival: start engine without it)";; esac
+      jq -n --arg at "$(now)" --argjson quiet "$QUIET" --arg root "$ROOT" --argjson signing "$([ "$SIGNING" = "false" ] && echo true || echo false)" --argjson bridge "$([[ "$BRIDGE" == *offline* ]] && echo true || echo false)" --argjson queue "${QUEUE:-0}" '{at:$at, quiet:$quiet, signingDead:$signing, bridgeOffline:$bridge, draftsQueued:$queue, root:$root}' > "$ALARM" 2>/dev/null
+      [ "$QUIET" = "true" ] && log "SB8: שקט-נמדד — $ROOT"
+
       # ── עדכון-בסיס: autonomy/state.json (lastVerify/lastBootstrap כשהשתנו) ──
       LASTV=$(get '.SB1.at // ""')
       if [ -n "$LASTV" ] && [ "$(jq -r '.lastVerify // ""' "$BASE" 2>/dev/null)" != "$LASTV" ]; then
