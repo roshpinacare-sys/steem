@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updatedAt": "2026-10-12T21:50:00Z",
+  "version": 2,
+  "updatedAt": "2026-10-12T22:44:48Z",
   "law": "בצע לפי AGENT_BOOT.md · תעד ב-worklog.md · דחוף דרך scripts/sovereign-push.sh",
   "queue": [
     {
@@ -101,7 +101,8 @@
       "cmd": "kill תהליך 3040 · SB-7 ensure-engine · ולידציה דרך /status",
       "expect": "maxPerDay 30 במדידה חיה, לא בקוד בלבד",
       "recurrence": "once",
-      "done": false
+      "done": true,
+      "proof": "R314 · תוקן בשתי השכבות — exec-armed.json יושר ל-30/70/35/35, רספאון דרך השומר, הוכחה חיה ב-execution.curate"
     },
     {
       "id": "R313-C",
@@ -121,6 +122,40 @@
       "cmd": "יצירת .github/workflows/public-probe.yml בענף saos-cockpit",
       "expect": "ריצה ראשונה ירוקה עם דוח ב-commit",
       "recurrence": "once",
+      "done": true,
+      "proof": "R314 · נסגר כ-superseded — הדופק החיצוני חי על saos-runtime (בלי-סוד, self-clocked, takeover) · השיורי נארז ב-sanbox/ops-pack/artery-alarm.yml"
+    },
+    {
+      "id": "R314-A",
+      "priority": "high",
+      "title": "ראיית רשת-חיה בקונסולת המפעיל — /api/operator/network + כרטיס הרשת-החיה מול מפת-העורקים",
+      "done": true,
+      "proof": "R314 · נתיב מאומת (401 ללא-סשן) · כרטיס בגריד · אימות-דפדפן בדוח"
+    },
+    {
+      "id": "R314-B",
+      "priority": "high",
+      "title": "חבילת-שפה ל-Domain — language-fix-r314.mjs (60 נקודותיים + 5 מרכאות נמדדו)",
+      "done": true,
+      "proof": "R314 · הכלי מוכן ב-sanbox/domain-hardening · ההחלה ממתינה ל-token Domain"
+    },
+    {
+      "id": "R314-C",
+      "priority": "medium",
+      "title": "זעקת-עורק-רפה כ-issue חי ב-saos-runtime — artery-alarm.yml",
+      "done": true,
+      "proof": "R314 · חבילה מוכנה ב-sanbox/ops-pack · ההתקנה ממתינה לגישת saos-runtime"
+    },
+    {
+      "id": "R314-D",
+      "priority": "high",
+      "title": "שיוך 7 התביעות (≈0.466 SP) מהיסטוריית-השרשרת בלבד",
+      "done": false
+    },
+    {
+      "id": "R314-E",
+      "priority": "medium",
+      "title": "סדר-המחסן ב-Domain — מבנה pages/feeds/ops + redirects (66 קבצים בשורש)",
       "done": false
     }
   ]
