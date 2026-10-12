@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-12T06:06:01.670Z",
+  "at": "2026-10-12T06:27:55.506Z",
   "custody": "14/14",
-  "social": "SOCIAL-IDLE",
-  "socialExecuted": 0,
+  "social": "SOCIAL-EXECUTED",
+  "socialExecuted": 5,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
-  "post": "BROADCASTED",
-  "postAccount": "woq",
-  "postPermlink": "i-tested-it-does-the-expensive-tool-actu-20261012-d88b24c7",
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "post": "DAILY-CAP",
+  "postAccount": null,
+  "postPermlink": null,
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T06:06:01.670Z",
+    "at": "2026-10-12T06:27:55.506Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 18884,
+        "ms": 44495,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,25 +33,24 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 251015,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 0,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 18528783
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 16562,
-        "verdict": "SOCIAL-IDLE",
-        "executed": 0,
+        "ms": 106587,
+        "verdict": "SOCIAL-EXECUTED",
+        "executed": 5,
         "refused": 0,
-        "due": 1
+        "due": 7
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 25,
+        "ms": 34,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -60,7 +59,7 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 2,
+        "ms": 3,
         "verdict": "COOLDOWN",
         "slot": 2,
         "title": null,
@@ -69,17 +68,17 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 2396,
-        "verdict": "BROADCASTED",
-        "account": "woq",
-        "permlink": "i-tested-it-does-the-expensive-tool-actu-20261012-d88b24c7",
+        "ms": 1,
+        "verdict": "DAILY-CAP",
+        "account": null,
+        "permlink": null,
         "mode": null,
         "note": null
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 165,
+        "ms": 284,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -88,7 +87,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 607,
+        "ms": 531,
         "verdict": "ADOPT-REFUSED",
         "ops": 0,
         "totalSp": 0,
@@ -97,6 +96,6 @@
     }
   },
   "truthrail": "PASS",
-  "truthrailPosts24h": 59,
+  "truthrailPosts24h": 60,
   "truthrailOutsideVotes": 2
 }
