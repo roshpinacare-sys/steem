@@ -1,13 +1,12 @@
 {
-  "at": "2026-10-12T10:00:32.448Z",
+  "at": "2026-10-12T10:21:30.624Z",
   "day": "2026-10-12",
   "results": [
     {
       "account": "cashmachine",
       "lane": "fleet-vote",
-      "verdict": "BROADCAST",
-      "permlink": "siq/the-18-bus-what-a-year-of-the-same-route-builds-in-a-person",
-      "digest8": "f965d908"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "cashmachine",
@@ -92,7 +91,8 @@
     {
       "account": "siq",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "payer has not enough RC mana for transaction:has_mana: Account: siq has 899494377 RC, needs 94761070"
     },
     {
       "account": "wic",
@@ -119,7 +119,7 @@
     {
       "account": "wog",
       "lane": "fleet-comment",
-      "verdict": "OWN-VOICE-VETO"
+      "verdict": "REPEAT-VETO"
     },
     {
       "account": "wog",
@@ -148,9 +148,9 @@
     "verified": 9,
     "total": 9
   },
-  "verdict": "HIVE-SOCIAL-EXECUTED",
-  "executed": 1,
-  "ms": 9138,
+  "verdict": "HIVE-SOCIAL-IDLE",
+  "executed": 0,
+  "ms": 9309,
   "perAccount": {
     "cashmachine": {
       "done": {
