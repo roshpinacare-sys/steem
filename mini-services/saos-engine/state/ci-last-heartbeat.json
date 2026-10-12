@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-12T05:48:09.141Z",
+  "at": "2026-10-12T06:06:01.670Z",
   "custody": "14/14",
   "social": "SOCIAL-IDLE",
   "socialExecuted": 0,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
   "post": "BROADCASTED",
-  "postAccount": "siq",
-  "postPermlink": "the-plateau-is-the-lesson-what-sixty-fla-20261012-cd2d750e",
-  "dex": "STANDBY",
-  "dexReason": "takeover-gap",
+  "postAccount": "woq",
+  "postPermlink": "i-tested-it-does-the-expensive-tool-actu-20261012-d88b24c7",
+  "dex": "TAKEOVER-EXECUTED",
+  "dexReason": "anchor-stale",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T05:48:09.141Z",
+    "at": "2026-10-12T06:06:01.670Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 22849,
+        "ms": 18884,
         "verdict": "FLEET-CUSTODY-ALIVE",
         "verified": 14,
         "total": 14
@@ -33,24 +33,25 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 0,
-        "verdict": "STANDBY",
-        "reason": "takeover-gap",
-        "anchorAgeMs": 16120772
+        "ms": 251015,
+        "verdict": "TAKEOVER-EXECUTED",
+        "reason": "anchor-stale",
+        "cycle": null,
+        "health": "ok"
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 9777,
+        "ms": 16562,
         "verdict": "SOCIAL-IDLE",
         "executed": 0,
         "refused": 0,
-        "due": 0
+        "due": 1
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 39,
+        "ms": 25,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -68,17 +69,17 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 2893,
+        "ms": 2396,
         "verdict": "BROADCASTED",
-        "account": "siq",
-        "permlink": "the-plateau-is-the-lesson-what-sixty-fla-20261012-cd2d750e",
+        "account": "woq",
+        "permlink": "i-tested-it-does-the-expensive-tool-actu-20261012-d88b24c7",
         "mode": null,
         "note": null
       },
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 292,
+        "ms": 165,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -87,7 +88,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 673,
+        "ms": 607,
         "verdict": "ADOPT-REFUSED",
         "ops": 0,
         "totalSp": 0,
@@ -96,6 +97,6 @@
     }
   },
   "truthrail": "PASS",
-  "truthrailPosts24h": 55,
+  "truthrailPosts24h": 59,
   "truthrailOutsideVotes": 2
 }
