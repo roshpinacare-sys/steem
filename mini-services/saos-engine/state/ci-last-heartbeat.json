@@ -1,8 +1,8 @@
 {
-  "at": "2026-10-12T20:22:17.390Z",
-  "custody": "1/14",
-  "social": "PART-GATED",
-  "socialExecuted": 0,
+  "at": "2026-10-12T20:40:20.904Z",
+  "custody": "14/14",
+  "social": "SOCIAL-EXECUTED",
+  "socialExecuted": 13,
   "content": "BRIDGE-DOWN",
   "contentSource": null,
   "post": "DAILY-CAP",
@@ -14,43 +14,43 @@
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
   "blurtLive": 0,
-  "delegation": "CUSTODY-GATE-REFUSED",
-  "delegationOps": 0,
-  "delegationSp": 0,
+  "delegation": "DELEGATED",
+  "delegationOps": 2,
+  "delegationSp": 125.808,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T20:22:17.390Z",
+    "at": "2026-10-12T20:40:20.904Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 17400,
-        "verdict": "PARTIAL",
-        "verified": 1,
+        "ms": 31707,
+        "verdict": "FLEET-CUSTODY-ALIVE",
+        "verified": 14,
         "total": 14
       },
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 0,
+        "ms": 1,
         "verdict": "STANDBY",
         "reason": "engine-alive",
-        "anchorAgeMs": 2024225
+        "anchorAgeMs": 3122048
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 33483,
-        "verdict": "PART-GATED",
-        "executed": 0,
-        "refused": 13,
-        "due": 0
+        "ms": 770081,
+        "verdict": "SOCIAL-EXECUTED",
+        "executed": 13,
+        "refused": 0,
+        "due": 146
       },
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 26,
+        "ms": 25,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -78,7 +78,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 562,
+        "ms": 4138,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -87,15 +87,15 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 1,
-        "verdict": "CUSTODY-GATE-REFUSED",
-        "ops": 0,
-        "totalSp": 0,
+        "ms": 3291,
+        "verdict": "DELEGATED",
+        "ops": 2,
+        "totalSp": 125.808,
         "reason": null
       }
     }
   },
-  "truthrail": "WARN-CLOSED-LOOP",
-  "truthrailPosts24h": 19,
-  "truthrailOutsideVotes": 0
+  "truthrail": "PASS",
+  "truthrailPosts24h": 17,
+  "truthrailOutsideVotes": 1
 }
