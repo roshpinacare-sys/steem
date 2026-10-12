@@ -3,10 +3,11 @@
 # שימוש: DOMAIN_TOKEN=... bash sanbox/domain-hardening/apply.sh
 set -euo pipefail
 : "${DOMAIN_TOKEN:?חובה DOMAIN_TOKEN עם גישת push לריפו Domain}"
+# R314-fix · SRC נגזר לפני cd — נתיב-יחסי של $0 נשבר אחרי המעבר ל-workdir-זר
+SRC="$(cd "$(dirname "$0")" && pwd)"
 WORK=$(mktemp -d)
 git clone --depth 3 "https://x-access-token:${DOMAIN_TOKEN}@github.com/roshpinacare-sys/Domain.git" "$WORK/d"
 cd "$WORK/d"
-SRC="$(cd "$(dirname "$0")" && pwd)"
 cp "$SRC/robots.txt" robots.txt
 cp "$SRC/sitemap.xml" sitemap.xml
 git add robots.txt sitemap.xml
