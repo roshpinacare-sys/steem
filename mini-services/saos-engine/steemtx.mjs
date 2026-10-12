@@ -34,8 +34,9 @@ const concat = (...bufs) => {
   for (const b of bufs) { out.set(b, o); o += b.length; }
   return out;
 };
-secp.etc.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, concat(...msgs));
-secp.etc.hmacSha256Async = async (key, ...msgs) => hmac(sha256, key, concat(...msgs));
+const secpKw = secp.etc || secp.utils;
+secpKw.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, concat(...msgs));
+secpKw.hmacSha256Async = async (key, ...msgs) => hmac(sha256, key, concat(...msgs));
 
 /* ── base58 (bitcoin alphabet — same as steem) ──────────────────────────── */
 const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
