@@ -115,6 +115,12 @@ export async function GET(req: NextRequest) {
           maxPerDay: curator.maxPerDay ?? null,
           vpEff: curator.vpEff ?? null,
           verdict: curator.verdict ?? null,
+          /* R314 · המדיניות-החיה של התהליך (execution.curate) — תמונת-המחזור עלולה לפגר מחזור אחד */
+          liveCap: (() => {
+            const ex = pick<Record<string, unknown>>(s, "execution");
+            const cu = ex && typeof ex === "object" ? (ex as Record<string, unknown>).curate : null;
+            return cu && typeof cu === "object" ? ((cu as Record<string, unknown>).maxPerDay as number) ?? null : null;
+          })(),
         }
       : null,
     fleet,
