@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-12T23:36:19.048Z",
+  "at": "2026-10-12T23:46:19.047Z",
   "enabled": true,
-  "runsTotal": 322,
+  "runsTotal": 323,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 87,
-      "oks": 49,
+      "window": 88,
+      "oks": 50,
       "fails": 33,
       "blocked": 5,
-      "okRate": 56.3,
+      "okRate": 56.8,
       "blockedRate": 5.7,
       "failReasons": {
         "unknown": 1,
@@ -38,15 +38,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 3928,
+      "checks": 3938,
       "downs": 122,
       "heals": 65,
       "healVerified": 54,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-12T23:36:19.069Z",
+      "lastCheckAt": "2026-10-12T23:46:19.094Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-12T23:36:19.084Z",
+      "lastUpAt": "2026-10-12T23:46:19.104Z",
       "blips": 8
     }
   },
@@ -55,7 +55,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×5/87 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×5/88 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
@@ -71,8 +71,8 @@
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
-    "unclassified-fail-legacy": 194,
-    "signing-cred-blocked": 240,
+    "unclassified-fail-legacy": 195,
+    "signing-cred-blocked": 241,
     "broadcast-fails": 73
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
