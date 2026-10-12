@@ -1,9 +1,9 @@
 {
-  "at": "2026-10-12T20:04:20.533Z",
+  "at": "2026-10-12T20:22:17.390Z",
   "custody": "1/14",
   "social": "PART-GATED",
   "socialExecuted": 0,
-  "content": "DRAFTS-QUEUED",
+  "content": "BRIDGE-DOWN",
   "contentSource": null,
   "post": "DAILY-CAP",
   "postAccount": null,
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T20:04:20.533Z",
+    "at": "2026-10-12T20:22:17.390Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 15957,
+        "ms": 17400,
         "verdict": "PARTIAL",
         "verified": 1,
         "total": 14
@@ -33,15 +33,15 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 1,
+        "ms": 0,
         "verdict": "STANDBY",
         "reason": "engine-alive",
-        "anchorAgeMs": 945926
+        "anchorAgeMs": 2024225
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 31543,
+        "ms": 33483,
         "verdict": "PART-GATED",
         "executed": 0,
         "refused": 13,
@@ -50,9 +50,9 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 2554,
-        "verdict": "DRAFTS-QUEUED",
-        "draftsQueued": 29,
+        "ms": 26,
+        "verdict": "BRIDGE-DOWN",
+        "draftsQueued": 0,
         "exposureBlocked": 0,
         "source": null
       },
@@ -68,7 +68,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 5,
+        "ms": 3,
         "verdict": "DAILY-CAP",
         "account": null,
         "permlink": null,
@@ -78,7 +78,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 551,
+        "ms": 562,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -87,7 +87,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 2,
+        "ms": 1,
         "verdict": "CUSTODY-GATE-REFUSED",
         "ops": 0,
         "totalSp": 0,
