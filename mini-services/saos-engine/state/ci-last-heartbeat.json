@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-12T14:56:22.687Z",
+  "at": "2026-10-12T15:15:10.674Z",
   "custody": "0/14",
   "social": "PART-GATED",
   "socialExecuted": 0,
@@ -8,8 +8,8 @@
   "post": "DAILY-CAP",
   "postAccount": null,
   "postPermlink": null,
-  "dex": "TAKEOVER-EXECUTED",
-  "dexReason": "anchor-stale",
+  "dex": "STANDBY",
+  "dexReason": "takeover-gap",
   "digest": "COOLDOWN",
   "digestTitle": null,
   "blurt": "BLURT-RPC-UNREACHABLE",
@@ -19,13 +19,13 @@
   "delegationSp": 0,
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-12T14:56:22.687Z",
+    "at": "2026-10-12T15:15:10.674Z",
     "master": "headcorner",
     "steps": {
       "custody": {
         "name": "custody",
         "ok": true,
-        "ms": 243,
+        "ms": 457,
         "verdict": "REVIVAL-FAIL",
         "verified": 0,
         "total": 14
@@ -33,16 +33,15 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 67427,
-        "verdict": "TAKEOVER-EXECUTED",
-        "reason": "anchor-stale",
-        "cycle": null,
-        "health": "ok"
+        "ms": 1,
+        "verdict": "STANDBY",
+        "reason": "takeover-gap",
+        "anchorAgeMs": 21850547
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 264,
+        "ms": 301,
         "verdict": "PART-GATED",
         "executed": 0,
         "refused": 13,
@@ -51,7 +50,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 16,
+        "ms": 31,
         "verdict": "BRIDGE-DOWN",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -60,7 +59,7 @@
       "digest": {
         "name": "digest",
         "ok": true,
-        "ms": 3,
+        "ms": 2,
         "verdict": "COOLDOWN",
         "slot": 2,
         "title": null,
@@ -69,7 +68,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "DAILY-CAP",
         "account": null,
         "permlink": null,
@@ -79,7 +78,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 261,
+        "ms": 364,
         "verdict": "BLURT-RPC-UNREACHABLE",
         "live": 0,
         "total": 12,
@@ -88,7 +87,7 @@
       "delegation": {
         "name": "delegation",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "CUSTODY-GATE-REFUSED",
         "ops": 0,
         "totalSp": 0,
@@ -97,6 +96,6 @@
     }
   },
   "truthrail": "PASS",
-  "truthrailPosts24h": 52,
-  "truthrailOutsideVotes": 2
+  "truthrailPosts24h": 47,
+  "truthrailOutsideVotes": 1
 }
