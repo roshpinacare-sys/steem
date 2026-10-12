@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-12T22:47:04.048Z",
+  "at": "2026-10-12T22:56:19.046Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 87bps → dragK 1.0435",
+      "reason": "spread 86bps → dragK 1.043",
       "action": {
-        "spreadBpsRec": 87,
-        "bestAsk": 0.10169662694405171,
-        "bestBid": 0.10081661457808247
+        "spreadBpsRec": 86,
+        "bestAsk": 0.10169836265636123,
+        "bestBid": 0.10082677959265982
       },
-      "at": "2026-10-12T22:47:04.048Z"
+      "at": "2026-10-12T22:56:19.046Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -335bps from external parity",
+      "action": {
+        "bps": -335
+      },
+      "at": "2026-10-12T22:56:19.046Z"
     },
     {
       "kind": "soldiers",
@@ -19,33 +28,33 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-12T22:47:04.048Z"
+      "at": "2026-10-12T22:56:19.046Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 93.3%",
+      "reason": "RC at 93.6%",
       "action": {
-        "rcPct": 93.3
+        "rcPct": 93.6
       },
-      "at": "2026-10-12T22:47:04.048Z"
+      "at": "2026-10-12T22:56:19.046Z"
     },
     {
       "kind": "curation",
-      "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 49.9%) — gates hold until candidates pass",
+      "decision": "curator-live",
+      "reason": "voted 3 today (117 total) · VP 50.6% · txid 4c382bff1762",
       "action": {
-        "votesToday": 24,
-        "vpEff": 49.9,
-        "verdict": "VP-FLOOR"
+        "votesToday": 27,
+        "vpEff": 50.6,
+        "verdict": "VOTED"
       },
-      "at": "2026-10-12T22:47:04.048Z"
+      "at": "2026-10-12T22:56:19.046Z"
     }
   ],
-  "spreadBpsRec": 87,
+  "spreadBpsRec": 86,
   "book": {
-    "bestAsk": 0.10169662694405171,
-    "bestBid": 0.10081661457808247,
-    "spreadBps": 87
+    "bestAsk": 0.10169836265636123,
+    "bestBid": 0.10082677959265982,
+    "spreadBps": 86
   }
 }
