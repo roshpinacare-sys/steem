@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-12T11:30:40.233Z",
+  "at": "2026-10-12T14:59:08.063Z",
   "day": "2026-10-12",
   "results": [
     {
@@ -27,7 +27,7 @@
     {
       "account": "haran",
       "lane": "fleet-comment",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "RC-LOW-HONEST-DEFER"
     },
     {
       "account": "haran",
@@ -68,7 +68,8 @@
     {
       "account": "macrame",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "REJECTED",
+      "reason": "Assert Exception:itr->get_vote_percent() != o.weight && \"Your current vote on this comment is identi"
     },
     {
       "account": "macrame",
@@ -83,7 +84,7 @@
     {
       "account": "siq",
       "lane": "fleet-vote",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "NO-CANDIDATE"
     },
     {
       "account": "siq",
@@ -125,7 +126,7 @@
     {
       "account": "wog",
       "lane": "deepen",
-      "verdict": "SCHEDULE-LATER"
+      "verdict": "NOTHING-TO-DEEPEN"
     },
     {
       "account": "woq",
@@ -151,7 +152,7 @@
   },
   "verdict": "HIVE-SOCIAL-IDLE",
   "executed": 0,
-  "ms": 14811,
+  "ms": 18215,
   "perAccount": {
     "cashmachine": {
       "done": {
@@ -161,9 +162,12 @@
     },
     "haran": {
       "done": {
-        "fleetVote": 1
+        "fleetVote": 1,
+        "fleetComment": 1
       },
-      "said": []
+      "said": [
+        "The whole year angle is what pulls me in here. Routines are how a place slowly becomes a home, and posts like this are where that actually shows. What is the one small thing that made this work?"
+      ]
     },
     "israelnews": {
       "done": {
@@ -176,7 +180,9 @@
       "said": []
     },
     "macrame": {
-      "done": {},
+      "done": {
+        "fleetVote": 1
+      },
       "said": []
     },
     "siq": {
