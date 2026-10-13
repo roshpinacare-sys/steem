@@ -285,6 +285,132 @@ function NetCard({ net, now }: { net: NetState | null; now: number }) {
   );
 }
 
+/* R323 · DexCard — לוח הדקס החי: השוק האמיתי (STEEM/SBD בשוק-הפנימי של Steem,
+ * מונע ע"י DEX-FLOW: טריפים עצמיים בכל-טיק, סריקות-שיור, השלמות) + הדקס הפנימי
+ * שלנו (grid98). כל-מספר הוא מדידה — אפס-המצאה. */
+function DexCard({ o, now }: { o: Overview; now: number }) {
+  const d = o?.dexflow ?? null;
+  const g = o?.grid98 ?? null;
+  const live = d && d.running === true && d.error == null;
+  const verdictTone =
+    !d
+      ? "idle"
+      : d.error
+        ? "bad"
+        : /TRIP-BROADCAST|COMPLETE-BROADCAST|SWEEP-BROADCAST/.test(String(d.verdict ?? ""))
+          ? "ok"
+          : /RESTING-WAIT|GOVERNOR|CAP|CYCLE/.test(String(d.verdict ?? ""))
+            ? "warn"
+            : d.running
+              ? "ok"
+              : "bad";
+  const toneCls =
+    verdictTone === "ok"
+      ? "border-emerald-800/60 bg-emerald-950/40 text-emerald-300"
+      : verdictTone === "warn"
+        ? "border-amber-800/60 bg-amber-950/40 text-amber-300"
+        : verdictTone === "bad"
+          ? "border-red-900/60 bg-red-950/40 text-red-300"
+          : "border-zinc-800 bg-zinc-900 text-zinc-400";
+  const num = (v: unknown, digits = 3): string => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toLocaleString("en-US", { maximumFractionDigits: digits }) : "—";
+  };
+  const stats: Array<[string, string, string]> = d
+    ? [
+        ["טריפים היום", num(d.trips, 0), ""],
+        ["פעולות היום", num(d.opsToday, 0), ""],
+        ["מילויים בשרשרת", d.fillsToday == null ? "נדגם..." : num(d.fillsToday, 0), ""],
+      ]
+    : [];
+  return (
+    <div className="space-y-3">
+      {!d ? (
+        <Empty text="אמת הדקס אינה זמינה כרגע (המנוע כבוי או ללא נתונים)" />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-semibold ${toneCls}`} dir="ltr">
+              {live ? "● LIVE" : "○ "} {String(d.verdict ?? "?")}
+            </span>
+            {d.trigger ? (
+              <span className="rounded-md border border-fuchsia-800/60 bg-fuchsia-950/30 px-2 py-0.5 text-[11px] text-fuchsia-300" dir="ltr">
+                ⚡ {String(d.trigger)}
+              </span>
+            ) : null}
+            {typeof d.rcPct === "number" ? (
+              <span className="rounded-md border border-zinc-800 bg-zinc-950/60 px-2 py-0.5 text-[11px] text-zinc-400" dir="ltr">
+                RC {d.rcPct}%
+              </span>
+            ) : null}
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {stats.map(([label, value]) => (
+              <div key={label} className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2 py-2.5">
+                <div className="text-lg font-bold tabular-nums text-zinc-100">{value}</div>
+                <div className="text-[11px] text-zinc-500">{label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-lg border border-emerald-900/50 bg-emerald-950/20 px-2 py-2.5">
+              <div className="text-lg font-bold tabular-nums text-emerald-300" dir="ltr">{num(d.volumeSteemToday)} ⓢ</div>
+              <div className="text-[11px] text-zinc-500">נפח STEEM היום</div>
+            </div>
+            <div className="rounded-lg border border-emerald-900/50 bg-emerald-950/20 px-2 py-2.5">
+              <div className="text-lg font-bold tabular-nums text-emerald-300" dir="ltr">{num(d.volumeSbdToday)} $</div>
+              <div className="text-[11px] text-zinc-500">נפח SBD היום</div>
+            </div>
+            <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-2 py-2.5">
+              <div className="text-lg font-bold tabular-nums text-zinc-100" dir="ltr">{num(d.realizedEdgeSbd, 4)} $</div>
+              <div className="text-[11px] text-zinc-500">שוליים שהושגו</div>
+            </div>
+          </div>
+          <p className="text-[11px] leading-5 text-zinc-600">
+            צמד STEEM/SBD בשוק-הפנימי של Steem · טריפ-עצמי אפס-דימום (שני-הצדדים שלנו, מחיר-היוצר שלנו) · נפח נמדד מהיסטוריית-החשבון (חלון-דגימה{" "}
+            {d.lastFillAt ? `· מילוי-אחרון ${relTime(d.lastFillAt, now)}` : ""})
+          </p>
+        </>
+      )}
+      {g ? (
+        <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/40 p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-zinc-300">הדקס הפנימי (grid98)</span>
+            {g.paused ? (
+              <span className="rounded-md border border-amber-800/60 bg-amber-950/40 px-1.5 py-0.5 text-[10px] text-amber-300" dir="ltr">
+                paused: {String(g.paused)}
+              </span>
+            ) : (
+              <span className="rounded-md border border-emerald-800/60 bg-emerald-950/40 px-1.5 py-0.5 text-[10px] text-emerald-300">פעיל</span>
+            )}
+          </div>
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div>
+              <div className="text-sm font-bold tabular-nums text-zinc-100">{num(g.tradesToday, 0)}</div>
+              <div className="text-[10px] text-zinc-500">עסקאות היום</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold tabular-nums text-zinc-100">{num(g.txsToday, 0)}</div>
+              <div className="text-[10px] text-zinc-500">טרנזאקציות</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold tabular-nums text-zinc-100" dir="ltr">{num(g.floor, 4)}</div>
+              <div className="text-[10px] text-zinc-500">רצפת SAOS</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold tabular-nums text-zinc-100">{num(g.pairs, 0)}</div>
+              <div className="text-[10px] text-zinc-500">צמדים</div>
+            </div>
+          </div>
+          <p className="mt-2 text-[11px] text-zinc-600" dir="ltr">
+            treasury P&amp;L ≈ {num(g.treasuryPnlSaos, 0)} SAOS · {relTime(g.at, now)}
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function StreamCard({ o, now }: { o: Overview; now: number }) {
   const s = o.stream;
   if (!s) return <Empty text="אמת הזרם אינה זמינה כרגע (המנוע כבוי או ללא נתונים)" />;
@@ -611,6 +737,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         ) : null}
         {o ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Card title="דקס — נפח חי" hint="DEX-FLOW · השוק האמיתי STEEM/SBD + הדקס הפנימי">
+              <DexCard o={o} now={now} />
+            </Card>
             <Card title="זרם שידור" hint={`רענון ${REFRESH_MS / 1000} שניות`}>
               <StreamCard o={o} now={now} />
             </Card>

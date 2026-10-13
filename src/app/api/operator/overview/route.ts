@@ -94,6 +94,12 @@ export async function GET(req: NextRequest) {
     .slice(0, 10)
     .map((t) => ({ id: t.id, priority: t.priority, title: t.title, cmd: t.cmd }));
 
+  /* R323 · DEX-FLOW: השכבה החיה של הדקס האמיתי (שוק-הפנימי של Steem, צמד STEEM/SBD)
+   * + הדקס הפנימי שלנו (grid98). אמת-מנוע + קובץ-state מקומי, אפס-חישוב-דומיין. */
+  const dexRaw = pick<Record<string, unknown>>(s, "dexflow");
+  const dexRt = (dexRaw?.runtime ?? null) as Record<string, unknown> | null;
+  const g98 = readJson<Record<string, unknown>>("sovereign/node/grid98-state.json");
+
   const data = {
     ok: true,
     asof: new Date().toISOString(),
@@ -143,6 +149,39 @@ export async function GET(req: NextRequest) {
       ? { updatedAt: yieldBoard.updatedAt ?? null, purpose: yieldBoard.purpose ?? null, tiers: (yieldBoard.tiers ?? []).slice(0, 6) }
       : null,
     git: gitHead(),
+    dexflow: dexRt
+      ? {
+          running: dexRt.running ?? null,
+          verdict: dexRt.lastVerdict ?? null,
+          at: (dexRt.lastVerdictAt as string) ?? (dexRt.lastTickAt as string) ?? null,
+          ticks: dexRt.ticks ?? null,
+          trips: dexRt.trips ?? 0,
+          completions: dexRt.completions ?? 0,
+          sweeps: dexRt.sweeps ?? null,
+          opsToday: dexRt.opsToday ?? 0,
+          fillsToday: dexRt.fillsToday ?? null,
+          volumeSteemToday: dexRt.volumeSteemToday ?? null,
+          volumeSbdToday: dexRt.volumeSbdToday ?? null,
+          realizedEdgeSbd: dexRt.realizedEdgeSbd ?? 0,
+          rcPct: dexRt.rcPct ?? null,
+          lastFillAt: (dexRt.chainLastFillAt as string) ?? null,
+          trigger: dexRt.trigger ?? null,
+          error: dexRt.lastError ?? null,
+        }
+      : null,
+    grid98: g98
+      ? {
+          at: g98.at ?? null,
+          paused: g98.paused ?? null,
+          tradesToday: g98.tradesToday ?? null,
+          txsToday: g98.txsToday ?? null,
+          ratePerMin: g98.ratePerMin ?? null,
+          floor: g98.floor ?? null,
+          treasuryPnlSaos: typeof g98.treasuryPnlµ === "number" ? Math.round((g98.treasuryPnlµ as number) / 1e6) : null,
+          pairs: g98.anchors ? Object.keys(g98.anchors as Record<string, unknown>).length : null,
+          leaderboard: Array.isArray(g98.leaderboard) ? (g98.leaderboard as unknown[]).slice(0, 5) : [],
+        }
+      : null,
     events,
   };
 
