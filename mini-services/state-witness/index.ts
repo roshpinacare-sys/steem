@@ -6,7 +6,7 @@ import fs from "node:fs";
 
 const DIR = "/home/z/my-project/mini-services/saos-engine/state";
 const LOG = "/tmp/state-witness.log";
-const PORT = 3046;
+const PORT = 3047;
 let recent: Array<{ at: string; ev: string; gone?: string[]; born?: string[] }> = [];
 let prev = new Set(fs.readdirSync(DIR));
 const snapshot = () => new Set(fs.readdirSync(DIR));
