@@ -1,22 +1,22 @@
 {
-  "at": "2026-10-13T10:38:51.213Z",
+  "at": "2026-10-13T11:08:51.215Z",
   "enabled": true,
-  "runsTotal": 340,
+  "runsTotal": 343,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 101,
+      "window": 104,
       "oks": 61,
       "fails": 33,
-      "blocked": 7,
-      "okRate": 60.4,
-      "blockedRate": 6.9,
+      "blocked": 10,
+      "okRate": 58.7,
+      "blockedRate": 9.6,
       "failReasons": {
         "unknown": 1,
         "timeout": 4,
         "none": 28
       },
-      "msP50": 247452,
+      "msP50": 245622,
       "msP90": 507918
     },
     "curator": {
@@ -40,25 +40,26 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 3748,
+      "checks": 3778,
       "downs": 122,
       "heals": 64,
       "healVerified": 53,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-13T10:38:51.243Z",
+      "lastCheckAt": "2026-10-13T11:08:51.255Z",
       "engineUp": true,
       "lastSpawnAt": "2026-10-13T09:59:07.842Z",
-      "lastUpAt": "2026-10-13T10:38:51.247Z",
+      "lastUpAt": "2026-10-13T11:08:51.258Z",
       "blips": 5
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×7/101 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×10/104 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "unclassified-fail-legacy",
@@ -72,8 +73,8 @@
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
-    "unclassified-fail-legacy": 212,
-    "signing-cred-blocked": 258,
+    "unclassified-fail-legacy": 215,
+    "signing-cred-blocked": 261,
     "broadcast-fails": 73
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
