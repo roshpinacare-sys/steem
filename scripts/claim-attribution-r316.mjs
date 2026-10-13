@@ -33,7 +33,8 @@ async function vestRatio(chain) {
   for (let i = 0; i < 3; i++) {
     try {
       const p = await rpc(chain, { jsonrpc: "2.0", method: "condenser_api.get_dynamic_global_properties", params: [], id: 1 });
-      const tvf = parseFloat(p.total_vesting_fund_shares), tvs = parseFloat(p.total_vesting_shares);
+      const tvf = parseFloat(p.total_vesting_fund_steem ?? p.total_vesting_fund_hive ?? p.total_vesting_fund_blurt ?? p.total_vesting_fund_shares);
+      const tvs = parseFloat(p.total_vesting_shares);
       if (Number.isFinite(tvf) && Number.isFinite(tvs) && tvs > 0) return tvf / tvs;
       throw new Error("props-shape");
     } catch (e) { console.error(`ratio try${i} ${chain}: ${e.message}`); }
@@ -61,22 +62,27 @@ async function* historyPages(chain, account) {
 }
 
 const chains = process.argv[4] ? process.argv[4].split(",") : Object.keys(FLEET);
+const onlyAcc = process.argv[5] ? process.argv[5].split(",") : null;
 for (const chain of chains) {
   const ratio = await vestRatio(chain);
   emit({ kind: "meta", chain, vestRatio: ratio, at: new Date().toISOString() });
   console.error(`${chain} ratio=${ratio}`);
-  for (const acc of FLEET[chain]) {
+  const roster = onlyAcc ? FLEET[chain].filter((a) => onlyAcc.includes(a)) : FLEET[chain];
+  for (const acc of roster) {
     let ops = 0, found = 0;
     try {
       for await (const page of historyPages(chain, acc)) {
         ops += page.length;
         for (const [, e] of page) {
-          const op = Array.isArray(e?.op) ? e.op : null;
-          if (!op || op[0] !== "claim_reward_balance") continue;
-          const r = op[1].reward ?? {};
-          const vests = parseFloat(String(r.vests ?? r.vesting_shares ?? "0").split(" ")[0]);
-          const liq = parseFloat(String(r.steem ?? r.hive ?? r.blurt ?? "0").split(" ")[0]);
-          const debt = parseFloat(String(r.sbd ?? r.hbd ?? "0").split(" ")[0]);
+          // פורמט-קונדנסר: op=["claim_reward_balance",{account,reward_steem,reward_sbd,reward_vests}]
+          // פורמט-appbase: op={type:"claim_reward_balance_operation",value:{...}}
+          let opName = null, val = null;
+          if (Array.isArray(e?.op)) { opName = e.op[0]; val = e.op[1] ?? {}; }
+          else if (e?.op?.type) { opName = String(e.op.type).replace(/_operation$/, ""); val = e.op.value ?? {}; }
+          if (opName !== "claim_reward_balance") continue;
+          const vests = parseFloat(String(val.reward_vests ?? val.vesting_shares ?? "0").split(" ")[0]);
+          const liq = parseFloat(String(val.reward_steem ?? val.reward_hive ?? val.reward_blurt ?? "0").split(" ")[0]);
+          const debt = parseFloat(String(val.reward_sbd ?? val.reward_hbd ?? "0").split(" ")[0]);
           emit({ kind: "claim", chain, account: acc, tx: e.trx_id, at: e.timestamp, block: e.block, vests: +vests.toFixed(6), liq: +liq.toFixed(3), debt: +debt.toFixed(3) });
           found++;
         }
