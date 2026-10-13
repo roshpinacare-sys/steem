@@ -20,6 +20,7 @@ adaptationBoot(); // R210 §XVI: restart counter — adaptation store proves per
 import { discoveryState } from "./discovery.mjs";
 import { fleetState } from "./fleet.mjs";
 import { startHyperGrid, hyperState } from "./hypergrid.mjs";
+import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { webintelState } from "./webintel.mjs";
 import { contentState } from "./content.mjs";
 import { streamState } from "./social-streamer.mjs"; /* R310: the live posts stream (one-body: the engine computes, the cockpit shows) */
@@ -132,6 +133,8 @@ async function handle(req) {
       fleet: fleetState(),
       /* T-19b HYPER-GRID: the volume layer — live meter + day counter */
       hyper: hyperState(),
+      /* R323 DEX-FLOW: the volume-TAKER layer — real fills + accumulating volume */
+      dexflow: dexState(),
       /* T-22 ONE-BODY live layer — computed by the ENGINE (single source) */
       live: {
         orders: oo.orders ?? [],
@@ -440,6 +443,12 @@ try {
 // the same watchdog (process-lifetime = engine lifetime).
 try { startHyperGrid(); } catch (e) {
   console.error(`hypergrid boot failed: ${String(e?.message ?? e)}`);
+}
+
+// R323 DEX-FLOW: the volume-TAKER layer — real fills, accumulating volume,
+// one self-cross trip per tick, the same signing rail + doctrine guards.
+try { startDexFlow(); } catch (e) {
+  console.error(`dexflow boot failed: ${String(e?.message ?? e)}`);
 }
 
 // R287 · REVENUE ARCHITECT LOOPS: the content compiler feeds the staging
