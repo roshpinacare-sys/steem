@@ -1,17 +1,17 @@
 {
-  "at": "2026-10-13T13:27:47.026Z",
+  "at": "2026-10-13T13:16:48.090Z",
   "verdict": "WRITER-IDENTITY-PARTIAL",
   "git": {
     "verdict": "GIT-CUSTODY-FAIL",
     "ok": false,
     "tokenExpiresAt": null,
-    "error": "Command failed: openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -in /home/z/my-project/upload/.gitcred.tmp.2406 -out /home/z/my-project/upload/.gitcred.tmp.240"
+    "error": "Command failed: openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -in /home/z/my-project/upload/.gitcred.tmp.32678 -out /home/z/my-project/upload/.gitcred.tmp.32"
   },
   "signing": {
     "verdict": "SIGNING-REVIVE-FAIL",
     "ok": false,
     "fingerprint": null,
-    "error": "Command failed: openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -in /tmp/.w1key.2406 -pass env:SAOS_VAULT_PASS\nNo environment variable SAOS_VAULT_PASS\nError ge"
+    "error": "Command failed: openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -in /tmp/.w1key.32678 -pass env:SAOS_VAULT_PASS\nNo environment variable SAOS_VAULT_PASS\nError g"
   },
   "law": "the autonomy owns its writer identity: fresh clone → reviveWriterIdentity() → sign+push, zero operator"
 }
