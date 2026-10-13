@@ -1334,8 +1334,22 @@ export function meshVerdict(organs = []) {
  * CACHE, never the sovereign home. Trading duty fails over to GitHub CI when
  * the sandbox's custodian anchor goes stale (engine dead) and never races a
  * live engine (fresh anchor = STANDBY). A takeover-gap keeps the failover
- * from hammering a dying host every 30 minutes. Pure + deterministic. */
-export function dexTakeoverDue({ anchorAt = null, now, staleMs = 90 * 60_000, lastAt = null, gapMs = 3 * 60 * 60_000 } = {}) {
+ * from hammering a host more often than the beat itself can run. Pure +
+ * deterministic.
+ *
+ * exec28/dex-1 (2026-10-13, measured): the sandbox custodian anchor froze at
+ * 13:29:37Z (host dead — custody 1/14) so EVERY beat entered the stale
+ * branch, and the old gapMs=3h rate-limiter then suppressed 12 of 14 beats
+ * (verdict "takeover-gap") — the arena idled ~10 of every 11 beats while the
+ * owner's standing complaint is DEX volume. Design cadence = the arena ticks
+ * every beat when the sandbox is dead (local design: ticks-1440/day; the
+ * cloud beat ≈ 18 min → ~80 execs/day). The floor is now 15 min = exactly
+ * the pulse sleep (sovereign-runtime dispatch chain), i.e. the true minimum
+ * inter-beat spacing: consecutive beats can no longer hammer, and every
+ * stale-anchor beat is due. Fail-closed guards UNCHANGED: fresh anchor =
+ * STANDBY (never races a live engine), missing credential = BLOCKED,
+ * sub-floor repeats = takeover-gap. */
+export function dexTakeoverDue({ anchorAt = null, now, staleMs = 90 * 60_000, lastAt = null, gapMs = 15 * 60_000 } = {}) {
   const nowMs = typeof now === "number" ? now : Date.parse(now);
   if (!Number.isFinite(nowMs)) return { due: false, reason: "bad-now" };
   if (anchorAt == null) return { due: true, reason: "no-anchor" };

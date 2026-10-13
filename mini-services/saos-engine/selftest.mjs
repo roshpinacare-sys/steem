@@ -1406,8 +1406,10 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   eq("takeover: missing anchor = due", dexTakeoverDue({ now: T0, anchorAt: null }).reason, "no-anchor");
   eq("takeover: unreadable anchor = due", dexTakeoverDue({ now: T0, anchorAt: "garbage" }).reason, "anchor-unreadable");
   eq("takeover: first takeover after stale has no gap block", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: null }).due, true);
-  eq("takeover: gap blocks hammering", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T11:30:00.000Z" }).reason, "takeover-gap");
-  eq("takeover: gap expires after 3h", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T08:00:00.000Z" }).due, true);
+  eq("takeover: gap floor blocks sub-beat repeats (<15min)", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T11:50:00.000Z" }).reason, "takeover-gap");
+  eq("takeover: gap floor boundary exactly 15min = due", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T11:45:00.000Z" }).due, true);
+  eq("takeover: stale-anchor beat is due (exec28: every beat ≥ floor)", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T11:30:00.000Z" }).due, true);
+  eq("takeover: old last (3h) long past floor = due", dexTakeoverDue({ now: T0, anchorAt: ms("2026-10-07T09:50:00.000Z"), lastAt: "2026-10-07T08:00:00.000Z" }).due, true);
   eq("takeover: boundary 90min exactly = still alive", dexTakeoverDue({ now: T0, anchorAt: Date.parse(T0) - 90 * 60_000 }).reason, "engine-alive");
   eq("takeover: bad now never fires", dexTakeoverDue({ now: "not-a-time", anchorAt: null }).due, false);
   eq("takeover: numeric epoch anchor accepted", dexTakeoverDue({ now: Date.parse(T0), anchorAt: Date.parse(T0) - 91 * 60_000 }).due, true);
