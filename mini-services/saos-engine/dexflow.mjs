@@ -91,18 +91,18 @@ export const DEXFLOW_DEFAULTS = {
   minRcPct: 40,          // own hard floor — above hyper's 25% floor
   backoff65Pct: 0.5,     // rcPct < 65 → half rate
   backoff50Pct: 0.25,    // rcPct < 50 → quarter rate
-  maxTripSbd: 3.0,       // hard notional ceiling per trip (SBD side)
+  maxTripSbd: 8.0,       // hard notional ceiling per trip (SBD side)
   minTripSbd: 0.05,      // below this the trip is RC-waste dust
   reserveSteem: 0.1,     // never commit the last dust
   reserveSbd: 0.5,       // bid-reserve law (inherited from hyper-grid)
-  steemUsePct: 0.4,      // ≤40% of liquid STEEM per trip
-  sbdUsePct: 0.45,       // ≤45% of (SBD − reserve) per trip
+  steemUsePct: 0.75,     // ≤75% of liquid STEEM per trip (volume with scarce capital)
+  sbdUsePct: 0.85,       // ≤85% of (SBD − reserve) per trip
   bandBps: 150,          // trip unit must sit within ±150bps of book mid
   bookSpreadHaltBps: 500,// book anomaly gate
-  opsDayCap: 5000,       // own day cap (2 ops per trip ≈ 2500 trips)
+  opsDayCap: 8000,       // own day cap (2 ops per trip ≈ 4000 trips)
   combinedDayCap: 32000, // dexflow + hyper ≤ doctrine cap (T-19b economics)
   ttlSec: 1800,          // chain-side self-clean for resting leftovers
-  sweepAgeSec: 300,      // unmatched leftovers older than this get swept
+  sweepAgeSec: 90,       // unmatched leftovers older than this get swept (the sharp re-trip pace)
   sweepEveryTicks: 20,   // sweep cadence
   tailEveryTicks: 15,    // chain-truth metering cadence
   tailWindow: 400,       // history window for fill metering
@@ -146,36 +146,6 @@ async function readLiveDf(account) {
   return { ok: true, live: (oo.orders ?? []).filter((o) => inDfSpace(o.orderid)) };
 }
 
-/* CHAIN-TRUTH METERING (T-18 law): today's fill_order ops from the account's
- * own history — the account's REAL DEX volume (all layers combined: cycle,
- * hyper, dexflow — labeled as the account total, a sampled window) */
-async function chainTailFills(account, day) {
-  try {
-    const h = await accountHistory(account, 400);
-    const hist = h?.hist ?? [];
-    const dayStartMs = Date.parse(`${day}T00:00:00Z`);
-    let fills = 0, volSteem = 0, volSbd = 0, lastFillAt = null;
-    const amt = (s) => { const m = String(s ?? "").split(" "); return { v: Number(m[0]) || 0, sym: m[1] ?? "" }; };
-    const tsOf = (x) => x?.timestamp ? Date.parse(x.timestamp + (x.timestamp.endsWith("Z") ? "" : "Z")) : 0;
-    for (const [, x] of hist) {
-      const v = x?.op?.value ?? x?.op ?? x?.value ?? null;
-      const type = x?.op?.type ?? x?.type ?? "";
-      if (!/fill_order/i.test(String(type))) continue;
-      const ts = tsOf(x);
-      if (ts < dayStartMs) continue;
-      const cur = amt(v?.current_pays), opn = amt(v?.open_pays);
-      if (!cur.v || !opn.v) continue;
-      fills += 1;
-      if (lastFillAt == null || ts > lastFillAt) lastFillAt = ts;
-      /* one fill_order op = one crossing; volume = both legs */
-      const a1 = cur.sym === "STEEM" ? cur.v : opn.sym === "STEEM" ? opn.v : 0;
-      const q1 = cur.sym === "SBD" ? cur.v : opn.sym === "SBD" ? opn.v : 0;
-      volSteem += a1; volSbd += q1;
-    }
-    return { fills, volSteem: Math.round(volSteem * 1000) / 1000, volSbd: Math.round(volSbd * 1000) / 1000, lastFillAt: lastFillAt ? new Date(lastFillAt).toISOString() : null, window: hist.length };
-  } catch { return null; }
-}
-
 /* the PARITY-EDGE trigger (operator: "יותר תנודתיות וטריגרים"): when the
  * external feed's implied unit drifts from the real book mid, the layer
  * sharpens (bigger trips, still inside every cap). Journal on change. */
@@ -193,6 +163,19 @@ function parityTrigger(mid, feedUnit, bandBps) {
   }
   return t ?? { id: null, sizeMult: 1.0 };
 }
+
+/* openOrders unit convention: ask (STEEM→SBD) unit = SBD per STEEM;
+ * bid (SBD→STEEM) unit = STEEM per SBD. Normalize everything to the book's
+ * axis (SBD per STEEM) so band/cross math never mixes axes (proven live:
+ * the two conventions differ by ~95×). */
+const normUnit = (o) => (o?.side === "ask" ? Number(o.unit ?? 0) : Number(o.unit ?? 0) > 0 ? 1 / Number(o.unit) : 0);
+
+/* partition id allocator: never exceed the ceiling, never collide */
+const nextIdFor = (st) => {
+  const n = Number(st?.nextId ?? DF_LO);
+  return n >= DF_LO && n <= DF_HI ? n : DF_LO;
+};
+const tSecOf = (nowMs) => Math.floor(nowMs / 1000);
 
 async function tickInner() {
   const now = new Date();
@@ -252,29 +235,84 @@ async function tickInner() {
   const hyperOps = readJson(path.join(STATE, "hyper-ops.json"), { day: null, opsToday: 0 });
   const hyperToday = hyperOps.day === today ? (hyperOps.opsToday ?? 0) : 0;
 
-  /* ONE-TRIP-ON-THE-BOOK LAW: any live leg of mine means the previous trip's
-   * cross is pending — either sweep the aged leftovers (ours-only) or WAIT.
-   * This bounds the pile to ≤2 legs no matter how the chain matches ops:
-   * intra-tx cross (the sharp path) → pile returns to 0 instantly; degraded
-   * resting path → legs age out, get swept, the loop resumes. Never stacks. */
+  /* ONE-TRIP-ON-THE-BOOK LAW: a live leg of mine means the previous trip's
+   * cross is pending. Three honest paths:
+   *   1. LEG-COMPLETION (the sharp path): place ONLY the opposite leg at the
+   *      current mid when it CROSSES the resting leg (maker price wins —
+   *      inventory returns, trip completes, volume lands). One op tx.
+   *   2. SWEEP: leftovers older than sweepAgeSec are cancelled (ours-only).
+   *   3. RESTING-WAIT: young leg that the current book cannot cross — wait
+   *      for an external fill or for the mid to come back.
+   * The pile can never exceed 2 legs (trip) or 1 leg (waiting) by design. */
   if (mine.live.length > 0) {
-    const nowSec = Math.floor(nowMs / 1000);
-    const stale = mine.live.filter((o) => {
-      const created = o.created ? Date.parse(o.created.endsWith("Z") ? o.created : o.created + "Z") : 0;
-      return created > 0 ? (nowMs - created) > dc.sweepAgeSec * 1000 : true;
-    });
-    if (stale.length > 0) {
-      const ops = stale.slice(0, 24).map((o) => ["limit_order_cancel", { owner: account, orderid: o.orderid }]);
+    const leg = mine.live[0];
+    const created = leg.created ? Date.parse(leg.created.endsWith("Z") ? leg.created : leg.created + "Z") : 0;
+    const ageSec = created > 0 ? (nowMs - created) / 1000 : dc.sweepAgeSec + 1;
+    const legU = normUnit(leg);                 /* SBD per STEEM */
+    const legAmt = Number(String(leg.base ?? "0").split(" ")[0]) || 0; /* resting qty in base units (STEEM for ask, SBD for bid) */
+
+    /* path 2: aged leftover — sweep it */
+    if (ageSec >= dc.sweepAgeSec) {
+      const ops = mine.live.slice(0, 24).map((o) => ["limit_order_cancel", { owner: account, orderid: o.orderid }]);
       const res = await executeOps(ops, { tag: "dexflow-sweep", rcPct });
       const ok = res.ok ?? res.verdict === "BROADCAST";
       return finish({
         lastVerdict: ok ? "SWEEP-BROADCAST" : "SWEEP-FAIL",
-        lastVerdictAt: now.toISOString(), rcPct, swept: stale.length,
+        lastVerdictAt: now.toISOString(), rcPct, swept: mine.live.length,
         lastTxid: ok ? res.txid ?? null : st.lastTxid ?? null,
         lastError: ok ? null : String(res.error ?? res.verdict).slice(0, 160),
       });
     }
-    return finish({ lastVerdict: "RESTING-WAIT", lastVerdictAt: now.toISOString(), rcPct, liveLegs: mine.live.length });
+
+    /* path 1: leg-completion — opposite leg at current mid, ONLY if it crosses */
+    const mid2 = (book.bestAsk + book.bestBid) / 2;
+    const uNew = Math.floor(mid2 * 1e6) / 1e6;
+    const crossOk = leg.side === "bid" ? uNew <= legU : uNew >= legU;  /* ask crosses bid at ≤ bid price; bid crosses ask at ≥ ask price */
+    if (crossOk && legU > 0 && legAmt > 0) {
+      let ops = null;
+      if (leg.side === "bid") {
+        /* resting bid: A_b = legAmt SBD buys legAmt×legU STEEM — complete with an ask of the SAME STEEM (inventory returns) */
+        const A = Math.floor(legAmt * legU * 1000) / 1000;
+        const S = Math.floor(A * uNew * 1000) / 1000;
+        const steemFree = Math.max(0, (acc.steem ?? 0) - dc.reserveSteem);
+        if (A >= 0.2 && A <= steemFree + 0.001) {
+          ops = [["limit_order_create", { owner: account, orderid: nextIdFor(st), amount_to_sell: `${A.toFixed(3)} STEEM`, min_to_receive: `${S.toFixed(3)} SBD`, fill_or_kill: false, expiration: tSecOf(nowMs) + dc.ttlSec }]];
+          var complMeta = { kind: "ask-completes-bid", A, S, uRest: Math.round(legU * 1e6) / 1e6, uNew };
+        }
+      } else {
+        /* resting ask: A_a STEEM — complete with a bid of the SAME STEEM notional (SBD side = A×uNew ≤ our SBD reserve check) */
+        const S = Math.floor(legAmt * uNew * 1000) / 1000;
+        const sbdFree = Math.max(0, (acc.sbd ?? 0) - dc.reserveSbd);
+        if (S >= dc.minTripSbd && S <= sbdFree + 0.001) {
+          ops = [["limit_order_create", { owner: account, orderid: nextIdFor(st), amount_to_sell: `${S.toFixed(3)} SBD`, min_to_receive: `${legAmt.toFixed(3)} STEEM`, fill_or_kill: false, expiration: tSecOf(nowMs) + dc.ttlSec }]];
+          var complMeta = { kind: "bid-completes-ask", S, A: legAmt, uRest: Math.round(legU * 1e6) / 1e6, uNew };
+        }
+      }
+      if (ops) {
+        const res = await executeOps(ops, { tag: "dexflow-complete", rcPct });
+        if (res.ok ?? res.verdict === "BROADCAST") {
+          const opsToday = (st.opsToday ?? 0) + 1;
+          /* realized round-trip edge (honest): the resting leg is the maker —
+           * its price vs the completion price IS the trip's realized edge */
+          const A = complMeta.A, rest = complMeta.uRest, nw = complMeta.uNew;
+          const edgeSbd = leg.side === "bid"
+            ? Math.round(A * (rest - nw) * 1000) / 1000   /* we sell at uRest (> uNew) → + (uRest−uNew)·A */
+            : Math.round(A * (nw - rest) * 10000) / 10000; /* we buy at uRest (< uNew) → saves (uNew−uRest)·A SBD */
+          appendLine(EVENTS_FILE, { type: "dexflow.complete", at: now.toISOString(), ...complMeta, txid: res.txid ?? null, edgeSbd, rcPct, opsToday });
+          return finish({
+            lastVerdict: "COMPLETE-BROADCAST", lastVerdictAt: now.toISOString(),
+            rcPct, opsToday, completions: (st.completions ?? 0) + 1,
+            realizedEdgeSbd: Math.round(((st.realizedEdgeSbd ?? 0) + edgeSbd) * 10000) / 10000,
+            lastTxid: res.txid ?? null, lastError: null,
+            nextId: nextIdFor(st) + 1, completion: complMeta,
+          });
+        }
+        return finish({ lastVerdict: "BROADCAST-FAIL", lastVerdictAt: now.toISOString(), rcPct, lastError: String(res.error ?? res.verdict).slice(0, 160) });
+      }
+    }
+
+    /* path 3: wait (honest) */
+    return finish({ lastVerdict: "RESTING-WAIT", lastVerdictAt: now.toISOString(), rcPct, liveLegs: mine.live.length, legAgeSec: Math.round(ageSec) });
   }
 
   if (rcPct == null || rcPct < dc.minRcPct) {
@@ -367,22 +405,60 @@ async function tick() {
   } finally { G.__saosDexInFlight = false; }
 }
 
-/* the chain-truth tail sampler (T-18 law): sampled window, honest labeling */
+/* the chain-truth tail sampler (T-18 law, INCREMENTAL watermarked): count
+ * only fill_order ops NEWER than the last watermark and ACCUMULATE the day
+ * totals — the sliding 400-op window alone undercounts as hyper-grid ops
+ * flood it (proven live: a 42-STEEM fill morning slid to 36 within an hour).
+ * The watermark is the newest op ts seen; day rollover resets everything. */
 let lastTailTick = -1;
 async function tailSample(account) {
   const st = readJson(FLOW_FILE, {});
-  if ((st.ticks ?? 0) - lastTailTick < 15 && st.fillsToday != null) return;
+  if ((st.ticks ?? 0) - lastTailTick < 15 && st.fillAcc != null) return;
   lastTailTick = st.ticks ?? 0;
   const day = new Date().toISOString().slice(0, 10);
-  const tail = await chainTailFills(account, day);
-  if (!tail) return;
+  const h = await accountHistory(account, 400);
+  const hist = h?.hist ?? [];
+  if (!hist.length) return;
+  const amt = (x) => {
+    if (x && typeof x === "object") {
+      const n = Number(x.amount ?? 0) / 10 ** Number(x.precision ?? 3);
+      const sym = x.nai === "@@000000021" ? "STEEM" : x.nai === "@@000000013" ? "SBD" : String(x.nai ?? "?");
+      return { v: n, sym };
+    }
+    const m = String(x ?? "").split(" ");
+    return { v: Number(m[0]) || 0, sym: m[1] ?? "" };
+  };
+  const tsOf = (x) => x?.timestamp ? Date.parse(x.timestamp + (x.timestamp.endsWith("Z") ? "" : "Z")) : 0;
   const dayStartMs = Date.parse(`${day}T00:00:00Z`);
-  if (st.day !== day) { /* rollover: fresh counters, keep the runtime */ }
+  const acc = st.fillAcc?.day === day ? st.fillAcc : { day, count: 0, volSteem: 0, volSbd: 0, lastTsMs: 0 };
+  const wm = Math.max(0, Number(acc.lastTsMs ?? 0));
+  let count = 0, volSteem = 0, volSbd = 0, lastFillAt = null, newestOpTs = 0;
+  for (const [, x] of hist) {
+    const ts = tsOf(x);
+    if (ts > newestOpTs) newestOpTs = ts;
+    if (ts <= wm || ts < dayStartMs) continue;
+    const v = x?.op?.value ?? x?.op ?? x?.value ?? null;
+    const type = x?.op?.type ?? x?.type ?? "";
+    if (!/fill_order/i.test(String(type))) continue;
+    const cur = amt(v?.current_pays), opn = amt(v?.open_pays);
+    if (!cur.v || !opn.v) continue;
+    count += 1;
+    if (lastFillAt == null || ts > lastFillAt) lastFillAt = ts;
+    const a1 = cur.sym === "STEEM" ? cur.v : opn.sym === "STEEM" ? opn.v : 0;
+    const q1 = cur.sym === "SBD" ? cur.v : opn.sym === "SBD" ? opn.v : 0;
+    volSteem += a1; volSbd += q1;
+  }
+  acc.count += count;
+  acc.volSteem = Math.round((acc.volSteem + volSteem) * 1000) / 1000;
+  acc.volSbd = Math.round((acc.volSbd + volSbd) * 1000) / 1000;
+  if (newestOpTs > wm) acc.lastTsMs = newestOpTs;
   writeJson(FLOW_FILE, {
     ...st, day,
-    fillsToday: tail.fills, volumeSteemToday: tail.volSteem, volumeSbdToday: tail.volSbd,
-    chainLastFillAt: tail.lastFillAt, chainWindow: tail.window, chainTailAt: new Date().toISOString(),
-    sampledSince: new Date(dayStartMs).toISOString(),
+    fillAcc: acc,
+    fillsToday: acc.count, volumeSteemToday: acc.volSteem, volumeSbdToday: acc.volSbd,
+    chainLastFillAt: lastFillAt ? new Date(lastFillAt).toISOString() : (st.chainLastFillAt ?? null),
+    chainWindow: hist.length, chainTailAt: new Date().toISOString(),
+    meterNote: "incremental watermarked fill counter over a sliding 400-op history window",
   });
 }
 
