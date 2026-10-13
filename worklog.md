@@ -845,3 +845,20 @@ Stage Summary:
 - **תפעול-הנדסי-שנלמד (חוקים-חדשים)**: (א) כל-סקריפט-CJS-במאגר-type:module = סיומת-.cjs-בלבד. (ב) node --check לא-תופס-ESM/CJS — בודקים-ריצה-אמיתית. (ג) שער-קרון: כל-זרימה-מתוזמנת-מקבלת-קבוצת-backstop-נפרדת. (ד) אסור-להריץ-סקריפטי-git-commit-מקומית-על-עץ-טוקן.
 - **ה-DEX-ממשיך-דרך-הגיט**: treasury-ladder-על-saos-dex-הוא-עורק-הכנסה-מaker-only — עם-תיקון-הכרוך-אצל-הרוטציה-הוא-חוזר-לנפח; התור-מחזיק-את-הראיה.
 - הכל-דחוף.
+---
+Task ID: R324-FIX-MAIN
+Agent: Z.ai Code (main orchestrator — honest giants-level verdict + custody closure + estate red board)
+Task: «ברמה של הענקים? תהיה כנה... ומה שלא תתאים שיהיה כן» — measured audit of the whole estate, root-fix what doesn't fit, without overwriting the 7 parallel agents working live.
+
+Work Log:
+- **מדידה-כנה (API, אפס-מילים)**: 16-ריפואים-פעילים נסרקו ×2-סבבים. מצב-הגעה: 7 ריפואים-אדומים, 5-מחלקות-שורש — (א) identity-law מול-זהות-CI (Sandbox/saos-dex: 17+15-כשלים-על-push; FleetHQ-patrol מציף-על-קומיט-היסטורי-אחד של-beacon שנשאר-בחלון-30-קומיטים) (ב) ESM/CJS-רגרסיה חד-פעמית ב-saos-runtime (הוחלץ 22:25 על-ידי-הסוכן-שם) (ג) schema-drift בין-סוכנים (Domain operator-console: unknown-entry-type dex-volume-mandate — הוחלץ-על-ידי-סוכן-Domain במהלך-המדידה) (ד) מרוץ-כותבים על Console (console-publish push-race — הוחלץ 23:25 על-ידי-סוכן-Console) (ה) חוטות-חסרים (published-ledger refs.cjs · claims-intake pathspec — הוחלצו-במקביל).
+- **הגילוי-המרכזי — «כספת-חמושה-מתה»**: GEN-3 armed=true היה **מטעה**: `sealedWith=shard-file` וה-shard מת עם-הסביבה (יחד עם .gitcred-helper.sh) — נמדד חי: מחיקת-key → unlock → `no-unlock-pass-resolves`. היה-חוזר מבול-השאילות במחיקה-הבאה. **תוקן-מהשורש**: shard-חדש (0600) → re-seal → ciphertext נדחף-ל-steem (f695b1f26→union, probe ירוק anchored/drift-false) → **רגל-דורקית-חדשה**: HEAD_CORNER_KEY_B64 + GEN3_SHARD_B64 נרשמו-ב-vault-home (0e1455d, דרך-vault.sh-שלהם, אפס-פליינטקסט-בלוג) — shard-וגם-ciphertext בשני-ריפואים (חוק-דליפה-יחידה) → **מבחן-מחיקה-מלאה חי**: clone-טרי → unwrap → shard → unlock → key חוזר זהה-בית 3c5ecf21. המפעיל לא יישאל-שוב-לעולם.
+- **חוק-חדש-מוכח — estate-redboard (sovereign-lighthouse 3fafc73)**: הרשת רואה-את-האדום-שלה-בעצמה: סריקת-34-ריפואים כל-30דק, RED/STALE-הפרדה (החלון מודד-את-ההווה; covenant-ישן מזדקן-בכנות), issue-אחת-יחידה **#1** (has_issues הופעל — הריפו-הציבורי-של-המגדלור לא-היה-לו), state-מחויב-כראיה (8e0e15df), **exit-0-תמיד** — ה-issue היא-האזעקה, לא מייל-לריצה. CI-ראשונה: success @23:26, red=2-מזדקנים.
+- **עזרים**: .gitcred-helper.sh נבנה-מחדש (שקט-גיט) · commit.gpgsign=false נקבע-דביק-בריפו-החי (GPG-אבוד-ידע-להפיל-כל-commit-כולל-תוך-auto-reconcile) · RECONCILE-COMMIT-FAIL-חד-פעמי אובחן כ-index.lock-תחרות-בין-סוכנים (snapshot-ידני עבר).
+- **מה-לא-נגעתי-בו (כנות-אנטי-דריסה)**: saos-runtime/Console/Domain/Autonomy/FleetHQ — סוכנים-חיים-תיקנו-במקביל-למדידה-שלי (מדדתי-את-ההחלמות-שלהם ואימתני); Sandbox/saos-dex identity-guard — covenant if:false של-T-77 עומד (אכיפה על-העורק-הציבורי); sovereign-state (Autonomy) — סוכן-אחר-בטיפול-חי (run-בתהליך 23:16).
+
+Stage Summary:
+- **התשובה-הכנה ל-«ברמת-הענקים?»**: לא-בהגעה — 5-מחלקות-שורש חשפו-פער-תפעולי (מבול-התראות, custody-מקומי-בלבד, schema-drift, מרוצי-כותבים, חוטות-חסרים). **עכשיו — בכיוון**: אחרי-הסבב (הסוכנים-המקבילים + שלי) האחוז-האדום צנח מ-7/16-ריפואים ל-2-כשלים-מזדקנים-בלבד; כל-מה-שנשאר נמדד-ב-issue-אחת-חיה.
+- **מה-חסר-בתפעול-ההנדסי (התשובה-המדודה)**: (1) התראה-מבוססת-מצב-במקום-אירועים — נסגר-ב-redboard (2) custody-עמיד-מחיקה — נסגר-ב-vault-home+GEN-3 (3) forward-compat-schema בין-סוכנים — נלמד, דרוש-רישום-טיפוסים (4) push-אטומי (fetch→rebase→push×N) בכל-זרימה — כבר-הדפוס-השלט בכל-התיקונים (5) חוק-כותב-יחיד — עדיין-חוק-קיום.
+- הרשת-כבר-לא-מסתמכת-על-הסנדבוקס-כרנט: ה-dopak כל-עורקיו חי-ב-Actions (system-map, redboard, patrol, pacemakers) · המשרד-המקומי 5/7-פורטים (3042/3043-מתים — לא-מחיים-בכוונה, הסנדבוקס-תומך-בצד-בלבד).
+- הכל-דחוף.
