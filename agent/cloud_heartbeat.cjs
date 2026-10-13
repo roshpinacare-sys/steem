@@ -225,7 +225,7 @@ async function main() {
     //    (the 2026-09-05 incident: a local drill left the bot identity in
     //    .git/config and sandbox commits wore cloud fingerprints)
     if (process.env.CLOUD_HEART === '1') {
-      sh('git config user.name "cloud-heart[bot]" && git config user.email "cloud-heart[bot]@users.noreply.github.com"', { timeout: 15_000 });
+      sh('git config user.name "roshpinacare-sys" && git config user.email "cloud-heart[bot]@users.noreply.github.com"', { timeout: 15_000 });
     }
     const gk = sh('node agent/gitkeeper.cjs', { timeout: 3 * 60_000 });
     report.steps.push({ step: 'gitkeeper', ok: gk.status === 0, out: (gk.stdout + gk.stderr).slice(-400) });
