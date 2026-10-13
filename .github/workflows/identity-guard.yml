@@ -15,6 +15,16 @@ permissions:
 
 jobs:
   guard:
+    # BILLING-WALL COVENANT (T-53, zai-13b red-noise ban) - applied 2026-10-13T12:1xZ,
+    # measured: every steem Actions job dies at startup behind the org spend limit
+    # (issue #29, 40/40 identity-guard failures 2026-10-13, zero steps ever ran).
+    # A dead runner + push trigger = one guaranteed red email per heartbeat push.
+    # This skip changes ZERO enforcement (the guard could not run anyway); the
+    # real identity/law enforcement rides the public artery receipts
+    # (receipts/fleet/steem.json, law-gitleaks-push covenant).
+    # RE-ENABLE: delete the `if: false` line the moment the spend limit is lifted
+    # and a dispatch run completes with real steps.
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
