@@ -1,6 +1,6 @@
 {
   "verdict": "RECRUITED",
-  "active": 9,
+  "active": 10,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 113 trades/24h measured (vol 1796.462 STEEM)",
+      "evidence": "state/market.json: 117 trades/24h measured (vol 1852.448 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -33,11 +33,11 @@
       "role": "מבקר-עסקאות",
       "lane": "truth",
       "capability": "chain-truth fill/op counters over account history (max(state, chain-truth))",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": null,
+      "evidence": "state/observe.json: 2 chain-truth fills counted (last 2026-10-13T12:57:30.000Z)",
       "priorStatus": "planned"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 0bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -149bps)",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/selftest-last-run.json: 1265/1265 PASS at 2026-10-13T12:31:01.469Z",
+      "evidence": "state/selftest-last-run.json: 1265/1265 PASS at 2026-10-13T12:49:39.047Z",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-13T12:50:09.945Z",
+  "at": "2026-10-13T13:00:09.946Z",
   "pid": 20331
 }
