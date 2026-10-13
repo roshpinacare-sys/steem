@@ -741,3 +741,24 @@ Stage Summary:
 - **המבקר-הציבורי עבר-מהפכה-קטנה**: אזעקת-שווא (חנק-מדידה-מדומה-כעמוד-מת) מתה-מבנית — FAIL-מ-היום פירושו-רק-דף-אמת-מת.
 - אפס-דבר-נפל-בין-הכיסאות: כל-תיקון-בוקר (חיווא-מהגיט · משמר-3046/3047 · לולאות-התמדה · Pulse-board) נמדד-שוב-אחרי-השידור-לסוכנים ועמד.
 - הכל-דחוף.
+---
+Task ID: R320
+Agent: Z.ai Code (main orchestrator · key-permanence + damage-sweep verification)
+Task: המפתח — פעם-אחת-ולתמיד. אימוץ, חוזקה-מבנית נגד-מחיקה, ומבדק-נזקים של השידור-לסוכנים
+
+Work Log:
+- **מבדק-נזקים (עצמאי, לא-סומך על R319)**: git — אפס-force, שרשור-ליניארי, 8-תהליכים-חיים על 3000/3040-3044/3046/3047, שתי-לולאות-התמדה (3252/3287), worklog שלם. R319 דווח נקי — נמדד שוב ואומת.
+- **המפתח**: upload/headcorner.txt (11:00) אומץ-עצמית על-ידי המנוע ב-11:08 דרך syncCredential (T-12) — 0600, עותק-upload נמחק, cred.present=True, headcorner master-verified מול-השרשרת חיה.
+- **GEN-3 — סגירת-הפער-המבני שגרם לשאילות-החוזרות**: R-VAULTPASS-1 השאיר את החייאה-המקומית מתה (passes CI-בלבד). נבנה: `scripts/gen3-vault.mjs` (seal/unlock/status, AES-256-CTR + PBKDF2-300k, sha-pins) — ciphertext מחויב-לגיט, shard מקומי מחוץ-לפרויקט (~/.saos-gen3-shard, 0600) + טבעת-מקורות-גיבוי (git-remote-token/gitcred-helper/pat.env). שתי-החזקות-הקוסטודיה לעולם לא מתלכדות בגיט — אפס-פלאינטקסט.
+- **key-guardian**: `sanbox/key-guardian.sh` חוט ל-bootstrap (שלב-1.5, לפני-העלאת-הצי) + כל-טיק של commit-loop + autonomy-runner. סדר-חייאה: key קיים → upload קיים (T-12) → GEN-3 unlock → בעיטה ל-/status.
+- **הוכחת-אש**: מחיקה-מדומה של .secrets/headcorner.key → guardian tick → חייאה זהה-בית (8ae2b7fa…), 0600, בלי-מפעיל/CI/upload. המנוע אימת מחדש (present=true, doctrine-match, foreign=false).
+- **נזק-עצמי-שנמצא-ותוקן**: reset-soft-לטיפ (R312) יתם מהשושלת את 7ac579ec — קומיט-CI מקומי שכבר נחתם-בשרשרת (origin החזיק תאומה SHA-אחר). תוקן בשתלת-שושלת commit-tree (tree זהה-בית, אפס-תוכן) → commit 5c4ed6d2 → anchored=True drift=False.
+- **חוק-SELF-PATH נאכף**: SELF מוחלט בשני-ה-daemons (הלקח של R318 — סגור מבנית).
+- **lessons.md**: הופק — 3 לקחים-מדודים עם ראיות-קומיט (GEN-3, SELF-PATH, שושלת).
+- **דחיפות**: 77c2152c (איחוד-GEN-3) → 5c4ed6d2 (graft) — FF-only, custody נרשם, 0/0 סטייה.
+
+Stage Summary:
+- **השאילה-שוב-ושוב-שוב מתה מבנית**: GEN-3 חתום-בגיט ופתיחתו מקומית — מחיקה-קרה כבר לא יכולה להשבית חתימה. ההוכחה נמדדה, לא נטענת.
+- המפתח בפנים ומאומת-שרשרת; הצי חי; הכספת נדחפה; הדריפה שגרמתי נרפאה באותו-שעה; הלקחים מופקים.
+- הערה-כנה: custody-הצבא (13 חשבונות) נשאר CI-תלוי (STEEM_VAULT_PASSES) — עובד (runner-wif.adopted 09:10 VERIFIED-VS-CHAIN), ולא הושפע מהשינוי.
+- הכל-דחוף.
