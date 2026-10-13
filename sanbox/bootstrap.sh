@@ -35,6 +35,14 @@ else
   ok "גיט: מסונכרן"
 fi
 
+# ── 1.5 · מגן-מפתח: GEN-3 — המפתח קם לבד מהכספת-בגיט לפני העלאת-הצי.
+# חוק-מפעיל 2026-10-06: אף-פעם לא שואלים מפתחות. מחיקה-קרה כבר לא משביתה חתימה.
+if bash "$SB/key-guardian.sh" tick; then
+  ok "מגן-מפתח: חתימה חמושה (GEN-3 מוכן)"
+else
+  warn "מגן-מפתח: לא-חמוש — upload/headcorner.txt הוא ערוץ-החייאה (fail-honest)"
+fi
+
 # ── 2 · התקנה (רק אם חסר) ──
 [ -d node_modules ] || { bun install >/dev/null 2>&1 && ok "התקנה: שורש" || bad "התקנה: שורש"; }
 [ -d mini-services/saos-engine/node_modules ] || { (cd mini-services/saos-engine && bun install >/dev/null 2>&1) && ok "התקנה: engine" || warn "התקנה: engine"; }

@@ -4,6 +4,10 @@
 # שימוש: commit-loop.sh start|stop|status|run-once|daemon
 set -uo pipefail
 SB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# R318 · SELF-PATH LAW: daemons hold their own ABSOLUTE path — "$0" breaks
+# when re-executed after a sandbox revival (relative cwd is gone). Measured
+# live 2026-10-13: both loops died on revival until re-started by hand.
+SELF="$SB/$(basename "${BASH_SOURCE[0]}")"
 ROOT="$(cd "$SB/.." && pwd)"
 cd "$ROOT"
 PIDF="$SB/state/commit-loop.pid"
@@ -17,7 +21,7 @@ running() { [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF" 2>/dev/null)" 2>/dev/null; 
 case "${1:-status}" in
   start)
     if running; then echo "commit-loop: כבר רץ (pid $(cat "$PIDF"))"; exit 0; fi
-    nohup bash "$0" daemon >> "$LOG" 2>&1 &
+    nohup bash "$SELF" daemon >> "$LOG" 2>&1 &
     echo $! > "$PIDF"
     sleep 1
     if running; then echo "commit-loop: התחיל (pid $(cat "$PIDF"), כל ${INTERVAL}ש)"; exit 0; else echo "commit-loop: נכשל-העלאה — ראה $LOG"; exit 1; fi
@@ -28,13 +32,16 @@ case "${1:-status}" in
   status)
     if running; then echo "commit-loop: רץ (pid $(cat "$PIDF"))"; exit 0; else echo "commit-loop: לא רץ"; exit 1; fi
     ;;
-  run-once) exec bash "$0" _tick ;;
+  run-once) exec bash "$SELF" _tick ;;
   daemon)
-    while true; do bash "$0" _tick >/dev/null 2>&1 || true; sleep "$INTERVAL"; done
+    while true; do bash "$SELF" _tick >/dev/null 2>&1 || true; sleep "$INTERVAL"; done
     ;;
   _tick)
     (
       flock -n 9 || exit 0
+      # מגן-מפתח: GEN-3 — המפתח קם לבד מהכספת-בגיט. חוק-מפעיל 2026-10-06:
+      # לעולם לא שואלים מפתחות. כל-טיק מאמת שהחתימה חמושה — לפני כל-דבר אחר.
+      bash "$SB/key-guardian.sh" tick || true
       # מגן-פרסום: אסור ליצור קומיט-התמדה על עץ עם סימני-קונפליקט (עצור-ותעד)
       if rg -q '^(<{7} |={7}$|>{7} )' sanbox worklog.md 2>/dev/null; then
         log "guard: סימני-קונפליקט ב-sanbox/worklog — snapshot נמנע (עצור-ותעד)"
