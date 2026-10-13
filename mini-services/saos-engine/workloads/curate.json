@@ -1,0 +1,16 @@
+{
+  "apiVersion": "saos.io/v1alpha1",
+  "kind": "Workload",
+  "metadata": { "name": "curate", "labels": { "rail": "curation", "step": "curate" } },
+  "spec": {
+    "goal": "curation fuel: doctrine-capped votes on candidates, VP-governed",
+    "stepId": "curate",
+    "stateFile": "curator.json",
+    "opClass": "semi",
+    "cadenceMinutes": 10,
+    "maxSpendPerDayUsd": 0,
+    "budgetNote": "VP-only spend — no liquid capital moves",
+    "guard": "doctrine cap 20 votes/day (lib.doctrineCapFloor) + VP floor 60% (curator.mjs)",
+    "reconcile": { "file": "curator.json", "path": "enabled" }
+  }
+}
