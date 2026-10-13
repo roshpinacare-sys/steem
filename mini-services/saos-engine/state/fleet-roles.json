@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 98 trades/24h measured (vol 1497.813 STEEM)",
+      "evidence": "state/market.json: 98 trades/24h measured (vol 1572.735 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -445bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 0bps)",
       "priorStatus": "active"
     },
     {
@@ -73,7 +73,7 @@
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/curator.json: DAY-CAP (budgetCounted 30, basis max(state, chain-truth))",
+      "evidence": "state/curator.json: VOTED (budgetCounted ?, basis state)",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/selftest-last-run.json: 1265/1265 PASS at 2026-10-12T22:46:19.677Z",
+      "evidence": "state/selftest-last-run.json: 1265/1265 PASS at 2026-10-13T00:07:45.442Z",
       "priorStatus": "active"
     },
     {
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/payouts.json: MEASURED at 2026-10-12T01:19:51.247Z — pending(vests 0), payout clock 3d remaining — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: MEASURED at 2026-10-13T00:06:19.048Z — pending(vests 0), payout clock 5d remaining — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -133,10 +133,10 @@
       "cadence": "daily",
       "truthContract": "their votes counted from chain history minus our journal, never from our own logs",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/weave.json: saos.weave.core.v1 published, age 23h — second-writer votes today 0 — החוזה-האחד פומבי",
+      "evidence": "state/weave.json: saos.weave.core.v1 published, age 0h — second-writer votes today 0 — החוזה-האחד פומבי",
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-12T23:56:19.049Z",
+  "at": "2026-10-13T00:06:19.048Z",
   "pid": 22503
 }
