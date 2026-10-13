@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-13T12:50:09.945Z",
+  "at": "2026-10-13T13:00:09.946Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 200bps → dragK 1.1",
+      "reason": "spread 17bps → dragK 1.0085",
       "action": {
-        "spreadBpsRec": 200,
-        "bestAsk": 0.10245901639344263,
-        "bestBid": 0.10042893063156338
+        "spreadBpsRec": 17,
+        "bestAsk": 0.10315,
+        "bestBid": 0.1029738858225554
       },
-      "at": "2026-10-13T12:50:09.945Z"
+      "at": "2026-10-13T13:00:09.946Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -149bps from external parity",
+      "action": {
+        "bps": -149
+      },
+      "at": "2026-10-13T13:00:09.946Z"
     },
     {
       "kind": "soldiers",
@@ -19,33 +28,33 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-13T12:50:09.945Z"
+      "at": "2026-10-13T13:00:09.946Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 86.7%",
+      "reason": "RC at 86.2%",
       "action": {
-        "rcPct": 86.7
+        "rcPct": 86.2
       },
-      "at": "2026-10-13T12:50:09.945Z"
+      "at": "2026-10-13T13:00:09.946Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 43%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 42.9%) — gates hold until candidates pass",
       "action": {
         "votesToday": 23,
-        "vpEff": 43,
+        "vpEff": 42.9,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-13T12:50:09.945Z"
+      "at": "2026-10-13T13:00:09.946Z"
     }
   ],
-  "spreadBpsRec": 200,
+  "spreadBpsRec": 17,
   "book": {
-    "bestAsk": 0.10245901639344263,
-    "bestBid": 0.10042893063156338,
-    "spreadBps": 200
+    "bestAsk": 0.10315,
+    "bestBid": 0.1029738858225554,
+    "spreadBps": 17
   }
 }
