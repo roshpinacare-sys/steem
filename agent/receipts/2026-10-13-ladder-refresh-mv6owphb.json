@@ -1,0 +1,132 @@
+{
+  "receipt": "ladder-refresh",
+  "task": "16-b — ladder-refresh executor run (≤3 cancel+replace pairs, ±2% band, floor-anchored, no fresh capital)",
+  "at": "2026-10-13T13:01:36.382Z",
+  "node": "https://api.steemit.com",
+  "account": "headcorner",
+  "market": {
+    "bestBid": 0.10297389,
+    "bestAsk": 0.10315,
+    "mid": 0.10306194,
+    "spreadPct": 0.17,
+    "depthBids": 20,
+    "depthAsks": 20,
+    "headBlock": 110404743
+  },
+  "ladderShape": {
+    "openOrders": 7,
+    "sells": 4,
+    "buys": 3,
+    "steemOfferedSellSide": 30.95,
+    "steemSoughtBuySide": 900.818,
+    "oldestOrderHours": 0.83,
+    "orders": [
+      {
+        "orderid": 12693791,
+        "side": "sell-steem",
+        "price": 0.10343907,
+        "baseAmount": 14.975,
+        "steemVolume": 14.975,
+        "vsMidPct": 0.37,
+        "ageHours": 0.83,
+        "expiration": "2026-11-09T12:11:59"
+      },
+      {
+        "orderid": 12693792,
+        "side": "sell-steem",
+        "price": 0.1042404,
+        "baseAmount": 14.975,
+        "steemVolume": 14.975,
+        "vsMidPct": 1.14,
+        "ageHours": 0.83,
+        "expiration": "2026-11-09T12:12:02"
+      },
+      {
+        "orderid": 12693793,
+        "side": "buy-steem",
+        "price": 0.0985987,
+        "baseAmount": 29.151,
+        "steemVolume": 295.653,
+        "vsMidPct": -4.33,
+        "ageHours": 0.83,
+        "expiration": "2026-11-09T12:12:05"
+      },
+      {
+        "orderid": 12693795,
+        "side": "buy-steem",
+        "price": 0.09709718,
+        "baseAmount": 29.151,
+        "steemVolume": 300.225,
+        "vsMidPct": -5.79,
+        "ageHours": 0.82,
+        "expiration": "2026-11-09T12:12:08"
+      },
+      {
+        "orderid": 12693796,
+        "side": "buy-steem",
+        "price": 0.09559585,
+        "baseAmount": 29.151,
+        "steemVolume": 304.94,
+        "vsMidPct": -7.24,
+        "ageHours": 0.82,
+        "expiration": "2026-11-09T12:12:11"
+      },
+      {
+        "orderid": 12694218,
+        "side": "sell-steem",
+        "price": 0.11,
+        "baseAmount": 0.5,
+        "steemVolume": 0.5,
+        "vsMidPct": 6.73,
+        "ageHours": 0.04,
+        "expiration": "2026-10-13T13:59:09"
+      },
+      {
+        "orderid": 12694222,
+        "side": "sell-steem",
+        "price": 0.106,
+        "baseAmount": 0.5,
+        "steemVolume": 0.5,
+        "vsMidPct": 2.85,
+        "ageHours": 0.03,
+        "expiration": "2026-10-13T13:59:33"
+      }
+    ]
+  },
+  "churn": {
+    "marketOpsInLast100AcctOps": 97,
+    "spanFirstLastSeconds": 423,
+    "verdict": "HIGH-FREQUENCY CONCURRENT MANAGER OBSERVED — another process is actively churning this ladder; this executor stays cap-limited and staleness-gated inside that reality"
+  },
+  "caps": {
+    "maxPairsPerRun": 3,
+    "staleMinAgeHours": 168,
+    "staleDistPct": 2,
+    "replaceBandPct": 2,
+    "targetOffsetPct": 1.5,
+    "floorLowestAsks": 2,
+    "floorHighestBids": 2,
+    "standingMinAfter": 4,
+    "bookMinDepthLevels": 3,
+    "bookAnomalySpreadPct": 15,
+    "orderLifetimeHours": 24,
+    "accountLock": "headcorner",
+    "neverTouch": [
+      "^ynet",
+      "^tov-hive"
+    ]
+  },
+  "gates": {
+    "liveGate28b": false,
+    "ladderArm": false,
+    "executorDisabled": false,
+    "dryForced": false
+  },
+  "dryRunPlanPrint": [],
+  "drops": [],
+  "anomaly": null,
+  "status": "plan-only-ladder-healthy-no-ops",
+  "ops": [],
+  "executed": [],
+  "reason": "no order qualifies stale (>7d AND >2% from mid) — nothing to refresh by design; run was plan-only (unarmed)"
+}
