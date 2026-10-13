@@ -1,0 +1,15 @@
+{
+  "apiVersion": "saos.io/v1alpha1",
+  "kind": "Workload",
+  "metadata": { "name": "report", "labels": { "rail": "transparency", "step": "report" } },
+  "spec": {
+    "goal": "the daily transparency root post + queued content drafts as comments under it",
+    "stepId": "report",
+    "stateFile": "daily-report.json",
+    "opClass": "semi",
+    "cadenceMinutes": 1440,
+    "maxSpendPerDayUsd": 0,
+    "budgetNote": "posting ops cost RC only — zero liquid spend",
+    "guard": "5-min root-post law + exposure-shield re-validation at broadcast (promo.mjs T-31) + one draft/cycle"
+  }
+}
