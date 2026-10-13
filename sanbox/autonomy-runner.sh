@@ -5,6 +5,8 @@
 # רישום: sanbox/state/autonomy-runtime.json (אמת-חיה, git-ignored) · autonomy/state.json (בסיס)
 set -uo pipefail
 SB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# R318 · SELF-PATH LAW: absolute self-path — "$0" dies after revival (see commit-loop.sh)
+SELF="$SB/$(basename "${BASH_SOURCE[0]}")"
 ROOT="$(cd "$SB/.." && pwd)"
 cd "$ROOT"
 INTERVAL="${SANBOX_AUTONOMY_INTERVAL:-900}"
@@ -23,7 +25,7 @@ running() { [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF" 2>/dev/null)" 2>/dev/null; 
 case "${1:-status}" in
   start)
     if running; then echo "autonomy-runner: כבר-רץ (pid $(cat "$PIDF"))"; exit 0; fi
-    nohup bash "$0" daemon >> "$LOG" 2>&1 &
+    nohup bash "$SELF" daemon >> "$LOG" 2>&1 &
     echo $! > "$PIDF"
     sleep 1
     if running; then echo "autonomy-runner: התחיל (pid $(cat "$PIDF"), כל ${INTERVAL}ש)"; exit 0; else echo "autonomy-runner: נכשל-העלאה — ראה $LOG"; exit 1; fi
@@ -41,7 +43,7 @@ case "${1:-status}" in
   status)
     if running; then echo "autonomy-runner: רץ (pid $(cat "$PIDF"))"; exit 0; else echo "autonomy-runner: לא-רץ"; exit 1; fi
     ;;
-  run-once) exec bash "$0" _tick ;;
+  run-once) exec bash "$SELF" _tick ;;
   daemon)
     SESSION=$(now)
     echo "$SESSION" > "$SB/state/autonomy-session.id"
@@ -52,7 +54,7 @@ case "${1:-status}" in
     # cost one cycle: the lock dies with the timed-out tick and the loop
     # ALWAYS continues, with the bounded-exit recorded honestly in the log.
     while true; do
-      timeout --kill-after=30 840 bash "$0" _tick >>"$LOG" 2>&1 \
+      timeout --kill-after=30 840 bash "$SELF" _tick >>"$LOG" 2>&1 \
         || log "tick: bounded-exit rc=$? (hang or error — loop continues)"
       sleep "$INTERVAL"
     done
@@ -65,6 +67,9 @@ case "${1:-status}" in
       if [ -f .git/MERGE_HEAD ]; then log "guard: מיזוג בעיצומו — tick נמנע"; exit 0; fi
       # מגן-קונפליקט: סימנים ב-sanbox — לא מריצים
       if rg -q '^(<{7} |={7}$|>{7} )' "$SB" 2>/dev/null; then log "guard: סימני-קונפליקט ב-sanbox — tick נמנע"; exit 0; fi
+
+      # מגן-מפתח: GEN-3 — חתימה חמושה לפני כל-משימה (חוק 2026-10-06)
+      bash "$SB/key-guardian.sh" tick || log "guard: key-guardian לא-הצליח — ממשיך fail-honest"
 
       SESSION=$(cat "$SB/state/autonomy-session.id" 2>/dev/null || echo "adhoc-$(now)")
       VERIFY_FAIL=0
