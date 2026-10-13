@@ -12,6 +12,16 @@ cd "$(dirname "$0")/.."
 T="origin/saos-cockpit"
 git fetch origin saos-cockpit >/dev/null 2>&1 || { echo "RECONCILE-FETCH-FAIL"; exit 1; }
 if git merge-base --is-ancestor "$T" HEAD 2>/dev/null; then echo "RECONCILE-NOT-NEEDED"; exit 0; fi
+# R321 · LIVE-STATE-FIRST LAW (measured 2026-10-13 11:2x twice: merge refused
+# to START because live services kept tracked state files dirty → the conflict
+# loop found nothing → commit failed → RECONCILE-COMMIT-FAIL, manual rescue
+# required). The dirty live state is snapshotted BEFORE the merge attempt, so
+# the merge always starts clean and the resolution law below always applies.
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+  git add -A ':!upload' ':!.secrets' 2>/dev/null
+  git -c commit.gpgsign=false commit -m "state: live churn snapshot before self-reconcile (R321)" >/dev/null 2>&1 \
+    || { echo "RECONCILE-SNAPSHOT-FAIL"; exit 5; }
+fi
 if ! git merge-base --is-ancestor HEAD "$T" 2>/dev/null; then
   if ! git merge --no-edit -m "merge: self-reconcile with $T (union ledgers · alive-wins state · R312)" "$T" >/dev/null 2>&1; then
     # resolve conflicts by law
@@ -35,8 +45,11 @@ if ! git merge-base --is-ancestor HEAD "$T" 2>/dev/null; then
   fi
 fi
 # post-merge marker gate (never ship conflict poison)
-if git grep -qE '^(<<<<<<< |=======\r?$|>>>>>>> )' -- 'mini-services' 2>/dev/null; then
+if git grep -qE '^(<<<<<<< |=======\r?$|>>>>>>> )' -- 'mini-services' 'sanbox' 'scripts' 'memory' 'agent' 2>/dev/null; then
   echo "RECONCILE-MARKERS-LEFT"; exit 4
 fi
+# lineage visibility: the anchored tip must survive every reconcile
+node scripts/chain-anchor-probe.mjs >/dev/null 2>&1 \
+  && echo "chain: anchored ok" || echo "chain: PROBE-RED — check chain-anchor-probe before push (R321 law)"
 echo "RECONCILED $(git rev-parse --short HEAD)"
 exit 0

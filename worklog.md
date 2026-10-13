@@ -762,3 +762,21 @@ Stage Summary:
 - המפתח בפנים ומאומת-שרשרת; הצי חי; הכספת נדחפה; הדריפה שגרמתי נרפאה באותו-שעה; הלקחים מופקים.
 - הערה-כנה: custody-הצבא (13 חשבונות) נשאר CI-תלוי (STEEM_VAULT_PASSES) — עובד (runner-wif.adopted 09:10 VERIFIED-VS-CHAIN), ולא הושפע מהשינוי.
 - הכל-דחוף.
+---
+Task ID: R321
+Agent: Z.ai Code (main orchestrator · post-broadcast sweep #2 + shield resurrection)
+Task: סריקה מלאה אחרי השידור-השני של R320 לכל-הסוכנים — נזקים, תיקון-שורש, חוזקה
+
+Work Log:
+- **גיט**: אפס-force (reflog origin: FF/update-by-push בלבד) · 8 קומיטים-חדשים-מקוריים נבדקו (CI-heartbeats + state-churn של סוכן-אחר — אף-אחד לא נגע בסקריפטים/כספת/worklog) · GEN-3 שלם ב-tree (outer-sha תואם META) · החיווט ב-3 הסקריפטים שרד · gitignore-חוק שלם · 24cf4c02-orphan הוכח כתיחום-union-מתוכנן (תוכן חי ב-77c2152c).
+- **תהליכים**: 8 ports עומדים · שתי-הלולאות באותם-pids (3252/3287 — יציבות-מלאה) · מפתח חמוש 0600 · engine present=true · שרשרת anchored=True.
+- **reconcile שגרתי 1/1**: probe-מוקדם ירוק → rebase נתקע על state-כפול → abort → soft-union מוגן-probe → pushed 434e165b → 0/0 → probe-סופי ירוק.
+- **נזק-אמיתי-שנמצא**: identity-guard.yml נעלם מהעץ-המקומי והאיחוד נשא את-ההיעדר ל-origin. חקירה-עומק: **המגן נולד-מת** — כל-גרסאות-ההיסטוריה (bf8ff8e2, e2913e4c) בינארי-זהה, Actions מעולם לא יכול היה להריץ אותו. נבנה מחדש באמת: `scripts/identity-guard.mjs` (זהות-זרה/פריסת-חיילים-לא-משוערת/transfers-out/delegation-armed → fail-loud exit-1) + YAML תקף (push+dispatch, contents:read). נבדק דו-כיוונית: clean=0 · synthetic-foreign → FAIL רם · שוחזר.
+- **auto-reconcile.sh הוקשח (LIVE-STATE-FIRST LAW)**: ה-RECONCILE-COMMIT-FAIL הנמדד-פעמיים-היום — merge מסרב-להתחיל על state-חי → לולאת-הקונפליקטים ריקה → commit מת. עכשיו: snapshot-חובה לפני-merge, שער-סימנים מורחב (sanbox/scripts/memory/agent), ו-probe-שרשרת בסוף-כל-reconcile.
+- **דחיפות**: 434e165b (union R321) + קומיט-המגן-החי — FF-only, 0/0.
+
+Stage Summary:
+- **אפס-נזק מהסוכנים-המקבילים** — השידור-השני נקי לחלוטין. הנזק-היחיד (מגן-מולד-מת) נחשף, שורשו נחקר, והוא קם-לתחייה-כקוד-חי ומנוסה.
+- השושלת-החתומה שרדה reconcile-נוסף (probe לפני-ואחרי) — החוק-החדש מ-R320 נאכף בפועל.
+- auto-reconcile כבר לא צריך-הצלה-ידנית על state-חי — הנפילה-הנמדדת נסגרה מבנית.
+- הכל-דחוף.
