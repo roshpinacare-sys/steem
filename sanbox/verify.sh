@@ -22,6 +22,15 @@ if want git; then
   N=$(git ls-files sanbox | wc -l)
   if [ "$N" -ge 10 ]; then p "git: sanbox נעקב בגיט (${N} קבצים)"; else f "git: sanbox לא נעקב (${N} קבצים) — יש לקמט ולדחוף"; fi
   if [ -f worklog.md ]; then p "git: worklog.md קיים"; else f "git: worklog.md חסר"; fi
+  # R322 · SHALLOW-POISON LAW (measured 2026-10-13: authority-watchdog ran a
+  # cwd-less `git fetch --depth=10` inside the LIVE repo — 57 grafts made every
+  # ancestry check lie, divergence counts were ghosts, a chain-anchored tip
+  # fell out of lineage invisibly). A shallow repo cannot judge lineage.
+  if [ -f .git/shallow ]; then
+    f "git: הריפו רדוד (.git/shallow) — בדיקות-אבות משקרות; הרץ git fetch --unshallow origin saos-cockpit"
+  else
+    p "git: אנטומיה-מלאה (לא-רדוד) — בדיקות-אבות אמינות"
+  fi
 fi
 
 # ── law ──
@@ -30,6 +39,15 @@ if want law; then
     p "law: doctrine-audit PASS"
   else
     w "law: doctrine-audit לא אישר PASS (בדוק ידנית: node scripts/doctrine-audit.mjs)"
+  fi
+  # R322 · IDENTITY-GUARD-LOCAL LAW: CI can be billing-walled (measured live:
+  # the identity-guard workflow died 40/40 behind a spend limit and the second
+  # writer documented an `if: false` skip). The shield therefore ALSO runs
+  # here — local verify cannot be billed into silence.
+  if node scripts/identity-guard.mjs >/dev/null 2>&1; then
+    p "law: identity-guard נקי (זהות-דוקטרינה יחידה, שערי-פריסה סגורים)"
+  else
+    f "law: identity-guard מצא אותות-זהות-זרה/פריסה-לא-משוערת — node scripts/identity-guard.mjs"
   fi
   SLR="mini-services/saos-engine/state/selftest-last-run.json"
   if [ -f "$SLR" ]; then

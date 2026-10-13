@@ -124,8 +124,14 @@ function scanFleetRepoGitNative(repo, perRepo = 10) {
     if (r.status !== 0) {
       r = sh("git", ["clone", "--depth=10", "--quiet", url, dir]);
     } else {
-      sh("git", ["fetch", "--depth=10", "--quiet", "origin"]); /* refresh shallow */
-      sh("git", ["reset", "--hard", "--quiet", "origin/HEAD"]);
+      /* R322 ROOT FIX (measured 2026-10-13): the refresh branch ran WITHOUT
+       * cwd — `git fetch --depth=10 origin` + `git reset --hard origin/HEAD`
+       * executed in the ENGINE'S LIVE REPO, not the /tmp clone. Live effect:
+       * repeated shallow forced-updates poisoned the live repo's ancestry
+       * (57 grafts in .git/shallow, fake 25/10 divergence, ancestor checks
+       * unreliable). The watchdog must never touch the live repo's refs. */
+      sh("git", ["fetch", "--depth=10", "--quiet", "origin"], dir); /* refresh shallow clone */
+      sh("git", ["reset", "--hard", "--quiet", "origin/HEAD"], dir);
     }
     if (r.status !== 0) return { repo, coverage: "UNREACHABLE", reason: String(r.stderr ?? "clone-failed").slice(0, 80) };
     const lg = sh("git", ["log", `--max-count=${perRepo}`, "--pretty=format:%H|%G?|%an|%aI|%s"], dir);
