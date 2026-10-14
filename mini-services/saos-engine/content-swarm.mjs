@@ -1,5 +1,5 @@
 /**
- * content-swarm.mjs — R332 · THE SWARM DISTRIBUTION PLANNER (the last open
+ * content-swarm.mjs — R336 · THE SWARM DISTRIBUTION PLANNER (the last open
  * integration module of the T-83 reference batch: Marketing-Swarm-Template's
  * agents.yaml — platform-specialized agents with rigid frames — made
  * sovereignty-native).
