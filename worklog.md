@@ -982,3 +982,20 @@ Stage Summary:
 - **R324-עומד-במדידה** (העדה=קומיטים) · **R323-חיה-ומאומתת-מול-השרשרת** (VERIFIED · ספר-7-פקודות-פתוחות · מחזור-הבא-03:23Z-cron).
 - **פערים-פתוחים-כנים**: (1) pat.env-root-owned-777 — לא-ניתן-להדק-בלי-root (2) SAOS_VAULT_PASS-ל-KEYS-ZIP-MASTER-דורש-שרשרת-wif-direct — יומרה, כל-הדרכים-החיות-עוקפות (3) 7-army-txids-UNREACHABLE-עד-אינדוקס (4) FleetHQ-red — תחום-בעלים-אחר, תיקון-שורש-כבר-נדחף-שם (5) ערבוב-מדידה-והצבה-בקבלה (estateOpenOrders) — הערה-שיטתית-ל-army-ladder.
 - הכל-דחוף.
+
+---
+Task ID: R324-CONT-2B (supervisor addendum)
+Agent: Z.ai Code (same round — examine-what-you-did-and-fix on my own office revival)
+Task: «בחן את מה שעשית ותקן» on the R324-CONT-2 revival itself — the supervisor kept dying and metrics/builder died twice more; root-fix, not revive-by-habit.
+
+Work Log:
+- **מוות-שקט שני של metrics/builder (~100ש אחרי החייאה)**: שורש-על נמדד — **OOM גלובלי בסנדבוקס** (dmesg: `Out of memory: Killed process 4704 (next-server)` 1.3GB-RSS; המנוע הקוקפיט נופח בקומפילציה וה-oom-killer משחט אחים-קטנים). 4GB-סנדבוקס צפוף.
+- **אפוטרופוס-משרד נבנה ונמדד לעומק** (scripts/office-supervisor.sh, אדיטיבי-בלבד, cooldown-10דק/שירות נגד סופות-spawn, probe-4ש נגד false-DOWN על /health איטי, pidfile-single-instance — הכפילות שנמדדה תוקנה): **חוק-ה-reaper נמדד סופית** — כל-צאצא-tool-call נקצץ בסוף-הקריאה גם-עם-setsid (4/5 מתו; השורדים-היוצאים-מן-הכלל היו-צאצאי-fork). סוכן-חי-לא-יכול להיות האפוטרופוס.
+- **התיקון-המבני-האמיתי — היתום-הכפול מת**: /start.sh (boot-הפלטפורמה) מדלג-על-שירות-בלי-package.json → metrics/builder לעולם-לא-נולדו ב-boot ונשחטו-ביד-בהמשך. ניתנו-להם-package.json-בדפוס-הבית (`bun index.ts`) → **נתיב-ה-boot-הסטנדרטי-מעיר-אותם-בכל-סנדבוקס-טרי, דרך-git-בלבד** — אפס-שינוי-פלטפורמה. saos-metrics קיבל-גם-dev-נקי-בלי-`--hot` (יציבות) ובלי-שורת-selftest-שלא-נבדקה.
+- **ביטוח-סשן**: COLD-START-שלב-בריאות קיבל-שורת-הצתה-אחת (pgrep→hatch) — כל-סשן-עתיד מדליק-את-המפקח-בפקודה-אחת. ניסיון-הצתה-ל-/start.sh-עצמו **נחסם-כנה**: root-owned-ול-z-אין-sudo — פער-תחום-פלטפורמה, רישום-בלבד (אינו-חוסם: package.json-מכסה-boot; COLD-START-מכסה-סשן).
+- **דחייה-מוצדקת**: הרחבת-dev-keeper-לרב-ward (3037/3041/3042/3043/3047) — איבר-החיים-של-המשרד מול-estate-רב-כותבים; מגיעה-לה-סבב-משלה-עם-shadow-test, לא-פאץ'-על-ברך-בסוף-לילה.
+
+Stage Summary:
+- **המשרד-חי**: 7/7-שירותים-חיים (3000/3037/3040/3041/3042/3043/3047 — בדיקה-חוזרת-אחרי-שני-גלי-OOM) · הבאים-בתור-לידה-אוטומטית-ב-boot: metrics/builder · האפוטרופוס-מוכן-בגיט-ומוצת-בכל-פתיחת-סשן.
+- **הפערים-הכנים-שנותרו**: (1) /start.sh-hatch דורש-root (פער-פלטפורמה, לא-קריטי) (2) keeper-רב-ward — סבב-מתוכנן (3) OOM-לחץ-קיומי-ב-4GB — תחום-מפעיל/פלטפורמה; ה-healer-מרכך-את-הפגיעה-עד-10דק.
+- הכל-דחוף.
