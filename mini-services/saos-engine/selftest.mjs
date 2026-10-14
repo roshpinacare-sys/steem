@@ -3132,6 +3132,50 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   if (prevSeed === undefined) delete process.env.SAOS_MEMORY_SEED_DIR; else process.env.SAOS_MEMORY_SEED_DIR = prevSeed;
 }
 
+{
+  /* 31 · R304 CONCEPT LADDER (T-84, Open-Pomelli deep-dive) — Pomelli's
+   * "exactly 4 distinct concepts, not generic fluff" made MEASURED: slop →
+   * memory → distinctness vetoes run before any draft exists; the ladder
+   * is deterministic and observe-only. Isolated tmp memory per R275. */
+  const cc = await import("./content-concepts.mjs");
+  const cm31 = await import("./content-memory.mjs");
+  const dir31 = path.join(process.env.SAOS_STATE_DIR, "c31");
+  fs.mkdirSync(dir31, { recursive: true });
+  cm31.recordRejected(dir31, { account: "headcorner", title: "The Queue Never Lies", body: "The queue never lies about priorities.", reason: "selftest-31 seed", at: new Date().toISOString() });
+  const mem31 = cm31.loadMemory(dir31);
+
+  const dna31 = { version: 1, law: "R304", voice: { pillars: ["measured truth", "numbers over adjectives"], bannedGenres: [] }, slopLexicon: ["unlock the power of", "in conclusion"], fleetForbidden: [], personaForbidden: {}, quality: { weights: { hook: 25, specificity: 20, structure: 20, brevity: 20, register: 15 }, enforce: false }, memory: { jaccard: 0.5, windowDays: 90 } };
+  const mk31 = (id, title, hook, topic, tags, angle) => ({ id, voice: "siq", topic, tags, title, body: `${hook}\n\nBody of ${id}.`, angle });
+  const corpus31 = [
+    mk31("c1-waiting", "Measuring the waiting room: 27 chairs and one honest clock", "Nobody chooses to be in a waiting room. That is what makes it interesting.", "waiting", ["psychology", "observation", "writing"], "waiting rooms as forced honesty: time you cannot optimize, 27 chairs, one clock"),
+    mk31("c2-slop", "Unlock The Power Of Steem", "In conclusion, the chain rewards the patient.", "growth", ["chain", "staking"], "token growth through patience"),
+    mk31("c3-twin", "Another Waiting Room, Same Honest Clock", "Nobody chooses to be in a waiting room. That is what makes it interesting.", "waiting", ["psychology"], "same forced honesty angle repeated"),
+    mk31("c4-queue", "The Queue Never Lies", "The queue never lies about priorities. Watch it for a day.", "queues", ["society", "observation"], "queues as priority made visible"),
+    mk31("c5-ledger", "A Ledger That Reads Itself Out Loud", "The ledger speaks if you let it. Every number is a decision somebody made.", "ledger", ["data", "accounting"], "the ledger as narration: 3 numbers, 3 decisions"),
+    mk31("c6-hands", "Two Hands, One Wrench, Zero Meetings", "The repair took one wrench and no meeting. Nobody scheduled a follow-up.", "repair", ["work", "tools"], "repair culture: 1 wrench, 0 meetings, 40 minutes"),
+    mk31("c7-bread", "The Bakery Knows the Night Shift", "Bread starts at 3am. The city only sees the result at 7.", "baking", ["work", "night"], "night work made visible: 3am to 7am"),
+    mk31("c8-roof", "Counting the Roof Tiles Before the Rain", "The roof held because someone counted. Tiles, 214 of them, checked twice.", "maintenance", ["home", "care"], "maintenance as arithmetic: 214 tiles, 2 passes"),
+  ];
+  const run31 = () => cc.conceptLadder({ corpus: corpus31, dna: dna31, memory: mem31, goal: "thought_leadership", limit: 4 });
+  const a31 = run31(), b31 = run31();
+  eq("31.1 deterministic ladder", JSON.stringify(a31), JSON.stringify(b31));
+  eq("31.2 verdict + measured vetoes", [a31.verdict, a31.generated, a31.kept, a31.vetoed.slop, a31.vetoed.memory, a31.vetoed.distinct], ["CONCEPTS-OK", 8, 5, 1, 1, 1]);
+  eq("31.3 shortlist respects Pomelli's limit", a31.shortlist.length, 4);
+  eq("31.4 ranked desc (ties by title/id)", a31.shortlist.every((c, i) => i === 0 || a31.shortlist[i - 1].score >= c.score), true);
+  const full31 = cc.conceptLadder({ corpus: corpus31, dna: dna31, memory: mem31, goal: "thought_leadership", limit: 8 });
+  const ids31 = full31.shortlist.map((c) => c.id);
+  ok("31.5 slop/memory/twin die before drafting", !ids31.includes("c2-slop") && !ids31.includes("c4-queue") && !ids31.includes("c3-twin") && ids31.includes("c1-waiting"));
+  eq("31.6 empty corpus honest", cc.conceptLadder({ corpus: [], dna: dna31 }).verdict, "CONCEPTS-EMPTY");
+  const only31 = cc.conceptLadder({ corpus: [corpus31[1]], dna: dna31, memory: mem31 });
+  eq("31.7 all-vetoed verdict stays observe-only", [only31.verdict, only31.kept, only31.observe], ["CONCEPTS-VETOED-ALL", 0, true]);
+  const g31 = cc.conceptLadder({ corpus: corpus31, dna: dna31, goal: "engagement" });
+  eq("31.8 organic CTA per goal", g31.shortlist[0].cta, "tell me yours");
+  const u31 = cc.conceptLadder({ corpus: corpus31, dna: dna31, goal: "go-viral-now" });
+  eq("31.9 unknown goal falls back honestly", [u31.goalKnown, u31.goal, u31.shortlist[0].cta], [false, "go-viral-now", "measure it yourself"]);
+  eq("31.10 memoryAvailable honest", [cc.conceptLadder({ corpus: corpus31, dna: dna31, memory: null }).memoryAvailable, a31.memoryAvailable], [false, true]);
+  try { fs.rmSync(dir31, { recursive: true, force: true }); } catch { /* tmp */ }
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
