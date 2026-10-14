@@ -862,3 +862,23 @@ Stage Summary:
 - **מה-חסר-בתפעול-ההנדסי (התשובה-המדודה)**: (1) התראה-מבוססת-מצב-במקום-אירועים — נסגר-ב-redboard (2) custody-עמיד-מחיקה — נסגר-ב-vault-home+GEN-3 (3) forward-compat-schema בין-סוכנים — נלמד, דרוש-רישום-טיפוסים (4) push-אטומי (fetch→rebase→push×N) בכל-זרימה — כבר-הדפוס-השלט בכל-התיקונים (5) חוק-כותב-יחיד — עדיין-חוק-קיום.
 - הרשת-כבר-לא-מסתמכת-על-הסנדבוקס-כרנט: ה-dopak כל-עורקיו חי-ב-Actions (system-map, redboard, patrol, pacemakers) · המשרד-המקומי 5/7-פורטים (3042/3043-מתים — לא-מחיים-בכוונה, הסנדבוקס-תומך-בצד-בלבד).
 - הכל-דחוף.
+
+---
+Task ID: R324-EXAMINE-FIX
+Agent: Z.ai Code (main orchestrator — examine-what-you-did-and-fix, honesty law)
+Task: «בחן את מה שעשית ותקן» — measured audit of my own R324/R324-FIX-MAIN claims, root-fix every gap found, zero stomps on 7 parallel agents.
+
+Work Log:
+- **הביקורת על-עצמי מצאה טענה-חצי-אמת**: R324-FIX-MAIN הכריז "treasury-ladder תוקן" — נמדד חי (run 38482136810): הסולם **ישן-ירוק** — `KEYLESS-STASIS: 0 live keys across 0 accounts`, exit-0, step-המחזור SKIPPED. שיטפון-המיילים נעצר, אבל עורק-ההכנסה לא שאב כלום — והאדום-שלי לא ראה את-זה (הצלחה-שמשמעותה-שינה בלתי-נראית להתראות-אירוע).
+- **שורש (מדידה, לא ניחוש)**: ROT2 רוטט את-הצי ב-00:05 (receipt-A, מאומת-שרשרת) אחרי-שכרוך-ה-GEN-2 נחתם — `ROT2_FLEET_KEYS` (הסוד-הטרי, 00:05) נצרך רק-על-ידי custody-recover, לא על-ידי הסולם.
+- **התיקון (2 קומיטים FF-only על טיפים-טריים c127ffc/47be65d)**: `cd6692c` — ROT2_FLEET_KEYS מחובר ל-treasury-ladder.yml + escrow-payroll.yml; resolve-keys נתיב-rot2-אגרנזיבי (כרוך-GEN-2 נשאר מקור-א; חוק-ה-abort-הכן נשמר). `d8bbb94` — v2 אחרי-מדידה-חיה: המפה היא {rot2:{chain:{account:{role:{wif}}}}} — deep-walk אוסף כל-מחרוזת-WIF (probe WIF_RE), אפס-הנחות-צורה; classify גוזר account/role מהרשויות-החיות-על-השרשרת — חומר-ישן מסתנן-עצמית.
+- **הוכחת-העור (run 38486823267, 23:52Z)**: `41 wif-candidates → 24 live keys` · `matched 24 live keys across 12 accounts` (cashmachine, haran, israelnews, lsa, macrame, tov, wic, wog, woq, hcsoldier4/5/6 — active+posting) · step-מחזור **success (was-skip-always)** · verdict **LADDER-ACTED · actions=2 · executed=2** · receipt a1975d9 → saos-dex treasury-public (trader hcsoldier4, mid 0.1034). ראיה נרשמה ב-issue #4 (comment 6157699208).
+- **סגירת-הסוג — עיוורון-ירוק**: estate-redboard v2 (sovereign-lighthouse `9e4ca5c`, dispatch success 23:54): probes-STASIS — ריצה-ירוקה + step-עבודה-ראשי skipped = 🟡 STASIS על-הלוח-הכן-היחיד, עם NEW-STASIS/STASIS-CLEARED. נמדד חי: `red=3 · stasis=0` (הסולם כבר-לא-ישן); Sandbox|identity-guard RECOVERED (הזדקן-כצפו); 2 אדומים-חיים של-סוכנים-אחרים (Autonomy|claims-intake, Domain|anchor-execute) מוחזקים-בראיה לבעליהם — אפס-נגיעה.
+- **המשרד-המקומי — 5-FAIL נמדדו ונסגרו עד-השורש**: (א) .git/shallow חזר 10-דק אחרי --unshallow — reflog חשף קומיט-סוכן-מקביל 23:57:48 (fetch רדוד על-הריפו-החי) → **תרופה-עצמית ב-commit-loop** (כל-טיק: shallow? → unshallow לפני דחיפה; נדחף fdd3fe990). (ב) 3046 שירת routes-של-state-witness — **bun --hot דו-קשר-ישן** (הקוד כבר תוקן, התהליך לא אותחל) → הפעלה-מחדש. (ג) operator-site לא רץ → הוקם מהקוד-האמיתי-בגיט (sanbox/operator-site): /health 200 · /operator/status 401 · סיסמה-שגויה 401. (ד) metrics 3042 + builder 3043 חזרו. (ה) commit-loop + autonomy-runner חזרו לרוץ.
+- **verify סופי: PASS=25 FAIL=0 WARN=1** (ה-WARN = תור-משימות SB1 — תחום-סוכן-אחר). סנפשוט-חי (LIVE-STATE-FIRST) + מיזוג-union + דחיפה 2719b7031 וגם fdd3fe990 — אפס-כוח, אנטומיה-מלאה, chain anchored ok.
+
+Stage Summary:
+- **התשובה-הכנה ל-«בחן את מה שעשית»**: מה-שהכרזתי ב-R324-FIX-MAIN החזיק (GEN-3 · redboard · Sandbox-טריאג' · SYSTEM-MAP) חוץ-מדבר-אחד — "הסולם תוקן" היה חצי-אמת: הרעש נעצר אבל-העבודה לא חזרה. עכשיו זה נמדד חי: הסולם סוחר (LADDER-ACTED, 2 actions בשרשרת), והמחלקה-שכמעט-הפילה את-המשרד (ירוק-מת) סגורה-מבנית בלוח.
+- **המשרד-המקומי חזר להיות משרד**: 7/7 פורטים (3000/3040-3043/3046/3047) · שתי-לולאות-התמדה חיות-ומרפאות-עצמן · operator-site מהגיט, לא מהסנדבוקס.
+- אפס-דריסות: FF-only על טיפים-טריים בכל-מאגר; קבצים-של-אחרים לא נגעו (רק resolve-keys.cjs משותף-בשינוי-אגרנזיבי-מתועד + 2 שורות-חיווט).
+- הכל-דחוף.
