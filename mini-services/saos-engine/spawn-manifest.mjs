@@ -67,15 +67,18 @@ export const MAX_LANES = 8;                   // lanes per manifest ceiling
  * calls of ci-cycle.mjs, in heartbeat execution order (verified at exec32
  * against ci-cycle.mjs including this module's own "spawn-manifest" step;
  * "content-swarm" landed concurrently via T-91 and is included as the real
- * tail step it is). The honesty law (R331: no random personas) makes this
- * the ONLY universe of lawful agentTypes — a spawn lane that is not a real
- * engine step does not exist and must never be fabricated. */
+ * tail step it is; "surface-watch" landed via exec33 lane 33-a and is
+ * included the same way — the roster is re-measured by selftest §40.34
+ * against ci-cycle.mjs's actual stepWrap set every run). The honesty law
+ * (R331: no random personas) makes this the ONLY universe of lawful
+ * agentTypes — a spawn lane that is not a real engine step does not exist
+ * and must never be fabricated. */
 export const FIXED_ROSTER = [
   "custody", "dex-takeover", "social", "content", "digest", "post",
   "blurt-custody", "delegation", "shell-watch", "visibility",
   "content-memory", "content-concepts", "content-sourcing",
   "content-engagement", "spawn-manifest", "content-drift", "format-lint",
-  "content-swarm",
+  "content-swarm", "surface-watch",
 ];
 
 export const LANE_KINDS = ["observe", "act"];

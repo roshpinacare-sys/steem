@@ -302,6 +302,36 @@ async function main() {
     return { verdict: r.verdict, at: r.at, selfManifestId: r.selfManifestId, selfManifestValid: r.selfManifestValid, lifecycleStatus: r.lifecycleStatus, scanned: r.scanned, invalidCount: r.invalidCount, observe: true };
   });
 
+  /* exec33 · lane 33-a · THE SELF-HEAL SURFACE WATCHTOWER (owner directive,
+   * verbatim intent: "no owner arming — sovereignty achieves everything
+   * itself; the site fell, got no data, and the sovereignty did NOT
+   * self-repair until manual intervention — that is not autonomous. The
+   * sovereign must verify activity as required."). Every beat MEASURES the
+   * live surfaces instead of assuming them: the Pulse front-door + its three
+   * data files (network/lanes/Domain published), the engine state freshness
+   * (heartbeat/presence-digest/selftest ages), the public artery's last run
+   * (GitHub API), and one cheap chain RPC call. Probes fire CONCURRENTLY
+   * with per-target timeouts (SWR — one slow target can never wedge the
+   * beat) and every fetched 200 is PARSED + shape-checked, so the
+   * raw-200-empty trap reads DEGRADED, never OK. OBSERVE-BY-DEFAULT: the
+   * step runs repairMode 'act' ONLY when the PREVIOUS sealed verdict was
+   * non-OK (state/surface-watch-latest.json) — the lawful AUTONOMOUS
+   * self-heal with no owner arming: repairs are infrastructure/state-only
+   * (re-run the owning generator workflow · re-push a Pages content commit ·
+   * workflow-dispatch the artery · rotate the public RPC node · escalate
+   * with an honest DECISIONS-bound receipt), each followed by an immediate
+   * readback re-probe recorded MATCH|MISMATCH. ZERO chain broadcasts, ZERO
+   * keys, ZERO value moves — R330/R333 untouched, standby laws untouched.
+   * Fail-isolated like every step: exit-0 by design. */
+  report.steps.surfaceWatch = await stepWrap("surface-watch", async () => {
+    const { runSurfaceWatch } = await import("./surface-watch.mjs");
+    const prev = readJson(path.join(STATE, "surface-watch-latest.json"), null);
+    const prevVerdict = prev?.verdict ?? null;
+    const repairMode = typeof prevVerdict === "string" && prevVerdict.startsWith("SURFACES-") && prevVerdict !== "SURFACES-OK" ? "act" : "observe";
+    const r = await runSurfaceWatch({ stateDir: STATE, now, repairMode, prevVerdict });
+    return { verdict: r.surfaceWatch, at: r.at, targets: r.surfaceTargets, ok: r.surfaceOK, degraded: r.surfaceDegraded, down: r.surfaceDown, repairs: r.surfaceRepairs, repairMode: r.repairMode, sig: r.surfaceSig, observe: !r.actArmed };
+  });
+
   /* R327 · THE DNA DRIFT REPORT (T-86, queue item #2 of the Open-Pomelli
    * deep-dive, intel §5.2): the brand-analyzer TWO-CHANNEL pattern made
    * sovereignty-native. Channel A = the signed content-dna.json (declared
@@ -453,6 +483,18 @@ async function main() {
       scanned: report.steps.spawnManifest?.scanned ?? 0,
       invalidCount: report.steps.spawnManifest?.invalidCount ?? 0,
     },
+    /* exec33 surface-watch — the one-line live-surface digest: verdict +
+     * target counts; surfaceRepairs > 0 means the PREVIOUS verdict was
+     * non-OK and the lawful autonomous self-heal executed (readbacks sealed
+     * in state/surface-watch-latest.json). */
+    surfaceWatch: report.steps.surfaceWatch?.verdict ?? "STEP-FAIL",
+    surfaceTargets: report.steps.surfaceWatch?.targets ?? null,
+    surfaceOK: report.steps.surfaceWatch?.ok ?? null,
+    surfaceDegraded: report.steps.surfaceWatch?.degraded ?? null,
+    surfaceDown: report.steps.surfaceWatch?.down ?? null,
+    surfaceRepairs: report.steps.surfaceWatch?.repairs ?? 0,
+    surfaceRepairMode: report.steps.surfaceWatch?.repairMode ?? null,
+    surfaceSig: report.steps.surfaceWatch?.sig ?? null,
     /* R306 engagement read-back — the one-line "what worked" digest
      * (at/measured/medianVotes/topTag; numbers only, no advice). */
     contentEngagement: {

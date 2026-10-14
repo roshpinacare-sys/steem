@@ -4066,6 +4066,305 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("42.7b the book holds both fronts", mem42.published.length, 2);
 }
 
+{
+  /* 43 · THE SELF-HEAL SURFACE WATCHTOWER (exec33, lane 33-a — owner
+   * directive, verbatim intent: "no owner arming — sovereignty achieves
+   * everything itself; the site fell, got no data, and the sovereignty did
+   * NOT self-repair until manual intervention — that is not autonomous. The
+   * sovereign must verify activity as required."). Every fleet surface is
+   * MEASURED every beat (Pulse front-door + its 3 data files, engine state
+   * freshness, the public artery's last run, the chain RPC); repairs are
+   * PLANNED always and EXECUTED only when the previous sealed verdict was
+   * non-OK (the autonomous self-heal — no owner arming). Repairs are
+   * infrastructure/state-ONLY: zero chain broadcasts, zero keys, zero value
+   * moves (R330/R333 untouched, standby untouched). Every executed repair
+   * gets an immediate readback re-probe — MATCH|MISMATCH, never a fake
+   * success. SWR law: probes fire concurrently, each capped — one hanging
+   * target can never wedge the beat. All vectors offline via fetchImpl
+   * (the content-engagement seam); no real network, no clock, no keys. */
+  const sw43 = await import("./surface-watch.mjs");
+  const NOW43 = "2026-10-14T12:30:00.000Z";
+  const OLD43 = "2026-10-14T09:00:00.000Z"; // 210 min before NOW43
+  const resp43 = (status, body, j) => ({ status, ok: status >= 200 && status < 300, text: async () => body ?? (j !== undefined ? JSON.stringify(j) : ""), json: async () => j });
+  const fresh43 = { schema: "pulse-network-v2", generatedAt: NOW43 };
+  const stale43 = { schema: "pulse-network-v2", generatedAt: OLD43 };
+  const mkFetch43 = (route) => {
+    const log = [];
+    const f = async (url, opts = {}) => {
+      log.push({ url: String(url), method: opts.method ?? "GET" });
+      const r = route(String(url), opts);
+      if (r === "hang") return new Promise(() => {}); // never resolves — the SWR trap
+      if (r === undefined) throw new Error("no-route-43");
+      return r;
+    };
+    f.log = log;
+    return f;
+  };
+
+  /* 43.1 the target registry: 9 typed surfaces, lawful kinds/sources,
+   * unique ids, shape-check contract on every datafile/statefile */
+  const T43 = sw43.probeTargets(NOW43);
+  const kinds43 = ["site", "datafile", "statefile", "workflow", "rpc"];
+  const src43 = ["pages", "raw", "api", "rpc", "local"]; // local = measured extension (steem is PRIVATE: anon raw = 404 → a raw probe would read DOWN and LIE)
+  eq("43.1 registry typed + shape-contract", [
+    T43.length,
+    new Set(T43.map((t) => t.id)).size === T43.length,
+    T43.every((t) => kinds43.includes(t.kind) && src43.includes(t.source) && typeof t.url === "string"),
+    T43.filter((t) => t.kind === "datafile" || t.kind === "statefile").every((t) => Number.isFinite(t.maxAgeMinutes) && Array.isArray(t.requiredKeys) && Array.isArray(t.tsKeys)),
+  ], [9, true, true, true]);
+
+  /* 43.2-43.4 site judge: marker-checked 200 (the raw-200 trap for the page itself) */
+  const site43 = T43.find((t) => t.id === "pulse-site");
+  eq("43.2 site 200+marker OK", sw43.judgeSurface(site43, { status: 200, body: "<title>Pulse · דופק הרשת</title>", observedAt: NOW43 }, NOW43).verdict, "OK");
+  eq("43.3 site 200 unmarked DEGRADED", sw43.judgeSurface(site43, { status: 200, body: "<html>placeholder</html>", observedAt: NOW43 }, NOW43), { verdict: "DEGRADED", reason: "site-200-unmarked (readback shape mismatch)", ageMinutes: null });
+  eq("43.4 site 404 DOWN", sw43.judgeSurface(site43, { status: 404, observedAt: NOW43 }, NOW43).verdict, "DOWN");
+
+  /* 43.5-43.9 datafile judge: shape + age rules (deterministic clock via now) */
+  const df43 = T43.find((t) => t.id === "pulse-network");
+  const jFresh43 = sw43.judgeSurface(df43, { status: 200, json: fresh43, observedAt: NOW43 }, NOW43);
+  eq("43.5 fresh datafile OK (age 0 ≤ 90)", [jFresh43.verdict, jFresh43.ageMinutes], ["OK", 0]);
+  const jStale43 = sw43.judgeSurface(df43, { status: 200, json: stale43, observedAt: NOW43 }, NOW43);
+  eq("43.6 stale datafile STALE (age 210 > 90)", [jStale43.verdict, jStale43.reason, jStale43.ageMinutes], ["STALE", "age>90m", 210]);
+  eq("43.7 raw-200-empty trap: valid JSON missing keys → DEGRADED", sw43.judgeSurface(df43, { status: 200, json: {}, observedAt: NOW43 }, NOW43).reason, "shape-missing:schema,generatedAt");
+  eq("43.8 200 unparseable → DOWN", sw43.judgeSurface(df43, { status: 200, json: undefined, observedAt: NOW43 }, NOW43).verdict, "DOWN");
+  eq("43.9 200 no valid timestamp → DEGRADED, no fake age", sw43.judgeSurface(df43, { status: 200, json: { schema: "x", generatedAt: 12345 }, observedAt: NOW43 }, NOW43), { verdict: "DEGRADED", reason: "shape-missing-timestamp (no fake age)", ageMinutes: null });
+
+  /* 43.10-43.14 artery judge: conclusion + age + the honest-unknown law */
+  const wf43 = T43.find((t) => t.id === "artery-workflow");
+  eq("43.10 artery success fresh OK", sw43.judgeSurface(wf43, { runStatus: "completed", conclusion: "success", createdAt: NOW43, observedAt: NOW43 }, NOW43).verdict, "OK");
+  eq("43.11 artery success 3h old STALE", sw43.judgeSurface(wf43, { runStatus: "completed", conclusion: "success", createdAt: OLD43, observedAt: NOW43 }, NOW43).verdict, "STALE");
+  eq("43.12 artery failure DOWN", sw43.judgeSurface(wf43, { runStatus: "completed", conclusion: "failure", createdAt: NOW43, observedAt: NOW43 }, NOW43).reason, "conclusion:failure");
+  eq("43.13 artery in_progress OK (alive right now)", sw43.judgeSurface(wf43, { runStatus: "in_progress", conclusion: null, createdAt: OLD43, observedAt: NOW43 }, NOW43).verdict, "OK");
+  eq("43.14 artery rate-limited probe-error → DEGRADED (never a fake DOWN)", sw43.judgeSurface(wf43, { probeError: "api-http-403", observedAt: NOW43 }, NOW43).verdict, "DEGRADED");
+
+  /* 43.15 rpc judge: the node IS the surface — unreachable or headless = DOWN;
+   * a node whose DGPO is blocked (measured live 2026-10-14 on jussi fronts)
+   * but whose chain answers = OK via the fallback liveness call */
+  const rpc43 = T43.find((t) => t.id === "steem-rpc");
+  eq("43.15 rpc head-block OK / unreachable+headless DOWN / fallback alive OK", [
+    sw43.judgeSurface(rpc43, { headBlock: 110432082, observedAt: NOW43 }, NOW43).verdict,
+    sw43.judgeSurface(rpc43, { probeError: "http-500", observedAt: NOW43 }, NOW43).verdict,
+    sw43.judgeSurface(rpc43, { headBlock: null, observedAt: NOW43 }, NOW43).verdict,
+    sw43.judgeSurface(rpc43, { headBlock: null, fallbackAlive: true, observedAt: NOW43 }, NOW43).reason,
+  ], ["OK", "DOWN", "DOWN", "alive-via-get-accounts (dgpo-blocked-on-node)"]);
+
+  /* 43.16-43.17 the lawful repair map + readbackRequired on EVERY action */
+  const engT43 = { id: "engine-selftest", kind: "statefile", url: "x", maxAgeMinutes: 90, source: "local" };
+  const plans43 = [
+    sw43.planRepair({ target: df43, verdict: "STALE", reason: "age>90m" }),
+    sw43.planRepair({ target: engT43, verdict: "STALE", reason: "age>90m" }),
+    sw43.planRepair({ target: site43, verdict: "DOWN", reason: "http-404" }),
+    sw43.planRepair({ target: wf43, verdict: "DOWN", reason: "conclusion:failure" }),
+    sw43.planRepair({ target: rpc43, verdict: "DOWN", reason: "rpc-node-unreachable" }),
+    sw43.planRepair({ target: df43, verdict: "DOWN", reason: "http-404" }),
+    sw43.planRepair({ target: df43, verdict: "DEGRADED", reason: "shape-missing:schema" }),
+    sw43.planRepair({ target: df43, verdict: "OK", reason: "fresh" }),
+  ];
+  eq("43.16 repair map per verdict", plans43.map((p) => (p ? p.action : null)), ["regen-state", "regen-state", "retrigger-pages", "redispatch", "failover-node", "regen-state", "escalate", null]);
+  eq("43.17 owners lawful + readbackRequired everywhere", [
+    plans43[0].repo + "/" + plans43[0].workflow,          // Pulse generator
+    plans43[1].repo + "/" + plans43[1].workflow,          // engine state → the public artery regenerates it
+    plans43[2].repo, plans43[3].repo + "/" + plans43[3].workflow,
+    plans43.filter(Boolean).every((p) => p.readbackRequired === true),
+  ], ["Pulse/heartbeat.yml", "saos-runtime/sovereign-runtime.yml", "Pulse", "saos-runtime/sovereign-runtime.yml", true]);
+
+  /* hermetic target set for the full-run vectors (offline fetchImpl only) */
+  const siteT43 = { id: "pulse-site", kind: "site", url: "https://site.test/", maxAgeMinutes: null, source: "pages", marker: "Pulse ·" };
+  const dfT43 = { id: "pulse-network", kind: "datafile", url: "https://raw.test/network.json", maxAgeMinutes: 90, source: "raw", requiredKeys: ["schema", "generatedAt"], tsKeys: ["generatedAt"] };
+  const locT43 = { id: "engine-selftest", kind: "statefile", url: "private:selftest", localPath: "selftest-last-run.json", maxAgeMinutes: 90, source: "local", requiredKeys: ["pass", "fail", "at"], tsKeys: ["at"] };
+  const rpcT43 = { id: "steem-rpc", kind: "rpc", url: "https://rpc0.test", maxAgeMinutes: null, source: "rpc" };
+  const tgt43 = [siteT43, dfT43, locT43, rpcT43];
+  const tmp43 = fs.mkdtempSync(os.tmpdir() + "/watch43-");
+  /* every run's stateDir gets the fresh local statefile (the "local" source
+   * reads git-as-memory from ITS OWN stateDir) */
+  const seedLocal43 = (dir) => { fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, "selftest-last-run.json"), JSON.stringify({ pass: 1, fail: 0, at: NOW43 })); };
+  for (const d of ["swr", "act", "mis", "regen", "obs", "gate", "gate2", "fo", "esc"]) seedLocal43(path.join(tmp43, d));
+  seedLocal43(tmp43);
+  const dgpo43 = { jsonrpc: "2.0", result: { head_block_number: 110432082, time: NOW43 } };
+  const allOk43 = (siteResult) => mkFetch43((u, o) => {
+    if (u === "https://site.test/" && (o.method ?? "GET") === "GET") return siteResult;
+    if (u === "https://raw.test/network.json") return resp43(200, JSON.stringify(fresh43));
+    if (u === "https://rpc0.test") return resp43(200, undefined, dgpo43);
+    return undefined;
+  });
+
+  /* 43.18 THE SWR LAW: one never-resolving target cannot wedge the watch —
+   * it times out honestly (80ms) while the healthy surfaces report, and the
+   * unknown reads DEGRADED (never a fabricated DOWN/OK) */
+  const swr43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "swr"), now: NOW43, targets: tgt43, timeoutMs: 80,
+    fetchImpl: allOk43("hang"), // the site fetch NEVER resolves — the SWR trap
+  });
+  eq("43.18 hanging target capped, watch completes", [
+    swr43.surfaceWatch, swr43.surfaceTargets, swr43.surfaceOK, swr43.surfaceRepairs,
+    swr43.surfaceSig === null || /^sig:[0-9a-f]{8}$/.test(swr43.surfaceSig),
+  ], ["SURFACES-DEGRADED", 4, 3, 0, true]);
+  const swrSealed43 = JSON.parse(fs.readFileSync(path.join(tmp43, "swr", "surface-watch-latest.json"), "utf8"));
+  ok("43.18b the hung target's reason names the timeout", swrSealed43.targets.find((t) => t.id === "pulse-site").reason.includes("timeout-80ms"));
+
+  /* 43.19 the heartbeat-keys registry — exactly the seven contract keys */
+  eq("43.19 heartbeat keys registry", ["surfaceWatch", "surfaceTargets", "surfaceOK", "surfaceDegraded", "surfaceDown", "surfaceRepairs", "surfaceSig"].every((k) => k in swr43), true);
+
+  /* 43.20 THE AUTONOMOUS SELF-HEAL, MATCH FLOW: prev verdict non-OK → act
+   * armed → site DOWN (first probe 404) → content commit → readback
+   * 200+marker = MATCH — and the token NEVER lands in any receipt
+   * (keys-never-echo, measured) */
+  let putBody43 = null;
+  let siteHits43 = 0; // probe 1 = the fallen site; probe 2 (readback) = healed
+  const act43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "act"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    repairMode: "act", prevVerdict: "SURFACES-DOWN", token: "test-token-xyz-never-echo",
+    fetchImpl: mkFetch43((u, o) => {
+      const m = o.method ?? "GET";
+      if (u === "https://site.test/" && m === "GET") {
+        siteHits43++;
+        return siteHits43 === 1 ? resp43(404, "") : resp43(200, "<title>Pulse · דופק הרשת</title>");
+      }
+      if (String(u).startsWith("https://api.github.com/repos/roshpinacare-sys/Pulse/contents/")) {
+        if (m === "PUT") { putBody43 = o.body; return resp43(201); }
+        return resp43(404); // heal file absent → create (no sha)
+      }
+      if (u === "https://raw.test/network.json") return resp43(200, JSON.stringify(fresh43));
+      if (u === "https://rpc0.test") return resp43(200, undefined, dgpo43);
+      return undefined;
+    }),
+  });
+  eq("43.20 act flow: commit + readback MATCH", [act43.surfaceWatch, act43.surfaceRepairs, act43.repairMode], ["SURFACES-DOWN", 1, "act"]);
+  const actSealed43 = JSON.parse(fs.readFileSync(path.join(tmp43, "act", "surface-watch-latest.json"), "utf8"));
+  eq("43.20b repair receipt honest + sealed", [
+    actSealed43.repairs[0].id, actSealed43.repairs[0].action, actSealed43.repairs[0].result, actSealed43.repairs[0].readback,
+    actSealed43.targets.find((t) => t.id === "pulse-site").readback,
+    /"ref"|"message"/.test(String(putBody43)) === true && String(JSON.parse(putBody43).message).includes("retrigger Pages"),
+    fs.readFileSync(path.join(tmp43, "act", "surface-watch-latest.json"), "utf8").includes("test-token-xyz-never-echo"),
+  ], ["pulse-site", "retrigger-pages", "committed", "MATCH", "MATCH", true, false]);
+
+  /* 43.21 MISMATCH honesty: readback still 404 → recorded MISMATCH with the
+   * pages-build-pending note — never a fake success */
+  const mis43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "mis"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    repairMode: "act", prevVerdict: "SURFACES-DOWN", token: "t",
+    fetchImpl: mkFetch43((u, o) => {
+      const m = o.method ?? "GET";
+      if (u === "https://site.test/" && m === "GET") return resp43(404, "");
+      if (String(u).startsWith("https://api.github.com/repos/roshpinacare-sys/Pulse/contents/")) return resp43(m === "PUT" ? 201 : 404);
+      if (u === "https://raw.test/network.json") return resp43(200, JSON.stringify(fresh43));
+      if (u === "https://rpc0.test") return resp43(200, undefined, dgpo43);
+      return undefined;
+    }),
+  });
+  eq("43.21 readback MISMATCH honesty", [
+    mis43.surfaceRepairs,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "mis", "surface-watch-latest.json"), "utf8")).repairs[0].readback,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "mis", "surface-watch-latest.json"), "utf8")).repairs[0].detail.note.includes("pages-build-pending"),
+  ], [1, "MISMATCH", true]);
+
+  /* 43.22 regen-state: stale datafile → dispatch the OWNING generator (ref
+   * main) → readback still stale = honest MISMATCH (freshness lands on the
+   * next generator run; the next beat verifies) */
+  let dispatchBody43 = null;
+  const regen43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "regen"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    repairMode: "act", prevVerdict: "SURFACES-DEGRADED", token: "t",
+    fetchImpl: mkFetch43((u, o) => {
+      const m = o.method ?? "GET";
+      if (u === "https://site.test/") return resp43(200, "<title>Pulse · דופק הרשת</title>");
+      if (u === "https://raw.test/network.json") return resp43(200, JSON.stringify(stale43));
+      if (String(u).endsWith("/actions/workflows/heartbeat.yml/dispatches") && m === "POST") { dispatchBody43 = o.body; return resp43(204); }
+      if (u === "https://rpc0.test") return resp43(200, undefined, dgpo43);
+      return undefined;
+    }),
+  });
+  eq("43.22 regen-state dispatches the owning generator", [
+    regen43.surfaceRepairs,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "regen", "surface-watch-latest.json"), "utf8")).repairs[0].action,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "regen", "surface-watch-latest.json"), "utf8")).repairs[0].result,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "regen", "surface-watch-latest.json"), "utf8")).repairs[0].readback,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "regen", "surface-watch-latest.json"), "utf8")).repairs[0].detail.owner,
+    JSON.parse(dispatchBody43).ref,
+  ], [1, "regen-state", "dispatched", "MISMATCH", "Pulse/heartbeat.yml", "main"]);
+
+  /* 43.23 OBSERVE-BY-DEFAULT: no repairMode → the plan is recorded, nothing
+   * executes (the R302/R304 observe-first law, measured on a DOWN surface) */
+  const obs43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "obs"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    fetchImpl: mkFetch43((u) => (u === "https://site.test/" ? resp43(404, "") : u === "https://raw.test/network.json" ? resp43(200, JSON.stringify(fresh43)) : u === "https://rpc0.test" ? resp43(200, undefined, dgpo43) : undefined)),
+  });
+  const obsSealed43 = JSON.parse(fs.readFileSync(path.join(tmp43, "obs", "surface-watch-latest.json"), "utf8"));
+  eq("43.23 observe default: plan recorded, zero executions", [obs43.surfaceRepairs, obs43.repairMode, obsSealed43.repairs.length, obsSealed43.repairsPlanned.length, obsSealed43.repairsPlanned[0].action], [0, "observe", 0, 1, "retrigger-pages"]);
+
+  /* 43.24 THE ACT GATE is fail-closed: 'act' with a previous OK verdict (or
+   * no previous verdict) degrades to observe — repair needs measured need */
+  const gate43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "gate"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    repairMode: "act", prevVerdict: "SURFACES-OK", token: "t",
+    fetchImpl: mkFetch43((u) => (u === "https://site.test/" ? resp43(404, "") : u === "https://raw.test/network.json" ? resp43(200, JSON.stringify(fresh43)) : u === "https://rpc0.test" ? resp43(200, undefined, dgpo43) : undefined)),
+  });
+  const gateNone43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "gate2"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    repairMode: "act", token: "t",
+    fetchImpl: mkFetch43((u) => (u === "https://site.test/" ? resp43(404, "") : u === "https://raw.test/network.json" ? resp43(200, JSON.stringify(fresh43)) : u === "https://rpc0.test" ? resp43(200, undefined, dgpo43) : undefined)),
+  });
+  eq("43.24 act gate fail-closed (prev OK / prev absent)", [gate43.surfaceRepairs, gateNone43.surfaceRepairs, String(gate43.repairMode).startsWith("act-gated-off")], [0, 0, true]);
+
+  /* 43.25 failover-node: dead node → next public node answers → failed-over
+   * + MATCH (the healing IS the next node answering) + rotation receipt */
+  const fo43 = await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "fo"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    repairMode: "act", prevVerdict: "SURFACES-DOWN", token: "t",
+    fetchImpl: mkFetch43((u) => (u === "https://site.test/" ? resp43(200, "<title>Pulse · דופק הרשת</title>") : u === "https://raw.test/network.json" ? resp43(200, JSON.stringify(fresh43)) : u === "https://rpc0.test" ? resp43(500, "") : u === "https://api.justyy.com" ? resp43(200, undefined, dgpo43) : undefined)),
+  });
+  const foSealed43 = JSON.parse(fs.readFileSync(path.join(tmp43, "fo", "surface-watch-latest.json"), "utf8"));
+  eq("43.25 failover rotation + readback on the next node", [
+    foSealed43.repairs[0].action, foSealed43.repairs[0].result, foSealed43.repairs[0].readback,
+    foSealed43.repairs[0].detail.to, JSON.parse(fs.readFileSync(path.join(tmp43, "fo", "rpc-failover.json"), "utf8")).to,
+  ], ["failover-node", "failed-over", "MATCH", "https://api.justyy.com", "https://api.justyy.com"]);
+
+  /* 43.26 ESCALATE honesty: a DEGRADED surface escalates — a DECISIONS-bound
+   * receipt in surface-escalations.jsonl, ZERO external API calls attempted */
+  const escLog43 = mkFetch43((u) => (u === "https://site.test/" ? resp43(200, "<title>Pulse · דופק הרשת</title>") : u === "https://raw.test/network.json" ? resp43(200, JSON.stringify({})) : u === "https://rpc0.test" ? resp43(200, undefined, dgpo43) : undefined));
+  await sw43.runSurfaceWatch({
+    stateDir: path.join(tmp43, "esc"), now: NOW43, targets: tgt43, timeoutMs: 200,
+    repairMode: "act", prevVerdict: "SURFACES-DEGRADED", token: "t", fetchImpl: escLog43,
+  });
+  const escLines43 = fs.readFileSync(path.join(tmp43, "esc", "surface-escalations.jsonl"), "utf8").trim().split("\n").map((l) => JSON.parse(l));
+  eq("43.26 escalate: honest receipt, zero external calls", [
+    escLines43.length, escLines43[0].id, escLines43[0].action,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "esc", "surface-watch-latest.json"), "utf8")).repairs[0].result,
+    escLog43.log.filter((c) => c.url.startsWith("https://api.github.com")).length,
+  ], [1, "pulse-network", "escalate", "escalated", 0]);
+
+  /* 43.27 the seal: signature binds content (fleet sig:8hex canonical) */
+  eq("43.27 signature binds content + tamper flips", [
+    /^sig:[0-9a-f]{8}$/.test(actSealed43.signature),
+    sw43.signWatchDoc(actSealed43) === actSealed43.signature,
+    sw43.signWatchDoc({ ...actSealed43, verdict: "SURFACES-OK" }) === actSealed43.signature,
+    actSealed43.repairMode === "act" && actSealed43.prevVerdict === "SURFACES-DOWN" && typeof actSealed43.lawSource === "string",
+  ], [true, true, false, true]);
+
+  /* 43.28 local statefile probes (the measured "local" source for the
+   * PRIVATE steem repo): fresh file OK with real age; absent file DOWN */
+  const locFresh43 = await sw43.runSurfaceWatch({ stateDir: tmp43, now: NOW43, targets: [locT43], timeoutMs: 200, fetchImpl: mkFetch43(() => undefined) });
+  const locAbsent43 = await sw43.runSurfaceWatch({ stateDir: tmp43, now: NOW43, targets: [{ ...locT43, id: "engine-absent", localPath: "absent-43.json" }], timeoutMs: 200, fetchImpl: mkFetch43(() => undefined) });
+  eq("43.28 local statefile fresh OK / absent DOWN", [
+    locFresh43.surfaceWatch, locFresh43.surfaceOK,
+    locAbsent43.surfaceWatch,
+    JSON.parse(fs.readFileSync(path.join(tmp43, "surface-watch-latest.json"), "utf8")).targets[0].verdict,
+  ], ["SURFACES-OK", 1, "SURFACES-DOWN", "DOWN"]);
+
+  /* 43.29 determinism: the seal is a function of content, not key order */
+  eq("43.29 signWatchDoc deterministic + key-order-free", [
+    sw43.signWatchDoc({ at: NOW43, verdict: "x" }),
+    sw43.signWatchDoc({ verdict: "x", at: NOW43 }),
+    sw43.signWatchDoc({ at: NOW43, verdict: "y" }),
+  ], [
+    sw43.signWatchDoc({ verdict: "x", at: NOW43 }),
+    sw43.signWatchDoc({ at: NOW43, verdict: "x" }),
+    sw43.signWatchDoc({ at: NOW43, verdict: "y" }),
+  ]);
+
+}
+
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
