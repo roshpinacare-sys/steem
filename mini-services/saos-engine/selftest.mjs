@@ -3057,6 +3057,81 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   process.env.SAOS_STATE_DIR = prevDir;
 }
 
+/* ── 30 · R302/R303 · CONTENT JUDGE + GIT-AS-MEMORY (T-83, trace 1a138763fa0a8fe9)
+ * — the SoMe/market-ldr learning layer, offline & deterministic: slop
+ * lexicon, persona voice (DNA), memory penalty, quality observe, and the
+ * weekly seed seal. Every dir isolated (R275 family: SAOS_STATE_DIR +
+ * SAOS_MEMORY_SEED_DIR) so the run leaves zero artifacts in the repo. ── */
+{
+  const cm = await import("./content-memory.mjs");
+  const cj = await import("./content-judge.mjs");
+  const dir30 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-mem30-"));
+  const seed30 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-mem30-seed-"));
+  const prevSeed = process.env.SAOS_MEMORY_SEED_DIR;
+  process.env.SAOS_MEMORY_SEED_DIR = seed30;
+  const nowISO = "2026-10-14T10:00:00.000Z";
+
+  /* 30.1 slop lexicon — the machine-slop fingerprint of the shelling incident */
+  eq("30.1: slop body hit refuses", cj.slopVerdict("A plain checklist", "Are you tired of juggling bills? This is fine.").ok, false);
+  eq("30.1: clean measured prose passes", cj.slopVerdict("Three receipts, one ledger", "The numbers held on Friday; here is the arithmetic.").ok, true);
+  ok("30.1: reason carries the phrase", cj.slopVerdict("x", "let's dive in to the drawer metaphor").reasons[0].includes("let's dive in"));
+
+  /* 30.2 DNA: load + merge + persona/fleet forbidden */
+  const dnaJ = cj.loadDNA();
+  ok("30.2: loadDNA contract", dnaJ.version === 1 && dnaJ.law === "R302" && Array.isArray(dnaJ.slopLexicon));
+  const merged = cj.mergeDNA(cj.DEFAULT_DNA, { fleetForbidden: ["crypto wizard"] });
+  eq("30.2: mergeDNA array override", merged.fleetForbidden, ["crypto wizard"]);
+  eq("30.2: mergeDNA keeps lexicon", merged.slopLexicon.length, cj.DEFAULT_DNA.slopLexicon.length);
+  eq("30.2: personaVerdict fleet-forbidden hit", cj.personaVerdict(merged, { id: "headcorner" }, { title: "t", body: "advice from a crypto wizard here" }).ok, false);
+  eq("30.2: personaVerdict clean", cj.personaVerdict(merged, { id: "headcorner" }, { title: "t", body: "plain arithmetic, receipts attached" }).ok, true);
+
+  /* 30.3 memory loop: record → load → penalty → winBoost (R275 isolation) */
+  eq("30.3: recordRejected id deterministic", cm.recordRejected(dir30, { account: "headcorner", title: "Are You Tired of Bills?", body: "are you tired of bills every month", reason: "slop:are you tired of", vetoType: "judge", at: nowISO }).id.length, 16);
+  eq("30.3: recordRejected dedups same verdict", cm.recordRejected(dir30, { account: "headcorner", title: "Are You Tired of Bills?", body: "are you tired of bills every month", reason: "slop:are you tired of", vetoType: "judge", at: nowISO }), null);
+  eq("30.3: recordPublished carries score", cm.recordPublished(dir30, { account: "headcorner", permlink: "plain-checklist", title: "The drawer earns its place", body: "I measured the drawer twice and the numbers held.", score: 61.5, at: nowISO }).score, 61.5);
+  const mem30 = cm.loadMemory(dir30);
+  eq("30.3: loadMemory counts", [mem30.rejected.length, mem30.published.length], [1, 1]);
+  eq("30.3: penalty exact rejected title", cm.memoryPenalty(mem30, { title: "are you tired of bills?", body: "something else entirely" }, { now: nowISO }).ok, false);
+  eq("30.3: penalty jaccard body ≥0.5", cm.memoryPenalty(mem30, { title: "Fresh angle on money", body: "are you tired of bills every single month now" }, { now: nowISO }).ok, false);
+  eq("30.3: clean pattern passes", cm.memoryPenalty(mem30, { title: "A different lesson", body: "The workshop ledger closes with three receipts and no adjectives." }, { now: nowISO }).ok, true);
+  ok("30.3: reason names the memory law", cm.memoryPenalty(mem30, { title: "are you tired of bills?", body: "x" }, { now: nowISO }).reasons[0].startsWith("memory:title-rejected"));
+  eq("30.3: aged-out window lets go", cm.memoryPenalty(mem30, { title: "are you tired of bills?", body: "x" }, { now: "2027-02-14T10:00:00.000Z" }).ok, true);
+  eq("30.3: winBoost matches published", cm.winBoost(mem30, { title: "The drawer earns its place again", body: "I measured the drawer twice and the numbers held up well." }).matched, true);
+  eq("30.3: degraded empty memory is honest", cm.memoryPenalty({ rejected: [], published: [] }, { title: "x", body: "y" }, { now: nowISO }).ok, true);
+
+  /* 30.4 judgeVerdict composition: hard laws fail-closed, quality observe */
+  const jv1 = cj.judgeVerdict({ title: "Unlock The Power Of Steem", body: "In conclusion, unlock the power of the chain today.", persona: "headcorner" }, { memory: mem30, persona: null, dna: dnaJ });
+  eq("30.4: slop draft → veto", jv1.ok, false);
+  ok("30.4: veto carries slop reasons", jv1.reasons.some((r) => r.startsWith("slop:")));
+  eq("30.4: quality stays observe", jv1.observe.mode, "observe");
+  const cleanDraft = { title: "Three receipts, one ledger", body: "The workshop drawer holds three receipts. I measured twice and wrote down what held. The numbers did not lie on Friday. Here is the arithmetic, plain as a checklist:\n\n- 12 SBD in\n- 4 SBD out\n- the rest held\n\nThe drawer earned its place.", persona: "headcorner" };
+  const jv2 = cj.judgeVerdict(cleanDraft, { memory: mem30, persona: { id: "headcorner", slang: ["let's measure it"], traits: ["steady"], neverDo: ["lecture anyone"] }, dna: dnaJ });
+  eq("30.4: clean draft clears hard laws", jv2.ok, true);
+  ok("30.4: quality score in range", jv2.observe.score >= 0 && jv2.observe.score <= 100);
+  ok("30.4: register axis measured", typeof jv2.observe.axes.register === "number");
+  eq("30.4: null memory degrades, never blocks", cj.judgeVerdict(cleanDraft, { memory: null, dna: dnaJ }).ok, true);
+  const weak = { title: "Words", body: "Short.", persona: null };
+  eq("30.4: observe never vetoes a low score", cj.judgeVerdict(weak, { memory: null, dna: dnaJ }).ok, true);
+  const enforceDna = cj.mergeDNA(dnaJ, { quality: { weights: dnaJ.quality.weights, enforce: true } });
+  eq("30.4: enforce mode applies the floor", cj.judgeVerdict(weak, { memory: null, dna: enforceDna }).ok, false);
+
+  /* 30.5 the seal: aggregate → weekly.json + HEARTBEAT.md + runtime→seed */
+  const agg30 = cm.weeklyAggregate(mem30, { now: nowISO });
+  eq("30.5: aggregate counts", [agg30.published, agg30.vetoed.judge ?? 0], [1, 1]);
+  eq("30.5: scoreMean observed", agg30.scoreMean, 61.5);
+  const md30 = cm.renderHeartbeat(mem30, agg30, { now: nowISO });
+  ok("30.5: heartbeat renders self-audit", md30.includes("published patterns: 1") && md30.includes("rejected patterns: 1"));
+  const wk30 = await cm.runWeeklyMemory({ stateDir: dir30, now: nowISO });
+  eq("30.5: runWeeklyMemory verdict", wk30.verdict, "MEMORY-OK");
+  eq("30.5: weekly.json written", JSON.parse(fs.readFileSync(path.join(dir30, "content-memory", "weekly.json"), "utf8")).published, 1);
+  ok("30.5: HEARTBEAT.md written in state", fs.readFileSync(path.join(dir30, "content-memory", "HEARTBEAT.md"), "utf8").includes("HEARTBEAT SELF-AUDIT"));
+  eq("30.5: seed merge honest", wk30.seedMerged, true);
+  eq("30.5: isolated seed carries runtime pattern", cm.readSeed("published").some((r) => r.permlink === "plain-checklist"), true);
+
+  try { fs.rmSync(dir30, { recursive: true, force: true }); fs.rmSync(seed30, { recursive: true, force: true }); } catch { /* tmp */ }
+  if (prevSeed === undefined) delete process.env.SAOS_MEMORY_SEED_DIR; else process.env.SAOS_MEMORY_SEED_DIR = prevSeed;
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

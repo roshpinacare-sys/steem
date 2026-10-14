@@ -192,6 +192,26 @@ async function main() {
     return { verdict: s.verdict ?? null, chain: s.chain ?? null, nodes: s.nodes ?? null, steemitShelled: s.steemit?.shelled ?? null, altRenderedAccounts: s.altRenderedAccounts ?? null, judged: s.cells?.judged ?? null, totalCells: s.cells?.total ?? null, fresh: true };
   });
 
+  /* R303 · THE CONTENT-MEMORY HEARTBEAT (T-83, owner order: "לאטום ולתעד
+   * לריבונות האוטונומית שלא יאבד בסנדבוקס שלך בשום פנים ואופן"): the weekly
+   * aggregate + HEARTBEAT self-audit + runtime→seed merge. TTL-gated 12h
+   * like the light steps; the written files ride the state-churn commits,
+   * and the seed merge lands the learning into the committed memory-seed/
+   * copy — git is the truth, sandbox deaths lose nothing. Read+write only:
+   * zero chain, zero broadcast, fail-isolated like every step. */
+  report.steps.contentMemory = await stepWrap("content-memory", async () => {
+    const SFILE = path.join(STATE, "content-memory-weekly.json");
+    const cached = readJson(SFILE, null);
+    const ageMin = cached?.generatedAt ? (Date.now() - Date.parse(cached.generatedAt)) / 60000 : Infinity;
+    if (Number.isFinite(ageMin) && ageMin < 720) {
+      const rejectedSum = Object.values(cached.vetoed ?? {}).reduce((a, b) => a + b, 0);
+      return { verdict: "MEMORY-OK", published: cached.published ?? null, rejected: rejectedSum, scoreMean: cached.scoreMean ?? null, fresh: false, ageMin: Math.round(ageMin) };
+    }
+    const { runWeeklyMemory } = await import("./content-memory.mjs");
+    const r = await runWeeklyMemory({ stateDir: STATE, now });
+    return { verdict: r.verdict, published: r.published, rejected: r.rejected, scoreMean: r.scoreMean ?? null, topReason: r.topReason ?? null, seedMerged: r.seedMerged, fresh: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -227,6 +247,9 @@ async function main() {
     delegation: report.steps.delegation?.verdict ?? "STEP-FAIL",
     delegationOps: report.steps.delegation?.ops ?? 0,
     delegationSp: report.steps.delegation?.totalSp ?? 0,
+    contentMemory: report.steps.contentMemory?.verdict ?? "STEP-FAIL",
+    contentMemoryPatterns: report.steps.contentMemory?.published ?? null,
+    contentMemoryScore: report.steps.contentMemory?.scoreMean ?? null,
   };
   console.log("CI-HEARTBEAT " + JSON.stringify(summary));
   fs.writeFileSync(path.join(STATE, "ci-last-heartbeat.json"), JSON.stringify({ ...summary, report }, null, 2));
