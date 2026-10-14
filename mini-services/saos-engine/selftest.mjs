@@ -2958,6 +2958,58 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   ok("R301: override path exists (owner can lift stealth via conf)", "stealth" in off && "maxFleetPostsPerDay" in off);
 }
 
+/* ── exec29/29-b · THE SOCIAL-STANDBY LAW (the hard gate at the rail
+ * choke-point). Fail-closed defaults + dual-key cross-verification, all
+ * offline: the zero-network law holds because the remote key is a stubbed
+ * fetchImpl here — production uses global fetch with a 10s timeout and
+ * NEVER caches (every verdict is a fresh file read + a fresh fetch). ── */
+{
+  const rg = await import("./readiness-gate.mjs");
+  const gdir = fs.mkdtempSync(path.join(os.tmpdir(), "saos-gate-"));
+  const wgate = (o) => fs.writeFileSync(path.join(gdir, "readiness.json"), typeof o === "string" ? o : JSON.stringify(o));
+  const noNet = async () => { throw new Error("network must not be attempted while the local key is closed/incomplete"); };
+  /* fail-closed defaults */
+  eq("exec29: readGate absent → STANDBY", rg.readGate(gdir).gate, "STANDBY");
+  wgate("{not json at all");
+  eq("exec29: readGate corrupt → STANDBY", rg.readGate(gdir).gate, "STANDBY");
+  wgate({});
+  eq("exec29: readGate gate-less document → STANDBY", rg.readGate(gdir).gate, "STANDBY");
+  eq("exec29: committed default readiness.json is CLOSED", rg.readGate(path.join(path.dirname(new URL(import.meta.url).pathname), "state")).gate, "STANDBY");
+  eq("exec29: verdict on absent file → STANDBY", (await rg.socialGateVerdict(gdir, { fetchImpl: noNet })).mode, "STANDBY");
+  /* the local key alone is never enough */
+  wgate({ gate: "ARMED", armedAt: "2026-10-14T00:00:00Z" });
+  eq("exec29: local ARMED w/o directiveRef → STANDBY (no fetch)", (await rg.socialGateVerdict(gdir, { fetchImpl: noNet })).mode, "STANDBY");
+  wgate({ gate: "ARMED", directiveRef: "DIR-1", armedAt: "not-a-date" });
+  eq("exec29: local ARMED w/ invalid armedAt → STANDBY (no fetch)", (await rg.socialGateVerdict(gdir, { fetchImpl: noNet })).mode, "STANDBY");
+  wgate({ gate: "ARMED ", directiveRef: "DIR-1", armedAt: "2026-10-14T00:00:00Z" });
+  eq("exec29: gate value matched strictly → STANDBY", (await rg.socialGateVerdict(gdir, { fetchImpl: noNet })).mode, "STANDBY");
+  /* the dual-key: the Autonomy DIRECTIVES file must agree, fresh every call */
+  wgate({ gate: "ARMED", directiveRef: "DIR-1", armedAt: "2026-10-14T00:00:00Z" });
+  const remote = (body, ok = true, status = 200) => async () => ({ ok, status, json: async () => body });
+  eq("exec29: cross-key directiveRef mismatch → STANDBY", (await rg.socialGateVerdict(gdir, { fetchImpl: remote({ status: "ARMED", directiveRef: "OTHER" }) })).mode, "STANDBY");
+  eq("exec29: cross-key status≠ARMED → STANDBY", (await rg.socialGateVerdict(gdir, { fetchImpl: remote({ status: "STANDBY", directiveRef: "DIR-1" }) })).mode, "STANDBY");
+  eq("exec29: cross-key HTTP 404 → STANDBY fail-closed", (await rg.socialGateVerdict(gdir, { fetchImpl: remote(null, false, 404) })).mode, "STANDBY");
+  eq("exec29: cross-key fetch failure → STANDBY fail-closed", (await rg.socialGateVerdict(gdir, { fetchImpl: async () => { throw new Error("net down"); } })).mode, "STANDBY");
+  eq("exec29: dual-key agreement → ARMED", (await rg.socialGateVerdict(gdir, { fetchImpl: remote({ status: "ARMED", directiveRef: "DIR-1" }) })).mode, "ARMED");
+  /* the honest receipt */
+  eq("exec29: STANDBY_RECEIPT shape", rg.STANDBY_RECEIPT("haran"), { lane: "haran", status: "STANDBY-GATE-CLOSED", actions: 0, note: "social standby law exec29 — zero social footprint until owner arms via Autonomy DIRECTIVES" });
+  /* THE CHOKE-POINT ITSELF: a full runSocial + runProfiles under the default
+   * law — zero actions, every lane an honest closed-gate receipt, and no
+   * custody revival / key handling / network anywhere on the path (the gate
+   * answers from the local file alone and returns before anything else). */
+  const asoc = await import("./army-social.mjs");
+  const soc = await asoc.runSocial({ now: "2026-10-14T12:00:00Z" });
+  eq("exec29: runSocial under the default law → SOCIAL-STANDBY", soc.verdict, "SOCIAL-STANDBY");
+  eq("exec29: runSocial zero actions", [soc.executed, soc.refused, soc.due], [0, 0, 0]);
+  const socDoc = JSON.parse(fs.readFileSync(path.join(process.env.SAOS_STATE_DIR, "social.json"), "utf8"));
+  eq("exec29: social.json carries the standby verdict", socDoc.verdict, "SOCIAL-STANDBY");
+  eq("exec29: every planned lane reports the closed-gate receipt", Object.values(socDoc.accounts).every((a) => a.status === "STANDBY-GATE-CLOSED" && a.actions === 0), true);
+  const prof = await asoc.runProfiles({ now: "2026-10-14T12:00:00Z" });
+  eq("exec29: runProfiles under the default law → PROFILES-STANDBY", prof.verdict, "PROFILES-STANDBY");
+  eq("exec29: runProfiles zero broadcasts", [prof.updated.length, prof.skipped.length, prof.deferred.length], [0, 0, 0]);
+  try { fs.rmSync(gdir, { recursive: true, force: true }); } catch { /* tmp best-effort */ }
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

@@ -69,6 +69,7 @@ import { loadOrBuild as loadFleetLedger, uniqueness as fleetUniqueness, notePubl
 import { reviveArmyCustody, ARMY_ROSTER as ROSTER_BASE } from "./vault-revival.mjs";
 import { readCommunityState, communityPostMeta, communityMetaObj } from "./community.mjs";
 import { embedImage } from "./illustrate.mjs";
+import { socialGateVerdict, STANDBY_RECEIPT } from "./readiness-gate.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 /* SAOS_STATE_DIR (R275 merge law): the selftest may run while the live engine
@@ -624,6 +625,30 @@ export async function runOrganicWatch({ now = new Date().toISOString(), window =
 /* ── THE RAIL ─────────────────────────────────────────────────────────────── */
 export async function runSocial({ now = new Date().toISOString() } = {}) {
   const t0 = Date.now();
+  /* exec29/29-b · THE SOCIAL-STANDBY LAW — the execution choke-point of the
+   * rail, placed BEFORE anything else in this function: while the gate is
+   * CLOSED, NOTHING below ever runs — zero custody revival, zero WIF/key
+   * decryption, zero steem.broadcast, zero network RPC broadcasts. Owner
+   * directive 2026-10-14 (verbatim intent): stay low-profile — it is OK to be
+   * invisible; zero flooding; nobody should see our actions until we are
+   * truly ready to operate as a strong engineering body. Fail-closed:
+   * the default readiness.json says STANDBY, and ARMED additionally demands
+   * the live dual-key cross-check against the Autonomy DIRECTIVES file —
+   * re-evaluated EVERY run, never cached, never sticky. Read-only
+   * observation (runOrganicWatch) stays lawful during standby. Paths resolve
+   * PER CALL (the R275 merge-law pattern — SAOS_STATE_DIR is honored even
+   * though it is set after this module's top-level ran). */
+  const gateState = process.env.SAOS_STATE_DIR || STATE;
+  const gate = await socialGateVerdict(gateState);
+  if (gate.mode !== "ARMED") {
+    const roster = [masterAccount(), ...ARMY_ROSTER];
+    const accounts = {};
+    for (const lane of roster) accounts[lane] = STANDBY_RECEIPT(lane);
+    const doc = { at: now, day: dayKeyOf(now), roster, verdict: "SOCIAL-STANDBY", gate, accounts, executed: 0, refused: 0, due: 0, ms: Date.now() - t0 };
+    writeJson(path.join(gateState, "social.json"), doc);
+    appendLine(path.join(gateState, "events.jsonl"), { type: "social.standby", at: now, mode: gate.mode, reason: gate.reason, lanes: roster.length, actions: 0 });
+    return { verdict: "SOCIAL-STANDBY", executed: 0, refused: 0, due: 0, gate };
+  }
   const p = socialPolicy();
   const master = masterAccount();
   const day = dayKeyOf(now);
@@ -1251,6 +1276,16 @@ export function personasState() {
 
 export async function runProfiles({ now = new Date().toISOString(), roster = [masterAccount(), ...ROSTER_BASE] } = {}) {
   const t0 = Date.now();
+  /* exec29/29-b · THE SAME STANDBY LAW: an account_update2 profile write is
+   * an on-chain social action — it stands down with the rail. Zero broadcasts
+   * while the gate is closed (fail-closed, dual-key, re-evaluated every run;
+   * paths resolve PER CALL per the R275 merge law). */
+  const gateState = process.env.SAOS_STATE_DIR || STATE;
+  const gate = await socialGateVerdict(gateState);
+  if (gate.mode !== "ARMED") {
+    appendLine(path.join(gateState, "events.jsonl"), { type: "personas.standby", at: now, mode: gate.mode, reason: gate.reason, actions: 0 });
+    return { at: now, verdict: "PROFILES-STANDBY", gate, updated: [], skipped: [], deferred: [], caps: "standby law exec29 — profile account_update2 stands down with the social rail", ms: Date.now() - t0 };
+  }
   const st = readJson(PERSONAS_FILE, { perAccount: {} });
   st.perAccount = st.perAccount ?? {};
   const out = { at: now, updated: [], skipped: [], deferred: [], caps: `≤${PROFILE_MAX_PER_RUN}/run · chain-truth idempotent · custody-gated · account_update2(43)` };
