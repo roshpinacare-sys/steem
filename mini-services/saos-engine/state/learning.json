@@ -1,22 +1,22 @@
 {
-  "at": "2026-10-14T00:58:01.298Z",
+  "at": "2026-10-14T01:21:13.778Z",
   "enabled": true,
-  "runsTotal": 373,
+  "runsTotal": 376,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 106,
-      "oks": 71,
-      "fails": 28,
+      "window": 98,
+      "oks": 74,
+      "fails": 17,
       "blocked": 7,
-      "okRate": 67,
-      "blockedRate": 6.6,
+      "okRate": 75.5,
+      "blockedRate": 7.1,
       "failReasons": {
-        "none": 25,
+        "none": 14,
         "timeout": 3
       },
-      "msP50": 145107,
-      "msP90": 500605
+      "msP50": 115334,
+      "msP90": 507918
     },
     "curator": {
       "present": true,
@@ -37,15 +37,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 3900,
+      "checks": 3924,
       "downs": 122,
       "heals": 65,
       "healVerified": 54,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-14T00:58:01.311Z",
+      "lastCheckAt": "2026-10-14T01:21:28.722Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-14T00:58:01.322Z",
+      "lastUpAt": "2026-10-14T01:21:28.730Z",
       "blips": 6
     }
   },
@@ -54,21 +54,21 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×7/106 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×7/98 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "unclassified-fail-legacy",
       "severity": "medium",
-      "evidence": "25 fails journaled without a reason class (pre-T-17 era — the sovereign recorded \"fail\" without engine-measured health)",
+      "evidence": "14 fails journaled without a reason class (pre-T-17 era — the sovereign recorded \"fail\" without engine-measured health)",
       "lesson": "unclassified fails poison the failure histogram — a lesson machine that cannot classify cannot fully learn",
       "action": "STRUCTURAL T-17: the marker flow journals engine-measured health+reason for every new fail; legacy history stays as evidence, never back-filled with invented causes"
     },
     {
       "id": "cycle-latency-tail",
       "severity": "medium",
-      "evidence": "p50 145107ms vs p90 500605ms",
+      "evidence": "p50 115334ms vs p90 507918ms",
       "lesson": "cycle duration tail is fat — RPC latency inside steps",
       "action": "watch: observe/node switch is already fail-isolated; no unsafe tuning"
     }
@@ -77,10 +77,10 @@
   "tuningsApplied": [],
   "lessonsTotal": {
     "cycle-conn-fails": 132,
-    "unclassified-fail-legacy": 245,
-    "signing-cred-blocked": 291,
+    "unclassified-fail-legacy": 248,
+    "signing-cred-blocked": 294,
     "broadcast-fails": 73,
-    "cycle-latency-tail": 1
+    "cycle-latency-tail": 4
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
