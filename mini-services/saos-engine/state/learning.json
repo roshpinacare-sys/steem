@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-14T04:26:44.689Z",
+  "at": "2026-10-14T04:37:56.817Z",
   "enabled": true,
-  "runsTotal": 397,
+  "runsTotal": 398,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,16 +17,18 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 143,
+      "totalVotes": 145,
       "window": 30,
       "verdicts": {
         "VOTED": 30
       },
       "vpEff": 42.4,
-      "meanAgeMinutes": null,
-      "tagsVoted": {},
+      "meanAgeMinutes": 33,
+      "tagsVoted": {
+        "steem": 2
+      },
       "dayCapsInRow": 0,
-      "maxPerDay": 10
+      "maxPerDay": 30
     },
     "exec": {
       "window": 0,
@@ -34,26 +36,25 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 4101,
+      "checks": 4102,
       "downs": 125,
       "heals": 71,
       "healVerified": 56,
       "healFailed": 3,
-      "lastCheckAt": "2026-10-14T04:26:44.710Z",
+      "lastCheckAt": "2026-10-14T04:27:44.711Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-14T04:26:44.718Z",
+      "lastUpAt": "2026-10-14T04:27:44.714Z",
       "blips": 9
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+      "severity": "high",
+      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
     }
   ],
   "tunings": {},
@@ -61,7 +62,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 315,
+    "signing-cred-blocked": 316,
     "broadcast-fails": 73,
     "cycle-latency-tail": 12
   },
