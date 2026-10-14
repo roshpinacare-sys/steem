@@ -295,6 +295,25 @@ async function main() {
     return { verdict: r.verdict, at: r.at, samples: r.samples, source: r.source ?? null, topPhrase: r.driftPhrases?.[0]?.phrase ?? null, pillarGaps: r.proposal?.pillarGaps?.length ?? 0, degraded: r.degraded ?? false, observe: true };
   });
 
+  /* R328 · THE PER-FRONT FORMAT LINT (T-87, queue item #3 of the
+   * Open-Pomelli deep-dive, intel §5.3): Pomelli's platforms.ts per-platform
+   * copy limits made sovereignty-native over the measured rails — the same
+   * drafts queue feeds steem (permlinkStem) AND hive (slugPermlink), and a
+   * format violation is found today only AFTER the chain rejects the
+   * broadcast. This step lints the live queue through EACH FRONT'S OWN
+   * permlink builder (single source of truth, never re-implemented) against
+   * measured contracts (title bytes, hive letter-start node contract, tag
+   * charset/count after the community prepend, the R244 word floor).
+   * OBSERVE-ONLY: enforcement arms only when the signed DNA sets
+   * memory.formatEnforce (the R307 pattern); spamgate/R297/R301/R302 keep
+   * every gate. Fail-isolated like every step. */
+  report.steps.formatLint = await stepWrap("format-lint", async () => {
+    const { runLint } = await import("./format-lint.mjs");
+    const { loadDNA } = await import("./content-judge.mjs");
+    const r = await runLint({ stateDir: STATE, now, dna: loadDNA() });
+    return { verdict: r.verdict, at: r.at, drafts: r.drafts, checked: r.checked, violations: r.violations, warnings: r.warnings, source: r.source ?? null, enforce: r.enforce, observe: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -339,6 +358,10 @@ async function main() {
     dnaDriftSamples: report.steps.contentDrift?.samples ?? null,
     dnaDriftSource: report.steps.contentDrift?.source ?? null,
     dnaDriftTop: report.steps.contentDrift?.topPhrase ?? null,
+    formatLint: report.steps.formatLint?.verdict ?? "STEP-FAIL",
+    formatLintChecked: report.steps.formatLint?.checked ?? null,
+    formatLintViolations: report.steps.formatLint?.violations ?? null,
+    formatLintEnforce: report.steps.formatLint?.enforce ?? null,
     contentMemoryPatterns: report.steps.contentMemory?.published ?? null,
     contentMemoryScore: report.steps.contentMemory?.scoreMean ?? null,
     contentConcepts: report.steps.contentConcepts?.verdict ?? "STEP-FAIL",

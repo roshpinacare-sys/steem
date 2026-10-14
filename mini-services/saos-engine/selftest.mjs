@@ -3526,6 +3526,72 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("35.15 real DNA + real corpus stays observe-only", [real35.observe, real35.samples === realPosts35.length, real35.proposal?.ownerGated, realDna35.law], [true, true, true, "R302"]);
 }
 
+{
+  /* 36 · R328 PER-FRONT FORMAT LINT (T-87, trace 1a1395305bec3371) —
+   * Pomelli's platforms.ts copy-limits made sovereignty-native: the SAME
+   * drafts queue feeds steem (permlinkStem) AND hive (slugPermlink); every
+   * limit is MEASURED (chain physics, each front's own signed laws —
+   * hive letter-start node contract, R244 word floor, tags after the
+   * community prepend). The lint imports each front's OWN builder (single
+   * source of truth — two slug builders are the drift class this fleet
+   * hunts). OBSERVE-ONLY: enforcement arms only by signed DNA
+   * (memory.formatEnforce, the R307 pattern); never a gate by itself. */
+  const fl36 = await import("./format-lint.mjs");
+  const ok36 = { id: "q-ok", title: "Measuring the quiet queue depth", body: Array(310).fill("word").join(" "), tags: ["life", "data"], persona: "siq" };
+  const base36 = await fl36.lintOne({ draft: ok36, front: "steem", permlink: "measuring-the-quiet-queue-depth-19700101-0" });
+  eq("36.1 clean draft passes steem", [base36.ok, base36.violations.length], [true, 0]);
+  const baseH36 = await fl36.lintOne({ draft: ok36, front: "hive", permlink: "measuring-the-quiet-queue-depth" });
+  eq("36.2 clean draft passes hive", baseH36.ok, true);
+  /* 36.3 title bytes: 300 ASCII bytes violate (chain counts bytes) */
+  const longTitle36 = { ...ok36, title: "x".repeat(300) };
+  const lt36 = await fl36.lintOne({ draft: longTitle36, front: "steem", permlink: "x-19700101-0" });
+  eq("36.3 title > 255 bytes caught", [lt36.ok, lt36.violations.some((v) => v.rule === "title-bytes" && v.got === 300)], [false, true]);
+  /* 36.4 hive letter-start: digit-leading title → slugPermlink fixes it, so
+   * the REAL builder output must pass; a raw digit permlink must fail */
+  const digitTitle36 = { ...ok36, title: "3 tools, 1 baseline, 2 deltas measured" };
+  const realPm36 = await fl36.derivePermlink(digitTitle36, "hive");
+  const rp36 = await fl36.lintOne({ draft: digitTitle36, front: "hive", permlink: realPm36 });
+  eq("36.4 hive real builder heals digit-start", [rp36.ok, /^[a-z]/.test(realPm36)], [true, true]);
+  const rawDigit36 = await fl36.lintOne({ draft: digitTitle36, front: "hive", permlink: "3-tools-1-baseline" });
+  eq("36.5 raw digit permlink fails hive contract", rawDigit36.violations.some((v) => v.rule === "permlink-letter-start"), true);
+  /* 36.6 tag charset + length */
+  const badTags36 = { ...ok36, tags: ["Life Style", "x".repeat(30)] };
+  const bt36 = await fl36.lintOne({ draft: badTags36, front: "steem", permlink: "ok-19700101-0" });
+  eq("36.6 bad tag charset + length caught", [bt36.violations.some((v) => v.rule === "tag-charset"), bt36.violations.some((v) => v.rule === "tag-length")], [true, true]);
+  /* 36.7 community prepend overflow: 5 tags + community = 6 → caught */
+  const comm36 = await fl36.lintOne({ draft: { ...ok36, tags: ["a-one", "b-two", "c-three", "d-four", "e-five"], community: "hive-161333" }, front: "steem", permlink: "ok-19700101-0" });
+  eq("36.7 community-prepended 6th tag caught", comm36.violations.some((v) => v.rule === "tags-count-community" && v.got === 6), true);
+  /* 36.8 body word floor (R244) */
+  const thin36 = await fl36.lintOne({ draft: { ...ok36, body: "too short entirely" }, front: "steem", permlink: "ok-19700101-0" });
+  eq("36.8 thin body caught", thin36.violations.some((v) => v.rule === "body-words" && v.got === 3), true);
+  /* 36.9 hive persona warning (never a violation) */
+  const noPersona36 = await fl36.lintOne({ draft: { ...ok36, persona: undefined }, front: "hive", permlink: "ok" });
+  eq("36.9 missing persona warns, never vetoes", [noPersona36.ok, noPersona36.warnings.some((w) => w.rule === "persona-missing")], [true, true]);
+  /* 36.10 queue lint aggregates across active fronts; blurt inactive → skipped */
+  const q36 = await fl36.lintQueue([ok36, { ...ok36, id: "q-bad", tags: ["Bad Tag"], body: "short" }]);
+  eq("36.10 queue lint: 2 drafts × 2 active fronts", [q36.drafts, q36.checked, q36.violations > 0], [2, 4, true]);
+  /* 36.11 runLint seals with signature; observe-only by default DNA */
+  const dna36 = { memory: {} };
+  const os36 = await import("node:os");
+  const tmp36 = fs.mkdtempSync(path.join(os36.tmpdir(), "flint36-")); /* R275: selftest never writes the live state */
+  const r36 = await fl36.runLint({ stateDir: tmp36, now: "2026-10-14T00:00:00.000Z", queue: [ok36], dna: dna36 });
+  eq("36.11 runLint observe + signed", [r36.verdict, r36.observe, r36.enforce, /^sig:[0-9a-f]{8}$/.test(r36.signature)], ["FORMAT-LINT-OK", true, false, true]);
+  /* 36.12 enforcement arms ONLY from the signed DNA knob */
+  const rEn36 = await fl36.runLint({ stateDir: tmp36, now: "2026-10-14T00:00:00.000Z", queue: [ok36], dna: { memory: { formatEnforce: true } } });
+  eq("36.12 formatEnforce arms from DNA", [rEn36.enforce, rEn36.observe], [true, false]);
+  /* 36.13 empty queue is honest-EMPTY, not a fake all-clear */
+  const rE36 = await fl36.runLint({ stateDir: tmp36, now: "2026-10-14T00:00:00.000Z", queue: [], dna: dna36 });
+  eq("36.13 empty queue honest", rE36.verdict, "FORMAT-LINT-EMPTY");
+  /* 36.14 determinism: same draft → same signature */
+  const dA36 = await fl36.runLint({ stateDir: tmp36, now: "2026-10-14T00:00:00.000Z", queue: [ok36], dna: dna36 });
+  const dB36 = await fl36.runLint({ stateDir: tmp36, now: "2026-10-14T00:00:00.000Z", queue: [ok36], dna: dna36 });
+  eq("36.14 lint deterministic", dA36.signature, dB36.signature);
+  /* 36.15 live smoke: the REAL corpus must be lint-clean across both fronts */
+  const realCorpus36 = JSON.parse(fs.readFileSync(new URL("./content-corpus.json", import.meta.url), "utf8"));
+  const realQ36 = await fl36.lintQueue(realCorpus36.map((c) => ({ id: c.id, title: c.title, body: c.body, tags: c.tags, persona: "siq" })));
+  eq("36.15 real corpus lint-clean on both fronts", [realQ36.checked, realQ36.violations], [realQ36.checked, 0]);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
