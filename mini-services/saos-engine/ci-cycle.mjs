@@ -402,6 +402,33 @@ async function main() {
     };
   });
 
+  /* exec34 · lane 34-d · THE GIT-AS-MEMORY PORTFOLIO SNAPSHOT (owner's
+   * Hyper-Sovereignty directive, second wave): the paper economy remembers
+   * itself. Every beat reads the sovereignty's OWN saos-dex ledger
+   * (grids.json + ledger.json — R328 lineage, DECISIONS #12/#17), computes
+   * DETERMINISTIC asset weights (grid-stack plan notionals + ledger credit
+   * entries, 6dp, sum≈1 or fail-closed), composes the signed state doc
+   * (surface-watch seal convention, sig:8hex over canonical JSON, identity
+   * exec34-engine-lane), writes it ATOMICALLY into
+   * state/portfolio-snapshot-latest.json with a parse-back readback (R340),
+   * and commits THAT ONE FILE under the house message — the git-as-memory
+   * loop the owner approved (commit:true is the DEFAULT, idempotent:
+   * byte-identical state skips the commit honestly). Paper/analysis layer
+   * ONLY: zero brokers, zero keys, zero broadcasts, zero value movement.
+   * Fail-isolated like every step (R339): an honest SNAPSHOT-FAIL receipt,
+   * never a broken heartbeat. */
+  report.steps.portfolioSnapshot = await stepWrap("portfolio-snapshot", async () => {
+    const { runPortfolioSnapshot } = await import("./portfolio-snapshot.mjs");
+    const r = await runPortfolioSnapshot({ repoRoot: path.join(DIR, "..", ".."), commit: true });
+    if (!r.ok) return { verdict: "SNAPSHOT-FAIL", stage: r.stage ?? null, error: r.error ?? null, observe: true };
+    return {
+      verdict: r.doc?.verdict ?? null, at: r.doc?.at ?? null, sig: r.doc?.sig ?? null,
+      assets: r.doc?.weights?.length ?? 0, top: r.doc?.weights?.[0]?.asset ?? null, topWeight: r.doc?.weights?.[0]?.weight ?? null,
+      written: r.write?.written ?? false, committed: r.commit?.committed ?? false, commitReason: r.commit?.reason ?? null,
+      observe: true,
+    };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -495,6 +522,14 @@ async function main() {
     surfaceRepairs: report.steps.surfaceWatch?.repairs ?? 0,
     surfaceRepairMode: report.steps.surfaceWatch?.repairMode ?? null,
     surfaceSig: report.steps.surfaceWatch?.sig ?? null,
+    /* exec34 34-d portfolio snapshot — the one-line paper-economy digest
+     * (verdict/top asset/weights count + the git-as-memory commit receipt). */
+    portfolioSnapshot: report.steps.portfolioSnapshot?.verdict ?? "STEP-FAIL",
+    portfolioSig: report.steps.portfolioSnapshot?.sig ?? null,
+    portfolioAssets: report.steps.portfolioSnapshot?.assets ?? null,
+    portfolioTop: report.steps.portfolioSnapshot?.top ?? null,
+    portfolioTopWeight: report.steps.portfolioSnapshot?.topWeight ?? null,
+    portfolioCommitted: report.steps.portfolioSnapshot?.committed ?? null,
     /* R306 engagement read-back — the one-line "what worked" digest
      * (at/measured/medianVotes/topTag; numbers only, no advice). */
     contentEngagement: {
