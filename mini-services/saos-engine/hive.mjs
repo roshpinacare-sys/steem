@@ -487,6 +487,17 @@ export async function runHiveRail({ now = new Date().toISOString(), limit = 3 } 
       draft.permlink = `${account}/${permlink}`;
       draft.chain = "hive";
       writeJson(path.join(DIR, "state", "content-ops.json"), c);
+      /* R337 · the hive broadcast becomes a memory pattern TOO — the R303
+       * book was steem-only by accident of wiring, not doctrine ("hive
+       * bodies invisible" was R336's named limitation). Best-effort, the
+       * R303 arc-law shape: a memory failure never un-publishes chain
+       * truth. chain:"hive" rides in the record AND the id. */
+      try {
+        const { recordPublished } = await import("./content-memory.mjs");
+        recordPublished(STATE, { account, permlink, title: draft.title, body, score: null, chain: "hive", at: now });
+      } catch (e) {
+        appendLine(path.join(STATE, "events.jsonl"), { type: "hive.memory-record-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
+      }
     }
   }
   const accountsToday = { ...(prev.day === day ? (prev.accounts ?? {}) : {}) };

@@ -122,14 +122,24 @@ export function recordRejected(stateDir, { account, title, body, reason, vetoTyp
   };
   return appendRecord(memoryFiles(stateDir).rejected, rec, rec.id);
 }
-/** R303 · a broadcast becomes a memory pattern with its quality observation */
-export function recordPublished(stateDir, { account, permlink, title, body, score = null, at }) {
+/** R303 · a broadcast becomes a memory pattern with its quality observation.
+ *  R337 · `chain` records WHICH FRONT the broadcast landed on — the truth
+ *  field the cross-chain twin scan (R336) was denied ("hive bodies invisible"
+ *  was an accident of wiring, not doctrine). Absent chain = legacy row =
+ *  chainUnknown, still counted, never faked into a chain. */
+export function recordPublished(stateDir, { account, permlink, title, body, score = null, chain = null, at }) {
   const titleNorm = normTitle(title);
   const rec = {
-    id: memId("published", titleNorm, account ?? ""),
+    /* R337 · chain RIDES IN THE ID: appendRecord dedupes by id, so without it
+     * the same title published on steem AND hive by the same account would
+     * silently drop the second record — the exact invisibility R337 closes,
+     * reborn one level down. Same title + same chain still dedupes (the
+     * re-record is idempotent); legacy rows (chain null → "") keep their ids. */
+    id: memId("published", titleNorm, account ?? "", chain ?? ""),
     at: at ?? new Date().toISOString(),
     account: account ?? null,
     permlink: permlink ?? null,
+    chain: chain ?? null,
     titleNorm,
     score,
     sh: [...shingles(body ?? title, 3)].slice(0, 40),

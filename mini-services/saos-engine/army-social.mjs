@@ -998,7 +998,7 @@ async function doPublish(account, st, p, now, day) {
    * so the learning survives every sandbox death (owner: "שלא יאבד בסנדבוקס
    * שלך בשום פנים ואופן"). */
   try {
-    recordPublished(STATE, { account, permlink, title: draft.title, body, score: judgeObserve?.score ?? null, at: now });
+    recordPublished(STATE, { account, permlink, title: draft.title, body, score: judgeObserve?.score ?? null, chain: "steem", at: now });
   } catch (e) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "social.memory-record-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
   }
@@ -1025,6 +1025,10 @@ async function doPublish(account, st, p, now, day) {
   draft.status = "published";
   draft.publishedAt = now;
   draft.publishedBy = account;
+  /* R337 · the row records its front: hive marks "hive" at pickup; the steem
+   * rail never did — null chain meant "steem by convention" in the R336 scan.
+   * Now it is MEASURED, not inferred. Never overwrites an existing mark. */
+  if (!draft.chain) draft.chain = "steem";
   draft.permlink = `${account}/${permlink}`;
   writeJson(CONTENT_FILE, c);
   return true;

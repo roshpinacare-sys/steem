@@ -3719,7 +3719,13 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   const realPosts38 = realCorpus38.map((c) => post38(c.id, c.title, c.body));
   const real38 = cd38.analyzeDrift({ dna: realDna38, posts: realPosts38 });
   const realTics38 = new Set(cd38.appliedTicPhrases(realDna38));
-  eq("38.14 real DNA v2: tic-free proposal + measured evidence + provenance", [realDna38.version, real38.observe, real38.ticsEvidence.length, real38.proposal.addLexicon.every((p) => !realTics38.has(p)), real38.proposal.refreshOf?.fromSig, realDna38.law], [2, true, realTics38.size, true, "sig:53fe40f2", "R302"]);
+  /* 38.14 live smoke on the REAL DNA + the REAL corpus as observed voice.
+   * R333 amendment (T-92): the DNA GROWS every applied wave (v2 → v3 at the
+   * wave-2 apply) — freezing version/fromSig on wave-1 values was a snapshot,
+   * not a contract (the T-88 lesson, "freezing on v1 is not a contract").
+   * The contract: the version only climbs, and refreshOf provenance points
+   * at the LAST applied ledger entry — whatever wave is current. */
+  eq("38.14 real DNA: tic-free proposal + measured evidence + ledger-tracking provenance", [realDna38.version >= 2, real38.observe, real38.ticsEvidence.length, real38.proposal.addLexicon.every((p) => !realTics38.has(p)), real38.proposal.refreshOf?.fromSig === realDna38.memory?.applied?.at(-1)?.fromSig, realDna38.law], [true, true, realTics38.size, true, true, "R302"]);
 }
 
 {
@@ -4015,6 +4021,49 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   fs.writeFileSync(sealedFile41, JSON.stringify({ ...doc41, signature: "sig:" + (await import("node:crypto")).createHash("sha256").update(ct41.stableStringify(doc41)).digest("hex").slice(0, 8) }));
   const r41 = ct41.applyProposal({ proposalFile: sealedFile41, dnaFile: dnaFile41, trace: "t92-selftest", now: "2026-10-14T12:03:00.000Z" });
   eq("41.8 sealed wave unions on the real DNA shape", [r41.ok, r41.next.memory.tics.length, r41.next.memory.ticEnforce, r41.next.version], [true, realDna41.memory.tics.length + 1, false, realDna41.version + 1]);
+}
+
+{
+  /* 42 · R337 THE CHAIN-TRUTH RECORDING WAVE (T-93, trace 1a13a2e1be234775)
+   * — R336's named limitation closed at the DATA half: the rails record
+   * WHICH FRONT a broadcast landed on (steem at publish, hive at
+   * pickup+broadcast, chain rides in the record ID — otherwise appendRecord's
+   * dedupe silently drops the second front's record, the exact invisibility
+   * R337 closes reborn one level down), and the R336 scan consumes R303 book
+   * rows THAT CARRY CHAIN for title-kind pairs. Legacy chainless rows stay
+   * chainUnknown, never faked into a chain. */
+  const cm42 = await import("./content-memory.mjs");
+  const cs42 = await import("./content-swarm.mjs");
+  /* 42.1 recordPublished stores the chain; absent chain = legacy null */
+  const dir42 = fs.mkdtempSync(os.tmpdir() + "/mem42-");
+  const rec42 = cm42.recordPublished(dir42, { account: "headcorner", permlink: "p1", title: "The kettle that outlived its cord", body: "measured twice ".repeat(40), chain: "steem", at: "2026-10-14T12:00:00.000Z" });
+  const legacy42 = cm42.recordPublished(path.join(dir42, "legacy"), { account: "siq", permlink: "p0", title: "Old shape row", body: "legacy row ", at: "2026-10-14T12:00:00.000Z" });
+  eq("42.1 chain recorded, absent chain stays null", [rec42.chain, legacy42.chain], ["steem", null]);
+  /* 42.2 THE MONEY VECTOR: a book row WITH chain speaks cross-chain — the
+   * same title on hive (book) and steem (queue) is MEASURED, not invisible */
+  const q42 = cs42.planSwarm({ queue: [], memory: { published: [{ id: "bookhive1", chain: "hive", titleNorm: "the kettle that outlived its cord" }] }, hiveRoster: [], steemRoster: [], publishedRows: [{ id: "pm1", chain: "steem", title: "The kettle that outlived its cord", bodyCore: "" }] });
+  eq("42.2 book row with chain speaks cross-chain", [q42.stats.crossChainTwins >= 1, q42.twins[0]?.kind, q42.stats.bookChainedRows], [true, "title", 1]);
+  /* 42.3 the legacy shape stays chainUnknown — excluded, never faked */
+  const q42b = cs42.planSwarm({ queue: [], memory: { published: [{ id: "bookold1", titleNorm: "the kettle that outlived its cord" }] }, hiveRoster: [], steemRoster: [], publishedRows: [{ id: "pm1", chain: "steem", title: "The kettle that outlived its cord", bodyCore: "" }] });
+  eq("42.3 legacy chainless book row excluded", [q42b.stats.crossChainTwins, q42b.stats.bookChainedRows], [0, 0]);
+  /* 42.4 no phantom self-twin: a book row duplicating a queue row
+   * (same chain+title) is skipped — the queue row is higher fidelity */
+  const q42c = cs42.planSwarm({ queue: [], memory: { published: [{ id: "bookdup1", chain: "steem", titleNorm: "the kettle that outlived its cord" }] }, hiveRoster: [], steemRoster: [], publishedRows: [{ id: "pm1", chain: "steem", title: "The kettle that outlived its cord", bodyCore: "" }] });
+  eq("42.4 book dedupe against the queue row", [q42c.stats.scannedRows, q42c.stats.sameChainTwins, q42c.stats.bookChainedRows], [1, 0, 0]);
+  /* 42.5 a book row never fakes a body-kind pair (bodyCore "" — title only) */
+  const q42d = cs42.planSwarm({ queue: [], memory: { published: [{ id: "bookhive2", chain: "hive", titleNorm: "a completely different headline here" }] }, hiveRoster: [], steemRoster: [], publishedRows: [{ id: "pm1", chain: "steem", title: "The kettle that outlived its cord", bodyCore: "" }] });
+  eq("42.5 disjoint titles stay honest zeros", [q42d.stats.crossChainTwins, q42d.stats.bookChainedRows], [0, 1]);
+  /* 42.6 stat semantics: publishedScanned = queue rows; scannedRows = queue + book */
+  eq("42.6 stats keep their meanings", [q42.stats.publishedScanned, q42.stats.scannedRows, q42.stats.chainsMeasured], [1, 2, ["hive", "steem"]]);
+  /* 42.7 THE ID-COLLISION KILL: same title+chain dedupes (idempotent),
+   * same title DIFFERENT chain lands BOTH — the silent drop is dead */
+  const dir42b = fs.mkdtempSync(os.tmpdir() + "/mem42b-");
+  const r42a = cm42.recordPublished(dir42b, { account: "headcorner", permlink: "p1", title: "Twin front test", body: "body one ".repeat(50), chain: "steem", at: "2026-10-14T12:01:00.000Z" });
+  const r42b = cm42.recordPublished(dir42b, { account: "headcorner", permlink: "p1", title: "Twin front test", body: "body one ".repeat(50), chain: "steem", at: "2026-10-14T12:01:00.000Z" });
+  const r42c = cm42.recordPublished(dir42b, { account: "headcorner", permlink: "p2", title: "Twin front test", body: "body two ".repeat(50), chain: "hive", at: "2026-10-14T12:02:00.000Z" });
+  const mem42 = cm42.loadMemory(dir42b);
+  eq("42.7 same chain dedupes, cross-chain both land", [!!r42a, r42b, !!r42c, r42a.id !== r42c.id, r42c.chain], [true, null, true, true, "hive"]);
+  eq("42.7b the book holds both fronts", mem42.published.length, 2);
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
