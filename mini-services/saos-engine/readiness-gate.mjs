@@ -125,3 +125,86 @@ export const STANDBY_RECEIPT = (lane) => ({
   actions: 0,
   note: "social standby law exec29 — zero social footprint until owner arms via Autonomy DIRECTIVES",
 });
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * exec29/29-a2 · MEASURED-LAWS REFRESH (additive, honesty-only).
+ *
+ * WHY: the sovereign decider (Autonomy D5-social-standby) measures the
+ * PUBLISHED gate state and requires the anti-farm laws to be measurable
+ * there — cfg = readiness.json.config | antiFarm | laws, and it PASSes its
+ * "חוקי-האנטי-חווה חיים-בקונפיג" item only when the cfg carries ALL THREE
+ * keys: fleetWeightPct · maxPostsPerDay · antiHerd. Until now readiness.json
+ * carried only the gate fields, so the decider honestly printed
+ * "הקונפיג-המפורסם (readiness.json) טרם-נמדד".
+ *
+ * WHAT: enrich the gate state with a `laws` block — EVERY number measured
+ * live from socialPolicy() (army-social.mjs), never invented. Zero fleet
+ * votes under the stealth doctrine is an honest law, serialized as-is.
+ * The block: {fleetWeightPct, maxPostsPerDay, maxFleetVotesPerDay,
+ * maxFleetVotesPerPost, jitterPct, antiHerd, stealth:{...the full
+ * socialPolicy() return as-is}, measuredAt, source}.
+ *   · jitterPct 5 = the R298 weight-jitter code law (fleetWeightPct ±5,
+ *     seeded per vote — army-social.mjs doFleetVote, `% 6` amplitude).
+ *   · antiHerd true = the T-87 anti-herd pick + R298 ring-cap laws (support
+ *     spreads by least-supported tier, ≤2 fleet votes per post, chain-truth).
+ *
+ * LAWS OF THIS FUNCTION:
+ *  · ADDITIVE ONLY: existing fields (gate/at/by/directiveRef/note/armedAt)
+ *    are preserved byte-for-byte in meaning — the gate value is NEVER
+ *    touched here; a STANDBY gate stays STANDBY (fail-closed untouched).
+ *  · LIVENESS: measuredAt is refreshed on EVERY standby run that finds a
+ *    readable gate file (the same living-receipt pattern as every other
+ *    state file the beat commits; a laws block measured weeks ago proves
+ *    nothing about now). Atomic write (tmp + rename), same as the rail.
+ *  · FAIL-HONEST: absent/corrupt/gate-less readiness.json → no write (a
+ *    laws block is never invented onto a file the gate cannot read);
+ *    socialPolicy() unavailable → no write. This function NEVER throws and
+ *    NEVER blocks the standby receipt path that calls it.
+ *  · The army-social import is DYNAMIC (inside the call): army-social.mjs
+ *    statically imports THIS module, so a static back-import would create
+ *    an evaluation cycle — the runtime import keeps the graph acyclic and
+ *    is resolved from the module cache in production and selftest alike.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+export async function refreshLaws(stateDir) {
+  const dir = stateDirOf(stateDir);
+  const file = path.join(dir, "readiness.json");
+  let doc = null;
+  try {
+    doc = JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    return { refreshed: false, reason: "readiness.json absent/corrupt — nothing to enrich (fail-closed untouched)" };
+  }
+  if (!doc || typeof doc !== "object" || Array.isArray(doc) || typeof doc.gate !== "string") {
+    return { refreshed: false, reason: "readiness.json gate-less — nothing to enrich (fail-closed untouched)" };
+  }
+  let policy = null;
+  try {
+    const { socialPolicy } = await import("./army-social.mjs");
+    policy = socialPolicy();
+  } catch (e) {
+    return { refreshed: false, reason: `socialPolicy() unavailable (${String(e?.message ?? e).slice(0, 60)}) — laws block not written (never invented)` };
+  }
+  if (!policy || typeof policy !== "object" || Array.isArray(policy)) {
+    return { refreshed: false, reason: "socialPolicy() returned no object — laws block not written (never invented)" };
+  }
+  const laws = {
+    fleetWeightPct: policy.fleetWeightPct ?? null,
+    maxPostsPerDay: policy.maxPostsPerDay ?? null,
+    maxFleetVotesPerDay: policy.maxFleetVotesPerDay ?? null,
+    maxFleetVotesPerPost: policy.maxFleetVotesPerPost ?? null,
+    jitterPct: 5, /* R298 weight-jitter law: fleetWeightPct ±(0..5) per vote, seeded + auditable */
+    antiHerd: true, /* T-87 anti-herd pick + R298 ring-cap: support spreads by least-supported tier, ≤2 fleet votes/post, chain-truth */
+    stealth: policy, /* the full measured socialPolicy() return, as-is — every number lives there */
+    measuredAt: new Date().toISOString(),
+    source: "socialPolicy() live",
+  };
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    const tmp = `${file}.tmp.${process.pid}`;
+    fs.writeFileSync(tmp, JSON.stringify({ ...doc, laws }, null, 2) + "\n");
+    fs.renameSync(tmp, file);
+  } catch (e) {
+    return { refreshed: false, reason: `write failed (${String(e?.message ?? e).slice(0, 60)}) — gate state untouched` };
+  }
+  return { refreshed: true, laws };
+}
