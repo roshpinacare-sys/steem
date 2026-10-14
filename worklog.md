@@ -1279,3 +1279,16 @@ Owner alert: failure email almost every 10 minutes from the Actions bot — "not
 4. **Self-inflicted + prevented**: my two pushes tripped identity-guard (DECISIONS #10) — committed as saos-fleet@ (forbidden NAME@ identity). Two one-time fails, no loop (push-only trigger). Lawful owner identity now set git-global + all estate clones. History blemish awaits owner decision (no force push).
 
 Lessons: leak-scan whole-tree means ANY flagged line bricks EVERY beat — redact BEFORE push; GITHUB_TOKEN pushes don't trigger identity-guard (noted gap); the paved road includes the failure surface — a road that emails the owner every 10 minutes is not paved.
+
+---
+
+## R332 — product-surface grill + rebuild: "not a real system like the giants" (2026-10-14 ~17:15Z, trace 1a13b57802ab4655)
+
+Owner verdict: the public surface is still a messy landing page; wallet/tokens/currency not serious; tests pass but no real value. Response (lane 19-a, apex repo only):
+
+1. **Roast measured, not guessed**: all "products" were infra dashboards; the economy (the estate's only real product) invisible on the surface; verification rails checked infra, never value.
+2. **Rebuilt the front door (ca983b4)**: index.html = live economy console — wallet/tokens/gearbox products with live tiles fed zero-secret from public Pulse network.json (gear 1/3, streak 2, kelly probation 12 SBD, arteries 2/2, chain head fresh per load), NOT-YET + 3 gaps with redemption paths published as the honesty product, git-as-API table, Kelly formula shown as code, honest unavailable-states (never invented numbers).
+3. **roast.html**: public grill — 7 findings with evidence, headlined by the owner's law: "טסט עובר ≠ יש לנו את זה" (test passes ≠ we have it). Distance-to-giants table measured, not estimated.
+4. **Browser-verified**: desktop+mobile clean, all tiles live-populated, zero JS errors, sticky-footer law held.
+
+Honest bottom line: the sovereignty still has no monetized scale (NOT-YET, kelly probation, canary caps) — but the surface now measures and publishes value AND losses every beat. Transparency about the gap is step one of the gap's redemption.
