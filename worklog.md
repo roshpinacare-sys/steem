@@ -1370,3 +1370,22 @@ Stage Summary:
 - The owner and the sovereignty now have a direct, durable, agent-free channel: git streams + public Pages surface; survives total agent death (MTT) — the owner manages the sovereignty through the interface, not through agents
 - Open handoffs: beat read-wiring (each lane's own workflow), GitHub-Models voice, direct-commit token UI (owner-held only), bounded-retry for channel files (R331 pattern), apex front-door anchor (apex lane)
 - FILE-BOUNDARY held: Pulse = new files only + 1 header anchor; steem = 1 new doc; saos-dex = DECISIONS append; zero engine/state/config files of other lanes touched
+
+---
+Task ID: 20-c (R344 voice wiring — the channel becomes super-intelligent, trace 1a13bb6a669de2b1)
+Agent: Z.ai Code (coordination-law lane, continuation of 20-a/20-b)
+Task: Identical message received again — the only remaining gap in the URGENT directive: the channel's "super-intelligent" voice was CLAIM-ONLY. Wired it (my channel lane, additive).
+
+Work Log:
+- Read worklog first: no new lane claims since 20-b; channel live (sovereign.html 200, D-0001 verified)
+- Measured the real network.json structure before writing (n.economy.gearbox/kelly/treasury/army, n.totals, n.chains.steem) — first draft had null inputs, caught by live test, fixed from measurement
+- Built Pulse/scripts/sovereign-voice.mjs (SAOS-SOVEREIGN-VOICE/1): LLM = language-translation ONLY over measured inputs (gear 1/3, kelly probation 12, gapsOpen 3, army 3/12, repos 37, steem head 110439848, directives/requests counts); integrity law enforced in code: every number-token in the summary validated against the inputs blob — foreign number = REJECTED honest; API/token failure = UNAVAILABLE honest; SKIP-UNCHANGED economy on identical inputs
+- Built Pulse/.github/workflows/sovereign-voice.yml (NEW file, zero collision with heartbeat/identity-guard): every 30 min + dispatch + channel-path triggers, lawful identity per DECISIONS #10, bounded rebase-retry push x5 (R331 pattern), fail-honest commit of voice.json
+- Live-tested locally: VOICE-UNAVAILABLE no-token (honest — this sandbox has no Models token; Actions carries GITHUB_TOKEN), JSON valid, real inputs populated — the fail-honest path is proven, the TRUE path awaits the first Actions run (voice.json in git = the evidence)
+- Wired the surface: sovereign.html new "קול-הריבונות" panel — TRUE shows summary+model+timestamp, UNAVAILABLE/REJECTED shows the honest reason, missing file shows honest not-yet state
+- Updated PROTOCOL.md + steem R344 doc §3: voice wired, TRUE only after first successful Actions run
+
+Stage Summary:
+- The channel now speaks in the sovereignty's voice — with an anti-invention law in code (numbers must be measured, else rejected), fail-honest everywhere, zero cost (public Actions + built-in GITHUB_TOKEN)
+- FILE-BOUNDARY held: Pulse = 2 new files (script+workflow) + PROTOCOL edit + voice.json honest seed; steem = R344 §3 edit + receipt; zero other lanes' files touched
+- Open: first Actions run verification (TRUE or honest UNAVAILABLE with real reason); direct-commit token UI; beat read-wiring per lane
