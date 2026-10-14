@@ -41,3 +41,13 @@
 - **לקח (נמדד)**: 7 ריפואים × cron-כל-5-30דק × exit-1 על תנאי-ידוע-ועקוב = עשרות-מיילים-אדומים לשעה אצל המפעיל («חסימות כל כמה דק»). המפעיל גילה-הכל-מהמיילים — אפס-נראות-מצב.
 - **תיקון-מוכח**: estate-redboard (sovereign-lighthouse, ציבורי): סריקת-כל-34-הריפואים, RED=ריצה-אחרונה-נכשלה-בתוך-חלון · STALE=כשל-ישן-בלי-ריצה-חדשה (covenant) · issue-אחת-יחידה (#1) + state-מחויב-כראיה · **exit-0-תמיד**.
 - **כלל**: כל-cron-זרימה: תנאי-ידוע → ראיה-מחויבת + תור-עקיבה, exit-0; exit-1 רק לכשל-חדש-בלתי-מוכר. ההתראה היא **שינוי-מצב**, לא אירוע.
+
+### חוק-הזיכרון-העצמי (R324-REF-STUDY · מחקר-ענקים, נמדד-מהקוד של ElizaOS)
+- **מקור-אמת**: elizaOS/eliza `packages/core/src/types/long-term-memory.ts` + `memory.ts` (נקראו-בפועל, לא-מסיכום).
+- **החוק**: הרשת זוכרת את עצמה בשלוש-קטגוריות — EPISODIC (מה-קרה) / SEMANTIC (מה-יודעים) / PROCEDURAL (מה-יודעים-לעשות) · כל-רשומה: confidence + source + accessCount · ביטחון-מתחת-לסף (0.55) לא-נהיה-זיכרון · דמיון (Jaccard ≥0.72) מחזק (accessCount++) במקום-ליצור-כפילות · נשכחים-של-30-יום נשרפים.
+- **מוכח-חי**: saos-runtime `ops/self-memory/self-memory.cjs` + workflow `self-memory.yml` (כל-6-שע) — dry-run מקומי: ריצה-1 +11 חדשות, ריצה-2 +0/11-חוזקו (אפס-כפילות); CI: run 38490010663 success → קומיט-עדה ae195e7 ב-origin.
+
+### חוק-«לא-זמין ≠ נכשל» (R324-REF-STUDY · מ-AgentKit של Coinbase)
+- **מקור-אמת**: coinbase/agentkit `typescript/agentkit/src/agentkit.ts` — `getActions()` מסנן לפי `supportsNetwork()` ומכריז providers לא-נתמכים כבלתי-זמינים (warning), לא ככשל.
+- **החוק**: זרימה שאינה-יכולה-לרוץ במצב-הנוכחי מפסיקה-בכבוד (STASIS/GATED/IDLE, exit-0 עם-ראיה) — לעולם לא מייצרת אדום. כשל-אמיתי הוא רק כשל-בלתי-מוכר. (יישום-קיים: KEYLESS-STASIS, redboard STASIS).
+- **GOAT/GOAT-SDK חתימה** (נמדד-ממבנה `typescript/packages/wallets/*`): כל-ארנק מממש אותו-חוזה `signAndSendTransaction` — מקביל-אצלנו ל-WIF-per-account מאוחזר מ-ROT2; השכבה-הזו כבר-בקנה-אחד (resolve-keys 24-keys/12-accounts, LADDER-ACTED).
