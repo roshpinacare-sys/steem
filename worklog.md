@@ -1292,3 +1292,16 @@ Owner verdict: the public surface is still a messy landing page; wallet/tokens/c
 4. **Browser-verified**: desktop+mobile clean, all tiles live-populated, zero JS errors, sticky-footer law held.
 
 Honest bottom line: the sovereignty still has no monetized scale (NOT-YET, kelly probation, canary caps) — but the surface now measures and publishes value AND losses every beat. Transparency about the gap is step one of the gap's redemption.
+
+---
+
+## R332 round-2 — the front door becomes a product (2026-10-14 ~17:25Z, trace 1a13b659dce47825)
+
+Round-2 self-grill on the rebuilt apex found 4 walls and fixed all the same day (commits 4b33a0d + 89ad8bb):
+
+1. **Live market rails** — chain median price (0.10409 SBD/STEEM at verification), order-book bid/ask/spread from public api.steemit.com. Giants show price first; now SAOS does.
+2. **Live receipt stream** — treasury/army ladder runs from the public GitHub API with conclusion badges; localStorage last-known cache; honest rate-limit degradation (verified live: showed the honest state instead of fake emptiness).
+3. **Interactive kelly calculator** — the EXACT production formulas with sliders; verified: 40% win-rate → cautious 3 SBD cap; 70% → safe clamps at 0.25, cap touches gear ceiling. The governing math is now playable — the currency story is no longer a story.
+4. **Full EN mirror** (index-en.html) with HE/EN toggles — professionals get the same live console in English.
+
+Browser-verified both languages, mobile 390px clean, zero JS errors. The public surface now: price first → live economy console → real products → playable math → receipt stream → published truth (NOT-YET + gaps) → git-as-API. Test-passes ≠ value: the surface itself now measures and shows the difference every beat.
