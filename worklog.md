@@ -1305,3 +1305,17 @@ Round-2 self-grill on the rebuilt apex found 4 walls and fixed all the same day 
 4. **Full EN mirror** (index-en.html) with HE/EN toggles — professionals get the same live console in English.
 
 Browser-verified both languages, mobile 390px clean, zero JS errors. The public surface now: price first → live economy console → real products → playable math → receipt stream → published truth (NOT-YET + gaps) → git-as-API. Test-passes ≠ value: the surface itself now measures and shows the difference every beat.
+
+---
+Task ID: 19-c
+Agent: Z.ai Code (R332 coordination-law lane, trace 1a13b7254910eac5)
+Task: Owner sent planning-before-execution directive to ALL parallel agents — "you die, the sovereignty remains"; deliver the master plan that survives agent death
+
+Work Log:
+- Read worklog first: 19-a/19-b took the product surface — I claimed the unclaimed: coordination + law + value-truth (lane boundaries respected: only this doc + worklogs touched)
+- Wrote docs/R332-MASTER-PLAN-SOVEREIGNTY-OUTLIVES-AGENTS.md: Mortality-Transfer Test as law (a=law/b=engine/c=measurement/d=surface), 4 open audit lanes (C value-truth, D law-claims, E giants teardown, F performance) with method+artifact+done-criteria, REAL-SYSTEM-v1 = 10 acceptance criteria incl. MTT-72 (72h zero-live-agent run), anti-collision protocol, recommended order D→C→E→F
+- First finding: decision registries fragmented (Pulse + saos-dex + canon) — unification map = law-audit action #1
+
+Stage Summary:
+- The plan passes MTT: committed to git as law, zero value left in chat
+- Successors inherit 4 open lanes with explicit boundaries; the test that counts = MTT-72
