@@ -231,6 +231,31 @@ async function main() {
     return { verdict: r.verdict, generated: r.generated, kept: r.kept, vetoed: r.vetoed, topScore: r.shortlist[0]?.score ?? null, topConcept: r.shortlist[0]?.id ?? null, observe: true };
   });
 
+  /* R305 · THE SOURCING LOOP (exec30, langchain-ai/social-media-agent
+   * pattern, measured): the EAR the content rail never had — a READ-ONLY
+   * scan of the live network (condenser hot/trending/created over a gentle
+   * 6-8 tag set, 15s timeout each, zero keys) scored against the R302 DNA
+   * axes, feeding R304's pipeline a candidate QUEUE from outside the fleet
+   * (fleet authors + roster-mention posts excluded — the fleet curates the
+   * world, never itself). OBSERVE-ONLY: never a gate (R304 pattern); the
+   * queue rides the state-churn commits so evidence accumulates in git.
+   * TTL-gated 6h like the other light steps so the 30-min pulse stays
+   * gentle on the public RPC; a cached beat re-reports honestly with
+   * fresh:false. Fail-isolated like every step — an upstream outage yields
+   * a SOURCING-DEGRADED receipt, never a broken heartbeat. */
+  report.steps.contentSourcing = await stepWrap("content-sourcing", async () => {
+    const SFILE = path.join(STATE, "content-candidates.json");
+    const cached = readJson(SFILE, null);
+    const ttlMin = Number(process.env.SAOS_SOURCING_TTL_MIN ?? 360);
+    const ageMin = cached?.at ? (Date.now() - Date.parse(cached.at)) / 60000 : Infinity;
+    if (Number.isFinite(ageMin) && ageMin < ttlMin) {
+      return { verdict: cached.verdict ?? null, at: cached.at, scanned: cached.scanned ?? 0, kept: cached.kept ?? (cached.candidates ?? []).length, topScore: cached.candidates?.[0]?.score ?? null, fresh: false, ageMin: Math.round(ageMin) };
+    }
+    const { runSourcing } = await import("./content-sourcing.mjs");
+    const r = await runSourcing({ now });
+    return { verdict: r.verdict, at: r.at, scanned: r.scanned ?? 0, kept: r.kept ?? 0, topScore: r.candidates?.[0]?.score ?? null, fresh: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -271,6 +296,14 @@ async function main() {
     contentMemoryScore: report.steps.contentMemory?.scoreMean ?? null,
     contentConcepts: report.steps.contentConcepts?.verdict ?? "STEP-FAIL",
     contentConceptsTop: report.steps.contentConcepts?.topConcept ?? null,
+    /* R305 sourcing loop — the one-line digest (at/scanned/kept/topScore). */
+    contentSourcing: {
+      at: report.steps.contentSourcing?.at ?? null,
+      scanned: report.steps.contentSourcing?.scanned ?? 0,
+      kept: report.steps.contentSourcing?.kept ?? 0,
+      topScore: report.steps.contentSourcing?.topScore ?? null,
+      verdict: report.steps.contentSourcing?.verdict ?? "STEP-FAIL",
+    },
   };
   console.log("CI-HEARTBEAT " + JSON.stringify(summary));
   fs.writeFileSync(path.join(STATE, "ci-last-heartbeat.json"), JSON.stringify({ ...summary, report }, null, 2));

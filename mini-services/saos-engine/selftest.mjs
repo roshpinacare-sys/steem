@@ -3176,6 +3176,90 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   try { fs.rmSync(dir31, { recursive: true, force: true }); } catch { /* tmp */ }
 }
 
+{
+  /* 32 · R305 SOURCING LOOP (exec30, langchain-ai/social-media-agent
+   * pattern, measured) — the read-only network EAR: deterministic scoring,
+   * honest empty/degraded receipts, fleet-author + roster-mention exclusions,
+   * seed-tag fallback, digest shape. Zero network: the scan runs through an
+   * injected fetchImpl; state lands in an isolated tmp dir per R275. */
+  const cs = await import("./content-sourcing.mjs");
+  const dir32 = path.join(process.env.SAOS_STATE_DIR, "c32");
+  fs.mkdirSync(dir32, { recursive: true });
+  const axes32 = cs.dnaAxes({ voice: { pillars: ["measured truth", "numbers over adjectives"] } });
+  const NOW32 = "2026-10-14T12:00:00Z";
+  const iso32 = (hAgo) => new Date(Date.parse(NOW32) - hAgo * 3600000).toISOString();
+
+  const mkPost32 = (n, over = {}) => ({
+    author: over.author ?? `coinpub-${n}`, permlink: over.permlink ?? `post-${n}`,
+    title: over.title ?? `An honest ledger of ${n} measurements`,
+    body: over.body ?? "Plain numbers, no adjectives. The count is 42 and the clock says when.",
+    created: over.created ?? iso32(2), net_votes: over.net_votes ?? 9, children: over.children ?? 1,
+    category: over.category ?? "technology",
+  });
+  const okFetch32 = (posts) => async () => ({ ok: true, status: 200, json: async () => ({ result: posts }) });
+
+  /* 32.1 deterministic scoring — same input → same score, twice */
+  const candA = { title: "measured truth in numbers", preview: "plain checklists", votes: 20, children: 5, created: iso32(6) };
+  eq("32.1 deterministic scoring", cs.scoreCandidate(candA, axes32, NOW32), cs.scoreCandidate(candA, axes32, NOW32));
+
+  /* 32.2 the score math is exactly the documented formula (engagement
+   * 30 interactions / 6h = 5/h → soft-cap 5/15, freshness 1/(1+0.25),
+   * relevance 2 axes → 2·2/3) */
+  eq("32.2 score math", cs.scoreCandidate({ title: "measured truth numbers over", preview: "", votes: 9, children: 21, created: iso32(6) }, axes32, NOW32).score,
+    Math.round((2 * (5 / 15) + 1 / 1.25 + 2 * Math.min(1, 2 / 3)) * 100) / 100);
+
+  /* 32.3 freshness decays monotonically with age (velocity soft-cap alone
+   * would let old whales tie — the decay must order them) */
+  const young = cs.scoreCandidate({ title: "", preview: "", votes: 50, children: 0, created: iso32(1) }, [], NOW32);
+  const old = cs.scoreCandidate({ title: "", preview: "", votes: 50, children: 0, created: iso32(72) }, [], NOW32);
+  eq("32.3 freshness decay orders young over old", [old.freshness < young.freshness, old.score < young.score], [true, true]);
+
+  /* 32.4 DNA axis relevance — 2 axis hits outrank 0 hits, all else equal */
+  const onVoice = cs.scoreCandidate({ title: "measured truth with plain numbers", preview: "", votes: 10, children: 0, created: iso32(2) }, axes32, NOW32);
+  const offVoice = cs.scoreCandidate({ title: "totally unrelated yoga mats", preview: "", votes: 10, children: 0, created: iso32(2) }, axes32, NOW32);
+  eq("32.4 axis relevance outranks", [onVoice.axesHit > 0, onVoice.score > offVoice.score], [true, true]);
+
+  /* 32.5 all sources fail → honest DEGRADED receipt, empty queue, file written */
+  const dead32 = await cs.runSourcing({ now: NOW32, stateDir: dir32, dna: { voice: { pillars: [] } }, fetchImpl: async () => { throw new Error("ECONNREFUSED"); } });
+  eq("32.5 degraded honesty", [dead32.verdict, dead32.candidates.length, dead32.degraded.length > 0], ["SOURCING-DEGRADED", 0, true]);
+
+  /* 32.6 empty-but-alive feeds → honest EMPTY verdict (sources ok, 0 posts) */
+  const empty32 = await cs.runSourcing({ now: NOW32, stateDir: dir32, dna: { voice: { pillars: [] } }, fetchImpl: okFetch32([]) });
+  eq("32.6 empty feed honesty", [empty32.verdict, empty32.candidates.length, empty32.scanned, empty32.sources.every((s) => s.ok)], ["SOURCING-EMPTY", 0, 0, true]);
+
+  /* 32.7 fleet authors + roster-mention bodies never reach the queue */
+  const mixed32 = [
+    mkPost32(1), mkPost32(2), mkPost32(3, { author: "headcorner" }), mkPost32(4, { author: "cashmachine" }),
+    mkPost32(5, { title: "Why macrame matters to me" }), mkPost32(6, { body: "I asked tov about it and he agreed." }),
+    mkPost32(7, { body: "I baked bread in my stove this morning." }),
+  ];
+  const q32 = await cs.runSourcing({ now: NOW32, stateDir: dir32, dna: { voice: { pillars: [] } }, fetchImpl: okFetch32(mixed32) });
+  const authors32 = q32.candidates.map((c) => c.author);
+  eq("32.7 fleet exclusions", [authors32.includes("headcorner"), authors32.includes("cashmachine"), authors32.includes("coinpub-5"), authors32.includes("coinpub-6"), authors32.includes("coinpub-7")], [false, false, false, false, true]);
+  eq("32.7b exclusion receipts counted", [q32.excluded.fleetAuthors, q32.excluded.rosterMentions], [2, 2]);
+
+  /* 32.8 seed tags: missing community state → the fixed fallback; community
+   * state present → its tag leads, cap 8 holds */
+  eq("32.8 seed-tags fallback", cs.seedTags({}), ["life", "israel", "technology", "cryptocurrency", "writing", "photography"]);
+  const seeded32 = cs.seedTags({ community: { name: "Hive-457262" }, round: { community: "hive-457262" } });
+  eq("32.8b community state leads + gentle cap", [seeded32[0], seeded32.length <= 8, seeded32.includes("life")], ["hive-457262", true, true]);
+
+  /* 32.9 digest shape: at/head/sources/candidates/excluded/signature, sig
+   * format, observe-only, verdicts only (no body material in the queue) */
+  eq("32.9 digest shape", [typeof q32.at === "string", typeof q32.head === "string" && q32.head.length >= 7, Array.isArray(q32.sources) && q32.sources.length === q32.sources.filter((s) => s.ok).length, /^sig:[0-9a-f]{8}$/.test(q32.signature), q32.observe, q32.candidates.every((c) => !("preview" in c) && !("body" in c))], [true, true, true, true, true, true]);
+
+  /* 32.10 the queue caps at top-12 (topN law) and ranks deterministically */
+  const many32 = Array.from({ length: 30 }, (_, i) => mkPost32(`bulk-${i}`, { permlink: `bulk-${i}`, created: iso32(1 + (i % 5)) }));
+  const big32 = await cs.runSourcing({ now: NOW32, stateDir: dir32, dna: { voice: { pillars: [] } }, fetchImpl: okFetch32(many32) });
+  eq("32.10 top-12 cap", big32.candidates.length, 12);
+
+  /* 32.11 the written state file parses back with the same signature */
+  const disk32 = JSON.parse(fs.readFileSync(path.join(dir32, "content-candidates.json"), "utf8"));
+  eq("32.11 state file is the receipt", [disk32.verdict, disk32.signature === big32.signature, disk32.candidates.length], [big32.verdict, true, 12]);
+
+  try { fs.rmSync(dir32, { recursive: true, force: true }); } catch { /* tmp */ }
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
