@@ -1266,3 +1266,16 @@ Stage Summary:
 **הוכחה:** selftest **76/76** (15-וקטורי-קלי; לקח-רעש-נקודה-צפה-תוקן-1e-9) · **מדידה-אמיתית:** 40-תמונות/28-פעימות/3-אינפורמטיביות → probation 12-SBD בהילוך-1 (רגלי-הקנרית ~0.03-SBD — הכביש-נוסע-רגיל). דחיפת-ייצור-treasury-ladder-להוכחת-קצה-לקצה.
 
 **כנות:** cost-basis-של-המלאי-הנמכר-נמדד-בפנק-האוצר-הנפרד; הקלי-מודד-תזרים-ממומש — שני-הפנקסים-חיים-במקביל. שני-הכיוונים-של-הבעלים-הותכו-לתמסורת-אחת: הילוכים-מרוויחים-מהירות-מאמינות (רצף), קלי-מתמחר-מהירות-מתוחלת (רווח-ממומש) — מהירות-גבוהה-בלי-חששות.
+
+---
+
+## R331 — red-alert loop: every-10-min Actions failure email bomb (2026-10-14 ~16:30Z, trace 1a13b2f8df6291d1)
+
+Owner alert: failure email almost every 10 minutes from the Actions bot — "not a serious system". Diagnosis across all 11 repos, root causes fixed at source:
+
+1. **sovereign-state brick (the 10-min bomb)** — leak-scan (fail-closed) tripped on 2 committed state lines since 12:47Z: the sealed-vault filename mention in protocol-canon.json:8 and the operator machine path in exec33 R341 doc:23. Every beat (cron 3,18,33,48 + self-chain) died at the same static content; state artery frozen. Fix f0e0064 (Autonomy): redact source per the scan's own law, local scan 0 hits pre-push; production beat 38597130711 green through leak-scan + commit-push.
+2. **sovereign-tick push race** — single-shot push lost the ref-lock twice (14:13, 14:35) on the busiest repo. Fix e490724 (Autonomy): bounded rebase-retry ×5 for tick + weekly-retro; fail-honest after.
+3. **Transient tail verified recovered, zero code change**: Pulse pages 500 (GitHub-side, 15:00Z incident window with FleetHQ commit_refs faults), office-3d, saos-act llm rate-limit blip, Console experiment-window fails, exposure-gate violations already cleaned at HEAD (scan PASS 811 files, gate green since 13:00Z).
+4. **Self-inflicted + prevented**: my two pushes tripped identity-guard (DECISIONS #10) — committed as saos-fleet@ (forbidden NAME@ identity). Two one-time fails, no loop (push-only trigger). Lawful owner identity now set git-global + all estate clones. History blemish awaits owner decision (no force push).
+
+Lessons: leak-scan whole-tree means ANY flagged line bricks EVERY beat — redact BEFORE push; GITHUB_TOKEN pushes don't trigger identity-guard (noted gap); the paved road includes the failure surface — a road that emails the owner every 10 minutes is not paved.
