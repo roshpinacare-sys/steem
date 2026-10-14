@@ -72,7 +72,8 @@ export function screenInput(text) {
 }
 
 /* ── 3 · validateOutput — JSON.parse + hand-rolled shape check (no ajv) ──
- * R350 (exec35, lane 35-a): schema fields may be the legacy type string OR a
+ * R352 (exec35, lane 35-a; renumbered R350→R352 after T-95 first-registration,
+ * Pulse DECISIONS #35/#36): schema fields may be the legacy type string OR a
  * constraint object { type, enum, min, max, minLength, maxLength }:
  *   · enum      — array; value must be EXACTLY one of (=== semantics).
  *   · min/max   — inclusive numeric bounds.
@@ -107,7 +108,8 @@ export function validateOutput(text, schema) {
     if (key === "required") continue;
     if (!(key in parsed)) continue; // absence handled by required[]; optional keys may be absent
     const got = typeOfValue(parsed[key]);
-    // R350: an object spec carries constraints; a string spec is the legacy type
+    // R352 (renumbered R350→R352 after T-95 first-registration, Pulse DECISIONS
+    // #35/#36): an object spec carries constraints; a string spec is the legacy type
     const spec = want !== null && typeof want === "object" && !Array.isArray(want) ? want : null;
     if (spec) {
       if (typeof spec.type === "string" && got !== spec.type) errors.push(`type-mismatch:${key}:want=${spec.type}:got=${got}`);
