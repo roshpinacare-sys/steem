@@ -1,20 +1,20 @@
 {
-  "at": "2026-10-14T02:53:08.745Z",
+  "at": "2026-10-14T03:03:08.769Z",
   "enabled": true,
-  "runsTotal": 387,
+  "runsTotal": 388,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 72,
-      "oks": 63,
+      "window": 73,
+      "oks": 64,
       "fails": 2,
       "blocked": 7,
-      "okRate": 87.5,
-      "blockedRate": 9.7,
+      "okRate": 87.7,
+      "blockedRate": 9.6,
       "failReasons": {
         "timeout": 2
       },
-      "msP50": 104372,
+      "msP50": 104283,
       "msP90": 145107
     },
     "curator": {
@@ -24,7 +24,7 @@
       "verdicts": {
         "VOTED": 30
       },
-      "vpEff": 47.2,
+      "vpEff": 45.9,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -36,15 +36,15 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 4019,
+      "checks": 4029,
       "downs": 122,
       "heals": 66,
       "healVerified": 55,
       "healFailed": 2,
-      "lastCheckAt": "2026-10-14T02:53:08.769Z",
+      "lastCheckAt": "2026-10-14T03:03:08.773Z",
       "engineUp": true,
       "lastSpawnAt": null,
-      "lastUpAt": "2026-10-14T02:53:08.771Z",
+      "lastUpAt": "2026-10-14T03:03:08.793Z",
       "blips": 6
     }
   },
@@ -53,7 +53,7 @@
       "id": "signing-cred-blocked",
       "severity": "low",
       "resolved": true,
-      "evidence": "cycle-blocked ×7/72 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "evidence": "cycle-blocked ×7/73 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
@@ -63,7 +63,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 305,
+    "signing-cred-blocked": 306,
     "broadcast-fails": 73,
     "cycle-latency-tail": 12
   },
