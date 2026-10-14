@@ -1143,3 +1143,26 @@ Stage Summary:
 - The integration-module queue from the owner's T-83 reference batch is now FULLY burned: ②R303 ③R302 ④R304/R307 ⑤R332 ⑥hermoso held by measured reality (owner-gated).
 - The distribution now has a PLAN each beat instead of a race; the cross-chain twin scan runs its evidence stream; the enforce wave (rails consulting the plan under memory.swarmEnforce) waits for accumulated evidence — the R302 observe→enforce pattern end to end.
 - Open unchanged: ticEnforce arming (evidence accumulating), pillar gaps (owner-gated), SOCIAL-STANDBY release (owner's dual-key directive), recordPublished chain-field extension (enforce wave).
+
+---
+## R327 — 2026-10-14T11:4xZ — המשך-מחזור: עורקי-ההכנסה-חזרו-לנשום-מעצמם · טריאז'-הרדומים-נסגר-15/15
+
+**מה-נמדד:**
+- עורקי-ההכנסה **חזרו-להיולד-מהלוח-עצמו**: treasury-ladder run 38550502024 event=**schedule** 10:34:20Z success · army-ladder run 38537951138 event=**schedule** 08:50:09Z success — רישום-ה-cron על-המארח-הציבורי-החדש (R280) **סוף-סוף-קם**; תיקון-ההצתה-שלי (a223d96+dff1c47) היה-הגשר-עד-שהמתזמן-התעורר. עכשיו-שני-השניים-חיים.
+- אדום-חדש-נתפס-ונסגר-במקביל: contract-check נכשל 07:16Z-07:30Z (סדרים-סגורים-בלי-קבלה closed=2 noReceipt=2) → הצי-תיקל 9b766a0 (מבחן-קבלה-מודע-טיפוסים: closureReceipt = אובייקט) → 07:33Z ירוק.
+- החור-הנותר-נמדד: contract-check = 7 runs, **אפס-הצתות-schedule-מעולם** — ה-cron-נולד-אילם; אף-pacemaker-לא-כיסה-אותו.
+- **התיקון-הדדי**: Console dd40de5 + FleetHQ 869c0a9 — מישור-החוזה: {Autonomy/contract-check.yml, slaMin 70}. DRYRUN אומת: measured=25/36, נתיב-230m → would-ignite. קבלה-בייצור: beat-11:25:55Z measured=25; contract-check-הוצת-מחדש-11:25:41Z-ירוק.
+- **טריאז'-הרדומים-השני (7-הנותרים) — נשפטו-כולם-בראיות-מדודות** (commits+README-role+Actions-shape לכל-אחד):
+  - sandbox-private = keep-dormant-on-purpose (מאוגף-מכונת-הבעלים — "died with the operator's machine")
+  - Adsmarket = static-by-design (קאנון-השיווק; אין-ad-tech, אין-מפתחות)
+  - saos-jummper = נבנה-אבל-חומת-המכסה-סוגרת (5-מסלולות-מוצהרות; חתימת-T-73-על-הריצה-האחרונה)
+  - Sdk = תאום-ארכיון-של-anchor-baseline — אותו-חוק, אותו-פסק-דין
+  - TruthRail = why-silence-מוצהר-עצמי-בקומיט-הראש-שלו (cron-strip; החיים-המתוזמנים-חיים-בציבורי)
+  - negen = חוזה-אוטונומיה-חתום-בעלים-עומד (MAY-פתוח; פיתוח-טרם-נלקח; 0-runs-מטבעו)
+  - sovereign-runner-kit = חוק-עיצוב: המכשיר-מריץ, GitHub-רק-רושם (0-runs = העיצוב-עובד)
+- פנקס-ההכרעות cca0241 נדחף: **15/15-פסקי-דין** · staleUndecided → 0 (מומתן-ב-network.json-הבא) · reviewBy 2026-11-13-ללא-שינוי.
+- Pulse-heartbeat-38556989868-הוצת-לקבלת-המדינה-בייצור.
+
+**לקח-מדוד**: `git checkout -- <dir>`-להיפוך-רעש-רחב-מדי — בלע-עריכת-פנקס-אחת; הוחזר-מהילד-ב-/tmp; מעתה-רק-נתיבים-מדויקים.
+
+**בידי-הבעלים-עדיין**: חומת-החיוב (T-73) · כספי-רכש-לעורק-הקנייה · מכונת-המפעיל (sandbox-private) · מפתחות-הארנק.
