@@ -20,6 +20,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { memoryPenalty, winBoost } from "./content-memory.mjs";
+import { ticVerdict } from "./content-tics.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 export const DNA_FILE = path.join(DIR, "content-dna.json");
@@ -194,6 +195,15 @@ export function judgeVerdict(draft, { memory = null, persona = null, dna = null 
   } else {
     axes.memory = { ok: true, degraded: true };
   }
+
+  /* R329 · THE TIC AXIS (T-88, owner delegation "יש ריבונות אחראית"): a
+   * phrase that ALREADY recurs across our published posts (memory.tics,
+   * applied from the sealed R327 proposal) repeats in this draft → observe
+   * by default; a hard reason ONLY when the signed DNA arms ticEnforce
+   * (the R307 knob pattern — enforcement waits for measured evidence). */
+  const tv = ticVerdict(draft, d);
+  axes.tics = { ok: tv.ok, hits: tv.hits, mode: tv.mode };
+  if (tv.mode === "enforce" && !tv.ok) reasons.push(...tv.reasons.slice(0, 2));
 
   const q = qualityScore({ title, body, persona, dna: d });
   axes.quality = { score: q.score, enforce: d?.quality?.enforce === true };

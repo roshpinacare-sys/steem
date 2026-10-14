@@ -3076,9 +3076,10 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("30.1: clean measured prose passes", cj.slopVerdict("Three receipts, one ledger", "The numbers held on Friday; here is the arithmetic.").ok, true);
   ok("30.1: reason carries the phrase", cj.slopVerdict("x", "let's dive in to the drawer metaphor").reasons[0].includes("let's dive in"));
 
-  /* 30.2 DNA: load + merge + persona/fleet forbidden */
+  /* 30.2 DNA: load + merge + persona/fleet forbidden (R329: the DNA is now
+   * VERSIONED — the applied-ledger flow bumps it, so pin >=1, not ==1) */
   const dnaJ = cj.loadDNA();
-  ok("30.2: loadDNA contract", dnaJ.version === 1 && dnaJ.law === "R302" && Array.isArray(dnaJ.slopLexicon));
+  ok("30.2: loadDNA contract", dnaJ.version >= 1 && dnaJ.law === "R302" && Array.isArray(dnaJ.slopLexicon));
   const merged = cj.mergeDNA(cj.DEFAULT_DNA, { fleetForbidden: ["crypto wizard"] });
   eq("30.2: mergeDNA array override", merged.fleetForbidden, ["crypto wizard"]);
   eq("30.2: mergeDNA keeps lexicon", merged.slopLexicon.length, cj.DEFAULT_DNA.slopLexicon.length);
@@ -3590,6 +3591,64 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   const realCorpus36 = JSON.parse(fs.readFileSync(new URL("./content-corpus.json", import.meta.url), "utf8"));
   const realQ36 = await fl36.lintQueue(realCorpus36.map((c) => ({ id: c.id, title: c.title, body: c.body, tags: c.tags, persona: "siq" })));
   eq("36.15 real corpus lint-clean on both fronts", [realQ36.checked, realQ36.violations], [realQ36.checked, 0]);
+}
+
+{
+  /* 37 · R329 THE TIC GUARD + THE PROPOSAL APPLIER (T-88, trace
+   * 1a1395bb641cecfd) — the owner delegated the decision ("אני לא מכריע יש
+   * ריבונות אחראית"): R327's sealed proposal applied RESPONSIBLY — tics are
+   * a measured REPEAT-BUDGET law (R301's anti-crowd shape at voice level),
+   * never a universal ban; observe-first (ticEnforce ships false); the
+   * applier acts only on a SIGNED proposal, is idempotent, keeps a
+   * provenance ledger inside the DNA, and never arms a veto knob. */
+  const ct37 = await import("./content-tics.mjs");
+  /* 37.1 union fingerprint: every distinct measured phrase stays (each was
+   * measured ≥3 hits/≥2 posts on its own — collapsing would narrow evidence) */
+  const cand37 = [
+    { phrase: "difference is in", hits: 12, posts: 3 },
+    { phrase: "the difference is", hits: 12, posts: 3 },
+    { phrase: "the difference is in", hits: 12, posts: 3 },
+    { phrase: "the drawer of replies", hits: 5, posts: 2 },
+    { phrase: "of replies you", hits: 4, posts: 2 },
+  ];
+  const roots37 = ct37.normalizeTics(cand37);
+  eq("37.1 union fingerprint kept", [roots37.length, roots37[0].phrase, roots37.some((r) => r.phrase === "the drawer of replies")], [5, "difference is in", true]);
+  /* 37.2 tic verdict: observe by default, enforce only by knob */
+  const dna37 = { version: 1, memory: { tics: [{ phrase: "the difference is in", hits: 12, posts: 3 }, { phrase: "the drawer of replies", hits: 5, posts: 2 }], ticEnforce: false } };
+  const ticDraft37 = { title: "Two clocks", body: "We measured both. The difference is in the baseline; the second clock logged 9 minutes." };
+  const clean37 = { title: "Two clocks", body: "We measured both clocks against one baseline: 12 minutes and 9 minutes." };
+  eq("37.2 tic observed, not vetoed", [ct37.ticVerdict(ticDraft37, dna37).ok, ct37.ticVerdict(ticDraft37, dna37).mode], [false, "observe"]);
+  eq("37.3 clean draft passes", [ct37.ticVerdict(clean37, dna37).ok, ct37.ticVerdict(clean37, dna37).hits.length], [true, 0]);
+  eq("37.4 enforce mode flips by knob", ct37.ticVerdict(ticDraft37, { ...dna37, memory: { ...dna37.memory, ticEnforce: true } }).mode, "enforce");
+  /* 37.5 judge integrates the tic axis as observe (never opens a gate) */
+  const cj37 = await import("./content-judge.mjs");
+  const jv37 = cj37.judgeVerdict({ ...ticDraft37, persona: "siq" }, { dna: { ...cj37.DEFAULT_DNA, memory: { ...cj37.DEFAULT_DNA.memory, tics: dna37.memory.tics, ticEnforce: false } } });
+  eq("37.5 judge observe carries tic axis", [jv37.ok, jv37.axes.tics.ok, jv37.axes.tics.mode], [true, false, "observe"]);
+  /* 37.6 applier: signature-checked sealed proposal or honest refuse */
+  const tmp37 = fs.mkdtempSync((await import("node:os")).tmpdir() + "/tics37-");
+  const badFile37 = path.join(tmp37, "bad.json");
+  fs.writeFileSync(badFile37, JSON.stringify({ verdict: "DNA-DRIFT-DETECTED", proposal: { addLexicon: ["the difference is in"] }, signature: "sig:00000000" }));
+  eq("37.6 bad signature refused", ct37.applyProposal({ proposalFile: badFile37, dnaFile: path.join(tmp37, "dna.json"), write: true }).ok, false);
+  /* 37.7 sealed flow: dry-run plans, never writes */
+  const doc37 = { verdict: "DNA-DRIFT-DETECTED", samples: 20, proposal: { addLexicon: cand37.map((c) => c.phrase), pillarGaps: ["measured truth"] } };
+  const sig37 = ct37.stableStringify;
+  const dnaFile37 = path.join(tmp37, "dna.json");
+  fs.writeFileSync(dnaFile37, JSON.stringify({ version: 1, law: "R302", voice: { pillars: ["measured truth"] }, memory: { jaccard: 0.5 } }));
+  const sealed37 = { verdict: doc37.verdict, proposal: doc37.proposal, signature: "sig:" + (await import("node:crypto")).createHash("sha256").update(JSON.stringify({ proposal: doc37.proposal, verdict: doc37.verdict })).digest("hex").slice(0, 8) };
+  const sealedFile37 = path.join(tmp37, "drift.json");
+  fs.writeFileSync(sealedFile37, JSON.stringify(sealed37));
+  const dry37 = ct37.applyProposal({ proposalFile: sealedFile37, dnaFile: dnaFile37, trace: "test", now: "2026-10-14T00:00:00.000Z" });
+  eq("37.7 dry-run plans without writing", [dry37.ok, dry37.dryRun, dry37.next.memory.tics.length >= 2, JSON.parse(fs.readFileSync(dnaFile37, "utf8")).version], [true, true, true, 1]);
+  /* 37.8 real write bumps version + provenance ledger; never arms veto */
+  const real37 = ct37.applyProposal({ proposalFile: sealedFile37, dnaFile: dnaFile37, trace: "test", now: "2026-10-14T00:00:00.000Z", write: true });
+  const dnaAfter37 = JSON.parse(fs.readFileSync(dnaFile37, "utf8"));
+  eq("37.8 apply writes version+ledger", [real37.write, dnaAfter37.version, dnaAfter37.memory.applied.length, dnaAfter37.memory.ticEnforce, dnaAfter37.memory.conceptsEnforce], [true, 2, 1, false, true]);
+  /* 37.9 idempotent: same sig → honest no-op */
+  const again37 = ct37.applyProposal({ proposalFile: sealedFile37, dnaFile: dnaFile37, trace: "test", now: "2026-10-14T00:00:00.000Z", write: true });
+  eq("37.9 same sig is a no-op", [again37.ok, again37.noop, JSON.parse(fs.readFileSync(dnaFile37, "utf8")).version], [true, true, 2]);
+  /* 37.10 applied DNA still lint/pipeline-safe: judge observe stays observe */
+  const jvAfter37 = cj37.judgeVerdict({ ...ticDraft37, persona: "siq" }, { dna: { ...cj37.DEFAULT_DNA, ...dnaAfter37 } });
+  eq("37.10 post-apply judge stays observe on tics", [jvAfter37.ok, jvAfter37.axes.tics.mode], [true, "observe"]);
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
