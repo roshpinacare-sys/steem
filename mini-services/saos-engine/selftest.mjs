@@ -1,6 +1,9 @@
 /**
  * selftest.mjs — deterministic offline vectors for the sovereign-local core.
- * Zero network, zero clock, zero randomness. RUN: bun selftest.mjs
+ * Zero network, zero clock, zero randomness. RUN: node mini-services/saos-engine/selftest.mjs (from repo root).
+ * exec36 · lane 36-a · the vectors stay deterministic (injected clocks, temp
+ * fixtures); the exec36 RUN MARKER adds wall-clock/randomBytes run state
+ * IDENTITY only (never a vector input) so a crashed run can never read green.
  */
 import {
   dragK, inventorySkew, planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, rebuildPacingFromEvents, classifyStale, pnlFromFills, guardDepth, parityVerdict,
@@ -21,6 +24,7 @@ import { classifyAgent } from "./fleet.mjs";
 import { PERSONAS, PERSONA_IDS, personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata, assignPersonas, personaBrief } from "./personas.mjs";
 import { OP_IDS } from "./steemtx.mjs";
 import { screenCode, screenInput, validateOutput, guardedRound, estimateTokens, assertBudget, runIsolated } from "./kernel-isolation.mjs";
+import { writeJsonAtomic, writeRunMarker, verifySelftestEvidence } from "./evidence.mjs";
 import os from "node:os";
 import fs from "node:fs";
 import path from "node:path";
@@ -38,6 +42,17 @@ const eq = (name, a, b) => {
   else { fail++; console.error(`FAIL ${name}\n  got: ${ja}\n  want: ${jb}`); }
 };
 const ok = (name, cond) => (cond ? pass++ : (fail++, console.error(`FAIL ${name}`)));
+
+/* exec36 · lane 36-a · RUN MARKER (R354 candidate — execution evidence, the
+ * SWE-bench SUITE_RAN pattern harvested via 33-b): written ATOMICALLY before
+ * the first vector executes. If this process dies mid-run, the marker exists
+ * WITHOUT a matching verdict — evidence.mjs classifies that NOT-RAN
+ * (fail-closed): a crashed selftest can never read green. The final verdict
+ * (bottom of this file) binds itself to THIS runId and self-verifies before
+ * exit (defense in depth). */
+const ENGINE_STATE = path.join(path.dirname(new URL(import.meta.url).pathname), "state");
+let RUN_MARKER = null;
+try { RUN_MARKER = writeRunMarker(ENGINE_STATE); } catch (e) { console.error(`SELFTEST-MARKER-FAIL ${String(e?.message ?? e).slice(0, 160)}`); }
 
 /* 1 · dragK monotone + clamped */
 eq("dragK@0", dragK(0), 1);
@@ -4879,6 +4894,131 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 }
 
 {
+  /* 48 · VERIFICATION LEASE + EXECUTION EVIDENCE (exec36, lane 36-a): the
+   * 33-b protocol-research harvest as TWO modules — (A) gate-lease.mjs
+   * (R353-candidate, registry pending R353+; mcp-servers gate-lease pattern:
+   * atomic mkdir election, ttl liveness + same-host pid liveness, stale
+   * takeover, owner-checked release, withLease SKIP-NOT-FAIL) and (B)
+   * evidence.mjs (R354-candidate; SWE-bench SUITE_RAN pattern: a verdict
+   * without positive execution evidence is NO-EVIDENCE and fails closed —
+   * "never ran" ≠ "ran clean" ≠ "ran and failed"). Lease + evidence fixtures
+   * live in TEMP dirs with INJECTED clocks (deterministic vectors); the REAL
+   * repo state files are only READ (color-agnostic enum vector — the vector
+   * asserts the honest SHAPE, never a specific color). */
+
+  const gl48 = await import("./gate-lease.mjs");
+  const ev48 = await import("./evidence.mjs");
+  /* deterministic injected clock for the whole lease flow */
+  const T48 = { a: 1000, b: 2000, c: 3000, d: 4000, e: 5000, f: 6000, g: 7000, h: 8000 };
+
+  /* ── 48.a the lease ── */
+  const leaseDir48 = fs.mkdtempSync(path.join(os.tmpdir(), "saos48-lease-"));
+  const l48a = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-A", now: T48.a });
+  eq("48.1 first acquire granted to the first caller", [l48a.granted, l48a.tookOver, l48a.lease?.owner, l48a.lease?.purpose], [true, false, "lane-A", "gate48"]);
+  const disk48 = JSON.parse(fs.readFileSync(path.join(leaseDir48, "gate48", "owner.json"), "utf8"));
+  ok("48.2 owner.json on disk: owner/pid/host/ttl/acquiredAt exact", disk48.owner === "lane-A" && disk48.pid === process.pid && disk48.host === os.hostname() && disk48.ttlMs === 60000 && disk48.acquiredAt === T48.a);
+
+  const l48b = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-B", now: T48.b });
+  eq("48.3 second acquire on same purpose → not-granted + holder info", [l48b.granted, l48b.holder?.owner, l48b.holder?.pid === process.pid], [false, "lane-A", true]);
+
+  /* 48.4 stale takeover via ttl: backdate the holder beyond its ttl */
+  const holderFile48 = path.join(leaseDir48, "gate48", "owner.json");
+  fs.writeFileSync(holderFile48, JSON.stringify({ ...JSON.parse(fs.readFileSync(holderFile48, "utf8")), acquiredAt: T48.b - 61000 }));
+  const l48c = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-C", now: T48.b });
+  eq("48.4 expired holder → stale takeover (tookOver + prevOwner)", [l48c.granted, l48c.tookOver, l48c.prevOwner], [true, true, "lane-A"]);
+
+  /* 48.5 stale takeover via same-host pid liveness: fresh ttl, dead pid */
+  const { spawn: spawn48 } = await import("node:child_process");
+  const deadPid48 = await new Promise((res) => { const c48 = spawn48(process.execPath, ["-e", ""], { stdio: "ignore" }); c48.on("exit", () => res(c48.pid)); });
+  fs.writeFileSync(holderFile48, JSON.stringify({ ...JSON.parse(fs.readFileSync(holderFile48, "utf8")), owner: "ghost", pid: deadPid48, acquiredAt: T48.b }));
+  const l48d = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-D", now: T48.c });
+  eq("48.5 dead-pid holder (fresh ttl) → stale takeover", [l48d.granted, l48d.tookOver, l48d.prevOwner], [true, true, "ghost"]);
+
+  /* 48.6 stale takeover via corrupt holder file */
+  fs.writeFileSync(holderFile48, "{corrupt");
+  const l48e = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-E", now: T48.d });
+  eq("48.6 corrupt holder file → stale takeover, prevOwner honestly unknown", [l48e.granted, l48e.tookOver, l48e.prevOwner, l48e.lease?.owner], [true, true, null, "lane-E"]);
+
+  /* 48.7 renew advances the on-disk timestamp exactly (liveness refresh) */
+  const l48f = await gl48.renewLease(l48e.lease, { now: T48.e });
+  eq("48.7 renew granted + disk acquiredAt advanced exactly", [l48f.renewed, JSON.parse(fs.readFileSync(holderFile48, "utf8")).acquiredAt], [true, T48.e]);
+
+  /* 48.8-48.10 owner-checked release */
+  const r48a = await gl48.releaseLease({ ...l48f.lease, owner: "mallory" });
+  eq("48.8 non-owner release refused fail-closed", [r48a.released, r48a.reason], [false, "owner-mismatch"]);
+  ok("48.9 refused release left the lease dir intact", fs.existsSync(path.join(leaseDir48, "gate48")));
+  const r48b = await gl48.releaseLease(l48f.lease);
+  eq("48.10 owner release works (readback: dir gone)", [r48b.released, fs.existsSync(path.join(leaseDir48, "gate48"))], [true, false]);
+
+  /* 48.11-48.15 withLease orchestration: run / SKIP-NOT-FAIL / honest propagation */
+  let ran48 = null;
+  const w48a = await gl48.withLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-F", now: T48.f, fn: async (lease) => { ran48 = lease.owner; return "ok48"; } });
+  eq("48.11 withLease ran fn, returned result, released", [w48a.skipped, w48a.result, ran48, fs.existsSync(path.join(leaseDir48, "gate48"))], [false, "ok48", "lane-F", false]);
+
+  const l48g = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-G", now: T48.g });
+  ok("48.12 contended pre-acquire for the withLease skip vector", l48g.granted === true);
+  const w48b = await gl48.withLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-F", now: T48.g, fn: async () => { throw new Error("MUST-NOT-RUN"); } });
+  eq("48.13 contended withLease → SKIP-NOT-FAIL shape (fn never ran)", [w48b.skipped, w48b.holder?.owner], [true, "lane-G"]);
+  await gl48.releaseLease(l48g.lease);
+
+  let threw48 = null;
+  try { await gl48.withLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, owner: "lane-F", now: T48.h, fn: async () => { throw new Error("boom48"); } }); } catch (e) { threw48 = e; }
+  eq("48.14 fn error propagates honestly after release", threw48?.message, "boom48");
+  ok("48.15 release ran in finally on fn throw (dir gone)", !fs.existsSync(path.join(leaseDir48, "gate48")));
+
+  /* 48.16-48.17 fail-closed arguments (mcp allowlist-containment discipline) */
+  const l48h = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "../escape", ttlMs: 60000, owner: "lane-F", now: T48.h });
+  eq("48.16 hostile purpose refused fail-closed", [l48h.granted, l48h.error], [false, "purpose-not-allowlisted"]);
+  const l48i = await gl48.acquireLease({ leaseDir: leaseDir48, purpose: "gate48", ttlMs: 60000, now: T48.h });
+  eq("48.17 missing owner refused fail-closed", [l48i.granted, l48i.error], [false, "owner-required"]);
+
+  /* ── 48.b execution evidence (temp state fixtures) ── */
+  const evDir48 = fs.mkdtempSync(path.join(os.tmpdir(), "saos48-ev-"));
+  const marker48 = path.join(evDir48, "selftest-run-marker.json");
+  const verdict48 = path.join(evDir48, "selftest-last-run.json");
+  const RUN48 = "4".repeat(32);
+  const S48 = "2026-10-14T16:00:00.000Z", F48 = "2026-10-14T16:00:05.000Z";
+  fs.writeFileSync(marker48, JSON.stringify({ runId: RUN48, startedAt: S48, startedMs: 0, pid: process.pid, host: os.hostname() }));
+
+  eq("48.18 marker without verdict → NOT-RAN (crashed before finishing)", ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 }).evidence, "NOT-RAN");
+
+  fs.writeFileSync(verdict48, JSON.stringify({ pass: 10, fail: 0, at: F48, vectors: 10, runId: RUN48, startedAt: S48, finishedAt: F48, durationMs: 5000, total: 10, suiteRan: true }));
+  const e48a = ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 });
+  eq("48.19 matched marker+verdict, clean → SUITE-RAN honest", [e48a.evidence, e48a.honest], ["SUITE-RAN", true]);
+
+  fs.writeFileSync(verdict48, JSON.stringify({ pass: 9, fail: 1, at: F48, vectors: 10, runId: RUN48, startedAt: S48, finishedAt: F48, durationMs: 5000, total: 10, suiteRan: true }));
+  const e48b = ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 });
+  eq("48.20 fail recorded (marker matched) → FAIL-RECORDED honest red", [e48b.evidence, e48b.honest], ["FAIL-RECORDED", false]);
+
+  fs.rmSync(marker48);
+  eq("48.21 verdict without marker → NO-MARKER fail-closed", ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 }).evidence, "NO-MARKER");
+
+  fs.writeFileSync(marker48, JSON.stringify({ runId: "b".repeat(32), startedAt: S48, startedMs: 0, pid: 1, host: "other-host" }));
+  eq("48.22 runId mismatch → RUNID-MISMATCH fail-closed", ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 }).evidence, "RUNID-MISMATCH");
+
+  fs.writeFileSync(verdict48, JSON.stringify({ pass: 1725, fail: 0, at: F48, vectors: 1725 })); /* legacy pre-evidence shape */
+  eq("48.23 legacy verdict (no runId/suiteRan) → fail-closed mismatch", ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 }).evidence, "RUNID-MISMATCH");
+
+  fs.writeFileSync(marker48, JSON.stringify({ runId: RUN48, startedAt: S48, startedMs: 0, pid: process.pid, host: os.hostname() })); /* restore the matched marker */
+  fs.writeFileSync(verdict48, JSON.stringify({ pass: 5, fail: 0, at: F48, vectors: 5, runId: RUN48, startedAt: S48, finishedAt: F48, durationMs: 1, total: 5, suiteRan: false }));
+  eq("48.24 suiteRan:false → NOT-RAN (empty status ≠ ran clean)", ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 }).evidence, "NOT-RAN");
+
+  fs.writeFileSync(verdict48, "{corrupt");
+  eq("48.25 unparseable verdict → NOT-RAN", ev48.verifySelftestEvidence({ verdictPath: verdict48, markerPath: marker48 }).evidence, "NOT-RAN");
+
+  /* 48.26-48.27 THE REAL REPO STATE — whatever color it is, it must be an
+   * honest enum member with honest ⇔ SUITE-RAN consistency (color-agnostic
+   * by law: the vector asserts the SHAPE, never a specific color). */
+  const real48 = ev48.verifySelftestEvidence({});
+  ok("48.26 real state evidence is an honest enum member", ev48.EVIDENCE_VALUES.includes(real48.evidence));
+  ok("48.27 real state honest ⇔ SUITE-RAN consistency", real48.honest === (real48.evidence === "SUITE-RAN"));
+
+  fs.rmSync(leaseDir48, { recursive: true, force: true });
+  fs.rmSync(evDir48, { recursive: true, force: true });
+  ok("48.28 section-48 fixtures cleaned by readback", !fs.existsSync(leaseDir48) && !fs.existsSync(evDir48));
+}
+
+{
   /* 49 · WATCHTOWER UPGRADES (exec36, lane 36-b): the 33-b protocol-research
    * harvest as ONE module (watch-upgrades.mjs) — (A) R355-CANDIDATE triage
    * BEFORE self-heal (SWE-bench harness/infra_failure.py: post-hoc READ-ONLY
@@ -5052,13 +5192,42 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
-/* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
- * role — written ONLY on a full run, never by a partial import. */
+/* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
+ * last-run write is now runId-bound + self-verified (defense in depth).
+ * Shape: legacy keys {pass, fail, at, vectors} kept byte-compatible PLUS
+ * {runId === marker.runId, startedAt, finishedAt, durationMs, total,
+ * suiteRan:true}. Consumers reading this verdict with a missing marker, a
+ * runId mismatch, or suiteRan!==true must treat it as NO-EVIDENCE
+ * (fail-closed STALE/UNKNOWN — never green):
+ * evidence.mjs:verifySelftestEvidence is the one-shape validator (the
+ * ci-cycle selftest-evidence probe uses it; future probes import the same).
+ * Honest note: FAIL-RECORDED (fail>0, marker matched) keeps suiteRan:true —
+ * "ran and failed" must stay distinguishable from "never ran"; it exits
+ * non-zero and is never green. The T-21 rule stands: written ONLY on a full
+ * run, never by a partial import. */
+let evidenceNote48 = null;
 try {
-  const fs = await import("node:fs");
-  const path = await import("node:path");
-  const STATE = path.join(path.dirname(new URL(import.meta.url).pathname), "state");
-  fs.mkdirSync(STATE, { recursive: true });
-  fs.writeFileSync(path.join(STATE, "selftest-last-run.json"), JSON.stringify({ pass, fail, at: new Date().toISOString(), vectors: pass + fail }, null, 2));
-} catch { /* state dir may be read-only in CI — the verdict above stands */ }
-process.exit(fail === 0 ? 0 : 1);
+  const finishedAt = new Date().toISOString();
+  const verdictPath = path.join(ENGINE_STATE, "selftest-last-run.json");
+  const verdict = {
+    pass, fail, at: finishedAt, vectors: pass + fail,
+    runId: RUN_MARKER?.runId ?? null,
+    startedAt: RUN_MARKER?.startedAt ?? null,
+    finishedAt,
+    durationMs: RUN_MARKER ? Date.now() - RUN_MARKER.startedMs : null,
+    total: pass + fail,
+    suiteRan: true,
+  };
+  writeJsonAtomic(verdictPath, verdict);
+  const evidence = verifySelftestEvidence({ verdictPath, markerPath: path.join(ENGINE_STATE, "selftest-run-marker.json") });
+  if (evidence.evidence === "FAIL-RECORDED") {
+    writeJsonAtomic(verdictPath, { ...verdict, evidence: evidence.evidence });
+  } else if (evidence.evidence !== "SUITE-RAN") {
+    writeJsonAtomic(verdictPath, { ...verdict, suiteRan: false, evidence: evidence.evidence });
+    evidenceNote48 = evidence.evidence;
+  }
+} catch (e) {
+  evidenceNote48 = `WRITE-FAIL:${String(e?.message ?? e).slice(0, 140)}`;
+}
+if (evidenceNote48) console.error(`SELFTEST-EVIDENCE ${evidenceNote48} — verdict is NO-EVIDENCE (fail-closed; never green)`);
+process.exit(fail === 0 && !evidenceNote48 ? 0 : 1);
