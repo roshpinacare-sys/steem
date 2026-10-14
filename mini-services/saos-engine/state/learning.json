@@ -1,36 +1,34 @@
 {
-  "at": "2026-10-14T03:17:19.575Z",
+  "at": "2026-10-14T03:34:17.861Z",
   "enabled": true,
-  "runsTotal": 389,
+  "runsTotal": 391,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 74,
-      "oks": 65,
-      "fails": 2,
+      "window": 67,
+      "oks": 59,
+      "fails": 1,
       "blocked": 7,
-      "okRate": 87.8,
-      "blockedRate": 9.5,
+      "okRate": 88.1,
+      "blockedRate": 10.4,
       "failReasons": {
-        "timeout": 2
+        "timeout": 1
       },
-      "msP50": 104372,
-      "msP90": 145107
+      "msP50": 102881,
+      "msP90": 122299
     },
     "curator": {
       "present": true,
-      "totalVotes": 146,
+      "totalVotes": 143,
       "window": 30,
       "verdicts": {
         "VOTED": 30
       },
-      "vpEff": 45.9,
-      "meanAgeMinutes": 114,
-      "tagsVoted": {
-        "steem": 3
-      },
+      "vpEff": 44.7,
+      "meanAgeMinutes": null,
+      "tagsVoted": {},
       "dayCapsInRow": 0,
-      "maxPerDay": 30
+      "maxPerDay": 10
     },
     "exec": {
       "window": 0,
@@ -38,25 +36,26 @@
       "lastError": null
     },
     "watchdog": {
-      "checks": 4033,
-      "downs": 122,
-      "heals": 66,
-      "healVerified": 55,
-      "healFailed": 2,
-      "lastCheckAt": "2026-10-14T03:07:08.773Z",
+      "checks": 4048,
+      "downs": 125,
+      "heals": 71,
+      "healVerified": 56,
+      "healFailed": 3,
+      "lastCheckAt": "2026-10-14T03:34:32.853Z",
       "engineUp": true,
-      "lastSpawnAt": null,
-      "lastUpAt": "2026-10-14T03:07:08.777Z",
-      "blips": 6
+      "lastSpawnAt": "2026-10-14T03:33:37.897Z",
+      "lastUpAt": "2026-10-14T03:34:32.856Z",
+      "blips": 7
     }
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×7/74 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×7/67 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
   ],
   "tunings": {},
@@ -64,7 +63,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 307,
+    "signing-cred-blocked": 309,
     "broadcast-fails": 73,
     "cycle-latency-tail": 12
   },

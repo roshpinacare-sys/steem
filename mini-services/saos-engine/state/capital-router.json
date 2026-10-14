@@ -1,12 +1,12 @@
 {
-  "at": "2026-10-14T03:17:19.575Z",
+  "at": "2026-10-14T03:37:29.688Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
-    "headcornerEffectiveSp": 2791.55,
+    "headcornerEffectiveSp": 2841.71,
     "armyEffectiveSp": 630.48,
-    "fleetEffectiveSp": 3422.03,
-    "delegatedOutSp": 1479.3,
+    "fleetEffectiveSp": 3472.19,
+    "delegatedOutSp": 1429.18,
     "expiringSoon": [],
     "liquidSteem": 3.364,
     "liquidSbd": 16.518,
@@ -19,37 +19,37 @@
       {
         "id": "today",
         "label": "as-measured now",
-        "spPerDay": 1.353711,
-        "usdPerDay": 0.140906,
+        "spPerDay": 1.378035,
+        "usdPerDay": 0.143438,
         "note": "curation-only lane, author dust, other lanes dormant",
         "multiplierVsToday": 1
       },
       {
         "id": "landing",
         "label": "recall wave lands (expiring→effective)",
-        "spPerDay": 1.778557,
-        "usdPerDay": 0.185128,
-        "note": "876.1 SP measured in the expiring queue",
-        "multiplierVsToday": 1.31
+        "spPerDay": 1.778576,
+        "usdPerDay": 0.18513,
+        "note": "825.98 SP measured in the expiring queue",
+        "multiplierVsToday": 1.29
       },
       {
         "id": "tags",
         "label": "tag-ROI budget shift to measured top tags",
-        "spPerDay": 2.489979,
-        "usdPerDay": 0.259179,
+        "spPerDay": 2.490007,
+        "usdPerDay": 0.259182,
         "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
-        "multiplierVsToday": 1.84
+        "multiplierVsToday": 1.81
       },
       {
         "id": "fleet",
         "label": "army battery deployed (regen-bounded slots × SP)",
-        "spPerDay": 2.544783,
-        "usdPerDay": 0.264884,
+        "spPerDay": 2.544811,
+        "usdPerDay": 0.264887,
         "note": "army adds 0.054804 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
-        "multiplierVsToday": 1.88
+        "multiplierVsToday": 1.85
       }
     ],
-    "compoundAprPct": 33.27,
+    "compoundAprPct": 32.69,
     "armyDailySp": 0.054804,
     "note": "curation rewards settle as VESTS — the battery itself compounds"
   },
@@ -57,21 +57,21 @@
     {
       "id": "await-landing",
       "class": "schedule",
-      "note": "876.1 SP measured in the expiring queue (recalled delegation wave) — detector armed; retune rails the day it lands",
+      "note": "825.98 SP measured in the expiring queue (recalled delegation wave) — detector armed; retune rails the day it lands",
       "expectedSpPerDay": 0,
       "evidence": {
-        "delegOut": 1479.3,
+        "delegOut": 1429.18,
         "activeRowsVests": 972758.03
       }
     },
     {
       "id": "vp-pace-headcorner",
       "class": "schedule",
-      "note": "headcorner VP 45.42% below floor 60% — rail lawfully paused; unlocks in ~17.5h at 20%/day regen; do NOT burn early",
+      "note": "headcorner VP 44.73% below floor 60% — rail lawfully paused; unlocks in ~18.32h at 20%/day regen; do NOT burn early",
       "expectedSpPerDay": 0,
       "evidence": {
-        "vpPct": 45.42,
-        "etaHours": 17.5
+        "vpPct": 44.73,
+        "etaHours": 18.32
       }
     },
     {
@@ -86,12 +86,12 @@
     {
       "id": "sbd-route",
       "class": "execute-now",
-      "note": "SBD routing: book bid buys STEEM 1.21% below feed — sell SBD into the bid, power up the STEEM",
+      "note": "SBD routing: book bid buys STEEM 1.13% below feed — sell SBD into the bid, power up the STEEM",
       "expectedSpPerDay": 0,
       "evidence": {
         "verdict": "ROUTE-VIA-BOOK",
-        "discountPct": 1.21,
-        "note": "book bid buys STEEM 1.21% below feed — sell SBD into the bid, power up the STEEM"
+        "discountPct": 1.13,
+        "note": "book bid buys STEEM 1.13% below feed — sell SBD into the bid, power up the STEEM"
       }
     },
     {
