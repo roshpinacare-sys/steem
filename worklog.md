@@ -924,3 +924,22 @@ Stage Summary:
 - **הצינור המלא חי**: army-ladder (2×/יום) → קבלות+ווליום-מאומת → קומיט-ראיה ל-saos-dex — ה-DEX מדווח על-עצמו בכנות.
 - **פיילוט-הבא (R323-המשך)**: מדידת-מילויים-של-הסולם-המורחב · דיאל-נפח-על-מנוע-SAOS · תדלוק-חשבונות-אבק-רק-במילת-בעלים.
 - הכל-דחוף.
+---
+Task ID: R324-CONT
+Agent: Z.ai Code (main orchestrator — continue: re-measure, honest gaps, root-fix live reds)
+Task: «תמשיך» — full re-measurement of the estate after R324/R324-FIX-MAIN/R324-EXAMINE-FIX/R324-REF-STUDY/R323-ARMY-LADDER; honest gap board; root-fix everything still red; zero stomps on parallel agents.
+
+Work Log:
+- **זירה-מקומית**: הקוקפיט :3000 מת (turbopack panic «Invalid argument os error 22» — הקאש הפגום מ-R287/R291) · state-witness :3047 מת. תיקון-חוקי: מחיקת-.next-אחת-מלאה (חוק-R291) → keeper-respawn (spawns=3) → :3000 ירוק. RSS-guard עוד הרג-והחזיר במהלך העבודה (2083MB>1638MB, respawn #3) — הגנה-מקדימה עובדת-כחוק, לא תקלה.
+- **state-witness יתום-מובנה**: נולד באתחול (dist-bundle ל-/tmp) אך מת באמצע-חיים בלי אפוטרופוס (R291 נמדד שוב: spawn-מ-tool-call מת עם ה-shell). הוחייה ב-setsid (PPID→1) — :3047 ירוק + שרד 20ש. פער-מתועד: חסר אפוטרופוס-חיים-ממושכים (לא נוגעים ב-keeper של אחרים).
+- **סריקת-24h על כל-ה-estate (API, אפס-מילים)**: saos-runtime — treasury-ladder נעצר-מכשלים מ-22:48Z (התיקון-הקודם החזיק; LADDER-ACTED מאומת מחדש) · sovereign-lighthouse — 21 כשלי lighthouse-pulse הסתיימו עד 10:30Z, מאז כל-ירוק · steem — identity-guard skipped (covenant) · Sandbox — covenant if:false מאומת-בקובץ (push הבא = skip, לא מייל) · saos-dex — 22 כשלי identity-guard הסתיימו 21:51Z (covenant T-77 במקום מ-22:2x) · **Domain — exposure-gate נכשל 01:17:58Z על push** — האדום-החי-היחיד.
+- **האדום-החי נחקר ונסגר עד-השורש**: קומיט R297 (סוכן-מקביל) הכניס ל-`agents/social-dedupe.cjs` הערה עם **שמות-אמת** (ידית-בעלים + חשבון-צי) על-ריפו-ציבורי — השער תפס, פתח issue #33 אחת (חוק-הקול-האחד עבד). שורש-מבני שני: ה-trigger של השער היה `branches: ain]` — **הומוגליף-יוניקוד** (ה-`]` לא-ASCII) — לכן כל-ה-fixes הקודמים "תיקנו בהערה ולא בשורה" (ההחלפה מצאה-כלום בשקט); הסוכן-המקביל תיקן את השורה במקביל (bab7b536) — od-proven `[main]` ב-origin-tip. תרומתי: ניקוי-השמות-מה-HEAD (החלפה-חוקית-בניסוח-ללא-שמות, scanner-PASS-811-קבצים) + נרמול-ההערה-שנשאה-הומוגליף-גם-היא (f7bc7b38, rebase-מעל-13-קומיטים-חיים, אפס-דריסה).
+- **סגירה-מדודה**: exposure-gate ירוק פעמיים (push 01:24:58 + dispatch שלי 01:28:54) · **issue #33 נסגרה-אוטונומית 01:25:05 (close-on-recovery — הלולאה החוקית מקצה-לקצה)** · dispatch-HTTP-204.
+- **ביטולי sovereign-runtime (23:05/00:44/00:48/01:18)** — כולם workflow_dispatch-vs-dispatch באותה קבוצת-יווכון: על-פי-עיצוב (dispatch-חדש מייתם-ישן), לא-מייצר-מיילים, לא-נגעתי.
+- **לקח-הנדסי-חדש (חוק)**: הומוגליפים-בקוד-הם מנגנון-כשל-שקט שמנצח replace/sed/regex ומרמה אפילו את python-repr — התיקון-היחיד-האמין = כתיבה-ישירה-לשורה + הוכחת-codepoints; `od`/codepoints הוא שופט-האמת, לא העיניים.
+- **המשרד-הסופי**: 8/8-פורטים ירוקים (3000/3040-3047) ב-01:35Z.
+
+Stage Summary:
+- **תשובת-ההמשך**: ה-estate ירוק-מדידה — לולאות-המיילים מתו (האחרונה עד 22:48Z), הקוקפיט-וכל-8-האיברים חיים, האדום-החי-היחיד (הפרשת-חשיפה ב-Domain) נתפס-על-ידי-השער-עצמו, תוקן-ב-HEAD, והשער נסגר-אוטונומית.
+- **הפערים-הכנים-שנותרו**: (1) state-witness חסר-אפוטרופוס-חיים (מתועד, לא-קריטי) (2) saos-sovereign-platform foundry-tests כשל-חד-פעמי-ישן (03:24Z-אתמול) (3) saos-dex האכיפה-רוכבת-על-FleetHQ-הציבורי כל-עוד-תקרת-ההוצאה-קיימת (covenant-מתועד) (4) ספירת-ה-identity-guard-הכושלת-ב-24h (38-Sandbox/22-saos-dex) הייתה-הצפת-המיילים-של-אתמול — ה-covenant חסם-אותה-מבנית.
+- הכל-דחוף.
