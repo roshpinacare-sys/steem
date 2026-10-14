@@ -163,3 +163,61 @@ export function conceptLadder({ corpus = [], dna = null, memory = null, goal = "
     observe: true, /* R304 observe-first: proposal, never a gate */
   };
 }
+
+/* ── R307 · SHORTLIST CONSUMPTION (T-85, trace 1a139111c47003e9) ──────────
+ * The ladder now feeds the writers' room. Drafts are MEASURED against the
+ * current shortlist every round (observe, always), and when the signed DNA
+ * sets memory.conceptsEnforce=true AND the drafts are corpus entries, they
+ * are REORDERED shortlist-first — the queue competes on the ladder instead
+ * of corpus order (T-84 §5.1, exactly as queued).
+ * Consumption NEVER drops a draft (every other gate keeps its own death:
+ * spamgate R243 / R297 chain-truth / R301 cadence / R302 judge), never
+ * gates a publish, and never reorders bridge drafts (they are not corpus
+ * entries — alignment is measured, order untouched). The enforce flag
+ * flips live through the owner-signed DNA file, exactly like
+ * quality.enforce in R302 — no code deploy needed to arm it.
+ * Deterministic: no clock, no randomness (selftest-safe). */
+
+const ALIGN_JACCARD = 0.5; /* title-twin bound for drafts that carry no corpus id */
+const titleJaccard = (a, b) => jaccard(shingles(String(a ?? ""), 1), shingles(String(b ?? ""), 1));
+
+export function consumeShortlist({ drafts = [], ladder = null, dna = null, source = "corpus" } = {}) {
+  const list = Array.isArray(drafts) ? drafts : [];
+  const shortlist = Array.isArray(ladder?.shortlist) ? ladder.shortlist : [];
+  const ladderAlive = shortlist.length > 0;
+  const enforce = Boolean(dna?.memory?.conceptsEnforce) && source === "corpus" && ladderAlive;
+
+  const report = {
+    law: "R307",
+    mode: enforce ? "enforce" : "observe",
+    source,
+    ladderVerdict: ladder?.verdict ?? null,
+    available: ladderAlive,
+    shortlist: shortlist.map((c) => c.id),
+    aligned: 0,
+    topId: shortlist[0]?.id ?? null,
+    alignedTop: false,
+    reordered: 0,
+  };
+  if (!list.length || !ladderAlive) return { drafts: list, alignment: report };
+
+  const rank = new Map(shortlist.map((c, i) => [String(c.id), i]));
+  const shortTitles = shortlist.map((c) => c.title);
+  const hits = (d) => rank.has(String(d?.id ?? "")) || shortTitles.some((t) => titleJaccard(String(d?.title ?? ""), t) >= ALIGN_JACCARD);
+
+  report.aligned = list.filter(hits).length;
+  report.alignedTop = hits(list[0]);
+
+  if (enforce) {
+    const first = [];
+    const seen = new Set();
+    for (const c of shortlist) {
+      const d = list.find((x) => !seen.has(x) && (String(x?.id ?? "") === String(c.id) || titleJaccard(String(x?.title ?? ""), c.title) >= ALIGN_JACCARD));
+      if (d) { first.push(d); seen.add(d); }
+    }
+    const rest = list.filter((x) => !seen.has(x)); /* original relative order preserved */
+    report.reordered = first.length;
+    return { drafts: [...first, ...rest], alignment: report };
+  }
+  return { drafts: list, alignment: report };
+}

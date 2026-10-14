@@ -20,6 +20,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { readCorpus } from "./intel-pack.mjs";
+import { conceptLadder, consumeShortlist } from "./content-concepts.mjs"; /* R307: the ladder feeds the writers' room */
+import { loadDNA } from "./content-judge.mjs";
+import { loadMemory } from "./content-memory.mjs";
 import { illustrateDraft } from "./illustrate.mjs";
 import { PERSONAS, PERSONA_IDS, assignPersonas, personaBrief, personaOf } from "./personas.mjs";
 import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
@@ -430,16 +433,40 @@ export async function runContent({ now = new Date().toISOString(), force = false
    * IN the tree, so content survives any sandbox wipe by design). */
   if (!raw) {
     const corpus = readCorpus();
-    raw = { drafts: corpus.map((c) => ({ title: c.title, body: c.body, tags: c.tags, angle: c.angle, voice: c.voice, persona: personaOf(c.voice) ? c.voice : null, groundedOn: [c.topic] })) };
+    raw = { drafts: corpus.map((c) => ({ id: c.id, title: c.title, body: c.body, tags: c.tags, angle: c.angle, voice: c.voice, persona: personaOf(c.voice) ? c.voice : null, groundedOn: [c.topic] })) }; /* R307: the corpus id rides with the draft — the ladder consumes by id */
   }
   /* R255: personas assigned at the gate — explicit draft.persona wins, else
    * topic-ownership round-robin; no voice writes twice in one batch. */
   const rawDrafts = raw?.drafts ?? [];
+  /* R307 · SHORTLIST CONSUMPTION (T-85, trace 1a139111c47003e9): the R304
+   * ladder feeds the writers' room. Drafts are MEASURED against the
+   * shortlist every round (observe, always); when the signed DNA sets
+   * memory.conceptsEnforce=true, corpus drafts are REORDERED shortlist-first
+   * — the queue competes on the ladder instead of corpus order (T-84 §5.1,
+   * exactly as queued). Never drops a draft, never gates a publish
+   * (spamgate/R297/R301/R302 keep every death); bridge drafts are measured,
+   * never reordered (not corpus entries). Ladder/DNA/memory failure
+   * degrades honestly to observe with available:false — the floor never
+   * starves because a mirror sneezed. */
+  let draftsForQueue = rawDrafts;
+  let conceptAlignment = { law: "R307", mode: "observe", available: false, note: "not-run" };
+  try {
+    const dnaR307 = loadDNA();
+    const ladderR307 = conceptLadder({ corpus: readCorpus(), dna: dnaR307, memory: loadMemory(STATE), goal: "thought_leadership", limit: 4 });
+    const consumedR307 = consumeShortlist({ drafts: rawDrafts, ladder: ladderR307, dna: dnaR307, source: raw && bridgeError?.startsWith("offline") ? "corpus" : "bridge" });
+    draftsForQueue = consumedR307.drafts;
+    conceptAlignment = consumedR307.alignment;
+    if (conceptAlignment.reordered > 0) {
+      appendLine(path.join(STATE, "events.jsonl"), { type: "content.concepts-consumed", at: now, mode: conceptAlignment.mode, reordered: conceptAlignment.reordered, aligned: conceptAlignment.aligned, topId: conceptAlignment.topId });
+    }
+  } catch (e) {
+    conceptAlignment = { law: "R307", mode: "observe", available: false, error: String(e?.message ?? e).slice(0, 140) };
+  }
   /* R308 · REJECTION DIAGNOSIS LAW: a blocked draft is never blind again —
    * every sanitize refusal is reason-coded into events (the exposure gate
    * stays fail-closed; only the silence dies). */
   const sanitizeReasons = {};
-  const sanitized = assignPersonas(rawDrafts.map((d) => {
+  const sanitized = assignPersonas(draftsForQueue.map((d) => {
     const ok = sanitizeDraft(d);
     if (!ok) {
       const t = enforceSymbolLaw(String(d?.title ?? ""));
@@ -453,7 +480,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     }
     return ok;
   }).filter(Boolean));
-  const exposureBlocked = rawDrafts.length - sanitized.length;
+  const exposureBlocked = draftsForQueue.length - sanitized.length; /* R307: reorder never drops — same count either way */
   if (exposureBlocked > 0) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "content.sanitize-rejected", at: now, blocked: exposureBlocked, reasons: sanitizeReasons });
   }
@@ -536,6 +563,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     source: raw && bridgeError?.startsWith("offline") ? "corpus" : raw ? "bridge" : "none",
     draftsQueued: keptFinal.length, standingDrafts, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged,
     minPostWords: MIN_POST_WORDS,
+    conceptAlignment,
     spentTitles: [...new Set([...spentTitles, ...keptFinal.map((d) => String(d?.title ?? ""))])].slice(-60),
     queue,
     law: "R240: נושאים-אנושיים מסבב-יום + קול-אחד-לחשבון + הסרת-כפילויות; חשיפה = נחסמת בטהרת-הנוסח; שידור רק אחרי אימות-חתימה (דוקטרינת-שער)",
@@ -543,7 +571,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     ms: Date.now() - t0,
   };
   writeJson(FILE, doc);
-  return { verdict: doc.verdict, draftsQueued: keptFinal.length, standingDrafts, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged, bridgeError };
+  return { verdict: doc.verdict, draftsQueued: keptFinal.length, standingDrafts, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged, bridgeError, conceptAlignment };
 }
 
 /** recruiter evidence: fresh drafts queued = the content team is really running */

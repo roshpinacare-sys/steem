@@ -3418,6 +3418,54 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   try { fs.rmSync(dirPart33, { recursive: true, force: true }); } catch { /* tmp */ }
 }
 
+{
+  /* 34 · R307 SHORTLIST CONSUMPTION (T-85, trace 1a139111c47003e9) — the
+   * ladder feeds the writers' room: observe-always, reorder shortlist-first
+   * only by signed DNA (memory.conceptsEnforce) and only for corpus drafts;
+   * never drops, never gates, deterministic (no clock, no randomness).
+   * Renumbered twice by cross-wave collisions (exec30 took R305 sourcing
+   * d7fa21ee2 then R306 engagement c26244354 — both deltas preserved;
+   * this law is R307, section 34, per the cross-wave-clobber runbook). */
+  const cc34 = await import("./content-concepts.mjs");
+  const dna34 = { version: 1, law: "R307", voice: { pillars: ["measured truth"], bannedGenres: [] }, slopLexicon: ["unlock the power of"], fleetForbidden: [], personaForbidden: {}, quality: { weights: { hook: 25, specificity: 20, structure: 20, brevity: 20, register: 15 }, enforce: false }, memory: { jaccard: 0.5, windowDays: 90 } };
+  const dna34E = { ...dna34, memory: { ...dna34.memory, conceptsEnforce: true } };
+  const mk34 = (id, title, hook, topic, tags, angle) => ({ id, voice: "siq", topic, tags, title, body: `${hook}\n\nBody of ${id}.`, angle });
+  const corpus34 = [
+    mk34("s1-alpha", "Measuring the queue: four honest clocks", "Nobody chooses to wait. That is what makes it interesting.", "waiting", ["psychology"], "waiting as forced honesty"),
+    mk34("s2-slop", "Unlock The Power Of Steem", "In conclusion, the chain rewards patience.", "growth", ["chain"], "patience only"),
+    mk34("s3-bravo", "A ledger that reads itself out loud", "The ledger speaks: every number is a decision somebody made.", "ledger", ["data"], "narration of decisions"),
+    mk34("s4-charlie", "Two hands, one wrench, zero meetings", "One wrench and no meeting. Nobody scheduled a follow-up.", "repair", ["tools"], "repair culture"),
+    mk34("s5-delta", "The bakery knows the night shift", "Bread starts at 3am; the city only sees the result at 7.", "baking", ["night"], "night work visible"),
+    mk34("s6-twin", "Six toasts for a quiet kitchen", "Nobody chooses to wait. That is what makes it interesting.", "waiting", ["psychology"], "forced honesty again"),
+  ];
+  const ladder34 = cc34.conceptLadder({ corpus: corpus34, dna: dna34, memory: null, limit: 4 });
+  const drafts34 = corpus34.map((c) => ({ id: c.id, title: c.title, body: c.body, tags: c.tags }));
+  const run34 = (o) => cc34.consumeShortlist(o);
+  const idsOf34 = (arr) => JSON.stringify(arr.map((d) => d.id));
+
+  eq("34.1 default is observe, order untouched", [run34({ drafts: drafts34, ladder: ladder34, dna: dna34, source: "corpus" }).alignment.mode, idsOf34(run34({ drafts: drafts34, ladder: ladder34, dna: dna34, source: "corpus" }).drafts)], ["observe", idsOf34(drafts34)]);
+  const obs34 = run34({ drafts: drafts34, ladder: ladder34, dna: dna34, source: "corpus" });
+  eq("34.2 alignment measured honestly", [obs34.alignment.aligned, obs34.alignment.alignedTop, obs34.alignment.available, obs34.alignment.topId], [4, true, true, ladder34.shortlist[0].id]);
+  eq("34.3 alignedTop false when the head is not shortlisted", run34({ drafts: [...drafts34].reverse(), ladder: ladder34, dna: dna34 }).alignment.alignedTop, false);
+  const en34 = run34({ drafts: drafts34, ladder: ladder34, dna: dna34E, source: "corpus" });
+  eq("34.4 enforce reorders shortlist-first in rank order", [en34.alignment.mode, en34.drafts.slice(0, 4).map((d) => d.id).join(",")], ["enforce", ladder34.shortlist.map((c) => c.id).join(",")]);
+  eq("34.5 remainder keeps its relative order", en34.drafts.slice(4).map((d) => d.id), ["s2-slop", "s6-twin"]);
+  eq("34.6 bridge drafts are never reordered", [run34({ drafts: drafts34, ladder: ladder34, dna: dna34E, source: "bridge" }).alignment.mode, idsOf34(run34({ drafts: drafts34, ladder: ladder34, dna: dna34E, source: "bridge" }).drafts)], ["observe", idsOf34(drafts34)]);
+  eq("34.7 bridge alignment measured by title", run34({ drafts: [{ title: "A totally different thing about weather" }, { title: "A ledger that reads itself out loud" }], ladder: ladder34, dna: dna34, source: "bridge" }).alignment.aligned, 1);
+  eq("34.8 missing ladder degrades, never throws", [run34({ drafts: drafts34, ladder: null, dna: dna34E }).alignment.available, idsOf34(run34({ drafts: drafts34, ladder: null, dna: dna34E }).drafts)], [false, idsOf34(drafts34)]);
+  const vetoed34 = cc34.conceptLadder({ corpus: [corpus34[1]], dna: dna34, memory: null });
+  eq("34.9 all-vetoed shortlist is honest-unavailable", [run34({ drafts: drafts34, ladder: vetoed34, dna: dna34E }).alignment.available, run34({ drafts: drafts34, ladder: vetoed34, dna: dna34E }).alignment.mode], [false, "observe"]);
+  eq("34.10 empty drafts honest", [run34({ drafts: [], ladder: ladder34, dna: dna34E }).alignment.aligned, run34({ drafts: [], ladder: ladder34, dna: dna34E }).alignment.reordered], [0, 0]);
+  eq("34.11 deterministic", JSON.stringify(run34({ drafts: drafts34, ladder: ladder34, dna: dna34E, source: "corpus" })), JSON.stringify(run34({ drafts: drafts34, ladder: ladder34, dna: dna34E, source: "corpus" })));
+  eq("34.12 enforce never drops a draft", [en34.drafts.length, new Set(en34.drafts.map((d) => d.id)).size], [drafts34.length, drafts34.length]);
+  /* 34.13 live smoke on the real corpus + the real signed DNA */
+  const realCorpus34 = JSON.parse(fs.readFileSync(new URL("./content-corpus.json", import.meta.url), "utf8"));
+  const realDna34 = JSON.parse(fs.readFileSync(new URL("./content-dna.json", import.meta.url), "utf8"));
+  const realLadder34 = cc34.conceptLadder({ corpus: realCorpus34, dna: realDna34, memory: null, limit: 4 });
+  const realEn34 = run34({ drafts: realCorpus34.map((c) => ({ id: c.id, title: c.title, body: c.body, tags: c.tags })), ladder: realLadder34, dna: { ...realDna34, memory: { ...(realDna34.memory ?? {}), conceptsEnforce: true } }, source: "corpus" });
+  eq("34.13 live corpus consumes the ladder", [realLadder34.verdict, realLadder34.shortlist.length <= 4, realEn34.drafts.length, realEn34.alignment.mode, realEn34.alignment.reordered >= 1], ["CONCEPTS-OK", true, realCorpus34.length, "enforce", true]);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

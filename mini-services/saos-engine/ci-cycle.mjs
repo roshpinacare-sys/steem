@@ -100,7 +100,10 @@ async function main() {
 
   report.steps.content = await stepWrap("content", async () => {
     const r = await runContent({ now, force: true });
-    return { verdict: r.verdict, draftsQueued: r.draftsQueued ?? 0, exposureBlocked: r.exposureBlocked ?? 0, source: r.source ?? null };
+    /* R307 (T-85): the queue now competes on the R304 ladder — alignment
+     * rides the heartbeat so the observe→enforce decision gets its measured
+     * evidence (R302 pattern). */
+    return { verdict: r.verdict, draftsQueued: r.draftsQueued ?? 0, exposureBlocked: r.exposureBlocked ?? 0, source: r.source ?? null, conceptAlignMode: r.conceptAlignment?.mode ?? null, conceptAlignAvailable: r.conceptAlignment?.available ?? null, conceptAlignAligned: r.conceptAlignment?.aligned ?? null, conceptAlignTop: r.conceptAlignment?.topId ?? null };
   });
 
   /* R312 · THE MEASURED-DIGEST SUPPLY (wires R288 — built 2026-10-10, never
@@ -293,6 +296,10 @@ async function main() {
     socialExecuted: report.steps.social?.executed ?? 0,
     content: report.steps.content?.verdict ?? "STEP-FAIL",
     contentSource: report.steps.content?.source ?? null,
+    conceptAlignMode: report.steps.content?.conceptAlignMode ?? null,
+    conceptAlignAvailable: report.steps.content?.conceptAlignAvailable ?? null,
+    conceptAlignAligned: report.steps.content?.conceptAlignAligned ?? null,
+    conceptAlignTop: report.steps.content?.conceptAlignTop ?? null,
     post: report.steps.post?.verdict ?? "STEP-FAIL",
     postAccount: report.steps.post?.account ?? null,
     postPermlink: report.steps.post?.permlink ?? null,
