@@ -71,7 +71,16 @@ export function screenInput(text) {
   return { allow: reasons.length === 0, reasons };
 }
 
-/* ── 3 · validateOutput — JSON.parse + hand-rolled shape check (no ajv) ── */
+/* ── 3 · validateOutput — JSON.parse + hand-rolled shape check (no ajv) ──
+ * R350 (exec35, lane 35-a): schema fields may be the legacy type string OR a
+ * constraint object { type, enum, min, max, minLength, maxLength }:
+ *   · enum      — array; value must be EXACTLY one of (=== semantics).
+ *   · min/max   — inclusive numeric bounds.
+ *   · minLength/maxLength — string length bounds.
+ * Violations are FAIL-CLOSED (invalid = invalid, never silently coerced) and
+ * carry a precise reason ("signal: value \"long\" not in enum"). Unknown keys
+ * inside a constraint spec are IGNORED (never crash). Backward-compatible:
+ * string-typed schemas behave byte-identically (all kernel vectors hold). */
 
 function typeOfValue(v) {
   if (v === null || v === undefined) return "nullish";
@@ -98,7 +107,40 @@ export function validateOutput(text, schema) {
     if (key === "required") continue;
     if (!(key in parsed)) continue; // absence handled by required[]; optional keys may be absent
     const got = typeOfValue(parsed[key]);
-    if (got !== want) errors.push(`type-mismatch:${key}:want=${want}:got=${got}`);
+    // R350: an object spec carries constraints; a string spec is the legacy type
+    const spec = want !== null && typeof want === "object" && !Array.isArray(want) ? want : null;
+    if (spec) {
+      if (typeof spec.type === "string" && got !== spec.type) errors.push(`type-mismatch:${key}:want=${spec.type}:got=${got}`);
+    } else if (got !== want) {
+      errors.push(`type-mismatch:${key}:want=${want}:got=${got}`); // legacy path — unchanged
+    }
+    if (!spec) continue;
+    const v = parsed[key];
+    if (spec.enum !== undefined) {
+      if (!Array.isArray(spec.enum)) errors.push(`${key}: enum-not-an-array`);
+      else if (!spec.enum.some((e) => e === v)) errors.push(`${key}: value ${JSON.stringify(v)} not in enum`); // === semantics, no coercion
+    }
+    if (spec.min !== undefined) {
+      if (typeof spec.min !== "number" || !Number.isFinite(spec.min)) errors.push(`${key}: min-not-a-number`);
+      else if (typeof v !== "number" || !Number.isFinite(v)) errors.push(`${key}: min-max-requires-number`);
+      else if (v < spec.min) errors.push(`${key}: ${v} < min ${spec.min}`); // inclusive bound
+    }
+    if (spec.max !== undefined) {
+      if (typeof spec.max !== "number" || !Number.isFinite(spec.max)) errors.push(`${key}: max-not-a-number`);
+      else if (typeof v !== "number" || !Number.isFinite(v)) errors.push(`${key}: min-max-requires-number`);
+      else if (v > spec.max) errors.push(`${key}: ${v} > max ${spec.max}`); // inclusive bound
+    }
+    if (spec.minLength !== undefined) {
+      if (!Number.isInteger(spec.minLength) || spec.minLength < 0) errors.push(`${key}: minLength-invalid`);
+      else if (typeof v !== "string") errors.push(`${key}: min-length-requires-string`);
+      else if (v.length < spec.minLength) errors.push(`${key}: length ${v.length} < minLength ${spec.minLength}`);
+    }
+    if (spec.maxLength !== undefined) {
+      if (!Number.isInteger(spec.maxLength) || spec.maxLength < 0) errors.push(`${key}: maxLength-invalid`);
+      else if (typeof v !== "string") errors.push(`${key}: max-length-requires-string`);
+      else if (v.length > spec.maxLength) errors.push(`${key}: length ${v.length} > maxLength ${spec.maxLength}`);
+    }
+    // unknown keys inside the spec (description, format, …) are IGNORED — never crash
   }
   if (errors.length > 0) return { ok: false, errors };
   return { ok: true, parsed, errors: [] };

@@ -429,6 +429,36 @@ async function main() {
     };
   });
 
+  /* exec35 · lane 35-a · THE CABINET SELFPROBE — OBSERVE-ONLY, DEFAULT OFF.
+   * The exec35 deterministic cabinet (cabinet.mjs — ai-hedge-fund blueprint
+   * on the LOCAL kernel) runs its personas ONLY behind an INJECTED respond
+   * seam (R330: the LLM never lives in the deterministic graph and is never
+   * imported). HONEST BOUNDARY: without an injected LLM the cabinet does not
+   * run in production beats — a heartbeat without SAOS_CABINET_SELFPROBE=1
+   * records SKIPPED-OFF and fabricates NOTHING. When the flag IS set, this
+   * probe still runs the DETERMINISTIC STUB respond (fixed fixture answers,
+   * NOT an LLM) with persist:false — a stub must never write decision-ledger
+   * lines (fabricated decisions in state are a dishonesty hazard). Paper/
+   * analysis only: zero keys, zero network, zero value, zero broadcasts.
+   * Deliberately NOT in spawn-manifest FIXED_ROSTER: it is not a production
+   * step (default OFF) and that roster file is outside this lane boundary.
+   * Fail-isolated like every step (R339): exit-0 by design. */
+  if (process.env.SAOS_CABINET_SELFPROBE === "1") {
+    report.steps.cabinetProbe = await stepWrap("cabinet-selfprobe", async () => {
+      const { runCabinet, stubRespond } = await import("./cabinet.mjs");
+      const r = await runCabinet({ respond: stubRespond, risk: { maxSizing: 0.2 }, repoRoot: path.join(DIR, "..", ".."), persist: false });
+      if (!r.ok) return { verdict: "CABINET-FAIL", stage: r.stage ?? null, error: r.error ?? null, observe: true };
+      return {
+        verdict: r.decision?.verdict ?? null, netConviction: r.decision?.netConviction ?? null,
+        sizing: r.decision?.sizing ?? null, abstains: r.receipts?.abstains ?? null,
+        clampEvents: r.decision?.clampEvents?.length ?? 0,
+        stubOnly: true, observe: true, // DETERMINISTIC STUB — not an LLM; nothing persisted
+      };
+    });
+  } else {
+    report.steps.cabinetProbe = { name: "cabinet-selfprobe", verdict: "SKIPPED-OFF", observe: true, note: "SAOS_CABINET_SELFPROBE != 1 — without an injected LLM the cabinet does not run in production beats (R330 seam)" };
+  }
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -530,6 +560,14 @@ async function main() {
     portfolioTop: report.steps.portfolioSnapshot?.top ?? null,
     portfolioTopWeight: report.steps.portfolioSnapshot?.topWeight ?? null,
     portfolioCommitted: report.steps.portfolioSnapshot?.committed ?? null,
+    /* exec35 35-a cabinet self-probe — observe-only, DEFAULT OFF (honest:
+     * without an injected LLM the cabinet does not run in production beats;
+     * SKIPPED-OFF is the honest default receipt). */
+    cabinetProbe: report.steps.cabinetProbe?.verdict ?? "STEP-FAIL",
+    cabinetNetConviction: report.steps.cabinetProbe?.netConviction ?? null,
+    cabinetSizing: report.steps.cabinetProbe?.sizing ?? null,
+    cabinetAbstains: report.steps.cabinetProbe?.abstains ?? null,
+    cabinetClamps: report.steps.cabinetProbe?.clampEvents ?? null,
     /* R306 engagement read-back — the one-line "what worked" digest
      * (at/measured/medianVotes/topTag; numbers only, no advice). */
     contentEngagement: {
