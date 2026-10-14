@@ -904,3 +904,23 @@ Stage Summary:
 - **הרשת עכשיו**: רואה-את-עצמה (system-map כל-30-דק) · זוכרת-את-עצמה (self-memory כל-6-שע) · מנתבת-טענות-מפעיל (operator-triage) · אדום-אחד-מדווח-בכנות (redboard) — כולם-עדות-קומיט, אפס-תלות-סנדבוקס.
 - **הבא**: GOAT/IntentKit עמוק-בנתיב-R323 (נפח-דקס: executeOps-אינטנטים) · SwarmNode-תבנית כהוכחה-מבנית-של-Git-only-runtime.
 - הכל-דחוף.
+---
+Task ID: R323-ARMY-LADDER
+Agent: Z.ai Code (main orchestrator — DEX activation: army maker book + VERIFIED-VS-CHAIN)
+Task: R323 (queued from owner): «SBD-דמה→נזילות-אמת · maker-בהון-מוגבל · היפר-גריד · 13-חשבונות-הצי היצע-אמת-על-השרשרת · VERIFIED-VS-CHAIN» — measured, built, fired, verified. Zero stomps on parallel agents.
+
+Work Log:
+- **מדידה-לפני-פעולה**: R324-ארטיפקטים חיים אומתו מחדש (sovereign-runtime/self-memory/redboard/treasury-ladder — הכל success ב-Actions) · policy-engine #17 נחתך היום ע"י סוכן-אחר (915a0cb) — נקרא מהמקור, לא נגעתי · STASIS staged-allow (R30 full lift) · יתרות-הצי נמדדו חי (get_accounts): 5-חשבונות-דלק (hcsoldier6 1.0 · hcsoldier4 0.4 · israelnews 0.235 · tov 0.209 · hcsoldier5 0.2) + 7-אבק 0.010 — כנות מהשורה הראשונה.
+- **grids/army-ladder.mjs (חדש, saos-dex b862080→1f328a4)**: ספר-maker רב-חשבונות על שרשרת-האכיפה המדודה STASIS→POLICY(policyCycleGate lane-grid)→key-gate→book-law · היפר-גריד: חשבון-i ב-edge+i×staggerBps (150+40bps) — סולם-עומק על-פני-רמות במקום ערימה · SBD→נזילות: רגל-קנייה נדלקת רק-מ-SBD שנצבר-ממילויים (minSbdForBuyLeg 1.0) · תקרות-קשיחות: 0.3/leg·0.6/open לחשבון + **תקרת-אחוזה חדשה Σ≤3.0 STEEM** (הון-מוגבל — מילת-הבעלים R323) + roster≤13 · אסורים headcorner/cornerstone · orderid-דטרמיניסטי-לחשבון · kill-law אחוזתי · selftest 30/30.
+- **grids/volume-verify.mjs (חדש)**: VERIFIED-VS-CHAIN — כל-txid-מקבלה נשלף מהשרשרת אופ-אופ (VERIFIED/EXPOSED/UNREACHABLE-כנה) + fill_order-מהיסטוריית-חשבון עם ייחוס-maker ממרחב-ה-orderid הדטרמיניסטי · exit-0-תמיד (הקובץ-הוא-האזעקה) · selftest 17/17.
+- **grids/state/army-ladder-plan.json (חתימה)**: roster-12 (רוטציה = סדר-ההיפר-גריד: דלוקים ראשונים) · rationale-מדוד עם יתרות-השרשרת · .github/workflows/army-ladder.yml (saos-runtime 6dc7fff): cron 23 3,15 (דקות-נפרדות-מהסולם) · selftest-gate→resolve-keys→army-run→verify→commit FF-only-yield.
+- **ירייה-חיה (run 38492664688 → success)**: **ARMY-ACTED · 5-חשבונות-פעלו · 7-FUEL-STASIS-כנים · 0-halt** · 7-creates עם txid+block · **אומת-על-השרשרת ידנית**: hcsoldier6 2-הצבות 150-יחידות · hcsoldier4 3-הצבות (300-ישן+2×150) — פני-הספר קפצו מ-0.3 ל-~1.24 STEEM פתוחים (בתוך-ה-3.0) — **פני-שטח-מילוי ×4.1**.
+- **VERIFIED-VS-CHAIN ראשון**: verdict **VERIFIED** · tx 4-מאומתים/7-UNREACHABLE (אינדוקס-צמתים-על-tx-טריים — הריצה-הבאה מאמתת-מחדש) · **גילוי-מהשרשרת**: 5-מילויים-אמת כבר-מיוחסים-לחשבונותינו (1-maker+hcsoldier4 · 4-taker+hcsoldier5) — **ווליום-אמת 1.1 STEEM / 0.111 SBD מדידת-שרשרת**.
+- **ביקורת-עצמית-מיידית + תיקון**: הקבלה-החיה חשפה שורות-כפולות (קריאה-אחרי-כתיבה שנכשלה דחפה שורת-error-נפרדת) — תוקן לשורה-אחת עם postVerify-בתוך-הרשומה (1f328a4, 30/30) · הלקח-של-R324 (node --check לא תופס) היה בשימוש-פעיל: selftest-אמת-ב-CI-ולא-בדיקת-תחביר.
+- **כנות-גבולות**: "זוגות-חדשים" — השוק-הפנימי הוא STEEM/SBD בלבד; שכבת-הסטייבל היא 5-השווקים של-מנוע-SAOS (החלטה #12) + תמחור-parity-חיצוני — לא הומצאו-זוגות · רגל-הקנייה ערה-אך-סגורה (אין-חשבון ≥1.0 SBD — נדלק עם-המילויים) · 7-אבק ממתינים-תדלוק (בעלים-gated).
+
+Stage Summary:
+- **הדקס-על-השרשרת-פעיל כלי-ריבוני**: 9-הצבות-אמת של 5-חשבונות-צי על SBD/STEEM, עומק-היפר-גריד 150-310bps, תקרות-קשיחות-בקוד, VERIFIED-VS-CHAIN מודד-אמת-מול-טענות — הכל דרך-גיט בלבד (חוק-#14), הרשאות-מ-ROT2, אפס-סודות-בגיט.
+- **הצינור המלא חי**: army-ladder (2×/יום) → קבלות+ווליום-מאומת → קומיט-ראיה ל-saos-dex — ה-DEX מדווח על-עצמו בכנות.
+- **פיילוט-הבא (R323-המשך)**: מדידת-מילויים-של-הסולם-המורחב · דיאל-נפח-על-מנוע-SAOS · תדלוק-חשבונות-אבק-רק-במילת-בעלים.
+- הכל-דחוף.
