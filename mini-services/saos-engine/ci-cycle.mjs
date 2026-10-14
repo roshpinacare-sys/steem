@@ -459,6 +459,23 @@ async function main() {
     report.steps.cabinetProbe = { name: "cabinet-selfprobe", verdict: "SKIPPED-OFF", observe: true, note: "SAOS_CABINET_SELFPROBE != 1 — without an injected LLM the cabinet does not run in production beats (R330 seam)" };
   }
 
+  /* exec36 · lane 36-a · SELFTEST EVIDENCE PROBE — OBSERVE-ONLY (R339
+   * fail-isolated). Runs verifySelftestEvidence (evidence.mjs — the R354
+   * candidate, SWE-bench SUITE_RAN pattern harvested via 33-b) against the
+   * CURRENT engine state files (selftest-last-run.json +
+   * selftest-run-marker.json) and records the classification in the cycle
+   * summary. Fail-closed law: only SUITE-RAN is green; NO-MARKER /
+   * RUNID-MISMATCH / NOT-RAN / FAIL-RECORDED are recorded honestly and the
+   * heartbeat NEVER blocks on them (exit-0 by design). HONEST BOUNDARY:
+   * this probe does not RUN the selftest and gates nothing yet — wiring the
+   * verification gate to hold the exec36 gate-lease (R353 candidate) is a
+   * recorded future beat. */
+  report.steps.selftestEvidence = await stepWrap("selftest-evidence", async () => {
+    const { verifySelftestEvidence } = await import("./evidence.mjs");
+    const r = verifySelftestEvidence({});
+    return { verdict: r.evidence, honest: r.honest, observe: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -568,6 +585,11 @@ async function main() {
     cabinetSizing: report.steps.cabinetProbe?.sizing ?? null,
     cabinetAbstains: report.steps.cabinetProbe?.abstains ?? null,
     cabinetClamps: report.steps.cabinetProbe?.clampEvents ?? null,
+    /* exec36 36-a selftest execution-evidence — observe-only fail-closed
+     * probe over the current marker+verdict pair (SUITE-RAN = green is
+     * justified; anything else = NO-EVIDENCE recorded honestly). */
+    selftestEvidence: report.steps.selftestEvidence?.verdict ?? "STEP-FAIL",
+    selftestEvidenceHonest: report.steps.selftestEvidence?.honest ?? null,
     /* R306 engagement read-back — the one-line "what worked" digest
      * (at/measured/medianVotes/topTag; numbers only, no advice). */
     contentEngagement: {
