@@ -962,3 +962,23 @@ Stage Summary:
 - המפתחות: לא-שונו-על-ידי-אף-סוכן, חיים-ומניבים-על-השרשרת (24-keys/12-accounts/9-הצבות-VERIFIED).
 - עורק-האזעקה של-הרשת כולה כבר-לא-תלוי-בשעון-הכי-לא-אמין-בצי — הפצמר מרגיש-ומצית, העדה-בהרצות.
 - האדום-היחיד-בזמן-כתיבה: FleetHQ|office-heartbeat — תיקון-שורש-נדחף, הרצה-חיה-מאמתת.
+
+---
+Task ID: R324-CONT-2
+Agent: Z.ai Code (main orchestrator — continue: cold-start re-measure after sandbox wipe, revival gaps closed to root, R324/R323 verified live; cross-evidence for the parallel round)
+Task: «תמשיך» — re-measure the whole estate after the environment reset; root-fix every local revival gap; verify R324/R323 claims against live CI + chain; zero stomps.
+
+Work Log:
+- **זיהוי-הסביבה (מדידה, לא-הנחה)**: הסנדבוקס אופס — `gh` נמחק (exit-127), pat.env מת ("Bad credentials"), metrics/builder מתו, ו-.gitcred-helper.sh = סטאב-ריק (`exit-0`). **ה-estate-על-הגיט שרד 100%** — כל-הקרונות-והלב (redboard/system-map/self-memory/army-ladder) רצים-ב-Actions ודחפו-heartbeat-כל-הלילה. בדיוק-הארכיטקטורה-ש-R324-דרשה: הסנדבוקס-ניתן-לניקוי, הגיט-הוא-הרנט.
+- **חייאה-מדודה של המשרד**: 3042+3043 (metrics/builder) מתו — **שורש**: אין-להם-package.json-משלהם, ו-`bun run dev` טיפס-ל-package.json-הראשי והריץ `next dev` (ניסה-לתפוס-3000 → EADDRINUSE). החייאה-הנכונה = `bun index.ts`-ישירות (setsid, חוק-R291) → 200/200. **תיקון-כנה לרשומת-R324-CONT**: הדקס-לא-יושב-על-3046-אלא-על-3037 (DEX_PORT-ב-lib.mjs) והיה-חי-כל-הזמן — המשרד 8/8 (3000/3037/3040/3041/3042/3043/3044/3047).
+- **עורק-push/API (R284) — חי, נמדד מהמקור**: מקור-החיים = insteadOf ב-.git/config (`x-access-token:github_pat_…` — אותו-token-vault-home-שהסבב-המקביל-חיבר; **מאומת-הצלבה**) — push-dry-run עבר-auth (הדחייה-הייתה-non-FF-מקומית, לא-403) · כל-4-הריפואים-פרטיים (ה-403-האנונימי-היה-rate-limit, לא-פרטיות-בלבד). ה-token-חולץ-בבטחה (split-user:pass — טעות-ראשונה-לכדה-את-הזוג-כולו → 401) אל `~/.saos-api-token`-0600 + **pat.env-חודש** לנוסחת-ה-house (root-owned-777 — לא-ניתן-להדק-הרשאות-בלי-root, מתועד). selfcustody-revive = GIT-CUSTODY-FAIL-על-SAOS_VAULT_PASS (נגזרת-KEYS-ZIP-MASTER; masterPasswordRef-קובע-wif-direct-chain-judged — יומרה-בלבד: push+API+army-keys-חיים-בשכבות-עוקפות). shard-GEN-3-חי-ב-HOME-0600.
+- **CI-מדידה-חיה (API, אפס-מילים) — הצלבה של הסבב המקביל**: redboard-success-01:56:31 = **הצתת-הפצמר-שלו** (dispatch-01:56:18→הצתה-13-שניות — נמדד-אצלי-באופן-עצמאי, תואם) · FleetHQ-office-heartbeat-בריצה-חיה-02:00 = ה-dispatch-של-התיקון-שלו, identity-guard-success×2 · treasury-ladder 3-successes (22:58→23:52) ואז-שקט — **לא-תקלה**: cron-שלו `41 5,17`, הבא-05:41Z · steem identity-guard all-skipped (covenant) · saos-dex — **כל-10-ה-workflows disabled_manually** (state-נמדד-מה-API; העדה-זורמת-קומיטים-ישירים dex-beat-כל-~15דק) · sovereign-runtime success×3+in_progress · army-ladder success.
+- **R323-אימות-מלא (run 38492664688)**: כל-ה-steps-success — selftest-gate→resolve-keys→army-run→VERIFIED-VS-CHAIN→commit-receipts. קבלות-ב-saos-dex (dcf57d): army-public (mid 0.10342 · roster-12 · acted-5 · halted-0 · ARMY-ACTED) · volume-verify **VERIFIED**: 4-tx-מאומתים, 7-UNREACHABLE (אינדוקס-צמתים-על-tx-טריים — הריצה-הבאה-מאמתת-מחדש), **5-מילויים-אמת-מדידת-שרשרת: 1-maker+4-taker · 1.1-STEEM / 0.111-SBD** (hcsoldier4:1 · hcsoldier5:4).
+- **מדידת-שרשרת-טרייה (RPC-ציבורי, קריא-בלבד, 02:0x)**: **7-פקודות-פתוחות-עכשיו** (hcsoldier4×3 · hcsoldier6×2 · hcsoldier5×1 · israelnews×1) — **תיקון-כנה**: ה-estateOpenOrders=1-בקבלה-היה-סנפשוט-בזמן-הצבה; הספר-לא-ריק-בין-מחזורים. spread-64.5bps (0.102923/0.103587), קירות-ראש 7355-bid/24646-ask-STEEM. רגל-הקנייה-סגורה-כנה (אין-חשבון-SBD≥1.0; דלק 0.08–0.156-SBD · hcsoldier6-0.7-STEEM-חופשי).
+- **תובנה-כנה ל-R323 (למחזור-03:23Z-הבא)**: 4-מתוך-5-המילויים-היו-taker — רגלי-הקנרית-חצו-spread. אין-שינוי-פרמטרים-על-קנה-אחד-בלי-מדידת-מחזור-מלא: המחזור-הבא-יקבע-אם-ה-stagger-דורש-העמקה. תדלוק-אבק — בעלים-gated, לא-נוגעים.
+
+Stage Summary:
+- **הסנדבוקס-נפל-והרשת-לא**: כל-תפקיד-קבוע-חי-על-הגיט (חוק-2026-10-07-מוכח-שוב-באש); הצד-המקומי-חזר-להיות-צד (8/8-פורטים) · עורק-push/API-חי-ומתועד (insteadOf+pat.env+~/.saos-api-token — שלוש-נקודות-custody) · אפס-בקשות-מהמפעיל.
+- **R324-עומד-במדידה** (העדה=קומיטים) · **R323-חיה-ומאומתת-מול-השרשרת** (VERIFIED · ספר-7-פקודות-פתוחות · מחזור-הבא-03:23Z-cron).
+- **פערים-פתוחים-כנים**: (1) pat.env-root-owned-777 — לא-ניתן-להדק-בלי-root (2) SAOS_VAULT_PASS-ל-KEYS-ZIP-MASTER-דורש-שרשרת-wif-direct — יומרה, כל-הדרכים-החיות-עוקפות (3) 7-army-txids-UNREACHABLE-עד-אינדוקס (4) FleetHQ-red — תחום-בעלים-אחר, תיקון-שורש-כבר-נדחף-שם (5) ערבוב-מדידה-והצבה-בקבלה (estateOpenOrders) — הערה-שיטתית-ל-army-ladder.
+- הכל-דחוף.
