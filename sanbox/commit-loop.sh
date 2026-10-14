@@ -42,6 +42,16 @@ case "${1:-status}" in
       # מגן-מפתח: GEN-3 — המפתח קם לבד מהכספת-בגיט. חוק-מפעיל 2026-10-06:
       # לעולם לא שואלים מפתחות. כל-טיק מאמת שהחתימה חמושה — לפני כל-דבר אחר.
       bash "$SB/key-guardian.sh" tick || true
+      # R324-EXAMINE-FIX · תרופת-רדודות-עצמית (R322 class, measured 2026-10-14 00:00):
+      # סוכן-מקביל בסנדבוקס מבצע fetch רדוד על הריפו-החי (grafts חוזרים ב-.git/shallow)
+      # — אבות-מזויפים. הלולאה מרפאת-עצמה: אם רדוד → unshallow לפני כל דחיפה.
+      if [ -f "$ROOT/.git/shallow" ]; then
+        if git fetch --unshallow --quiet origin saos-cockpit >> "$LOG" 2>&1; then
+          log "shallow-heal: .git/shallow זוהה → --unshallow הושלם (אנטומיה-מלאה)"
+        else
+          log "shallow-heal: unshallow נכשל — הדחיפה ממשיכה fail-honest, verify יצעק"
+        fi
+      fi
       # מגן-פרסום: אסור ליצור קומיט-התמדה על עץ עם סימני-קונפליקט (עצור-ותעד)
       if rg -q '^(<{7} |={7}$|>{7} )' sanbox worklog.md 2>/dev/null; then
         log "guard: סימני-קונפליקט ב-sanbox/worklog — snapshot נמנע (עצור-ותעד)"
