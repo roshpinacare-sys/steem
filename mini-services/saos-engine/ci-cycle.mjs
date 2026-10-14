@@ -315,6 +315,39 @@ async function main() {
     return { verdict: r.verdict, at: r.at, drafts: r.drafts, checked: r.checked, violations: r.violations, warnings: r.warnings, source: r.source ?? null, enforce: r.enforce, observe: true };
   });
 
+  /* R332 · THE SWARM DISTRIBUTION PLANNER (T-91, the last open integration
+   * module of the T-83 reference batch — Marketing-Swarm-Template's
+   * agents.yaml made sovereignty-native): ONE drafts queue feeds TWO live
+   * rails that pick INDEPENDENTLY (steem persona-match/FIFO, hive
+   * affinity/brevity) — a draft's destination is consumption-order luck,
+   * and every uniqueness veto in the house is CHAIN-LOCAL and WINDOWED
+   * (the R297 shallow-memory class, unmeasured across chains). This step
+   * plans the distribution each beat: deterministic assignment (pinned >
+   * persona-in-hive-roster > steem-default), anti-twin splits at plan
+   * level (≥0.5 title, honest pigeonhole residue), and the FIRST
+   * cross-chain twin scan over published rows (null chain ⇒ steem by
+   * documented convention; the R303 book rows are chainUnknown — named,
+   * not hidden). OBSERVE-ONLY (the R304 precedent): the plan seals to
+   * state/swarm-plan-latest.json and NOTHING else; consumption arms only
+   * through the signed DNA knob memory.swarmEnforce (default false, the
+   * R307 pattern); spamgate/R297/R301/R302 keep every gate. Fail-isolated
+   * like every step. */
+  report.steps.contentSwarm = await stepWrap("content-swarm", async () => {
+    const { runSwarm } = await import("./content-swarm.mjs");
+    const r = await runSwarm({ stateDir: STATE, now });
+    const top = (r.twins ?? [])[0] ?? null;
+    return {
+      verdict: r.verdict, at: r.at, sig: r.signature ?? null,
+      drafts: r.stats?.drafts ?? 0, steem: r.stats?.steem ?? 0, hive: r.stats?.hive ?? 0,
+      pinned: r.stats?.pinned ?? 0, splits: r.stats?.splits ?? 0,
+      pinnedConflicts: r.stats?.pinnedConflicts ?? 0, unresolved: r.stats?.unresolved ?? 0,
+      publishedScanned: r.stats?.publishedScanned ?? 0,
+      twins: r.stats?.crossChainTwins ?? null, sameChainTwins: r.stats?.sameChainTwins ?? null,
+      topTwin: top ? `${top.kind} ${top.sim.toFixed(2)} ${top.aChain}↔${top.bChain}` : null,
+      degraded: r.degraded ?? false, observe: true,
+    };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -366,6 +399,14 @@ async function main() {
     formatLintChecked: report.steps.formatLint?.checked ?? null,
     formatLintViolations: report.steps.formatLint?.violations ?? null,
     formatLintEnforce: report.steps.formatLint?.enforce ?? null,
+    swarm: report.steps.contentSwarm?.verdict ?? "STEP-FAIL",
+    swarmDrafts: report.steps.contentSwarm?.drafts ?? null,
+    swarmSteem: report.steps.contentSwarm?.steem ?? null,
+    swarmHive: report.steps.contentSwarm?.hive ?? null,
+    swarmSplits: report.steps.contentSwarm?.splits ?? null,
+    swarmTwins: report.steps.contentSwarm?.twins ?? null,
+    swarmTopTwin: report.steps.contentSwarm?.topTwin ?? null,
+    swarmSig: report.steps.contentSwarm?.sig ?? null,
     contentMemoryPatterns: report.steps.contentMemory?.published ?? null,
     contentMemoryScore: report.steps.contentMemory?.scoreMean ?? null,
     contentConcepts: report.steps.contentConcepts?.verdict ?? "STEP-FAIL",

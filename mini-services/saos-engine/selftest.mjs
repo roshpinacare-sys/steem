@@ -3722,6 +3722,124 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("38.14 real DNA v2: tic-free proposal + measured evidence + provenance", [realDna38.version, real38.observe, real38.ticsEvidence.length, real38.proposal.addLexicon.every((p) => !realTics38.has(p)), real38.proposal.refreshOf?.fromSig, realDna38.law], [2, true, realTics38.size, true, "sig:53fe40f2", "R302"]);
 }
 
+{
+  /* 39 · R332 THE SWARM DISTRIBUTION PLANNER (T-91, trace 1a13a0c86d97817d) —
+   * the last open integration module of the T-83 reference batch
+   * (Marketing-Swarm-Template's agents.yaml made sovereignty-native). ONE
+   * drafts queue, TWO rails picking independently, every uniqueness veto
+   * chain-local and windowed: the R297 shallow-memory class, unmeasured
+   * ACROSS chains. The planner: deterministic assignment (pinned >
+   * persona-in-hive-roster > steem-default), anti-twin splits at plan
+   * level (honest pigeonhole residue — two fronts cannot host three
+   * mutually-similar siblings), and the FIRST cross-chain twin scan over
+   * published rows. Pure core: no clock, no randomness, no fs, no
+   * mutation. OBSERVE-ONLY: state/swarm-plan-latest.json is the only
+   * write; consumption arms only via signed DNA memory.swarmEnforce
+   * (default false). */
+  const cs39 = await import("./content-swarm.mjs");
+  const dir39 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-swarm-"));
+
+  const q39 = (id, title, extra = {}) => ({ id, status: "drafted", title, body: "x", persona: null, draftedAt: "2026-10-14T00:0" + (id.length % 10) + ":00Z", ...extra });
+  /* 39.1 determinism: same input → same signature (no clock inside) */
+  const p39a = cs39.planSwarm({ queue: [q39("d1", "The quiet bench at the station")], hiveRoster: ["hv1"], steemRoster: ["st1"] });
+  const p39b = cs39.planSwarm({ queue: [q39("d1", "The quiet bench at the station")], hiveRoster: ["hv1"], steemRoster: ["st1"] });
+  eq("39.1 deterministic plan + sig:8hex", [p39a.signature, p39a.signature], [p39b.signature, /^sig:[0-9a-f]{8}$/.test(p39a.signature) ? p39a.signature : "no"]);
+  /* 39.2 persona in the hive roster → hive, basis persona */
+  const p39c = cs39.planSwarm({ queue: [q39("d2", "A title about patience", { persona: "hv1" })], hiveRoster: ["hv1"], steemRoster: ["st1"] });
+  eq("39.2 hive-roster persona → hive", [p39c.assignments[0].front, p39c.assignments[0].basis], ["hive", "persona"]);
+  /* 39.3 steem-only persona → steem, basis persona */
+  const p39d = cs39.planSwarm({ queue: [q39("d3", "Another quiet morning", { persona: "st1" })], hiveRoster: ["hv1"], steemRoster: ["st1"] });
+  eq("39.3 steem persona → steem", [p39d.assignments[0].front, p39d.assignments[0].basis], ["steem", "persona"]);
+  /* 39.4 unknown persona → steem, basis default */
+  const p39e = cs39.planSwarm({ queue: [q39("d4", "One more doorway")], hiveRoster: ["hv1"], steemRoster: ["st1"] });
+  eq("39.4 unknown persona → steem default", [p39e.assignments[0].front, p39e.assignments[0].basis], ["steem", "default"]);
+  /* 39.5 explicit pin wins over the persona law */
+  const p39f = cs39.planSwarm({ queue: [q39("d5", "A hive-roster voice speaks", { persona: "hv1", front: "steem" })], hiveRoster: ["hv1"], steemRoster: ["st1"] });
+  eq("39.5 pin overrides persona", [p39f.assignments[0].front, p39f.assignments[0].basis, p39f.stats.pinned], ["steem", "pinned", 1]);
+  /* 39.6 anti-twin split: similar titles → different fronts, flip recorded */
+  const p39g = cs39.planSwarm({
+    queue: [q39("d6", "Seven floors of waiting rooms"), q39("d7", "Seven floors of waiting rooms, again")],
+    hiveRoster: [], steemRoster: [],
+  });
+  const fronts39g = p39g.assignments.map((a) => a.front).sort();
+  eq("39.6 anti-twin split across fronts", [fronts39g, p39g.stats.splits, p39g.splits[0]?.flipped], [["hive", "steem"], 1, "d7"]);
+  /* 39.7 pigeonhole honesty: three mutually-similar siblings on two fronts
+   * MUST leave one pair sharing a front — recorded, never looped */
+  const p39h = cs39.planSwarm({
+    queue: [q39("d8", "The drawer of replies"), q39("d9", "The drawer of replies, part two"), q39("d10", "The drawer of replies, part three")],
+    hiveRoster: [], steemRoster: [],
+  });
+  eq("39.7 pigeonhole residue is named", [p39h.stats.unresolved, p39h.assignments.every((a) => a.front === "steem" || a.front === "hive")], [1, true]);
+  /* 39.8 double-pin collision reported, neither pin moved (both pins hold;
+   * the movable case is 39.9) */
+  const p39i = cs39.planSwarm({
+    queue: [q39("d11", "Matching titles for a conflict", { front: "steem" }), q39("d12", "Matching titles for a conflict too", { front: "steem" })],
+    hiveRoster: [], steemRoster: [],
+  });
+  eq("39.8 double-pin collision reported", [p39i.stats.pinnedConflicts, p39i.assignments.filter((a) => a.front === "steem").length, p39i.pinnedConflicts[0]?.ids.length], [1, 2, 2]);
+  /* 39.9 a pin holds and the placed movable row flips instead */
+  const p39j = cs39.planSwarm({
+    queue: [q39("d13", "Clashing sibling titles here"), q39("d14", "Clashing sibling titles there", { front: "steem" })],
+    hiveRoster: [], steemRoster: [],
+  });
+  eq("39.9 pin holds, movable flips", [p39j.assignments.find((a) => a.id === "d13").front, p39j.assignments.find((a) => a.id === "d14").front, p39j.splits[0]?.flipped], ["hive", "steem", "d13"]);
+  /* 39.10 CROSS-CHAIN TITLE TWIN — the money vector: every existing veto is
+   * chain-local; the same title on steem AND hive was invisible until now */
+  const pub39 = [
+    { id: "steem-a/x1", chain: "steem", title: "One month on cash", bodyCore: "" },
+    { id: "hv-x2", chain: "hive", title: "One month on cash", bodyCore: "" },
+  ];
+  const p39k = cs39.planSwarm({ queue: [], hiveRoster: [], steemRoster: [], publishedRows: pub39 });
+  eq("39.10 cross-chain title twin found", [p39k.stats.crossChainTwins, p39k.twins[0]?.kind, p39k.twins[0]?.aChain, p39k.twins[0]?.bChain], [1, "title", "steem", "hive"]);
+  /* 39.11 cross-chain BODY twin: different titles, same core */
+  const core39 = "the same paragraphs about patient queues and small habits repeated verbatim across chains as bodies often are";
+  const p39l = cs39.planSwarm({
+    queue: [], hiveRoster: [], steemRoster: [],
+    publishedRows: [
+      { id: "steem-a/y1", chain: "steem", title: "Completely different heading one", bodyCore: core39 },
+      { id: "hv-y2", chain: "hive", title: "Another heading entirely here", bodyCore: core39 },
+    ],
+  });
+  eq("39.11 cross-chain body twin found", [p39l.twins[0]?.kind, p39l.stats.crossChainTwins], ["body", 1]);
+  /* 39.12 same-chain near-twins counted SEPARATELY (the per-chain vetoes
+   * own those) and null chain ⇒ steem by documented convention */
+  const p39m = cs39.planSwarm({
+    queue: [], hiveRoster: [], steemRoster: [],
+    publishedRows: [
+      { id: "z1", chain: null, title: "Twin pair inside one chain", bodyCore: "" },
+      { id: "z2", chain: "hive", title: "Twin pair inside one chain", bodyCore: "" },
+      { id: "z3", chain: "steem", title: "Twin pair inside one chain", bodyCore: "" },
+    ],
+  });
+  eq("39.12 null⇒steem + same-chain separate", [p39m.stats.crossChainTwins, p39m.stats.sameChainTwins, p39m.stats.chainsMeasured], [2, 1, ["hive", "steem"]]);
+  /* 39.13 zero mutation: the queue and memory objects are untouched */
+  const qOrig39 = [q39("d15", "Mutation probe title", { persona: "hv1" })];
+  const mOrig39 = { published: [{ id: "m1" }] };
+  const qSnap39 = JSON.stringify(qOrig39), mSnap39 = JSON.stringify(mOrig39);
+  cs39.planSwarm({ queue: qOrig39, memory: mOrig39, hiveRoster: ["hv1"], steemRoster: [], publishedRows: [] });
+  eq("39.13 zero mutation of inputs", [JSON.stringify(qOrig39), JSON.stringify(mOrig39)], [qSnap39, mSnap39]);
+  /* 39.14 verdicts: drafted → PLANNED; none → EMPTY (twin scan still runs) */
+  const p39n = cs39.planSwarm({ queue: [q39("d16", "Something to plan")], hiveRoster: [], steemRoster: [] });
+  const p39o = cs39.planSwarm({ queue: [{ id: "pub", status: "published", title: "Only published here" }], hiveRoster: [], steemRoster: [] });
+  eq("39.14 verdicts PLANNED/EMPTY", [p39n.verdict, p39o.verdict, p39o.stats.drafts], ["SWARM-PLANNED", "SWARM-EMPTY", 0]);
+  /* 39.15 runSwarm: seals the plan file; missing ops → honest degrade */
+  const { runSwarm } = cs39;
+  fs.writeFileSync(path.join(dir39, "content-ops.json"), JSON.stringify({ queue: [q39("d17", "A real plan probe", { persona: "someone" })] }));
+  const r39a = await runSwarm({ stateDir: dir39, now: "2026-10-14T00:00:00.000Z" });
+  const sealed39 = JSON.parse(fs.readFileSync(path.join(dir39, "swarm-plan-latest.json"), "utf8"));
+  eq("39.15a runSwarm seals plan", [r39a.verdict, r39a.stats.drafts, sealed39.signature, sealed39.at, sealed39.assignments[0]?.front], ["SWARM-PLANNED", 1, r39a.signature, "2026-10-14T00:00:00.000Z", "steem"]);
+  const dir39b = fs.mkdtempSync(path.join(os.tmpdir(), "saos-swarm-degraded-"));
+  const r39b = await runSwarm({ stateDir: dir39b, now: "2026-10-14T00:00:00.000Z" });
+  eq("39.15b missing ops → SWARM-DEGRADED honest", [r39b.verdict, r39b.degraded, r39b.stats.crossChainTwins], ["SWARM-DEGRADED", true, null]);
+  /* 39.16 sig law: the sealed file's signature excludes the `at` stamp
+   * (re-sign the payload without at → same sig; the T-88 contract law) */
+  const { stableStringify } = await import("./content-drift.mjs");
+  const { createHash } = await import("node:crypto");
+  const { at: _at39, signature: _sig39, ...payload39 } = sealed39;
+  const expect39 = "sig:" + createHash("sha256").update(stableStringify(payload39)).digest("hex").slice(0, 8);
+  eq("39.16 signature over payload-without-at", [expect39, sealed39.signature], [sealed39.signature, expect39]);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
