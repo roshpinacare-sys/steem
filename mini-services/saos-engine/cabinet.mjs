@@ -1,9 +1,11 @@
 /* SAOS CABINET (exec35, lane 35-a) — the deterministic multi-persona paper
  * decision machinery, mapped onto OUR kernel (R343) + OUR own paper ledger.
  *
- * LAW PROVENANCE — exec35 cabinet law directive; registry number pending
- * (R350+/R351+; the R350 validateOutput enum/range extension is the
- * registered kernel upgrade this module parses through). Pattern source:
+ * LAW PROVENANCE — exec35 cabinet law directive; registry number R351
+ * (registered, Pulse DECISIONS #36; the R352 validateOutput enum/range
+ * extension — renumbered R350→R352 after T-95 first-registration (Pulse
+ * DECISIONS #35/#36) — is the registered kernel upgrade this module parses
+ * through). Pattern source:
  * the ai-hedge-fund v2.5 blueprint (34-c dossier, MIT, harvest table H1-H10)
  * re-built sovereignty-native:
  *   · persona = declared approach metadata ONLY (R331 roster-truthfulness:
@@ -16,7 +18,8 @@
  *     {ok:false}, never a fabricated opinion.
  *   · LOCKED FAILURE CONTRACT: data errors propagate, LLM errors ABSTAIN
  *     (never fabricate), every persisted decision is hash-chained.
- *   · enum+range parse BEFORE use through kernel validateOutput (R350):
+ *   · enum+range parse BEFORE use through kernel validateOutput (R352;
+ *     renumbered R350→R352 after T-95 first-registration, Pulse DECISIONS #35/#36):
  *     signal ∈ {bullish,neutral,bearish}, confidence ∈ [0,100]; invalid ⇒
  *     ONE bounded repair round (max 2 total attempts, never 3), still
  *     invalid ⇒ abstain record.
@@ -44,7 +47,7 @@ import { validateOutput } from "./kernel-isolation.mjs";
 
 export const CABINET_IDENTITY = "exec35-engine-lane@agents.roshpinacare-sys";
 export const CABINET_LAW_SOURCE =
-  "exec35 cabinet law directive (registry pending R350+/R351+): ai-hedge-fund blueprint on the LOCAL kernel — " +
+  "exec35 cabinet law directive (R351 registered, Pulse DECISIONS #36): ai-hedge-fund blueprint on the LOCAL kernel — " +
   "injected-respond-only LLM seam (R330), declared-persona roster (R331), deterministic blend, risk clamps " +
   "'conviction requests, risk disposes', hash-chained append-only PAPER ledger, kill-switch read at decision " +
   "time AND inside replay; paper-only, own-ledger, zero keys, zero brokers, zero value, zero broadcasts";
@@ -86,7 +89,8 @@ export const PERSONAS = Object.freeze([
 
 export const PERSONA_IDS = Object.freeze(PERSONAS.map((p) => p.id));
 
-/* persona schema — parsed through the kernel R350 enum/range validator */
+/* persona schema — parsed through the kernel R352 enum/range validator
+ * (renumbered R350→R352 after T-95 first-registration, Pulse DECISIONS #35/#36) */
 export function personaSchema(persona) {
   const p = persona && typeof persona === "object" ? persona : {};
   const range = Array.isArray(p.confidenceRange) && p.confidenceRange.length === 2 ? p.confidenceRange : CONFIDENCE_RANGE;

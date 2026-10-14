@@ -4587,13 +4587,15 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 }
 
 {
-  /* 46 · KERNEL ENUM/RANGE (exec35, lane 35-a — the R350 upgrade): schema
+  /* 46 · KERNEL ENUM/RANGE (exec35, lane 35-a — the R352 upgrade; renumbered
+   * R350→R352 after T-95 first-registration, Pulse DECISIONS #35/#36): schema
    * fields may carry constraint objects {type, enum, min, max, minLength,
    * maxLength}. Violations are FAIL-CLOSED with precise reasons; unknown
    * spec keys are IGNORED (never crash); legacy string schemas behave
    * byte-identically (sections 44/45 stay green — the whole file re-runs). */
 
-  /* the cabinet persona schema — the R350 target shape */
+  /* the cabinet persona schema — the R352 target shape (renumbered
+   * R350→R352 after T-95 first-registration, Pulse DECISIONS #35/#36) */
   const S46 = {
     signal: { type: "string", enum: ["bullish", "neutral", "bearish"] },
     confidence: { type: "number", min: 0, max: 100 },
@@ -4666,7 +4668,8 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 {
   /* 47 · THE DETERMINISTIC CABINET (exec35, lane 35-a): ai-hedge-fund
    * blueprint on the LOCAL kernel — frozen persona roster (R331), injected
-   * respond ONLY (R330), enum+range parse before use (R350), bounded repair
+   * respond ONLY (R330), enum+range parse before use (R352; renumbered
+   * R350→R352 after T-95 first-registration, Pulse DECISIONS #35/#36), bounded repair
    * (max 2 attempts), honest abstain, deterministic blend, risk clamps
    * "conviction requests, risk disposes" with ClampEvents, hash-chained
    * append-only PAPER ledger (fold-verified), kill-switch read at decision
