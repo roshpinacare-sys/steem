@@ -57,6 +57,9 @@ import * as path from "node:path";
 import { createHash } from "node:crypto";
 import { buildTx, wifDecode, pubkeyFromSeed, pubkeyBytes, fingerprint, STEEM_CHAIN_ID, HIVE_CHAIN_ID } from "./steemtx.mjs";
 import { rpcCall } from "./measure.mjs";
+import { loadOrBuild as loadFleetLedger, uniqueness as fleetUniqueness, notePublished as noteFleetLedgerPublished, saveLedger as saveFleetLedgerFile } from "./fleet-ledger.mjs";
+import { ARMY_ROSTER } from "./army-social.mjs";
+import { masterAccount } from "./signer.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const ROOT = path.join(DIR, "..", "..");
@@ -241,6 +244,20 @@ export async function runOnce({ stagingOnly = false } = {}) {
   const chainName = "steem"; /* hive/blurt: measured-node law before first use */
   const chain = CHAINS[chainName];
   const nowD = new Date();
+  /* R297 · CHAIN-TRUTH UNIQUENESS VETO at the streamer gate too (the shelling
+   * incident): this rail publishes as ANY matched account — it vetoes against
+   * the same chain-truth ledger the army-social rail obeys. Fail-closed. */
+  try {
+    const stateDir = path.join(DIR, "state");
+    const ledger = await loadFleetLedger([masterAccount(), ...ARMY_ROSTER], { stateDir, now: nowD.toISOString() });
+    const u = fleetUniqueness(ledger, { account: pick.acc.name, title: draft.title, body: draft.body });
+    if (!u.ok) {
+      appendSent({ at: nowD.toISOString(), kind: "post", mode: "live", account: pick.acc.name, chain: chainName, permlink: "(pre-sign)", sha8: draft.sha8, txid: null, verdict: "VETOED-CHAIN-UNIQUENESS", reasons: u.reasons.slice(0, 3), ms: 0 });
+      return { ...base, ok: false, verdict: "VETOED-CHAIN-UNIQUENESS", reasons: u.reasons.slice(0, 3), stage };
+    }
+  } catch (e) {
+    return { ...base, ok: false, verdict: "LEDGER-UNAVAILABLE-FAIL-CLOSED", reason: String(e?.message ?? e).slice(0, 120), stage };
+  }
   const permlink = `${slugify(draft.title)}-${nowD.toISOString().slice(0, 10).replace(/-/g, "")}-${draft.sha8}`.slice(0, 255);
   const tags = Array.isArray(draft.tags) && draft.tags.length ? draft.tags.slice(0, 5) : ["saos"];
   const ops = [["comment", {
@@ -290,6 +307,15 @@ export async function runOnce({ stagingOnly = false } = {}) {
   const b = await rpcCall("network_broadcast_api.broadcast_transaction", [tx.json], 20000);
   const broadcasted = b.ok;
   appendSent({ ...base, kind: "post", mode: "live", account: pick.acc.name, chain: chainName, permlink, sha8: draft.sha8, txid: broadcasted ? txid : null, verdict: broadcasted ? "BROADCASTED" : "BROADCAST-FAILED", node: b.node ?? null, error: broadcasted ? undefined : String(b.error ?? "").slice(0, 120), ms: Date.now() - t0 });
+  /* R297: a live broadcast is chain-truth the moment it lands — note it so
+   * every later tick vetoes against the fresh post even before the ledger's
+   * next chain refresh. */
+  if (broadcasted) {
+    try {
+      const led = await loadFleetLedger([masterAccount(), ...ARMY_ROSTER], { stateDir: path.join(DIR, "state"), now: nowD.toISOString() });
+      saveFleetLedgerFile(path.join(DIR, "state"), noteFleetLedgerPublished(led, { account: pick.acc.name, permlink, title: draft.title, body: draft.body, created: nowD.toISOString() }));
+    } catch { /* the veto already passed; the next chain refresh covers the gap */ }
+  }
   /* R308 · QUEUE-TRUTH SYNC: the work queue reflects reality — the row that
    * just went live is marked published (title match), so the operator never
    * sees a "drafted" row that is already on the chain. Fail-soft: the chain

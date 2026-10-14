@@ -65,6 +65,7 @@ import { personaOf, arcStageOf, profileDoc, profileDiffers, mergeProfileMetadata
 import { synthesizeReply, synthesizePersonaComment, synthesizePersonaReply, isProbeComment, mentionsAny } from "./intel-pack.mjs";
 import { spamVerdict, organicVerdict, flagPauseVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
 import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
+import { loadOrBuild as loadFleetLedger, uniqueness as fleetUniqueness, notePublished as noteFleetLedgerPublished, saveLedger as saveFleetLedgerFile } from "./fleet-ledger.mjs";
 import { reviveArmyCustody, ARMY_ROSTER as ROSTER_BASE } from "./vault-revival.mjs";
 import { readCommunityState, communityPostMeta, communityMetaObj } from "./community.mjs";
 import { embedImage } from "./illustrate.mjs";
@@ -108,6 +109,8 @@ export function socialPolicy() {
                                  * accounts while chain truth stays intact; control accounts
                                  * render fully from the same IP). 8% keeps the support real
                                  * and kills the uniform-weight signature. */
+    maxFleetVotesPerPost: 2,    /* R298 ring-cap: the chain showed 5-7 fleet votes on every
+                                 * post — a ring shape. ≤2 fleet votes per post, chain-truth. */
     maxFleetCommentsPerDay: 2,  // per account — R244: conversation is the product
     fleetRepliesEnabled: true,  // T-87: fleet comments are lawful reply targets
     maxRepliesPerDay: 3,        // per account — R244 amplification
@@ -796,6 +799,34 @@ async function doPublish(account, st, p, now, day) {
       return false;
     }
   }
+  /* R297 · THE CHAIN-TRUTH UNIQUENESS VETO (the shelling incident, measured
+   * 2026-10-14: 75 exact duplicate bodies cross-account in 8 days + 47
+   * duplicate-title groups = the exact bot-farm signature that got the WHOLE
+   * roster shelled on steemit.com). The local windows (R277 48h, queue titles
+   * 20 rows) let "Seven Floors" ship twice 51h apart. The chain forgets
+   * nothing: the draft is vetoed against a chain-truth ledger of the roster's
+   * last 60 root posts each — exact body, near-body (Jaccard ≥ 0.5), and
+   * normalized-title, 45-day window, any account including SELF. Fail-closed:
+   * an unavailable ledger refuses the publish (a missing post is cheaper
+   * than a roster-wide shell). */
+  {
+    let verdict297 = null;
+    try {
+      const ledger = await loadFleetLedger([master, ...ARMY_ROSTER], { stateDir: STATE, now });
+      verdict297 = fleetUniqueness(ledger, { account, title: draft.title, body: draft.body });
+    } catch (e) {
+      appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-uniqueness-ledger-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
+      verdict297 = { ok: false, reasons: ["ledger-unavailable-fail-closed"], against: [] };
+    }
+    if (!verdict297.ok) {
+      draft.status = "vetoed-chain-uniqueness";
+      draft.vetoedAt = now;
+      draft.vetoReason = verdict297.reasons.slice(0, 3).join("; ").slice(0, 300);
+      writeJson(CONTENT_FILE, c);
+      appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-uniqueness-veto", at: now, account, title: String(draft.title).slice(0, 80), reasons: verdict297.reasons.slice(0, 3), against: verdict297.against });
+      return false;
+    }
+  }
   /* R243 SPAMGATE (grafted, union merge): nothing publishes without clearing
    * the measured spam law (thin-body / bait-phrases / link-stuffing /
    * self-repetition / ungrounded / cross-chain — the @spaminator profile). */
@@ -844,7 +875,8 @@ async function doPublish(account, st, p, now, day) {
   /* R277 intent-before-broadcast: the publish body enters the fleet ledger
    * BEFORE the broadcast so a same-tick sibling's veto sees it (the same law
    * the conversational lanes obey), and so the 48h body-clash window holds
-   * across runs, processes, and sandboxes. */
+   * across runs, processes, and sandboxes. R297: the CHAIN-TRUTH ledger gets
+   * the same note so the 45-day uniqueness veto sees it on every tick. */
   noteFleetSaid(day, account, body);
   const ops = [[
     "comment",
@@ -853,6 +885,14 @@ async function doPublish(account, st, p, now, day) {
   const res = await executeAs(account, ops, { tag: "social-post", role: "posting" });
   if (!res.ok) return false;
   st.published = [...(st.published ?? []), draft.id];
+  /* R297: the broadcast is now chain-truth — record it so every later tick
+   * (this sandbox or any other) vetoes against the live post, not a memory. */
+  try {
+    const led = await loadFleetLedger([master, ...ARMY_ROSTER], { stateDir: STATE, now });
+    saveFleetLedgerFile(STATE, noteFleetLedgerPublished(led, { account, permlink, title: draft.title, body, created: now }));
+  } catch (e) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-uniqueness-note-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
+  }
   /* R255 · THE ARC ADVANCES ON MEASURED TRUTH: lifetime posts live in the
    * chain (this publish just added one); the stage pointer is recomputed
    * from that count, so a persona's development is provable, never claimed. */
@@ -895,10 +935,21 @@ async function doFleetVote({ account, master, st, p, nowMs, now }) {
    * active_votes), then by total votes — the least-supported fleet post gets
    * the next vote, so support spreads; seeded rotation inside the tier. */
   const minRoster = Math.min(...candidates.map((c) => c.rosterVotes ?? 0));
+  /* R298 · THE RING CAP (the shelling incident): the measured signature was
+   * 5-7 fleet votes on EVERY post (710/732 at one weight). The anti-herd
+   * tier spreads support but never STOPS it — a post at the cap is untouchable
+   * now: ≤ maxFleetVotesPerPost fleet votes per post, chain-truth counted. */
+  if (minRoster >= (p.maxFleetVotesPerPost ?? 2)) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.fleet-vote-ring-cap", at: now, account, minRoster, cap: p.maxFleetVotesPerPost ?? 2 });
+    return false;
+  }
   const tier = candidates.filter((c) => (c.rosterVotes ?? 0) === minRoster)
     .sort((a, b) => (a.votes ?? 0) - (b.votes ?? 0) || b.createdMs - a.createdMs);
   const pick = tier[(hashSeed(`${now.slice(0, 10)}|${account}|vote`) + st.done["fleet-vote"]) % tier.length];
-  const weight = Math.round(p.fleetWeightPct * 100);
+  /* R298 · WEIGHT JITTER: one fixed weight across 710 votes was the loudest
+   * signature. The support weight now varies per vote, seeded + auditable:
+   * fleetWeightPct ±(0..5) → 8-13% real support, never a uniform bar. */
+  const weight = Math.round((p.fleetWeightPct + (hashSeed(`${now.slice(0, 13)}|${account}|vw|${st.done["fleet-vote"]}`) % 6)) * 100);
   const ops = [["vote", { voter: account, author: pick.author, permlink: pick.permlink, weight }]];
   const res = await executeAs(account, ops, { tag: "social-fleet-vote", role: "posting" });
   if (!res.ok) return false;
