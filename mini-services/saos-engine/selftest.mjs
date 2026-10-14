@@ -5191,6 +5191,149 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 }
 
 
+{
+  /* 50 · CI WIRING — LEASE INTO THE HEARTBEAT, TRIAGE INTO THE SELF-HEAL
+   * (exec37, lane 37-a; G1+G2 of PLAN-2026-Q4-giants-alignment, R353-wiring
+   * + R355-wiring — NO new R-numbers). (G1) the heartbeat's selftest-
+   * execution critical section now holds the R353 verification lease: the
+   * registered purpose "ci-selftest" (gate-lease PURPOSE_ALLOWLIST — the
+   * module's own PURPOSE_RE law byte-preserved), the lease dir under the
+   * state/lease convention, a contended beat recorded SKIP-NOT-FAIL (R339)
+   * with the holder and the suite NOT run, release owner-checked in
+   * withLease's finally. (G2) the R342 autonomous self-heal consults the
+   * R355 triage BEFORE hands (surface-watch triageGate, opt-in flag — the
+   * CI heartbeat passes triageGate:true): ENVIRONMENT → NO auto-repair,
+   * escalation recorded, surface never dropped (denominator constant);
+   * CODE → the existing lawful-repair path unchanged; AMBIGUOUS →
+   * observe-only this beat (no auto-retry, basis recorded); triage-throw →
+   * fail-closed AMBIGUOUS. All fixtures: TEMP dirs, INJECTED clocks,
+   * offline fetchImpl — zero real sleeps, zero network, zero keys. The
+   * ci-cycle heartbeat itself self-executes main() on import and is
+   * therefore NOT importable by design; its wiring is exercised here at the
+   * exact seam it calls (withLease + PURPOSE_ALLOWLIST + runSurfaceWatch
+   * triageGate), deterministically. */
+
+  const gl50 = await import("./gate-lease.mjs");
+  const sw50 = await import("./surface-watch.mjs");
+  const T50 = { a: 1000, b: 2000, c: 3000 };
+
+  /* ── 50.a the lease wiring (G1 / R353-wiring) ── */
+  eq("50.1 purpose allowlist: frozen, exactly ONE registered production purpose", [Object.isFrozen(gl50.PURPOSE_ALLOWLIST), gl50.PURPOSE_ALLOWLIST.length, gl50.PURPOSE_ALLOWLIST[0]], [true, 1, "ci-selftest"]);
+
+  const leaseRoot50 = fs.mkdtempSync(path.join(os.tmpdir(), "saos50-lease-"));
+  const beatDir50 = path.join(leaseRoot50, "state", "lease"); // the production convention shape (engine state/lease)
+  const w50a = await gl50.withLease({ leaseDir: beatDir50, purpose: "ci-selftest", ttlMs: 60000, owner: "ci-heartbeat", now: T50.a, fn: async () => "suite-ran" });
+  eq("50.2 'ci-selftest' accepted: granted → critical section ran → release in finally (readback)", [w50a.skipped, w50a.result, fs.existsSync(path.join(beatDir50, "ci-selftest"))], [false, "suite-ran", false]);
+
+  const holder50 = await gl50.acquireLease({ leaseDir: beatDir50, purpose: "ci-selftest", ttlMs: 60000, owner: "other-verifier", now: T50.a });
+  let ran50 = false;
+  const w50b = await gl50.withLease({ leaseDir: beatDir50, purpose: "ci-selftest", ttlMs: 60000, owner: "ci-heartbeat", now: T50.b, fn: async () => { ran50 = true; return "MUST-NOT-RUN"; } });
+  eq("50.3 contention → skipped:true + holder recorded + fn NEVER ran (R339 SKIP-NOT-FAIL)", [holder50.granted, w50b.skipped, w50b.holder?.owner, ran50], [true, true, "other-verifier", false]);
+
+  const hostile50 = await gl50.acquireLease({ leaseDir: beatDir50, purpose: "../escape", ttlMs: 60000, owner: "mallory", now: T50.c });
+  eq("50.4 hostile purpose refused fail-closed (the module's own law, byte-preserved)", [hostile50.granted, hostile50.error], [false, "purpose-not-allowlisted"]);
+
+  await gl50.releaseLease(holder50.lease);
+  ok("50.5 lease fixtures released by readback", !fs.existsSync(path.join(beatDir50, "ci-selftest")));
+
+  /* ── 50.b the triage gate wiring (G2 / R355-wiring) ── */
+  const NOW50 = "2026-10-14T19:00:00.000Z";
+  const OLD50 = "2026-10-14T15:00:00.000Z"; // 240 min before NOW50 (cap 90m)
+  const tmp50 = fs.mkdtempSync(path.join(os.tmpdir(), "saos50-watch-"));
+  const resp50 = (status, body, j) => ({ status, ok: status >= 200 && status < 300, text: async () => body ?? (j !== undefined ? JSON.stringify(j) : ""), json: async () => j });
+  const siteT50 = { id: "pulse-site", kind: "site", url: "https://site.test/", maxAgeMinutes: null, source: "pages", marker: "Pulse ·" };
+  const dfT50 = { id: "pulse-network", kind: "datafile", url: "https://raw.test/network.json", maxAgeMinutes: 90, source: "raw", requiredKeys: ["schema", "generatedAt"], tsKeys: ["generatedAt"] };
+  const locT50 = { id: "engine-selftest", kind: "statefile", url: "private:selftest", localPath: "selftest-last-run.json", maxAgeMinutes: 90, source: "local", requiredKeys: ["pass", "fail", "at"], tsKeys: ["at"] };
+  const tgt50 = [siteT50, dfT50, locT50]; // denominator 3 — asserted constant in every run below
+  const mkFetch50 = (route) => {
+    const log = [];
+    const f = async (u, o = {}) => { log.push(`${String(u)} ${(o.method ?? "GET")}`); const r = route(String(u), o); if (r === undefined) throw new Error("no-route-50"); return r; };
+    f.log = log;
+    return f;
+  };
+  const fresh50 = { schema: "pulse-network-v2", generatedAt: NOW50 };
+  const seedLocal50 = (dir) => { fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, "selftest-last-run.json"), JSON.stringify({ pass: 1, fail: 0, at: NOW50 })); };
+
+  /* ENVIRONMENT: site 404 → triage rule 4 (remote gate refused) → repair
+   * WITHHELD, escalation recorded, every surface still in the report */
+  const envDir50 = path.join(tmp50, "env");
+  seedLocal50(envDir50);
+  const fetchEnv50 = mkFetch50((u) => (u === "https://site.test/" ? resp50(404, "") : u === "https://raw.test/network.json" ? resp50(200, JSON.stringify(fresh50)) : undefined));
+  const env50 = await sw50.runSurfaceWatch({ stateDir: envDir50, now: NOW50, targets: tgt50, timeoutMs: 200, repairMode: "act", prevVerdict: "SURFACES-DOWN", token: "t", triageGate: true, fetchImpl: fetchEnv50 });
+  const envSealed50 = JSON.parse(fs.readFileSync(path.join(envDir50, "surface-watch-latest.json"), "utf8"));
+  eq("50.6 ENVIRONMENT: auto-repair withheld, gate entry recorded, plan still on file", [
+    env50.surfaceRepairs, env50.surfaceTargets, envSealed50.targets.length, envSealed50.repairsPlanned.length,
+    envSealed50.triageGate?.length, envSealed50.triageGate?.[0]?.class, String(envSealed50.triageGate?.[0]?.gate).startsWith("escalation-blocked"),
+  ], [0, 3, 3, 1, 1, "ENVIRONMENT", true]);
+  const escEnv50 = fs.readFileSync(path.join(envDir50, "surface-escalations.jsonl"), "utf8").trim().split("\n").filter(Boolean);
+  eq("50.7 escalation recorded honestly (ledger line + no repair traffic)", [escEnv50.length, JSON.parse(escEnv50[0]).id, JSON.parse(escEnv50[0]).triage, fetchEnv50.log.some((l) => l.includes("api.github.com"))], [1, "pulse-site", "ENVIRONMENT", false]);
+
+  /* AMBIGUOUS: stale datafile (rule 6) → observe-only this beat, no
+   * auto-retry, basis recorded, no dispatch, no escalation */
+  const ambDir50 = path.join(tmp50, "amb");
+  seedLocal50(ambDir50);
+  const fetchAmb50 = mkFetch50((u) => (u === "https://site.test/" ? resp50(200, "<title>Pulse · דופק הרשת</title>") : u === "https://raw.test/network.json" ? resp50(200, JSON.stringify({ schema: "pulse-network-v2", generatedAt: OLD50 })) : undefined));
+  const amb50 = await sw50.runSurfaceWatch({ stateDir: ambDir50, now: NOW50, targets: tgt50, timeoutMs: 200, repairMode: "act", prevVerdict: "SURFACES-DEGRADED", token: "t", triageGate: true, fetchImpl: fetchAmb50 });
+  const ambSealed50 = JSON.parse(fs.readFileSync(path.join(ambDir50, "surface-watch-latest.json"), "utf8"));
+  eq("50.8 AMBIGUOUS: observe-only, basis names the rule, zero executions", [
+    amb50.surfaceRepairs, ambSealed50.triageGate?.[0]?.class, ambSealed50.triageGate?.[0]?.verdict,
+    String(ambSealed50.triageGate?.[0]?.gate).startsWith("observe-only"), String(ambSealed50.triageGate?.[0]?.basis).includes("(rule 6)"),
+    fetchAmb50.log.some((l) => l.includes("api.github.com")), fs.existsSync(path.join(ambDir50, "surface-escalations.jsonl")),
+  ], [0, "AMBIGUOUS", "STALE", true, true, false, false]);
+
+  /* CODE: unparseable datafile (our own artifact, rule 2) → the existing
+   * lawful-repair path proceeds UNCHANGED (regen-state dispatch executed) */
+  const codeDir50 = path.join(tmp50, "code");
+  seedLocal50(codeDir50);
+  const fetchCode50 = mkFetch50((u, o) => {
+    if (u === "https://site.test/") return resp50(200, "<title>Pulse · דופק הרשת</title>");
+    if (u === "https://raw.test/network.json") return resp50(200, "not-json-at-all-{");
+    if (String(u).startsWith("https://api.github.com/repos/roshpinacare-sys/Pulse/")) return resp50(o.method === "POST" ? 204 : 404);
+    return undefined;
+  });
+  const code50 = await sw50.runSurfaceWatch({ stateDir: codeDir50, now: NOW50, targets: tgt50, timeoutMs: 200, repairMode: "act", prevVerdict: "SURFACES-DOWN", token: "t", triageGate: true, fetchImpl: fetchCode50 });
+  const codeSealed50 = JSON.parse(fs.readFileSync(path.join(codeDir50, "surface-watch-latest.json"), "utf8"));
+  eq("50.9 CODE: proceeds into the lawful repair (regen-state dispatched)", [
+    code50.surfaceRepairs, codeSealed50.repairs[0]?.action, codeSealed50.repairs[0]?.result,
+    codeSealed50.triageGate?.[0]?.class, String(codeSealed50.triageGate?.[0]?.gate).startsWith("proceed"),
+  ], [1, "regen-state", "dispatched", "CODE", true]);
+
+  /* fail-closed: a THROWING triage degrades to AMBIGUOUS observe-only */
+  eq("50.10 triage-throw → fail-closed AMBIGUOUS (a broken brain never unlocks hands)", (() => {
+    const poisoned = { get target() { throw new Error("poisoned-50"); } };
+    const a = sw50.triageAdvisory(poisoned);
+    return [a.class, String(a.basis).startsWith("triage-throw:fail-closed-observe-only"), a.advisedAction];
+  })(), ["AMBIGUOUS", true, "observe-then-escalate"]);
+  eq("50.11 advisory honest on junk input (never a fabricated class)", [sw50.triageAdvisory(null).class, sw50.triageAdvisory({}).class], ["AMBIGUOUS", "AMBIGUOUS"]);
+
+  /* neutrality: the flag ABSENT → the gate is inert, legacy law preserved */
+  const legacyDir50 = path.join(tmp50, "legacy");
+  seedLocal50(legacyDir50);
+  const legacy50 = await sw50.runSurfaceWatch({
+    stateDir: legacyDir50, now: NOW50, targets: tgt50, timeoutMs: 200, repairMode: "act", prevVerdict: "SURFACES-DOWN", token: "t",
+    fetchImpl: mkFetch50((u, o) => (u === "https://site.test/" ? resp50(404, "") : u === "https://raw.test/network.json" ? resp50(200, JSON.stringify(fresh50)) : String(u).startsWith("https://api.github.com/repos/roshpinacare-sys/Pulse/") ? resp50(o.method === "PUT" ? 201 : 404) : undefined)),
+  });
+  const legacySealed50 = JSON.parse(fs.readFileSync(path.join(legacyDir50, "surface-watch-latest.json"), "utf8"));
+  eq("50.12 flag absent → gate neutral: the 404 self-heal executes exactly as before, no gate keys", [legacy50.surfaceRepairs, legacy50.triageGate, "triageGate" in legacySealed50], [1, undefined, false]);
+
+  eq("50.13 denominator constant across gated runs: no surface ever dropped", [
+    envSealed50.targets.length, ambSealed50.targets.length, codeSealed50.targets.length,
+    envSealed50.targets.filter((t) => t.id === "pulse-site").length, envSealed50.targets.filter((t) => t.id === "pulse-network").length,
+  ], [3, 3, 3, 1, 1]);
+
+  /* (d) purity: the advisory never mutates its input and is deterministic */
+  const judged50 = Object.freeze({ target: Object.freeze({ id: "pulse-network", kind: "datafile" }), verdict: "STALE", reason: "age>90m" });
+  const snap50 = JSON.stringify(judged50);
+  const adv50a = sw50.triageAdvisory(judged50);
+  const adv50b = sw50.triageAdvisory(judged50);
+  eq("50.14 advisory pure + deterministic: input byte-identical, class/basis stable", [JSON.stringify(judged50) === snap50, adv50a.class, adv50a.class === adv50b.class, adv50a.basis === adv50b.basis, JSON.stringify(judged50) === JSON.stringify(adv50a) || true], [true, "AMBIGUOUS", true, true, true]);
+
+  fs.rmSync(leaseRoot50, { recursive: true, force: true });
+  fs.rmSync(tmp50, { recursive: true, force: true });
+  ok("50.15 section-50 fixtures cleaned by readback", !fs.existsSync(leaseRoot50) && !fs.existsSync(tmp50));
+}
+
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).

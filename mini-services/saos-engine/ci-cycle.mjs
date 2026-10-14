@@ -328,8 +328,13 @@ async function main() {
     const prev = readJson(path.join(STATE, "surface-watch-latest.json"), null);
     const prevVerdict = prev?.verdict ?? null;
     const repairMode = typeof prevVerdict === "string" && prevVerdict.startsWith("SURFACES-") && prevVerdict !== "SURFACES-OK" ? "act" : "observe";
-    const r = await runSurfaceWatch({ stateDir: STATE, now, repairMode, prevVerdict });
-    return { verdict: r.surfaceWatch, at: r.at, targets: r.surfaceTargets, ok: r.surfaceOK, degraded: r.surfaceDegraded, down: r.surfaceDown, repairs: r.surfaceRepairs, repairMode: r.repairMode, sig: r.surfaceSig, observe: !r.actArmed };
+    /* exec37 37-a R355-wiring: triageGate:true arms the R355 triage as the
+     * ADVISORY gate on the autonomous self-heal — ENVIRONMENT repairs are
+     * withheld (escalation recorded), AMBIGUOUS observe-only this beat,
+     * CODE proceeds into the lawful-repair path unchanged; a surface is
+     * never dropped (the denominator is constant). */
+    const r = await runSurfaceWatch({ stateDir: STATE, now, repairMode, prevVerdict, triageGate: true });
+    return { verdict: r.surfaceWatch, at: r.at, targets: r.surfaceTargets, ok: r.surfaceOK, degraded: r.surfaceDegraded, down: r.surfaceDown, repairs: r.surfaceRepairs, repairMode: r.repairMode, sig: r.surfaceSig, triaged: Array.isArray(r.triageGate) ? r.triageGate.length : null, observe: !r.actArmed };
   });
 
   /* R327 · THE DNA DRIFT REPORT (T-86, queue item #2 of the Open-Pomelli
@@ -458,6 +463,53 @@ async function main() {
   } else {
     report.steps.cabinetProbe = { name: "cabinet-selfprobe", verdict: "SKIPPED-OFF", observe: true, note: "SAOS_CABINET_SELFPROBE != 1 — without an injected LLM the cabinet does not run in production beats (R330 seam)" };
   }
+
+  /* exec37 · lane 37-a · SELFTEST LEASE BEAT (G1 — R353 wiring; runs BEFORE
+   * the evidence probe below so the probe reads THIS beat's evidence).
+   * The selftest-execution critical section (run selftest.mjs — the suite
+   * itself writes the verdict + runId-bound marker atomically, R354 — is now
+   * wrapped in withLease with the REGISTERED purpose "ci-selftest"
+   * (PURPOSE_ALLOWLIST in gate-lease.mjs; an unregistered purpose can never
+   * hold the gate). Lease dir under the engine state convention: state/lease.
+   * CONTENTION IS NOT A FAILURE (R339 SKIP-NOT-FAIL): a not-granted beat
+   * records {skipped:true, holder} HONESTLY and does NOT run the suite this
+   * beat — the next beat verifies. Release is owner-checked in withLease's
+   * finally (R340 readback). Fail-isolated like every step; exit-0 by
+   * design — the blocking gate stays the workflow's own selftest step. */
+  report.steps.selftestLease = await stepWrap("selftest-lease", async () => {
+    const { withLease, PURPOSE_ALLOWLIST } = await import("./gate-lease.mjs");
+    const purpose = "ci-selftest";
+    if (!PURPOSE_ALLOWLIST.includes(purpose)) {
+      return { verdict: "SELFTEST-LEASE-PURPOSE-UNREGISTERED", purpose, observe: true, note: "fail-closed: the beat refuses to hold an unregistered gate purpose" };
+    }
+    const { spawnSync } = await import("node:child_process");
+    const leaseDir = path.join(STATE, "lease");
+    const r = await withLease({
+      leaseDir,
+      purpose,
+      ttlMs: 600000, // 10 min — far above suite duration; a crashed holder expires, the next beat takes over
+      owner: "ci-heartbeat",
+      fn: () => {
+        const t0 = Date.now();
+        const p = spawnSync(process.execPath, [path.join(DIR, "selftest.mjs")], { cwd: DIR, encoding: "utf8", timeout: 300000 });
+        const tail = String(p.stdout ?? "").trim().split("\n").filter(Boolean).pop() ?? null;
+        return { exitCode: p.status, durationMs: Date.now() - t0, tail };
+      },
+    });
+    if (r.skipped) {
+      return { verdict: "SELFTEST-SKIPPED-CONTENTION", purpose, holder: r.holder ?? null, leaseError: r.error ?? null, observe: true, note: "R339 SKIP-NOT-FAIL: another verifier holds the ci-selftest lease — the suite is NOT run this beat" };
+    }
+    const out = r.result ?? {};
+    return {
+      verdict: out.exitCode === 0 ? "SELFTEST-RAN-GREEN" : out.exitCode == null ? "SELFTEST-RUN-TIMEOUT" : "SELFTEST-RAN-RED",
+      purpose,
+      exitCode: out.exitCode ?? null,
+      durationMs: out.durationMs ?? null,
+      tail: typeof out.tail === "string" ? out.tail.slice(0, 160) : null,
+      leaseDir: "state/lease",
+      observe: true,
+    };
+  });
 
   /* exec36 · lane 36-a · SELFTEST EVIDENCE PROBE — OBSERVE-ONLY (R339
    * fail-isolated). Runs verifySelftestEvidence (evidence.mjs — the R354
@@ -590,6 +642,12 @@ async function main() {
      * justified; anything else = NO-EVIDENCE recorded honestly). */
     selftestEvidence: report.steps.selftestEvidence?.verdict ?? "STEP-FAIL",
     selftestEvidenceHonest: report.steps.selftestEvidence?.honest ?? null,
+    /* exec37 37-a R353-wiring — the lease-held selftest beat receipt
+     * (SELFTEST-RAN-GREEN | SELFTEST-RAN-RED | SELFTEST-RUN-TIMEOUT |
+     * SELFTEST-SKIPPED-CONTENTION with the holder recorded honestly). */
+    selftestLease: report.steps.selftestLease?.verdict ?? "STEP-FAIL",
+    selftestLeaseHolder: report.steps.selftestLease?.holder ?? null,
+    selftestLeaseExit: report.steps.selftestLease?.exitCode ?? null,
     /* R306 engagement read-back — the one-line "what worked" digest
      * (at/measured/medianVotes/topTag; numbers only, no advice). */
     contentEngagement: {
