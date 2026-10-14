@@ -3963,6 +3963,60 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 
 }
 
+{
+  /* 41 · R333 THE TIC UNION LAW (T-92, trace 1a13a2e1be234775) — measured
+   * live BEFORE the fix: the drift beat's sealed proposal sig:67a390a5
+   * (5 fresh phrases, R330-filtered → zero applied tics inside) + the old
+   * replace-semantics applier shrank DNA v2 from 8 tics to 5 in a dry-run —
+   * replace + R330's anti-re-propose filter = an infinite churn pump. The
+   * applier now UNIONS: existing tics are memory, not footnotes; the ledger
+   * records ticsAdded / ticsDropped / ticsLost honestly; idempotency and
+   * the never-arm law untouched. */
+  const ct41 = await import("./content-tics.mjs");
+  const EXIST41 = ["difference is in", "difference is in the", "drawer of replies", "of replies you", "the difference is", "the difference is in", "the drawer of", "the loop the"].map((phrase) => ({ phrase, hits: null, posts: null }));
+  const NEW41 = ["the post that", "the real work", "i measure it", "i measure it against", "i measure it against the"];
+  const dna41 = { version: 2, memory: { tics: EXIST41, ticEnforce: false, applied: [{ fromSig: "sig:53fe40f2" }] } };
+  /* 41.1 THE MONEY VECTOR: wave-2 grows the fingerprint, never shrinks it
+   * (the old code produced 5 here — measured live, the repro that made R333) */
+  const next41 = ct41.planApply({ dna: dna41, proposal: { addLexicon: NEW41 }, sig: "sig:67a390a5", trace: "t92", now: "2026-10-14T12:00:00.000Z" });
+  eq("41.1 wave-2 union keeps every applied tic", [next41.memory.tics.length, EXIST41.every((t) => next41.memory.tics.some((n) => n.phrase === t.phrase)), NEW41.every((p) => next41.memory.tics.some((n) => n.phrase === p))], [13, true, true]);
+  /* 41.2 knobs untouched: version bumps, veto stays disarmed */
+  eq("41.2 version + never-arm law", [next41.version, next41.memory.ticEnforce, next41.memory.conceptsEnforce], [3, false, true]);
+  /* 41.3 ledger honesty: the delta is named, nothing dropped, nothing lost */
+  const entry41 = next41.memory.applied.at(-1);
+  eq("41.3 ledger names the delta", [entry41.actions.tics.length, entry41.actions.ticsAdded.length, entry41.actions.ticsDropped, entry41.actions.ticsLost, entry41.fromSig], [13, 5, undefined, undefined, "sig:67a390a5"]);
+  /* 41.4 belt+braces dedup: even a future R330 regression that re-offers an
+   * applied phrase cannot double it — union collapses exact phrases */
+  const dup41 = ct41.planApply({ dna: dna41, proposal: { addLexicon: [...NEW41, "the real work", "drawer of replies"] }, sig: "sig:aaaaaaa1", now: "2026-10-14T12:01:00.000Z" });
+  eq("41.4 exact-dup cannot double the fingerprint", [dup41.memory.tics.length, dup41.memory.applied.at(-1).actions.ticsAdded.length], [13, 5]);
+  /* 41.5 idempotency contract unchanged (same fromSig → honest no-op; the
+   * plan still forms but the applier refuses to re-apply) */
+  const tmp41 = fs.mkdtempSync(os.tmpdir() + "/tics41-");
+  const idemFile41 = path.join(tmp41, "idem-dna.json");
+  fs.writeFileSync(idemFile41, JSON.stringify({ version: 9, memory: { applied: [{ fromSig: "sig:53fe40f2" }], tics: EXIST41 } }));
+  const ap41 = ct41.applyProposal({ proposalDoc: { proposal: { addLexicon: NEW41 }, sig: "sig:53fe40f2" }, dnaFile: idemFile41, write: true });
+  eq("41.5 same fromSig is a no-op", [ap41.ok, ap41.noop, ap41.write, JSON.parse(fs.readFileSync(idemFile41, "utf8")).version], [true, true, false, 9]);
+  /* 41.6 the structural ceiling never bites in practice, and when it does,
+   * BOTH sides of the overflow are loud: candidates dropped + applied lost */
+  const wide41 = Array.from({ length: 50 }, (_, i) => ({ phrase: `a measured phrase ${String(i).padStart(2, "0")} long`, hits: 50 - i, posts: 2 }));
+  const over41 = ct41.planApply({ dna: dna41, proposal: { addLexicon: wide41.map((w) => w.phrase) }, sig: "sig:aaaaaaa2", now: "2026-10-14T12:02:00.000Z" });
+  eq("41.6 cap overflow recorded both sides", [over41.memory.tics.length, over41.memory.applied.at(-1).actions.ticsDropped.length, over41.memory.applied.at(-1).actions.ticsLost.length], [48, 2, 8]);
+  /* 41.7 normalizeTics hygiene law intact: short phrases never become tics */
+  eq("41.7 short phrases filtered", ct41.normalizeTics(["short", "a real phrase here", "exact 8"]).map((t) => t.phrase), ["a real phrase here"]);
+  /* 41.8 the R333 shape on the REAL DNA structure: a synthetic sealed
+   * proposal carrying a phrase from NO tic generation (stable pre- AND
+   * post-real-apply — no live-state dependency, no idempotency trap) →
+   * exactly one growth, observe mode, never arms */
+  const realDna41 = JSON.parse(fs.readFileSync(path.join(path.dirname(new URL(import.meta.url).pathname), "content-dna.json"), "utf8"));
+  const dnaFile41 = path.join(tmp41, "live-dna.json");
+  fs.writeFileSync(dnaFile41, JSON.stringify(realDna41));
+  const doc41 = { verdict: "DNA-DRIFT-DETECTED", proposal: { addLexicon: ["the zebra ledger note"], pillarGaps: ["measured truth"] } };
+  const sealedFile41 = path.join(tmp41, "drift.json");
+  fs.writeFileSync(sealedFile41, JSON.stringify({ ...doc41, signature: "sig:" + (await import("node:crypto")).createHash("sha256").update(ct41.stableStringify(doc41)).digest("hex").slice(0, 8) }));
+  const r41 = ct41.applyProposal({ proposalFile: sealedFile41, dnaFile: dnaFile41, trace: "t92-selftest", now: "2026-10-14T12:03:00.000Z" });
+  eq("41.8 sealed wave unions on the real DNA shape", [r41.ok, r41.next.memory.tics.length, r41.next.memory.ticEnforce, r41.next.version], [true, realDna41.memory.tics.length + 1, false, realDna41.version + 1]);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
