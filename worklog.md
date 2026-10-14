@@ -1096,3 +1096,11 @@ Work Log:
 Stage Summary:
 - **ההאצלה-הוכחה בפועל**: הכרעה-שנדחתה-לבעלים בוצעה-ע"י-הריבונות — על-ראיה-חתומה, בדרגות (observe-first), עם-פרובננס-בתוך-הארטיפקט, והפיכות-git (revert-אחד = rollback מלא).
 - **פתוח**: אכיפת-טיקים (ticEnforce) תישקול רק על-עדות-דופק-מצטברת (דפוס-R302); §5.4 hermoso — הדחייה מוחזקת-כעת ע"י-המציאות-המדודה (אין-מסילה-ממומנת — נמדד), לא-ע"י-המתנה-לבעלים.
+
+## R327 — custody heal: siq = 金库滞后于链（测量定根）+ ROT2 轨（2026-10-14T08:4xZ）
+
+- **GRID custody.coverage 13/14 定根（证据链闭合）**：siq 的链史先用 condenser 扫出"零 account_update"——**是扫描工件**（该节点 limit 上限=100，大 limit 一律报错被当空结果）。修正后全史：siq 的 posting 钥匙 10-12 晚三连转（20:17/20:45/**21:34Z 定格 STM6ucW9GYSy… op#4553=现行钥匙**）。而金库两代都早于最终轮换（GEN-2=MASTER 封印 11:21Z、GEN-1=09-10）→ 引擎链判拒绝 siq **判得对——是金库滞后于链**。出事前的缓存持有活钥匙但死于沙箱（.secrets 不入库）。10-12T20:40 的 14/14 快照与今日 13 集合差集=恰好 siq。ROT2 receipt-A：acct-06 FAIL-BROADCAST（active 角色），但 21:34Z 的 posting 广播**已落地** → ROT2_FLEET_KEYS 载有 siq 活 posting 材料（Actions 运行时自动解密，无需 runner 侧开封）。
+- **修复（saos-runtime 9fd2be2）**：ROT2 custody rail——点火步骤后的 fail-soft 新步骤。对每个 ROT2 WIF 自行链判（steem.auth.wifToPublic vs 链上现行权威），LIVE-MATCH 者以 "ROT2" 代追加进引擎缓存（dual-gen schema 镜像、原子 0600）。GEN-2 保持首位；adoptFromCache 取第一个链验证代；14/14 时 R255 条件重拉不触发（无覆写）。双判设计：rail 判一次、beat 采用再判一次——链是唯一法官。拒绝保持响亮；secret/缓存缺席=诚实 no-op；输出只有指纹。
+- **沙箱 6 路径验证（零真实材料）**：诚实 no-op ×3、假材料拒绝、mock LIVE-MATCH 补丁（gens [GEN-2,ROT2] 0600）、不可解析 ref 响亮跳过、ref 形与名字形键都解析。ESM/NODE_PATH 陷阱推前捕获（改用 CJS heredoc 惯例）。
+- **期待**：下一拍 custody 14/14 → GRID custody.coverage 转绿 → SOCIAL-STANDBY 闸释放（舰队社交发布线复活）。
+- **诚实边界**：acct-06 的 active 广播仍未落地（ROT2 材料中 active 角色未注册）——独立车道，只有持有 ROT2 active 材料的 CI 能补广播；7 个未决休眠库不变；计费墙 owner-gated 不变。
