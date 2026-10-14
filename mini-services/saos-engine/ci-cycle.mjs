@@ -278,6 +278,23 @@ async function main() {
     return { verdict: r.verdict, at: r.at, measured: r.measured, medianVotes: r.medianVotes, topTag: r.topTag ?? null, degraded: r.degraded ?? false, observe: true };
   });
 
+  /* R327 · THE DNA DRIFT REPORT (T-86, queue item #2 of the Open-Pomelli
+   * deep-dive, intel §5.2): the brand-analyzer TWO-CHANNEL pattern made
+   * sovereignty-native. Channel A = the signed content-dna.json (declared
+   * identity); Channel B = what we ACTUALLY published (R303 books first,
+   * then READ-ONLY chain get_content over R306's discovered posts — never
+   * rebuilding R306's work, only reading its sealed state). The output is a
+   * REFRESH PROPOSAL sealed into state/dna-drift-latest.json — applying it
+   * is OWNER-GATED by design (the signed file is authoritative). OBSERVE-
+   * ONLY, never a gate; fail-honest (a chain outage ⇒ DNA-DRIFT-DEGRADED
+   * receipt, never a broken heartbeat); deterministic core (no clock, no
+   * randomness). Fail-isolated like every step. */
+  report.steps.contentDrift = await stepWrap("content-drift", async () => {
+    const { runDrift } = await import("./content-drift.mjs");
+    const r = await runDrift({ stateDir: STATE, now });
+    return { verdict: r.verdict, at: r.at, samples: r.samples, source: r.source ?? null, topPhrase: r.driftPhrases?.[0]?.phrase ?? null, pillarGaps: r.proposal?.pillarGaps?.length ?? 0, degraded: r.degraded ?? false, observe: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -318,6 +335,10 @@ async function main() {
     delegationOps: report.steps.delegation?.ops ?? 0,
     delegationSp: report.steps.delegation?.totalSp ?? 0,
     contentMemory: report.steps.contentMemory?.verdict ?? "STEP-FAIL",
+    dnaDrift: report.steps.contentDrift?.verdict ?? "STEP-FAIL",
+    dnaDriftSamples: report.steps.contentDrift?.samples ?? null,
+    dnaDriftSource: report.steps.contentDrift?.source ?? null,
+    dnaDriftTop: report.steps.contentDrift?.topPhrase ?? null,
     contentMemoryPatterns: report.steps.contentMemory?.published ?? null,
     contentMemoryScore: report.steps.contentMemory?.scoreMean ?? null,
     contentConcepts: report.steps.contentConcepts?.verdict ?? "STEP-FAIL",

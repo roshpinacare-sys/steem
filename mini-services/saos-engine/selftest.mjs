@@ -3466,6 +3466,66 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("34.13 live corpus consumes the ladder", [realLadder34.verdict, realLadder34.shortlist.length <= 4, realEn34.drafts.length, realEn34.alignment.mode, realEn34.alignment.reordered >= 1], ["CONCEPTS-OK", true, realCorpus34.length, "enforce", true]);
 }
 
+{
+  /* 35 · R327 DNA DRIFT REPORT (T-86, trace 1a1393f245a1f659) — the
+   * brand-analyzer two-channel pattern: declared DNA vs observed voice.
+   * OBSERVE-ONLY: the report proposes, the owner applies; the module never
+   * writes content-dna.json, never gates a publish. Deterministic core
+   * (no clock, no randomness); degraded is honest (zero posts ⇒
+   * DNA-DRIFT-DEGRADED, never a fake all-clear). */
+  const cd35 = await import("./content-drift.mjs");
+  const dna35 = { version: 1, law: "R327", voice: { pillars: ["measured truth", "numbers over adjectives", "plain checklists", "human register"], bannedGenres: [] }, slopLexicon: ["unlock the power of"], fleetForbidden: ["as an ai"], personaForbidden: { siq: ["folks"] }, quality: { weights: { hook: 25, specificity: 20, structure: 20, brevity: 20, register: 15 }, enforce: false }, memory: { jaccard: 0.5, windowDays: 90 } };
+  const post35 = (id, title, body) => ({ id, permlink: id, title, body });
+  const healthy35 = [
+    post35("d1", "Queue depth measured: 3 baselines, 2 deltas", "We logged 41 jobs. The baseline was 12 minutes; after the fix it measured 9 minutes — a 25% delta. Numbers:\n- baseline 12 min\n- after 9 min\n- delta 25%\nI counted twice; you can re-run the audit yourself."),
+    post35("d2", "The wrench ledger: 3 tools, 1 baseline", "Our shop logged 14 repairs this week. Measured time per repair: 22 minutes average. The checklist:\n- wrench\n- torque baseline 40 Nm\n- delta log\nYou can audit it; I measured every job."),
+    post35("d3", "Bread math: 41 loaves, 3 baselines", "We measured 41 loaves. Flour baseline 1.2kg; the delta after the new oven was 9%. Checklist:\n- weigh flour\n- log baseline\n- measure delta\nI counted the trays myself and you can recount."),
+  ];
+  const drift35 = [
+    post35("x1", "The silent ledger of small repairs", "The quiet hum of the workshop teaches patience. The quiet hum continues. Every shelf remembers the quiet hum of honest work."),
+    post35("x2", "Notes from the quiet bench", "The quiet hum of the bench at night. I keep the ledger. The quiet hum keeps me. Work is a quiet hum if you let it be."),
+    post35("x3", "Third shift, quiet numbers", "The quiet hum of the third shift measured nothing yet. The quiet hum of the fans. We logged 12 jobs; the quiet hum remained."),
+  ];
+  /* 35.1 degraded is honest: zero posts ⇒ DEGRADED samples:0 */
+  const deg35 = cd35.analyzeDrift({ dna: dna35, posts: [] });
+  eq("35.1 empty corpus degrades honestly", [deg35.verdict, deg35.samples, deg35.degraded], ["DNA-DRIFT-DEGRADED", 0, true]);
+  eq("35.2 degraded carries no fake proposal", [deg35.proposal, deg35.register], [null, null]);
+  /* 35.3 healthy corpus: pillars exhibited, verdict OK */
+  const ok35 = cd35.analyzeDrift({ dna: dna35, posts: healthy35 });
+  eq("35.3 healthy corpus measures OK", [ok35.verdict, ok35.samples, ok35.degraded], ["DNA-DRIFT-OK", 3, false]);
+  eq("35.4 numbers pillar saturated by digits", ok35.pillars.find((p) => p.pillar === "numbers over adjectives").exhibited, true);
+  eq("35.5 checklists pillar sees the list posts", ok35.register.listPostRatio >= 0.5, true);
+  /* 35.6 forbidden voice in observed text is DETECTED */
+  const forb35 = cd35.analyzeDrift({ dna: dna35, posts: [...healthy35, post35("f1", "Hello folks", "As an AI, I measured 3 baselines. folks, the baseline was 12. - a\n- b\n- c")] });
+  eq("35.6 forbidden hits flip to DETECTED", [forb35.verdict, forb35.forbiddenHits.length >= 2, forb35.proposal.ownerGated], ["DNA-DRIFT-DETECTED", true, true]);
+  /* 35.7 the corpus growing its own slop: repeated novel phrase → candidate */
+  const mine35 = cd35.analyzeDrift({ dna: dna35, posts: drift35 });
+  eq("35.7 recurring novel phrase mined", mine35.driftPhrases.some((d) => d.phrase === "the quiet hum"), true);
+  eq("35.8 mined phrase across ≥2 distinct posts", mine35.driftPhrases.every((d) => d.posts >= 2), true);
+  /* 35.9 known lexicon phrases are NOT re-mined as candidates */
+  const lex35 = cd35.analyzeDrift({ dna: dna35, posts: [...healthy35, post35("l1", "Unlock the power of wrenches", "Unlock the power of torque. Unlock the power of lists.\n- a\n- b\n- c\nUnlock the power of logs.")] });
+  eq("35.9 known slop excluded from candidates", lex35.driftPhrases.some((d) => d.phrase.includes("unlock")), false);
+  /* 35.10 stopword-only n-grams never count */
+  const stop35 = cd35.mineDriftPhrases([post35("s1", "the of and", "the of and the of and the of and the of and")], []);
+  eq("35.10 glue never becomes a candidate", stop35.length, 0);
+  /* 35.11 the module never mutates the DNA object (owner-gated by construction) */
+  const dnaBefore35 = JSON.stringify(dna35);
+  cd35.analyzeDrift({ dna: dna35, posts: drift35 });
+  eq("35.11 DNA object untouched by analysis", JSON.stringify(dna35), dnaBefore35);
+  /* 35.12 seal is deterministic; signature follows canonical JSON */
+  const doc35 = cd35.analyzeDrift({ dna: dna35, posts: healthy35 });
+  eq("35.12 signature deterministic", cd35.signDrift(doc35), cd35.signDrift(cd35.analyzeDrift({ dna: dna35, posts: healthy35 })));
+  eq("35.13 signature format", /^sig:[0-9a-f]{8}$/.test(cd35.signDrift(doc35)), true);
+  /* 35.14 markdown is stripped before measuring (syntax ≠ prose) */
+  eq("35.14 stripMarkdown removes syntax, keeps prose", [cd35.stripMarkdown("## Head\n```js\ndigits 123\n```\n[link](https://x.y) five plain words here")].map((s) => [s.includes("```"), s.includes("https"), s.includes("##"), s.includes("Head")]), [[false, false, false, true]]);
+  /* 35.15 live smoke on the REAL signed DNA + the REAL corpus as observed voice */
+  const realDna35 = JSON.parse(fs.readFileSync(new URL("./content-dna.json", import.meta.url), "utf8"));
+  const realCorpus35 = JSON.parse(fs.readFileSync(new URL("./content-corpus.json", import.meta.url), "utf8"));
+  const realPosts35 = realCorpus35.map((c) => post35(c.id, c.title, c.body));
+  const real35 = cd35.analyzeDrift({ dna: realDna35, posts: realPosts35 });
+  eq("35.15 real DNA + real corpus stays observe-only", [real35.observe, real35.samples === realPosts35.length, real35.proposal?.ownerGated, realDna35.law], [true, true, true, "R302"]);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
