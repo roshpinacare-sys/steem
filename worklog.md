@@ -1062,3 +1062,20 @@ Stage Summary:
 - **R327 חיה בדופק**: דו"ח-סטיית-DNA = מכשיר-ריבוני-מלא (ללא-מפתחות, קריא-בלבד, observe-only, fail-honest) — תור-הגל-הבא של-T-84: סעיף 5.2 בוצע.
 - **הממצא-הפתוח-לבעלים**: הפרופוזל החתום (8 צירופים + 2 פערי-עמודות) ממתין להחלטת-רענון — יישום owner-gated כפי-שנחתם ב-intel §5.2.
 - הרשת-הבאה-בתור: §5.3 מגבלות-פורמט פר-עמדת-תצוגה (דפוס platforms.ts).
+
+---
+Task ID: T-87 (R328, trace 1a1395305bec3371)
+Agent: Z.ai Code (content lane, saos-content-agent identity)
+Task: «תמשיך» — תור-הגל-הבא של T-84 סעיף 5.3: מגבלות-פורמט פר-עמדת-תצוגה (R328) — דפוס platforms.ts ריבוני.
+
+Work Log:
+- **רישום-R חוקי (#21)**: R328 נתבע נקי (origin grep לפני-כתיבה; R327 שלי על-הענן).
+- **מדידה-קודם**: נמדדו-ה rails החיים — steem (army-social permlinkStem: slug≤60+day+i), hive (R263 rail, slugPermlink ≤64 + letter-start "node contract" מחוק-משלהם), blurt (custody/RC בלבד — אין-post-op בדופק: active:false כנה). MIN_POST_WORDS=300 (R244). תגיות: אין-בדיקת-charset/count-קהילה קיימת בשום-rail — החור-המדוד.
+- **format-lint.mjs**: FRONT_LIMITS מדוד-לכל-חזית; lintOne טהור (title-bytes, permlink-charset/length/letter-start, tag-charset/length/count-אחרי-הקהילה, body-words, persona-warning); **ה-permlink-נבנה-ע"י-ה-builder-האמיתי-של-כל-חזית** (ייבוא, לא-שכפול — שני-מחוללי-slug = מחלקת-הסטייה-שהצי צד); lintQueue לתור-חי; runLint אוטם state/format-lint-latest.json (sig:8hex, דפוס-R306/R327).
+- **דופק (נגד R312)**: צעד format-lint + מפתחות formatLint/Checked/Violations/Enforce; OBSERVE-ONLY — אכיפה נעולה על DNA חתום memory.formatEnforce (דפוס-R307, וקטור 36.12).
+- **selftest 1457/1457** (+15 וקטורים, סעיף 36): תקין-עובר, title-bytes (300), hive-letter-start (ה-builder-האמיתי מרפא / פרמלינק-גולמי נופל), tag-charset+length, גלישת-קהילה-ל-6, רצפת-300-מילים, persona-warn-לא-וטו, תור-2×2-חזיתות, DNA-knob, ריק-כן-EMPTY, דטרמיניזם (tmpdir מבודד — R275), עשן-חי-על-הקורפוס-האמיתי.
+- **עשן-חי (07:4xZ)**: תור-אמיתי 30 טיוטות × 2 חזיתות = 60 בדיקות → **FORMAT-LINT-OK** sig:74832304 — 0 הפרות, 16-warnings (persona-חסר-ל-hive-fit). התור-בריא-בצורה; המכשיר יודע-מעכשיו-לפני-השרשרת.
+
+Stage Summary:
+- **R328 חיה בדופק**: lint-פורמט פר-חזית על-פרמלינקים-של-ה-builders-האמיתיים — הפרה-מתגלה-לפני-בזבוז-RC, לא-בפורנזיקה-אחרי-REJECTED.
+- **תור-הגל-הבא**: §5.4 hermoso — owner-gated (דחוי-מנומק עד מסילת-פרסום-ממומן); או-העמקת-השלמת-פערי-R327 לפי-הכרעת-הבעלים-על-הפרופוזל-החתום.
