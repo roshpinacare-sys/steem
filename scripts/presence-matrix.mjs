@@ -501,14 +501,27 @@ async function main() {
    * (D5-social-standby) reads. Signature = "sig:" + first 8 hex of
    * sha256(canonical digest JSON), where canonical = compact, keys sorted,
    * computed over the digest WITHOUT the signature field (it cannot sign
-   * itself). Any tamper/corruption of at/head/verdicts breaks the sig. */
-  const digest = { at: matrix.at, head: matrix.head, fleetSteemit, alternatesParity, chainPresence: matrix.verdicts.chainPresence };
+   * itself). Any tamper/corruption of at/head/verdict/verdicts breaks the sig.
+   *
+   * exec29/29-a2 · DECIDER CONTRACT: the Autonomy decider's D5 reads exactly
+   * the field `verdict` (first of its tuple verdict/status/state/result) and
+   * PASSes the multi-network display item only when the value is in its
+   * GREEN_VERDICTS whitelist {PASS, GREEN, OK, LIVE, READY, ALL_PASS,
+   * HEALTHY} and the digest is <12h old. Honest mapping, measured here:
+   *   "GREEN"    = alternates display parity holds AND the full fleet
+   *                (14/14) is present on chain — the multi-network display
+   *                deployment is green; the steemit.com anti-abuse shell is
+   *                never swallowed — it stays carried by fleetSteemit.
+   *   "IMPAIRED" = anything else (parity lost, chain presence incomplete,
+   *                chain layer failed). Never invented, always measured. */
+  const verdict = (alternatesParity === true && matrix.verdicts.chainPresence === "14/14") ? "GREEN" : "IMPAIRED";
+  const digest = { at: matrix.at, head: matrix.head, fleetSteemit, alternatesParity, chainPresence: matrix.verdicts.chainPresence, verdict };
   const canonical = JSON.stringify(digest, Object.keys(digest).sort());
   const signature = "sig:" + createHash("sha256").update(canonical).digest("hex").slice(0, 8);
   fs.writeFileSync(path.join(STATE_DIR, "presence-matrix-digest.json"), JSON.stringify({ ...digest, signature }) + "\n");
 
   /* stdout digest — one honest line for the run log */
-  console.log(`presence-matrix ${matrix.at} head=${(matrix.head || "n/a").slice(0, 12)} fleetSteemit=${fleetSteemit} alternatesParity=${alternatesParity} chain=${matrix.verdicts.chainPresence} steemit.com=${matrix.surfaces["steemit.com"].surfaceVerdict}`);
+  console.log(`presence-matrix ${matrix.at} head=${(matrix.head || "n/a").slice(0, 12)} fleetSteemit=${fleetSteemit} alternatesParity=${alternatesParity} chain=${matrix.verdicts.chainPresence} verdict=${verdict} steemit.com=${matrix.surfaces["steemit.com"].surfaceVerdict}`);
   for (const s of SURFACES) console.log(`  ${s.id}: ${matrix.surfaces[s.id].surfaceVerdict}`);
 }
 

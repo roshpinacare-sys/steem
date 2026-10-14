@@ -3010,6 +3010,53 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   try { fs.rmSync(gdir, { recursive: true, force: true }); } catch { /* tmp best-effort */ }
 }
 
+/* ── exec29/29-a2 · DIGEST CONTRACT ALIGNMENT — the decider-consumable
+ * measured-laws refresh (readiness.json laws block). Every value measured
+ * from socialPolicy() live, never invented; the gate field is NEVER touched
+ * (STANDBY stays fail-closed); a laws block is never invented onto a file
+ * the gate cannot read; measuredAt stays live on every standby run. ── */
+{
+  const rg2 = await import("./readiness-gate.mjs");
+  const asoc2 = await import("./army-social.mjs");
+  const gdir2 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-laws-"));
+  const gfile = path.join(gdir2, "readiness.json");
+  const readG = () => { try { return JSON.parse(fs.readFileSync(gfile, "utf8")); } catch { return null; } };
+  /* fail-honest: nothing is invented onto a file the gate cannot read */
+  eq("29-a2: refreshLaws on absent readiness.json → no write", (await rg2.refreshLaws(gdir2)).refreshed, false);
+  eq("29-a2: absent file stays absent (no laws block invented)", readG(), null);
+  fs.writeFileSync(gfile, "{corrupt");
+  const corruptBytes = fs.readFileSync(gfile, "utf8");
+  eq("29-a2: refreshLaws on corrupt file → no write", (await rg2.refreshLaws(gdir2)).refreshed, false);
+  eq("29-a2: corrupt file untouched", fs.readFileSync(gfile, "utf8"), corruptBytes);
+  fs.writeFileSync(gfile, JSON.stringify({ note: "gate-less" }));
+  eq("29-a2: refreshLaws on gate-less doc → no write", (await rg2.refreshLaws(gdir2)).refreshed, false);
+  /* the committed-default shape: additive enrichment, gate preserved exactly */
+  fs.writeFileSync(gfile, JSON.stringify({ gate: "STANDBY", at: "2026-10-14T01:56:13Z", by: "exec29/29-b default law", directiveRef: null, note: "default CLOSED — multi-account social broadcasting is owner-armed only" }, null, 2) + "\n");
+  eq("29-a2: refreshLaws on the default gate → enriched", (await rg2.refreshLaws(gdir2)).refreshed, true);
+  const enriched = readG();
+  eq("29-a2: gate fields preserved in meaning (STANDBY fail-closed untouched)", [enriched.gate, enriched.at, enriched.by, enriched.directiveRef, enriched.note], ["STANDBY", "2026-10-14T01:56:13Z", "exec29/29-b default law", null, "default CLOSED — multi-account social broadcasting is owner-armed only"]);
+  const pol = asoc2.socialPolicy();
+  eq("29-a2: laws headline = MEASURED socialPolicy values (never invented)", [enriched.laws.fleetWeightPct, enriched.laws.maxPostsPerDay, enriched.laws.maxFleetVotesPerDay, enriched.laws.maxFleetVotesPerPost, enriched.laws.jitterPct, enriched.laws.antiHerd, enriched.laws.source], [pol.fleetWeightPct, pol.maxPostsPerDay, pol.maxFleetVotesPerDay, pol.maxFleetVotesPerPost, 5, true, "socialPolicy() live"]);
+  eq("29-a2: stealth block = the full socialPolicy() return, as-is", enriched.laws.stealth, pol);
+  ok("29-a2: measuredAt is a real ISO stamp", Number.isFinite(Date.parse(enriched.laws.measuredAt)));
+  /* liveness: the laws refresh re-measures on every standby run */
+  const firstMeasuredAt = readG().laws.measuredAt;
+  const r2 = await rg2.refreshLaws(gdir2);
+  eq("29-a2: refresh re-measures every call (measuredAt stays live)", [r2.refreshed, readG().laws.measuredAt >= firstMeasuredAt], [true, true]);
+  /* the standby choke-points: no gate file invented; an existing gate file
+   * gets its laws refreshed additively on the real run paths */
+  const prevDir = process.env.SAOS_STATE_DIR;
+  process.env.SAOS_STATE_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "saos-a2run-"));
+  const soc2 = await asoc2.runSocial({ now: "2026-10-14T12:00:00Z" });
+  eq("29-a2: runSocial with no gate file → SOCIAL-STANDBY, no readiness.json invented", [soc2.verdict, fs.existsSync(path.join(process.env.SAOS_STATE_DIR, "readiness.json"))], ["SOCIAL-STANDBY", false]);
+  fs.writeFileSync(path.join(process.env.SAOS_STATE_DIR, "readiness.json"), JSON.stringify({ gate: "STANDBY", at: "2026-10-14T01:56:13Z" }));
+  await asoc2.runProfiles({ now: "2026-10-14T12:00:00Z" });
+  const after = JSON.parse(fs.readFileSync(path.join(process.env.SAOS_STATE_DIR, "readiness.json"), "utf8"));
+  eq("29-a2: runProfiles standby path refreshes laws additively (gate preserved)", [after.gate, after.laws.fleetWeightPct, after.laws.source], ["STANDBY", pol.fleetWeightPct, "socialPolicy() live"]);
+  try { fs.rmSync(gdir2, { recursive: true, force: true }); fs.rmSync(process.env.SAOS_STATE_DIR, { recursive: true, force: true }); } catch { /* tmp best-effort */ }
+  process.env.SAOS_STATE_DIR = prevDir;
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

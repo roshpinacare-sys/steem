@@ -69,7 +69,7 @@ import { loadOrBuild as loadFleetLedger, uniqueness as fleetUniqueness, notePubl
 import { reviveArmyCustody, ARMY_ROSTER as ROSTER_BASE } from "./vault-revival.mjs";
 import { readCommunityState, communityPostMeta, communityMetaObj } from "./community.mjs";
 import { embedImage } from "./illustrate.mjs";
-import { socialGateVerdict, STANDBY_RECEIPT } from "./readiness-gate.mjs";
+import { socialGateVerdict, STANDBY_RECEIPT, refreshLaws } from "./readiness-gate.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 /* SAOS_STATE_DIR (R275 merge law): the selftest may run while the live engine
@@ -647,6 +647,7 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     const doc = { at: now, day: dayKeyOf(now), roster, verdict: "SOCIAL-STANDBY", gate, accounts, executed: 0, refused: 0, due: 0, ms: Date.now() - t0 };
     writeJson(path.join(gateState, "social.json"), doc);
     appendLine(path.join(gateState, "events.jsonl"), { type: "social.standby", at: now, mode: gate.mode, reason: gate.reason, lanes: roster.length, actions: 0 });
+    await refreshLaws(gateState).catch(() => {}); /* exec29/29-a2: additive measured-laws refresh of readiness.json — never blocks the standby path, never touches the gate value */
     return { verdict: "SOCIAL-STANDBY", executed: 0, refused: 0, due: 0, gate };
   }
   const p = socialPolicy();
@@ -1284,6 +1285,7 @@ export async function runProfiles({ now = new Date().toISOString(), roster = [ma
   const gate = await socialGateVerdict(gateState);
   if (gate.mode !== "ARMED") {
     appendLine(path.join(gateState, "events.jsonl"), { type: "personas.standby", at: now, mode: gate.mode, reason: gate.reason, actions: 0 });
+    await refreshLaws(gateState).catch(() => {}); /* exec29/29-a2: same additive measured-laws refresh on the profiles standby path */
     return { at: now, verdict: "PROFILES-STANDBY", gate, updated: [], skipped: [], deferred: [], caps: "standby law exec29 — profile account_update2 stands down with the social rail", ms: Date.now() - t0 };
   }
   const st = readJson(PERSONAS_FILE, { perAccount: {} });
