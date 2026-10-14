@@ -42,7 +42,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { masterAccount, armyCustodyState } from "./signer.mjs";
 import { reviveArmyCustody } from "./vault-revival.mjs";
-import { runSocial } from "./army-social.mjs";
+import { runSocial, ARMY_ROSTER } from "./army-social.mjs";
 import { runContent } from "./content.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -154,6 +154,44 @@ async function main() {
     return { verdict: r.verdict, ops: r.ops ?? 0, totalSp: r.totalSp ?? 0, reason: r.reason ?? null };
   });
 
+  /* R299/R300 · THE VISIBILITY ARTERY (the shelling incident + owner order
+   * 2026-10-14: "יש עוד רשתות שמציגות בבלוקצ'יין של סטימיט בוא נעבוד איתם"):
+   * READ-ONLY probing of where the fleet is visible — steemit.com's un-shell
+   * meter (R299) + the multi-frontend census (R300: chain truth on 3 nodes +
+   * steemitwallet/steemworld/steemdb/steemscan). Wired here because the
+   * heartbeat (THIS file) is the persistent executor — the big daily report
+   * never ran in CI, which left R299 orphaned (the built-but-not-running
+   * pattern R312 warned about). TTL-gated so a 30-min heartbeat stays light:
+   * the census re-probes ≤ every 6h, the shell meter ≤ every 90min; fresh
+   * state is re-reported honestly with fresh:false. Zero keys, zero
+   * broadcast, fail-isolated like every step. */
+  report.steps.shellWatch = await stepWrap("shell-watch", async () => {
+    const SFILE = path.join(STATE, "shell-status.json");
+    const cached = readJson(SFILE, null);
+    const ageMin = cached?.at ? (Date.now() - Date.parse(cached.at)) / 60000 : Infinity;
+    if (Number.isFinite(ageMin) && ageMin < 90) {
+      const s = cached.summary ?? {};
+      return { verdict: s.verdict ?? null, shelled: s.shelled ?? null, rendered: s.rendered ?? null, challenged: s.challenged ?? null, fresh: false, ageMin: Math.round(ageMin) };
+    }
+    const { runShellWatch } = await import("./shell-watch.mjs");
+    const out = await runShellWatch({ now, roster: [masterAccount(), ...ARMY_ROSTER] });
+    return { verdict: out.summary?.verdict ?? null, shelled: out.summary?.shelled ?? null, rendered: out.summary?.rendered ?? null, challenged: out.summary?.challenged ?? null, fresh: true };
+  });
+
+  report.steps.visibility = await stepWrap("visibility", async () => {
+    const SFILE = path.join(STATE, "visibility-census.json");
+    const cached = readJson(SFILE, null);
+    const ageMin = cached?.at ? (Date.now() - Date.parse(cached.at)) / 60000 : Infinity;
+    if (Number.isFinite(ageMin) && ageMin < 360) {
+      const s = cached.summary ?? {};
+      return { verdict: s.verdict ?? null, chain: s.chain ?? null, altRenderedAccounts: s.altRenderedAccounts ?? null, fresh: false, ageMin: Math.round(ageMin) };
+    }
+    const { runVisibilityCensus } = await import("./fleet-visibility.mjs");
+    const out = await runVisibilityCensus({ now, roster: [masterAccount(), ...ARMY_ROSTER] });
+    const s = out.summary ?? {};
+    return { verdict: s.verdict ?? null, chain: s.chain ?? null, nodes: s.nodes ?? null, steemitShelled: s.steemit?.shelled ?? null, altRenderedAccounts: s.altRenderedAccounts ?? null, judged: s.cells?.judged ?? null, totalCells: s.cells?.total ?? null, fresh: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -181,6 +219,11 @@ async function main() {
     digestTitle: report.steps.digest?.title ?? null,
     blurt: report.steps.blurt?.verdict ?? "STEP-FAIL",
     blurtLive: report.steps.blurt?.live ?? null,
+    shellWatch: report.steps.shellWatch?.verdict ?? "STEP-FAIL",
+    shelled: report.steps.shellWatch?.shelled ?? null,
+    visibility: report.steps.visibility?.verdict ?? "STEP-FAIL",
+    visibilityChain: report.steps.visibility?.chain ?? null,
+    visibilityAltRendered: report.steps.visibility?.altRenderedAccounts ?? null,
     delegation: report.steps.delegation?.verdict ?? "STEP-FAIL",
     delegationOps: report.steps.delegation?.ops ?? 0,
     delegationSp: report.steps.delegation?.totalSp ?? 0,
