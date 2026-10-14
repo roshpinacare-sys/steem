@@ -514,11 +514,27 @@ export async function runContent({ now = new Date().toISOString(), force = false
     ...carriedLive,
   ].slice(0, 30); // bounded queue — the rail posts per doctrine caps, never floods
 
+  /* R312 · VERDICT TRUTH LAW (measured false red 2026-10-13→14, GRID-ALERT #3):
+   * BRIDGE-DOWN fired while 14 eligible drafts stood in the queue and the
+   * publish rail aired 5 posts/24h (truthrail PASS). The old verdict counted
+   * only THIS-round keptFinal, conflating "room idle this round" with "the
+   * publishing system is down". Truth per R244/R264's own law:
+   *   - drafts kept this round              → DRAFTS-QUEUED (the room spoke)
+   *   - nothing kept, queue FED             → QUEUED (the rail has work; an
+   *     offline-by-design bridge is not a down bridge)
+   *   - nothing kept, queue STARVED + bridge error → BRIDGE-DOWN (honest red:
+   *     nothing to publish AND no provider — operator grows the corpus)
+   *   - nothing kept, queue STARVED, no bridge error → NO-DRAFTS (honest red) */
+  const standingDrafts = queue.filter((d) => d?.status === "drafted").length;
+  const verdict = keptFinal.length > 0 ? "DRAFTS-QUEUED"
+    : standingDrafts > 0 ? "QUEUED"
+    : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS";
+
   const doc = {
     draftedAt: now,
-    verdict: keptFinal.length > 0 ? "DRAFTS-QUEUED" : bridgeError ? "BRIDGE-DOWN" : "NO-DRAFTS",
+    verdict,
     source: raw && bridgeError?.startsWith("offline") ? "corpus" : raw ? "bridge" : "none",
-    draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged,
+    draftsQueued: keptFinal.length, standingDrafts, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged,
     minPostWords: MIN_POST_WORDS,
     spentTitles: [...new Set([...spentTitles, ...keptFinal.map((d) => String(d?.title ?? ""))])].slice(-60),
     queue,
@@ -527,7 +543,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
     ms: Date.now() - t0,
   };
   writeJson(FILE, doc);
-  return { verdict: doc.verdict, draftsQueued: keptFinal.length, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged, bridgeError };
+  return { verdict: doc.verdict, draftsQueued: keptFinal.length, standingDrafts, exposureBlocked, dedupeDropped: dropped, spentBlocked, illustrated, thinPurged, bridgeError };
 }
 
 /** recruiter evidence: fresh drafts queued = the content team is really running */
