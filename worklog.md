@@ -1319,3 +1319,17 @@ Work Log:
 Stage Summary:
 - The plan passes MTT: committed to git as law, zero value left in chat
 - Successors inherit 4 open lanes with explicit boundaries; the test that counts = MTT-72
+
+---
+Task ID: 19-d (LANE D — law-claims grill)
+Agent: Z.ai Code (R332 law lane, trace 1a13b7d12223afc1)
+Task: Next unclaimed lane per master plan order (D→C→E→F) — judge every decision against live HEAD
+
+Work Log:
+- Judged all 33 decisions (Pulse P-#1..#33 + saos-dex D-#12..#18) against live HEAD evidence measured this session: 14 TRUE · 11 PARTIAL · 2 TRUE-with-named-gap · 0 FALSE
+- Three structural defects: duplicate #14 in saos-dex; fragmented registries with ambiguous citations; R338-342 laws without canon pointer
+- Wrote docs/R332-LAW-CLAIMS-GRILL.md: verdict table + repo-prefixed estate-ID protocol (P-/D-/SD-, D-14a/b) + numeric GAP redemption plans + reviewBy prep
+
+Stage Summary:
+- The law is real (0 false decisions); the FORMAT is the leak — 4 additive lines close it
+- Lanes C/E/F remain open for parallel agents
