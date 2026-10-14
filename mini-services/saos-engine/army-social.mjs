@@ -111,16 +111,31 @@ export function socialPolicy() {
                                  * and kills the uniform-weight signature. */
     maxFleetVotesPerPost: 2,    /* R298 ring-cap: the chain showed 5-7 fleet votes on every
                                  * post — a ring shape. ≤2 fleet votes per post, chain-truth. */
-    maxFleetCommentsPerDay: 2,  // per account — R244: conversation is the product
+    /* R301 · THE STEALTH DOCTRINE (owner order 2026-10-14, verbatim:
+     * "מבחינתי זה בסדר כרגע שאנחנו לא מופיעים אנחנו יכולים לקדם את עצמנו טוב
+     * יותר בלי להציף את הרשת ושלא יראו את הפעולות שלנו עד שנהיה מוכנים באמת
+     * לפעול כגוף הנדסי חזק ועוצמתי ברשת") — during the shelling period the
+     * fleet keeps a human footprint and NOTHING else: zero fleet votes (the
+     * uniform ring shape was THE signature that shelled all 14), a seeded
+     * fleet-wide publish ROTATION (≤ maxFleetPostsPerDay posts/day across the
+     * roster instead of 14), conversation halved. Promotion continues —
+     * presence, never flood. The owner lifts any line via armedConf().social
+     * (the spread below is the override point) or by flipping stealth off. */
+    stealth: true,
+    maxFleetPostsPerDay: 6,      // fleet-wide total (rotation across the roster), was: 14 slots
+    maxFleetVotesPerDay: 0,      /* stealth: ring votes are the shelling signature — zero,
+                                  * even at R298's jittered 8-13% weight */
+    maxFleetCommentsPerDay: 1,  // was 2 — half the visible cross-account talk
     fleetRepliesEnabled: true,  // T-87: fleet comments are lawful reply targets
-    maxRepliesPerDay: 3,        // per account — R244 amplification
+    maxRepliesPerDay: 1,        // was 3 — stealth halves it again
     voteAgeMinMinutes: 15,      // fresh enough to earn curation share
     voteAgeMaxMinutes: 1200,    // 20h
     minCommentChars: 15,        // skip "nice"/spam comments
     maxReplyChars: 700,
-    /* R243: the intelligence round — substance caps for the new lanes */
-    maxCommunityCommentsPerDay: 2,   // R244: one real comment became two
-    maxConversationDeepensPerDay: 2, // R244: answer who answers us, twice
+    /* R243: the intelligence round — substance caps for the new lanes
+     * R301 (stealth, owner 2026-10-14): halved from 2 — less visible talk */
+    maxCommunityCommentsPerDay: 1,   // stealth: was 2
+    maxConversationDeepensPerDay: 1, // stealth: was 2
     minCommunityPostChars: 400,      // comment real posts, not stubs
     communityTags: ["life", "psychology", "food", "photography", "writing", "nature", "health", "travel"],
     communityBlockedAuthors: ["steemit", "steem", "steemitblog", "busy", "steemcurator01", "steemcurator02", "upvu", "cmp2020"],
@@ -130,6 +145,25 @@ export function socialPolicy() {
 }
 
 export const dayKeyOf = (iso) => String(iso ?? new Date().toISOString()).slice(0, 10);
+
+/* ── pure: R301 · THE STEALTH PUBLISH ROTATION (owner order 2026-10-14) ────
+ * The fleet-wide cap picks TODAY's publishers deterministically out of the
+ * roster (seeded per day+account, auditable, reproducible). Parked accounts
+ * keep their conversation lanes — presence without flood. The same subset
+ * all day (no intraday flapping), a different subset across days (no
+ * always-on/always-off accounts — every account eventually publishes).
+ * cap 0 → nobody publishes · cap ≥ roster → everyone (law unchanged). */
+export function stealthPublishers(dayIso, roster, cap, seedSalt = "stealth-v1") {
+  const list = (Array.isArray(roster) ? roster : []).filter(Boolean);
+  const n = Math.max(0, Math.min(Math.floor(Number(cap)), list.length));
+  if (!Number.isFinite(n) || n <= 0) return [];
+  return [...list]
+    .map((account, i) => ({ account, k: hashSeed(`${String(dayIso ?? "")}|${seedSalt}|${account}`) + i }))
+    .sort((x, y) => x.k - y.k || x.account.localeCompare(y.account))
+    .slice(0, n)
+    .map((x) => x.account)
+    .sort();
+}
 
 /* ── pure: R254 · FLEET PUBLISH SLOTS (better scheduling, operator order) ───
  * "אני רוצה אינטלגנציה רבה בהפעלה של כולם וגם יפה אני רואה תזמונים יותר
@@ -631,6 +665,11 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
    * account, computed once per run, deterministic per day (auditable). */
   const fleetMinutes = fleetPublishMinutes(day, [master, ...ARMY_ROSTER], { window: p.fleetSlotWindow ?? [11, 21] });
 
+  /* R301 · STEALTH ROTATION: today's fleet-wide publisher subset (seeded,
+   * auditable). Parked accounts keep conversation lanes — presence, not flood. */
+  const stealthCap = p.stealth ? (Number.isFinite(p.maxFleetPostsPerDay) ? p.maxFleetPostsPerDay : Infinity) : Infinity;
+  const publishers = new Set(stealthPublishers(day, [master, ...ARMY_ROSTER], stealthCap));
+
   for (const account of [master, ...ARMY_ROSTER]) {
     const st = carried.accounts[account] ?? {
       done: { publish: 0, "fleet-vote": 0, "fleet-comment": 0, reply: 0, "community-comment": 0, deepen: 0 },
@@ -666,7 +705,9 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     carried.seeds[account] = seed;
     const pubMin = fleetMinutes[account];
     const schedule = buildDaySchedule(seed, { publishWindow: p.publishWindow, publishMinute: Number.isFinite(pubMin) ? pubMin : null });
-    const due = schedule.filter((s) => minuteOfDay >= s.minute && st.done[s.kind] < capOf(s.kind, p));
+    /* R301: publish slots fire only for today's rotation subset */
+    const publishAllowed = publishers.has(account);
+    const due = schedule.filter((s) => minuteOfDay >= s.minute && st.done[s.kind] < capOf(s.kind, p) && (s.kind !== "publish" || publishAllowed));
     dueCount += due.length;
 
     /* R244 · THE PACING LAW: a human does not leave three comments in one
@@ -703,10 +744,10 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
         st.lastError = { at: now, kind: slot.kind, msg: String(e?.message ?? e).slice(0, 160) };
       }
     }
-    accounts[account] = { ...st, verdict: "SOCIAL-LIVE", custody, schedule, seeds: seed };
+    accounts[account] = { ...st, verdict: "SOCIAL-LIVE", custody, schedule, seeds: seed, stealthPublish: publishAllowed ? "due" : "rotation-park" };
   }
 
-  const doc = { ...base, custodyVerdict: custody?.verdict ?? null, custodyVerified: custody?.after?.verified ?? null, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
+  const doc = { ...base, stealth: p.stealth === true, publishers: [...publishers], custodyVerdict: custody?.verdict ?? null, custodyVerified: custody?.after?.verified ?? null, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
   writeJson(SOCIAL_FILE, doc);
   appendLine(path.join(STATE, "events.jsonl"), { type: "social.run", at: now, day, executed, refused });
   return { verdict: executed > 0 ? "SOCIAL-EXECUTED" : refused ? "PART-GATED" : "SOCIAL-IDLE", executed, refused, due: dueCount };
