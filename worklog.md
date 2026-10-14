@@ -882,3 +882,25 @@ Stage Summary:
 - **המשרד-המקומי חזר להיות משרד**: 7/7 פורטים (3000/3040-3043/3046/3047) · שתי-לולאות-התמדה חיות-ומרפאות-עצמן · operator-site מהגיט, לא מהסנדבוקס.
 - אפס-דריסות: FF-only על טיפים-טריים בכל-מאגר; קבצים-של-אחרים לא נגעו (רק resolve-keys.cjs משותף-בשינוי-אגרנזיבי-מתועד + 2 שורות-חיווט).
 - הכל-דחוף.
+---
+Task ID: R324-REF-STUDY
+Agent: Z.ai Code (main orchestrator — reference-architecture study, measured from source, applied live)
+Task: המפעיל סיפק מאגרי-ענקים מאומתים (ElizaOS · GOAT · IntentKit · SwarmNode · CDP AgentKit · web3-mcp · DeMCP · web3-docs) ושאל «באיזה קובץ להעמיק תחילה». חוק-הכנות: לא לענות מזיכרון — לקרוא את הקוד בפועל, למדוד, וליישם מיד את מה שמרים-את-הרמה.
+
+Work Log:
+- **קריאה-אמיתית (clones ב-/tmp/refs: elizaOS/eliza · goat-sdk/goat · coinbase/agentkit)**:
+  (1) Eliza `packages/core/src/types/long-term-memory.ts` + `memory.ts` — EPISODIC/SEMANTIC/PROCEDURAL · MemoryExtraction{category,confidence,source} · סף-ביטחון · accessCount/lastAccessedAt (חיזוק-זיכרון) · קונסולידציה.
+  (2) Coinbase AgentKit `typescript/agentkit/src/agentkit.ts` — `getActions()` מסנן לפי `supportsNetwork()` → **לא-זמין ≠ נכשל** (fail-fast על-חוסר-walletProvider זהה לחוק-ה-abort-הכן שלנו).
+  (3) GOAT `typescript/packages/wallets/*` — כל-ארנק מממש חוזה-חתימה-אחד (`signAndSendTransaction`): המקביל-אצלנו = WIF-per-account מ-ROT2 (resolve-keys 24-keys/12-accounts, LADDER-ACTED — כבר-בקנה-אחד).
+- **הבחירה להעמקה-ראשונה (ענו-על-השאלה במדידה)**: Eliza-זיכרון ראשון — פצע-R324 היה הכרה-עצמית; GOAT-חתימה שני — נתיב-R323 (דקס/נפח). IntentKit+SwarmNode למחקר-הבא (SwarmNode ≈ הדוקטרינה-שלנו: אפס-שרת-מרכזי, הרצה-על-ביקוש + state-מתמיד).
+- **יישום-מיידי — SELF-MEMORY (Eliza-תבנית על-גיט, saos-runtime)**: `ops/self-memory/self-memory.cjs` + `.github/workflows/self-memory.yml` (cron 37 */6 · backstop-קבוצה-נפרדת · fail-soft exit-0 · אפס-סודות/אפס-API-חובה). שליפה מראיות: system-map.json + learning/ledger.jsonl + evolution-*.json + מפקד-יכולות (workflows+ops) → EPISODIC/SEMANTIC/PROCEDURAL עם confidence/source/accessCount · דמיון Jaccard ≥0.72 מחזק-במקום-לשכפל · נשכחים-של-30-יום נשרפים.
+- **הוכחת-עור**: node --check PASS · dry-run מקומי: ריצה-1 **+11 חדשות**, ריצה-2 **+0 חדשות / 11 חוזקו** (אפס-כפילות — חיזוק-הזיכרון עובד) · דחיפה FF-only 9f21e34 על-גבי-קומיט-סוכן-מקביל 3f465ee (אפס-דריסה) · dispatch חי HTTP-204 → run **38490010663 success** → קומיט-עדה **ae195e7** («+9 new») · RAW 200.
+- **הזיכרון כבר-אמר-אמת-ראשונה**: סריקתו-הראשונה נתנה מפה-ירוקה (חיים=8/אדומים=0/נעדרי-דופק=0 — תיקון-הסולם ניכר) וחשפה-ראיות לטריאז' (escrow-payroll/fleet-rotation-a/gen2-rotation/owner-key-adopt STALE · grid-watchdog CANCELLED) — נרשמו-כראיה, לא-נגעתי (תחום-סוכנים-אחרים).
+- **חוקים-חדשים ב-lessons.md** (נדחפו-דרך-reconcile-union אל saos-cockpit): חוק-הזיכרון-העצמי (Eliza-תבנית) · חוק-«לא-זמין ≠ נכשל» (AgentKit) · הערת-GOAT-חתימה.
+- **תקלה-עצמית-מתועדת-בכנות**: דחפתי-תחילה-את-lessons ל-target-הלא-נכון (origin/main של steem הוא מראת-הסולם הציבורית, לא-עורק-ה-estate) — זוהת-מיד («exists on disk, but not in origin/main»), אובחן (estate-עובד-על saos-cockpit), ותוקן-דרך auto-reconcile (RECONCILED 6971654da5, chain anchored ok) — החוקים מאומתים-על origin/saos-cockpit.
+
+Stage Summary:
+- **תשובת-השאלה**: העמקה-ראשונה = זיכרון-Eliza (כבר-נקרא-וניישם-חי); חתימת-GOAT שנייה (מוכר-בקנה-אחד-אצלנו). הפער-האמיתי-שלנו לא-היה-חתימה אלא זיכרון-מתמשך — והוא-נסגר-היום: למשרד יש עכשיו זיכרון-עצמי-מסוג-שלוש-קטגוריות-עם-ביטחון-וחיזוק, כל-6-שע, על-הגיט.
+- **הרשת עכשיו**: רואה-את-עצמה (system-map כל-30-דק) · זוכרת-את-עצמה (self-memory כל-6-שע) · מנתבת-טענות-מפעיל (operator-triage) · אדום-אחד-מדווח-בכנות (redboard) — כולם-עדות-קומיט, אפס-תלות-סנדבוקס.
+- **הבא**: GOAT/IntentKit עמוק-בנתיב-R323 (נפח-דקס: executeOps-אינטנטים) · SwarmNode-תבנית כהוכחה-מבנית-של-Git-only-runtime.
+- הכל-דחוף.
