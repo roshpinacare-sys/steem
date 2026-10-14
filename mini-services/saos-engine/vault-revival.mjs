@@ -181,9 +181,22 @@ function unlockGeneration({ ref, zip, metaRef, genLabel, eraRefs }) {
     if (outerSha !== meta.keysZipSha256) throw new Error(`vault-outer-sha-mismatch (${outerSha.slice(0, 8)})`);
     const { pass: keysZipPass, via: passVia } = resolveGenerationPass(meta, eraRefs ?? []);
     fs.writeFileSync(path.join(TMP, "keys-zip.enc"), enc, { mode: 0o600 });
-    execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-      "-in", path.join(TMP, "keys-zip.enc"), "-out", path.join(TMP, "inner.zip"),
-      "-pass", `pass:${keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
+    /* R312 · DIAGNOSTIC TRUTH (measured 2026-10-14: runner book said only
+     * "Command failed: openssl …" on BOTH generations while the custody-recover
+     * CI lane opened the SAME archive 0-holes — an undiagnosable book). openssl
+     * stderr carries the exact failure class (bad decrypt = stale pass bundle
+     * on the host; could-not-read = file problem) and NO key material, so the
+     * verdict-only law allows it in the book. Pass-ref NAME stays journaled,
+     * material never does. */
+    let stderrTail = "";
+    try {
+      execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
+        "-in", path.join(TMP, "keys-zip.enc"), "-out", path.join(TMP, "inner.zip"),
+        "-pass", `pass:${keysZipPass}`], { stdio: ["ignore", "ignore", "pipe"] });
+    } catch (e) {
+      stderrTail = String(e?.stderr ?? "").trim().split("\n").slice(-2).join(" / ").slice(0, 140);
+      throw new Error(`openssl-decrypt-failed via ${passVia} (${stderrTail || String(e?.message ?? e).slice(0, 100)})`);
+    }
     const innerBuf = fs.readFileSync(path.join(TMP, "inner.zip"));
     const innerSha = sha256(innerBuf);
     if (innerSha !== meta.keysZipInnerSha256) throw new Error(`vault-inner-sha-mismatch (${innerSha.slice(0, 8)})`);
@@ -221,7 +234,7 @@ function pullArmyKeysFromVault() {
     { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
     { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
   ]) {
-    try { gens.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
+    try { gens.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 160)}`); }
   }
   const accounts = [];
   const missing = [];
@@ -356,7 +369,7 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
         { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
         { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
       ]) {
-        try { gensM.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 80)}`); }
+        try { gensM.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 160)}`); }
       }
       for (const role of ["posting", "active"]) {
         for (const g of gensM) {
