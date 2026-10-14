@@ -1,0 +1,80 @@
+{
+  "at": "2026-10-14T18:31:44.269Z",
+  "drillVersion": 1,
+  "verdict": "DRILL-FAIL",
+  "drScore": {
+    "passed": 3,
+    "total": 4
+  },
+  "runId": "0696579d8441a2f1492dfd48f09029ef",
+  "originHead": "bfa9ff26fd6559e923bb4294cd3c51ee7a2e3f56",
+  "source": "https://github.com/roshpinacare-sys/steem.git",
+  "branch": null,
+  "steps": [
+    {
+      "name": "clone",
+      "ok": true,
+      "skipped": false,
+      "durationMs": 16848,
+      "detail": {
+        "source": "https://***@github.com/roshpinacare-sys/steem.git",
+        "branch": null,
+        "shallow": true,
+        "originHead": "bfa9ff26fd6559e923bb4294cd3c51ee7a2e3f56"
+      }
+    },
+    {
+      "name": "selftest",
+      "ok": true,
+      "skipped": false,
+      "durationMs": 3324,
+      "detail": {
+        "npmInstall": {
+          "needed": true,
+          "ran": true,
+          "ok": true,
+          "tool": "npm",
+          "durationMs": 480
+        },
+        "exitCode": 0,
+        "selftestLine": "1807/1807 PASS",
+        "tail": "{\"ev\":\"saos.llm_chain.selected\",\"purpose\":\"selftest\",\"selected\":\"merged-partial\",\"ms\":0}\n{\"ev\":\"saos.llm_chain.started\",\"purpose\":\"selftest\",\"candidates\":[\"c1-good\",\"c2-never\"]}\n{\"ev\":\"saos.llm_chain.selected\",\"purpose\":\"selftest\",\"selected\":\"c1-good\",\"ms\":0}\n{\"ev\":\"saos.llm_chain.started\",\"purpose\":\"selftest\",\"candidates\":[\"c1-two\",\"c2-topup\"]}\n{\"ev\":\"saos.llm_chain.unsatisfied_merge\",\"purpose\":\"selftest\",\"candidate\":\"c1-two\"}\n{\"ev\":\"saos.llm_chain.unsatisfied_merge\",\"purpose\":\"selftest\",\"candidate\":\"c2-topup\"}\n{\"ev\":\"saos.llm_chain.selected\",\"purpose\":\"selftest\",\"selected\":\"merged-partial\",\"ms\":0}\n{\"ev\":\"saos.llm_chain.started\",\"purpose\":\"selftest\",\"candidates\":[\"counter\"]}\n{\"ev\":\"saos.llm_chain.selected\",\"purpose\":\"selftest\",\"selected\":\"counter\",\"ms\":0}\n{\"ev\":\"saos.llm_chain.fastpath_hit\",\"purpose\":\"selftest\",\"ms\":0,\"tokensSaved\":7}\n{\"ev\":\"saos.llm_chain.started\",\"purpose\":\"drill\",\"candidates\":[\"drill-forced-fail\",\"drill-provider-1t\",\"drill-local-echo\"]}\n{\"ev\":\"saos.llm_chain.candidate_failed\",\"purpose\":\"drill\",\"candidate\":\"drill-forced-fail\",\"errorClass\":\"unknown\"}\n{\"ev\":\"saos.llm_chain.selected\",\"purpose\":\"drill\",\"selected\":\"drill-provider-1t\",\"ms\":0}\n\nSELFTEST 1807/1807 PASS\n"
+      }
+    },
+    {
+      "name": "evidence",
+      "ok": true,
+      "skipped": false,
+      "durationMs": 1,
+      "detail": {
+        "evidence": "SUITE-RAN",
+        "honest": true,
+        "module": "clone:evidence.mjs"
+      }
+    },
+    {
+      "name": "watch",
+      "ok": false,
+      "skipped": false,
+      "durationMs": 1487,
+      "detail": {
+        "verdict": "SURFACES-DEGRADED",
+        "targets": 9,
+        "ok": 8,
+        "degraded": 1,
+        "down": 0,
+        "repairMode": "observe",
+        "fileWritten": true,
+        "nonOk": [
+          {
+            "id": "artery-workflow",
+            "verdict": "DEGRADED",
+            "reason": "probe-error:api-http-403"
+          }
+        ]
+      }
+    }
+  ],
+  "verdictRule": "DRILL-PASS iff all 4 steps ok:true; skipped ≠ passed (fail-closed honesty); exit 0 iff DRILL-PASS",
+  "lawSource": "PLAN-2026-Q4-giants-alignment.md §0 criterion-4 (rebuild-from-git) · §2 G3 · §3 lane D · §4 P0 · R360-CANDIDATE rebuild-drill (registry pending — never self-registered)"
+}
