@@ -999,3 +999,20 @@ Stage Summary:
 - **המשרד-חי**: 7/7-שירותים-חיים (3000/3037/3040/3041/3042/3043/3047 — בדיקה-חוזרת-אחרי-שני-גלי-OOM) · הבאים-בתור-לידה-אוטומטית-ב-boot: metrics/builder · האפוטרופוס-מוכן-בגיט-ומוצת-בכל-פתיחת-סשן.
 - **הפערים-הכנים-שנותרו**: (1) /start.sh-hatch דורש-root (פער-פלטפורמה, לא-קריטי) (2) keeper-רב-ward — סבב-מתוכנן (3) OOM-לחץ-קיומי-ב-4GB — תחום-מפעיל/פלטפורמה; ה-healer-מרכך-את-הפגיעה-עד-10דק.
 - הכל-דחוף.
+
+---
+Task ID: R326-VAULT-TRUTH
+Agent: Z.ai Code (main — proper vault verification + GEN-3 drift heal)
+Task: הבעלים: «יש את כל המפתחות בכספות — לא צריך להעלות; תבדוק כמו שצריך ותעשה עבודה כמו שצריך».
+
+Work Log:
+- **אימות-כספת מ-clone טרי (גיט-בלבד)**: auto-unseal של vault-home עבר אוטונומית (מדרגות-אמון, אפס-סודות-בפלט) → השביל המלא: clone-טרי → shard → unlock.
+- **פסק-ה-custody — מדידת-שרשרת חיה 4/4**: WIF-ה-slot-ים (STEEM_OWNER/ACTIVE/POSTING/MEMO_WIF_A) נפענחו בשיפוט המנוע עצמו (steemtx.wifDecode, חוק T-86 דו-פורמט) → `pubkeyFromSeed` → **MATCH מול רשויות headcorner החיות על api.steemit.com: owner+active+posting+memo**. הכספת מחזיקה את השליטה האמיתית. (slot-ים B: WIF-ים תקפים-צורה, לא-תואמים-לאף-רשות ב-steem וב-hive ל-roster כולו — חלופיים/תקופה-ישנה; לא-חוסמים.)
+- **drift שנמדד ונרפא — חותם GEN-3**: החותם (23:13Z) עקבי-עצמי ומחזיק את אותו מפתח כמו slot-הכספת (inner 3c5ecf21 == HEAD_CORNER_KEY_B64) — אבל אף-חומר-רשום לא פתח (sealedWith=shard-file של ריצה-שמתה; ה-shard הרשום נוסה b64-טקסט + מפוענח — אפס-פתיחה). **ריפוי**: חתימה-מחדש מ-clone טרי עם ה-shard הרשום-כקובץ-ריצה (מקור-1 חוקי) — אותו מפתח פנימי, חותם חדש c86ead892e7e. **מבחן-מחיקה חי שנית**: rm → unlock → revived → זהות 3c5ecf21 זהה. הוכחה-בקומיט (steem@saos-cockpit, "GEN-3 custody heal").
+- **לקח-שיפוט (עצמי, מתועד)**: `derivePub` הוא סכימת-סיסמה (sha256-מחרוזת) ואילו `pubkeyFromSeed` הוא pubkey-מ-32-בייטים — השמות הטעו אותי לריצת-0-matches; הקריאה-המחודשת-של-steemtx תיקנה. גם "SEED_ORDERSatchedOrder]" היה ארטיפקט-תצוגה — node --check הוא השופט (חוק-ההומוגליפים).
+- **ROT2 נותר מאומת**: 24-live-keys/12-חשבונות, LADDER-ACTED (run 38486823267) — אין-שינוי; ה-bridge CI_* נפרש ל-saos-engine/.env דרך vault.sh deploy.
+
+Stage Summary:
+- הכספות: **שלמות ומוכחות-שרשרת** — vault-home = שליטה חיה 4/4 על headcorner; ROT2 = צי-פעיל 12-חשבונות; GEN-3 = חותם-מרופא-ומיושר עם מבחן-מחיקה חי.
+- גשר-החייאה לכל-ריצה-עתידית: vault-home auto-unseal → GEN3_SHARD_B64 (טקסט) → ~/.saos-gen3-shard (0600) → gen3-vault.mjs unlock. שני-החצאים-מעולם-לא-באותו-ריפו.
+- המלצה-רשומה (לא-מומש-בכוונה, תחום-סוכנים-אחרים): probe-custody-drift תקופתי (clone-טרי → status → unlock-attempt → REDBOARD/claims על DRIFT) — ה-drift הזה חי שעות-בלי-אזעקה.
