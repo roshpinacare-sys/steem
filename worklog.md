@@ -1022,3 +1022,24 @@ Stage Summary:
 - **ההחלטה-המושהית נפתרה על-ידי-החוק**: SwarmNode/ai-agentic-wallet מול GOAT/IntentKit — אין-צורך: Actions = הרנט-ה-serverless שלנו (SwarmNode איזומורפי, כבר-ממומש בבית), והחתימה-הבלתי-מושגחת של-R323 רצה כבר על army-ladder-CI עם מפתחות ב-custody-CI. אפס-תלות-חיצונית, אפס-ערוץ-מחוץ-לגיט.
 - **פערים-פתוחים-כנים (לא-שלי/לא-ניתנים-לסגירה-מקומית)**: (1) pat.env root-owned-777 — הידוק-הרשאות דורש-root (2) OOM-תחת-קומפילציית-Turbopack בסנדבוקס-4GB — תחום-פלטפורמה; האפוטרופוס+דיסק-בריא מרככים (3) /start.sh-hatch דורש-root — ממותן (package.json-boot + הצתה-חוצת-סשן ב-double-fork) (4) שער-המפעיל חוזר לאתחול אחרי-איפוס-סנדבוקס — עיצוב-כוונה, למפעיל-לקבוע-סיסמה (5) SAOS_VAULT_PASS-wif-direct — יומרה, כל-העורקים-החיים-עוקפים (6) 7-army-txids-UNREACHABLE-עד-אינדוקס — מחזור-CI-הבא (7) keeper-רב-ward — סבב-מתוכנן (8) GPG-שבור — מיושן-מוחלף-על-ידי GEN-3+identity-guard.
 - **הכל-דחוף. אפס-דריסה: אף-קומיט-לא-נדחף-על-ידי הסבב הזה** (כל-התיקונים-מקומיים/אבחון; התיקון-ב-Autonomy נעשה-בסבב-המקביל-ואומת-כאן).
+
+---
+Task ID: R323-1
+Agent: Z.ai Code (main orchestrator)
+Task: «תמשיך» — R323: הפעלת-DEX; גבול-מדיניות מוקדם מול identity-guard; אימות VERIFIED-VS-CHAIN עצמאי; הכרעת-ספר חי; אפס-דריסה.
+
+Work Log:
+- **גבול-מדיניות אומת בקוד (הבדיקה-המחייבת-המוקדמת)**: grids/army-ladder.mjs (404 שורות) מכיל רק limit_order_create/limit_order_cancel — אפס transfer/delegate/convert/vote; שרשרת-אכיפה STASIS→POLICY(policyCycleGate)→key-gate→book-law(maker-only, orderids-idempotent, kill-law, expiry) קוד-אמיתי; thinkGate מסרב delegation גם כשמדיניות מרשה (selftest 244) ומסנן fail-closed ל-ladder בלבד (test-claim-role-split:38). הגבול מול הדוקטרינה עומד.
+- **ה-cron-של 03:23Z לא ירה (GitHub-delay, 52+ דק)** — הוצת מחזור-קנרי אחד ידנית (workflow_dispatch מעוצב-בכוונה; מנדט DECISIONS #12 IGNITION-R1) → ריצה #2 (38509694388) success.
+- **VERIFIED-VS-CHAIN בידיים-שלי (RPC קריא-בלבד)**: כל-7 ה-txids "UNREACHABLE" של-ריצה #1 נמצאו בשרשרת (בלוקים 110418924–930, סולם-יורד 0.150→0.100 STEEM) — ארטיפקט-אינדוקס-צמתים (אימות-52-שניות-אחרי-שידור), לא עסקאות-פנטום; גם 0f2ae999 (limit_order_cancel, 110422649) אומת. 8/8-דגימות-קיימות. הספר-שלנו התעדכן בריצה #2: 11/15-verified, 0-exposed, 4-unreachable (מ-7), verdict-VERIFIED.
+- **מילוי-מייקר שני אומת בשרשרת**: tov מול droida 0.108-STEEM/0.011-SBD (00:54:12) — המכפיל-maker:taker שיפר 1:4→2:4; נפח-מצטבר 1.208-STEEM/0.122-SBD.
+- **אמת-ספר-קשה**: ריצה #2 ביצעה kill-law מגן (4-ביטולים: hcsoldier4×2, israelnews, hcsoldier5) אחרי-סחיפת-מיד 0.1034→0.10248 — ולא הציבה-חדשות; 8/12-חשבונות FUEL-STASIS (אין-SBD; תדלוק=תחום-בעלים), hcsoldier6 AT-TARGET. **השרשרת-עכשיו: אפס-פקודות-פתוחות בכל-הרוסטר** (נמדד find_limit_orders על-כל-12) — הקבלה-מדדה estateOpenOrders=7 לפני-הביטולים; הערה-שיטתית-שנייה-מאותה-מחלקה (מדידה-לפני-התיישבות-פעולות) לתיקון-army-ladder.
+- **הספר-החיצוני זז**: לווייתנים-חיצוניים (לא-שלנו — אפס-לימיטים-מ-03:40-בכל-חשבונות-האחוזה) הציבו קירות 9.9k/28.4k-STEEM ב-0.1011/0.1039 (~270bps מול-64bps) — הסולם-האבק-שלנו לא-מתחרה-בלי-דלק. מציאות-שוק-כנה.
+- **רגל-מקומית: STASIS-כנה-by-design**: המנוע (:3040) הורפא-מ-ENOSPC וסובב-ticks, אבל hyper-grid ב-BROADCAST-FAIL עם lastError=THINK-GATE-REFUSED — army-custody-revival 0-חשבונות (SAOS_VAULT_PASS חסר; מפתחות-צבא ב-custody-CI-בלבד-עיצוב). fail-closed עובד: השער מסרב, הקבלה-היא-האזעקה. לא-נזייף. (באגים-צדדיים-קיימים: reviveToolbelt/reviveIntegrations ".then is not a function" — קודם-ה-ENOSPC, נפרדים.)
+- **dex-beat ממשיך לזרום**: קומיטים-ישירים-ל-saos-dex (5474905 03:24, 0353ee1 02:55) — הרגל-המקומית-מפרסמת-עדות-לגיט.
+
+Stage Summary:
+- **R323 חיה ומאומתת**: ערוץ-הביצוע=CI-army-ladder (מפתחות-custody-CI) · גבול-מדיניות=רק-limit-orders (מוכח-בקוד-ובשרשרת) · VERIFIED-VS-CHAIN=11/15+8/8-דגימות-עצמאיות · אפס-exposed · 2-מילויי-מייקר/4-טייקר · אפס-נוכחות-ספר-עכשיו (kill-law-מגן) · 8/12-סטאזיס-דלק.
+- **השערת-ה-stagger מרוסטרת כנה**: לא-פרמטר-אלא-סביבה — בספר-רחב-המילוי-המייקר-השני-בא-מאליו; בלי-דלק-אין-מה-להעמיק.
+- **פערים-פתוחים-כנים**: (1) תדלוק 8-חשבונות = תחום-בעלים-בלבד (2) estateOpenOrders-מדידה-לפני-התיישבות — תיקון-קטן-מתוכנן ב-army-ladder (3) 4-txids-UNREACHABLE-בקבלה — סריקה-מחדש-בקנרי-הבא 15:23Z (כל-הדגימות-קיימות-בשרשרת) (4) GitHub-cron-מתעכל — הקנרי-2x/יום+קבלות-כנות סופגים (5) רגל-מקומית-ב-STASIS-עד-מפתחות-מקומיים — by-design.
+- הכל-דחוף. אפס-דריסה (אפס-קומיטים-שלי-לריפואים; הכל-מדידה+dispatch-מנדטי).
