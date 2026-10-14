@@ -101,7 +101,13 @@ export function socialPolicy() {
     fleetSlotWindow: [11, 21], // fleet publish slots cut from the same prime window
     maxPostsPerDay: 1,          // per account — presence, never flood (anti-spam law stays)
     maxFleetVotesPerDay: 3,     // per account — R244 amplification (תגביר עוצמה)
-    fleetWeightPct: 25,         // low weight: support, not self-dealing
+    fleetWeightPct: 8,          /* 28-steem measured-law: the old 25% x 6 uniform fleet votes
+                                 * on every post was the exact bot-farm signature that got
+                                 * the WHOLE roster shelled on steemit.com (measured
+                                 * 2026-10-13/14: origin serves the landing shell for all 14
+                                 * accounts while chain truth stays intact; control accounts
+                                 * render fully from the same IP). 8% keeps the support real
+                                 * and kills the uniform-weight signature. */
     maxFleetCommentsPerDay: 2,  // per account — R244: conversation is the product
     fleetRepliesEnabled: true,  // T-87: fleet comments are lawful reply targets
     maxRepliesPerDay: 3,        // per account — R244 amplification
