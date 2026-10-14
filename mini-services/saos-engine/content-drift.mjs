@@ -9,8 +9,20 @@
  * class of rot that shelled the roster once (75 duplicated bodies, 47 twin
  * titles): nobody notices a voice decaying one post at a time.
  *
+ *   R330 CLOSURE (T-89): R329 applied R327's signed proposal — the DNA now
+ *   carries memory.tics. A monitor blind to its own applied proposal would
+ *   re-mine "the difference is" and re-propose the SAME refresh every beat
+ *   (the R297 shallow-memory class, reborn on the monitor itself). Closure:
+ *   (a) mining excludes applied tics — an adopted tic is voice-LAW, not a
+ *   discovery; (b) the proposal carries refreshOf provenance from
+ *   memory.applied — the owner reads a post-apply measurement, not a stale
+ *   duplicate; (c) ticsEvidence measures each tic's recurrence in the
+ *   OBSERVED corpus — the accumulated evidence the owner-gated ticEnforce
+ *   arming decision (R302 pattern) awaits (DNA v2 shipped hits:null).
+ *
  *   observe — pure `analyzeDrift({ dna, posts })`: deterministic, no clock,
  *             no randomness, no network (the R304/R306 purity law).
+ *
  *   measure — per-pillar proxies, repeated-phrase mining (candidate lexicon
  *             additions — the slop channel), register stats, forbidden-voice
  *             hits (fleetForbidden/personaForbidden in REAL published text).
@@ -156,6 +168,43 @@ export function mineDriftPhrases(posts, knownLexicon = [], { minHits = DRIFT_MIN
   return out.slice(0, 8);
 }
 
+/* ── pure: the APPLIED tic phrases (R330) ───────────────────────────
+ * Robust to both shapes the applier may store: {phrase, hits, posts}
+ * objects (what R329 wrote) or plain strings. Lowercased for mining.
+ * An applied tic is the DNA's OWN voice law — never a drift discovery. */
+export function appliedTicPhrases(dna) {
+  const tics = dna?.memory?.tics;
+  if (!Array.isArray(tics)) return [];
+  return tics
+    .map((t) => (typeof t === "string" ? t : t?.phrase))
+    .filter((p) => typeof p === "string" && p.trim().length > 0)
+    .map((p) => p.toLowerCase());
+}
+
+/* ── pure: per-tic recurrence in the OBSERVED corpus (R330 ticsEvidence) ──
+ * The evidence slots DNA v2 shipped as hits:null/posts:null, measured.
+ * This is what accumulates in the heartbeat so the owner-gated ticEnforce
+ * arming decision (R302 observe→enforce pattern) rides MEASURED evidence.
+ * Honest zeros count: a tic absent from the observed corpus is evidence too. */
+export function ticsEvidence(posts, dna) {
+  const tics = appliedTicPhrases(dna);
+  if (!tics.length) return [];
+  const docs = (posts ?? [])
+    .map((p, i) => ({ idx: i, id: p?.id ?? p?.permlink ?? null, text: stripMarkdown(`${p?.title ?? ""} ${p?.body ?? ""}`).toLowerCase() }))
+    .filter((d) => d.text.length >= 40);
+  return tics.map((tic) => {
+    let hits = 0;
+    const seen = new Set();
+    for (const d of docs) {
+      let n = 0;
+      let idx = d.text.indexOf(tic);
+      while (idx !== -1) { n++; idx = d.text.indexOf(tic, idx + tic.length); }
+      if (n > 0) { hits += n; seen.add(d.id ?? `idx:${d.idx}`); }
+    }
+    return { phrase: tic, hits, posts: seen.size };
+  });
+}
+
 /* ── pure: forbidden-voice hits in the OBSERVED corpus ───────────────────── */
 export function forbiddenHits(posts, dna) {
   const hits = [];
@@ -179,6 +228,7 @@ export function analyzeDrift({ dna, posts }) {
   if (!real.length) {
     return { verdict: "DNA-DRIFT-DEGRADED", observe: true, samples: 0, degraded: true,
       pillars: [], driftPhrases: [], forbiddenHits: [], register: null, proposal: null,
+      ticsEvidence: [], ticsObserved: null,
       reason: "no observed posts (books empty + chain read yielded nothing)" };
   }
   const px = pillarProxies(real);
@@ -188,8 +238,11 @@ export function analyzeDrift({ dna, posts }) {
     const score = fn ? fn(px) : clamp01(real.filter((p) => stripMarkdown(`${p?.title ?? ""} ${p?.body ?? ""}`).toLowerCase().includes(String(pillar).toLowerCase())).length / real.length);
     pillars.push({ pillar, score, exhibited: score >= DRIFT_PILLAR_GAP });
   }
-  const lexicon = dna?.slopLexicon ?? [];
-  const driftPhrases = mineDriftPhrases(real, lexicon);
+  const tics = appliedTicPhrases(dna);            // R330: applied tics are law, not discovery
+  const lexicon = [...(dna?.slopLexicon ?? []), ...tics];
+  const inTicFamily = (phrase) => tics.some((t) => t === phrase || t.includes(phrase) || phrase.includes(t));  // overlapping variants are the same voice-law (R329 shape)
+  const driftPhrases = mineDriftPhrases(real, lexicon).filter((d) => !inTicFamily(d.phrase));
+  const ticEv = ticsEvidence(real, dna);          // R330: measured evidence for the arming decision
   const forbidden = forbiddenHits(real, dna);
   const sentences = real.map((p) => stripMarkdown(`${p?.title ?? ""} ${p?.body ?? ""}`).split(/[.!?]+/).filter((s) => s.trim().split(/\s+/).length >= 3)).flat();
   const lens = sentences.map((s) => s.trim().split(/\s+/).length);
@@ -198,17 +251,20 @@ export function analyzeDrift({ dna, posts }) {
   const register = { meanSentenceLen, longRatio, listPostRatio: px.listPostRatio, digitsPer1k: px.digitsPer1k, measuredPer1k: px.measuredPer1k, personalPer1k: px.personalPer1k };
   const pillarGaps = pillars.filter((p) => !p.exhibited).map((p) => p.pillar);
   const verdict = (forbidden.length > 0 || pillarGaps.length >= 2 || driftPhrases.length >= 3) ? "DNA-DRIFT-DETECTED" : "DNA-DRIFT-OK";
+  const applied = Array.isArray(dna?.memory?.applied) && dna.memory.applied.length > 0
+    ? dna.memory.applied[dna.memory.applied.length - 1] : null;
   const proposal = {
-    addLexicon: driftPhrases.map((d) => d.phrase),
+    addLexicon: driftPhrases.map((d) => d.phrase).filter((p) => !inTicFamily(p)),  // R330 belt+braces: never re-propose a tic or its overlapping variants
     pillarGaps,
     forbidden: forbidden.map((f) => `${f.tag}:"${f.fragment}"`),
+    refreshOf: applied ? { fromSig: applied.fromSig ?? null, at: applied.at ?? null, trace: applied.trace ?? null } : null,  // R330: measured AFTER the last applied refresh
     rationale: forbidden.length > 0 ? "observed text hit forbidden voice — refresh persona/fleet bans"
       : driftPhrases.length >= 3 ? "recurring phrases not in the lexicon — the corpus is growing its own slop"
       : pillarGaps.length >= 2 ? "declared pillars not exhibited in the observed corpus"
       : "no structural drift measured",
     ownerGated: true, /* the signed file is authoritative — application is owner-gated (intel §5.2) */
   };
-  return { verdict, observe: true, samples: real.length, degraded: false, pillars, driftPhrases, forbiddenHits: forbidden, register, proposal, reason: null };
+  return { verdict, observe: true, samples: real.length, degraded: false, pillars, driftPhrases, forbiddenHits: forbidden, register, proposal, ticsEvidence: ticEv, ticsObserved: ticEv.filter((e) => e.posts > 0).length, reason: null };
 }
 
 /* ── seal: one state file, rides the state-churn commits (R303 law) ──────── */
