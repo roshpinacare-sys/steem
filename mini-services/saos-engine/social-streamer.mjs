@@ -325,9 +325,17 @@ export async function runOnce({ stagingOnly = false } = {}) {
       const ops = readJson(OPS_FILE, null);
       if (ops && Array.isArray(ops.queue)) {
         const row = ops.queue.find((q) => String(q?.title ?? "").trim() === String(draft.title).trim() && q?.status === "drafted");
-        if (row) { row.status = "published"; row.publishedAt = base.at; row.account = pick.acc.name; row.permlink = permlink; row.txid = txid; writeJson(OPS_FILE, ops); }
+        if (row) { row.status = "published"; row.publishedAt = base.at; row.account = pick.acc.name; row.permlink = permlink; row.txid = txid; if (!row.chain) row.chain = chainName; writeJson(OPS_FILE, ops); }
       }
     } catch { /* fail-soft by law */ }
+    /* R337 · THE THIRD CONSUMER JOINS THE BOOK: this rail was the measured
+     * hole — it broadcast (4 rows on 2026-10-14) while the R303 book stayed
+     * empty, because only army-social/hive wired recordPublished. Best-effort,
+     * the arc-law shape: a memory failure never un-publishes chain truth. */
+    try {
+      const { recordPublished } = await import("./content-memory.mjs");
+      recordPublished(STATE, { account: pick.acc.name, permlink, title: draft.title, body: draft.body, score: null, chain: chainName, at: base.at });
+    } catch { /* the sent-ledger remains the anchor; the weekly merge retries nothing by design */ }
     /* R309 · REVENUE-TRUTH SYNC: a digest that just went live is marked
      * PUBLISHED in the staging buffer with its chain proof — the operator
      * never sees a READY package that already breathes on the chain. */

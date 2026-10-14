@@ -66,6 +66,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { titleSimilarity } from "./content.mjs";
 import { stableStringify } from "./content-drift.mjs";
+import { normTitle } from "./content-memory.mjs"; /* R337: the book's own title normalizer — the dedupe key speaks the book's language (pure string fn, no IO at import) */
 
 export const TWIN_THRESHOLD = 0.5; /* the house number: replyFresh maxSimilarity, monoculture veto, R277 body-clash */
 
@@ -157,6 +158,29 @@ export function planSwarm({ queue = [], memory = null, hiveRoster = [], steemRos
     seen.add(key);
     if (p?.title || p?.bodyCore) rows.push({ id: key, chain: normChain(p.chain), title: String(p.title ?? ""), bodyCore: String(p.bodyCore ?? "") });
   }
+  /* R337 · THE BOOK JOINS THE SCAN WHERE IT CAN SPEAK THE TRUTH: R303 rows
+   * recorded WITH chain (the R337 rails record it now — steem at publish,
+   * hive at pickup+broadcast, chain rides in the record id) contribute
+   * TITLE-kind pairs — titleNorm is present; body is not, and is never
+   * faked. Legacy chainless rows stay chainUnknown, excluded: the
+   * limitation SHRINKS as the book regrows, named every beat. A book row is
+   * skipped when a queue row already speaks for the same chain+title (the
+   * queue row is higher fidelity — no double-count, no phantom self-twin). */
+  let bookChained = 0;
+  if (Array.isArray(memory?.published)) {
+    const qKeys = new Set(rows.map((r) => `${r.chain}::${normTitle(r.title)}`));
+    for (const b of memory.published) {
+      if (!b?.chain || !b?.titleNorm) continue; /* legacy chainUnknown — never faked into a chain */
+      const chain = normChain(b.chain);
+      const t = normTitle(b.titleNorm);
+      if (qKeys.has(`${chain}::${t}`)) continue;
+      rows.push({ id: String(b.id ?? `${chain}::${t}`), chain, title: t, bodyCore: "" });
+      bookChained++;
+    }
+  }
+  stats.bookChainedRows = bookChained;
+  stats.scannedRows = rows.length; /* R337: queue rows + book rows that spoke */
+  stats.chainsMeasured = [...new Set(rows.map((r) => r.chain))].sort();
   for (let i = 0; i < rows.length; i++) {
     for (let j = i + 1; j < rows.length; j++) {
       const a = rows[i], b = rows[j];
@@ -187,8 +211,8 @@ export function planSwarm({ queue = [], memory = null, hiveRoster = [], steemRos
     pinnedConflicts,
     unresolved,
     twins: twins.slice(0, 20),
-    stats: { ...stats, memoryRows, chainUnknownNote: "R303 book rows carry titleNorm+shingles only — chainUnknown, excluded from cross-chain pairs (measured limitation, named)" },
-    law: "assignment: pinned > persona-in-hive-roster > steem-default; anti-twin splits ≥0.5 title; cross-chain twin scan over published rows (null chain ⇒ steem); OBSERVE-ONLY — consumption arms only via signed DNA memory.swarmEnforce (default false); spamgate/R297/R301/R302 keep every gate",
+    stats: { ...stats, memoryRows, chainUnknownNote: "R337 rails record chain (steem at publish, hive at pickup+broadcast; chain rides in the record id) — book rows WITH chain join the title-kind scan; legacy chainless rows stay chainUnknown, excluded (the limitation shrinks as the book regrows)" },
+    law: "assignment: pinned > persona-in-hive-roster > steem-default; anti-twin splits ≥0.5 title; cross-chain twin scan over published rows (null chain ⇒ steem) + R303 book rows that carry chain (R337); OBSERVE-ONLY — consumption arms only via signed DNA memory.swarmEnforce (default false); spamgate/R297/R301/R302 keep every gate",
     ownerGated: true,
   };
   plan.signature = "sig:" + createHash("sha256").update(stableStringify(plan)).digest("hex").slice(0, 8);
@@ -231,7 +255,7 @@ export async function runSwarm({ stateDir, now } = {}) {
     const degraded = {
       verdict: "SWARM-DEGRADED", error: String(e?.message ?? e).slice(0, 160),
       assignments: [], splits: [], pinnedConflicts: [], twins: [],
-      stats: { drafts: 0, steem: 0, hive: 0, pinned: 0, splits: 0, pinnedConflicts: 0, publishedScanned: 0, crossChainTwins: null, sameChainTwins: null },
+      stats: { drafts: 0, steem: 0, hive: 0, pinned: 0, splits: 0, pinnedConflicts: 0, unresolved: 0, publishedScanned: 0, scannedRows: null, bookChainedRows: null, crossChainTwins: null, sameChainTwins: null },
       ownerGated: true, degraded: true,
     };
     seal(degraded);
