@@ -1238,3 +1238,18 @@ Stage Summary:
 
 **גבול-הכנות**: תקרת-ההון-של-הצבא (estateCapSteem=3) נשארת-חוק-canary-עצמאי — ציר-חשיפת-הון-נפרד; יטפס-בסולם-מדוד-משלו-כשהרווח-ירשה, לעולם-לא-מהפקדה.
 **מהירות-בלי-חששות = משמעת**: העלאה-אטית-מראיות · ירידה-מיידית-מאדום · fail-closed-לכל-אורך · שער-הבעלים-שלם.
+
+---
+Task ID: 34-a2 (exec34 lean lane — kernel isolation)
+Agent: kernel-completion-lane (exec34-kernel-lane identity)
+
+Work Log:
+- Built `mini-services/saos-engine/kernel-isolation.mjs` — **199 LOC**, pure node builtins (child_process/fs/os/path), zero deps, zero keys. Law provenance in header: exec34 Hyper-Sovereignty zero-crash directive; E2B + Guardrails patterns harvested NATIVELY (no SaaS, no Docker — unavailable, measured, no keys); R330 (LLM outside deterministic core — injected `repairOnce` seam, never imported), R340 (cleanup readback: `cleanup:'confirmed'` only when `fs.existsSync(tmpdir)===false`), R341 (estimateTokens ceil(len/4) + assertBudget throws), R342 (bounded self-heal: validate → ONE repair → revalidate → honest verdict, never loops).
+- Exports (6): `screenCode` (static deny-screen, fail-closed: child_process/process.binding, fork-bomb shape while(true)+spawn, `rm -rf /`, absolute-path escape /usr|/etc|/home/), `screenInput` (strong-hit injection deny-list + base64-of-curl; tolerant to soft noise), `validateOutput` (JSON.parse + hand-rolled shape check, no ajv), `guardedRound` (attempts∈{1,2} hard-bounded, repair-crash → REJECTED, zero-crash), `estimateTokens`/`assertBudget`, `runIsolated` (real `spawn(process.execPath, ['-e', code])` into fresh mkdtemp cwd, env whitelist = {PATH, HOME→tmpdir} scrub, SIGKILL timeout, 65536-byte output cap, recursive+force rmSync in finally, R340 readback).
+- Selftest section 44 appended (`selftest.mjs` +85 lines, after last section 43): **30 vectors, 44.1–44.28** — screenCode allows/denies; screenInput strong-hit denies + benign/noisy allows; validateOutput ok/type-fail/parse-fail/missing-required; guardedRound first-try VALIDATED(1) / repair-succeeds(2) / repair-fails REJECTED(2, never 3) / throwing-repair survived; budget throw+pass; runIsolated real spawns: 1+1→OK+cleanup-confirmed, `for(;;){}`→TIMEOUT+cleanup-confirmed+<15s, exit(3)→EXIT-3, EXEC34_SECRET env-scrub (child prints `undefined`, stdout never contains the secret), screened code→SCREENED without spawn.
+- **Selftest: 1614/1614 PASS** (was 1584; +30 vectors, all green, `node mini-services/saos-engine/selftest.mjs` from repo root).
+- Commit `8bb01423` (8bb0142328d48194db53fc8316fe4cbf3420f157): `exec34/34-a2 zero-crash kernel: native micro-sandbox (env-whitelist, timeout-kill, cleanup-readback) + LLM I/O guardrail (bounded repair, fail-closed) — E2B/Guardrails patterns, no SaaS/Docker/keys` (2 files, +284). Push: **OK** (first push rejected non-fast-forward — rebase over a6bd709c then push green); API-verified HTTP 200 on `repos/roshpinacare-sys/steem/commits/8bb01423…` with both files.
+
+Stage Summary:
+- What now exists: a **zero-crash kernel seam** in saos-engine — untrusted generated code can be run in a disposable native sandbox (fresh tmpdir, whitelisted env, SIGKILL-bounded, byte-capped, cleanup PROVEN by readback) and untrusted LLM output can be schema-gated with exactly one bounded repair attempt — all deterministic core, LLM strictly outside (R330 seam). Prior lane 34 died leaving nothing; this lane landed module + selftest + push + this receipt.
+- Zero keys touched, zero value moved, zero broadcasts sent, zero network grants to the child (env carries PATH+HOME only). Fail-closed throughout; honest boundaries recorded (screen deny-lists are static high-confidence patterns, not semantic AI; SaaS/Docker isolation unavailable in this environment — hence native).
