@@ -292,7 +292,8 @@ async function main() {
   report.steps.contentDrift = await stepWrap("content-drift", async () => {
     const { runDrift } = await import("./content-drift.mjs");
     const r = await runDrift({ stateDir: STATE, now });
-    return { verdict: r.verdict, at: r.at, samples: r.samples, source: r.source ?? null, topPhrase: r.driftPhrases?.[0]?.phrase ?? null, pillarGaps: r.proposal?.pillarGaps?.length ?? 0, degraded: r.degraded ?? false, observe: true };
+    const ticTop = (r.ticsEvidence ?? []).filter((e) => e.posts > 0).sort((a, b) => (b.hits - a.hits) || a.phrase.localeCompare(b.phrase))[0] ?? null;
+    return { verdict: r.verdict, at: r.at, samples: r.samples, source: r.source ?? null, topPhrase: r.driftPhrases?.[0]?.phrase ?? null, pillarGaps: r.proposal?.pillarGaps?.length ?? 0, ticsObserved: r.ticsObserved ?? null, ticsTopPhrase: ticTop ? `${ticTop.phrase} x${ticTop.hits}/${ticTop.posts}p` : null, refreshOf: r.proposal?.refreshOf?.fromSig ?? null, degraded: r.degraded ?? false, observe: true };
   });
 
   /* R328 · THE PER-FRONT FORMAT LINT (T-87, queue item #3 of the
@@ -358,6 +359,9 @@ async function main() {
     dnaDriftSamples: report.steps.contentDrift?.samples ?? null,
     dnaDriftSource: report.steps.contentDrift?.source ?? null,
     dnaDriftTop: report.steps.contentDrift?.topPhrase ?? null,
+    dnaDriftTicsObserved: report.steps.contentDrift?.ticsObserved ?? null,
+    dnaDriftTicsTop: report.steps.contentDrift?.ticsTopPhrase ?? null,
+    dnaDriftRefreshOf: report.steps.contentDrift?.refreshOf ?? null,
     formatLint: report.steps.formatLint?.verdict ?? "STEP-FAIL",
     formatLintChecked: report.steps.formatLint?.checked ?? null,
     formatLintViolations: report.steps.formatLint?.violations ?? null,

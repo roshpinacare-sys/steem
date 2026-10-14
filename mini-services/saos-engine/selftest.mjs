@@ -3651,6 +3651,77 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("37.10 post-apply judge stays observe on tics", [jvAfter37.ok, jvAfter37.axes.tics.mode], [true, "observe"]);
 }
 
+{
+  /* 38 · R330 DRIFT CLOSURE + TICS EVIDENCE (T-89, trace 1a1397d155d25c4d) —
+   * R329 applied R327's signed proposal (DNA v1→v2 carrying memory.tics),
+   * but the drift monitor was still blind to what its own proposal had
+   * become: the next beat would have re-mined "the difference is" and
+   * re-proposed the SAME refresh — the R297 shallow-memory class reborn on
+   * the monitor itself. Closure: mining excludes applied tics (an adopted
+   * tic is voice-LAW, not a discovery); the proposal carries refreshOf
+   * provenance from memory.applied; ticsEvidence measures each tic's
+   * recurrence in the OBSERVED corpus — the accumulated evidence the
+   * owner-gated ticEnforce arming decision (R302 pattern) awaits, since
+   * DNA v2 shipped those slots as hits:null/posts:null. */
+  const cd38 = await import("./content-drift.mjs");
+  const TICS38 = ["difference is in", "difference is in the", "drawer of replies", "of replies you", "the difference is", "the difference is in", "the drawer of", "the loop the"];
+  const dna38 = { version: 2, law: "R302", voice: { pillars: ["measured truth", "numbers over adjectives", "plain checklists", "human register"], bannedGenres: [] }, slopLexicon: ["unlock the power of"], fleetForbidden: [], personaForbidden: {}, quality: { weights: { hook: 25, specificity: 20, structure: 20, brevity: 20, register: 15 }, enforce: false }, memory: { jaccard: 0.5, windowDays: 90, tics: TICS38.map((phrase) => ({ phrase, hits: null, posts: null })), ticEnforce: false, conceptsEnforce: true, applied: [{ at: "2026-10-14T07:48:18.503Z", trace: "test", fromSig: "sig:53fe40f2", driftVerdict: "DNA-DRIFT-DETECTED", actions: { tics: TICS38 } }] } };
+  const post38 = (id, title, body) => ({ id, permlink: id, title, body });
+  const corpus38 = [
+    post38("t1", "The drawer of replies", "The difference is in the drawer of replies you keep. The difference is in how you answer. The difference is patience — measure it."),
+    post38("t2", "Second ledger", "The difference is in the numbers you log. We measured 12; the baseline held. The difference is in the drawer of replies too."),
+    post38("t3", "Third ledger, plain", "We logged 41 jobs and measured 9 minutes. Checklist:\n- baseline\n- delta\n- audit\nThe difference is in the counting."),
+    post38("t4", "Bench notes", "The quiet bench keeps its own ledger. The quiet bench measured nothing yet. I logged the quiet bench anyway."),
+    post38("t5", "Evening shift", "The quiet bench again tonight. We counted 9 trays; the baseline held. The quiet bench remembers."),
+  ];
+  const ticSet38 = new Set(TICS38);
+  /* 38.1 applied tics are NOT re-mined as candidates (the loop is closed) */
+  const c38 = cd38.analyzeDrift({ dna: dna38, posts: corpus38 });
+  eq("38.1 applied tics never re-mined", c38.driftPhrases.every((d) => !ticSet38.has(d.phrase)), true);
+  /* 38.2 THE MONEY VECTOR: the same corpus under a v1-shape DNA (no tics)
+   * re-mines the tic family — proving the pre-R330 re-proposal loop existed
+   * and that closure came from the applied tics, not from luck. */
+  const dna38v1 = { ...dna38, version: 1, memory: { jaccard: 0.5, windowDays: 90 } };
+  const v138 = cd38.analyzeDrift({ dna: dna38v1, posts: corpus38 });
+  eq("38.2 v1 DNA re-proposes the applied tic (loop proven)", [v138.driftPhrases.some((d) => d.phrase === "the difference is"), v138.verdict], [true, "DNA-DRIFT-DETECTED"]);
+  /* 38.3 the monitor is NOT blinded: a genuinely new recurring phrase still mined */
+  eq("38.3 new phrase still mined", [c38.driftPhrases.some((d) => d.phrase === "the quiet bench"), c38.verdict], [true, "DNA-DRIFT-OK"]);
+  /* 38.4 the proposal never re-proposes an applied tic (belt+braces filter) */
+  eq("38.4 addLexicon tic-free", c38.proposal.addLexicon.every((p) => !ticSet38.has(p)), true);
+  /* 38.5 refreshOf provenance rides the proposal (post-apply measurement) */
+  eq("38.5 refreshOf carries the applied provenance", [c38.proposal.refreshOf?.fromSig, c38.proposal.refreshOf?.trace, typeof c38.proposal.refreshOf?.at], ["sig:53fe40f2", "test", "string"]);
+  /* 38.6 v1-shape DNA: refreshOf honest null (backward compatible) */
+  eq("38.6 no applied ledger → refreshOf null", v138.proposal.refreshOf, null);
+  /* 38.7 ticsEvidence measures the observed recurrence exactly */
+  const ev38 = c38.ticsEvidence.find((e) => e.phrase === "the difference is");
+  eq("38.7 tic evidence counted exactly", [ev38.hits, ev38.posts], [6, 3]);
+  /* 38.8 honest zero: a tic absent from the observed corpus is evidence too */
+  const zero38 = c38.ticsEvidence.find((e) => e.phrase === "the loop the");
+  eq("38.8 absent tic is honest zero", [zero38.hits, zero38.posts], [0, 0]);
+  /* 38.9 ticsObserved = tics with posts>0 in this sample */
+  eq("38.9 ticsObserved counts observed tics", c38.ticsObserved, 7);
+  /* 38.10 plain-string tics accepted too (robust to applier shape) */
+  const dna38s = { ...dna38, memory: { ...dna38.memory, tics: ["the difference is"] } };
+  const s38 = cd38.analyzeDrift({ dna: dna38s, posts: corpus38 });
+  eq("38.10 string tics work", [s38.ticsEvidence.length, s38.ticsEvidence[0].hits, s38.driftPhrases.every((d) => d.phrase !== "the difference is")], [1, 6, true]);
+  /* 38.11 signature deterministic with the new fields */
+  eq("38.11 signature deterministic", [cd38.signDrift(c38), /^sig:[0-9a-f]{8}$/.test(cd38.signDrift(c38))], [cd38.signDrift(cd38.analyzeDrift({ dna: dna38, posts: corpus38 })), true]);
+  /* 38.12 the module still never mutates the DNA object (incl. applied ledger) */
+  const before38 = JSON.stringify(dna38);
+  cd38.analyzeDrift({ dna: dna38, posts: corpus38 });
+  eq("38.12 DNA object untouched", JSON.stringify(dna38), before38);
+  /* 38.13 degraded shape carries honest empty evidence, never fake numbers */
+  const deg38 = cd38.analyzeDrift({ dna: dna38, posts: [] });
+  eq("38.13 degraded evidence honest", [deg38.ticsEvidence.length, deg38.ticsObserved, deg38.proposal], [0, null, null]);
+  /* 38.14 live smoke on the REAL DNA v2 + the REAL corpus as observed voice */
+  const realDna38 = JSON.parse(fs.readFileSync(new URL("./content-dna.json", import.meta.url), "utf8"));
+  const realCorpus38 = JSON.parse(fs.readFileSync(new URL("./content-corpus.json", import.meta.url), "utf8"));
+  const realPosts38 = realCorpus38.map((c) => post38(c.id, c.title, c.body));
+  const real38 = cd38.analyzeDrift({ dna: realDna38, posts: realPosts38 });
+  const realTics38 = new Set(cd38.appliedTicPhrases(realDna38));
+  eq("38.14 real DNA v2: tic-free proposal + measured evidence + provenance", [realDna38.version, real38.observe, real38.ticsEvidence.length, real38.proposal.addLexicon.every((p) => !realTics38.has(p)), real38.proposal.refreshOf?.fromSig, realDna38.law], [2, true, realTics38.size, true, "sig:53fe40f2", "R302"]);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
