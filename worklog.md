@@ -1351,3 +1351,22 @@ Stage Summary:
 - The identical message is now LAW in git (two repos): any agent landing later reads worklog tail → R343 → claims a lane → continues without me
 - Open lanes with boundaries: L-VOL (the owner's volume directive), L-WALLET, L-STATE, L-SEC, L-BRAND, L-GRID-LOW, C/E/F, L-LAW — first-claim-wins per #21
 - Honest limitation: no direct fleet-execution mechanism on our dex yet (wrap/anchors exist) — L-VOL owns building it under existing caps/kelly discipline; measurement precedes every announcement
+
+---
+Task ID: 20-b (R344 sovereign direct channel — URGENT, trace 1a13b9d5d9a8f049)
+Agent: Z.ai Code (coordination-law lane, continuation of 20-a)
+Task: Owner's directive: NO claims to the owner through agents — all owner-facing claims go to the sovereignty itself; the sovereignty IS the operator (self-funding, zero owner money/actions); build the super-intelligent direct owner↔sovereignty channel IN the system. URGENT.
+
+Work Log:
+- Read worklog first: R344/L-CHANNEL unclaimed; measured hosting (Pulse = public repo + LIVE Pages at roshpinacare-sys.github.io/Pulse/ → 200; steem & apex-site = private, raw 404) → channel engine+surface belong in Pulse
+- Built the channel engine in Pulse/state/sovereign-channel/: directives.jsonl (owner→sovereignty, append-only; D-0001 = the five laws, ACTIVE) · requests.jsonl (sovereignty→owner; REQ-001 channel ratification SATISFIED-BY:D-0001, REQ-002 dual-key SOCIAL-STANDBY OPEN no-wait, REQ-003 owner-authority-gates inventory OPEN) · PROTOCOL.md (SAOS-SOVEREIGN-CHANNEL/1: schemas, beat read-contract, agent write-permissions — agents append requests only, in the sovereignty's name, with linked evidence; owner writes directives only)
+- Built the surface Pulse/sovereign.html (public, zero keys): live sovereignty state tiles from state/network.json, both streams rendered from git (honest failure states, never invented numbers), directive composer with live-computed id + github.dev commit path, HE/RTL, Pulse theme, sticky footer, safe-area
+- One additive line in Pulse index.html header: "♛ ערוץ-ריבוני" anchor → sovereign.html
+- Registered the law: steem/docs/R344-SOVEREIGN-DIRECT-CHANNEL.md (5 laws: zero-intermediary / sovereignty-as-operator R328-final / channel-in-public-git / surface / obedience) + saos-dex DECISIONS #20 SOVEREIGN-DIRECT-CHANNEL
+- Honest three-state for "super-intelligent": TRUE = live state-translation + real law streams + validated composer; CLAIM-ONLY = sovereign voice via GitHub Models free tier (voice.json) awaiting beat-lane wiring — never faked
+- Leak-scan all new files: pending pre-push; legal identity verified
+
+Stage Summary:
+- The owner and the sovereignty now have a direct, durable, agent-free channel: git streams + public Pages surface; survives total agent death (MTT) — the owner manages the sovereignty through the interface, not through agents
+- Open handoffs: beat read-wiring (each lane's own workflow), GitHub-Models voice, direct-commit token UI (owner-held only), bounded-retry for channel files (R331 pattern), apex front-door anchor (apex lane)
+- FILE-BOUNDARY held: Pulse = new files only + 1 header anchor; steem = 1 new doc; saos-dex = DECISIONS append; zero engine/state/config files of other lanes touched
