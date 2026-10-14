@@ -26,6 +26,7 @@ cd mini-services/saos-engine
 bun selftest.mjs                        # חייב N/N PASS (מקור: state/selftest-last-run.json)
 node ../../scripts/chain-anchor-probe.mjs   # עוגן-tip מול-השרשרת — DRIFT = עצור
 curl -s localhost:3040/ >/dev/null && echo engine-ok   # + 3041/3042/3043 במידת-הצורך
+pgrep -f 'bash scripts/office-supervisor.sh' >/dev/null || { setsid nohup bash scripts/office-supervisor.sh >/dev/null 2>&1 < /dev/null & }  # אפוטרופוס-המשרד (R324-CONT-2: OOM משחט אחים — תחיית-יתום כפויה, cooldown 10דק)
 ```
 
 ## שלב-שני-וחצי · חייאת-זהות-הכותב (R284 — אפס-מפעיל)
