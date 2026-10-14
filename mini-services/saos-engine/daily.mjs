@@ -43,7 +43,8 @@ import { runRecruiter } from "./recruiter.mjs";
 import { runEconomics } from "./economics.mjs";
 import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
-import { runSocial, runOrganicWatch, runProfiles } from "./army-social.mjs";
+import { runSocial, runOrganicWatch, runProfiles, ARMY_ROSTER } from "./army-social.mjs";
+import { runShellWatch } from "./shell-watch.mjs"; /* R299: THE UN-SHELL METER */
 import { runHiveRail } from "./hive.mjs";
 import { runBlurtOrgan } from "./blurt.mjs";
 import { runHiveProfiles } from "./hive-profiles.mjs";
@@ -891,6 +892,16 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.organic = await stepWrap("organic", async () => {
     const out = await runOrganicWatch({ now });
     return { verdict: out.organic?.verdict ?? null, activePauses: Object.keys(out.pauses ?? {}).length, flags: out.posts?.reduce((n, p2) => n + (p2.flags ?? 0), 0) ?? 0, ms: null };
+  });
+
+  /* R299 · THE UN-SHELL METER (the shelling incident): the frontend-level
+   * shell state of the roster is invisible to the chain API — this step
+   * probes steemit.com profile pages from the engine's own vantage and
+   * records render/shell/challenge HONESTLY (read-only, zero keys).
+   * Fail-isolated like every rail. */
+  report.steps.shellWatch = await stepWrap("shell-watch", async () => {
+    const out = await runShellWatch({ now, roster: [masterAccount(), ...ARMY_ROSTER] });
+    return { verdict: out.summary?.verdict ?? null, shelled: out.summary?.shelled ?? null, rendered: out.summary?.rendered ?? null, challenged: out.summary?.challenged ?? null, control: out.control?.verdict ?? null };
   });
 
   /* R255 · THE PERSONA PROFILE SYNC (the visibility law): on-chain profiles
