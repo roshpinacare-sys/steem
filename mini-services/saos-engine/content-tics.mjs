@@ -112,17 +112,49 @@ export function loadSealedProposal(file) {
   }
 }
 
+/* R333 · THE UNION LAW (T-92, trace 1a13a2e1be234775) — measured live before
+ * a line was written: the 2026-10-14 drift beat sealed proposal sig:67a390a5
+ * (5 fresh phrases, R330-filtered so NO applied tic rides along) and the
+ * dry-run shrank DNA v2 from 8 tics to 5 — the applier REPLACED the
+ * fingerprint it was supposed to grow. Replace + R330's anti-re-propose
+ * filter = a pump: apply wave 2 → the 8 applied tics vanish from the DNA →
+ * inTicFamily stops recognizing them → the monitor re-proposes them next
+ * beat → the next apply drops the wave-2 five — churn forever, memory
+ * regression on every beat. The applied ledger is a MEMORY, not a footnote:
+ * existing tics enter the union first-class, new candidates join by
+ * measured weight, dedup is exact-phrase (R330 already guards overlap at
+ * proposal level), and the structural ceiling (TIC_CAP_DNA — 4× the hygiene
+ * cap, never bites in practice) records any overflow HONESTLY in the ledger
+ * (actions.ticsDropped) instead of silently narrowing the fingerprint.
+ * Idempotency (fromSig) and the never-arm law (ticEnforce) are untouched. */
+export const TIC_CAP_DNA = 48;
+
 /** dry-run by default: returns the next DNA WITHOUT writing. */
 export function planApply({ dna, proposal, sig, trace, now, driftVerdict = null }) {
-  const tics = normalizeTics(proposal.addLexicon ?? []);
   const mem = { ...(dna.memory ?? {}) };
-  mem.tics = tics;
+  const existing = Array.isArray(mem.tics) ? mem.tics : [];
+  const candidates = normalizeTics(proposal.addLexicon ?? [], { cap: 100000 });
+  const union = normalizeTics([...existing, ...candidates], { cap: TIC_CAP_DNA });
+  const have = new Set(union.map((t) => t.phrase));
+  const added = union.filter((t) => !existing.some((e) => (typeof e === "string" ? e : e?.phrase)?.toLowerCase?.() === t.phrase));
+  const dropped = candidates.map((t) => t.phrase).filter((p) => !have.has(p));
+  /* R333 belt+braces: if the structural ceiling ever forces a previously-
+   * applied tic OUT of the fingerprint, that loss is a LOUD ledger line
+   * (ticsLost), never a silent narrowing — under cap 48 this stays empty
+   * in every real wave; a non-empty ticsLost is an alarm, not bookkeeping. */
+  const lost = existing
+    .map((e) => (typeof e === "string" ? e : e?.phrase)?.toLowerCase?.())
+    .filter((p) => p && !have.has(p));
+  mem.tics = union;
   mem.ticEnforce = mem.ticEnforce === true; /* LAW 2: the applier never arms a veto knob */
   mem.conceptsEnforce = true;              /* R307 reorder knob: never drops, never gates; evidence = R304 ladder live + drift pillar gaps */
   mem.applied = [
     ...((dna.memory ?? {}).applied ?? []),
     { at: now ?? null, trace: trace ?? null, fromSig: sig ?? null, driftVerdict: driftVerdict ?? null,
-      actions: { tics: tics.map((t) => t.phrase), ticEnforce: mem.ticEnforce, conceptsEnforce: true } },
+      actions: { tics: union.map((t) => t.phrase), ticsAdded: added.map((t) => t.phrase),
+        ...(dropped.length ? { ticsDropped: dropped } : {}),
+        ...(lost.length ? { ticsLost: lost } : {}),
+        ticEnforce: mem.ticEnforce, conceptsEnforce: true } },
   ];
   return { ...dna, version: (dna.version ?? 1) + 1, memory: mem };
 }
