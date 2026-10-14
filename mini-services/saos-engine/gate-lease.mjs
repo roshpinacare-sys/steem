@@ -75,6 +75,17 @@ import path from "node:path";
 const PURPOSE_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 const DEFAULT_TTL_MS = 120000;
 
+/* ── purpose allowlist (exec37 lane 37-a, R353 wiring; ADDITIVE entry only —
+ * this export is the ONLY gate-lease.mjs edit of that lane) ────────────────
+ * The production purposes registered to HOLD the verification gate. The
+ * module's own grant law stays PURPOSE_RE fail-closed (48.16 hostile-refused,
+ * byte-preserved); production callers MUST pick their purpose from this list
+ * and check membership before acquiring (ci-cycle.mjs does exactly that —
+ * an unregistered purpose can never hold the gate in a live beat).
+ * "ci-selftest" = the heartbeat's lease-wrapped selftest critical section
+ * (run selftest.mjs → verdict + run-marker written, R354). */
+export const PURPOSE_ALLOWLIST = Object.freeze(["ci-selftest"]);
+
 const validTtl = (n) => Number.isInteger(n) && n > 0;
 const validPid = (n) => Number.isInteger(n) && n > 0;
 

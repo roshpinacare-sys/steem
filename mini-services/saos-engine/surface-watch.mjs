@@ -81,6 +81,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
+/* exec37 · lane 37-a · R355-wiring: the triage brain (watch-upgrades.mjs,
+ * byte-untouched) imported as a READ-ONLY ADVISORY dependency — pure module,
+ * no side effects, no cycle (it imports node:fs/path only). */
+import { triageFailure } from "./watch-upgrades.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 
@@ -233,6 +237,29 @@ export function planRepair(judged) {
     action = { action: "escalate" };
   }
   return { ...action, readbackRequired: true };
+}
+
+/* ── exec37 · lane 37-a · the R355 advisory triage seam (fail-closed) ──────
+ * One classification per non-OK surface, BEFORE any repair decision.
+ * READ-ONLY by construction: the judged input is never mutated, no clock,
+ * no network, no execution. A triage that THROWS (or any unexpected shape)
+ * degrades fail-closed to AMBIGUOUS/observe-only — a broken brain must
+ * never unlock hands, and must never fabricate a class. */
+export function triageAdvisory(judged) {
+  try {
+    const t = triageFailure({
+      surface: typeof judged?.target?.id === "string" ? judged.target.id : undefined,
+      verdict: typeof judged?.verdict === "string" ? judged.verdict : undefined,
+      reason: typeof judged?.reason === "string" ? judged.reason : undefined,
+      httpCode: null,
+    });
+    if (!t || typeof t.class !== "string" || !["ENVIRONMENT", "CODE", "AMBIGUOUS"].includes(t.class)) {
+      return { class: "AMBIGUOUS", confidence: "high", basis: "triage-shape-invalid:fail-closed-observe-only", advisedAction: "observe-then-escalate" };
+    }
+    return { class: t.class, confidence: t.confidence, basis: t.basis, advisedAction: t.advisedAction };
+  } catch (e) {
+    return { class: "AMBIGUOUS", confidence: "high", basis: `triage-throw:fail-closed-observe-only (${String(e?.message ?? e).slice(0, 60)})`, advisedAction: "observe-then-escalate" };
+  }
 }
 
 /* ── credentials: env-sourced, NEVER echoed, NEVER written to receipts ───── */
@@ -456,6 +483,10 @@ export async function runSurfaceWatch(opts = {}) {
   const now = opts.now ?? new Date().toISOString();
   const fetchImpl = opts.fetchImpl ?? null; // selftest seam; production = global fetch
   const timeoutMs = Number(opts.timeoutMs) > 0 ? Number(opts.timeoutMs) : PROBE_TIMEOUT_MS;
+  /* exec37 37-a R355-wiring: triageGate is the OPT-IN advisory wiring flag —
+   * the CI heartbeat passes triageGate:true; with the flag ABSENT the whole
+   * gate is neutral and legacy behavior is byte-preserved (section 43). */
+  const triageOn = opts.triageGate === true;
   try {
     const targets = Array.isArray(opts.targets) && opts.targets.length ? opts.targets : probeTargets(now);
     const token = opts.token ?? ghToken();
@@ -485,12 +516,44 @@ export async function runSurfaceWatch(opts = {}) {
       .map((j) => ({ targetId: j.target.id, verdict: j.verdict, ...planRepair(j) }))
       .filter((p) => p.action);
 
-    /* (e) execute repairs ONLY when act-armed (the autonomous self-heal) */
+    /* (e) execute repairs ONLY when act-armed (the autonomous self-heal).
+     * exec37 37-a R355-wiring: when triageOn, every planned repair first
+     * passes the R355 triage as an ADVISORY gate (brain before hands):
+     *   ENVIRONMENT → NO auto-repair; escalation recorded (jsonl + doc); the
+     *     surface STAYS in the report — the denominator never changes;
+     *   CODE        → the existing lawful-repair path, unchanged;
+     *   AMBIGUOUS (incl. triage-throw → fail-closed) → observe-only this
+     *     beat: no execution, no auto-retry, basis recorded.
+     * plans[] (repairsPlanned) keeps EVERY non-OK surface's lawful plan —
+     * a gated-out surface is never dropped from the report. */
     const repairs = [];
     const readbackById = {};
+    const triageGate = [];
     if (actArmed) {
       for (const p of plans.slice(0, MAX_REPAIRS_PER_BEAT)) {
         const j = judged.find((x) => x.target.id === p.targetId);
+        if (triageOn) {
+          const adv = triageAdvisory(j);
+          const entry = { id: p.targetId, verdict: j?.verdict ?? null, class: adv.class, confidence: adv.confidence, basis: adv.basis, advisedAction: adv.advisedAction };
+          if (adv.class === "ENVIRONMENT") {
+            entry.gate = "escalation-blocked (no auto-repair this beat)";
+            triageGate.push(entry);
+            /* record the escalation — same ledger as the escalate executor,
+             * minus any probe: the gate WITHHELD the hands, nothing executed */
+            try {
+              fs.mkdirSync(stateDir, { recursive: true });
+              fs.appendFileSync(path.join(stateDir, "surface-escalations.jsonl"), JSON.stringify({ at: now, id: p.targetId, verdict: j?.verdict ?? null, reason: j?.reason ?? null, action: "escalate", triage: "ENVIRONMENT", basis: adv.basis }) + "\n");
+            } catch { /* ledger never blocks */ }
+            continue;
+          }
+          if (adv.class === "AMBIGUOUS") {
+            entry.gate = "observe-only (no auto-retry this beat)";
+            triageGate.push(entry);
+            continue;
+          }
+          entry.gate = "proceed (lawful-repair-candidate)";
+          triageGate.push(entry);
+        }
         const receipt = await executeRepair({ action: p.action, repo: p.repo, workflow: p.workflow, path: p.path }, j, { fetchImpl, now, stateDir, token, timeoutMs });
         repairs.push(receipt);
         readbackById[p.targetId] = receipt.readback;
@@ -513,6 +576,10 @@ export async function runSurfaceWatch(opts = {}) {
       })),
       repairsPlanned: plans,
       repairs,
+      /* exec37 37-a R355-wiring: the advisory triage ledger of THIS beat —
+       * present ONLY when the gate ran (triageGate:true + act-armed); in
+       * observe/OK beats the sealed doc stays byte-compatible. */
+      ...(triageOn && actArmed && triageGate.length ? { triageGate } : {}),
     };
     const docSigned = { ...doc, signature: signWatchDoc(doc) };
     let fileWritten = false;
@@ -535,6 +602,8 @@ export async function runSurfaceWatch(opts = {}) {
       repairMode: doc.repairMode,
       actArmed,
       fileWritten,
+      /* exec37 37-a: present only when the R355 gate was wired on */
+      ...(triageOn ? { triageGate } : {}),
     };
   } catch (e) {
     /* never throws — an error is a verdict, not a wedge */
