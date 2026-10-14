@@ -256,6 +256,25 @@ async function main() {
     return { verdict: r.verdict, at: r.at, scanned: r.scanned ?? 0, kept: r.kept ?? 0, topScore: r.candidates?.[0]?.score ?? null, fresh: true };
   });
 
+  /* R306 · THE ENGAGEMENT READ-BACK (exec30, the "what worked" loop — the
+   * market-ldr/langchain advantage pattern made sovereignty-native):
+   * READ-ONLY measurement of OUR OWN published posts — fleet ledger cache
+   * (loadCached, never rebuilt) + chain blog truth (headcorner + ARMY_ROSTER,
+   * self-authored roots, last 14 days, cap 40) → get_content per post →
+   * votes/replies/payout records + an honest aggregate (median, vote-
+   * quartile means, per-tag means — numbers only, no advice text), sealed
+   * with a canonical signature into state/content-engagement.json, which
+   * rides the state-churn commits. SOCIAL-STANDBY-safe by construction
+   * (measuring our own history is observation, not action). OBSERVE-ONLY:
+   * never a gate — enforcement waits for measured evidence, exactly like
+   * R302. Fail-isolated like every step: a chain error is an honest
+   * ENGAGEMENT-DEGRADED receipt, never a broken heartbeat. */
+  report.steps.contentEngagement = await stepWrap("content-engagement", async () => {
+    const { runEngagement } = await import("./content-engagement.mjs");
+    const r = await runEngagement({ stateDir: STATE, now });
+    return { verdict: r.verdict, at: r.at, measured: r.measured, medianVotes: r.medianVotes, topTag: r.topTag ?? null, degraded: r.degraded ?? false, observe: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -303,6 +322,15 @@ async function main() {
       kept: report.steps.contentSourcing?.kept ?? 0,
       topScore: report.steps.contentSourcing?.topScore ?? null,
       verdict: report.steps.contentSourcing?.verdict ?? "STEP-FAIL",
+    },
+    /* R306 engagement read-back — the one-line "what worked" digest
+     * (at/measured/medianVotes/topTag; numbers only, no advice). */
+    contentEngagement: {
+      at: report.steps.contentEngagement?.at ?? null,
+      measured: report.steps.contentEngagement?.measured ?? null,
+      medianVotes: report.steps.contentEngagement?.medianVotes ?? null,
+      topTag: report.steps.contentEngagement?.topTag ?? null,
+      verdict: report.steps.contentEngagement?.verdict ?? "STEP-FAIL",
     },
   };
   console.log("CI-HEARTBEAT " + JSON.stringify(summary));
