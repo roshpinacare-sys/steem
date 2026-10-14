@@ -1043,3 +1043,18 @@ Stage Summary:
 - **השערת-ה-stagger מרוסטרת כנה**: לא-פרמטר-אלא-סביבה — בספר-רחב-המילוי-המייקר-השני-בא-מאליו; בלי-דלק-אין-מה-להעמיק.
 - **פערים-פתוחים-כנים**: (1) תדלוק 8-חשבונות = תחום-בעלים-בלבד (2) estateOpenOrders-מדידה-לפני-התיישבות — תיקון-קטן-מתוכנן ב-army-ladder (3) 4-txids-UNREACHABLE-בקבלה — סריקה-מחדש-בקנרי-הבא 15:23Z (כל-הדגימות-קיימות-בשרשרת) (4) GitHub-cron-מתעכל — הקנרי-2x/יום+קבלות-כנות סופגים (5) רגל-מקומית-ב-STASIS-עד-מפתחות-מקומיים — by-design.
 - הכל-דחוף. אפס-דריסה (אפס-קומיטים-שלי-לריפואים; הכל-מדידה+dispatch-מנדטי).
+
+## R326 — income-plane arteries + honest staleness clock + dormant triage (2026-10-14T07:2xZ)
+
+- **run 36 verdict (honest)**: נכשל על משטח-המירוץ שהתיקון-שלי (f20a747) חשף — "nothing to commit" בין-diff-ל-commit תחת bash -e. הצי הרכיב שתי-שכבות-נוספות מעל (9b9d027 commit-before-pull, 96ac0b4 R41 race-tolerance: commit-ריק = NO-CHANGE-כן exit-0). runs 37-40 ירוקים. איחוד-נשמר, אפס-דריסה.
+- **מפתחות-הכספת נבדקו-שוב**: ROT2_FLEET_KEYS updated_at לא-זז (2026-10-13T00:05:12Z); 6/6 סודות-יציבים; ladders חיים-קצה-עד-קצה (treasury #21 · army #1/#2 success).
+- **רעב-cron-עורקי-הכנסה נמדד ותוקן**: 21/21-treasury + 2/2-army הרצות = workflow_dispatch, אפס-הצתות-schedule מעולם (05:41Z + 03:23Z של היום רעבו — חוק-scheduler-ריפו-חדש שוב, על המארח-הציבורי R280). 2-עורקי-פצמר חוברו (slaMin 780 = קצב-12h + שומר-jitter-1h, סטייה-מכוונת-מהחוק-מתועדת-בקובץ) על **שני-המארחים**: Console a223d96 (24-lanes) · FleetHQ dff1c47 (35-lanes). DRYRUN-מאומת-בשניהם; קבלת-פצמר-הבאה אישרה measured:24 ו-lanes on-time; הצתה-אוטומטית ~12:52Z אם-cron-ימשיך-לרעוב (משחזר קצב-הכנסה 2/יום).
+- **אדומים-חדשים טרייאז'**: FleetHQ|office-3d = born-red (CI העתיק dist-artifact שלעולם-לא-נשמר) — **כבר-תוקן-ע"י-סוכן-מקביל** (2f7c003), run #46 ירוק; Sandbox|compute-canary = מד-חומת-החיוב **בתכנון** (החומה-סגורה, ה-probe חסום = האזעקה-עובדת, owner-gated); Autonomy contract-check החלים-מעצמו (#3/#4 ירוקים).
+- **Pulse issue #5 (8-ריפו-רדומים) בוצע**: **התגלה שמד-הטריות משקר** — אירוע-branch/tag בulk הרים pushed_at על 7-ריפו בדקה-אחת (02:26:18-33Z) ו-13-ריפו-אכן-רדומים קרסו-ל-2-כביכול-טריים. **תוקן probe.mjs (41956af)**: הטריות-נמדדת על ה-commit-האחרון-בענף-ברירת-המחדל (fallback-מתועד ל-pushed_at ב-rate-wall), מפרסם stale24hAnnotated (שם+שעון+פסק-דין+נימוק+reviewBy) + totals.staleUndecided. עשן-מלא-מקומי: exit=0, stale24h=13-כן (מול 2-שקר), הערות-פסק-דין מוצגות.
+- **state/dormant-decisions.json (pulse-dormant-decisions/1)**: פסקי-דין-מרואיים-פר-ריפו — Project-files **REVIVED** (קבלות-keeper על דקות-ציבוריות), Saosmartwallet מעטפת-משמורת key-gated, 6-מעטפות role-declared why-silenced = keep-dormant-on-purpose, reviewBy 2026-11-13 (פסק-שפג-תוקפו חוזר-ל-undecided = בלי-רדום-זומבי). issue #5 הוער-בטבלת-ההחלטות-המתועדת ונסגר-completed (comment 6163009184).
+
+**Stage Summary**:
+- עורקי-ההכנסה רוכבים-על-הפצמר בשני-המארחים — עצמאות-מה-scheduler; קצב-2/יום משוחזר-כנה גם-עם-cron-רעב.
+- מד-הטריות כן-שוב: שעון-last-commit, פסקי-דין-מתוכננים-עם-תפוגה, 7-רדומים-כנים-נותרו-גלויים-לטריאז'-הבא (sandbox-private, Adsmarket, saos-jummper, Sdk, TruthRail, negen, sovereign-runner-kit).
+- אפס-דריסה: 3-דחיפות additive (Console a223d96 · FleetHQ dff1c47 · Pulse 41956af); ה-ledger נצרך fail-open (בלי-קובץ = הכל-undecided).
+- owner-gated נותרו: חומת-החיוב (canary אדום-מתוכנן), 7-רדומים-להכרעה, תדלוק-רגלי-קנייה ל-treasury.
