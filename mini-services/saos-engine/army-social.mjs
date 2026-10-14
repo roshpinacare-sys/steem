@@ -66,6 +66,10 @@ import { synthesizeReply, synthesizePersonaComment, synthesizePersonaReply, isPr
 import { spamVerdict, organicVerdict, flagPauseVerdict, crossChainVerdict, spamwatchState, saveSpamwatch, GATE_DEFAULTS } from "./spamgate.mjs";
 import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
 import { loadOrBuild as loadFleetLedger, uniqueness as fleetUniqueness, notePublished as noteFleetLedgerPublished, saveLedger as saveFleetLedgerFile } from "./fleet-ledger.mjs";
+/* R302/R303 (T-83): the content judge + the Git-as-Memory learning loop —
+ * the SoMe/market-ldr distillation, composed ON TOP of the existing gates. */
+import { judgeVerdict, loadDNA } from "./content-judge.mjs";
+import { loadMemory, recordRejected, recordPublished } from "./content-memory.mjs";
 import { reviveArmyCustody, ARMY_ROSTER as ROSTER_BASE } from "./vault-revival.mjs";
 import { readCommunityState, communityPostMeta, communityMetaObj } from "./community.mjs";
 import { embedImage } from "./illustrate.mjs";
@@ -905,6 +909,33 @@ async function doPublish(account, st, p, now, day) {
     journalRefusal(now, account, `publish:${draft.id}`, gate);
     return false;
   }
+  /* R302 · THE CONTENT JUDGE (T-83, owner order 2026-10-14: "תתחיל הכי טוב
+   * שאפשר בצע"): the learning layer composed ON TOP of the existing gates —
+   * slop lexicon (the machine-slop fingerprint of the shelling incident),
+   * persona voice collisions (content-dna.json), and the R303 Git-as-Memory
+   * penalty (a pattern the fleet already refused — exact title or ≥0.5
+   * Jaccard body within 90d — refuses again). Quality runs OBSERVE-ONLY
+   * (the policy-engine pattern: enforcement waits for measured evidence).
+   * Judge crash = fail-open with an honest event — the hard gates spamgate
+   * + R297 still hold; the judge never OPENS a gate the laws closed, and
+   * never wedges the organ on its own bug. */
+  let judgeObserve = null;
+  try {
+    const mem = await loadMemory(STATE);
+    const jv = judgeVerdict(draft, { memory: mem, persona: personaOf(draft.persona) ?? personaOf(account) ?? null, dna: loadDNA() });
+    judgeObserve = jv.observe ?? null;
+    if (!jv.ok) {
+      draft.status = "refused-judge";
+      draft.judge = { at: now, reasons: jv.reasons.slice(0, 6), quality: jv.observe?.score ?? null };
+      writeJson(CONTENT_FILE, c);
+      try { recordRejected(STATE, { account, title: draft.title, body: draft.body, reason: jv.reasons.slice(0, 3).join("; "), vetoType: "judge", at: now }); } catch { /* memory is additive */ }
+      appendLine(path.join(STATE, "events.jsonl"), { type: "social.judge-veto", at: now, account, title: String(draft.title).slice(0, 80), reasons: jv.reasons.slice(0, 4) });
+      return false;
+    }
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.judge-observe", at: now, account, title: String(draft.title).slice(0, 80), score: jv.observe?.score ?? null, mode: jv.observe?.mode ?? "observe" });
+  } catch (e) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.judge-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
+  }
   const permlink = permlinkStem(draft.title, day, st.done.publish ?? 0);
   /* R246 COMMUNITY-RAIL, R254 CENTRALIZATION (operator order, verbatim
    * intent): "ולהתחיל להפעיל אותה שיזרמו לשם נעשה את זה מרוכז שיהיה לנו מקום
@@ -959,6 +990,17 @@ async function doPublish(account, st, p, now, day) {
     saveFleetLedgerFile(STATE, noteFleetLedgerPublished(led, { account, permlink, title: draft.title, body, created: now }));
   } catch (e) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-uniqueness-note-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
+  }
+  /* R303 · GIT-AS-MEMORY: the broadcast becomes a learning pattern with its
+   * quality observation (judgeObserve from R302; null when the judge
+   * degraded). Best-effort — a memory failure never un-publishes chain
+   * truth, and the weekly heartbeat step merges runtime → committed seed
+   * so the learning survives every sandbox death (owner: "שלא יאבד בסנדבוקס
+   * שלך בשום פנים ואופן"). */
+  try {
+    recordPublished(STATE, { account, permlink, title: draft.title, body, score: judgeObserve?.score ?? null, at: now });
+  } catch (e) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "social.memory-record-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
   }
   /* R255 · THE ARC ADVANCES ON MEASURED TRUTH: lifetime posts live in the
    * chain (this publish just added one); the stage pointer is recomputed
