@@ -3840,6 +3840,129 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("39.16 signature over payload-without-at", [expect39, sealed39.signature], [sealed39.signature, expect39]);
 }
 
+{
+  /* 40 · R331 THE SPAWN-MANIFEST LAW + R332 THE IDEMPOTENCY LIFECYCLE (exec32
+   * lane 32-a, law provenance exec31 dossier f8cd2ad): legion_agi's spawn
+   * pattern made sovereignty-native — typed pre-spawn manifests, hard caps,
+   * truthful fixed-roster fallback (no invented personas), fail-closed
+   * validation that records EVERY violation — plus Mercury's lifecycle
+   * reserve-before-act → release-only-pre-act → freeze-after-commit, replays
+   * returning the recorded outcome. The heartbeat step is OBSERVE-ONLY:
+   * it derives the beat's own self-manifest from the REAL ci-cycle roster,
+   * walks the lifecycle, scans state/spawn/manifests/*.json, seals a signed
+   * receipt. Zero keys, zero value, zero chain, zero npm deps. */
+  const sm39 = await import("./spawn-manifest.mjs");
+  const NOW39 = "2026-10-14T12:00:00.000Z";
+  const lane39 = (over = {}) => ({ id: "l0", agentType: "content", kind: "observe", budgetTokens: 5000, fanoutCap: 1, ...over });
+  const lanes39 = [lane39(), { id: "l1", agentType: "social", kind: "observe", budgetTokens: 5000, fanoutCap: 1 }];
+
+  /* 40.1 deterministic identity: same input → same id; id shape */
+  const m39a = sm39.deriveManifest({ goal: "beat", lanes: lanes39, now: NOW39 });
+  const m39b = sm39.deriveManifest({ goal: "beat", lanes: lanes39, now: NOW39 });
+  eq("40.1 deterministic id + shape", [m39a.id, m39a.id === m39b.id, /^spawn-[0-9a-f]{8}$/.test(m39a.id)], [m39b.id, true, true]);
+  /* 40.2 manifest shape: schema v, laws checked, honest null deciderRef */
+  eq("40.2 manifest shape", [m39a.v, m39a.lawsChecked, m39a.deciderRef, m39a.at], [1, ["R331", "R332"], null, NOW39]);
+  /* 40.3 deciderRef honored when the laws carry it */
+  eq("40.3 deciderRef from laws", sm39.deriveManifest({ goal: "beat", lanes: lanes39, now: NOW39, laws: { deciderRef: "decider:exec32" } }).deciderRef, "decider:exec32");
+  /* 40.4 lane normalization: truthful fallback, worklog forced true, defaults */
+  const ln39 = m39a.lanes[0];
+  eq("40.4 lane normalization", [ln39.fallback, ln39.worklogRequired, ln39.kind, m39a.lanes[1].fallback], ["content", true, "observe", "social"]);
+  /* 39.5-40.8 budget law: hard floor/ceiling, integer-only (legion_agi had NO budgets) */
+  const throws39 = (fn) => { try { fn(); return null; } catch (e) { return String(e?.message ?? e); } };
+  ok("40.5 throws invented persona", /agentType-roster/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ agentType: "legion-quantum-guru" })], now: NOW39 })) || ""));
+  ok("40.6 throws budget below floor", /budgetTokens/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ budgetTokens: 999 })], now: NOW39 })) || ""));
+  ok("40.7 throws budget above ceiling", /budgetTokens/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ budgetTokens: 200001 })], now: NOW39 })) || ""));
+  ok("40.8 throws non-integer budget", /budgetTokens/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ budgetTokens: 1000.5 })], now: NOW39 })) || ""));
+  /* 39.9-40.10 fanout cap (anti-storm) */
+  ok("40.9 throws fanoutCap 0", /fanoutCap/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ fanoutCap: 0 })], now: NOW39 })) || ""));
+  ok("40.10 throws fanoutCap over 8", /fanoutCap/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ fanoutCap: 9 })], now: NOW39 })) || ""));
+  /* 40.11 truthful fallback law: a DIFFERENT persona is unlawful even if real */
+  ok("40.11 throws fallback ≠ agentType", /fallback-truthful/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ fallback: "social" })], now: NOW39 })) || ""));
+  /* 40.12 kind whitelist */
+  ok("40.12 throws kind not observe/act", /R331-kind/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [lane39({ kind: "dream" })], now: NOW39 })) || ""));
+  /* 39.13-40.15 structural impossibilities throw */
+  ok("40.13 throws empty goal", /goal-required/.test(throws39(() => sm39.deriveManifest({ goal: "  ", lanes: lanes39, now: NOW39 })) || ""));
+  ok("40.14 throws empty lanes", /lanes-required/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: [], now: NOW39 })) || ""));
+  ok("40.15 throws 9 lanes (> MAX_LANES)", /lanes-max/.test(throws39(() => sm39.deriveManifest({ goal: "g", lanes: Array.from({ length: 9 }, (_, i) => lane39({ id: `l${i}` })), now: NOW39 })) || ""));
+
+  /* 40.16 the derived manifest passes its own fail-closed validation */
+  const v39 = sm39.validateManifest(m39a);
+  eq("40.16 derived manifest validates", [v39.valid, v39.reasons], [true, []]);
+  /* 39.17-40.25 every rejection reason, one vector each */
+  const bad39 = (over = {}, top = {}) => sm39.validateManifest({
+    v: 1, id: "spawn-12345678", at: NOW39, goal: "g", lawsChecked: ["R331", "R332"], deciderRef: null,
+    lanes: [{ id: "l0", agentType: "content", kind: "observe", budgetTokens: 5000, fanoutCap: 1, fallback: "content", worklogRequired: true, ...over }], ...top,
+  });
+  ok("40.17 unknown agentType rejected", bad39({ agentType: "random-genius" }).reasons.some((r) => r.includes("agentType-roster")));
+  ok("40.18 budget out of range rejected", bad39({ budgetTokens: 999 }).reasons.some((r) => r.includes("budgetTokens-range")));
+  ok("40.19 fanoutCap out of range rejected", bad39({ fanoutCap: 42 }).reasons.some((r) => r.includes("fanoutCap-range")));
+  ok("40.20 fallback ≠ agentType rejected", bad39({ fallback: "social" }).reasons.some((r) => r.includes("fallback-truthful")));
+  ok("40.21 worklogRequired false rejected", bad39({ worklogRequired: false }).reasons.some((r) => r.includes("worklogRequired")));
+  ok("40.22 missing R331 rejected", bad39({}, { lawsChecked: ["R332"] }).reasons.some((r) => r.includes("R331")));
+  ok("40.23 unknown top-level field rejected", bad39({}, { persona: "invented" }).reasons.some((r) => r.startsWith("unknown-field:persona")));
+  ok("40.24 unknown lane field rejected", bad39({ backstory: "MIT PhD" }).reasons.some((r) => r.includes("unknown-field:backstory")));
+  ok("40.25 too many lanes rejected", bad39({}, { lanes: Array.from({ length: 9 }, (_, i) => ({ id: `l${i}`, agentType: "content", kind: "observe", budgetTokens: 5000, fanoutCap: 1, fallback: "content", worklogRequired: true })) }).reasons.some((r) => r.includes("lanes-max")));
+  /* 40.26 schema + goal checks */
+  const sch39 = bad39({}, { v: 2, goal: "" });
+  eq("40.26 schema v≠1 + empty goal recorded", [sch39.valid, sch39.reasons.some((r) => r.includes("v-schema")), sch39.reasons.some((r) => r.includes("goal-missing"))], [false, true, true]);
+  /* 40.27 fail-closed = ALL violations recorded at once, never first-fail */
+  const multi39 = bad39({ agentType: "ghost", budgetTokens: 1, worklogRequired: false }, { lawsChecked: [] });
+  eq("40.27 all violations collected", [multi39.valid, multi39.reasons.length >= 4], [false, true]);
+
+  /* 40.28 R332 legal chain: pending → reserved → frozen */
+  const nl39 = sm39.nextLifecycle;
+  eq("40.28 legal chain", [nl39("pending", "reserve"), nl39("reserved", "execute")], ["reserved", "frozen"]);
+  /* 40.29 release is only for PRE-ACT failure; a released lane may re-reserve */
+  eq("40.29 release + lawful retry", [nl39("reserved", "release"), nl39("released", "reserve")], ["released", "reserved"]);
+  /* 40.30 every illegal transition throws with the law reason */
+  const ill39 = (s, e) => { try { nl39(s, e); return null; } catch (er) { return String(er?.message ?? er); } };
+  eq("40.30 illegal transitions throw", [ill39("pending", "execute"), ill39("pending", "release"), ill39("reserved", "reserve"), ill39("frozen", "execute"), ill39("frozen", "release"), ill39("frozen", "reserve"), ill39("released", "execute"), ill39("nope", "reserve"), ill39("pending", "wish")].every((m) => m && m.includes("R332-illegal-transition")), true);
+  /* 40.31 idempotency: replay on frozen returns the recorded outcome, forever */
+  eq("40.31 replay-on-frozen idempotent", [nl39("frozen", "replay"), nl39(nl39("frozen", "replay"), "replay"), nl39(nl39(nl39("frozen", "replay"), "replay"), "replay")], ["frozen", "frozen", "frozen"]);
+
+  /* 40.32 heartbeat happy path (isolated tmp stateDir — R275 law) */
+  const os39 = await import("node:os");
+  const tmp39 = fs.mkdtempSync(path.join(os39.tmpdir(), "spawn39-"));
+  const r39 = await sm39.runSpawnManifest({ stateDir: path.join(tmp39, "a"), now: NOW39 });
+  eq("40.32 happy path receipt", [r39.verdict, r39.selfManifestValid, r39.lifecycleStatus, r39.fileWritten, r39.selfFileWritten, r39.scanned, r39.invalidCount], ["SPAWN-MANIFEST-OK", true, "frozen", true, true, 0, 0]);
+  /* 40.33 the seal exists, is signed, and the self-manifest ledger file round-trips */
+  const sealed39 = JSON.parse(fs.readFileSync(path.join(tmp39, "a", "spawn-manifest-latest.json"), "utf8"));
+  const ledgerFile39 = path.join(tmp39, "a", "spawn", "manifests", `${r39.selfManifestId}.json`);
+  const ledger39 = JSON.parse(fs.readFileSync(ledgerFile39, "utf8"));
+  eq("40.33 seal + ledger written & valid", [sealed39.verdict, sealed39.observe, sealed39.selfManifest.id, /^sig:[0-9a-f]{8}$/.test(sealed39.signature), sm39.validateManifest(ledger39).valid, sm39.signSpawnDoc(ledger39) === ledger39.signature], ["SPAWN-MANIFEST-OK", true, r39.selfManifestId, true, true, true]);
+  /* 40.34 roster truthfulness: every agentType (roster AND self-lanes) is a REAL
+   * stepWrap name of ci-cycle.mjs — no invented personas anywhere */
+  const src39 = fs.readFileSync(new URL("./ci-cycle.mjs", import.meta.url), "utf8");
+  const realSteps39 = new Set([...src39.matchAll(/stepWrap\("([a-z0-9-]+)"/g)].map((m) => m[1]));
+  const sealedLanes39 = JSON.parse(fs.readFileSync(ledgerFile39, "utf8")).lanes;
+  eq("40.34 roster truthfulness vs ci-cycle", [sm39.FIXED_ROSTER.every((s) => realSteps39.has(s)), sealedLanes39.every((l) => realSteps39.has(l.agentType)), sealedLanes39.every((l) => l.kind === "observe" && l.worklogRequired === true && l.fallback === l.agentType)], [true, true, true]);
+  /* 40.35 determinism: same now → same id + same signature (a different tmp dir
+   * changes nothing — the receipt is a function of the audit, not the disk) */
+  const r39b = await sm39.runSpawnManifest({ stateDir: path.join(tmp39, "b"), now: NOW39 });
+  eq("40.35 deterministic receipt", [r39b.selfManifestId, r39b.signature], [r39.selfManifestId, r39.signature]);
+  /* 40.36 degraded path: unwritable stateDir (parent is a FILE) → verdict stays
+   * OK, fileWritten honestly false, nothing thrown (exit-0 by design) */
+  fs.writeFileSync(path.join(tmp39, "blocker"), "not a dir");
+  const r39c = await sm39.runSpawnManifest({ stateDir: path.join(tmp39, "blocker"), now: NOW39 });
+  eq("40.36 unwritable stateDir degrades honestly", [r39c.verdict, r39c.fileWritten, r39c.selfFileWritten, r39c.selfManifestValid, r39c.lifecycleStatus], ["SPAWN-MANIFEST-OK", false, false, true, "frozen"]);
+  /* 39.37-40.38 the spawn-ledger scan: valid + invalid + unparseable → counted,
+   * evidence recorded, beat verdict stays OK (observe-only, never a gate) */
+  const scanDir39 = path.join(tmp39, "c", "spawn", "manifests");
+  fs.mkdirSync(scanDir39, { recursive: true });
+  fs.writeFileSync(path.join(scanDir39, `${m39a.id}.json`), JSON.stringify({ ...m39a, signature: sm39.signSpawnDoc(m39a) }));
+  fs.writeFileSync(path.join(scanDir39, "spawn-bad00000.json"), JSON.stringify({ v: 2, id: "spawn-bad00000", at: NOW39, goal: "g", lawsChecked: ["R331"], deciderRef: null, lanes: [{ id: "l0", agentType: "content", kind: "observe", budgetTokens: 5000, fanoutCap: 1, fallback: "content", worklogRequired: true }] }));
+  fs.writeFileSync(path.join(scanDir39, "spawn-junk0000.json"), "{not json");
+  const r39d = await sm39.runSpawnManifest({ stateDir: path.join(tmp39, "c"), now: NOW39 });
+  eq("40.37 scan counts valid + invalid + unparseable", [r39d.verdict, r39d.scanned, r39d.invalidCount], ["SPAWN-MANIFEST-OK", 3, 2]);
+  const sealedScan39 = JSON.parse(fs.readFileSync(path.join(tmp39, "c", "spawn-manifest-latest.json"), "utf8"));
+  eq("40.38 invalid-manifest evidence recorded in the seal", [sealedScan39.summary.scan.find((s) => s.file === "spawn-bad00000.json")?.reasons.some((r) => r.includes("v-schema")) ?? false, sealedScan39.summary.scan.find((s) => s.file === "spawn-junk0000.json")?.reasons.length > 0 ?? false], [true, true]);
+  /* 40.39 the seal is a signature over content: tampering flips it, sig-field
+   * itself is excluded (re-sign of a signed doc is stable) */
+  const tampered39 = { ...sealed39, selfManifest: { ...sealed39.selfManifest, valid: false } };
+  eq("40.39 signature binds content", [sm39.signSpawnDoc(sealed39) === sealed39.signature, sm39.signSpawnDoc(tampered39) === sealed39.signature], [true, false]);
+
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

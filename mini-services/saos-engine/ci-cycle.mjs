@@ -278,6 +278,27 @@ async function main() {
     return { verdict: r.verdict, at: r.at, measured: r.measured, medianVotes: r.medianVotes, topTag: r.topTag ?? null, degraded: r.degraded ?? false, observe: true };
   });
 
+  /* R331 · THE SPAWN-MANIFEST HEARTBEAT (exec32, lane 32-a — law provenance
+   * exec31 dossier: legion_agi's spawn pattern hardened + Mercury's R332
+   * idempotency lifecycle). Every beat derives its OWN typed self-manifest
+   * from the REAL step roster (FIXED_ROSTER = the actual stepWrap names of
+   * THIS file — the honesty law forbids invented personas), validates it
+   * fail-closed (hard caps: ≤8 lanes, fanout ≤8, token budgets bounded,
+   * truthful fallback = the lane's own roster entry), walks the R332
+   * lifecycle pending→reserved→frozen (a replay returns the frozen receipt,
+   * never a re-execution), then scans state/spawn/manifests/*.json and
+   * records per-file verdicts. The manifest ledger + the sealed receipt ride
+   * the state-churn commits (git-as-memory, auditable pre-spawn forever).
+   * OBSERVE-ONLY: spawns nothing, moves no value, touches no key, never
+   * gates another step — a discovered invalid manifest is EVIDENCE
+   * (invalidCount), and enforcement belongs to the sovereign decider, not
+   * to an observe rail. Fail-isolated like every step: exit-0 by design. */
+  report.steps.spawnManifest = await stepWrap("spawn-manifest", async () => {
+    const { runSpawnManifest } = await import("./spawn-manifest.mjs");
+    const r = await runSpawnManifest({ stateDir: STATE, now });
+    return { verdict: r.verdict, at: r.at, selfManifestId: r.selfManifestId, selfManifestValid: r.selfManifestValid, lifecycleStatus: r.lifecycleStatus, scanned: r.scanned, invalidCount: r.invalidCount, observe: true };
+  });
+
   /* R327 · THE DNA DRIFT REPORT (T-86, queue item #2 of the Open-Pomelli
    * deep-dive, intel §5.2): the brand-analyzer TWO-CHANNEL pattern made
    * sovereignty-native. Channel A = the signed content-dna.json (declared
@@ -418,6 +439,16 @@ async function main() {
       kept: report.steps.contentSourcing?.kept ?? 0,
       topScore: report.steps.contentSourcing?.topScore ?? null,
       verdict: report.steps.contentSourcing?.verdict ?? "STEP-FAIL",
+    },
+    /* R331 spawn-manifest — the one-line self-audit digest (id/valid/lifecycle
+     * + the spawn-ledger scan counts). OBSERVE-ONLY by law. */
+    spawnManifest: {
+      verdict: report.steps.spawnManifest?.verdict ?? "STEP-FAIL",
+      selfManifestId: report.steps.spawnManifest?.selfManifestId ?? null,
+      selfManifestValid: report.steps.spawnManifest?.selfManifestValid ?? null,
+      lifecycleStatus: report.steps.spawnManifest?.lifecycleStatus ?? null,
+      scanned: report.steps.spawnManifest?.scanned ?? 0,
+      invalidCount: report.steps.spawnManifest?.invalidCount ?? 0,
     },
     /* R306 engagement read-back — the one-line "what worked" digest
      * (at/measured/medianVotes/topTag; numbers only, no advice). */
