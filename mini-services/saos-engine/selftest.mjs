@@ -4586,6 +4586,295 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   ok("45.48 fixture cleanup confirmed by readback", !fs.existsSync(repo45) && !fs.existsSync(repo45b));
 }
 
+{
+  /* 46 · KERNEL ENUM/RANGE (exec35, lane 35-a — the R350 upgrade): schema
+   * fields may carry constraint objects {type, enum, min, max, minLength,
+   * maxLength}. Violations are FAIL-CLOSED with precise reasons; unknown
+   * spec keys are IGNORED (never crash); legacy string schemas behave
+   * byte-identically (sections 44/45 stay green — the whole file re-runs). */
+
+  /* the cabinet persona schema — the R350 target shape */
+  const S46 = {
+    signal: { type: "string", enum: ["bullish", "neutral", "bearish"] },
+    confidence: { type: "number", min: 0, max: 100 },
+    rationale: { type: "string", minLength: 1, maxLength: 1024 },
+  };
+
+  /* 46.1-46.2 valid enum+range passes; wrong enum fails with the precise reason */
+  const v46a = validateOutput('{"signal":"bullish","confidence":80,"rationale":"ok"}', S46);
+  eq("46.1 enum+range valid → ok + parsed round-trip", [v46a.ok, v46a.parsed.signal, v46a.parsed.confidence], [true, "bullish", 80]);
+  const v46b = validateOutput('{"signal":"long","confidence":80,"rationale":"ok"}', S46);
+  eq("46.2 wrong enum value fails with precise reason", [v46b.ok, v46b.errors], [false, ['signal: value "long" not in enum']]);
+
+  /* 46.3-46.5 range bounds fail-closed with exact reason strings */
+  const v46c = validateOutput('{"signal":"bullish","confidence":150,"rationale":"ok"}', S46);
+  eq("46.3 confidence 150 > max 100", [v46c.ok, v46c.errors], [false, ["confidence: 150 > max 100"]]);
+  const v46d = validateOutput('{"signal":"bullish","confidence":-5,"rationale":"ok"}', S46);
+  eq("46.4 confidence -5 < min 0", [v46d.ok, v46d.errors], [false, ["confidence: -5 < min 0"]]);
+  const v46e = validateOutput('{"signal":"bullish","confidence":50,"rationale":""}', S46);
+  eq("46.5 empty rationale < minLength 1", [v46e.ok, v46e.errors], [false, ["rationale: length 0 < minLength 1"]]);
+
+  /* 46.6 maxLength both directions: at-cap passes, over fails with exact reason */
+  const v46f = validateOutput(JSON.stringify({ signal: "neutral", confidence: 50, rationale: "r".repeat(1024) }), S46);
+  eq("46.6a rationale at maxLength 1024 passes", v46f.ok, true);
+  const v46g = validateOutput(JSON.stringify({ signal: "neutral", confidence: 50, rationale: "r".repeat(2000) }), S46);
+  eq("46.6b rationale 2000 > maxLength 1024", [v46g.ok, v46g.errors], [false, ["rationale: length 2000 > maxLength 1024"]]);
+
+  /* 46.7 inclusive bounds: exactly min/max pass (no silent coercion anywhere) */
+  const v46h = validateOutput('{"signal":"bearish","confidence":0,"rationale":"edge"}', S46);
+  const v46i = validateOutput('{"signal":"bearish","confidence":100,"rationale":"edge"}', S46);
+  eq("46.7 min/max inclusive: 0 and 100 both pass", [v46h.ok, v46i.ok], [true, true]);
+
+  /* 46.8-46.9 unknown spec keys IGNORED (never crash, no noise errors) */
+  const v46j = validateOutput('{"s":"x","n":5}', { s: { type: "string", enum: ["x"], description: "d", format: "f", whatever: 1 }, n: { type: "number", min: 0, doc: "ignored" } });
+  eq("46.8 unknown spec keys ignored → valid passes clean", [v46j.ok, v46j.errors], [true, []]);
+  const v46k = validateOutput('{"s":"y"}', { s: { type: "string", enum: ["x"], description: "d", format: "f" } });
+  eq("46.9 unknown keys add no noise on failure either", [v46k.ok, v46k.errors], [false, ['s: value "y" not in enum']]);
+
+  /* 46.10 legacy string schema byte-identical (44.x shape re-verified) */
+  const v46l = validateOutput('{"a":"x"}', { a: "string" });
+  const v46m = validateOutput('{"n":"3"}', { n: "number" });
+  eq("46.10 legacy string schema unchanged", [v46l.ok, v46m.ok, v46m.errors[0]], [true, false, "type-mismatch:n:want=number:got=string"]);
+
+  /* 46.11 === semantics: no coercion across types (the type matches; only the enum fails) */
+  const v46n = validateOutput('{"n":1}', { n: { type: "number", enum: [1, 2, 3] } });
+  const v46o = validateOutput('{"s":"1"}', { s: { type: "string", enum: [1] } });
+  eq("46.11 enum uses === (number enum ok; '1'≠1 fails without coercion)", [v46n.ok, v46o.ok, v46o.errors], [true, false, ['s: value "1" not in enum']]);
+
+  /* 46.12 constraints skipped when the key is absent (absence stays a required[] matter) */
+  const v46p = validateOutput("{}", { signal: { type: "string", enum: ["bullish"] }, confidence: { type: "number", min: 0, max: 100 } });
+  eq("46.12 absent key skips constraints (optional stays optional)", [v46p.ok, v46p.errors], [true, []]);
+
+  /* 46.13 spec without a declared type: constraints still enforced */
+  const v46q = validateOutput('{"s":"a"}', { s: { enum: ["a"] } });
+  const v46r = validateOutput('{"s":"b"}', { s: { enum: ["a"] } });
+  eq("46.13 type-less spec enforces enum only", [v46q.ok, v46r.ok], [true, false]);
+
+  /* 46.14-46.16 constraint/domain mismatches are violations, not crashes */
+  const v46s = validateOutput('{"r":5}', { r: { type: "string", minLength: 1 } });
+  const v46t = validateOutput('{"n":"x"}', { n: { type: "number", min: 0 } });
+  const v46u = validateOutput('{"n":5}', { n: { type: "number", max: "bogus" } });
+  ok("46.14 minLength on non-string → fail-closed reason", v46s.ok === false && v46s.errors.includes("r: min-length-requires-string") && v46s.errors.includes("type-mismatch:r:want=string:got=number"));
+  ok("46.15 min on non-number → fail-closed reason", v46t.ok === false && v46t.errors.includes("n: min-max-requires-number"));
+  ok("46.16 malformed bound → fail-closed (max-not-a-number), never crash", v46u.ok === false && v46u.errors.includes("n: max-not-a-number"));
+
+  /* 46.17 malformed enum shape → fail-closed */
+  const v46v = validateOutput('{"s":"bullish"}', { s: { enum: "bullish" } });
+  eq("46.17 enum-not-an-array fails closed", [v46v.ok, v46v.errors], [false, ["s: enum-not-an-array"]]);
+}
+
+{
+  /* 47 · THE DETERMINISTIC CABINET (exec35, lane 35-a): ai-hedge-fund
+   * blueprint on the LOCAL kernel — frozen persona roster (R331), injected
+   * respond ONLY (R330), enum+range parse before use (R350), bounded repair
+   * (max 2 attempts), honest abstain, deterministic blend, risk clamps
+   * "conviction requests, risk disposes" with ClampEvents, hash-chained
+   * append-only PAPER ledger (fold-verified), kill-switch read at decision
+   * time AND inside replay. Ledger fixtures live in TEMP dirs only — the
+   * real state ledger is never written by this selftest (persist:false). */
+
+  const cab47 = await import("./cabinet.mjs");
+  const REPO47 = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "..");
+  const NOW47 = "2026-10-15T00:00:00.000Z";
+
+  /* 47.1-47.2 the roster: frozen, declared, never invented at runtime */
+  eq("47.1 PERSONAS frozen + ids exact order", [Object.isFrozen(cab47.PERSONAS), cab47.PERSONA_IDS], [true, ["technical", "fundamental", "risk", "macro"]]);
+  ok("47.2 every persona declares approach + signalEnum + confidenceRange", cab47.PERSONAS.every((p) =>
+    Object.isFrozen(p) && typeof p.approach === "string" && p.approach.length > 20 &&
+    JSON.stringify(p.signalEnum) === '["bullish","neutral","bearish"]' &&
+    JSON.stringify(p.confidenceRange) === "[0,100]"));
+
+  /* 47.3 persona valid round: attempts 1, fields carried */
+  const p47a = await cab47.runPersona({ persona: cab47.PERSONAS[0], prompt: "paper round", respond: cab47.stubRespond });
+  eq("47.3 valid persona round", [p47a.personaId, p47a.abstain, p47a.attempts, p47a.signal, p47a.confidence], ["technical", false, 1, "bullish", 75]);
+
+  /* 47.4 invalid → ONE bounded repair → succeeds: exactly 2 attempts, never 3,
+   * and the 2nd call carries the kernel repair instruction with the reasons */
+  let calls47 = 0;
+  const prompts47 = [];
+  const p47b = await cab47.runPersona({
+    persona: cab47.PERSONAS[0], prompt: "paper round",
+    respond: async ({ prompt }) => {
+      calls47++;
+      prompts47.push(prompt);
+      return calls47 === 1
+        ? '{"signal":"long","confidence":80,"rationale":"bad enum"}'
+        : '{"signal":"bearish","confidence":40,"rationale":"repaired"}';
+    },
+  });
+  eq("47.4 repair-succeeds: 2 total attempts, repaired fields", [p47b.abstain, p47b.attempts, p47b.signal, p47b.confidence, calls47, (p47b.rationale ?? "").length > 0], [false, 2, "bearish", 40, 2, true]);
+  ok("47.4b 2nd call is a repair round: instruction + kernel reasons embedded", prompts47.length === 2 && String(prompts47[1]).includes("REPAIR REQUIRED") && String(prompts47[1]).includes("not in enum"));
+
+  /* 47.5 invalid → abstain (locked failure contract): never a 3rd attempt */
+  calls47 = 0;
+  const p47c = await cab47.runPersona({
+    persona: cab47.PERSONAS[1], prompt: "paper round",
+    respond: async () => { calls47++; return '{"signal":"LONG","confidence":150,"rationale":"nope"}'; },
+  });
+  eq("47.5 invalid→abstain: exactly 2 attempts, honest reason, no fabricated signal", [p47c.abstain, p47c.attempts, calls47, p47c.reason, "signal" in p47c], [true, 2, 2, "abstain-after-bounded-repair", false]);
+  ok("47.5b abstain errors carry the kernel violation reasons", Array.isArray(p47c.errors) && p47c.errors.some((e) => String(e).includes("not in enum")) && p47c.errors.some((e) => String(e).includes("150 > max 100")));
+
+  /* 47.6 respond throws → abstain (LLM errors abstain, never fabricate) */
+  const p47d = await cab47.runPersona({ persona: cab47.PERSONAS[2], prompt: "paper round", respond: async () => { throw new Error("llm down"); } });
+  eq("47.6 thrown respond → abstain after 2 attempts", [p47d.abstain, p47d.attempts, p47d.reason, p47d.errors.some((e) => String(e).includes("respond-threw"))], [true, 2, "abstain-after-bounded-repair", true]);
+
+  /* 47.7-47.8 fail-closed seams: unknown persona never calls respond; missing respond abstains */
+  calls47 = 0;
+  const p47e = await cab47.runPersona({ persona: { id: "ghost-persona" }, prompt: "x", respond: async () => { calls47++; return "{}"; } });
+  eq("47.7 persona-not-in-roster → abstain, respond NEVER called", [p47e.abstain, p47e.reason, calls47], [true, "persona-not-in-roster", 0]);
+  const p47f = await cab47.runPersona({ persona: cab47.PERSONAS[3], prompt: "x" });
+  eq("47.8 respond-not-injected → abstain (cabinet never fabricates)", [p47f.abstain, p47f.reason], [true, "respond-not-injected"]);
+
+  /* 47.9 blend: abstentions excluded + counted; exact netConviction/verdict/sizing */
+  const rounds47 = [
+    { personaId: "technical", abstain: false, signal: "bullish", confidence: 75 },
+    { personaId: "fundamental", abstain: false, signal: "bullish", confidence: 50 },
+    { personaId: "risk", abstain: false, signal: "neutral", confidence: 50 },
+    { personaId: "macro", abstain: false, signal: "bearish", confidence: 25 },
+    { personaId: "ghost", abstain: true, reason: "x" },
+  ];
+  const b47 = cab47.blend({ rounds: rounds47 });
+  eq("47.9 blend exact: (0.75+0.5+0-0.25)/4=0.25 → BUY, sizing 0.25, abstain counted", [b47.netConviction, b47.verdict, b47.sizing, b47.nonAbstainCount, b47.abstainCount, b47.votes], [0.25, "BUY", 0.25, 4, 1, { bullish: 2, neutral: 1, bearish: 1 }]);
+
+  /* 47.10-47.13 verdict zones + honest zero + invalid excluded */
+  const b47h = cab47.blend({ rounds: [{ abstain: true }, { abstain: true }] });
+  eq("47.10 all-abstain → netConviction 0, HOLD, sizing 0", [b47h.netConviction, b47h.verdict, b47h.sizing, b47h.nonAbstainCount], [0, "HOLD", 0, 0]);
+  const b47s = cab47.blend({ rounds: [{ abstain: false, signal: "bearish", confidence: 80 }, { abstain: false, signal: "bearish", confidence: 80 }] });
+  eq("47.11 two bearish 80 → -0.8 → SELL, sizing 0.8", [b47s.netConviction, b47s.verdict, b47s.sizing], [-0.8, "SELL", 0.8]);
+  const b47z = cab47.blend({ rounds: [{ abstain: false, signal: "bullish", confidence: 20 }] });
+  eq("47.12 0.2 inside the dead zone → HOLD (thresholds ±0.25 declared)", [b47z.verdict, b47z.sizing, b47z.thresholds], ["HOLD", 0.2, { buy: 0.25, sell: -0.25 }]);
+  const b47i = cab47.blend({ rounds: [{ abstain: false, signal: "long", confidence: 99 }] });
+  eq("47.13 unusable round excluded + counted invalid, never averaged", [b47i.netConviction, b47i.invalidCount, b47i.nonAbstainCount], [0, 1, 0]);
+  const b47c = cab47.blend({ rounds: rounds47, clamp: { maxSizing: 0.2 } });
+  eq("47.14 blend clamp caps requested sizing 0.25→0.2", [b47c.sizing, b47c.sizingCapped], [0.2, true]);
+
+  /* 47.15-47.18 risk clamps: every application emits a ClampEvent */
+  const blend47 = { verdict: "BUY", sizing: 0.25, netConviction: 0.25, votes: { bullish: 2, neutral: 1, bearish: 1 }, nonAbstainCount: 4, abstainCount: 1 };
+  const c47a = cab47.applyRiskClamps({ blend: blend47, risk: { maxSizing: 0.2 }, now: NOW47 });
+  eq("47.15 maxSizing clamp + event", [c47a.verdict, c47a.sizing, c47a.clampEvents], ["BUY", 0.2, [{ clamp: "maxSizing", from: 0.25, to: 0.2, at: NOW47 }]]);
+  const c47b = cab47.applyRiskClamps({ blend: blend47, risk: { minConfidence: 0.4 }, now: NOW47 });
+  eq("47.16 minConfidence floor disposes: HOLD + 0 + event", [c47b.verdict, c47b.sizing, c47b.clampEvents], ["HOLD", 0, [{ clamp: "minConfidence", from: 0.25, to: 0, at: NOW47 }]]);
+  const c47c = cab47.applyRiskClamps({ blend: blend47, risk: { killSwitch: true }, now: NOW47 });
+  eq("47.17 killSwitch forces HOLD + sizing 0 + event", [c47c.verdict, c47c.sizing, c47c.killSwitch, c47c.clampEvents], ["HOLD", 0, true, [{ clamp: "killSwitch", from: "BUY", to: "HOLD", at: NOW47 }]]);
+  const c47d = cab47.applyRiskClamps({ blend: { verdict: "HOLD", sizing: 0, netConviction: 0 }, risk: { killSwitch: true }, now: NOW47 });
+  eq("47.18 killSwitch on already-flat → no noise event (nothing changed)", [c47d.verdict, c47d.sizing, c47d.clampEvents.length], ["HOLD", 0, 0]);
+  ok("47.19 applyRiskClamps survives null blend honestly", cab47.applyRiskClamps({ blend: null }).ok === false && cab47.applyRiskClamps({ blend: null }).error === "blend-required");
+
+  /* 47.20-47.22 ledger: append-only hash chain on a TEMP fixture repo */
+  const repo47 = fs.mkdtempSync(path.join(os.tmpdir(), "saos47-cabinet-"));
+  fs.mkdirSync(path.join(repo47, "mini-services", "saos-engine", "state"), { recursive: true });
+  const mkRec47 = (i, verdict) => ({
+    at: `2026-10-15T00:00:0${i}.000Z`, schemaVersion: 1, identity: cab47.CABINET_IDENTITY,
+    personaRounds: [{ personaId: "technical", abstain: false, signal: "bullish", confidence: 75 }, { personaId: "macro", abstain: true, reason: "fixture", attempts: 2 }],
+    verdict, sizing: 0.5, netConviction: 0.5, votes: { bullish: 1, neutral: 0, bearish: 0 },
+    nonAbstainCount: 1, abstainCount: 1, clampEvents: [], lawSource: "fixture:47",
+  });
+  const a47a = cab47.appendDecisionLedger(repo47, mkRec47(1, "BUY"));
+  const a47b = cab47.appendDecisionLedger(repo47, mkRec47(2, "SELL"));
+  const a47c = cab47.appendDecisionLedger(repo47, mkRec47(3, "HOLD"));
+  eq("47.20 first append: seq 1, GENESIS prevHash, R340 readback ok", [a47a.ok, a47a.seq, a47a.prevHash, typeof a47a.hash], [true, 1, "GENESIS", "string"]);
+  eq("47.21 chain links: seq2.prevHash === seq1.hash, seq3.prevHash === seq2.hash", [a47b.seq, a47b.prevHash === a47a.hash, a47c.seq, a47c.prevHash === a47b.hash], [2, true, 3, true]);
+  const f47 = cab47.foldLedger(repo47);
+  eq("47.22 fold verifies the whole chain", [f47.ok, f47.length, f47.lastSeq, f47.lastHash === a47c.hash], [true, 3, 3, true]);
+
+  /* 47.23 fold on an absent ledger = honest empty chain, not corruption */
+  const repo47e = fs.mkdtempSync(path.join(os.tmpdir(), "saos47-empty-"));
+  const f47e = cab47.foldLedger(repo47e);
+  eq("47.23 absent ledger folds as empty ok", [f47e.ok, f47e.empty, f47e.length, f47e.lastHash], [true, true, 0, "GENESIS"]);
+
+  /* 47.24-47.26 tamper ONE byte in temp copies → fold reports ok:false at the right seq */
+  const src47 = fs.readFileSync(path.join(repo47, "mini-services", "saos-engine", "state", "cabinet-decisions.jsonl"), "utf8");
+  const tamperAt = (idx, fn) => {
+    const repoT = fs.mkdtempSync(path.join(os.tmpdir(), "saos47-tamper-"));
+    fs.mkdirSync(path.join(repoT, "mini-services", "saos-engine", "state"), { recursive: true });
+    const lines = src47.split("\n");
+    lines[idx] = fn(lines[idx]);
+    fs.writeFileSync(path.join(repoT, "mini-services", "saos-engine", "state", "cabinet-decisions.jsonl"), lines.join("\n"));
+    const r = cab47.foldLedger(repoT);
+    fs.rmSync(repoT, { recursive: true, force: true });
+    return r;
+  };
+  const t47a = tamperAt(1, (l) => l.replace('"SELL"', '"XELL"')); // verdict byte, line 2
+  const t47b = tamperAt(2, (l) => l.replace(/"hash":"./, (m) => m.slice(0, -1) + (m.endsWith("0") ? "1" : "0"))); // hash byte, line 3
+  const t47c = tamperAt(1, () => "{oops"); // unparseable line 2
+  eq("47.24 verdict-byte tamper on line 2 → hash-mismatch at seq 2", [t47a.ok, t47a.at, t47a.error], [false, 2, "hash-mismatch"]);
+  eq("47.25 hash-byte tamper on line 3 → mismatch at seq 3", [t47b.ok, t47b.at, t47b.error], [false, 3, "hash-mismatch"]);
+  eq("47.26 unparseable line 2 → fold fails at seq 2", [t47c.ok, t47c.at, t47c.error], [false, 2, "line-unparseable"]);
+
+  /* 47.27 append on a broken chain is REFUSED (fail-closed, R337 cousin);
+   * append on the healthy chain extends it (seq 4) */
+  const a47w = cab47.appendDecisionLedger(repo47, mkRec47(4, "HOLD"));
+  eq("47.27a append on healthy chain extends: seq 4 links to seq 3", [a47w.ok, a47w.seq, a47w.prevHash === a47c.hash], [true, 4, true]);
+  const repo47b = fs.mkdtempSync(path.join(os.tmpdir(), "saos47-append-"));
+  fs.mkdirSync(path.join(repo47b, "mini-services", "saos-engine", "state"), { recursive: true });
+  fs.writeFileSync(path.join(repo47b, "mini-services", "saos-engine", "state", "cabinet-decisions.jsonl"), src47.replace('"BUY"', '"BUi"'));
+  const a47z = cab47.appendDecisionLedger(repo47b, mkRec47(9, "BUY"));
+  eq("47.27b append on broken chain refused with honest at", [a47z.ok, a47z.error, a47z.at], [false, "ledger-chain-broken", 1]);
+
+  /* 47.28-47.32 replay is a VERIFICATION: fold + record + kill-switch re-read */
+  const rp47a = await cab47.replayDecision(repo47, 2, async () => false);
+  eq("47.28 replay CONFIRMED carries the record + chain verification", [rp47a.ok, rp47a.replayVerdict, rp47a.record?.seq, rp47a.record?.verdict, rp47a.chainOk], [true, "CONFIRMED", 2, "SELL", true]);
+  const rp47b = await cab47.replayDecision(repo47, 2, async () => true);
+  eq("47.29 replay with kill-switch NOW true → SUPERSEDED-KILLSWITCH", [rp47b.ok, rp47b.replayVerdict, rp47b.record?.seq], [true, "SUPERSEDED-KILLSWITCH", 2]);
+  const rp47c = await cab47.replayDecision(repo47, 9, async () => false);
+  eq("47.30 replay record-not-found → honest ok:false", [rp47c.ok, rp47c.error, rp47c.chainOk], [false, "record-not-found", true]);
+  const rp47d = await cab47.replayDecision(repo47, 1, async () => { throw new Error("ks probe down"); });
+  eq("47.31 erroring kill-switch read → fail-closed SUPERSEDED", [rp47d.replayVerdict, rp47d.killSwitchSource], ["SUPERSEDED-KILLSWITCH", "injected-error-fail-closed"]);
+  const repo47t = fs.mkdtempSync(path.join(os.tmpdir(), "saos47-replay-tamper-"));
+  fs.mkdirSync(path.join(repo47t, "mini-services", "saos-engine", "state"), { recursive: true });
+  fs.writeFileSync(path.join(repo47t, "mini-services", "saos-engine", "state", "cabinet-decisions.jsonl"), src47.replace('"SELL"', '"XELL"'));
+  const rp47e = await cab47.replayDecision(repo47t, 2, async () => false);
+  eq("47.32 replay on a broken chain refuses loudly", [rp47e.ok, rp47e.error, rp47e.at], [false, "ledger-chain-broken", 2]);
+
+  /* 47.33 default kill-switch file semantics (injected fn absent) */
+  const repo47k = fs.mkdtempSync(path.join(os.tmpdir(), "saos47-ks-"));
+  fs.mkdirSync(path.join(repo47k, "mini-services", "saos-engine", "state"), { recursive: true });
+  const ksFile47 = path.join(repo47k, "mini-services", "saos-engine", "state", "cabinet-killswitch.json");
+  fs.writeFileSync(path.join(repo47k, "mini-services", "saos-engine", "state", "cabinet-decisions.jsonl"), src47);
+  const ks47a = await cab47.replayDecision(repo47k, 1);
+  fs.writeFileSync(ksFile47, JSON.stringify({ killSwitch: true }));
+  const ks47b = await cab47.replayDecision(repo47k, 1);
+  fs.writeFileSync(ksFile47, JSON.stringify({ killSwitch: false }));
+  const ks47c = await cab47.replayDecision(repo47k, 1);
+  fs.writeFileSync(ksFile47, "{corrupt");
+  const ks47d = await cab47.replayDecision(repo47k, 1);
+  eq("47.33 default kill-switch file: absent→false, true, false, corrupt→fail-closed true", [
+    [ks47a.replayVerdict, ks47a.killSwitchSource],
+    [ks47b.replayVerdict, ks47b.killSwitchSource],
+    [ks47c.replayVerdict, ks47c.killSwitchSource],
+    [ks47d.replayVerdict, ks47d.killSwitchSource],
+  ], [
+    ["CONFIRMED", "no-killswitch-file"],
+    ["SUPERSEDED-KILLSWITCH", "cabinet-killswitch.json"],
+    ["CONFIRMED", "cabinet-killswitch.json"],
+    ["SUPERSEDED-KILLSWITCH", "killswitch-file-corrupt-fail-closed"],
+  ]);
+
+  /* 47.34 runCabinet integration on the REAL repo root — deterministic
+   * injected stub respond, persist:false. Stub confidences are exact in
+   * binary FP: (0.75+0.5+0−0.25)/4 = 0.25 exactly → BUY at the threshold. */
+  const rc47 = await cab47.runCabinet({ respond: cab47.stubRespond, risk: { maxSizing: 0.25 }, repoRoot: REPO47, persist: false, now: NOW47 });
+  eq("47.34 runCabinet ok, 4 personas, all valid on attempt 1", [rc47.ok, rc47.personaRounds.length, rc47.personaRounds.map((r) => r.personaId), rc47.personaRounds.every((r) => r.abstain === false && r.attempts === 1)], [true, 4, ["technical", "fundamental", "risk", "macro"], true]);
+  eq("47.35 stub blend exact: netConviction 0.25 → BUY, sizing 0.25 at the cap boundary (no clamp event)", [rc47.decision.netConviction, rc47.decision.verdict, rc47.decision.sizing, rc47.decision.clampEvents.length], [0.25, "BUY", 0.25, 0]);
+  eq("47.36 receipts honest: respond injected, nothing persisted, zero abstains", [rc47.receipts.respondInjected, rc47.receipts.persisted, rc47.receipts.abstains, rc47.receipts.paperOnly], [true, false, 0, true]);
+  ok("47.37 persist:false NEVER writes the real state ledger", !fs.existsSync(path.join(REPO47, "mini-services", "saos-engine", "state", "cabinet-decisions.jsonl")));
+  ok("47.38 record carries schemaVersion + identity + lawSource", rc47.record.schemaVersion === 1 && rc47.record.identity === cab47.CABINET_IDENTITY && String(rc47.record.lawSource).includes("paper-only"));
+
+  /* 47.39-47.40 honest refusals: no respond ⇒ no run; all-abstain respond ⇒ HOLD honestly */
+  const rc47x = await cab47.runCabinet({});
+  eq("47.39 no injected respond → ok:false (cabinet never fabricates)", [rc47x.ok, rc47x.error], [false, "respond-required"]);
+  const rc47y = await cab47.runCabinet({ respond: async () => { throw new Error("no llm in the deterministic graph"); }, repoRoot: REPO47, persist: false, now: NOW47 });
+  eq("47.40 all-personas-abstain → ok:true, HOLD, sizing 0, 4 honest abstains", [rc47y.ok, rc47y.receipts.abstains, rc47y.decision.verdict, rc47y.decision.sizing, rc47y.personaRounds.every((r) => r.abstain === true && r.attempts === 2)], [true, 4, "HOLD", 0, true]);
+
+  /* 47.41 temp-fixture cleanup with readback (R340 style) */
+  fs.rmSync(repo47, { recursive: true, force: true });
+  fs.rmSync(repo47b, { recursive: true, force: true });
+  fs.rmSync(repo47e, { recursive: true, force: true });
+  fs.rmSync(repo47t, { recursive: true, force: true });
+  fs.rmSync(repo47k, { recursive: true, force: true });
+  ok("47.41 cabinet fixture cleanup confirmed by readback", !fs.existsSync(repo47) && !fs.existsSync(repo47b) && !fs.existsSync(repo47e) && !fs.existsSync(repo47t) && !fs.existsSync(repo47k));
+}
+
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
