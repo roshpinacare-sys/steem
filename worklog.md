@@ -1122,3 +1122,24 @@ Work Log:
 Stage Summary:
 - **המוניטור-סוגר-את-המעגל-שלו-עצמו**: הצעה-שיושמה-לא-תוצע-מחדש-בשום-וריאנט; הראיה-להחלטת-החימוש-נמדדת-מעכשיו-בכל-פעימה-במקום-לשבת-ריקה-ב-DNA.
 - **פתוח**: ticEnforce-יחומס-רק-על-ראיה-מצטברת (המדידה-חיה-מעכשיו); פערי-העמודות-ממשיכים-להימדד-בהצעה (owner-gated); זנב-זהות `z@container` על b1e182d98-נרשם (דפוס-#16, שכתוב-owner-gated).
+
+---
+Task ID: T-91
+Agent: Z.ai Code (content lane / SAOS sovereignty fleet)
+Task: Owner "תמשיך" (trace 1a13a0c86d97817d) — continue; measured the T-83 integration-module queue: ②Git-as-Memory=R303 ③质量法官=R302 ④Creative Core=R304/R307 all burned, ⑥hermoso held by measured reality — module ⑤ Swarm distribution was the last unbuilt one. Closed it as R332 the swarm distribution planner.
+
+Work Log:
+- Field measured first: T-90 closed task F (R331 backup display front live on Pulse, 97d194a); both repos unpushed=0; the queue's real remainder = integration module ⑤.
+- THE MEASURED GAP (engine state, not vibes): ONE drafts queue (content-ops.json) feeds TWO live rails that pick INDEPENDENTLY — steem (army-social.doPublish: persona-match → FIFO adoption) and hive (runHiveRail → pickPersonaFitDraft: affinity → brevity). A draft's destination = consumption-order luck; hive marks chain:"hive" at pickup so the same ROW never double-posts — that is luck, not doctrine. AND every uniqueness veto in the house is CHAIN-LOCAL and WINDOWED (steem monoculture queue-20, R277 body-clash 2-day said-ledger, hive monoculture 12, hive spamgate ownRecentBodies per-account) — the R297 shallow-memory class, UNMEASURED ACROSS chains; the fleet-ledger is steem-nodes-only (hive bodies invisible).
+- R332 claimed clean (scoped origin grep both repos, law #21; R327–R331 taken).
+- Built content-swarm.mjs — pure core planSwarm (no clock/random/fs/network): (1) deterministic assignment precedence — explicit d.front pin wins (the owner's voice; collisions REPORTED, never silently resolved), else persona ∈ hive roster → hive (the persona's native voice), else steem default; (2) anti-twin at plan level: ≥0.5 title siblings never share a front — the movable row flips; one flip per row — the two-fronts/three-siblings PIGEONHOLE residue recorded honestly, never looped (caught in design review: the naive flip loop dead-cycles); (3) the FIRST cross-chain twin scan over published rows — title twins + body-core twins (R277's normalizeBodyForClash, lazily imported, single source of truth) ≥0.5 on DIFFERENT chains; null chain ⇒ steem by documented convention (hive sets chain at pickup, the steem rail never does); same-chain twins counted separately (the per-chain vetoes own those); honest zeros count. Sig over payload-without-at (the T-88 contract law, stableStringify from content-drift). OBSERVE-ONLY (the R304 precedent): state/swarm-plan-latest.json is the only write; consumption arms only via signed DNA memory.swarmEnforce (default false, R307 pattern); spamgate/R297/R301/R302 keep every gate.
+- MEASURED LIMITATION named, not hidden: the R303 memory book carries titleNorm+shingles only (no body, no chain) → book rows are chainUnknown, excluded from cross-chain pairs; extending recordPublished with chain is a rail-side change queued for the enforce wave.
+- Heartbeat step content-swarm wired (anti-R312): keys swarm/swarmDrafts/swarmSteem/swarmHive/swarmSplits/swarmTwins/swarmTopTwin/swarmSig.
+- selftest 1498/1498 (+17 vectors, section 39; 0 failures on first full run after three pre-run self-corrections: 39.8's fixture needed BOTH pins for a true collision, 39.12's three-rows-two-chains yields TWO cross pairs not one, 39.16's contract strips signature+at). Money vector 39.10: the same title on steem AND hive — invisible to every existing veto — now measured. 39.7 the pigeonhole honesty.
+- Live smoke on the real state (heartbeat-shape call): 26 drafts → 10 steem / 16 hive (the queue's persona-to-hive-roster shape counted for the first time), 0 splits, 0 pinnedConflicts, 0 unresolved, 4 published rows scanned, crossChainTwins 0 — the honest zero, first beat of the evidence stream; sig:de578a60.
+- Pushed steem 66cd915f2 (rebase over the cloud heartbeat churn d1330c6b3 — state-only, clean; ls-remote=HEAD + authenticated API-200 + author saos-content-agent@agents.roshpinacare-sys per law #10).
+
+Stage Summary:
+- The integration-module queue from the owner's T-83 reference batch is now FULLY burned: ②R303 ③R302 ④R304/R307 ⑤R332 ⑥hermoso held by measured reality (owner-gated).
+- The distribution now has a PLAN each beat instead of a race; the cross-chain twin scan runs its evidence stream; the enforce wave (rails consulting the plan under memory.swarmEnforce) waits for accumulated evidence — the R302 observe→enforce pattern end to end.
+- Open unchanged: ticEnforce arming (evidence accumulating), pillar gaps (owner-gated), SOCIAL-STANDBY release (owner's dual-key directive), recordPublished chain-field extension (enforce wave).
