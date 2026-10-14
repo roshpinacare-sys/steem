@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-14T12:45:27.859Z",
+  "head": "88e9f1d76e99d848ec33346c94bd9bd501b07718",
+  "verdict": "SURFACES-DEGRADED",
+  "repairMode": "observe",
+  "actArmed": false,
+  "prevVerdict": "SURFACES-OK",
+  "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
+  "targets": [
+    {
+      "id": "pulse-site",
+      "kind": "site",
+      "source": "pages",
+      "verdict": "OK",
+      "reason": "front-door-200-marked"
+    },
+    {
+      "id": "pulse-network",
+      "kind": "datafile",
+      "source": "raw",
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 15.3
+    },
+    {
+      "id": "pulse-mirror-lanes",
+      "kind": "datafile",
+      "source": "raw",
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 15.3
+    },
+    {
+      "id": "pulse-domain-published",
+      "kind": "datafile",
+      "source": "raw",
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 307
+    },
+    {
+      "id": "engine-heartbeat",
+      "kind": "statefile",
+      "source": "raw",
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 30.5
+    },
+    {
+      "id": "engine-presence-digest",
+      "kind": "statefile",
+      "source": "local",
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 32.7
+    },
+    {
+      "id": "engine-selftest",
+      "kind": "statefile",
+      "source": "local",
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 0.6
+    },
+    {
+      "id": "artery-workflow",
+      "kind": "workflow",
+      "source": "api",
+      "verdict": "DEGRADED",
+      "reason": "probe-error:api-http-403"
+    },
+    {
+      "id": "steem-rpc",
+      "kind": "rpc",
+      "source": "rpc",
+      "verdict": "OK",
+      "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
+    }
+  ],
+  "repairsPlanned": [
+    {
+      "targetId": "pulse-domain-published",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "Domain",
+      "workflow": "published-ledger.yml",
+      "readbackRequired": true
+    },
+    {
+      "targetId": "artery-workflow",
+      "verdict": "DEGRADED",
+      "action": "escalate",
+      "readbackRequired": true
+    }
+  ],
+  "repairs": [],
+  "signature": "sig:f8344228"
+}
