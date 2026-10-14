@@ -3260,6 +3260,164 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   try { fs.rmSync(dir32, { recursive: true, force: true }); } catch { /* tmp */ }
 }
 
+{
+  /* 33 · R306 ENGAGEMENT READ-BACK (exec30, "what worked" loop) — the
+   * read-only look BACK at our own published posts: pure aggregation math
+   * (median/quartiles/byTag), honest zero + degraded receipts, 14d window +
+   * cap 40, canonical seal. Zero network: the chain runs through an injected
+   * fetchImpl; state lands in isolated tmp dirs per R275. */
+  const ce = await import("./content-engagement.mjs");
+  const NOW33 = "2026-10-14T12:00:00.000Z";
+  const iso33 = (hAgo) => new Date(Date.parse(NOW33) - hAgo * 3600000).toISOString();
+
+  /* 33.1 tags: top-3 from json_metadata, string or object, garbage-safe */
+  eq("33.1 parseTags object top-3", ce.parseTags({ tags: ["a", "b", "c", "d"] }), ["a", "b", "c"]);
+  eq("33.1 parseTags string form", ce.parseTags('{"tags":["a","b","c","d"]}'), ["a", "b", "c"]);
+  eq("33.1 parseTags garbage", [ce.parseTags("not-json"), ce.parseTags(null)], [[], []]);
+
+  /* 33.2 recordFromContent — the honest verdict-only mapping */
+  const recOne = ce.recordFromContent({
+    author: "headcorner", permlink: "p-one", created: "2026-10-14T00:00:00Z",
+    active_votes: [{ voter: "a" }, { voter: "b" }, { voter: "c" }, { voter: "d" }, { voter: "e" }],
+    net_rshares: "123456789", children: 2, pending_payout_value: "1.250 SBD",
+    json_metadata: '{"tags":["x","y"]}',
+  }, { now: NOW33 });
+  eq("33.2 record mapping", recOne, { author: "headcorner", permlink: "p-one", created: "2026-10-14T00:00:00Z", ageHours: 12, votes: 5, netRha: "123456789", replies: 2, pendingSbd: 1.25, tags: ["x", "y"] });
+  eq("33.2 null content → null record", ce.recordFromContent(null, { now: NOW33 }), null);
+
+  /* 33.3 aggregation math on a fixed 12-post fixture (median/quartiles) */
+  const recs33 = [40, 32, 25, 20, 18, 15, 12, 10, 8, 6, 4, 2].map((v, i) => ({
+    author: `a${String(i + 1).padStart(2, "0")}`, permlink: `p${i + 1}`,
+    created: iso33(24 * (i + 1)), ageHours: 24 * (i + 1), votes: v,
+    netRha: "1000", replies: v % 4, pendingSbd: 0, tags: [],
+  }));
+  const agg33 = ce.aggregateEngagement(recs33);
+  eq("33.3 median votes/replies", [agg33.medianVotes, agg33.medianReplies], [13.5, 0.5]);
+  eq("33.3 mean + totals", [agg33.meanVotes, agg33.meanReplies, agg33.totalVotes, agg33.totalReplies], [16, 1, 192, 12]);
+  eq("33.3 top quartile (best 3 of 12)", agg33.topQuartile, { n: 3, votes: 32.3, replies: 0.3 });
+  eq("33.3 bottom quartile (worst 3 of 12)", agg33.bottomQuartile, { n: 3, votes: 4, replies: 1.3 });
+  eq("33.3 determinism", JSON.stringify(ce.aggregateEngagement(recs33)), JSON.stringify(agg33));
+
+  /* 33.4 honest zero: empty published-set aggregates to nulls, never NaN */
+  eq("33.4 empty aggregate receipt", ce.aggregateEngagement([]), {
+    posts: 0, medianVotes: null, medianReplies: null, meanVotes: null, meanReplies: null,
+    totalVotes: 0, totalReplies: 0,
+    topQuartile: { n: 0, votes: null, replies: null },
+    bottomQuartile: { n: 0, votes: null, replies: null },
+    byTag: {}, windowDays: 14,
+  });
+
+  /* 33.5 byTag means + topTag (most-published, tie → best votes → lexicographic) */
+  const aggTags = ce.aggregateEngagement([
+    { votes: 10, replies: 2, tags: ["x", "y"] },
+    { votes: 6, replies: 0, tags: ["x"] },
+    { votes: 2, replies: 4, tags: ["z", "w", "v"] },
+  ]);
+  eq("33.5 byTag math", aggTags.byTag, { x: { posts: 2, votes: 8, replies: 1 }, y: { posts: 1, votes: 10, replies: 2 }, z: { posts: 1, votes: 2, replies: 4 }, w: { posts: 1, votes: 2, replies: 4 }, v: { posts: 1, votes: 2, replies: 4 } });
+  eq("33.5 topTag", ce.topTagFromSummary(aggTags), "x");
+  eq("33.5 topTag empty → null", ce.topTagFromSummary({ byTag: {} }), null);
+
+  /* 33.6 the 14-day window + cap 40 (records cap respected) */
+  const cands33 = Array.from({ length: 45 }, (_, i) => ({ author: `w${String(i).padStart(2, "0")}`, permlink: `p${i}`, created: iso33(1 + i) }));
+  cands33.push({ author: "old-one", permlink: "o", created: "2026-09-25T00:00:00Z" });
+  cands33.push({ author: "future-one", permlink: "f", created: "2026-10-20T00:00:00Z" });
+  const sel33 = ce.selectRecent(cands33, { now: NOW33 });
+  eq("33.6 cap 40 respected", [sel33.length, ce.MAX_POSTS], [40, 40]);
+  ok("33.6 window filter holds", sel33.every((c) => { const age = Date.parse(NOW33) - Date.parse(c.created); return age >= 0 && age <= 14 * 86400000; }) && !sel33.some((c) => c.author === "old-one" || c.author === "future-one"));
+  eq("33.6 newest first", sel33[0].created, iso33(1));
+  eq("33.6 explicit cap honored", ce.selectRecent(cands33, { now: NOW33, cap: 5 }).length, 5);
+
+  /* 33.7 the seal: canonical sig, key-order independent, data-sensitive */
+  const sigA = ce.signEngagement({ at: NOW33, measured: 2, posts: [], summary: { posts: 2 } });
+  ok("33.7 sig format", /^sig:[0-9a-f]{8}$/.test(sigA));
+  eq("33.7 sig key-order independent", ce.signEngagement({ summary: { posts: 2 }, posts: [], measured: 2, at: NOW33 }), sigA);
+  ok("33.7 sig changes with data", ce.signEngagement({ at: NOW33, measured: 3, posts: [], summary: { posts: 2 } }) !== sigA);
+  eq("33.7 sig field excluded", ce.signEngagement({ at: NOW33, measured: 2, posts: [], summary: { posts: 2 }, signature: "sig:deadbeef" }), sigA);
+
+  /* fixture RPC: method-table fetchImpl (offline seam, production = global fetch) */
+  const rpc33 = (table) => async (url, opts = {}) => {
+    const { method, params } = JSON.parse(opts.body);
+    if (!(method in table)) throw new Error(`unexpected method ${method}`);
+    const v = await table[method](params);
+    return { ok: true, status: 200, json: async () => ({ result: v === undefined ? null : v }) };
+  };
+  const gprop33 = { head_block_number: 91000000, time: NOW33 };
+
+  /* 33.8 empty published-set → honest zero receipt, sealed on disk */
+  const dirEmpty33 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-eng-empty-"));
+  const rEmpty = await ce.runEngagement({ now: NOW33, stateDir: dirEmpty33, accounts: ["headcorner"], spacingMs: 0, fetchImpl: rpc33({ "condenser_api.get_discussions_by_blog": async () => [], "condenser_api.get_dynamic_global_property": async () => gprop33 }) });
+  eq("33.8 zero receipt honesty", [rEmpty.verdict, rEmpty.measured, rEmpty.medianVotes, rEmpty.degraded, rEmpty.fileWritten], ["ENGAGEMENT-NONE", 0, null, false, true]);
+  const diskEmpty = JSON.parse(fs.readFileSync(path.join(dirEmpty33, "content-engagement.json"), "utf8"));
+  eq("33.8 zero receipt sealed", [diskEmpty.verdict, diskEmpty.measured, diskEmpty.summary.posts, ce.signEngagement(diskEmpty) === diskEmpty.signature, diskEmpty.observe], ["ENGAGEMENT-NONE", 0, 0, true, true]);
+  try { fs.rmSync(dirEmpty33, { recursive: true, force: true }); } catch { /* tmp */ }
+
+  /* 33.9 total chain failure → degraded receipt, never a crash */
+  const dirDead33 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-eng-dead-"));
+  const rDead = await ce.runEngagement({ now: NOW33, stateDir: dirDead33, accounts: ["headcorner", "cashmachine"], spacingMs: 0, fetchImpl: async () => { throw new Error("ECONNREFUSED"); } });
+  eq("33.9 degraded honesty", [rDead.verdict, rDead.measured, rDead.degraded, rDead.failedAccounts], ["ENGAGEMENT-DEGRADED", 0, true, 2]);
+  const diskDead = JSON.parse(fs.readFileSync(path.join(dirDead33, "content-engagement.json"), "utf8"));
+  ok("33.9 per-account failure reasons recorded", diskDead.accounts.failed.length === 2 && diskDead.accounts.failed.every((f) => f.account && String(f.error).includes("all-steem-nodes-failed")));
+  try { fs.rmSync(dirDead33, { recursive: true, force: true }); } catch { /* tmp */ }
+
+  /* 33.10 happy path: ledger cache + chain blog truth → dedupe → 14d window
+   * → measure → aggregate → sealed receipt (reblogs/comments/old dropped) */
+  const dirOk33 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-eng-ok-"));
+  fs.writeFileSync(path.join(dirOk33, "fleet-body-ledger.json"), JSON.stringify({
+    at: NOW33, source: "test", accounts: ["headcorner", "lsa"], failed: [],
+    posts: [
+      { author: "lsa", permlink: "ledger-only", created: "2026-10-13T08:00:00Z" },
+      { author: "headcorner", permlink: "hc-p1", created: "2026-10-13T10:00:00Z" },
+    ],
+  }));
+  const voters33 = (n) => Array.from({ length: n }, (_, i) => ({ voter: `v${i}` }));
+  const contents33 = {
+    "headcorner/hc-p1": { author: "headcorner", permlink: "hc-p1", created: "2026-10-13T10:00:00Z", active_votes: voters33(12), net_rshares: "9007199", children: 3, pending_payout_value: "0.000 SBD", json_metadata: { tags: ["steem", "life"] } },
+    "headcorner/hc-p2": { author: "headcorner", permlink: "hc-p2", created: "2026-10-12T10:00:00Z", active_votes: [], net_rshares: "0", children: 0, pending_payout_value: "0.000 SBD", json_metadata: { tags: ["steem"] } },
+    "cashmachine/cm-p1": { author: "cashmachine", permlink: "cm-p1", created: "2026-10-13T09:00:00Z", active_votes: voters33(8), net_rshares: "12", children: 1, pending_payout_value: "0.000 SBD", json_metadata: '{"tags":["money","life"]}' },
+    "lsa/ledger-only": { author: "lsa", permlink: "ledger-only", created: "2026-10-13T08:00:00Z", active_votes: voters33(2), net_rshares: "5", children: 0, pending_payout_value: "0.000 SBD", json_metadata: { tags: ["life"] } },
+  };
+  const blogs33 = {
+    headcorner: [
+      { author: "headcorner", permlink: "hc-p1", created: "2026-10-13T10:00:00Z", depth: 0 },
+      { author: "headcorner", permlink: "hc-p2", created: "2026-10-12T10:00:00Z", depth: 0 },
+      { author: "someoneelse", permlink: "reblogged", created: "2026-10-13T11:00:00Z", depth: 0 },
+      { author: "headcorner", permlink: "hc-comment", created: "2026-10-13T11:30:00Z", depth: 1 },
+    ],
+    cashmachine: [
+      { author: "cashmachine", permlink: "cm-p1", created: "2026-10-13T09:00:00Z", depth: 0 },
+      { author: "cashmachine", permlink: "cm-old", created: "2026-09-01T09:00:00Z", depth: 0 },
+    ],
+  };
+  const rOk = await ce.runEngagement({ now: NOW33, stateDir: dirOk33, accounts: ["headcorner", "cashmachine"], spacingMs: 0, fetchImpl: rpc33({
+    "condenser_api.get_discussions_by_blog": async ([p]) => blogs33[p.tag] ?? [],
+    "condenser_api.get_content": async ([a, pm]) => contents33[`${a}/${pm}`] ?? null,
+    "condenser_api.get_dynamic_global_property": async () => gprop33,
+  }) });
+  eq("33.10 happy-path measure", [rOk.verdict, rOk.measured, rOk.medianVotes, rOk.topTag, rOk.degraded, rOk.failedAccounts], ["ENGAGEMENT-OK", 4, 5, "life", false, 0]);
+  const disk = JSON.parse(fs.readFileSync(path.join(dirOk33, "content-engagement.json"), "utf8"));
+  eq("33.10 provenance counts", [disk.source.ledgerEntries, disk.source.chainDiscovered, disk.source.deduped, disk.source.inWindow], [2, 3, 5, 4]);
+  eq("33.10 quartile math on disk", [disk.summary.topQuartile, disk.summary.bottomQuartile], [{ n: 1, votes: 12, replies: 3 }, { n: 1, votes: 0, replies: 0 }]);
+  eq("33.10 byTag means", [disk.summary.byTag.steem, disk.summary.byTag.life, disk.summary.byTag.money], [{ posts: 2, votes: 6, replies: 1.5 }, { posts: 3, votes: 7.3, replies: 1.3 }, { posts: 1, votes: 8, replies: 1 }]);
+  const recHc1 = disk.posts.find((p) => p.author === "headcorner" && p.permlink === "hc-p1");
+  eq("33.10 verdict-only record shape", [recHc1.votes, recHc1.replies, recHc1.ageHours, recHc1.pendingSbd, recHc1.netRha, recHc1.tags], [12, 3, 26, 0, "9007199", ["steem", "life"]]);
+  ok("33.10 records are verdicts-only (no body/title material)", disk.posts.every((p) => !("body" in p) && !("title" in p) && Array.isArray(p.tags) && p.tags.length <= 3));
+  eq("33.10 receipt sealed + observe-only", [ce.signEngagement(disk) === disk.signature, disk.observe, typeof disk.head === "string" || disk.head === null], [true, true, true]);
+  try { fs.rmSync(dirOk33, { recursive: true, force: true }); } catch { /* tmp */ }
+
+  /* 33.11 partial failure: one account down → measured + honest DEGRADED */
+  const dirPart33 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-eng-part-"));
+  const rPart = await ce.runEngagement({ now: NOW33, stateDir: dirPart33, accounts: ["headcorner", "cashmachine"], spacingMs: 0, fetchImpl: rpc33({
+    "condenser_api.get_discussions_by_blog": async ([p]) => { if (p.tag === "headcorner") throw new Error("HTTP 503"); return blogs33.cashmachine; },
+    "condenser_api.get_content": async ([a, pm]) => contents33[`${a}/${pm}`] ?? null,
+    "condenser_api.get_dynamic_global_property": async () => gprop33,
+  }) });
+  eq("33.11 partial degraded honesty", [rPart.verdict, rPart.measured, rPart.degraded, rPart.failedAccounts, rPart.postErrors], ["ENGAGEMENT-DEGRADED", 1, true, 1, 0]);
+  const diskPart = JSON.parse(fs.readFileSync(path.join(dirPart33, "content-engagement.json"), "utf8"));
+  eq("33.11 failed account named on disk", [diskPart.accounts.failed.length, diskPart.accounts.failed[0].account], [1, "headcorner"]);
+  eq("33.11 still measured what it could", [diskPart.measured, diskPart.posts[0].author, diskPart.posts[0].votes], [1, "cashmachine", 8]);
+  try { fs.rmSync(dirPart33, { recursive: true, force: true }); } catch { /* tmp */ }
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */
