@@ -9,7 +9,7 @@
  * class of rot that shelled the roster once (75 duplicated bodies, 47 twin
  * titles): nobody notices a voice decaying one post at a time.
  *
- *   R330 CLOSURE (T-89): R329 applied R327's signed proposal — the DNA now
+ *   R334 CLOSURE (T-89): R329 applied R327's signed proposal — the DNA now
  *   carries memory.tics. A monitor blind to its own applied proposal would
  *   re-mine "the difference is" and re-propose the SAME refresh every beat
  *   (the R297 shallow-memory class, reborn on the monitor itself). Closure:
@@ -168,7 +168,7 @@ export function mineDriftPhrases(posts, knownLexicon = [], { minHits = DRIFT_MIN
   return out.slice(0, 8);
 }
 
-/* ── pure: the APPLIED tic phrases (R330) ───────────────────────────
+/* ── pure: the APPLIED tic phrases (R334) ───────────────────────────
  * Robust to both shapes the applier may store: {phrase, hits, posts}
  * objects (what R329 wrote) or plain strings. Lowercased for mining.
  * An applied tic is the DNA's OWN voice law — never a drift discovery. */
@@ -181,7 +181,7 @@ export function appliedTicPhrases(dna) {
     .map((p) => p.toLowerCase());
 }
 
-/* ── pure: per-tic recurrence in the OBSERVED corpus (R330 ticsEvidence) ──
+/* ── pure: per-tic recurrence in the OBSERVED corpus (R334 ticsEvidence) ──
  * The evidence slots DNA v2 shipped as hits:null/posts:null, measured.
  * This is what accumulates in the heartbeat so the owner-gated ticEnforce
  * arming decision (R302 observe→enforce pattern) rides MEASURED evidence.
@@ -238,11 +238,11 @@ export function analyzeDrift({ dna, posts }) {
     const score = fn ? fn(px) : clamp01(real.filter((p) => stripMarkdown(`${p?.title ?? ""} ${p?.body ?? ""}`).toLowerCase().includes(String(pillar).toLowerCase())).length / real.length);
     pillars.push({ pillar, score, exhibited: score >= DRIFT_PILLAR_GAP });
   }
-  const tics = appliedTicPhrases(dna);            // R330: applied tics are law, not discovery
+  const tics = appliedTicPhrases(dna);            // R334: applied tics are law, not discovery
   const lexicon = [...(dna?.slopLexicon ?? []), ...tics];
   const inTicFamily = (phrase) => tics.some((t) => t === phrase || t.includes(phrase) || phrase.includes(t));  // overlapping variants are the same voice-law (R329 shape)
   const driftPhrases = mineDriftPhrases(real, lexicon).filter((d) => !inTicFamily(d.phrase));
-  const ticEv = ticsEvidence(real, dna);          // R330: measured evidence for the arming decision
+  const ticEv = ticsEvidence(real, dna);          // R334: measured evidence for the arming decision
   const forbidden = forbiddenHits(real, dna);
   const sentences = real.map((p) => stripMarkdown(`${p?.title ?? ""} ${p?.body ?? ""}`).split(/[.!?]+/).filter((s) => s.trim().split(/\s+/).length >= 3)).flat();
   const lens = sentences.map((s) => s.trim().split(/\s+/).length);
@@ -254,10 +254,10 @@ export function analyzeDrift({ dna, posts }) {
   const applied = Array.isArray(dna?.memory?.applied) && dna.memory.applied.length > 0
     ? dna.memory.applied[dna.memory.applied.length - 1] : null;
   const proposal = {
-    addLexicon: driftPhrases.map((d) => d.phrase).filter((p) => !inTicFamily(p)),  // R330 belt+braces: never re-propose a tic or its overlapping variants
+    addLexicon: driftPhrases.map((d) => d.phrase).filter((p) => !inTicFamily(p)),  // R334 belt+braces: never re-propose a tic or its overlapping variants
     pillarGaps,
     forbidden: forbidden.map((f) => `${f.tag}:"${f.fragment}"`),
-    refreshOf: applied ? { fromSig: applied.fromSig ?? null, at: applied.at ?? null, trace: applied.trace ?? null } : null,  // R330: measured AFTER the last applied refresh
+    refreshOf: applied ? { fromSig: applied.fromSig ?? null, at: applied.at ?? null, trace: applied.trace ?? null } : null,  // R334: measured AFTER the last applied refresh
     rationale: forbidden.length > 0 ? "observed text hit forbidden voice — refresh persona/fleet bans"
       : driftPhrases.length >= 3 ? "recurring phrases not in the lexicon — the corpus is growing its own slop"
       : pillarGaps.length >= 2 ? "declared pillars not exhibited in the observed corpus"

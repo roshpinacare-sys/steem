@@ -3652,7 +3652,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 }
 
 {
-  /* 38 · R330 DRIFT CLOSURE + TICS EVIDENCE (T-89, trace 1a1397d155d25c4d) —
+  /* 38 · R334 DRIFT CLOSURE + TICS EVIDENCE (T-89, trace 1a1397d155d25c4d) —
    * R329 applied R327's signed proposal (DNA v1→v2 carrying memory.tics),
    * but the drift monitor was still blind to what its own proposal had
    * become: the next beat would have re-mined "the difference is" and
@@ -3679,7 +3679,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   const c38 = cd38.analyzeDrift({ dna: dna38, posts: corpus38 });
   eq("38.1 applied tics never re-mined", c38.driftPhrases.every((d) => !ticSet38.has(d.phrase)), true);
   /* 38.2 THE MONEY VECTOR: the same corpus under a v1-shape DNA (no tics)
-   * re-mines the tic family — proving the pre-R330 re-proposal loop existed
+   * re-mines the tic family — proving the pre-R334 re-proposal loop existed
    * and that closure came from the applied tics, not from luck. */
   const dna38v1 = { ...dna38, version: 1, memory: { jaccard: 0.5, windowDays: 90 } };
   const v138 = cd38.analyzeDrift({ dna: dna38v1, posts: corpus38 });
@@ -3723,7 +3723,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 }
 
 {
-  /* 39 · R332 THE SWARM DISTRIBUTION PLANNER (T-91, trace 1a13a0c86d97817d) —
+  /* 39 · R336 THE SWARM DISTRIBUTION PLANNER (T-91, trace 1a13a0c86d97817d —
    * the last open integration module of the T-83 reference batch
    * (Marketing-Swarm-Template's agents.yaml made sovereignty-native). ONE
    * drafts queue, TWO rails picking independently, every uniqueness veto

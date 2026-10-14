@@ -280,7 +280,10 @@ async function main() {
 
   /* R331 · THE SPAWN-MANIFEST HEARTBEAT (exec32, lane 32-a — law provenance
    * exec31 dossier: legion_agi's spawn pattern hardened + Mercury's R332
-   * idempotency lifecycle). Every beat derives its OWN typed self-manifest
+   * idempotency lifecycle (R332 = exec31's registered law, first registration
+   * 2026-10-14T07:55:33Z — NOT the swarm planner, which the 32-b registry
+   * repair renumbered to R336 per first-registration-wins law #21)). Every
+   * beat derives its OWN typed self-manifest
    * from the REAL step roster (FIXED_ROSTER = the actual stepWrap names of
    * THIS file — the honesty law forbids invented personas), validates it
    * fail-closed (hard caps: ≤8 lanes, fanout ≤8, token budgets bounded,
@@ -336,7 +339,7 @@ async function main() {
     return { verdict: r.verdict, at: r.at, drafts: r.drafts, checked: r.checked, violations: r.violations, warnings: r.warnings, source: r.source ?? null, enforce: r.enforce, observe: true };
   });
 
-  /* R332 · THE SWARM DISTRIBUTION PLANNER (T-91, the last open integration
+  /* R336 · THE SWARM DISTRIBUTION PLANNER (T-91, the last open integration
    * module of the T-83 reference batch — Marketing-Swarm-Template's
    * agents.yaml made sovereignty-native): ONE drafts queue feeds TWO live
    * rails that pick INDEPENDENTLY (steem persona-match/FIFO, hive
