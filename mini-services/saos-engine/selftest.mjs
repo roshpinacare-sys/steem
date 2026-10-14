@@ -2926,6 +2926,38 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   ok("R311: dedupeTitles blocks the near-twin of an aired title", ded.kept.length === 0 && ded.dropped.length === 1);
 }
 
+/* ── R300 · THE MULTI-FRONTEND CENSUS (owner order 2026-10-14: work with
+ * every network that displays the Steem chain — know WHERE we are visible) ── */
+{
+  const fv = await import("./fleet-visibility.mjs");
+  const st300 = fv.selftest();
+  ok(`R300: fleet-visibility selftest ${st300.passed}/${st300.total} (marker · spa · census verdicts)`, st300.ok === true);
+  ok("R300: census knows the five public vantages (steemit + 4 alt)", Object.keys(fv.FRONTENDS).length === 4 && fv.CHAIN_NODES.length === 3);
+}
+
+/* ── R301 · THE STEALTH DOCTRINE (owner order 2026-10-14: OK to be invisible,
+ * promote without flooding, keep our actions unseen until truly ready) ── */
+{
+  const as301 = await import("./army-social.mjs");
+  const pol = as301.socialPolicy();
+  ok("R301: stealth armed by default (owner mandate)", pol.stealth === true);
+  ok("R301: fleet votes zeroed in stealth (the ring signature is dead)", pol.maxFleetVotesPerDay === 0);
+  ok("R301: fleet-wide publish cap < roster (no more 14/day flood)", typeof pol.maxFleetPostsPerDay === "number" && pol.maxFleetPostsPerDay > 0 && pol.maxFleetPostsPerDay < 14);
+  ok("R301: conversation halved (comments ≤1 · replies ≤1 · community ≤1 · deepen ≤1)", pol.maxFleetCommentsPerDay === 1 && pol.maxRepliesPerDay === 1 && pol.maxCommunityCommentsPerDay === 1 && pol.maxConversationDeepensPerDay === 1);
+  const R = ["a", "b", "c", "d", "e", "f", "g"];
+  const d1 = as301.stealthPublishers("2026-10-14", R, 3);
+  ok("R301: rotation respects the cap exactly", d1.length === 3);
+  ok("R301: rotation is day-stable (no intraday flapping)", JSON.stringify(d1) === JSON.stringify(as301.stealthPublishers("2026-10-14", R, 3)));
+  ok("R301: rotation ⊆ roster, sorted (auditable)", d1.every((a) => R.includes(a)) && JSON.stringify(d1) === JSON.stringify([...d1].sort()));
+  ok("R301: cap 0 → nobody publishes", as301.stealthPublishers("2026-10-14", R, 0).length === 0);
+  ok("R301: cap ≥ roster → everyone (law unchanged when stealth off)", as301.stealthPublishers("2026-10-14", R, 99).length === R.length);
+  const union = new Set();
+  for (let i = 0; i < 30; i++) for (const a of as301.stealthPublishers(`2026-09-${String(14 + i).padStart(2, "0")}`, R, 3)) union.add(a);
+  ok("R301: 30 days of rotation cover the whole roster (no always-off account)", union.size === R.length);
+  const off = as301.socialPolicy();
+  ok("R301: override path exists (owner can lift stealth via conf)", "stealth" in off && "maxFleetPostsPerDay" in off);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
  * role — written ONLY on a full run, never by a partial import. */

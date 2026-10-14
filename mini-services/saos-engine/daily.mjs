@@ -45,6 +45,7 @@ import { runWebIntel } from "./webintel.mjs";
 import { runContent } from "./content.mjs";
 import { runSocial, runOrganicWatch, runProfiles, ARMY_ROSTER } from "./army-social.mjs";
 import { runShellWatch } from "./shell-watch.mjs"; /* R299: THE UN-SHELL METER */
+import { runVisibilityCensus } from "./fleet-visibility.mjs"; /* R300: THE MULTI-FRONTEND CENSUS */
 import { runHiveRail } from "./hive.mjs";
 import { runBlurtOrgan } from "./blurt.mjs";
 import { runHiveProfiles } from "./hive-profiles.mjs";
@@ -902,6 +903,18 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   report.steps.shellWatch = await stepWrap("shell-watch", async () => {
     const out = await runShellWatch({ now, roster: [masterAccount(), ...ARMY_ROSTER] });
     return { verdict: out.summary?.verdict ?? null, shelled: out.summary?.shelled ?? null, rendered: out.summary?.rendered ?? null, challenged: out.summary?.challenged ?? null, control: out.control?.verdict ?? null };
+  });
+
+  /* R300 · THE MULTI-FRONTEND CENSUS (owner order 2026-10-14: "יש עוד רשתות
+   * שמציגות בבלוקצ'יין של סטימיט בוא נעבוד איתם"): steemit.com is one
+   * frontend among many — the census measures the roster across the chain
+   * nodes and every public frontend we can reach (wallet · steemworld ·
+   * steemdb · steemscan), so the network knows WHERE it is visible
+   * regardless of one gatekeeper's filter. Read-only, zero keys,
+   * fail-honest per cell. Fail-isolated like every rail. */
+  report.steps.visibility = await stepWrap("visibility", async () => {
+    const out = await runVisibilityCensus({ now, roster: [masterAccount(), ...ARMY_ROSTER] });
+    return { verdict: out.summary?.verdict ?? null, chain: out.summary?.chain ?? null, nodes: out.summary?.nodes ?? null, steemit: out.summary?.steemit ?? null, alt: out.summary?.alt ?? null, altRenderedAccounts: out.summary?.altRenderedAccounts ?? null, judged: out.summary?.cells?.judged ?? null, totalCells: out.summary?.cells?.total ?? null };
   });
 
   /* R255 · THE PERSONA PROFILE SYNC (the visibility law): on-chain profiles
