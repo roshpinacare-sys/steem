@@ -1253,3 +1253,16 @@ Work Log:
 Stage Summary:
 - What now exists: a **zero-crash kernel seam** in saos-engine — untrusted generated code can be run in a disposable native sandbox (fresh tmpdir, whitelisted env, SIGKILL-bounded, byte-capped, cleanup PROVEN by readback) and untrusted LLM output can be schema-gated with exactly one bounded repair attempt — all deterministic core, LLM strictly outside (R330 seam). Prior lane 34 died leaving nothing; this lane landed module + selftest + push + this receipt.
 - Zero keys touched, zero value moved, zero broadcasts sent, zero network grants to the child (env carries PATH+HOME only). Fail-closed throughout; honest boundaries recorded (screen deny-lists are static high-confidence patterns, not semantic AI; SaaS/Docker isolation unavailable in this environment — hence native).
+## R330 — 2026-10-14T15:0xZ — KELLY-CAP: מסנן-התוחלת-על-הכביש-הסלול (המתמטיקה-הטהורה-של-הבעלים)
+
+**הוראת-הבעלים (trace 1a13acb997251019):** הגיר-בוקס-לא-רק-מטפס-הילוכים — הוא-מטפס **על-בסיס-יעילות-מתמטית-טהורה**. ב-2-ליבות/4GB כל-טוקן-מבוזבז = הפסד-ישיר; המתמטיקה-מקומית-דטרמיניסטית, ה-LLM-נשאר-אסטרטגיה-בלבד.
+
+**המימוש (saos-dex 75fb607 + 14c6458 · Pulse 17bec42 · DECISIONS #18):**
+1. **`grids/alpha-performance-math.mjs`** (SAOS-KELLY-CAP/1) — קריאה-בלבד מהקבלות-בגיט: **pnl-ממומש = דלתא-SBD לכל-סוחר** בין-קבלות-עוקבות (maker-מכירה-בלבד = נקי-מרעש-נעילות-STEEM; יתרת-SBD-יורדת = פס-אדום-אמיתי). פעימה-שקטה = אין-מידע — מחוץ-למדגם.
+2. **נוסחת-הבעלים מילולית:** f = p − ((1−p)/WLR) · safe = clamp(f×½, 0.01, 0.25) · cap = min(הילוך, ⌊הילוך×safe×4⌋). **הקלי-רק-מהדק** — הטבלה-נשארת-התקרה; לעולם-לא-מהפקדה.
+3. **סדר-הכשלים:** פנק-חסר-לגמרי = fault→רצפה 25 · <10-מימושים-מדודים = **probation-קשה→חצי-תקרה** · מדגם-מלא = קלי. תוחלת-שלילית = צל-4% (המייצר-חי-למדוד-התאוששות). כשל-מסנן לעולם-לא-עוצר-את-הכביש.
+4. **חיווט:** applyGear-מצמץ-תקרות-כסף-בלבד (per-op+cycle); קצב/ops-שלמים; HALT-תחת-מסילה-מצומצמת-נושא-ראיית-תוחלת; recordLadderReceipt-מפרסם-תמונת-קלי-במצב-הגיט; ה-probe-מציג-אותה-בכל-פעימה.
+
+**הוכחה:** selftest **76/76** (15-וקטורי-קלי; לקח-רעש-נקודה-צפה-תוקן-1e-9) · **מדידה-אמיתית:** 40-תמונות/28-פעימות/3-אינפורמטיביות → probation 12-SBD בהילוך-1 (רגלי-הקנרית ~0.03-SBD — הכביש-נוסע-רגיל). דחיפת-ייצור-treasury-ladder-להוכחת-קצה-לקצה.
+
+**כנות:** cost-basis-של-המלאי-הנמכר-נמדד-בפנק-האוצר-הנפרד; הקלי-מודד-תזרים-ממומש — שני-הפנקסים-חיים-במקביל. שני-הכיוונים-של-הבעלים-הותכו-לתמסורת-אחת: הילוכים-מרוויחים-מהירות-מאמינות (רצף), קלי-מתמחר-מהירות-מתוחלת (רווח-ממומש) — מהירות-גבוהה-בלי-חששות.
