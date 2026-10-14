@@ -1,7 +1,7 @@
 # CONTENT MEMORY — HEARTBEAT SELF-AUDIT
 
-- generated: 2026-10-14T10:48:29.331Z (R303, git-as-memory)
-- published patterns: 0 (scoreMean=n/a)
+- generated: 2026-10-14T12:08:21.912Z (R303, git-as-memory)
+- published patterns: 4 (scoreMean=n/a)
 - rejected patterns: 0 (none)
 
 ## top refusal reasons (window 90d)
