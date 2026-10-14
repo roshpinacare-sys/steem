@@ -4878,6 +4878,178 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   ok("47.41 cabinet fixture cleanup confirmed by readback", !fs.existsSync(repo47) && !fs.existsSync(repo47b) && !fs.existsSync(repo47e) && !fs.existsSync(repo47t) && !fs.existsSync(repo47k));
 }
 
+{
+  /* 49 · WATCHTOWER UPGRADES (exec36, lane 36-b): the 33-b protocol-research
+   * harvest as ONE module (watch-upgrades.mjs) — (A) R355-CANDIDATE triage
+   * BEFORE self-heal (SWE-bench harness/infra_failure.py: post-hoc READ-ONLY
+   * ADVISORY classification ENVIRONMENT/CODE/AMBIGUOUS, never drops an
+   * instance, fail-closed to AMBIGUOUS on the unknown), (B) R356-CANDIDATE
+   * budget-governed retries with truthful exits (SWE-agent
+   * sweagent/agent/reviewer.py: cost_limit + min_budget_for_new_attempt,
+   * min-budget checked BEFORE spawning a new attempt), (C) R357-CANDIDATE
+   * typed receipts (eliza packages/core/src/memory.ts MemoryType/scope/
+   * factory+guards) with an append-only validated jsonl ledger, and (D) the
+   * ADDITIVE triageWatchState pure seam over surface-watch-latest.json —
+   * surface-watch.mjs/ci-cycle.mjs stay byte-untouched. Ledger fixtures live
+   * in TEMP dirs only (the real state ledger is never written by this run);
+   * sleepImpl injected (zero real backoff sleeps); every stop truthful. */
+
+  const wu49 = await import("./watch-upgrades.mjs");
+  const REPO49 = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "..");
+  const STATE49 = path.join(REPO49, "mini-services", "saos-engine", "state");
+  const noSleep49 = async () => {};
+
+  /* 49.1-49.9 triageFailure — the four directive vectors + honesty extras */
+  const t49a = wu49.triageFailure({ surface: "pulse-network", verdict: "DOWN", reason: "http-403", httpCode: 403 });
+  eq("49.1 api-403 → ENVIRONMENT/high/escalate", [t49a.class, t49a.confidence, t49a.advisedAction], ["ENVIRONMENT", "high", "escalate"]);
+  eq("49.2 forbidden-scope / unauthorized-token reasons → ENVIRONMENT", [wu49.triageFailure({ reason: "forbidden: scope check failed" }).class, wu49.triageFailure({ reason: "unauthorized token rejected" }).advisedAction], ["ENVIRONMENT", "escalate"]);
+  const t49b = wu49.triageFailure({ surface: "engine-selftest", verdict: "DEGRADED", reason: "shape-missing:generatedAt" });
+  eq("49.3 shape-validation → CODE/lawful-repair-candidate", [t49b.class, t49b.confidence, t49b.advisedAction], ["CODE", "high", "lawful-repair-candidate"]);
+  eq("49.4 unparseable-json / json-parse-failed → CODE (our own artifact)", [wu49.triageFailure({ verdict: "DOWN", reason: "unparseable-json" }).class, wu49.triageFailure({ reason: "json-parse-failed at byte 0" }).class], ["CODE", "CODE"]);
+  const t49c = wu49.triageFailure({ surface: "artery-workflow", verdict: "DEGRADED", reason: "probe timed out after 8000ms" });
+  eq("49.5 timeout → AMBIGUOUS/high/observe-then-escalate", [t49c.class, t49c.confidence, t49c.advisedAction], ["AMBIGUOUS", "high", "observe-then-escalate"]);
+  eq("49.6 http-5xx → AMBIGUOUS (could be either)", [wu49.triageFailure({ verdict: "DOWN", reason: "http-503", httpCode: 503 }).class, wu49.triageFailure({ httpCode: 500 }).class], ["AMBIGUOUS", "AMBIGUOUS"]);
+  const t49d = wu49.triageFailure({ surface: "mystery", verdict: "DOWN", reason: "wibble-xyz-42" });
+  eq("49.7 unknown reason → AMBIGUOUS LOW fail-closed (never a silent OK)", [t49d.class, t49d.confidence, t49d.basis.includes("unrecognized-signature:fail-closed")], ["AMBIGUOUS", "low", true]);
+  eq("49.8 empty/garbage input still classified honestly (never throws, never OK)", [wu49.triageFailure({}).class, wu49.triageFailure(null).class, wu49.triageFailure({ reason: 42, verdict: 7 }).class], ["AMBIGUOUS", "AMBIGUOUS", "AMBIGUOUS"]);
+  eq("49.9 httpCode derived from the reason text when the field is absent", wu49.triageFailure({ reason: "http-403" }).class, "ENVIRONMENT");
+
+  /* 49.10-49.18 triage static-rule honesty: read-only, deterministic, ordered */
+  eq("49.10 DNS / connect / network-unreachable signatures → ENVIRONMENT", [wu49.triageFailure({ reason: "getaddrinfo ENOTFOUND raw.githubusercontent.com" }).class, wu49.triageFailure({ reason: "connect ECONNREFUSED 1.2.3.4:443" }).class, wu49.triageFailure({ reason: "network unreachable" }).class], ["ENVIRONMENT", "ENVIRONMENT", "ENVIRONMENT"]);
+  eq("49.11 rate-limit 429 → ENVIRONMENT (a remote gate, not a code bug)", wu49.triageFailure({ reason: "rate limit exceeded", httpCode: 429 }).class, "ENVIRONMENT");
+  eq("49.12 http-408 request-timeout → AMBIGUOUS (timeout tier wins over 4xx)", wu49.triageFailure({ httpCode: 408 }).class, "AMBIGUOUS");
+  eq("49.13 probe-error / partial-response signatures → AMBIGUOUS", [wu49.triageFailure({ reason: "probe-error:socket-hang-up" }).class, wu49.triageFailure({ reason: "partial response received" }).class], ["AMBIGUOUS", "AMBIGUOUS"]);
+  eq("49.14 rule order is the tie-break law: auth beats timeout; code beats 5xx", [wu49.triageFailure({ reason: "auth handshake timed out" }).class, wu49.triageFailure({ reason: "shape-missing:at", httpCode: 500 }).class], ["ENVIRONMENT", "CODE"]);
+  eq("49.15 advisedAction map exact + frozen", [wu49.TRIAGE_ACTIONS.ENVIRONMENT, wu49.TRIAGE_ACTIONS.CODE, wu49.TRIAGE_ACTIONS.AMBIGUOUS, Object.isFrozen(wu49.TRIAGE_ACTIONS)], ["escalate", "lawful-repair-candidate", "observe-then-escalate", true]);
+  ok("49.16 class enum frozen + triage result frozen", Object.isFrozen(wu49.TRIAGE_CLASSES) && Object.isFrozen(t49a));
+  const t49f = { surface: "x", verdict: "DOWN", reason: "http-403", httpCode: 403, extra: { nested: [1, 2] } };
+  const before49 = JSON.stringify(t49f);
+  wu49.triageFailure(t49f);
+  eq("49.17 triage NEVER mutates its input (read-only by construction)", JSON.stringify(t49f), before49);
+  eq("49.18 deterministic: same input → byte-identical verdict (no clock, no randomness)", JSON.stringify(wu49.triageFailure({ reason: "http-403" })), JSON.stringify(wu49.triageFailure({ reason: "http-403" })));
+
+  /* 49.19-49.35 retry governor — budget-governed, truthful exits (R356) */
+  const g49a = wu49.createRetryGovernor({ maxAttempts: 3, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49a = await g49a.run(async () => "paper-ok", { label: "first-try" });
+  eq("49.19 success on attempt 1 → SUCCEEDED/attempts=1/result carried/spent=0", [r49a.ok, r49a.attempts, r49a.exitReason, r49a.result, r49a.spentMs, typeof r49a.measuredMs], [true, 1, "SUCCEEDED", "paper-ok", 0, "number"]);
+  let throws49 = 0;
+  const g49b = wu49.createRetryGovernor({ maxAttempts: 2, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49b = await g49b.run(async () => { throws49 += 1; throw new Error("boom-49"); });
+  eq("49.20 always-throws maxAttempts=2 → MAX-ATTEMPTS attempts=2 (truthful, not bare false)", [r49b.ok, r49b.attempts, r49b.exitReason, throws49, r49b.errors.length], [false, 2, "MAX-ATTEMPTS", 2, 2]);
+  ok("49.21 thrown errors recorded truthfully (message preserved, never swallowed)", r49b.errors.every((e) => e === "boom-49"));
+  let spawns49 = 0;
+  const g49c = wu49.createRetryGovernor({ maxAttempts: 5, costPerAttemptMs: 40, budgetMs: 50, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49c = await g49c.run(async () => { spawns49 += 1; throw new Error("fail-49"); });
+  eq("49.22 budget 50 / cost 40: second attempt REFUSED BEFORE spawn → MIN-BUDGET-NOT-MET", [r49c.ok, r49c.attempts, r49c.exitReason, spawns49, r49c.spentMs], [false, 1, "MIN-BUDGET-NOT-MET", 1, 40]);
+  const g49d = wu49.createRetryGovernor({ maxAttempts: 5, costPerAttemptMs: 0, budgetMs: 0, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49d = await g49d.run(async () => "never-runs");
+  eq("49.23 zero budget + zero-cost action → BUDGET-EXHAUSTED at 0 attempts (refuses vapor)", [r49d.ok, r49d.attempts, r49d.exitReason, r49d.spentMs], [false, 0, "BUDGET-EXHAUSTED", 0]);
+  let spawns49e = 0;
+  const g49e = wu49.createRetryGovernor({ maxAttempts: 5, costPerAttemptMs: 40, budgetMs: 80, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49e = await g49e.run(async () => { spawns49e += 1; throw new Error("x"); });
+  eq("49.24 budget drains mid-flight → BUDGET-EXHAUSTED attempts=2 spent=80", [r49e.exitReason, r49e.attempts, r49e.spentMs, spawns49e], ["BUDGET-EXHAUSTED", 2, 80, 2]);
+  const g49f = wu49.createRetryGovernor({ maxAttempts: 3, costPerAttemptMs: 25, budgetMs: 1000, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49f = await g49f.run(async () => { throw new Error("y"); });
+  eq("49.25 spentMs exact + monotonic in attempts (3 × 25 = 75) → MAX-ATTEMPTS", [r49f.spentMs, r49f.attempts, r49f.exitReason], [75, 3, "MAX-ATTEMPTS"]);
+  const sleeps49 = [];
+  const g49g = wu49.createRetryGovernor({ maxAttempts: 4, backoffBaseMs: 100, sleepImpl: async (ms) => { sleeps49.push(ms); } });
+  await g49g.run(async () => { throw new Error("z"); });
+  eq("49.26 exponential backoff base×2^(n−1) between attempts (100,200,400)", sleeps49, [100, 200, 400]);
+  const sleeps49b = [];
+  const g49h = wu49.createRetryGovernor({ maxAttempts: 5, backoffBaseMs: 10000000, sleepImpl: async (ms) => { sleeps49b.push(ms); } });
+  await g49h.run(async () => { throw new Error("z"); });
+  eq("49.27 backoff CAPPED at 30s: a 10^9 base sleeps exactly 30000, never more", sleeps49b, [30000, 30000, 30000, 30000]);
+  let n49i = 0;
+  const g49i = wu49.createRetryGovernor({ maxAttempts: 3, costPerAttemptMs: 40, budgetMs: 10, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49i = await g49i.run(async () => { n49i += 1; throw new Error("no"); });
+  eq("49.28 FIRST attempt is pre-flight checked too: remaining 10 < min 40 → never spawns", [r49i.exitReason, r49i.attempts, n49i], ["MIN-BUDGET-NOT-MET", 0, 0]);
+  const g49j = wu49.createRetryGovernor({ maxAttempts: 3, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49j = await g49j.run("not-a-function");
+  eq("49.29 non-callable action → honest ACTION-INVALID pre-flight refusal (never a fake lifecycle stop, never a throw)", [r49j.ok, r49j.attempts, r49j.exitReason, r49j.errors[0].includes("action-not-callable")], [false, 0, "ACTION-INVALID", true]);
+  eq("49.30 negative budget config refused at zero attempts (ACTION-INVALID)", (await wu49.createRetryGovernor({ maxAttempts: 3, costPerAttemptMs: 40, budgetMs: -5, sleepImpl: noSleep49 }).run(async () => 1)).exitReason, "ACTION-INVALID");
+  let n49k = 0;
+  const g49k = wu49.createRetryGovernor({ maxAttempts: 2, backoffBaseMs: 1, sleepImpl: noSleep49 });
+  const r49k = await g49k.run(async () => { n49k += 1; return false; });
+  eq("49.31 explicit false = failed attempt (documented contract) → MAX-ATTEMPTS attempts=2", [r49k.exitReason, r49k.attempts, n49k, r49k.errors], ["MAX-ATTEMPTS", 2, 2, ["attempt-returned-false", "attempt-returned-false"]]);
+  let n49l = 0;
+  const r49l = await wu49.createRetryGovernor({ maxAttempts: 2, backoffBaseMs: 1, sleepImpl: noSleep49 }).run(async () => { n49l += 1; return { ok: n49l >= 2 }; }, { isSuccess: (r) => r.ok === true });
+  eq("49.32 isSuccess predicate: {ok:false} retries, {ok:true} succeeds on attempt 2", [r49l.ok, r49l.attempts, r49l.exitReason, n49l], [true, 2, "SUCCEEDED", 2]);
+  eq("49.33 stop-reason enum frozen + lifecycle reasons exact", [Object.isFrozen(wu49.GOVERNOR_STOP_REASONS), JSON.stringify(wu49.GOVERNOR_STOP_REASONS)], [true, '["SUCCEEDED","BUDGET-EXHAUSTED","MAX-ATTEMPTS","MIN-BUDGET-NOT-MET"]']);
+  ok("49.34 every lifecycle exit produced in this section ∈ the frozen enum", [r49a, r49b, r49c, r49d, r49e, r49f, r49k].every((r) => wu49.GOVERNOR_STOP_REASONS.includes(r.exitReason)));
+  eq("49.35 maxAttempts=0 → MAX-ATTEMPTS at 0 attempts (never spawns)", [(await wu49.createRetryGovernor({ maxAttempts: 0, sleepImpl: noSleep49 }).run(async () => 1)).attempts, (await wu49.createRetryGovernor({ maxAttempts: 0, sleepImpl: noSleep49 }).run(async () => 1)).exitReason], [0, "MAX-ATTEMPTS"]);
+
+  /* 49.36-49.49 typed receipts — eliza taxonomy over R303/R341 (R357) */
+  const rec49 = wu49.makeReceipt({ kind: "TRIAGE", scope: "private", subject: "pulse-domain-published", at: "2026-10-14T17:00:00.000Z", body: { class: "AMBIGUOUS", advisedAction: "observe-then-escalate" } });
+  eq("49.36 receipt shape: schemaVersion=1 + kind/scope/subject/at/body + frozen", [rec49.schemaVersion, rec49.kind, rec49.scope, rec49.subject, rec49.at, Object.isFrozen(rec49)], [1, "TRIAGE", "private", "pulse-domain-published", "2026-10-14T17:00:00.000Z", true]);
+  eq("49.37 all six frozen-enum kinds construct", wu49.RECEIPT_KINDS.map((k) => wu49.makeReceipt({ kind: k, subject: "s", at: "2026-10-14T17:00:00.000Z", body: {} }).kind), ["MEASUREMENT", "REPAIR", "TRIAGE", "ESCALATION", "LEASE", "SNAPSHOT"]);
+  const thr49 = (fn) => { try { fn(); return null; } catch (e) { return String((e && e.message) ?? e); } };
+  ok("49.38 factory is LOUD: wrong kind / wrong scope / empty subject / bad at / missing body all throw makeReceipt:<reason>", [
+    thr49(() => wu49.makeReceipt({ kind: "DIARY", subject: "s", at: "2026-10-14T17:00:00.000Z", body: {} })),
+    thr49(() => wu49.makeReceipt({ kind: "REPAIR", scope: "public", subject: "s", at: "2026-10-14T17:00:00.000Z", body: {} })),
+    thr49(() => wu49.makeReceipt({ kind: "REPAIR", subject: "", at: "2026-10-14T17:00:00.000Z", body: {} })),
+    thr49(() => wu49.makeReceipt({ kind: "REPAIR", subject: "s", at: "not-a-date", body: {} })),
+    thr49(() => wu49.makeReceipt({ kind: "REPAIR", subject: "s", at: "2026-10-14T17:00:00.000Z" })),
+  ].every((m) => typeof m === "string" && m.startsWith("makeReceipt:")));
+  const recNow49 = wu49.makeReceipt({ kind: "SNAPSHOT", subject: "s", body: {} });
+  eq("49.39 scope defaults private (fail-closed) + at defaults to valid ISO-now", [recNow49.scope, wu49.isReceipt(recNow49)], ["private", true]);
+  eq("49.40 guards: isReceipt / junk / schemaVersion / wrong-kind / isKind exact", [
+    wu49.isReceipt(rec49), wu49.isReceipt({}), wu49.isReceipt(null),
+    wu49.isReceipt({ ...rec49, schemaVersion: 2 }), wu49.isReceipt({ ...rec49, kind: "DIARY" }),
+    wu49.isKind(rec49, "TRIAGE"), wu49.isKind(rec49, "REPAIR"), wu49.isKind(rec49, "DIARY"),
+  ], [true, false, false, false, false, true, false, false]);
+
+  const repo49a = fs.mkdtempSync(path.join(os.tmpdir(), "saos49-ledger-"));
+  const rec49b = wu49.makeReceipt({ kind: "MEASUREMENT", subject: "engine-selftest", at: "2026-10-14T17:01:00.000Z", body: { pass: 1725, fail: 0 } });
+  const rec49c = wu49.makeReceipt({ kind: "REPAIR", scope: "shared", subject: "pulse-site", at: "2026-10-14T17:02:00.000Z", body: { action: "retrigger-pages" } });
+  const rec49d = wu49.makeReceipt({ kind: "TRIAGE", subject: "artery-workflow", at: "2026-10-14T17:03:00.000Z", body: { class: "AMBIGUOUS" } });
+  eq("49.41 append → ok (cabinet path convention: repoRoot/mini-services/saos-engine/state/watch-receipts.jsonl)", [wu49.appendReceiptLedger(repo49a, rec49b).ok, wu49.appendReceiptLedger(repo49a, rec49c).ok, wu49.appendReceiptLedger(repo49a, rec49d).ok], [true, true, true]);
+  const disk49 = JSON.parse(fs.readFileSync(path.join(repo49a, "mini-services", "saos-engine", "state", "watch-receipts.jsonl"), "utf8").trim().split("\n")[0]);
+  eq("49.42 ledger line round-trips byte-honest: schemaVersion + kind + scope on disk", [disk49.schemaVersion, disk49.kind, disk49.scope, disk49.subject, disk49.at], [1, "MEASUREMENT", "private", "engine-selftest", "2026-10-14T17:01:00.000Z"]);
+  const bytesBefore49 = fs.statSync(path.join(repo49a, "mini-services", "saos-engine", "state", "watch-receipts.jsonl")).size;
+  eq("49.43 non-receipt append REFUSED without writing a byte (R341 lineage)", [
+    wu49.appendReceiptLedger(repo49a, { kind: "TRIAGE", subject: "x", at: "2026-10-14T17:04:00.000Z", body: {} }).error.startsWith("not-a-receipt"),
+    wu49.appendReceiptLedger(repo49a, null).ok,
+    wu49.appendReceiptLedger(repo49a, "junk").ok,
+    fs.statSync(path.join(repo49a, "mini-services", "saos-engine", "state", "watch-receipts.jsonl")).size === bytesBefore49,
+  ], [true, false, false, true]);
+  const rd49 = wu49.readReceipts(repo49a);
+  eq("49.44 read-back: 3 receipts, 0 corrupt, order preserved", [rd49.ok, rd49.total, rd49.corrupt, rd49.receipts.map((r) => r.kind)], [true, 3, 0, ["MEASUREMENT", "REPAIR", "TRIAGE"]]);
+  eq("49.45 filtered read by kind", wu49.readReceipts(repo49a, { kind: "REPAIR" }).receipts.map((r) => r.subject), ["pulse-site"]);
+  eq("49.46 filtered read by since (inclusive) + kind∧since conjunction", [wu49.readReceipts(repo49a, { since: "2026-10-14T17:02:00.000Z" }).receipts.map((r) => r.kind), wu49.readReceipts(repo49a, { since: "2026-10-14T17:02:00.000Z", kind: "TRIAGE" }).receipts.length], [["REPAIR", "TRIAGE"], 1]);
+  const repo49b = fs.mkdtempSync(path.join(os.tmpdir(), "saos49-corrupt-"));
+  fs.mkdirSync(path.join(repo49b, "mini-services", "saos-engine", "state"), { recursive: true });
+  fs.writeFileSync(path.join(repo49b, "mini-services", "saos-engine", "state", "watch-receipts.jsonl"), JSON.stringify(rec49b) + "\n{corrupt-line\n");
+  const rd49b = wu49.readReceipts(repo49b);
+  eq("49.47 corrupt line counted honestly, good lines still served (never crashes, never silently dropped)", [rd49b.ok, rd49b.total, rd49b.corrupt, rd49b.receipts[0].kind], [true, 1, 1, "MEASUREMENT"]);
+  const repo49c = fs.mkdtempSync(path.join(os.tmpdir(), "saos49-absent-"));
+  eq("49.48 absent ledger = honest empty (not corruption)", [wu49.readReceipts(repo49c).empty, wu49.readReceipts(repo49c).total], [true, 0]);
+  fs.rmSync(repo49a, { recursive: true, force: true });
+  fs.rmSync(repo49b, { recursive: true, force: true });
+  fs.rmSync(repo49c, { recursive: true, force: true });
+  ok("49.49 receipt fixtures cleaned by readback (the REAL state ledger is never written by this selftest)", !fs.existsSync(repo49a) && !fs.existsSync(repo49b) && !fs.existsSync(repo49c) && !fs.existsSync(path.join(STATE49, "watch-receipts.jsonl")));
+
+  /* 49.50-49.54 triageWatchState — the ADDITIVE pure seam (D) */
+  const doc49 = {
+    at: "2026-10-14T17:10:00.000Z", verdict: "SURFACES-DOWN",
+    targets: [
+      { id: "pulse-site", kind: "site", verdict: "OK", reason: "front-door-200-marked" },
+      { id: "pulse-network", kind: "datafile", verdict: "DEGRADED", reason: "shape-missing:generatedAt" },
+      { id: "pulse-domain-published", kind: "datafile", verdict: "DOWN", reason: "http-403" },
+      { id: "engine-heartbeat", kind: "statefile", verdict: "DEGRADED", reason: "probe timed out after 8000ms" },
+      { id: "mystery-target", kind: "rpc", verdict: "DOWN", reason: "wibble-42" },
+    ],
+  };
+  const snap49 = JSON.stringify(doc49);
+  const tw49 = wu49.triageWatchState(doc49);
+  eq("49.50 perTarget triage classes exact (OK → null triage: nothing to triage)", tw49.perTarget.map((p) => [p.id, p.triage ? p.triage.class : null]), [["pulse-site", null], ["pulse-network", "CODE"], ["pulse-domain-published", "ENVIRONMENT"], ["engine-heartbeat", "AMBIGUOUS"], ["mystery-target", "AMBIGUOUS"]]);
+  eq("49.51 summary counts + watch verdict honest", [tw49.ok, tw49.summary.total, tw49.summary.ok, tw49.summary.triaged, tw49.summary.watchVerdict], [true, 5, 1, { CODE: 1, ENVIRONMENT: 1, AMBIGUOUS: 2 }, "SURFACES-DOWN"]);
+  eq("49.52 pure: the input doc is byte-identical after the call (read-only seam)", JSON.stringify(doc49), snap49);
+  eq("49.53 malformed docs → honest ok:false, never a fabricated triage", [wu49.triageWatchState(null).ok, wu49.triageWatchState({}).ok, wu49.triageWatchState({ targets: "nope" }).error.startsWith("doc-shape-invalid")], [false, false, true]);
+  const real49 = JSON.parse(fs.readFileSync(path.join(STATE49, "surface-watch-latest.json"), "utf8"));
+  const tw49b = wu49.triageWatchState(real49);
+  ok("49.54 REAL committed watch doc triages cleanly: every non-OK target carries a class ∈ the frozen enum", tw49b.ok === true && tw49b.perTarget.length === real49.targets.length && tw49b.perTarget.every((p) => (p.verdict === "OK" ? p.triage === null : wu49.TRIAGE_CLASSES.includes(p.triage.class))));
+}
+
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* T-21 · last-run marker: the recruiter's evidence for the integrity-auditor
