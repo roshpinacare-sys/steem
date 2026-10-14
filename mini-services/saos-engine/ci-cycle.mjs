@@ -212,6 +212,25 @@ async function main() {
     return { verdict: r.verdict, published: r.published, rejected: r.rejected, scoreMean: r.scoreMean ?? null, topReason: r.topReason ?? null, seedMerged: r.seedMerged, fresh: true };
   });
 
+  /* R304 · THE CONCEPT LADDER (T-84, Open-Pomelli deep-dive, trace
+   * 1a138f98b9a80b61): Pomelli's "exactly 4 distinct concepts" made
+   * deterministic over the sovereign corpus — slop (R302) → memory (R303)
+   * → measured distinctness die BEFORE any draft exists. OBSERVE-ONLY:
+   * the shortlist rides the state-churn commits so evidence accumulates
+   * in git; enforcement waits for measured heartbeat evidence (R302
+   * pattern). Fail-isolated like every step. */
+  report.steps.contentConcepts = await stepWrap("content-concepts", async () => {
+    const { conceptLadder } = await import("./content-concepts.mjs");
+    const { loadMemory } = await import("./content-memory.mjs");
+    const { loadDNA } = await import("./content-judge.mjs");
+    const corpus = JSON.parse(fs.readFileSync(path.join(DIR, "content-corpus.json"), "utf8"));
+    const r = conceptLadder({ corpus, dna: loadDNA(), memory: loadMemory(STATE), goal: "thought_leadership", limit: 4 });
+    try {
+      fs.writeFileSync(path.join(STATE, "concepts-latest.json"), JSON.stringify({ ...r, generatedAt: now }, null, 2));
+    } catch { /* state write never blocks the heartbeat */ }
+    return { verdict: r.verdict, generated: r.generated, kept: r.kept, vetoed: r.vetoed, topScore: r.shortlist[0]?.score ?? null, topConcept: r.shortlist[0]?.id ?? null, observe: true };
+  });
+
   /* CI session ledger — the machine-independent life of the organ, appended
    * every heartbeat, committed back into the private tree. */
   try {
@@ -250,6 +269,8 @@ async function main() {
     contentMemory: report.steps.contentMemory?.verdict ?? "STEP-FAIL",
     contentMemoryPatterns: report.steps.contentMemory?.published ?? null,
     contentMemoryScore: report.steps.contentMemory?.scoreMean ?? null,
+    contentConcepts: report.steps.contentConcepts?.verdict ?? "STEP-FAIL",
+    contentConceptsTop: report.steps.contentConcepts?.topConcept ?? null,
   };
   console.log("CI-HEARTBEAT " + JSON.stringify(summary));
   fs.writeFileSync(path.join(STATE, "ci-last-heartbeat.json"), JSON.stringify({ ...summary, report }, null, 2));
