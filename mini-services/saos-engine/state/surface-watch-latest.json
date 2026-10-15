@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-15T01:42:11.647Z",
-  "head": "70b123e08717a54026fc5f75309351f09ffe1e53",
+  "at": "2026-10-15T02:13:15.561Z",
+  "head": "7c52cf45db7fd62ac70e58a087a18aece2df2ccc",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 12.1
+      "ageMinutes": 13.1
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 12.1
+      "ageMinutes": 13.1
     },
     {
       "id": "pulse-domain-published",
@@ -36,15 +36,15 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 94
+      "ageMinutes": 125
     },
     {
       "id": "engine-heartbeat",
       "kind": "statefile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 434.2
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 31.1
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 454.7
+      "ageMinutes": 24.8
     },
     {
       "id": "engine-selftest",
@@ -85,16 +85,8 @@
       "repo": "Domain",
       "workflow": "published-ledger.yml",
       "readbackRequired": true
-    },
-    {
-      "targetId": "engine-heartbeat",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "saos-runtime",
-      "workflow": "sovereign-runtime.yml",
-      "readbackRequired": true
     }
   ],
   "repairs": [],
-  "signature": "sig:fc61d4cf"
+  "signature": "sig:a82694bd"
 }
