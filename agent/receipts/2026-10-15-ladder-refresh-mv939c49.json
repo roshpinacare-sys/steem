@@ -1,0 +1,102 @@
+{
+  "receipt": "ladder-refresh",
+  "task": "16-b — ladder-refresh executor run (≤3 cancel+replace pairs, ±2% band, floor-anchored, no fresh capital)",
+  "at": "2026-10-15T05:18:52.568Z",
+  "node": "https://api.steemit.com",
+  "account": "headcorner",
+  "market": {
+    "bestBid": 0.10050286,
+    "bestAsk": 0.10458383,
+    "mid": 0.10254335,
+    "spreadPct": 3.98,
+    "depthBids": 12,
+    "depthAsks": 20,
+    "headBlock": 110452770
+  },
+  "ladderShape": {
+    "openOrders": 4,
+    "sells": 2,
+    "buys": 2,
+    "steemOfferedSellSide": 10.818,
+    "steemSoughtBuySide": 608.145,
+    "oldestOrderHours": 28.86,
+    "orders": [
+      {
+        "orderid": 12696357,
+        "side": "sell-steem",
+        "price": 0.10464041,
+        "baseAmount": 5.409,
+        "steemVolume": 5.409,
+        "vsMidPct": 2.05,
+        "ageHours": 28.86,
+        "expiration": "2026-11-10T00:27:14"
+      },
+      {
+        "orderid": 12696358,
+        "side": "sell-steem",
+        "price": 0.1055648,
+        "baseAmount": 5.409,
+        "steemVolume": 5.409,
+        "vsMidPct": 2.95,
+        "ageHours": 28.86,
+        "expiration": "2026-11-10T00:27:17"
+      },
+      {
+        "orderid": 12696360,
+        "side": "buy-steem",
+        "price": 0.09987968,
+        "baseAmount": 30.134,
+        "steemVolume": 301.703,
+        "vsMidPct": -2.6,
+        "ageHours": 28.86,
+        "expiration": "2026-11-10T00:27:23"
+      },
+      {
+        "orderid": 12696361,
+        "side": "buy-steem",
+        "price": 0.09833508,
+        "baseAmount": 30.134,
+        "steemVolume": 306.442,
+        "vsMidPct": -4.1,
+        "ageHours": 28.86,
+        "expiration": "2026-11-10T00:27:26"
+      }
+    ]
+  },
+  "churn": {
+    "marketOpsInLast100AcctOps": 82,
+    "spanFirstLastSeconds": 22248,
+    "verdict": "HIGH-FREQUENCY CONCURRENT MANAGER OBSERVED — another process is actively churning this ladder; this executor stays cap-limited and staleness-gated inside that reality"
+  },
+  "caps": {
+    "maxPairsPerRun": 3,
+    "staleMinAgeHours": 168,
+    "staleDistPct": 2,
+    "replaceBandPct": 2,
+    "targetOffsetPct": 1.5,
+    "floorLowestAsks": 2,
+    "floorHighestBids": 2,
+    "standingMinAfter": 4,
+    "bookMinDepthLevels": 3,
+    "bookAnomalySpreadPct": 15,
+    "orderLifetimeHours": 24,
+    "accountLock": "headcorner",
+    "neverTouch": [
+      "^ynet",
+      "^tov-hive"
+    ]
+  },
+  "gates": {
+    "liveGate28b": false,
+    "ladderArm": false,
+    "executorDisabled": false,
+    "dryForced": false
+  },
+  "dryRunPlanPrint": [],
+  "drops": [],
+  "anomaly": null,
+  "status": "plan-only-ladder-healthy-no-ops",
+  "ops": [],
+  "executed": [],
+  "reason": "no order qualifies stale (>7d AND >2% from mid) — nothing to refresh by design; run was plan-only (unarmed)"
+}
