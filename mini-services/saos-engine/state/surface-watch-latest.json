@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-15T04:25:26.450Z",
-  "head": "59d1fbf6dba450fd749bad02b139c11d97e4fef1",
+  "at": "2026-10-15T04:53:00.709Z",
+  "head": "ec1dc21359b4bba69412a9ad04a664895382fdef",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 25.3
+      "ageMinutes": 22.8
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 25.3
+      "ageMinutes": 22.8
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 257.2
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 13.7
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 27.4
+      "ageMinutes": 27.6
     },
     {
       "id": "engine-presence-digest",
@@ -60,7 +60,7 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 0.3
+      "ageMinutes": 0.2
     },
     {
       "id": "artery-workflow",
@@ -77,16 +77,7 @@
       "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
-  "repairsPlanned": [
-    {
-      "targetId": "pulse-domain-published",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Domain",
-      "workflow": "published-ledger.yml",
-      "readbackRequired": true
-    }
-  ],
+  "repairsPlanned": [],
   "repairs": [],
-  "signature": "sig:7de727d1"
+  "signature": "sig:c5472f28"
 }
