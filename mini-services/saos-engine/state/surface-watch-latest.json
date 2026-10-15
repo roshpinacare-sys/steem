@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-15T09:23:42.815Z",
-  "head": "5a70f45df53da14e6759b287088b842979aa7b15",
+  "at": "2026-10-15T09:50:18.154Z",
+  "head": "35655c4a5873e3ba882119536d1bd0c5e7ab85a7",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.5
+      "ageMinutes": 20.1
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.5
+      "ageMinutes": 20.1
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 284.4
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 22.9
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 22.3
+      "ageMinutes": 26.6
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 19.7
+      "ageMinutes": 24
     },
     {
       "id": "engine-selftest",
@@ -60,7 +60,7 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 0.2
+      "ageMinutes": 0.1
     },
     {
       "id": "artery-workflow",
@@ -77,16 +77,7 @@
       "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
-  "repairsPlanned": [
-    {
-      "targetId": "pulse-domain-published",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Domain",
-      "workflow": "published-ledger.yml",
-      "readbackRequired": true
-    }
-  ],
+  "repairsPlanned": [],
   "repairs": [],
-  "signature": "sig:a3adf0b8"
+  "signature": "sig:a1a10b86"
 }
