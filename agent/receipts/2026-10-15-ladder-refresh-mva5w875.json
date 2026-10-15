@@ -1,0 +1,152 @@
+{
+  "receipt": "ladder-refresh",
+  "task": "16-b — ladder-refresh executor run (≤3 cancel+replace pairs, ±2% band, floor-anchored, no fresh capital)",
+  "at": "2026-10-15T23:20:25.985Z",
+  "node": "https://api.steemit.com",
+  "account": "headcorner",
+  "market": {
+    "bestBid": 0.1020359,
+    "bestAsk": 0.10432968,
+    "mid": 0.10318279,
+    "spreadPct": 2.22,
+    "depthBids": 16,
+    "depthAsks": 20,
+    "headBlock": 110474292
+  },
+  "ladderShape": {
+    "openOrders": 9,
+    "sells": 2,
+    "buys": 7,
+    "steemOfferedSellSide": 10.818,
+    "steemSoughtBuySide": 633.269,
+    "oldestOrderHours": 46.89,
+    "orders": [
+      {
+        "orderid": 12701634,
+        "side": "buy-steem",
+        "price": 0.09725734,
+        "baseAmount": 0.5,
+        "steemVolume": 5.141,
+        "vsMidPct": -5.74,
+        "ageHours": 9.9,
+        "expiration": "2026-10-16T13:26:08"
+      },
+      {
+        "orderid": 12701635,
+        "side": "buy-steem",
+        "price": 0.09716284,
+        "baseAmount": 0.5,
+        "steemVolume": 5.146,
+        "vsMidPct": -5.83,
+        "ageHours": 9.9,
+        "expiration": "2026-10-16T13:26:08"
+      },
+      {
+        "orderid": 12701784,
+        "side": "buy-steem",
+        "price": 0.10121457,
+        "baseAmount": 0.5,
+        "steemVolume": 4.94,
+        "vsMidPct": -1.91,
+        "ageHours": 5.04,
+        "expiration": "2026-10-16T18:18:10"
+      },
+      {
+        "orderid": 12701785,
+        "side": "buy-steem",
+        "price": 0.10109179,
+        "baseAmount": 0.5,
+        "steemVolume": 4.946,
+        "vsMidPct": -2.03,
+        "ageHours": 5.04,
+        "expiration": "2026-10-16T18:18:10"
+      },
+      {
+        "orderid": 12701786,
+        "side": "buy-steem",
+        "price": 0.1009897,
+        "baseAmount": 0.5,
+        "steemVolume": 4.951,
+        "vsMidPct": -2.13,
+        "ageHours": 5.04,
+        "expiration": "2026-10-16T18:18:10"
+      },
+      {
+        "orderid": 12696357,
+        "side": "sell-steem",
+        "price": 0.10464041,
+        "baseAmount": 5.409,
+        "steemVolume": 5.409,
+        "vsMidPct": 1.41,
+        "ageHours": 46.89,
+        "expiration": "2026-11-10T00:27:14"
+      },
+      {
+        "orderid": 12696358,
+        "side": "sell-steem",
+        "price": 0.1055648,
+        "baseAmount": 5.409,
+        "steemVolume": 5.409,
+        "vsMidPct": 2.31,
+        "ageHours": 46.89,
+        "expiration": "2026-11-10T00:27:17"
+      },
+      {
+        "orderid": 12696360,
+        "side": "buy-steem",
+        "price": 0.09987968,
+        "baseAmount": 30.134,
+        "steemVolume": 301.703,
+        "vsMidPct": -3.2,
+        "ageHours": 46.88,
+        "expiration": "2026-11-10T00:27:23"
+      },
+      {
+        "orderid": 12696361,
+        "side": "buy-steem",
+        "price": 0.09833508,
+        "baseAmount": 30.134,
+        "steemVolume": 306.442,
+        "vsMidPct": -4.7,
+        "ageHours": 46.88,
+        "expiration": "2026-11-10T00:27:26"
+      }
+    ]
+  },
+  "churn": {
+    "marketOpsInLast100AcctOps": 59,
+    "spanFirstLastSeconds": 34749,
+    "verdict": "HIGH-FREQUENCY CONCURRENT MANAGER OBSERVED — another process is actively churning this ladder; this executor stays cap-limited and staleness-gated inside that reality"
+  },
+  "caps": {
+    "maxPairsPerRun": 3,
+    "staleMinAgeHours": 168,
+    "staleDistPct": 2,
+    "replaceBandPct": 2,
+    "targetOffsetPct": 1.5,
+    "floorLowestAsks": 2,
+    "floorHighestBids": 2,
+    "standingMinAfter": 4,
+    "bookMinDepthLevels": 3,
+    "bookAnomalySpreadPct": 15,
+    "orderLifetimeHours": 24,
+    "accountLock": "headcorner",
+    "neverTouch": [
+      "^ynet",
+      "^tov-hive"
+    ]
+  },
+  "gates": {
+    "liveGate28b": false,
+    "ladderArm": false,
+    "executorDisabled": false,
+    "dryForced": false
+  },
+  "dryRunPlanPrint": [],
+  "drops": [],
+  "anomaly": null,
+  "status": "plan-only-ladder-healthy-no-ops",
+  "ops": [],
+  "executed": [],
+  "reason": "no order qualifies stale (>7d AND >2% from mid) — nothing to refresh by design; run was plan-only (unarmed)"
+}
