@@ -80,8 +80,8 @@ jobs:
           git add mini-services/saos-engine/state 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -m "exec-cycle: doctrine-capped broadcast receipts (txids, zero keys) [skip ci]"
-            git pull --rebase origin main || true
-            git push origin HEAD:main
+            git pull --rebase origin saos-cockpit || true
+            git push origin HEAD:saos-cockpit
           else
             echo "no state delta this cycle"
           fi
