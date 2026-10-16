@@ -48,8 +48,15 @@ const ROOT = "/home/z/my-project";
  * respawn after 3 dead ticks, cooldown 60s). The engine reciprocally hatches
  * THIS keeper when both :3000 and :3044 are dark. Single-instance laws stay:
  * each guardian spawns its ward only when the ward's port is dark. */
-const ENGINE_PORT = 3040;
-const ENGINE_DIR = "/home/z/my-project/mini-services/saos-engine";
+/* T-80 REALITY ALIGNMENT (2026-10-16, measured): office-selfcheck lawfully
+ * owns :3040 and answers /health — the keeper was "proving" the engine alive
+ * on the WRONG port (a sibling office masquerading as the engine), and
+ * ENGINE_DIR pointed at the pre-estate-move path (gone). Now: the engine's
+ * port rides SAOS_ENGINE_PORT (hatched keepers inherit the engine's env),
+ * and the dir is DERIVED (WIPE-#4 law: never hardcode — dev-keeper and
+ * saos-engine are siblings under mini-services/). */
+const ENGINE_PORT = Number(process.env.SAOS_ENGINE_PORT || 3040);
+const ENGINE_DIR = path.resolve(import.meta.dir, "..", "saos-engine");
 let engineUp: boolean | null = null;
 let engineDownTicks = 0;
 let engineSpawns = 0;

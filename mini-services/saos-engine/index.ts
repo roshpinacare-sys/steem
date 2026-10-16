@@ -48,7 +48,10 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as childProcess from "node:child_process";
 
-const PORT = 3040;
+/* T-80: office-selfcheck lawfully owns :3040 in the current organism; the
+ * engine binds 3040 by default (historical) but a boot may override via
+ * SAOS_ENGINE_PORT — the trading loop must never fight a sibling office. */
+const PORT = Number(process.env.SAOS_ENGINE_PORT || 3040);
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const ACCOUNT = process.env.SAOS_ACCOUNT || "headcorner";
@@ -405,6 +408,21 @@ try {
   reviveArmyCustody().then((r) => console.log(`army custody revival: ${r.verdict} (${r.after?.verified ?? 0}/${r.after?.total ?? "?"})`)).catch((e) => console.error(`army revival error: ${String(e?.message ?? e).slice(0, 120)}`));
 } catch (e) {
   console.error(`army revival boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
+}
+
+// T-80 SUPERVISED ROT2 GATE (owner law 2026-10-16): the agents' management
+// tokens live in the atomic vault FOR THE SOVEREIGNTY'S USE — supervised.
+// Boot-time adoption THROUGH the vault-home supervise/ gate (sha-pin triple
+// fail-closed + custody ledger + 0600 material + shred). Fail-soft: the
+// GEN-2/GEN-1 git-vault revival above stays armed as fallback; the live
+// chain judges every adoption; the cross-chain pause stands (steem only).
+try {
+  import("./rot2-gate.mjs")
+    .then((m) => m.adoptRot2Fleet({ purpose: "engine boot" }))
+    .then((r) => console.log(`rot2 gate: ${r.ok ? `ADOPTED ${r.verified}/${r.roster} (supervised, ledger-logged)` : `REFUSED:${String(r.reason ?? "partial").slice(0, 90)}`}`))
+    .catch((e) => console.error(`rot2 gate error: ${String(e?.message ?? e).slice(0, 120)}`));
+} catch (e) {
+  console.error(`rot2 gate boot failed: ${String(e?.message ?? e).slice(0, 120)}`);
 }
 
 // R306 CAPABILITY-LAYER REVIVAL: boot-time self-heal of the integrations
