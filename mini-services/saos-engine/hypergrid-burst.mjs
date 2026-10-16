@@ -21,6 +21,12 @@
 //  - single-flight: startHyperGrid() is boot-idempotent (one loop/process).
 // ═══════════════════════════════════════════════════════════════════════════
 import { startHyperGrid, hyperState, hyperConf } from "./hypergrid.mjs";
+import { runBooklaw } from "./booklaw.mjs";
+import { openOrders, accountState } from "./measure.mjs";
+import { masterAccount, executeOps, execPaused } from "./signer.mjs";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const G = globalThis;
 const BURST_MS = Math.min(Math.max(Number(process.env.HYPER_BURST_MS ?? 90_000), 5_000), 300_000);
@@ -59,6 +65,39 @@ const result = {
   opsToday: after?.runtime?.opsToday ?? null,
 };
 out(JSON.stringify(result));
+
+/* ═══ BOOKLAW REVIVAL — the account's own risk desk, wire-back (2026-10-16) ═══
+ * Measured disease: the coverage law was orphaned (lib refactor lost
+ * booklawPlan — the module could not even load, zero callers since 10-02)
+ * while the chain accumulated 20.35 SBD of phantom bid overflow from an
+ * orphaned fat tranche no living lane owns (registry lost with a sandbox
+ * generation). "כסף תקוע בלימיטים" — the owner's words, made literal.
+ * The burst now runs the law after the tick loop stops: measure → plan →
+ * cancel worst-price overflow (orphans first, hyper band untouchable,
+ * ≤20 ops) through the SAME think-gate/exec rails every op must pass.
+ * Fail-honest: a refused broadcast is a typed verdict, never a fake green. */
+if (delta >= 1) {
+  try {
+    const acc = masterAccount();
+    const [oo, st] = await Promise.all([openOrders(acc), accountState(acc)]);
+    const oursFile = path.join(path.dirname(fileURLToPath(import.meta.url)), "state", "our-orders.json");
+    let registryIds = [];
+    try { registryIds = (JSON.parse(fs.readFileSync(oursFile, "utf8")).orderids ?? []).map((x) => (typeof x === "object" && x !== null ? x.id : x)); } catch { /* honest empty */ }
+    const law = await runBooklaw({
+      observe: { orders: oo.ok ? oo.orders : null, inventory: st.ok ? { steem: st.steem, sbd: st.sbd } : null },
+      registryIds,
+      now: new Date().toISOString(),
+      exec: execPaused() ? null : async (ops, tag) => executeOps(ops, { tag }),
+    });
+    out("booklaw: " + JSON.stringify({ verdict: law.verdict, coverage: law.coverage, cancelIds: law.cancelIds, cancelWhy: law.cancelWhy, broadcast: law.broadcast }));
+    if (law.verdict === "REPAIRED" && law.broadcast && law.broadcast.ok === false) {
+      out("booklaw RED: repair broadcast failed — " + String(law.broadcast.error ?? "unknown"));
+      process.exitCode = 1;
+    }
+  } catch (e) {
+    out("booklaw error (honest, non-fatal): " + String((e && e.message) || e));
+  }
+}
 
 if (delta < 1) {
   out("burst FAILED: loop did not advance ticks — honest red");
