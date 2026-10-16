@@ -90,8 +90,8 @@ if (delta >= 1) {
       exec: execPaused() ? null : async (ops, tag) => executeOps(ops, { tag }),
     });
     out("booklaw: " + JSON.stringify({ verdict: law.verdict, coverage: law.coverage, cancelIds: law.cancelIds, cancelWhy: law.cancelWhy, broadcast: law.broadcast }));
-    if (law.verdict === "REPAIRED" && law.broadcast && law.broadcast.ok === false) {
-      out("booklaw RED: repair broadcast failed — " + String(law.broadcast.error ?? "unknown"));
+    if (law.broadcast && law.broadcast.ok === false) {
+      out("booklaw RED: repair broadcast failed (" + law.verdict + ") — " + String(law.broadcast.error ?? "unknown"));
       process.exitCode = 1;
     }
   } catch (e) {
