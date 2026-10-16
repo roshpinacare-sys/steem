@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-16T08:03:47.401Z",
-  "head": "db10efce16036fd6c9e34963c07833c31f10402c",
-  "verdict": "SURFACES-OK",
+  "at": "2026-10-16T08:31:10.884Z",
+  "head": "843468218f8903e2e280b25fa3d403ae93f1367c",
+  "verdict": "SURFACES-DOWN",
   "repairMode": "observe",
   "actArmed": false,
   "prevVerdict": "SURFACES-OK",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 3.6
+      "ageMinutes": 1
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,14 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 3.6
+      "ageMinutes": 1
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 181.2
+      "verdict": "DOWN",
+      "reason": "http-404"
     },
     {
       "id": "engine-heartbeat",
@@ -80,7 +79,7 @@
   "repairsPlanned": [
     {
       "targetId": "pulse-domain-published",
-      "verdict": "STALE",
+      "verdict": "DOWN",
       "action": "regen-state",
       "repo": "Domain",
       "workflow": "published-ledger.yml",
@@ -88,5 +87,5 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:e704bad7"
+  "signature": "sig:da4438d4"
 }
