@@ -528,17 +528,30 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     const guardNote = [];
     const selfCrossCancelSet = new Set([...staleIds, ...flowRequoteIds]);
     const selfAsks = [], selfBids = [];
+    /* WAVE-91 sane band: only prices within [0.2×ref, 5×ref] of a measured
+     * reference are real crossing risks; anything outside is data-corrupt or
+     * fat-finger and is CANCELLED (ours-only) instead of distorting prices. */
+    const refPx = Number(offer?.marks?.paritySbdPerSteem) > 0 ? Number(offer.marks.paritySbdPerSteem)
+      : (Number(offer?.book?.bestBid) > 0 && Number(offer?.book?.bestAsk) > 0 ? (Number(offer.book.bestBid) + Number(offer.book.bestAsk)) / 2 : null);
+    const insaneOursIds = [];
     try {
       const restingSelf = await openOrders(ACCOUNT);
       for (const o of (restingSelf?.ok ? restingSelf.orders : [])) {
-        if (selfCrossCancelSet.has(Number(o.orderid))) continue; // cancelled earlier in this same batch
+        const id = Number(o.orderid);
+        if (selfCrossCancelSet.has(id)) continue; // cancelled earlier in this same batch
         if (!(o.unit > 0)) continue;
+        const insane = refPx > 0 && (o.unit < refPx * 0.2 || o.unit > refPx * 5);
+        if (insane) {
+          if (oursSet.has(id) && insaneOursIds.length < 5) insaneOursIds.push({ id, side: o.side, unit: o.unit });
+          continue; // never let corrupt prices touch the guard's sets
+        }
         (o.side === "ask" ? selfAsks : selfBids).push(o.unit);
       }
       if (!restingSelf?.ok) guardNote.push({ note: "resting-unreadable — guard degraded to in-batch only (honest)" });
     } catch (e) {
       guardNote.push({ note: `resting-read-error: ${String(e?.message ?? e).slice(0, 80)} — guard degraded to in-batch only (honest)` });
     }
+    if (insaneOursIds.length) guardNote.push({ note: "insane-own-orders queued for cancel (ours-only, cap 5)", items: insaneOursIds });
 
     /* (c-NEW · R210 §VI/§IX) the claim op is built FIRST in the batch —
      * the maxOpsPerCycle slice truncates the TAIL, so a late-pushed claim
@@ -574,6 +587,12 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
 
     // (a) stale repricing — cancel ONLY our own law-violating orders (D-021, cap 5→12: measured stale pile of 13)
     for (const id of staleIds.slice(0, 12)) {
+      ops.push(["limit_order_cancel", { owner: ACCOUNT, orderid: id }]);
+    }
+    // (a0) WAVE-91 insane-price cancels — our own data-corrupt/fat-finger orders
+    // (unit outside [0.2×ref, 5×ref], e.g. the 10.18 ask the pre-fix guard made)
+    // are cancelled first-class so they can never lock capital or distort the book.
+    for (const { id } of insaneOursIds) {
       ops.push(["limit_order_cancel", { owner: ACCOUNT, orderid: id }]);
     }
     // (a2) T-19 flow requote — cancel our previous flow levels (mobile layer), cap 12
@@ -757,7 +776,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
      * orders on this account must never be our cancel candidates) + meter
      * the ops throughput + RC trend — measured, not assumed. */
     if (res.ok ?? res.verdict === "BROADCAST") {
-      const cancelled = new Set([...staleIds, ...flowRequoteIds]);
+      const cancelled = new Set([...staleIds, ...flowRequoteIds, ...insaneOursIds.map((x) => x.id)]);
       const cut = (ours.orderids ?? []).filter((o) => !cancelled.has(typeof o === "object" ? o.id : o));
       writeJson(OURS_FILE, { orderids: [...cut, ...createdIds].slice(-200) });
       let rcPct = null;
