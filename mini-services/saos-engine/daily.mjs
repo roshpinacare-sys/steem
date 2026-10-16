@@ -513,6 +513,33 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     const prevFlowIds = (ours.orderids ?? []).filter((o) => typeof o === "object" && o.tranche === "flow").map((o) => o.id);
     const flowRequoteIds = hyperEnabled ? [] : prevFlowIds.filter((id) => !staleIds.includes(id));
 
+    /* WAVE-91 SELF-CROSS GUARD (measured 2026-10-16): the 10-14 cycle sold
+     * 297.1 STEEM into OUR OWN resting bid (fill_order current_orderid
+     * 948945592 → open_orderid 2026101404) — a pure spread loss paid to
+     * nobody. LAW: a new ask must rest strictly ABOVE every own resting
+     * bid; a new bid strictly BELOW every own resting ask. The price
+     * adjusts (lift/sink SELF_CROSS_BPS); co-layer orders are never
+     * cancelled here (T-19 partition law unchanged). In-batch ops count
+     * too — the chain applies ops sequentially, so an ask earlier in the
+     * same tx can cross a bid later in it. dexflow is race-safe by its
+     * cycle-marker respect; its TTL leftovers are real resting orders and
+     * are honored by this guard. */
+    const SELF_CROSS_BPS = 10;
+    const guardNote = [];
+    const selfCrossCancelSet = new Set([...staleIds, ...flowRequoteIds]);
+    const selfAsks = [], selfBids = [];
+    try {
+      const restingSelf = await openOrders(ACCOUNT);
+      for (const o of (restingSelf?.ok ? restingSelf.orders : [])) {
+        if (selfCrossCancelSet.has(Number(o.orderid))) continue; // cancelled earlier in this same batch
+        if (!(o.unit > 0)) continue;
+        (o.side === "ask" ? selfAsks : selfBids).push(o.unit);
+      }
+      if (!restingSelf?.ok) guardNote.push({ note: "resting-unreadable — guard degraded to in-batch only (honest)" });
+    } catch (e) {
+      guardNote.push({ note: `resting-read-error: ${String(e?.message ?? e).slice(0, 80)} — guard degraded to in-batch only (honest)` });
+    }
+
     /* (c-NEW · R210 §VI/§IX) the claim op is built FIRST in the batch —
      * the maxOpsPerCycle slice truncates the TAIL, so a late-pushed claim
      * could be silently dropped after its prediction was written
@@ -581,17 +608,37 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
             const id = (tSec + ops.length) >>> 0;
             /* T-19: flow levels carry sbdOut3 — the EXACT 3dp SBD out computed
              * at plan time; value levels fall back to multiply-and-round. */
-            const sOut = lvl.sbdOut3 != null ? lvl.sbdOut3 : amt * lvl.unit;
+            /* WAVE-91 self-cross guard: never rest an ask at/below an own bid. */
+            let pxAsk = lvl.sbdOut3 != null && amt > 0 ? Math.round((lvl.sbdOut3 / amt) * 1e6) / 1e6 : lvl.unit;
+            const maxOwnBid = selfBids.length ? Math.max(...selfBids) : 0;
+            let lifted = false;
+            if (maxOwnBid > 0 && pxAsk <= maxOwnBid) {
+              pxAsk = Math.round(maxOwnBid * (1 + SELF_CROSS_BPS / 1e4) * 1e6) / 1e6;
+              lifted = true;
+              guardNote.push({ side: "ask", id, from: lvl.unit, to: pxAsk, why: `own-bid@${maxOwnBid}` });
+            }
+            const sOut = lifted ? Math.round(amt * pxAsk * 1e3) / 1e3 : (lvl.sbdOut3 != null ? lvl.sbdOut3 : amt * lvl.unit);
+            selfAsks.push(pxAsk);
             ops.push(["limit_order_create", { owner: ACCOUNT, orderid: id, amount_to_sell: `${amt.toFixed(3)} STEEM`, min_to_receive: `${sOut.toFixed(3)} SBD`, fill_or_kill: false, expiration: tSec + 86400 }]);
-            createdIds.push({ id, side: "ask", unit: lvl.unit, tranche: lvl.tranche ?? "value", amountSteem: amt, at: now });
+            createdIds.push({ id, side: "ask", unit: pxAsk, tranche: lvl.tranche ?? "value", amountSteem: amt, at: now });
             askSum = Math.round((askSum + amt) * 1e6) / 1e6;
           } else {
             const amt = Math.min(lvl.amountSbd, Math.max(0, bidCap - bidSum), Math.max(0, (conf.maxBidSbdPerCycle ?? 20) - bidSum));
             if (amt < 0.001) break;
             const id = (tSec + ops.length) >>> 0;
-            const stOut = lvl.steemOut3 != null ? lvl.steemOut3 : amt / lvl.unit;
+            /* WAVE-91 self-cross guard: never rest a bid at/above an own ask. */
+            let pxBid = lvl.steemOut3 != null && amt > 0 ? Math.round((amt / lvl.steemOut3) * 1e6) / 1e6 : lvl.unit;
+            const minOwnAsk = selfAsks.length ? Math.min(...selfAsks) : Infinity;
+            let sunk = false;
+            if (Number.isFinite(minOwnAsk) && minOwnAsk > 0 && pxBid >= minOwnAsk) {
+              pxBid = Math.round(minOwnAsk * (1 - SELF_CROSS_BPS / 1e4) * 1e6) / 1e6;
+              sunk = true;
+              guardNote.push({ side: "bid", id, from: lvl.unit, to: pxBid, why: `own-ask@${minOwnAsk}` });
+            }
+            const stOut = sunk ? Math.round(amt / pxBid * 1e3) / 1e3 : (lvl.steemOut3 != null ? lvl.steemOut3 : amt / lvl.unit);
+            selfBids.push(pxBid);
             ops.push(["limit_order_create", { owner: ACCOUNT, orderid: id, amount_to_sell: `${amt.toFixed(3)} SBD`, min_to_receive: `${stOut.toFixed(3)} STEEM`, fill_or_kill: false, expiration: tSec + 86400 }]);
-            createdIds.push({ id, side: "bid", unit: lvl.unit, tranche: lvl.tranche ?? "value", amountSbd: amt, at: now });
+            createdIds.push({ id, side: "bid", unit: pxBid, tranche: lvl.tranche ?? "value", amountSbd: amt, at: now });
             bidSum = Math.round((bidSum + amt) * 1e6) / 1e6;
           }
         }
@@ -724,7 +771,8 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       try { promo = await postDailyReport({ obs, rollup: report.steps.report?.rollup ?? null, intel: intelOut, now }); }
       catch (e) { promo = { verdict: "PROMO-ERROR", error: String(e?.message ?? e).slice(0, 120) }; }
     }
-    return { verdict: res.verdict, txid: res.txid ?? null, ops: ops.length, opNames: res.opNames ?? ops.map(([n]) => n), node: res.node ?? null, error: res.error ?? null, promo, opsToday: opsDay.opsToday + ops.length, opsDayCap, cancels: staleIds.length, created: createdIds.length, hyperLayer: hyperEnabled ? "hypergrid-owns-flow" : "cycle-flow-tranche" };
+    if (persist && guardNote.length) appendLine(path.join(STATE, "events.jsonl"), { type: "self-cross-guard", at: now, actions: guardNote.slice(0, 20) });
+    return { verdict: res.verdict, txid: res.txid ?? null, ops: ops.length, opNames: res.opNames ?? ops.map(([n]) => n), node: res.node ?? null, error: res.error ?? null, promo, opsToday: opsDay.opsToday + ops.length, opsDayCap, cancels: staleIds.length, created: createdIds.length, hyperLayer: hyperEnabled ? "hypergrid-owns-flow" : "cycle-flow-tranche", selfCrossGuard: guardNote.length ? guardNote : null };
   });
 
   /* 7 · soldiers: T-80 FROZEN-BY-DEFAULT (operator stop-order 2026-10-04 —
