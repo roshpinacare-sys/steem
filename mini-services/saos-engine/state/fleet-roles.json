@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 573 trades/24h measured (vol 6732.58 STEEM)",
+      "evidence": "state/market.json: 571 trades/24h measured (vol 6633.43 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -37,7 +37,7 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/observe.json: 40 chain-truth fills counted (last 2026-10-15T18:18:12.000Z)",
+      "evidence": "state/observe.json: 42 chain-truth fills counted (last 2026-10-15T23:05:21.000Z)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -179bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -159bps)",
       "priorStatus": "active"
     },
     {
@@ -73,7 +73,7 @@
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/curator.json: DAY-CAP (budgetCounted 30, basis max(state, chain-truth))",
+      "evidence": "state/curator.json: VOTED (budgetCounted ?, basis state)",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/selftest-last-run.json: 1822/1822 PASS at 2026-10-15T20:49:57.287Z",
+      "evidence": "state/selftest-last-run.json: 1822/1822 PASS at 2026-10-16T00:10:45.486Z",
       "priorStatus": "active"
     },
     {
@@ -121,7 +121,7 @@
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/payouts.json: MEASURED at 2026-10-15T01:42:11.647Z — pending(vests 0), payout clock 5d remaining — המכשיר-להפיכת-הקיורציה-למדוד חי",
+      "evidence": "state/payouts.json: MEASURED at 2026-10-16T00:10:56.296Z — pending(vests 0), payout clock 4d remaining — המכשיר-להפיכת-הקיורציה-למדוד חי",
       "priorStatus": "active"
     },
     {
@@ -133,10 +133,10 @@
       "cadence": "daily",
       "truthContract": "their votes counted from chain history minus our journal, never from our own logs",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/weave.json: saos.weave.core.v1 published, age 19h — second-writer votes today 0 — החוזה-האחד פומבי",
+      "evidence": "state/weave.json: saos.weave.core.v1 published, age 0h — second-writer votes today 0 — החוזה-האחד פומבי",
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-15T20:50:08.662Z",
-  "pid": 2344
+  "at": "2026-10-16T00:10:56.296Z",
+  "pid": 2739
 }
