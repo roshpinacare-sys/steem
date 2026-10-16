@@ -1,0 +1,95 @@
+#
+#
+
+name: exec-cycle
+
+# גל-91 · החוליה-השבורה-המבנית-שנסגרה:
+# worklog-הריפו (R302) קבע במפורש: "נקודות-לביצוע שנותרו: (1) זריעת ln מחדש
+# (upload/headcorner.txt — מפעיל בלבד · או-נתיב-token-forge-חדש ל-CI-seed)".
+# זהו אותו נתיב. המנוע בנה תוכנית-היצע OFFER-READY (asks/bids על שוק-הפנימי
+# של Steem) אבל מת בקציר-סנדבוקס עם ה-.secrets ה-gitignored → SIGNING-DEAD.
+# הידיים הקבועות: CI שמחזיק את MAIN_KEY (מפתח-האב → .secrets/headcorner.key
+# 0600, אף-פעם-לא-נאכף, אף-פעם-לא-ב-stdout) + STEEM_VAULT_PASSES (חייאת-צבא
+# posting+active מהכספת-החתומה, VERIFIED-VS-CHAIN). מחזור אחד doctrine-capped
+# כל שעתיים (offset :17 מול money-watch :33 · anchor :55).
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */2 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: exec-cycle
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      STEEM_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Secure the master credential (server-side · 0600 · zero echo)
+        env:
+          MAIN_KEY: ${{ secrets.MAIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MAIN_KEY}" ]; then
+            echo "::error::MAIN_KEY absent on roshpinacare-sys/steem — seed it (token-forge route) or remove this workflow"
+            exit 1
+          fi
+          mkdir -p .secrets
+          # פורמט-השער: "<account> <master-password|P-key>" — תומך בשני-הצורות
+          if [[ "${MAIN_KEY}" == *" "* ]]; then
+            printf '%s\n' "${MAIN_KEY}" > .secrets/headcorner.key
+          else
+            printf 'headcorner %s\n' "${MAIN_KEY}" > .secrets/headcorner.key
+          fi
+          chmod 600 .secrets/headcorner.key
+
+      - name: Install engine deps
+        working-directory: mini-services/saos-engine
+        run: bun install --frozen-lockfile || bun install
+
+      - name: Selftest gate (fail-closed — honest death beats forged signing)
+        working-directory: mini-services/saos-engine
+        run: bun selftest.mjs
+
+      - name: One doctrine-capped cycle (SENSE → DECIDE → ACT → RECORD)
+        working-directory: mini-services/saos-engine
+        run: bun daily.mjs
+
+      - name: Publish the exec receipts (vault law — txids journaled, zero keys)
+        if: always()
+        run: |
+          set -euo pipefail
+          rm -f mini-services/saos-engine/state/*.tmp.* 2>/dev/null || true
+          git config user.name "saos-exec-bot"
+          git config user.email "saos-exec-bot@users.noreply.github.com"
+          git add mini-services/saos-engine/state 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "exec-cycle: doctrine-capped broadcast receipts (txids, zero keys) [skip ci]"
+            git pull --rebase origin saos-cockpit || true
+            git push origin HEAD:saos-cockpit
+          else
+            echo "no state delta this cycle"
+          fi
+
+      - name: Cycle verdict line (visible in the run summary)
+        if: always()
+        working-directory: mini-services/saos-engine
+        run: |
+          if [ -f state/cycle-run.json ]; then
+            bun -e 'const d=require("./state/cycle-run.json");console.log("cycle ok:",d.ok===true,"| steps:",Object.entries(d.steps??{}).map(([k,v])=>k+"="+(v.verdict??(v.ok?"ok":"fail"))).join(" "))' || true
+          fi
