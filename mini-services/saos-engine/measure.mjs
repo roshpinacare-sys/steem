@@ -245,10 +245,18 @@ export async function openOrders(account) {
     const sp = o.sell_price ?? {};
     const [bAmt, bSym] = String(sp.base ?? "? ?").split(" ");
     const [qAmt, qSym] = String(sp.quote ?? "? ?").split(" ");
-    const unit = Number(bAmt) > 0 ? Number(qAmt) / Number(bAmt) : 0;
+    /* WAVE-91 UNIT FIX (measured 2026-10-16): unit is ALWAYS SBD-per-STEEM.
+     * The old `quote/base` inverted BIDS (a 0.5 SBD→4.93 STEEM bid read as
+     * 9.86 instead of 0.1014) — classifyStale then flagged EVERY real bid
+     * stale every cycle (chronic self-churn) and the self-cross guard
+     * "lifted" an ask to 10.18 against an imaginary 10.17 bid. */
+    const isAsk = String(bSym).includes("STEEM");
+    const unit = (Number(bAmt) > 0 && Number(qAmt) > 0)
+      ? (isAsk ? Number(qAmt) / Number(bAmt) : Number(bAmt) / Number(qAmt))
+      : 0;
     return {
       orderid: o.orderid,
-      side: String(bSym).includes("STEEM") ? "ask" : "bid",
+      side: isAsk ? "ask" : "bid",
       base: `${bAmt} ${bSym}`,
       quote: `${qAmt} ${qSym}`,
       unit: Math.round(unit * 1e6) / 1e6,
