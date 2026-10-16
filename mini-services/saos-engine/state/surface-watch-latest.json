@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-16T10:11:54.471Z",
-  "head": "b8d7daeb66167b71a5e1189f096f4000942e08e0",
-  "verdict": "SURFACES-OK",
+  "at": "2026-10-16T10:35:08.008Z",
+  "head": "e8bb69b57e1608bdbaf38b601ef20a4aa4d621ca",
+  "verdict": "SURFACES-DOWN",
   "repairMode": "observe",
   "actArmed": false,
   "prevVerdict": "SURFACES-OK",
@@ -20,15 +20,14 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 11.8
+      "ageMinutes": 5
     },
     {
       "id": "pulse-mirror-lanes",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 11.8
+      "verdict": "DOWN",
+      "reason": "unparseable-json"
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +35,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 309.3
+      "ageMinutes": 332.6
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +43,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 27.4
+      "ageMinutes": 23.2
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +51,7 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 24.9
+      "ageMinutes": 20.6
     },
     {
       "id": "engine-selftest",
@@ -79,6 +78,14 @@
   ],
   "repairsPlanned": [
     {
+      "targetId": "pulse-mirror-lanes",
+      "verdict": "DOWN",
+      "action": "regen-state",
+      "repo": "Pulse",
+      "workflow": "heartbeat.yml",
+      "readbackRequired": true
+    },
+    {
       "targetId": "pulse-domain-published",
       "verdict": "STALE",
       "action": "regen-state",
@@ -88,5 +95,5 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:c924ffad"
+  "signature": "sig:3e13e2bd"
 }
