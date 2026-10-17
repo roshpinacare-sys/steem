@@ -117,7 +117,11 @@ if (hiveRoster) {
 const ports = { "saos-engine": 3040, "saos-custodian": 3041, "saos-metrics": 3042, "saos-builder": 3043 };
 for (const [svc, port] of Object.entries(ports)) {
   const src = fs.readFileSync(path.join(ENGINE, "..", svc, "index.ts"), "utf8");
-  if (!new RegExp(`PORT\\s*=\\s*${port}`).test(src)) F("D4", `${svc}/index.ts no longer declares PORT=${port} — the port law moved`);
+  /* 2026-10-17: the engine's port law evolved to an env-overridable default
+   * (`PORT = Number(process.env.SAOS_ENGINE_PORT || 3040)` — "the trading
+   * loop must never fight a sibling office"); the LAW (the number) did not
+   * move — only the declaration form. Both forms satisfy D4. */
+  if (!new RegExp(`PORT\\s*=\\s*(?:Number\\([^)]*?\\|\\|\\s*)?${port}\\s*\\)?(?!\\d)`).test(src)) F("D4", `${svc}/index.ts no longer declares PORT=${port} — the port law moved`);
   if (!atlas.includes(String(port))) F("D4", `port ${port} (${svc}) missing from ATLAS §1`);
 }
 const rcChecks = [["POST_RC_COST", /POST_RC_COST\s*=\s*([\d_]+)/, "2,300,000,000"], ["MIN_DELEGATION_RC", /MIN_DELEGATION_RC\s*=\s*([\d_]+)/, "1,607,605,799"], ["DONOR_KEEP_MAX", /DONOR_KEEP_MAX\s*=\s*([\d_]+)/, "2,450,000,000"]];
