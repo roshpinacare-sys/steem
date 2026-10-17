@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-16T12:35:23.394Z",
+  "at": "2026-10-17T04:26:16.462Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 86bps → dragK 1.043",
+      "reason": "spread 46bps → dragK 1.023",
       "action": {
-        "spreadBpsRec": 86,
-        "bestAsk": 0.10451505016722408,
-        "bestBid": 0.1036247953410292
+        "spreadBpsRec": 46,
+        "bestAsk": 0.10365251727541955,
+        "bestBid": 0.10318107246406719
       },
-      "at": "2026-10-16T12:35:23.394Z"
+      "at": "2026-10-17T04:26:16.462Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -167bps from external parity",
+      "action": {
+        "bps": -167
+      },
+      "at": "2026-10-17T04:26:16.462Z"
     },
     {
       "kind": "soldiers",
@@ -19,46 +28,46 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-16T12:35:23.394Z"
+      "at": "2026-10-17T04:26:16.462Z"
     },
     {
       "kind": "rewards",
       "decision": "claim",
-      "reason": "unclaimed: 0 STEEM + 0 SBD + 62.882139 VESTS — free fuel, claim now",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 19.347393 VESTS — free fuel, claim now",
       "action": {
         "ok": true,
         "steem": 0,
         "sbd": 0,
-        "vests": 62.882139,
+        "vests": 19.347393,
         "any": true
       },
-      "at": "2026-10-16T12:35:23.394Z"
+      "at": "2026-10-17T04:26:16.462Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 100%",
+      "reason": "RC at 99.9%",
       "action": {
-        "rcPct": 100
+        "rcPct": 99.9
       },
-      "at": "2026-10-16T12:35:23.394Z"
+      "at": "2026-10-17T04:26:16.462Z"
     },
     {
       "kind": "curation",
-      "decision": "curator-live",
-      "reason": "voted 3 today (184 total) · VP 47% · txid 086faf9140d5",
+      "decision": "curator-armed",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 31.6%) — gates hold until candidates pass",
       "action": {
-        "votesToday": 12,
-        "vpEff": 47,
-        "verdict": "VOTED"
+        "votesToday": 0,
+        "vpEff": 31.6,
+        "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-16T12:35:23.394Z"
+      "at": "2026-10-17T04:26:16.462Z"
     }
   ],
-  "spreadBpsRec": 86,
+  "spreadBpsRec": 46,
   "book": {
-    "bestAsk": 0.10451505016722408,
-    "bestBid": 0.1036247953410292,
-    "spreadBps": 86
+    "bestAsk": 0.10365251727541955,
+    "bestBid": 0.10318107246406719,
+    "spreadBps": 46
   }
 }
