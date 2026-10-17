@@ -19,6 +19,23 @@
  *                   healthy RPC round: the stream is starving in production.
  *                   This is the public alarm; pulse + digest still run
  *                   (their workflow steps are if: always()).
+ *   PASS-STANDBY (exit 0) — the army-social rail's OWN fresh receipt says
+ *                   SOCIAL-STANDBY (state/social.json, written every cycle
+ *                   by runSocial's exec29 choke-point). The readiness gate is
+ *                   the live authority over the roster — it is re-evaluated
+ *                   every run, never cached (exec29/29-b) — so when it stands
+ *                   the fleet DOWN, the stream cannot "starve"; it is
+ *                   lawfully idle by owner directive (2026-10-14 low-profile
+ *                   law). Measured 2026-10-17: armed-file true (CI_SOCIAL_ARMED
+ *                   secret) + gate STANDBY produced 19h of hourly RED spam —
+ *                   a red page the owner's own standby law controls trains
+ *                   the operator to ignore red (this file's own disease
+ *                   doctrine). The receipt outranks the armed FILE because
+ *                   the gate outranks the standing order: the standing order
+ *                   is a precondition, the gate verdict is the measured law
+ *                   of THIS cycle. When the owner arms the gate, the receipt
+ *                   disappears (verdict leaves SOCIAL-STANDBY) and the RED
+ *                   law is instantly live again — fail-closed both ways.
  *   WARN-CLOSED-LOOP             — posts24h > 0 but outsideVotes == 0.
  *                   NOT red: outside votes depend on the world, not the
  *                   machine; a red page the world controls trains the
@@ -108,8 +125,35 @@ export function outsideVotesOf(activeVotes, roster) {
   return { outside, total };
 }
 
-export function verdictOf({ armed, posts24h, outsideVotes, rpcHealthy }) {
+/* a standby receipt older than this is NOT lawful standby — a stale receipt
+ * with an armed standing order means the rail failed to report = machine
+ * failure, the RED law applies (fail-closed toward the alarm) */
+export const STANDBY_FRESH_MS = 35 * 60_000; /* heartbeat ~18min; 35min = one missed cycle of grace */
+
+export function standbyReceiptOf(socialState, nowIso, { freshMs = STANDBY_FRESH_MS } = {}) {
+  try {
+    /* accepts a path (production) or an already-parsed object (pure vectors) */
+    const d = typeof socialState === "string" ? JSON.parse(fs.readFileSync(socialState, "utf8")) : socialState;
+    const at = String(d?.at ?? "");
+    const t = Date.parse(at);
+    const fresh = Number.isFinite(t) && Date.parse(nowIso) - t >= 0 && Date.parse(nowIso) - t <= freshMs;
+    return {
+      present: true,
+      fresh,
+      lawful: fresh === true && d?.verdict === "SOCIAL-STANDBY",
+      verdict: String(d?.verdict ?? ""),
+      gateMode: String(d?.gate?.mode ?? ""),
+      gateReason: String(d?.gate?.reason ?? "").slice(0, 160),
+      at,
+    };
+  } catch {
+    return { present: false, fresh: false, lawful: false, verdict: "", gateMode: "", gateReason: "", at: "" };
+  }
+}
+
+export function verdictOf({ armed, posts24h, outsideVotes, rpcHealthy, standbyLawful = false }) {
   if (!rpcHealthy) return "RPC-FAILED";
+  if (standbyLawful) return "PASS-STANDBY"; /* the rail's own gate stands down — measured, fresh, owner law */
   if (!armed) return "PASS-UNARMED";
   if (posts24h === 0) return "RED-STREAM-STARVING";
   return outsideVotes >= 1 ? "PASS" : "WARN-CLOSED-LOOP";
@@ -163,6 +207,15 @@ async function main() {
     [verdictOf({ armed: true, posts24h: 2, outsideVotes: 3, rpcHealthy: true }), "PASS", "pass-law"],
     [verdictOf({ armed: false, posts24h: 0, outsideVotes: 0, rpcHealthy: true }), "PASS-UNARMED", "unarmed-law"],
     [verdictOf({ armed: true, posts24h: 0, outsideVotes: 0, rpcHealthy: false }), "RPC-FAILED", "no-measure-no-alarm"],
+    [verdictOf({ armed: true, posts24h: 0, outsideVotes: 0, rpcHealthy: true, standbyLawful: true }), "PASS-STANDBY", "standby-law-beats-armed-file"],
+    [verdictOf({ armed: false, posts24h: 0, outsideVotes: 0, rpcHealthy: true, standbyLawful: true }), "PASS-STANDBY", "standby-law-beats-unarmed"],
+    [verdictOf({ armed: true, posts24h: 0, outsideVotes: 0, rpcHealthy: true, standbyLawful: false }), "RED-STREAM-STARVING", "no-receipt-still-red"],
+    [standbyReceiptOf({ at: nowIso, verdict: "SOCIAL-STANDBY", gate: { mode: "STANDBY", reason: "owner law" } }, nowIso).lawful, true, "fresh-standby-receipt"],
+    [standbyReceiptOf({ at: "2020-01-01T00:00:00Z", verdict: "SOCIAL-STANDBY", gate: { mode: "STANDBY" } }, nowIso).lawful, false, "stale-receipt-not-lawful"],
+    [standbyReceiptOf({ at: nowIso, verdict: "SOCIAL-EXECUTED", gate: { mode: "ARMED" } }, nowIso).lawful, false, "armed-receipt-revives-red-law"],
+    [standbyReceiptOf(path.join(STATE, "social.json.does-not-exist"), nowIso).present, false, "missing-receipt-honest"],
+    [standbyReceiptOf({}, nowIso).present, true, "empty-object-is-present-but-unlawful"],
+    [standbyReceiptOf({}, nowIso).lawful, false, "empty-object-not-lawful"],
   ];
   const failed = vectors.filter(([got, want]) => got !== want);
 
@@ -181,19 +234,26 @@ async function main() {
   }
 
   const armed = fs.existsSync(path.join(ENGINE, ".secrets", "social-armed.json"));
+  const receipt = standbyReceiptOf(path.join(STATE, "social.json"), nowIso);
+  /* diagnosis: what the streamer (the other armed rail) last did — visible in
+   * state + digest so a starvation always carries its own WHY */
+  let streamerVerdict = "";
+  try { streamerVerdict = String(JSON.parse(fs.readFileSync(path.join(STATE, "ci-last-heartbeat.json"), "utf8"))?.post ?? ""); } catch { }
   const m = await measure({ nowIso });
-  const verdict = verdictOf({ armed, posts24h: m.posts24h, outsideVotes: m.outsideVotes, rpcHealthy: m.rpcHealthy });
+  const verdict = verdictOf({ armed, posts24h: m.posts24h, outsideVotes: m.outsideVotes, rpcHealthy: m.rpcHealthy, standbyLawful: receipt.lawful });
 
   const out = {
     at: nowIso,
     rail: "truthrail-r316",
     verdict,
     armed,
+    standby: { present: receipt.present, fresh: receipt.fresh, lawful: receipt.lawful, receiptVerdict: receipt.verdict, gateMode: receipt.gateMode, gateReason: receipt.gateReason, at: receipt.at },
+    streamerVerdict,
     posts24h: m.posts24h,
     outsideVotes: m.outsideVotes,
     totalVotes: m.totalVotes,
     posts: m.perPost.slice(0, 12),
-    law: "RED only when armed and starving (machine failure); closed-loop is WARN (world-dependent); no measure is no alarm",
+    law: "RED only when truly armed and starving (machine failure); lawful standby is PASS-STANDBY (owner gate, fresh receipt); closed-loop is WARN (world-dependent); no measure is no alarm",
   };
 
   fs.mkdirSync(STATE, { recursive: true });
@@ -207,11 +267,13 @@ async function main() {
       hb.truthrail = verdict;
       hb.truthrailPosts24h = m.posts24h;
       hb.truthrailOutsideVotes = m.outsideVotes;
+      if (receipt.lawful) { hb.truthrailStandby = receipt.gateReason || "standby receipt lawful"; }
+      else hb.truthrailStandby = null;
       fs.writeFileSync(hbPath, JSON.stringify(hb, null, 2));
     }
   } catch { /* merge never blocks the verdict */ }
 
-  console.log("TRUTHRAIL-VERDICT " + JSON.stringify({ verdict, armed, posts24h: m.posts24h, outsideVotes: m.outsideVotes }));
+  console.log("TRUTHRAIL-VERDICT " + JSON.stringify({ verdict, armed, standbyLawful: receipt.lawful, gateMode: receipt.gateMode, posts24h: m.posts24h, outsideVotes: m.outsideVotes }));
   if (verdict === "RED-STREAM-STARVING") process.exit(1);
 }
 
