@@ -1,23 +1,93 @@
 {
-  "at": "2026-10-17T17:38:44.236Z",
-  "verdict": "COVERED",
+  "at": "2026-10-17T18:23:07.633Z",
+  "verdict": "REPAIRED",
   "lanes": {
-    "hyper": 6,
-    "cancelableAsks": 4,
-    "cancelableBids": 3,
+    "hyper": 14,
+    "cancelableAsks": 9,
+    "cancelableBids": 8,
     "orphans": 6
   },
   "coverage": {
-    "askSum": 146.391,
-    "askCap": 261.1816,
-    "askOver": 0,
-    "bidSum": 19.999,
-    "bidCap": 44.06575,
-    "bidOver": 0
+    "askSum": 239.821,
+    "askCap": 163.5615,
+    "askOver": 76.2595,
+    "bidSum": 40,
+    "bidCap": 15.0404,
+    "bidOver": 24.9596
   },
-  "cancelIds": [],
-  "cancelWhy": [],
-  "broadcast": null,
+  "cancelIds": [
+    1792250953,
+    1792250952,
+    1792250956,
+    1792250957,
+    1792250958,
+    1792260118,
+    1792260119
+  ],
+  "cancelWhy": [
+    {
+      "id": 1792250953,
+      "side": "ask",
+      "amt": 39.551,
+      "unit": 0.101262,
+      "freed": 39.551,
+      "orphan": true
+    },
+    {
+      "id": 1792250952,
+      "side": "ask",
+      "amt": 39.551,
+      "unit": 0.101135,
+      "freed": 39.551,
+      "orphan": true
+    },
+    {
+      "id": 1792250956,
+      "side": "bid",
+      "amt": 7.159,
+      "unit": 0.10063,
+      "freed": 7.159,
+      "orphan": true
+    },
+    {
+      "id": 1792250957,
+      "side": "bid",
+      "amt": 7.159,
+      "unit": 0.100522,
+      "freed": 7.159,
+      "orphan": true
+    },
+    {
+      "id": 1792250958,
+      "side": "bid",
+      "amt": 5.681,
+      "unit": 0.100414,
+      "freed": 5.681,
+      "orphan": true
+    },
+    {
+      "id": 1792260118,
+      "side": "bid",
+      "amt": 4.338,
+      "unit": 0.100426,
+      "freed": 4.338,
+      "orphan": false
+    },
+    {
+      "id": 1792260119,
+      "side": "bid",
+      "amt": 4.338,
+      "unit": 0.100324,
+      "freed": 4.338,
+      "orphan": false
+    }
+  ],
+  "broadcast": {
+    "ok": true,
+    "txid": "a6ca6706d54afeb91e698866104aaedef3f19cfc",
+    "error": null,
+    "count": 7
+  },
   "laws": [
     "הספר לעולם לא מבטיח יותר מהיתרה — כיסוי נמדד כל מחזור (asks ≤ יתרת STEEM × 0.95, bids ≤ (יתרת SBD − 0.5 רזרבה) × 0.95)",
     "פס-ההיפר-גריד נגע-בלבד: ids ‎[2.1e9, 4.29e9]‎ נמדדים אך לעולם לא מבוטלים כאן",
