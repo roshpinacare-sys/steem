@@ -71,11 +71,57 @@ async function main() {
     return { verdict: r?.verdict ?? null, verified: st?.verified ?? null, total: st?.total ?? null };
   });
 
+  /* ── P0-FAILCLOSE (2026-10-17 · operator-approved Phase-0) ────────────────
+   * The in-cycle selftest lease now runs BEFORE any money lane, and its
+   * verdict GATES dex-takeover + delegation-rail via moneyGateOpen() (lib.mjs).
+   * The old order — money first, selftest observe-only after — was the
+   * measured fail-open: beat 2026-10-17T00:25:30Z recorded dex=
+   * TAKEOVER-EXECUTED + delegation=DELEGATED while selftestLease=
+   * SELFTEST-RAN-RED. Law: GREEN is the only key that opens money.
+   * RED / TIMEOUT / contention / absent = honest BLOCK, loudly recorded. */
+  const selftestLease = await stepWrap("selftest-lease", async () => {
+    const { withLease, PURPOSE_ALLOWLIST } = await import("./gate-lease.mjs");
+    const purpose = "ci-selftest";
+    if (!PURPOSE_ALLOWLIST.includes(purpose)) {
+      return { verdict: "SELFTEST-LEASE-PURPOSE-UNREGISTERED", purpose, observe: true, note: "fail-closed: the beat refuses to hold an unregistered gate purpose" };
+    }
+    const { spawnSync } = await import("node:child_process");
+    const leaseDir = path.join(STATE, "lease");
+    const r = await withLease({
+      leaseDir,
+      purpose,
+      ttlMs: 600000, // 10 min — far above suite duration; a crashed holder expires, the next beat takes over
+      owner: "ci-heartbeat",
+      fn: () => {
+        const t0 = Date.now();
+        const p = spawnSync(process.execPath, [path.join(DIR, "selftest.mjs")], { cwd: DIR, encoding: "utf8", timeout: 300000 });
+        const tail = String(p.stdout ?? "").trim().split("\n").filter(Boolean).pop() ?? null;
+        return { exitCode: p.status, durationMs: Date.now() - t0, tail };
+      },
+    });
+    if (r.skipped) {
+      return { verdict: "SELFTEST-SKIPPED-CONTENTION", purpose, holder: r.holder ?? null, leaseError: r.error ?? null, observe: true, note: "R339 SKIP-NOT-FAIL for the OBSERVE lane; the MONEY gate still blocks (moneyGateOpen)" };
+    }
+    const out = r.result ?? {};
+    return {
+      verdict: out.exitCode === 0 ? "SELFTEST-RAN-GREEN" : out.exitCode == null ? "SELFTEST-RUN-TIMEOUT" : "SELFTEST-RAN-RED",
+      purpose,
+      exitCode: out.exitCode ?? null,
+      durationMs: out.durationMs ?? null,
+      tail: typeof out.tail === "string" ? out.tail.slice(0, 160) : null,
+      leaseDir: "state/lease",
+      observe: true,
+    };
+  });
+  report.steps.selftestLease = selftestLease;
+
   /* ── R245 · DEX TAKEOVER (operator order: no action is sovereign on the
    * sandbox) — when the sandbox's custodian anchor goes stale (engine dead),
    * CI adopts the master's ACTIVE authority (chain-judged, from the workflow
    * secret) and runs ONE full engine cycle: trading, converts, the economy.
-   * A fresh anchor = engine alive = STANDBY (never races the local engine). */
+   * A fresh anchor = engine alive = STANDBY (never races the local engine).
+   * P0-FAILCLOSE: additionally gated on the selftest verdict above —
+   * non-GREEN selftest = TAKEOVER-BLOCKED-SELFTEST-NOT-GREEN. */
   report.steps.dex = await stepWrap("dex-takeover", async () => {
     const { dexTakeoverDue } = await import("./lib.mjs");
     const anchor = readJson(path.join(STATE, "custody-anchor.json"), null);
@@ -83,6 +129,19 @@ async function main() {
     const gate = dexTakeoverDue({ anchorAt: anchor?.at ?? null, now, lastAt: last?.at ?? null });
     if (!gate.due) return { verdict: "STANDBY", reason: gate.reason, anchorAgeMs: anchor?.at ? Date.now() - (typeof anchor.at === "number" ? anchor.at : Date.parse(anchor.at)) : null };
     if (!process.env.CI_ADOPT_WIF_ACTIVE) return { verdict: "TAKEOVER-BLOCKED-NO-CREDENTIAL", reason: gate.reason };
+    /* P0-FAILCLOSE: the money gate — the in-cycle selftest verdict (computed
+     * BEFORE this step now) must be GREEN or nothing moves. Fail-closed on
+     * RED, TIMEOUT, contention-skip, and a failed/absent selftest step. */
+    const { moneyGateOpen } = await import("./lib.mjs");
+    const mg = moneyGateOpen({ selftestVerdict: selftestLease?.verdict ?? null });
+    if (!mg.open) {
+      const blocked = { verdict: "TAKEOVER-BLOCKED-SELFTEST-NOT-GREEN", reason: gate.reason, selftest: selftestLease?.verdict ?? null, selftestExit: selftestLease?.exitCode ?? null, gate: mg.reason };
+      try {
+        fs.writeFileSync(path.join(STATE, "ci-takeover.json"), JSON.stringify({ at: now, ...blocked }, null, 2));
+        appendLine(path.join(STATE, "events.jsonl"), { type: "ci.dex-takeover-blocked", at: now, selftest: blocked.selftest, gate: mg.reason });
+      } catch { /* ledger never blocks */ }
+      return blocked;
+    }
     process.env.CI_ADOPT_WIF_POSTING = process.env.CI_ADOPT_WIF_POSTING ?? "";
     const { runCycle } = await import("./daily.mjs");
     const r = await runCycle({ now, persist: true });
@@ -152,6 +211,11 @@ async function main() {
    * ledgered, fully reversible (7-day undelegation, ownership never moves).
    * Fail-closed when the CI_DELEGATION_ARMED secret is absent. */
   report.steps.delegation = await stepWrap("delegation", async () => {
+    /* P0-FAILCLOSE: the same money gate as dex-takeover — no GREEN selftest,
+     * no delegation. Fail-closed also when the selftest step itself failed. */
+    const { moneyGateOpen } = await import("./lib.mjs");
+    const mg = moneyGateOpen({ selftestVerdict: selftestLease?.verdict ?? null });
+    if (!mg.open) return { verdict: "DELEGATION-BLOCKED-SELFTEST-NOT-GREEN", ops: 0, totalSp: 0, reason: mg.reason, selftest: selftestLease?.verdict ?? null };
     const { runDelegationRail } = await import("./delegation-rail.mjs");
     const r = await runDelegationRail({ now });
     return { verdict: r.verdict, ops: r.ops ?? 0, totalSp: r.totalSp ?? 0, reason: r.reason ?? null };
@@ -476,40 +540,12 @@ async function main() {
    * beat — the next beat verifies. Release is owner-checked in withLease's
    * finally (R340 readback). Fail-isolated like every step; exit-0 by
    * design — the blocking gate stays the workflow's own selftest step. */
-  report.steps.selftestLease = await stepWrap("selftest-lease", async () => {
-    const { withLease, PURPOSE_ALLOWLIST } = await import("./gate-lease.mjs");
-    const purpose = "ci-selftest";
-    if (!PURPOSE_ALLOWLIST.includes(purpose)) {
-      return { verdict: "SELFTEST-LEASE-PURPOSE-UNREGISTERED", purpose, observe: true, note: "fail-closed: the beat refuses to hold an unregistered gate purpose" };
-    }
-    const { spawnSync } = await import("node:child_process");
-    const leaseDir = path.join(STATE, "lease");
-    const r = await withLease({
-      leaseDir,
-      purpose,
-      ttlMs: 600000, // 10 min — far above suite duration; a crashed holder expires, the next beat takes over
-      owner: "ci-heartbeat",
-      fn: () => {
-        const t0 = Date.now();
-        const p = spawnSync(process.execPath, [path.join(DIR, "selftest.mjs")], { cwd: DIR, encoding: "utf8", timeout: 300000 });
-        const tail = String(p.stdout ?? "").trim().split("\n").filter(Boolean).pop() ?? null;
-        return { exitCode: p.status, durationMs: Date.now() - t0, tail };
-      },
-    });
-    if (r.skipped) {
-      return { verdict: "SELFTEST-SKIPPED-CONTENTION", purpose, holder: r.holder ?? null, leaseError: r.error ?? null, observe: true, note: "R339 SKIP-NOT-FAIL: another verifier holds the ci-selftest lease — the suite is NOT run this beat" };
-    }
-    const out = r.result ?? {};
-    return {
-      verdict: out.exitCode === 0 ? "SELFTEST-RAN-GREEN" : out.exitCode == null ? "SELFTEST-RUN-TIMEOUT" : "SELFTEST-RAN-RED",
-      purpose,
-      exitCode: out.exitCode ?? null,
-      durationMs: out.durationMs ?? null,
-      tail: typeof out.tail === "string" ? out.tail.slice(0, 160) : null,
-      leaseDir: "state/lease",
-      observe: true,
-    };
-  });
+  /* P0-FAILCLOSE: the selftest-lease step was HOISTED above the money lanes
+   * (dex-takeover / delegation-rail) and now GATES them via moneyGateOpen().
+   * Its original position here — after the money lanes, observe-only,
+   * exit-0-by-design — was the measured fail-open hole (beat
+   * 2026-10-17T00:25:30Z: money moved while SELFTEST-RAN-RED). The hoisted
+   * block near the top of main() is the single authoritative run. */
 
   /* exec36 · lane 36-a · SELFTEST EVIDENCE PROBE — OBSERVE-ONLY (R339
    * fail-isolated). Runs verifySelftestEvidence (evidence.mjs — the R354
