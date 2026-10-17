@@ -1349,3 +1349,18 @@ export function dexTakeoverDue({ anchorAt = null, now, staleMs = 90 * 60_000, la
   }
   return { due: false, reason: "engine-alive" };
 }
+
+/* ── P0-FAILCLOSE · THE MONEY GATE (pure, operator-approved Phase-0) ───────
+ * Measured fail-open (2026-10-17T00:25:30Z beat): dex=TAKEOVER-EXECUTED and
+ * delegation=DELEGATED in the SAME cycle whose selftestLease verdict was
+ * SELFTEST-RAN-RED — the red signal was recorded honestly and ignored, and
+ * the money lanes ran BEFORE the selftest step even executed.
+ * Law now: GREEN is the ONLY verdict that opens a money lane (dex-takeover,
+ * delegation-rail). RED / RUN-TIMEOUT / SKIPPED-CONTENTION / UNREGISTERED /
+ * STEP-FAIL / absent — every failed or INCONCLUSIVE state BLOCKS. The
+ * observe/selftest lanes keep R339 SKIP-NOT-FAIL semantics; money does not.
+ * Pure + deterministic — vector-tested in selftest-moneygate.mjs. */
+export function moneyGateOpen({ selftestVerdict = null } = {}) {
+  if (selftestVerdict === "SELFTEST-RAN-GREEN") return { open: true, reason: "selftest-green" };
+  return { open: false, reason: `selftest-not-green:${selftestVerdict ?? "absent"}` };
+}
