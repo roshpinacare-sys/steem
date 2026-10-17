@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-17T03:19:55.813Z",
+  "at": "2026-10-17T03:34:15.330Z",
   "custody": "0/14",
   "social": "SOCIAL-STANDBY",
   "socialExecuted": 0,
@@ -59,10 +59,10 @@
   },
   "spawnManifest": {
     "verdict": "SPAWN-MANIFEST-OK",
-    "selfManifestId": "spawn-986feb42",
+    "selfManifestId": "spawn-83350e64",
     "selfManifestValid": true,
     "lifecycleStatus": "frozen",
-    "scanned": 102,
+    "scanned": 103,
     "invalidCount": 0
   },
   "surfaceWatch": "SURFACES-DEGRADED",
@@ -72,9 +72,9 @@
   "surfaceDown": 0,
   "surfaceRepairs": 0,
   "surfaceRepairMode": "act",
-  "surfaceSig": "sig:595aec5f",
+  "surfaceSig": "sig:562e7772",
   "portfolioSnapshot": "SNAPSHOT-OK",
-  "portfolioSig": "sig:9fe950db",
+  "portfolioSig": "sig:02935f5a",
   "portfolioAssets": 3,
   "portfolioTop": "CREDIT",
   "portfolioTopWeight": 0.928004,
@@ -91,7 +91,7 @@
   "selftestLeaseHolder": null,
   "selftestLeaseExit": 0,
   "contentEngagement": {
-    "at": "2026-10-17T03:19:55.813Z",
+    "at": "2026-10-17T03:34:15.330Z",
     "measured": 40,
     "medianVotes": 1,
     "topTag": "life",
@@ -99,7 +99,7 @@
   },
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-10-17T03:19:55.813Z",
+    "at": "2026-10-17T03:34:15.330Z",
     "master": "headcorner",
     "steps": {
       "custody": {
@@ -113,11 +113,11 @@
       "selftestLease": {
         "name": "selftest-lease",
         "ok": true,
-        "ms": 2624,
+        "ms": 2649,
         "verdict": "SELFTEST-RAN-GREEN",
         "purpose": "ci-selftest",
         "exitCode": 0,
-        "durationMs": 2619,
+        "durationMs": 2648,
         "tail": "SELFTEST 1823/1823 PASS",
         "detail": null,
         "leaseDir": "state/lease",
@@ -126,7 +126,7 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 0,
+        "ms": 1,
         "verdict": "TAKEOVER-BLOCKED-NO-CREDENTIAL",
         "reason": "anchor-stale"
       },
@@ -142,7 +142,7 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 51,
+        "ms": 54,
         "verdict": "QUEUED",
         "draftsQueued": 0,
         "exposureBlocked": 0,
@@ -164,7 +164,7 @@
       "post": {
         "name": "post",
         "ok": true,
-        "ms": 3,
+        "ms": 4,
         "verdict": "LIVE-REFUSED-NOT-ARMED",
         "account": null,
         "permlink": null,
@@ -174,7 +174,7 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 637,
+        "ms": 774,
         "verdict": "BLURT-BODIES-LIVE",
         "live": 12,
         "total": 12,
@@ -198,7 +198,7 @@
         "rendered": 0,
         "challenged": 14,
         "fresh": false,
-        "ageMin": 13
+        "ageMin": 28
       },
       "visibility": {
         "name": "visibility",
@@ -208,7 +208,7 @@
         "chain": "ALL-EXISTS",
         "altRenderedAccounts": 14,
         "fresh": false,
-        "ageMin": 13
+        "ageMin": 28
       },
       "contentMemory": {
         "name": "content-memory",
@@ -248,14 +248,14 @@
         "kept": 12,
         "topScore": 1.36,
         "fresh": false,
-        "ageMin": 13
+        "ageMin": 28
       },
       "contentEngagement": {
         "name": "content-engagement",
         "ok": true,
-        "ms": 28824,
+        "ms": 28451,
         "verdict": "ENGAGEMENT-OK",
-        "at": "2026-10-17T03:19:55.813Z",
+        "at": "2026-10-17T03:34:15.330Z",
         "measured": 40,
         "medianVotes": 1,
         "topTag": "life",
@@ -265,35 +265,35 @@
       "spawnManifest": {
         "name": "spawn-manifest",
         "ok": true,
-        "ms": 8,
+        "ms": 9,
         "verdict": "SPAWN-MANIFEST-OK",
-        "at": "2026-10-17T03:19:55.813Z",
-        "selfManifestId": "spawn-986feb42",
+        "at": "2026-10-17T03:34:15.330Z",
+        "selfManifestId": "spawn-83350e64",
         "selfManifestValid": true,
         "lifecycleStatus": "frozen",
-        "scanned": 102,
+        "scanned": 103,
         "invalidCount": 0,
         "observe": true
       },
       "surfaceWatch": {
         "name": "surface-watch",
         "ok": 8,
-        "ms": 444,
+        "ms": 572,
         "verdict": "SURFACES-DEGRADED",
-        "at": "2026-10-17T03:19:55.813Z",
+        "at": "2026-10-17T03:34:15.330Z",
         "targets": 9,
         "degraded": 1,
         "down": 0,
         "repairs": 0,
         "repairMode": "act",
-        "sig": "sig:595aec5f",
-        "triaged": 4,
+        "sig": "sig:562e7772",
+        "triaged": 5,
         "observe": false
       },
       "contentDrift": {
         "name": "content-drift",
         "ok": true,
-        "ms": 9391,
+        "ms": 9521,
         "verdict": "DNA-DRIFT-DETECTED",
         "samples": 20,
         "source": "chain",
@@ -308,7 +308,7 @@
       "formatLint": {
         "name": "format-lint",
         "ok": true,
-        "ms": 10,
+        "ms": 11,
         "verdict": "FORMAT-LINT-OK",
         "drafts": 30,
         "checked": 60,
@@ -343,8 +343,8 @@
         "ok": true,
         "ms": 41,
         "verdict": "SNAPSHOT-OK",
-        "at": "2026-10-17T03:20:37.857Z",
-        "sig": "sig:9fe950db",
+        "at": "2026-10-17T03:34:57.428Z",
+        "sig": "sig:02935f5a",
         "assets": 3,
         "top": "CREDIT",
         "topWeight": 0.928004,
@@ -362,7 +362,7 @@
       "selftestEvidence": {
         "name": "selftest-evidence",
         "ok": true,
-        "ms": 0,
+        "ms": 1,
         "verdict": "SUITE-RAN",
         "honest": true,
         "observe": true
