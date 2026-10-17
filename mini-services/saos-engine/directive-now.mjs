@@ -24,6 +24,18 @@ import { buildBusMessage, busOp } from "./bus.mjs";
 const ACCOUNT = "headcorner";
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 
+/* CI rail first (daily.mjs law, R-runner-wif): role-scoped posting WIF from
+ * repo secrets, chain-judged at adoption; absent env = zero change. */
+const ciPosting = (process.env.CI_ADOPT_WIF_POSTING ?? "").trim();
+if (ciPosting) {
+  try {
+    const bare = ciPosting.startsWith("P") && ciPosting.length >= 51 ? ciPosting.slice(1) : ciPosting;
+    const { adoptVerifiedWifIdentity, masterAccount } = await import("./signer.mjs");
+    const r = await adoptVerifiedWifIdentity(masterAccount(), bare, { role: "posting" });
+    console.error(`ci posting adopt: ${r?.ok ? "VERIFIED-VS-CHAIN" : String(r?.reason ?? "refused").slice(0, 80)}`);
+  } catch (e) { console.error(`ci posting adopt error: ${String(e?.message ?? e).slice(0, 80)}`); }
+}
+
 const task = String(process.argv[2] ?? "health-probe").replace(/[^a-z0-9._-]/g, "").slice(0, 48) || "health-probe";
 const runId = String(process.argv[3] ?? `d-${Date.now()}`).replace(/[^a-zA-Z0-9._-]/g, "").slice(0, 64);
 
