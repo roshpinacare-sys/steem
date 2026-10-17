@@ -96,7 +96,22 @@ async function main() {
         const t0 = Date.now();
         const p = spawnSync(process.execPath, [path.join(DIR, "selftest.mjs")], { cwd: DIR, encoding: "utf8", timeout: 300000 });
         const tail = String(p.stdout ?? "").trim().split("\n").filter(Boolean).pop() ?? null;
-        return { exitCode: p.status, durationMs: Date.now() - t0, tail };
+        /* W0.1-c observability delta (2026-10-17, agent-zai): on RED the suite
+         * prints "FAIL <name> / got: / want:" per failing vector — but this fn
+         * captured stdout and dropped it (measured: verdict frozen at fail=1
+         * since 2026-10-16T14:29Z with the vector name unknowable anywhere).
+         * Surface the failing-vector lines into the step result (→ heartbeat
+         * selftestLeaseDetail) AND console (→ run logs). */
+        let detail = null;
+        if (p.status !== 0) {
+          const lines = String(`${p.stdout ?? ""}\n${p.stderr ?? ""}`).split("\n")
+            .map((l) => l.trim())
+            .filter((l) => l.startsWith("FAIL ") || l.startsWith("got:") || l.startsWith("want:") || l.startsWith("SELFTEST-EVIDENCE") || l.startsWith("SELFTEST-MARKER-FAIL"))
+            .slice(0, 10);
+          detail = lines.join(" | ").slice(0, 700) || "(red, no FAIL lines captured — non-zero exit without vector output)";
+          console.error(`SELFTEST-LEASE-RED detail: ${detail}`);
+        }
+        return { exitCode: p.status, durationMs: Date.now() - t0, tail, detail };
       },
     });
     if (r.skipped) {
@@ -109,6 +124,7 @@ async function main() {
       exitCode: out.exitCode ?? null,
       durationMs: out.durationMs ?? null,
       tail: typeof out.tail === "string" ? out.tail.slice(0, 160) : null,
+      detail: out.detail ?? null,
       leaseDir: "state/lease",
       observe: true,
     };
@@ -682,6 +698,7 @@ async function main() {
      * (SELFTEST-RAN-GREEN | SELFTEST-RAN-RED | SELFTEST-RUN-TIMEOUT |
      * SELFTEST-SKIPPED-CONTENTION with the holder recorded honestly). */
     selftestLease: report.steps.selftestLease?.verdict ?? "STEP-FAIL",
+    selftestLeaseDetail: report.steps.selftestLease?.detail ?? null,
     selftestLeaseHolder: report.steps.selftestLease?.holder ?? null,
     selftestLeaseExit: report.steps.selftestLease?.exitCode ?? null,
     /* R306 engagement read-back — the one-line "what worked" digest
