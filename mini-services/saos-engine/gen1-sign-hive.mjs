@@ -59,7 +59,7 @@ function judgeText(text, tag) {
 }
 
 // ── 1. GEN-1 zip (sha-pinned, per GEN-1-ERA-META) ───────────────────────────
-const meta = JSON.parse(fs.readFileSync(new URL("../../agent/GEN-1-ERA-META.json", import.meta.url).pathname, "utf8"));
+const meta = JSON.parse(fs.readFileSync(new URL("../../agent/vault/GEN-1-ERA-META.json", import.meta.url).pathname, "utf8"));
 const zipEnc = fs.readFileSync(new URL("../../agent/vault/KEYS-ZIP-2026-09-10.zip.enc", import.meta.url).pathname);
 if (sha256hex(zipEnc) !== meta.keysZipSha256) { log({ ok: false, error: "gen1-outer-sha-mismatch" }); process.exit(1); }
 let bundle = {};
