@@ -38,9 +38,10 @@
  * ZERO-SECRET LAW: every journal line is scrubbed (WIF/PAT/token patterns →
  * redacted); only verdicts, op names, tiers and txids ever hit disk.
  *
- * WAVE-1 (this commit): T3 ENFORCED at executeAs; T0-T2 observed (classified,
- * capped-counted, journaled) — zero behavior change for the live lanes. The
- * enforcement flip for T0-T2 is a one-flag owner decision.
+ * WAVE-2 (this commit, owner-approved): ALL tiers enforced. T3 =
+ * destruction gate (owner-personal, unchanged); T0-T2 = DAILY CAPS ONLY —
+ * measured from exec-log (264 batches/4d → caps carry 8-10× headroom), keys
+ * stay governed by the signer's own proven laws. Caps are owner-tunable.
  */
 
 import * as fs from "node:fs";
@@ -58,8 +59,15 @@ export const OWNER_ACCOUNT = "headcorner";
 export const STEEM_RPC = "https://api.steemit.com";
 const FRESH_TTL_MS = 5_000; /* speed-only micro-cache — the decision itself re-reads state */
 
-/* wave-1 enforcement switches (owner-flippable) */
-export const ENFORCE = { T3: true, T2: false, T1: false, T0: false };
+/* wave-2 (2026-10-17, owner-approved "בטח תבצע"): ALL tiers enforced.
+ * ENFORCEMENT MEANING for T0-T2 = DAILY CAPS ONLY (blast-radius law) — keys
+ * and custody remain governed by the signer's own proven gates (think-gate,
+ * ROLE-KEY-ABSENT, credential laws): the hierarchy adds rate-limits, it does
+ * NOT duplicate or weaken existing laws (first-claim-wins). T3 stays
+ * owner-personal. Caps are MEASURED from exec-log (4-day window: 264
+ * batches, vote ~55/day, order-creates ~14/day, transfers 0) → caps carry
+ * 8-10× headroom. Owner-tunable in TIERS. */
+export const ENFORCE = { T3: true, T2: true, T1: true, T0: true };
 
 export const TIERS = {
   T0: { id: "T0", name: "ROUTINE", capPerDay: 500, law: "reversible routine ops; agent-autonomous within caps" },
@@ -241,20 +249,21 @@ export function evaluateGuard({ account = "", ops = [], tag = "" }, deps = {}) {
     };
   }
 
-  /* T0-T2 — wave-1 observe: classification+caps+journal, no verdict change.
-   * When ENFORCE[tier] is flipped by the owner, caps and custody become hard. */
+  /* T0-T2 — enforced = DAILY CAP (blast-radius). Keys/custody stay the
+   * signer's own law. If the caller presents custody evidence explicitly
+   * (deps.custodyVerified), it is honored as an ADDITIONAL check. */
   if (ENFORCE[tier]) {
     const counters = deps.counters ?? { day: now.toISOString().slice(0, 10), counts: {} };
     const dayCount = counters.counts?.[tier] ?? 0;
     const cap = tierDef.capPerDay;
     push("daily-cap", dayCount < cap, `${dayCount}/${cap}`);
-    push("custody", !!deps.custodyVerified, deps.custodyVerified ? "verified" : "not-verified");
     if (dayCount >= cap) return { verdict: "DENY", tier, tierName: tierDef.name, account, tag, reason: "tier-cap-exceeded", checks };
-    if (!deps.custodyVerified) return { verdict: "DENY", tier, tierName: tierDef.name, account, tag, reason: "custody-not-verified", checks };
+    if (deps.custodyVerified === false) return { verdict: "DENY", tier, tierName: tierDef.name, account, tag, reason: "custody-not-verified", checks };
+    if (deps.custodyVerified === true) push("custody", true, "verified (caller evidence)");
   }
   return {
     verdict: "ALLOW", tier, tierName: tierDef.name, account, tag,
-    reason: ENFORCE[tier] ? `enforced ${tier}` : `observe-wave-1 (ENFORCE.${tier}=false)`,
+    reason: `enforced ${tier} (cap ${tierDef.capPerDay}/day)`,
     checks,
   };
 }
@@ -277,7 +286,7 @@ export async function guardCommand(account, ops, { tag = "cycle", countersFile =
     const cls = classifyOps(ops);
     verdict = cls.maxTier === "T3"
       ? { verdict: "DENY", tier: "T3", tierName: TIERS.T3.name, account, tag, reason: "hierarchy-infra-fail-closed", checks: [{ name: "infra", ok: false, detail: String(e?.message ?? e).slice(0, 120) }] }
-      : { verdict: "ALLOW", tier: cls.maxTier, tierName: TIERS[cls.maxTier].name, account, tag, reason: "observe-wave-1 (infra-error journaled)", checks: [{ name: "infra", ok: false, detail: String(e?.message ?? e).slice(0, 120) }] };
+      : { verdict: "ALLOW", tier: cls.maxTier, tierName: TIERS[cls.maxTier].name, account, tag, reason: "enforced caps (infra-error journaled)", checks: [{ name: "infra", ok: false, detail: String(e?.message ?? e).slice(0, 120) }] };
   }
   journalHier({ at: new Date().toISOString(), type: "hierarchy.guard", account, tag, ...verdict, opNames: (ops ?? []).map(([n]) => n) }, { file: auditFile });
   if (verdict.verdict === "ALLOW") bumpCounters(verdict.tier, { file: countersFile });
@@ -293,21 +302,21 @@ export function selftest({ auditFile = path.join(STATE, "hierarchy-selftest-audi
   const FRESH = { found: true, fresh: true, grantedAt: "t", expiresAt: "t+1h" };
   const EXPIRED = { found: true, fresh: false, reason: "owner-grant-expired" };
 
-  t("T0 vote → ALLOW observe", () => {
+  t("T0 vote → ALLOW enforced (cap live)", () => {
     const r = evaluateGuard({ account: "x", ops: [["vote", {}]], tag: "t" }, { ownerLive: LIVE_OK });
-    return ok(r.verdict === "ALLOW" && r.tier === "T0", r.reason);
+    return ok(r.verdict === "ALLOW" && r.tier === "T0" && r.reason.includes("enforced"), r.reason);
   });
-  t("T1 limit_order_create → ALLOW observe", () => {
+  t("T1 limit_order_create → ALLOW enforced (cap live)", () => {
     const r = evaluateGuard({ account: "x", ops: [["limit_order_create", {}]], tag: "t" }, { ownerLive: LIVE_OK });
-    return ok(r.verdict === "ALLOW" && r.tier === "T1", r.reason);
+    return ok(r.verdict === "ALLOW" && r.tier === "T1" && r.reason.includes("enforced"), r.reason);
   });
-  t("T1 account_update2 (profile metadata) → ALLOW observe", () => {
+  t("T1 account_update2 (profile metadata) → ALLOW enforced", () => {
     const r = evaluateGuard({ account: "x", ops: [["account_update2", {}]], tag: "t" }, { ownerLive: LIVE_OK });
     return ok(r.verdict === "ALLOW" && r.tier === "T1", r.reason);
   });
-  t("T2 transfer → ALLOW observe wave-1", () => {
+  t("T2 transfer → ALLOW enforced (cap live)", () => {
     const r = evaluateGuard({ account: "x", ops: [["transfer", {}]], tag: "t" }, { ownerLive: LIVE_OK });
-    return ok(r.verdict === "ALLOW" && r.tier === "T2", r.reason);
+    return ok(r.verdict === "ALLOW" && r.tier === "T2" && r.reason.includes("enforced"), r.reason);
   });
   t("T3 account_update authority → DENY no-grant", () => {
     const r = evaluateGuard({ account: "x", ops: [["account_update", {}]], tag: "t" }, { grant: { found: false, fresh: false, reason: "owner-grant-required" }, ownerLive: LIVE_OK, bondIntact: true });
@@ -338,18 +347,17 @@ export function selftest({ auditFile = path.join(STATE, "hierarchy-selftest-audi
     return ok(r.verdict === "DENY" && r.tier === "T3", r.reason);
   });
   t("T1 enforced + cap exceeded → DENY tier-cap-exceeded", () => {
-    const saved = ENFORCE.T1; ENFORCE.T1 = true;
-    try {
-      const r = evaluateGuard({ account: "x", ops: [["limit_order_create", {}]], tag: "t" }, { counters: { day: "d", counts: { T1: 200 } }, custodyVerified: true, ownerLive: LIVE_OK });
-      return ok(r.verdict === "DENY" && r.reason === "tier-cap-exceeded", r.reason);
-    } finally { ENFORCE.T1 = saved; }
+    const r = evaluateGuard({ account: "x", ops: [["limit_order_create", {}]], tag: "t" }, { counters: { day: "d", counts: { T1: 200 } }, ownerLive: LIVE_OK });
+    return ok(r.verdict === "DENY" && r.reason === "tier-cap-exceeded", r.reason);
   });
-  t("T1 enforced + no custody → DENY custody-not-verified", () => {
-    const saved = ENFORCE.T1; ENFORCE.T1 = true;
-    try {
-      const r = evaluateGuard({ account: "x", ops: [["delegate_vesting_shares", {}]], tag: "t" }, { counters: { day: "d", counts: {} }, custodyVerified: false, ownerLive: LIVE_OK });
-      return ok(r.verdict === "DENY" && r.reason === "custody-not-verified", r.reason);
-    } finally { ENFORCE.T1 = saved; }
+  t("T1 enforced within cap → ALLOW (keys stay the signer's law)", () => {
+    const r = evaluateGuard({ account: "x", ops: [["delegate_vesting_shares", {}]], tag: "t" }, { counters: { day: "d", counts: {} }, ownerLive: LIVE_OK });
+    return ok(r.verdict === "ALLOW" && r.reason.includes("enforced"), r.reason);
+  });
+  t("explicit custody evidence honored when presented", () => {
+    const okR = evaluateGuard({ account: "x", ops: [["vote", {}]], tag: "t" }, { custodyVerified: true, ownerLive: LIVE_OK });
+    const noR = evaluateGuard({ account: "x", ops: [["vote", {}]], tag: "t" }, { custodyVerified: false, ownerLive: LIVE_OK });
+    return ok(okR.verdict === "ALLOW" && noR.verdict === "DENY" && noR.reason === "custody-not-verified", `ok=${okR.verdict} no=${noR.reason}`);
   });
   t("scrub: WIF-like evidence never reaches the journal", () => {
     const wif = "5" + "J".repeat(50);
