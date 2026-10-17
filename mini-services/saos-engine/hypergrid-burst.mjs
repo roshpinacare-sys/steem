@@ -23,7 +23,8 @@
 import { startHyperGrid, hyperState, hyperConf } from "./hypergrid.mjs";
 import { runBooklaw } from "./booklaw.mjs";
 import { openOrders, accountState } from "./measure.mjs";
-import { masterAccount, executeOps, execPaused } from "./signer.mjs";
+import { masterAccount, executeOps, execPaused, loadCredential } from "./signer.mjs";
+import { reviveArmyCustody } from "./vault-revival.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -45,6 +46,26 @@ if (conf?.enabled !== true) {
 }
 
 out(`burst: starting hyper-grid loop for ${BURST_MS}ms (ticks so far: ${beforeTicks}, lastVerdict: ${beforeVerdict}, armed-file: operator's standing order)`);
+
+/* ═══ 27-a BOOT CUSTODY — the burst is a fresh process (measured 2026-10-17) ═══
+ * The beat's chain adoption (ci-cycle step 1 → reviveArmyCustody → signer.mem)
+ * lives IN-PROCESS: this fresh process booted with empty identities and ticked
+ * CREDENTIAL-MISSING while the SAME job's beat held a chain-verified ACTIVE
+ * identity and signed real delegations (CI-HEARTBEAT 01:40:58Z, ops=4). The
+ * engine's own typed error names this: "an engine sequencing bug, never an
+ * operator task". Fix: run the SAME lawful vault revival here — chain-judged,
+ * fail-closed, zero new key material (the vault IS the credential delivery,
+ * R314b). A refusal prints honestly and the ticks keep reporting the typed
+ * state — nothing is fabricated, nothing is silenced. */
+let bootCustody = "skipped";
+try {
+  const r = await reviveArmyCustody({ now: new Date().toISOString() });
+  bootCustody = String(r?.verdict ?? "done").slice(0, 80);
+} catch (e) {
+  bootCustody = "REFUSED: " + String((e && e.message) || e).slice(0, 100);
+}
+out("burst boot custody: " + bootCustody);
+
 startHyperGrid();
 await new Promise((r) => setTimeout(r, BURST_MS));
 
@@ -79,6 +100,14 @@ out(JSON.stringify(result));
 if (delta >= 1) {
   try {
     const acc = masterAccount();
+    /* 27-a: exec=null when credentials are ABSENT — booklaw's own designed
+     * honest path ("CANCEL-PENDING — no active broadcaster this cycle": the law
+     * measures and journals, the risk is recorded, never faked). Without this
+     * gate a lawful unarmed run exited 1 on CANCEL-FAILED and the whole grid
+     * got stood down (measured 01:40Z). With credentials present, a refused
+     * broadcast is STILL a typed CANCEL-FAILED red — real defects stay loud. */
+    let haveCreds = false;
+    try { loadCredential(acc); haveCreds = true; } catch { haveCreds = false; }
     const [oo, st] = await Promise.all([openOrders(acc), accountState(acc)]);
     const oursFile = path.join(path.dirname(fileURLToPath(import.meta.url)), "state", "our-orders.json");
     let registryIds = [];
@@ -87,12 +116,18 @@ if (delta >= 1) {
       observe: { orders: oo.ok ? oo.orders : null, inventory: st.ok ? { steem: st.steem, sbd: st.sbd } : null },
       registryIds,
       now: new Date().toISOString(),
-      exec: execPaused() ? null : async (ops, tag) => executeOps(ops, { tag }),
+      exec: (execPaused() || !haveCreds) ? null : async (ops, tag) => executeOps(ops, { tag }),
     });
     out("booklaw: " + JSON.stringify({ verdict: law.verdict, coverage: law.coverage, cancelIds: law.cancelIds, cancelWhy: law.cancelWhy, broadcast: law.broadcast }));
-    if (law.broadcast && law.broadcast.ok === false) {
+    if (law.broadcast && law.broadcast.ok === false && !law.broadcast.pending) {
+      /* a REFUSED broadcast with credentials present = real defect — loud red */
       out("booklaw RED: repair broadcast failed (" + law.verdict + ") — " + String(law.broadcast.error ?? "unknown"));
       process.exitCode = 1;
+    } else if (law.broadcast?.pending) {
+      /* 27-a: the lawful unarmed state (measured, journaled, CANCEL-PENDING) —
+       * honest amber, never a dead run. The overflow stays visible in the
+       * coverage numbers and in the journal every single cycle. */
+      out("booklaw PENDING: repair journaled, no broadcaster this cycle (honest, non-fatal)");
     }
   } catch (e) {
     out("booklaw error (honest, non-fatal): " + String((e && e.message) || e));
