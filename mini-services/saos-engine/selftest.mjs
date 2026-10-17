@@ -36,6 +36,17 @@ let pass = 0, fail = 0;
  * army-social state read/write below resolves against an isolated tmp dir. */
 process.env.SAOS_STATE_DIR = path.join(os.tmpdir(), `saos-selftest-state-${process.pid}`);
 try { fs.mkdirSync(process.env.SAOS_STATE_DIR, { recursive: true }); } catch { /* exists */ }
+/* R275 ISOLATION LAW — SEED HALF (2026-10-17, agent-zai/W1): the committed
+ * seed (memory-seed/*.jsonl) is GIT state the live engine's weekly merge
+ * churns IN-PLACE. Measured live: one beat's runtime→seed merge wrote 4 real
+ * fleet rows into memory-seed/published.jsonl and vector 42.7b flipped
+ * 2→6 between two runs of identical code — the suite was reading machine
+ * churn as vector input, a determinism violation of this file's own header
+ * law ("zero network, zero clock, zero randomness"). content-memory.seedDir()
+ * reads SAOS_MEMORY_SEED_DIR at CALL time precisely so the selftest can
+ * isolate it after transitive import — wire the hook the module built for
+ * us. The seed+runtime MERGE contract itself gets its own vector (42.8). */
+process.env.SAOS_MEMORY_SEED_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "saos-selftest-seed-"));
 const eq = (name, a, b) => {
   const ja = JSON.stringify(a), jb = JSON.stringify(b);
   if (ja === jb) { pass++; }
@@ -4080,6 +4091,21 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   const mem42 = cm42.loadMemory(dir42b);
   eq("42.7 same chain dedupes, cross-chain both land", [!!r42a, r42b, !!r42c, r42a.id !== r42c.id, r42c.chain], [true, null, true, true, "hive"]);
   eq("42.7b the book holds both fronts", mem42.published.length, 2);
+  /* 42.8 THE SEED HALF IS REAL TOO (2026-10-17, agent-zai/W1): the book is
+   * seed + runtime merged seed-first by id (commits beat transient state) —
+   * the sandbox-death-proof half of loadMemory. Isolated seed dir + scoped
+   * env override (the vector-30 pattern) locks the merge contract without
+   * ever reading the live repo's churned seed. */
+  const seedDir42 = fs.mkdtempSync(os.tmpdir() + "/mem42seed-");
+  const prevSeed42 = process.env.SAOS_MEMORY_SEED_DIR;
+  process.env.SAOS_MEMORY_SEED_DIR = seedDir42;
+  fs.writeFileSync(path.join(seedDir42, "published.jsonl"),
+    JSON.stringify({ id: "seedrow42", chain: "steem", titleNorm: "seed row survives sandbox death", at: "2026-10-01T00:00:00.000Z" }) + "\n");
+  const mem42merge = cm42.loadMemory(dir42b);
+  if (prevSeed42 === undefined) delete process.env.SAOS_MEMORY_SEED_DIR; else process.env.SAOS_MEMORY_SEED_DIR = prevSeed42;
+  eq("42.8 seed+runtime merge is seed-first by id",
+    [mem42merge.published.length, mem42merge.published.some((r) => r.id === "seedrow42"), mem42merge.published.some((r) => r.id === r42a.id), mem42merge.published.filter((r) => r.permlink === "p1").length],
+    [3, true, true, 1]);
 }
 
 {
