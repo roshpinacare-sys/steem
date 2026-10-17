@@ -1,10 +1,10 @@
 {
-  "at": "2026-10-16T14:28:27.269Z",
-  "head": "9532e64a3027ccabd6fcd452f0c0d883975de741",
-  "verdict": "SURFACES-OK",
-  "repairMode": "observe",
-  "actArmed": false,
-  "prevVerdict": "SURFACES-OK",
+  "at": "2026-10-17T03:19:55.813Z",
+  "head": "a78dce30634238a513440d786ee4aa1f8eec586e",
+  "verdict": "SURFACES-DEGRADED",
+  "repairMode": "act",
+  "actArmed": true,
+  "prevVerdict": "SURFACES-DEGRADED",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 28.3
+      "ageMinutes": 79.8
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 28.3
+      "ageMinutes": 79.8
     },
     {
       "id": "pulse-domain-published",
@@ -36,23 +36,23 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 565.9
+      "ageMinutes": 173.8
     },
     {
       "id": "engine-heartbeat",
       "kind": "statefile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 23.1
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 99
     },
     {
       "id": "engine-presence-digest",
       "kind": "statefile",
       "source": "local",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 20.1
+      "verdict": "STALE",
+      "reason": "age>720m",
+      "ageMinutes": 768.6
     },
     {
       "id": "engine-selftest",
@@ -60,14 +60,14 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 0.2
+      "ageMinutes": 0
     },
     {
       "id": "artery-workflow",
       "kind": "workflow",
       "source": "api",
-      "verdict": "OK",
-      "reason": "run-active (artery alive right now)"
+      "verdict": "DEGRADED",
+      "reason": "probe-error:api-http-403"
     },
     {
       "id": "steem-rpc",
@@ -85,8 +85,68 @@
       "repo": "Domain",
       "workflow": "published-ledger.yml",
       "readbackRequired": true
+    },
+    {
+      "targetId": "engine-heartbeat",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "saos-runtime",
+      "workflow": "sovereign-runtime.yml",
+      "readbackRequired": true
+    },
+    {
+      "targetId": "engine-presence-digest",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "saos-runtime",
+      "workflow": "sovereign-runtime.yml",
+      "readbackRequired": true
+    },
+    {
+      "targetId": "artery-workflow",
+      "verdict": "DEGRADED",
+      "action": "escalate",
+      "readbackRequired": true
     }
   ],
   "repairs": [],
-  "signature": "sig:7992d732"
+  "triageGate": [
+    {
+      "id": "pulse-domain-published",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
+    },
+    {
+      "id": "engine-heartbeat",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
+    },
+    {
+      "id": "engine-presence-digest",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
+    },
+    {
+      "id": "artery-workflow",
+      "verdict": "DEGRADED",
+      "class": "ENVIRONMENT",
+      "confidence": "high",
+      "basis": "http-4xx-api 403 (rule 4) — remote gate refused, not a code bug",
+      "advisedAction": "escalate",
+      "gate": "escalation-blocked (no auto-repair this beat)"
+    }
+  ],
+  "signature": "sig:595aec5f"
 }
