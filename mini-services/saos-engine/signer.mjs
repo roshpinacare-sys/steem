@@ -19,6 +19,7 @@ import * as path from "node:path";
 import { rpcCall, accountState } from "./measure.mjs";
 import { SEED_ORDERS, wifFor, derivePub, buildTx, fingerprint, OP_IDS } from "./steemtx.mjs";
 import { resolveClaimRole } from "./adaptation.mjs";
+import { guardCommand, classifyOps } from "./command-hierarchy.mjs";
 import { validateCredentialText, vpSpoilage, stickyNodeOrder, credentialGate, doctrineAccount } from "./lib.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -754,6 +755,31 @@ export async function executeAs(account, ops, { tag = "cycle", role = "active", 
   if (execPaused()) return { ok: false, verdict: "OPERATOR-PAUSED", reason: "kill-switch" };
   if (!ops.length) return { ok: true, verdict: "NO-OPS", ops: 0 };
   if (ops.length > conf.maxOpsPerCycle) ops = ops.slice(0, conf.maxOpsPerCycle);
+
+  /* R-CMDHIER · THE COMMAND HIERARCHY — owner mandate 2026-10-17 (verbatim):
+   * "הארכיטקטורה הריבונית חייבת לדעת לעבוד עם הכספות החשבונות והכל — לא לאסור
+   * עליה — אבל בחומרה והיררכיה שלא ישמידו את הפרויקט." T0-T2 = classified,
+   * capped-counted, journaled — their own proven lane laws stay THE law
+   * (observe wave-1, zero behavior change). T3 DESTRUCTION (authority
+   * reshapes, account creation, unknown ops) = owner-personal: DENIED at this
+   * chokepoint unless a fresh TTL owner-grant + live owner bond verify at
+   * decision time — never a static flag, fail-closed on chain-unreachable. */
+  let hier = null;
+  try {
+    hier = await guardCommand(account, ops, { tag });
+  } catch (e) {
+    /* infra failure → pure re-classification: T3 still fails closed, T0-T2
+     * proceed observed (their lane laws hold), everything journaled honest */
+    if (classifyOps(ops).maxTier === "T3") {
+      appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: "HIERARCHY-INFRA-FAIL-CLOSED", opNames: ops.map(([n]) => n), reason: String(e?.message ?? e).slice(0, 120) });
+      return { ok: false, verdict: "HIERARCHY-DENIED", tier: "T3", reason: "hierarchy-infra-fail-closed" };
+    }
+    appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: "HIERARCHY-INFRA-ERROR-OBSERVE", opNames: ops.map(([n]) => n), reason: String(e?.message ?? e).slice(0, 120) });
+  }
+  if (hier?.verdict === "DENY") {
+    appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: "HIERARCHY-DENIED", tier: hier.tier, tierName: hier.tierName, reason: hier.reason, opNames: ops.map(([n]) => n), destructionOps: hier.destructionOps ?? null });
+    return { ok: false, verdict: "HIERARCHY-DENIED", tier: hier.tier, tierName: hier.tierName, reason: hier.reason, destructionOps: hier.destructionOps ?? null };
+  }
 
   /* T-80 · THE THINK GATE — mandatory reasoning BEFORE any key material is
    * touched (cheapest guard first: pure local policy, zero network). A refusal
