@@ -60,6 +60,29 @@ async function stepWrap(name, fn) {
   }
 }
 
+/* W0.1 (2026-10-17 · audit wave-0, owner-approved): SELFTEST RED = ZERO CHAIN
+ * MOVEMENT. The R245 DEX takeover and the delegation rail move real chain
+ * value (trading, converts, stake). From this beat they run ONLY when the
+ * latest recorded selftest evidence is SUITE-RAN green — the R354 classifier
+ * wired as a real gate (its own header documented this wiring as "a recorded
+ * future beat"). Fail-closed: NO-MARKER / RUNID-MISMATCH / NOT-RAN /
+ * FAIL-RECORDED / read-fail all stand the gate DOWN; the selftest-lease step
+ * runs every beat, so a fresh green suite re-arms the gates automatically.
+ * The watchdog does NOT watch selftest — therefore the blocked verdicts are
+ * deliberately NOT added to its WAIT set: they stay RED until the suite is
+ * green (the alarm is carried, never silenced). */
+async function selftestChainGate() {
+  try {
+    const { verifySelftestEvidence } = await import("./evidence.mjs");
+    const r = verifySelftestEvidence({});
+    return r.evidence === "SUITE-RAN" && r.honest === true
+      ? { armed: true, evidence: r.evidence }
+      : { armed: false, evidence: r.evidence };
+  } catch (e) {
+    return { armed: false, evidence: "GATE-READ-FAIL", error: String(e?.message ?? e) };
+  }
+}
+
 async function main() {
   const now = new Date().toISOString();
   const report = { heartbeat: "saos.ci.v1", at: now, master: masterAccount(), steps: {} };
@@ -82,6 +105,8 @@ async function main() {
     const last = readJson(path.join(STATE, "ci-takeover.json"), null);
     const gate = dexTakeoverDue({ anchorAt: anchor?.at ?? null, now, lastAt: last?.at ?? null });
     if (!gate.due) return { verdict: "STANDBY", reason: gate.reason, anchorAgeMs: anchor?.at ? Date.now() - (typeof anchor.at === "number" ? anchor.at : Date.parse(anchor.at)) : null };
+    const stGate = await selftestChainGate();
+    if (!stGate.armed) return { verdict: "TAKEOVER-BLOCKED-SELFTEST-RED", reason: gate.reason, evidence: stGate.evidence, gateError: stGate.error ?? null };
     if (!process.env.CI_ADOPT_WIF_ACTIVE) return { verdict: "TAKEOVER-BLOCKED-NO-CREDENTIAL", reason: gate.reason };
     process.env.CI_ADOPT_WIF_POSTING = process.env.CI_ADOPT_WIF_POSTING ?? "";
     const { runCycle } = await import("./daily.mjs");
@@ -152,6 +177,9 @@ async function main() {
    * ledgered, fully reversible (7-day undelegation, ownership never moves).
    * Fail-closed when the CI_DELEGATION_ARMED secret is absent. */
   report.steps.delegation = await stepWrap("delegation", async () => {
+    /* W0.1: same selftest chain gate as the dex takeover — real SP moves only on proven-green selftest. */
+    const stGate = await selftestChainGate();
+    if (!stGate.armed) return { verdict: "DELEGATION-BLOCKED-SELFTEST-RED", evidence: stGate.evidence, gateError: stGate.error ?? null };
     const { runDelegationRail } = await import("./delegation-rail.mjs");
     const r = await runDelegationRail({ now });
     return { verdict: r.verdict, ops: r.ops ?? 0, totalSp: r.totalSp ?? 0, reason: r.reason ?? null };
@@ -555,6 +583,7 @@ async function main() {
     postPermlink: report.steps.post?.permlink ?? null,
     dex: report.steps.dex?.verdict ?? "STEP-FAIL",
     dexReason: report.steps.dex?.reason ?? null,
+    dexEvidence: report.steps.dex?.evidence ?? null,
     digest: report.steps.digest?.verdict ?? "STEP-FAIL",
     digestTitle: report.steps.digest?.title ?? null,
     blurt: report.steps.blurt?.verdict ?? "STEP-FAIL",
@@ -565,6 +594,7 @@ async function main() {
     visibilityChain: report.steps.visibility?.chain ?? null,
     visibilityAltRendered: report.steps.visibility?.altRenderedAccounts ?? null,
     delegation: report.steps.delegation?.verdict ?? "STEP-FAIL",
+    delegationEvidence: report.steps.delegation?.evidence ?? null,
     delegationOps: report.steps.delegation?.ops ?? 0,
     delegationSp: report.steps.delegation?.totalSp ?? 0,
     contentMemory: report.steps.contentMemory?.verdict ?? "STEP-FAIL",
