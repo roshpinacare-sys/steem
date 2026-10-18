@@ -52,8 +52,8 @@ async function main() {
   if (!chain.ok || !Array.isArray(chain.result)) { out({ ok: false, verdict: "REFUSED", reason: `rpc-failed:${chain.error ?? "?"}` }); process.exit(1); }
   const authority = new Map();
   for (const a of chain.result ?? []) {
-    const pub = a?.posting?.key_auths?.[0]?.[0];
-    if (typeof pub === "string") authority.set(a.name, pub);
+    const pubs = (a?.posting?.key_auths ?? []).map((k) => k?.[0]).filter((p) => typeof p === "string");
+    if (pubs.length) authority.set(a.name, pubs); /* multi-key authorities: fleet posting keys may be appended (G13 custody restore) */
   }
 
   /* 3. key↔authority matrix (public facts only) */
@@ -62,7 +62,7 @@ async function main() {
     onChainAuthority: authority.get(a.name) ?? null,
     genMatches: (a.gens ?? []).filter((g) => g.wif).map((g) => ({
       gen: g.gen ?? null,
-      matchesAuthority: authority.has(a.name) && pubkeyFromSeed(wifDecode(g.wif)) === authority.get(a.name),
+      matchesAuthority: (authority.get(a.name) ?? []).includes(pubkeyFromSeed(wifDecode(g.wif))),
     })),
   }));
   const matched = matrix.filter((m) => m.genMatches.some((g) => g.matchesAuthority));

@@ -208,7 +208,11 @@ export async function runOnce({ stagingOnly = false } = {}) {
   const drafts = fs.existsSync(DRAFTS)
     ? fs.readdirSync(DRAFTS).filter((f) => f.endsWith(".json")).sort().map((f) => readJson(path.join(DRAFTS, f), null)).filter(Boolean)
     : [];
-  const draft = drafts.find((d) => !blockSet.has(d.sha8)) ?? null;
+  /* G13 fix (root of the 73-veto starvation): a retired draft (retired-chain-dupe etc.)
+   * never re-enters the pick — the chain's veto IS the verdict; retrying a
+   * chain-proven dupe is waste (R309: "a cap without a measurement is value theft" —
+   * same law: a veto without retirement is cycle theft). */
+  const draft = drafts.find((d) => !blockSet.has(d.sha8) && (!d.status || d.status === "drafted")) ?? null;
   if (!draft) {
     return { ...base, ok: true, verdict: "NOTHING-NEW", drafts: drafts.length, alreadySent: blockSet.size, stage };
   }
@@ -224,18 +228,21 @@ export async function runOnce({ stagingOnly = false } = {}) {
   if (!chainAccs.ok || !Array.isArray(chainAccs.result)) return { ...base, ok: false, verdict: "RPC-FAILED", reason: chainAccs.error ?? "get_accounts", stage };
   const authority = new Map();
   for (const a of chainAccs.result ?? []) {
-    const pub = a?.posting?.key_auths?.[0]?.[0];
-    if (typeof pub === "string") authority.set(a.name, pub);
+    const pubs = (a?.posting?.key_auths ?? []).map((k) => k?.[0]).filter((p) => typeof p === "string");
+    if (pubs.length) authority.set(a.name, pubs); /* multi-key authorities: fleet posting keys may be appended (G13 custody restore) */
   }
   const matched = roster
-    .map((a) => ({ acc: a, gen: (a.gens ?? []).find((g) => g.wif && authority.get(a.name) && pubkeyFromSeed(wifDecode(g.wif)) === authority.get(a.name)) }))
+    .map((a) => ({ acc: a, gen: (a.gens ?? []).find((g) => g.wif && (authority.get(a.name) ?? []).includes(pubkeyFromSeed(wifDecode(g.wif)))) }))
     .filter((x) => x.gen);
   if (!matched.length) return { ...base, ok: false, verdict: "NO-MATCHING-KEY", stage };
 
   /* account rotation: least-used matched account in the ledger (gap law) */
   const useCount = new Map();
   const lastUse = new Map();
-  for (const r of sent) { if (r.account) { useCount.set(r.account, (useCount.get(r.account) ?? 0) + 1); if (!lastUse.has(r.account) || new Date(r.at) > lastUse.get(r.account)) lastUse.set(r.account, new Date(r.at)); } }
+  /* G13 consistency with R287 dedupe law: only rows that actually reached the
+   * chain (BROADCASTED) burn rotation stats and the gap clock — veto/refusal
+   * rows are attempt telemetry, never usage ("failed rows do NOT burn it"). */
+  for (const r of sent) { if (r.account && r.verdict === "BROADCASTED") { useCount.set(r.account, (useCount.get(r.account) ?? 0) + 1); if (!lastUse.has(r.account) || new Date(r.at) > lastUse.get(r.account)) lastUse.set(r.account, new Date(r.at)); } }
   matched.sort((x, y) => (useCount.get(x.acc.name) ?? 0) - (useCount.get(y.acc.name) ?? 0));
   const now = Date.now();
   const pick = matched.find((x) => now - (lastUse.get(x.acc.name)?.getTime() ?? 0) >= MIN_GAP_MIN_PER_ACCOUNT * 60_000) ?? null;
@@ -253,6 +260,14 @@ export async function runOnce({ stagingOnly = false } = {}) {
     const u = fleetUniqueness(ledger, { account: pick.acc.name, title: draft.title, body: draft.body });
     if (!u.ok) {
       appendSent({ at: nowD.toISOString(), kind: "post", mode: "live", account: pick.acc.name, chain: chainName, permlink: "(pre-sign)", sha8: draft.sha8, txid: null, verdict: "VETOED-CHAIN-UNIQUENESS", reasons: u.reasons.slice(0, 3), ms: 0 });
+      /* G13: the chain judged this draft a dupe — retire it so the rail moves
+       * to fresh stock (the draft file is content-addressed; the veto stays in
+       * the ledger forever as the audit trail). */
+      try {
+        const df = path.join(DRAFTS, `${draft.sha8}.json`);
+        const dj = readJson(df, null);
+        if (dj && !dj.status) { dj.status = "retired-chain-dupe"; dj.retiredAt = nowD.toISOString(); fs.writeFileSync(df, JSON.stringify(dj, null, 2)); }
+      } catch { /* retirement is best-effort; the ledger veto stands regardless */ }
       return { ...base, ok: false, verdict: "VETOED-CHAIN-UNIQUENESS", reasons: u.reasons.slice(0, 3), stage };
     }
   } catch (e) {
@@ -283,7 +298,11 @@ export async function runOnce({ stagingOnly = false } = {}) {
   try {
     const raw = Buffer.from(tx.json.signatures[0], "hex");
     const sigObj = secp.Signature.fromCompact(new Uint8Array(raw.slice(1)));
-    sigVerified = secp.verify(sigObj, new Uint8Array(Buffer.from(tx.digestHex, "hex")), pubkeyBytes(authority.get(pick.acc.name)));
+    /* G13: authorities are multi-key now (custody appends) — the signature is
+     * valid if it recovers to ANY live posting key of the account. */
+    sigVerified = (authority.get(pick.acc.name) ?? []).some((p) => {
+      try { return secp.verify(sigObj, new Uint8Array(Buffer.from(tx.digestHex, "hex")), pubkeyBytes(p)); } catch { return false; }
+    });
   } catch { sigVerified = false; }
   const txid = createHash("sha256").update(Buffer.from(tx.serializedHex, "hex")).digest("hex").slice(0, 40);
 
