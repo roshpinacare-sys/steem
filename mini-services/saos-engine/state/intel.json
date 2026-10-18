@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-18T20:55:55.580Z",
+  "at": "2026-10-18T21:50:16.735Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 169bps → dragK 1.0845",
+      "reason": "spread 36bps → dragK 1.018",
       "action": {
-        "spreadBpsRec": 169,
-        "bestAsk": 0.10426,
-        "bestBid": 0.10251153254741159
+        "spreadBpsRec": 36,
+        "bestAsk": 0.1044162681996454,
+        "bestBid": 0.10403662089055347
       },
-      "at": "2026-10-18T20:55:55.580Z"
+      "at": "2026-10-18T21:50:16.735Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates 106bps from external parity",
+      "action": {
+        "bps": 106
+      },
+      "at": "2026-10-18T21:50:16.735Z"
     },
     {
       "kind": "soldiers",
@@ -19,46 +28,46 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-18T20:55:55.580Z"
+      "at": "2026-10-18T21:50:16.735Z"
     },
     {
       "kind": "rewards",
       "decision": "claim",
-      "reason": "unclaimed: 0 STEEM + 0 SBD + 75.769193 VESTS — free fuel, claim now",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 95.113984 VESTS — free fuel, claim now",
       "action": {
         "ok": true,
         "steem": 0,
         "sbd": 0,
-        "vests": 75.769193,
+        "vests": 95.113984,
         "any": true
       },
-      "at": "2026-10-18T20:55:55.580Z"
+      "at": "2026-10-18T21:50:16.735Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 90.3%",
+      "reason": "RC at 90.6%",
       "action": {
-        "rcPct": 90.3
+        "rcPct": 90.6
       },
-      "at": "2026-10-18T20:55:55.580Z"
+      "at": "2026-10-18T21:50:16.735Z"
     },
     {
       "kind": "curation",
-      "decision": "curator-armed",
-      "reason": "rail armed, verdict NO-CANDIDATES today (VP 38.3%) — gates hold until candidates pass",
+      "decision": "curator-live",
+      "reason": "voted 3 today (216 total) · VP 38.3% · txid 9578bfe361e7",
       "action": {
-        "votesToday": 20,
+        "votesToday": 23,
         "vpEff": 38.3,
-        "verdict": "NO-CANDIDATES"
+        "verdict": "VOTED"
       },
-      "at": "2026-10-18T20:55:55.580Z"
+      "at": "2026-10-18T21:50:16.735Z"
     }
   ],
-  "spreadBpsRec": 169,
+  "spreadBpsRec": 36,
   "book": {
-    "bestAsk": 0.10426,
-    "bestBid": 0.10251153254741159,
-    "spreadBps": 169
+    "bestAsk": 0.1044162681996454,
+    "bestBid": 0.10403662089055347,
+    "spreadBps": 36
   }
 }
