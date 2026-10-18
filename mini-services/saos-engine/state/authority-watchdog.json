@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-18T14:48:47.085Z",
-  "verdict": "1-FLAGGED",
+  "at": "2026-10-18T22:34:25.918Z",
+  "verdict": "ALL-SIGNED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -69,55 +69,20 @@
     },
     {
       "repo": "TruthRail",
-      "coverage": "MEASURED",
-      "method": "git-native",
-      "scanned": 10,
-      "signed": 0,
-      "unsigned": 10,
-      "invalid": 0,
-      "untrusted": 0,
-      "unknown": 0,
-      "signedPct": 0,
-      "flagged": []
+      "coverage": "UNREACHABLE",
+      "reason": "fatal: could not read Username for 'https://github.com': No such device or addre"
     },
     {
       "repo": "saos-agents",
-      "coverage": "MEASURED",
-      "method": "git-native",
-      "scanned": 10,
-      "signed": 0,
-      "unsigned": 9,
-      "invalid": 1,
-      "untrusted": 0,
-      "unknown": 0,
-      "signedPct": 0,
-      "flagged": [
-        {
-          "hash": "83555a78",
-          "gq": "E",
-          "sig": "INVALID",
-          "author": "roshpinacare-sys",
-          "at": "2026-10-14T05:25:57+03:00",
-          "subject": "FLEET-COORDINATION/1: anti-overwrite protocol — merged by R41 (החוק-נע"
-        }
-      ]
+      "coverage": "UNREACHABLE",
+      "reason": "fatal: could not read Username for 'https://github.com': No such device or addre"
     }
   ],
-  "flagged": [
-    {
-      "hash": "83555a78",
-      "gq": "E",
-      "sig": "INVALID",
-      "author": "roshpinacare-sys",
-      "at": "2026-10-14T05:25:57+03:00",
-      "subject": "FLEET-COORDINATION/1: anti-overwrite protocol — merged by R41 (החוק-נע",
-      "repo": "saos-agents"
-    }
-  ],
+  "flagged": [],
   "coverage": {
-    "measured": 7,
+    "measured": 5,
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 6124
+  "ms": 4670
 }
