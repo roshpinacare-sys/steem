@@ -1,0 +1,11 @@
+import fs from 'fs';
+const TOKEN = fs.readFileSync('/home/z/.git-creds','utf8').match(/https:\/\/[^:]+:([^@]+)@github\.com/)[1];
+const H = {Authorization:`Bearer ${TOKEN}`,'Accept':'application/vnd.github+json'};
+const REPO='roshpinacare-sys/Autonomy';
+const wf=process.argv[2];
+const d=await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${wf}/runs?per_page=10`,{headers:H}).then(x=>x.json());
+const run=(d.workflow_runs||[]).find(r=>r.conclusion&&r.conclusion!=='success');
+const j=await fetch(`https://api.github.com/repos/${REPO}/actions/runs/${run.id}/jobs?per_page=5`,{headers:H}).then(x=>x.json());
+const job=(j.jobs||[]).find(x=>x.conclusion!=='success');
+const log=await fetch(`https://api.github.com/repos/${REPO}/actions/jobs/${job.id}/logs`,{headers:H}).then(x=>x.text());
+console.log(log.split('\n').filter(l=>!/^20\d\d-.*Z\s*(Get|Set|Restore|Download|Complete|Cleaning|Evaluate|Condition|Queue|Prepare|Initialize|Run)/.test(l)).slice(-30).join('\n').replace(/[A-Za-z0-9_+\/=-]{45,}/g,'<REDACTED>'));
