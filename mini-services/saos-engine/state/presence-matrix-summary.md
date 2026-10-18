@@ -1,7 +1,7 @@
 # presence-matrix — multi-network display parity probe (read-only)
 
-- at: 2026-10-18T13:16:45.008Z
-- HEAD: f5544ed4e2aa66aaf6900755c41c3addc072db2d
+- at: 2026-10-18T14:06:43.022Z
+- HEAD: 445e27a90f2a630d8dfb51336890047532072a5f
 - roster source: army-social.mjs:import · fleet 14 (master headcorner + 13 army) · controls steem/nasoe/marpa
 - chain layer: ok via condenser_api.get_accounts
 
@@ -14,29 +14,29 @@ CONTROLS 3: steemit.com=MIXED/DEGRADED (fleet FULL=0/14; controls: HTTP403,HTTP4
 | steemitwallet.com | SPA-PARITY | SPA-PARITY×14 | 59.5KB |
 | steemworld.org | SPA-PARITY | SPA-PARITY×14 | 1.6KB |
 | steemscan.com | SPA-PARITY | SPA-PARITY×14 | 1.0KB |
-| steemdb.io | SPA-PARITY | SPA-PARITY×14 | 45.8KB |
+| steemdb.io | UNDETERMINED (insufficient fetches) | HTTP200×5 ERR×9 | — |
 
 ## per-account raw
 
 | account | class | chain | steemit.com | steemitwallet.com | steemworld.org | steemscan.com | steemdb.io |
 |---|---|---|---|---|---|---|---
-| headcorner | fleet-master | 1149p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 45.5KB |
-| cashmachine | fleet | 200p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 45.6KB |
-| haran | fleet | 477p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 44.3KB |
-| israelnews | fleet | 105p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 43.8KB |
-| lsa | fleet | 195p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 45.8KB |
-| macrame | fleet | 146p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 45.4KB |
-| siq | fleet | 164p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 48.1KB |
-| tov | fleet | 172p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 47.3KB |
-| wic | fleet | 117p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 45.1KB |
-| wog | fleet | 161p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 46.4KB |
-| woq | fleet | 111p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 46.0KB |
-| hcsoldier4 | fleet | 20p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 49.7KB |
-| hcsoldier5 | fleet | 25p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 49.4KB |
-| hcsoldier6 | fleet | 22p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 50.0KB |
-| steem | control | 0p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | HTTP500 11.0KB |
-| nasoe | control | 3345p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 45.9KB |
-| marpa | control | 29550p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 45.7KB |
+| headcorner | fleet-master | 1150p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | HTTP200 46.1KB |
+| cashmachine | fleet | 200p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | HTTP200 46.3KB |
+| haran | fleet | 477p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | HTTP200 44.6KB |
+| israelnews | fleet | 105p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | HTTP200 44.9KB |
+| lsa | fleet | 195p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | HTTP200 45.6KB |
+| macrame | fleet | 146p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| siq | fleet | 164p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| tov | fleet | 172p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| wic | fleet | 117p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| wog | fleet | 161p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| woq | fleet | 111p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| hcsoldier4 | fleet | 20p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| hcsoldier5 | fleet | 25p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| hcsoldier6 | fleet | 22p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| steem | control | 0p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| nasoe | control | 3345p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
+| marpa | control | 29550p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | ERR (This operation was aborted) |
 
 ## honest limits
 - read-only probe: zero keys, zero broadcasts, zero writes outside the state dir
