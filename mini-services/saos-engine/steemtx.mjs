@@ -356,11 +356,12 @@ export const HIVE_CHAIN_ID = Buffer.from("beeab0de000000000000000000000000000000
 /* ── signing ────────────────────────────────────────────────────────────── */
 export function signDigest(digest32, wif) {
   const priv = Buffer.from(wifDecode(wif));
-  const sig = secp.sign(Buffer.from(digest32), priv); // deterministic RFC6979, low-s, recovery bit set
-  const rec = sig.recovery ?? 0;
-  const r = Buffer.from(sig.r.toString(16).padStart(64, "0"), "hex");
-  const s = Buffer.from(sig.s.toString(16).padStart(64, "0"), "hex");
-  return Buffer.concat([Buffer.from([31 + rec]), r, s]); // [header=31+rec][r][s]
+  /* גל-99 · תיקון-שורשי מדוד ×3 (נמדד ישירות מול @noble/secp256k1@1.7.2 — המנעול
+   * שב-bun.lock): sign() async · signSync() מחזיר טאפל [compact64 = r||s, recId]
+   * — לא אובייקט {r,s,recovery} כמו ב-1.6.x (שם הקריסה: "sig.r.toString").
+   * הפורמט-על-הסליל שלנו [31+rec][r][s] הוא בדיוק header + compact — ישר-מהטאפל. */
+  const [compact, recId] = secp.signSync(Buffer.from(digest32), priv, { der: false, recovered: true }); // deterministic RFC6979, low-s
+  return Buffer.concat([Buffer.from([31 + recId]), Buffer.from(compact)]); // [header=31+rec][r][s]
 }
 
 /** build + sign a full tx from ops. Returns BOTH the binary digest proof and
