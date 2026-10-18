@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-18T06:03:36.234Z",
-  "head": "be588a55069b57f2b4b166037adcee3ad7aaa48e",
+  "at": "2026-10-18T08:52:37.439Z",
+  "head": "d4f79d2743b8d1ed7bef024cd892cec84a33baed",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -18,17 +18,17 @@
       "id": "pulse-network",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 3.5
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 142.5
     },
     {
       "id": "pulse-mirror-lanes",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 3.5
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 142.5
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 273.8
+      "ageMinutes": 139.1
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 22.8
+      "ageMinutes": 72.8
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5.7
+      "ageMinutes": 147.8
     },
     {
       "id": "engine-selftest",
@@ -79,6 +79,22 @@
   ],
   "repairsPlanned": [
     {
+      "targetId": "pulse-network",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "Pulse",
+      "workflow": "heartbeat.yml",
+      "readbackRequired": true
+    },
+    {
+      "targetId": "pulse-mirror-lanes",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "Pulse",
+      "workflow": "heartbeat.yml",
+      "readbackRequired": true
+    },
+    {
       "targetId": "pulse-domain-published",
       "verdict": "STALE",
       "action": "regen-state",
@@ -88,5 +104,5 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:0efb7531"
+  "signature": "sig:e5147ec7"
 }
