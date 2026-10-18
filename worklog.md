@@ -1388,3 +1388,23 @@ Stage Summary:
 - The channel now speaks in the sovereignty's voice — with an anti-invention law in code (numbers must be measured, else rejected), fail-honest everywhere, zero cost (public Actions + built-in GITHUB_TOKEN)
 - FILE-BOUNDARY held: Pulse = 2 new files (script+workflow) + PROTOCOL edit + voice.json honest seed; steem = R344 §3 edit + receipt; zero other lanes' files touched
 - Open: first Actions run verification (TRUE or honest UNAVAILABLE with real reason); direct-commit token UI; beat read-wiring per lane
+
+---
+Task ID: 21-a (L-SEC lane — recovery+vault integrity, trace 1a14f2a0eeaefb29)
+Agent: Z.ai Code (execution-fabric session, entered via owner directive "examine architecture+git, plan well, execute comprehensively, nothing important lost")
+Task: Prove the sovereignty survives total sandbox death and nothing is lost; audit vault integrity; measure the live organism; document SIGNING-DEAD root cause.
+
+Work Log:
+- Read AGENTS.md + COLD-START.md first; ran the lawful session-opening protocol from a fresh /tmp clone (this sandbox hosts execution-fabric at /home/z/my-project — separate repo; zero mixing)
+- Protocol results: divergence 0/0 · engine selftest 1823/1823 PASS (both work-clone AND fresh clone) · doctrine-audit PASS (177 assets, D1-D6) · chain-anchor-probe anchored:true drift:false (tip 1d96ed5b, block 110545181)
+- BOOTSTRAP-OK: scripts/sovereign-bootstrap.sh from git alone reproduced the brain (fresh clone head c9ef042 == origin tip, selftest 1823/1823) — MTT receipt earned today
+- VAULT-INTEGRITY PASS without any decryption: sha256 of KEYS-ZIP-2026-10-12-MASTER + KEYS-BACKUP-2026-09-09 + KEYS-SEED-2026-10-04 all MATCH their recovery-meta.json pins; gpg pubAnchor r5 present; inner-sha pins present for Actions-level verification
+- Engine booted from git-only fresh clone: HTTP :3040 up (17 routes), payouts verdict MEASURED (flip happened), next payout clock 2026-10-22 (95.5h), revenue compiler 4 broadcast-ready, army custody 0/14 fail-closed honest (no operator pass)
+- Local selfcustody revive: WRITER-IDENTITY-PARTIAL (GIT-CUSTODY-FAIL, SIGNING-REVIVE-FAIL) — correct fail-closed: SAOS_VAULT_PASS is operator-held (GitHub Secrets), forbidden in sandbox by law §3; hence this commit is a NEUTRAL UNSIGNED CHECKPOINT per R267 §2.5 (documented here per the law)
+- Root-cause hypothesis for SIGNING-DEAD documented in docs/RECOVERY-VAULT-AUDIT-2026-10-18.md: MAIN_KEY secret (updated 09-21) predates the 10-12 MASTER-DERIVE rotation (txid f6283d2e9fd37dbd); two remedy paths listed (operator updates secret, or custody lane derives from sha-pinned vault via STEEM_VAULT_PASSES)
+- Observed-not-touched: hive-custody-revival being dispatched every 2-4min failing honestly = live agent-9 t18 lane; FILE-BOUNDARY respected (only docs/ receipt + worklog + refreshed engine state files)
+
+Stage Summary:
+- The owner's "nothing important lost" fear is now MEASURED-DISPROVEN: total sandbox death loses nothing (git-only revival proven today, vault sha-pins 3/3, chain anchor public)
+- Signing-dead root cause narrowed to stale MAIN_KEY secret vs 10-12 rotation — owner-level remedy documented
+- The organism boots and measures from git alone; secrets stay sealed by law; zero secrets touched (names+shas only)
