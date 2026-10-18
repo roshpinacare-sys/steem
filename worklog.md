@@ -1431,3 +1431,24 @@ Stage Summary:
 - SIGNING-DEAD (מ-16.10, קרד.missing) נסגר בשתי-הרפואות: MAIN_KEY-הסוד-המיושן הוחלף-בשורש-החי (4/4-על-השרשרת) + המנוע-החי-חתום-VERIFIED-היום
 - נוסחת-השחזור-המלאה-מתועדת-לנצח: PAT → wrap c029b0b7 → P → intake/headcorner-master.txt.enc → מפתח-שורה-2-בלי-השם → MAIN_KEY (steem, המפתח-בלבד) או POST /adopt-credential {"text":"headcorner P<key>"}
 - אפס-כפייה-על-כספות-אטומות · אפס-הדפסת-סוד-חי · כל-פסק-דין-הוא-של-השרשרת-עצמה
+
+---
+Task ID: 49 (zai-code sandbox-revival)
+Task: הסנדבוקס-נרולד-לצילום-ישן — המשרד-מת-לגמרי; תחייה-מלאה-מהגיט-בלבד לפי COLD-START
+
+Work Log:
+- הרולבק-מחק: את-קלון-ה-steem, את-vault-home, ואת-כל-תהליכי-המשרד (3040/3041/3042/3043/3047) — נותרו-רק-הריפואים-על-GitHub
+- תחייה-לפי-הפרוטוקול: קלון-טרי (PAT-אפמרלי, נוקה-מ-config) → fetch/reset → selftest **1823/1823 PASS** → doctrine-audit **PASS (177 נכסים)**
+- עליית-המנוע-בודדת-נפלה-אחרי-דקות; הופעל **office-supervisor** (חוק-R324-CONT-2) — החיה-את-כל-המשרד: engine 3040 + custodian 3041 + metrics 3042 + builder 3043 + state-witness 3047
+- vault-home נפתח-מחדש: wrap c029b0b7 (PAT) → P (session 0600) → intake/headcorner-master.txt.enc → מפתח-שורה-2-בלי-השם (הנוסחה-הנצחית, מומש-שוב)
+- POST /adopt-credential → **VERIFIED** fingerprint **c056922c** — מעגל-מלא-עם-שם-ה-wrap-בכספת (מיד-לאחר-העלייה-הטרייה)
+- מחזור-מידי: **37/37 שלבים, ok:true, health:ok, 60 שניות** — curate/execute/payouts/selftest הכל-חי
+- צי: 13/15-חיים (engine-core ALIVE; watchdog-מת-מזמן-מוגדר-לתחייה-במחזור)
+- זהות-כותב: GIT-CUSTODY-FAIL + SIGNING-REVIVE-FAIL — **חסימה-חוקית**: keysZipPass-חי-ב-Actions-secret-STEEM_VAULT_PASSES-בלבד (R-VAULTPASS-1, "unrecoverable by law"); P-של-הכספת-הריבונית-נבדק-ואינו-מפתח-איטום-ה-GPG (נמדד, כנות)
+- לכן: קומיט-זה checkpoint-ניטרלי-לא-חתום לפי §2.5 (הסיבה-מתועדת-כאן); דחיפה-ב-PAT-אפמרלי-בלי-שמירתו
+- היגיינה: המפתח-המדורג-ב-/tmp נגרס (shred); אפס-סודות-בפלט-או-ב-config
+
+Stage Summary:
+- המשרד-הריבוני-חי-שוב-מהגיט-בלבד — ההוכחה-השלישית-של-תחיית-האורגניזם (R284/R324/Task-46, והיום-Task-49)
+- הסודות-הפעילים: חתימת-Steem-חיה (c056922c) · פרמת-דחיפה-אפמרלית-בלבד · GPG-r5-אטום-חוקית-עד-המפעיל/Actions
+- מה-שלא-נדחף-לא-קרה — רשומה-זו-נדחפת-עכשיו
