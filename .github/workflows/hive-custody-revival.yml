@@ -30,7 +30,17 @@ jobs:
           MAIN_KEY: ${{ secrets.MAIN_KEY }}
           ROT_ROSTER: ${{ secrets.ROT_ROSTER }}
         working-directory: mini-services/saos-engine
-        run: bun run gen1-sign-hive.mjs
+        run: |
+          bun run gen1-sign-hive.mjs > stdout.log 2> stderr.log
+          EXIT=$?
+          touch custody-receipt.jsonl
+          # כל שורות-ה-verdict הציבוריות (stdout) מועברות לקבלה; WIF מוצנז בחוק
+          sed -E 's/[1-9A-HJ-NP-Za-km-z]{50,52}/[REDACTED-WIF]/g' stdout.log >> custody-receipt.jsonl
+          if [ "$EXIT" -ne 0 ]; then
+            echo "{\"at\":\"$(date -u +%FT%TZ)\",\"ok\":false,\"error\":\"pre-log-crash\"}" >> custody-receipt.jsonl
+            tail -5 stderr.log | sed -E 's/[1-9A-HJ-NP-Za-km-z]{50,52}/[REDACTED-WIF]/g' >> custody-receipt.jsonl
+          fi
+          exit "$EXIT"
       - name: custody receipt artifact (always — fail-closed verdicts are value)
         if: always()
         uses: actions/upload-artifact@v4
