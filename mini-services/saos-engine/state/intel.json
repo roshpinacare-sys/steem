@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-18T08:52:37.439Z",
+  "at": "2026-10-18T11:59:57.029Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 105bps → dragK 1.0525",
+      "reason": "spread 191bps → dragK 1.0955",
       "action": {
-        "spreadBpsRec": 105,
-        "bestAsk": 0.10197887580429768,
-        "bestBid": 0.10091835704914724
+        "spreadBpsRec": 191,
+        "bestAsk": 0.10247778077026663,
+        "bestBid": 0.10053475935828877
       },
-      "at": "2026-10-18T08:52:37.439Z"
+      "at": "2026-10-18T11:59:57.029Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates 245bps from external parity",
+      "action": {
+        "bps": 245
+      },
+      "at": "2026-10-18T11:59:57.029Z"
     },
     {
       "kind": "soldiers",
@@ -19,33 +28,46 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-18T08:52:37.439Z"
+      "at": "2026-10-18T11:59:57.029Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 114.462068 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 114.462068,
+        "any": true
+      },
+      "at": "2026-10-18T11:59:57.029Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 99.9%",
+      "reason": "RC at 100%",
       "action": {
-        "rcPct": 99.9
+        "rcPct": 100
       },
-      "at": "2026-10-18T08:52:37.439Z"
+      "at": "2026-10-18T11:59:57.029Z"
     },
     {
       "kind": "curation",
       "decision": "curator-live",
-      "reason": "voted 3 today (199 total) · VP 41.6% · txid ef1161a61d83",
+      "reason": "voted 3 today (202 total) · VP 43.3% · txid a22da6690fb5",
       "action": {
-        "votesToday": 6,
-        "vpEff": 41.6,
+        "votesToday": 9,
+        "vpEff": 43.3,
         "verdict": "VOTED"
       },
-      "at": "2026-10-18T08:52:37.439Z"
+      "at": "2026-10-18T11:59:57.029Z"
     }
   ],
-  "spreadBpsRec": 105,
+  "spreadBpsRec": 191,
   "book": {
-    "bestAsk": 0.10197887580429768,
-    "bestBid": 0.10091835704914724,
-    "spreadBps": 105
+    "bestAsk": 0.10247778077026663,
+    "bestBid": 0.10053475935828877,
+    "spreadBps": 191
   }
 }
