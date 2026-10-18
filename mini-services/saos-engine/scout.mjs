@@ -62,12 +62,22 @@ async function screenRepo(fullName) {
   const meta = await gh(`/repos/${fullName}`);
   const reasons = [];
   let verdict = "PASS";
+  let contribs = null;
   const ageD = days(meta.created_at), pushD = days(meta.pushed_at);
   const license = meta.license?.spdx_id ?? null;
   if (!license || license === "NOASSERTION") { reasons.push("no-identified-license"); verdict = "FLAG"; }
   if (meta.archived) reasons.push("archived");
   if (ageD < 90) { reasons.push(`young:${ageD}d`); if (verdict === "PASS") verdict = "FLAG"; }
   if (pushD > 365) { reasons.push(`stale:${pushD}d-since-push`); if (verdict === "PASS") verdict = "FLAG"; }
+  if (meta.fork) { reasons.push("fork:not-original-source"); if (verdict === "PASS") verdict = "FLAG"; } // T-526: forks hide the true origin — study the parent instead
+
+  // T-526 contributor-concentration anomaly: hype pattern = many stars but a
+  // single contributor on a young repo (common in fake-project / dropper repos).
+  try {
+    const c = await gh(`/repos/${fullName}/contributors?per_page=100&anon=1`);
+    contribs = Array.isArray(c) ? c.length : 0;
+    if (contribs <= 1 && ageD < 180 && (meta.stargazers_count ?? 0) >= 50) { reasons.push(`single-contributor-hype:${contribs}c/${meta.stargazers_count}stars`); if (verdict === "PASS") verdict = "FLAG"; }
+  } catch { /* contributors endpoint optional */ }
 
   // install-hook + payload screen on the root package.json (JS ecosystems)
   let hooks = [];
@@ -98,6 +108,7 @@ async function screenRepo(fullName) {
   return {
     repo: fullName, url: meta.html_url, stars: meta.stargazers_count, forks: meta.forks_count,
     ageDays: ageD, daysSincePush: pushD, license, archived: !!meta.archived,
+    fork: !!meta.fork, ownerType: meta.owner?.type ?? null, contributors: contribs,
     language: meta.language, description: (meta.description ?? "").slice(0, 160),
     installHooks: hooks, verdict, reasons, screenedAt: new Date().toISOString(),
   };

@@ -73,6 +73,17 @@ async function sh(cmd) {
 }
 
 async function gitPushLedger() {
+  // HARD LAW (learned T-526): this loop must NEVER destroy uncommitted work.
+  // reset --hard on push-conflict would wipe any dirty path outside the
+  // ledger — so if the worktree is dirty beyond the ledger, REFUSE to push
+  // (ledger stays on disk; next cycle retries). Sovereign processes protect
+  // the tree; they do not bulldoze it.
+  const dirty = await sh("git status --short");
+  const dirtyOutsideLedger = dirty.out
+    .split("\n")
+    .map((l) => l.trim().replace(/^\S+\s+/, ""))
+    .filter((p) => p && p !== "mini-services/saos-engine/scout-state/LEDGER.json");
+  if (dirtyOutsideLedger.length) return { pushed: false, why: "worktree-dirty-refusing-reset", paths: dirtyOutsideLedger.slice(0, 4) };
   const br = (await sh("git branch --show-current")).out.trim();
   const msg = `scout-ledger: discovery memory update (${new Date().toISOString().slice(0, 16)}Z) [auto]`;
   const addCommit = () => sh("git add -f mini-services/saos-engine/scout-state/LEDGER.json").then(() => sh(`git commit -m "${msg}"`));
