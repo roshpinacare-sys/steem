@@ -16,7 +16,6 @@ type SessionState = {
 
 type Overview = Record<string, any>;
 type NetState = Record<string, any>;
-type NetState = Record<string, any>;
 
 const REFRESH_MS = 30_000;
 
