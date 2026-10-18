@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-18T18:46:15.808Z",
+  "at": "2026-10-18T20:55:55.580Z",
   "enabled": true,
-  "runsTotal": 429,
+  "runsTotal": 430,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,20 +17,23 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 213,
+      "totalVotes": 216,
       "window": 30,
       "verdicts": {
         "VOTED": 27,
         "BROADCAST-FAIL": 3
       },
       "vpEff": 38.3,
-      "meanAgeMinutes": null,
-      "tagsVoted": {},
+      "meanAgeMinutes": 100.3,
+      "tagsVoted": {
+        "crypto": 2,
+        "steem": 1
+      },
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
     "exec": {
-      "window": 1,
+      "window": 2,
       "fails": 0,
       "lastError": null
     },
@@ -50,10 +53,11 @@
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
   ],
   "tunings": {},
@@ -61,7 +65,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 347,
+    "signing-cred-blocked": 348,
     "broadcast-fails": 75,
     "cycle-latency-tail": 12
   },
