@@ -1,23 +1,75 @@
 {
-  "at": "2026-10-18T18:01:41.730Z",
-  "verdict": "COVERED",
+  "at": "2026-10-18T19:09:38.596Z",
+  "verdict": "REPAIRED",
   "lanes": {
-    "hyper": 1,
-    "cancelableAsks": 14,
-    "cancelableBids": 4,
-    "orphans": 9
+    "hyper": 9,
+    "cancelableAsks": 7,
+    "cancelableBids": 9,
+    "orphans": 8
   },
   "coverage": {
-    "askSum": 281.645,
-    "askCap": 428.69035,
-    "askOver": 0,
-    "bidSum": 10.662,
-    "bidCap": 17.4363,
-    "bidOver": 0
+    "askSum": 400,
+    "askCap": 317.24775,
+    "askOver": 82.75225,
+    "bidSum": 16.763,
+    "bidCap": 10.4044,
+    "bidOver": 6.3586
   },
-  "cancelIds": [],
-  "cancelWhy": [],
-  "broadcast": null,
+  "cancelIds": [
+    1792348579,
+    1792348578,
+    1792348584,
+    1792348580,
+    1792348581
+  ],
+  "cancelWhy": [
+    {
+      "id": 1792348579,
+      "side": "ask",
+      "amt": 2.284,
+      "unit": 0.105517,
+      "freed": 2.284,
+      "orphan": true
+    },
+    {
+      "id": 1792348578,
+      "side": "ask",
+      "amt": 98.858,
+      "unit": 0.105272,
+      "freed": 98.858,
+      "orphan": true
+    },
+    {
+      "id": 1792348584,
+      "side": "bid",
+      "amt": 2.667,
+      "unit": 0.104298,
+      "freed": 2.667,
+      "orphan": true
+    },
+    {
+      "id": 1792348580,
+      "side": "bid",
+      "amt": 2.667,
+      "unit": 0.104273,
+      "freed": 2.667,
+      "orphan": true
+    },
+    {
+      "id": 1792348581,
+      "side": "bid",
+      "amt": 2.667,
+      "unit": 0.104273,
+      "freed": 2.667,
+      "orphan": true
+    }
+  ],
+  "broadcast": {
+    "ok": true,
+    "txid": "0cae9ff62f1bb4b2ba4f1ddd4621cdc43160674a",
+    "error": null,
+    "count": 5
+  },
   "laws": [
     "הספר לעולם לא מבטיח יותר מהיתרה — כיסוי נמדד כל מחזור (asks ≤ יתרת STEEM × 0.95, bids ≤ (יתרת SBD − 0.5 רזרבה) × 0.95)",
     "פס-ההיפר-גריד נגע-בלבד: ids ‎[2.1e9, 4.29e9]‎ נמדדים אך לעולם לא מבוטלים כאן",
