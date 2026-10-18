@@ -1,31 +1,31 @@
 {
-  "format": "recovery-meta-4",
-  "doctrine": "operator directive 2026-09-10: \"\u05d6\u05d4 \u05d0\u05e6\u05dc\u05da \u05d1\u05e7\u05d1\u05e6\u05d9\u05dd \u05dc\u05d0 \u05d0\u05e6\u05dc\u05d9\" \u2014 system custody, private repo. Supersedes chat-only passwords (the chat-only era stranded KEYS-ZIP-2026-09-09 forever).",
+  "format": "recovery-meta-3",
+  "doctrine": "operator directive 2026-09-10: \"זה אצלך בקבצים לא אצלי\" — system custody, private repo. Supersedes chat-only passwords (the chat-only era stranded KEYS-ZIP-2026-09-09 forever).",
   "keysZipPass": "kHpav0hEIlH9bt62GOTGbTe7KeLrYCaE",
-  "keysZipFile": "agent/vault/KEYS-ROT2-2026-10-13.zip.enc",
-  "keysZipSha256": "786df4a108601a9e5da287b991df40b55c4663710c5c39543b4fc2a6ba02cc54",
+  "keysZipFile": "agent/vault/KEYS-ZIP-GEN2-2026-10-18.zip.enc",
+  "keysZipSha256": "8e4deac32adcb5e7aaa3022cdc16a5a96b29f56909a09749e53cdf14c18a7782",
   "keysZipInnerSha256": "350ab9aefcd7fa6c838070cf26c51342464bc4c8045e087d69491299c9fc55d6",
   "keysBackupPass": "9MXl_OSCGt9jqAzC4NYBfqMA4PSioVrS",
-  "keysBackupFile": "agent/vault/KEYS-BACKUP-GEN2-2026-10-12.tar.enc",
-  "keysBackupSha256": "0187c9b0064ec8a746fb67916df44bc899ba9c9900bc6f163faaeb433130b796",
-  "replacedArchive": "agent/vault/KEYS-ZIP-GEN2-2026-10-12.zip.enc (kept in history; GEN-2-2026-10-12 \u2014 passphrase rotation by the sovereignty, owner directive trace 1a12\u2026f45d; T-68 repair: meta-driven source, rotate mode; payload identical, inner sha unchanged)",
-  "sealedAt": "2026-10-13T00:03:24.783Z",
+  "keysBackupFile": "agent/vault/KEYS-BACKUP-GEN2-2026-10-18.tar.enc",
+  "keysBackupSha256": "b5cc877a032e629123d26fcb2f11d096e75946efbe8fcdfde1f251e358f5ba85",
+  "replacedArchive": "agent/vault/KEYS-ROT2-2026-10-13.zip.enc (kept in history; GEN-2-2026-10-12 — passphrase rotation by the sovereignty, owner directive trace 1a12…f45d; T-68 repair: meta-driven source, converge mode; payload identical, inner sha unchanged)",
+  "sealedAt": "2026-10-18T00:38:26.313Z",
   "seedVaultFile": "agent/vault/KEYS-SEED-2026-10-04.zip.enc",
   "seedVaultSha256": "c0ac281b307aac5b2b40a92d0f57f8469771c724e4c86640dafe5ffa6ec486d5",
   "seedVaultInnerSha256": "2580eaded17d1d858176fb328412905ca0e0cb4db4bf4b24a7cc8052a11e6d1b",
   "seedVaultSealedAt": "2026-10-04 (re-sealed R20c-deep)",
-  "seedVaultNote": "sovereign master seed (SAOS-ROT1 root) rescued from chat archive 2026-10-04 \u2014 re-sealed with keysZipPass in R20c-deep after bad-decrypt found; roundtrip verified",
+  "seedVaultNote": "sovereign master seed (SAOS-ROT1 root) rescued from chat archive 2026-10-04 — re-sealed with keysZipPass in R20c-deep after bad-decrypt found; roundtrip verified",
   "rotation": {
     "id": "GEN-2-2026-10-12",
     "prior": "GEN-2-2026-10-12",
-    "masterPasswordRef": "gen2.keysZipUnlock (STEEM_VAULT_PASSES bundle, steem + saos-runtime secrets) \u2014 repo-side system custody unchanged (operator doctrine 2026-09-10)",
-    "note": "Executed by the runner itself (gen2-rotation.yml, T-68 repair): rotate mode; round-trip verified, inner sha pinned. GEN-1/T50 values superseded for the ACTIVE bundle; historical archives stay GEN-1-decryptable (documented boundary \u2014 passphrase rotation cannot re-protect already-published ciphertext; on-chain key-material rotation is a separate higher operation). PERSONAS_KEY escrow = armed decision D3b (Domain write-only secret)."
+    "masterPasswordRef": "gen2.keysZipUnlock (STEEM_VAULT_PASSES bundle, steem + saos-runtime secrets) — repo-side system custody unchanged (operator doctrine 2026-09-10)",
+    "note": "Executed by the runner itself (gen2-rotation.yml, T-68 repair): converge mode; round-trip verified, inner sha pinned. GEN-1/T50 values superseded for the ACTIVE bundle; historical archives stay GEN-1-decryptable (documented boundary — passphrase rotation cannot re-protect already-published ciphertext; on-chain key-material rotation is a separate higher operation). PERSONAS_KEY escrow = armed decision D3b (Domain write-only secret)."
   },
   "keysZipUnlockRef": "gen2.keysZipUnlock",
   "keysBackupUnlockRef": "gen2.keysBackupUnlock",
   "personasEscrow": {
     "status": "armed",
-    "decidedIn": "T-63 D3b, trace 1a12\u2026f45d",
+    "decidedIn": "T-63 D3b, trace 1a12…f45d",
     "detail": "PERSONAS_KEY lives in Domain repo secrets (write-only by design); escrow into this vault at the next Domain keeper window"
   },
   "rot2": {
