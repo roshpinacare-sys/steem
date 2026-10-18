@@ -21,9 +21,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.14
-      - name: install engine deps
-        run: cd mini-services/saos-engine && bun install
-      - name: open vault, judge custody, sign heartbeat (secrets never printed)
+      - name: install+custody+receipt (single step — every failure is receipted)
         env:
           STEEM_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
           ROT2_FLEET_KEYS: ${{ secrets.ROT2_FLEET_KEYS }}
@@ -31,13 +29,17 @@ jobs:
           ROT_ROSTER: ${{ secrets.ROT_ROSTER }}
         working-directory: mini-services/saos-engine
         run: |
-          bun run gen1-sign-hive.mjs > stdout.log 2> stderr.log
-          EXIT=$?
+          set +e
+          bun install > install.log 2>&1; INSTALL=$?
+          bun run gen1-sign-hive.mjs > stdout.log 2> stderr.log; EXIT=$?
           touch custody-receipt.jsonl
-          # כל שורות-ה-verdict הציבוריות (stdout) מועברות לקבלה; WIF מוצנז בחוק
+          if [ "$INSTALL" -ne 0 ]; then
+            echo "{\"at\":\"$(date -u +%FT%TZ)\",\"ok\":false,\"error\":\"bun-install-failed\",\"exit\":$INSTALL}" >> custody-receipt.jsonl
+            tail -5 install.log >> custody-receipt.jsonl
+          fi
           sed -E 's/[1-9A-HJ-NP-Za-km-z]{50,52}/[REDACTED-WIF]/g' stdout.log >> custody-receipt.jsonl
           if [ "$EXIT" -ne 0 ]; then
-            echo "{\"at\":\"$(date -u +%FT%TZ)\",\"ok\":false,\"error\":\"pre-log-crash\"}" >> custody-receipt.jsonl
+            echo "{\"at\":\"$(date -u +%FT%TZ)\",\"ok\":false,\"error\":\"script-exit\",\"exit\":$EXIT}" >> custody-receipt.jsonl
             tail -5 stderr.log | sed -E 's/[1-9A-HJ-NP-Za-km-z]{50,52}/[REDACTED-WIF]/g' >> custody-receipt.jsonl
           fi
           exit "$EXIT"
