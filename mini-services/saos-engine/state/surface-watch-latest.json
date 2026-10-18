@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-18T05:11:17.931Z",
-  "head": "ddd0a42ebd2955633d13b1c334108e8c82db97d7",
+  "at": "2026-10-18T05:40:49.001Z",
+  "head": "b1400644b1c574d60d39df663ab5d3243f9a7cf2",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -18,17 +18,17 @@
       "id": "pulse-network",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 1631.1
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 10.7
     },
     {
       "id": "pulse-mirror-lanes",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 1631.1
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 10.7
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 221.5
+      "ageMinutes": 251
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 32.3
+      "ageMinutes": 29.5
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 40.7
+      "ageMinutes": 8.3
     },
     {
       "id": "engine-selftest",
@@ -79,22 +79,6 @@
   ],
   "repairsPlanned": [
     {
-      "targetId": "pulse-network",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Pulse",
-      "workflow": "heartbeat.yml",
-      "readbackRequired": true
-    },
-    {
-      "targetId": "pulse-mirror-lanes",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Pulse",
-      "workflow": "heartbeat.yml",
-      "readbackRequired": true
-    },
-    {
       "targetId": "pulse-domain-published",
       "verdict": "STALE",
       "action": "regen-state",
@@ -104,5 +88,5 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:adfc97c0"
+  "signature": "sig:45ede1a3"
 }
