@@ -31,6 +31,14 @@ jobs:
           ROT_ROSTER: ${{ secrets.ROT_ROSTER }}
         working-directory: mini-services/saos-engine
         run: bun run gen1-sign-hive.mjs
+      - name: custody receipt artifact (always — fail-closed verdicts are value)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: custody-receipt
+          path: mini-services/saos-engine/custody-receipt.jsonl
+          retention-days: 30
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         with:
           name: signed-tx

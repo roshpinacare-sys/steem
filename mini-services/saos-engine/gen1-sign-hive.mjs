@@ -22,7 +22,12 @@ function pubFromSeed(seed32) {
   return "STM" + bs58.encode(Buffer.concat([Buffer.from(pub), chk]));
 }
 const pubOfWif = (wif) => pubFromSeed(wifDecode(wif));
-const log = (o) => console.log(JSON.stringify(o));
+const log = (o) => {
+  console.log(JSON.stringify(o));
+  // checkpoint t18 (agent-9): custody verdicts are PUBLIC material — persist them
+  // so a fail-closed exit remains observable after the runner dies (log 404 lesson).
+  try { fs.appendFileSync('custody-receipt.jsonl', JSON.stringify({ at: new Date().toISOString(), ...o }) + '\n'); } catch {}
+};
 
 async function rpc(nodes, method, params) {
   let last = "no-node";
