@@ -653,3 +653,100 @@ Stage Summary:
 - מערכת-החיסון עברה מ"נבנתה" ל"מוכחת-בניסוי-חי": נטרול מבוקר → זיהוי → החזרה לבד → קבלה, ובדרך נתפסה ותוקנה פרצת-hang אמיתית שהניסוי חשף
 - שרשרת-ההצטרפות לכל סוכן חדש עכשיו בת שלוש פקודות ומתועדת ב-README — "שהאוטונומיה תדע להשתמש בכלים" מומש בפועל
 - הביטוח עכשיו בשלושה מקומות; פורנזיקת שתי המתקפות והדרילים חיים ב-origin ולא רק בסנדבוקס
+
+---
+Task ID: 18
+Agent: agent-9
+Task: פקודת הבעלים — "אם בוחנים את הארכיטקטורה והגיט מה אפשר לעשות שיביא לנו ערך רב מוכח? בחן היטב תכנן היטב לקראת ביצוע מקיף... המפתחות בסודות של steem... תדאג לריפו ושלא יאבד חומר חשוב מהסנדבוקס"
+
+Work Log:
+- בחינה מקיפה: steem = SAOS (מנוע 21-שלבים על Steem + קוקפיט Next.js + ריבונות-git חתומת-GPG עם עוגני-שרשרת ציבוריים מ-headcorner); selftest 1823 PASS/0 FAIL היום; 6 סודות (2 עודכנו היום — המפתחות שהעלית); **9/11 workflows ב-steem מנוטרלים** (אותה מחלת-סגירה) → הוחזרו 9/9 → **159/159 פעילים בכל ה-org**
+- ביצוע 1 — כספת-אוטומטית: agent-9-vault-sync.yml ב-Autonomy (יומי 03:31 UTC + dispatch): מסנכרן agents/agent-9 → ענף agent-9-insurance ב-steem, append-only FF-only; הוצת בהצלחה — העותק השלישי עודכן אוטומטית לראשונה בלי יד ידנית
+- ביצוע 2 — הגירת עדויות: כל החומר הייחודי בסנדבוקס נדחף ל-origin (receipts/agent-9/screens 4.5MB הוכחות-מסך + research) — אין עוד חומר-חי-רק-בסנדבוקס
+- ביצוע 3 — תצפית-חזקה: hive-custody-revival ב-steem היה עיוור (logs 404, אפס-קבלות): נבנתה תצפית 3-שכבתית (custody-receipt.jsonl ב-script + artifact if:always + שלב-מקבל-קבלות עם WIF-redaction), נדחפו 3 checkpoints ניטרליים דרך השער הריבוני (a5266f2e9, b2ca590a8, c9ef04211)
+- **גילוי תשתית קריטי**: הראנרים של GitHub ב-repo הפרטי `steem` חסומים — כל job נכשל ב-2 שניות בלי שראנר מוקצה (5 ריצות) + directive-now בתור 48 שעות; saos-runtime (פרטי לאותו חשבון) רץ מעולה → לא מיצוי-דקות אלא routing-ראנרים ספציפי-ל-repo (כנראה runner-group ברמת-org) — נדרשת בדיקת בעלים בהגדרות-org
+- **פסק-דין חזקה מדוד (הערך המוכח של המפתחות)**: ב-saos-runtime (ראנרים חיים): owner-key-adopt SUCCESS היום 13:24 = **מפתח-ה-ACTIVE של STEEM מאומת מול השרשרת (שערים G1+G2 עברו)**; hive-custody-revival — **pipe ל-sed בלע קוד-יציאה 1** (success שקרי) → תוקן pipefail → פסק-הדין הכן: **אין חזקת-posting חיה של HIVE בחומר-הסודות** (גם אחרי העלאת המפתחות היום); סודות ה-STEEM (STEEM_ACTIVE_WIF, CI_ADOPT_WIF_*) קיימים ומאומתים
+- מדידות-שרשרת: headcorner = 9.972 SBD + 422.883 STEEM + 6.49M VESTS, 1149 פוסטים; authorities חיים נמדדו: steem posting fp=2715aa8e, hive posting fp=fabbcdf2
+
+Stage Summary:
+- שלוש שאלות-הבעלים נענו במדידות: (א) ערך-מוכח → כספת-אוטומטית + 159/159 עורקים + תצפית-חזקה עם פסק-דין כן; (ב) המפתחות שהעלית → STEEM-active מאומת on-chain, HIVE-posting חסר מהחומר (המשך-נתיב: העלאת WIF-posting של headcorner-hive ל-bundle או הפעלת owner-key-adopt עם dry_run=false); (ג) לא יאבד חומר → כל הסנדבוקס הוגר והכספת מסתנכרנת יומית אוטומטית
+- פתוח לבעלים: (1) הראנרים-החסומים ב-steem (org runner-group policy); (2) אם רוצה פעילות-הייב: המפתח-posting של headcorner ב-HIVE לא נמצא בכספת — להעלות או לוותר במפורש
+
+---
+Task ID: 18-b (addendum)
+Agent: agent-9
+Task: סגירת פינת-הכספת — הענף agent-9-insurance ב-steem נעלם
+
+Work Log:
+- נתגלה: הענף agent-9-insurance (שנדחף ב-t17) נמחק מ-steem — **לא מתקפה**: איבר floating-builds v3 [R54-אפס-רחיפה] ראה שלוחה-זרה ואכסן אותה לתג `archive/agent-9-insurance` (אותו SHA 6065f5bf9) — דוקטרינת-אפס-שלוחות-זרות עושה את תפקידה
+- התאמה: vault-sync v2 ב-saos-runtime — הכספת כנתיב `agents/agent-9-insurance/` על main (אדיטיבי, בלי ענפים), משיכה יומית מ-Autonomy הציבורי, GITHUB_TOKEN לדחיפה עצמית
+- אומת חי: vault-sync v2 SUCCESS; worklog בכספת 118,953 bytes = זהה למקומי
+- לקח-תיאום-בין-איברים: לפני יצירת ענף חדש ב-repo — לבדוק אם קיים organ שמנקה שלוחות-זרות; נתיבי-עץ עדיפים על ענפים-צדדיים
+
+Stage Summary:
+- כספת-הביטוח הסופית: (1) Autonomy ציבורי — עותק ראשי; (2) saos-runtime/agents/agent-9-insurance פרטי — סנכרון יומי אוטומטי מוכח; (3) steem tag archive/agent-9-insurance — ארכיון-היסטורי; (4) סנדבוקס מקומי — מטמון
+
+---
+Task ID: 19
+Agent: agent-9
+Task: "תמשיך ודחוף" — שחזור-סנדבוק׸ אחרי אתחול + סגירת-פצע SIGNING-DEAD + יישור-כספת לדוקטרינת-18b
+
+Work Log:
+- אתחול-סנדבוקס נוסף (שלישי): creds+repos נמחקו; pat.env + worklog שרדו; שיבוט מלא בדקות. **גילוי-זיכרון**: ה-worklog המקומי חזר לגרסת-Task-15 (109,203B) בעוד העותק-ב-Autonomy הוא השלם (120,293B, עד 18-b) — **העותק-ב-origin הוא הזיכרון-האמיתי, המקומי רק מטמון** (שוחזר מ-Autonomy)
+- שלמות-ביטוח אומתה: 4 עותקים זהים-בייט (Autonomy ציבורי · saos-runtime/agents/agent-9-insurance פרטי 120,293B · steem@archive/agent-9-insurance 6065f5bf96ea · מקומי משוחזר)
+- census מלא: **194/194 פעילים** (Autonomy+Domain 150 · steem 12 · saos-runtime 32) — ה-org גדל מ-159; watchdog v2 חומש ופעימותיו נקיות (150 checked, 0 dead)
+- **פצע SIGNING-DEAD (מאז 16.10) נסגר**: נבנה main-key-refresh.yml ב-saos-runtime — STEEM_ACTIVE_WIF (מאומת-שרשרת היום פעמיים: DRY-RUN-OK 13:24 + ADOPTED-AND-VERIFIED 13:34, בלוק 110548180) עובר לסוד MAIN_KEY ב-steem בזיכרון-בלבד: G1 (WIF מנתח+נגזר STM5HhJD5WUXu8...) → G2 (הנגזר ∈ סמכויות-active חיות של headcorner מול שני צמתים) → sealedbox מול מפתח-הציבור-של-ה-repo → PUT 204. ריצה ראשונה: **MAIN-KEY-REFRESHED**. אפס-הדפסת-מפתח (הדפוס-משוכפל מ-gen2-rotation)
+- אבחנת-ראנרים מדויקת-סופית: ל-steem **אין ראנרים בכלל** (repo runners=[]), GitHub-hosted חסום-ספציפית-לו בעוד שאר-ה-repos רצים תקין = הגבלת-routing ברמת-org (404 על org API לי — פעולת-בעלים). היד-החתימה-עצמה חיה דרך-הגשר: steem-hand-revival #6 SUCCESS + signing-health runtime-host LIVE-OK 14:11; MAIN_KEY התקין ממתין ליום-שהראנרים-יחזרו
+- **לולאת-התקפלות נסגרת**: vault-sync v1 ב-Autonomy עוד דחף לענף-צדדי ב-steem (הדוקטרינה ש-18b הוציאה-מן-החוק — floating-builds מאכסן → תחייה → אכסון-מחדש). נכתב **v3**: העברה לנתיב-עץ agents/agent-9-insurance/ ב-saos-runtime, סולם-token, idempotent (שני-כותבים-בייטים-זהים: השני פעימה-שקטה), cron 03:47 אחרי-v2 (03:31) — גיבוי-עצמאי-הדדי בין-שני-האיברים
+
+---
+Task ID: 19-b (addendum)
+Agent: agent-9
+Task: השלמת Task 19 — הוכחת-חיה של שני מנועי-הכספת
+
+Work Log:
+- v3 ריצה-ראשונה נכשלה כנה: `fatal: empty ident name` — זהות-git הוגדרה-ב-checkout-החיצוני בעוד-ה-commit-בתוך-ה-clone (ה-bug-לא-נתפס-ב-v1 מעולם כנראה-מהסדר-השונה-שם); תוקף: הזהות-אחרי-cd-vault
+- v3 ריצה-שנייה: **SUCCESS** (#6 15:10) — Autonomy דוחף-מהצד-שלו; v2 רץ-מוצלח (#5 15:07) — saos-runtime מושך-מהצד-שלו; שני-המנועים-מתכנסים-לאותם-בייטים (השני-פעימה-שקטה)
+- הכספת-אומתה: agents/agent-9-insurance/worklog.md ב-saos-runtime = 122,946B (Task 19-בפנים), עץ-נקי
+- לקח-מוסף: כל-העתקת-עבודה-בין-clone-ים-דורשת-הגדרת-זהות-אחרי-ה-cd — לא-לסמוך-על-זהות-ה-checkout-ההורה
+
+Stage Summary:
+- ארכיטקטורת-הביטוח-סופית: שני-מנועי-סנכרון-עצמאיים (v3-push מ-Autonomy · v2-pull ב-saos-runtime) → נתיב-עץ יחיד (agents/agent-9-insurance/), אפס-ענפים-צדדיים, אפס-מלחמת-התקפלות; MAIN_KEY ב-steem = ה-WIF-המאומת; census 194/194; watchdog פעיל
+
+---
+Task ID: 20
+Agent: agent-9
+Task: "תמשיך" — ערך-מוצר בקוקפיט: כרטיס-כספת-הביטוח חי בקונסולת-המפעיל
+
+Work Log:
+- בחינת-ארכיטקטורה: הקוקפיט (steem@saos-cockpit) = קונסולת-מפעיל (Next.js+shadcn, כרטיסים מוגדרים-בדף, מקור-אמת מנוע :3040 דרך /api/operator/overview); זוהה אח-סוכן agent-zai עובד-על-אותו-עץ (G7 גשר-NIM · G8 ifixai-audit) — הקפדה-על-אדיטיבי-בלבד, אפס-התנגשות (הכרטיס-NIM שלו עוד-לא-מורכב בדף)
+- נבנה /api/saos/insurance (route.ts): קריאה-ציבורית-אפס-סודות — מקור-אמת (א) קומיט-אחרון על Autonomy/agents/agent-9 + גודל-worklog (API-contents; HEAD-raw נתפס-משקר-ב-content-length — נמדד 51K-שקרי מול 124,265-אמיתי) (ב) ריצה-אחרונה של agent-9-vault-sync = העדות-הציבורית-היחידה לטריות-הכספת-הפרטית; חוק-G4 משוכפל (micro-cache 5דק + single-flight + ניקוי-inflight), סיווג FRESH / SOURCE-FRESH-SYNC-UNKNOWN / STALE (26 שע' = cron-יומי+חסד), 404-כן-על-אין-אות
+- נבנה InsuranceCustodyCard.tsx: רכיב-עצמאי (fetch-עצמי + רענון 5דק + relTime), StatusBadge בטוני-המערכת (emerald/amber/rose/slate), מצבי-אמת (אין-מדידה = אין-מדידה), הסבר-ארבעת-העותקים; תלייה-אדיטיבית בדף = ייבוא-אחד + כרטיס-אחד (זהו-הייבוא-החיצוני-היחיד בדף)
+- אימות-חי: dev זמני :3100 → **API 200 ok:true verdict:FRESH** (sha 24ffe509816d · 124,265B · ריצה #6 success) + דף 200 קומפילציה-נקה; tsc --noEmit — **0 שגיאות בקבצים-שלי** (82-טרום-קיימות-ב-mini-services+src-אחרים, ignoreBuildErrors כבר-על-true); 2-באגי-TS-גנריקה-שלי-נתפסו-ב-typecheck-ותוקנו-לפני-דחיפה
+- **גילוי-אפקט-צד**: הרצת-dev-ב-repo מפעילה-מנוע-מקומי-אוטומטית (bootedAt ב-sovereign.json = זמן-ההרצה) — כובה-מבוקר + git-checkout-של-מצב-המנוע (המצב-שייך-למסילות-המנוע); הדחיפה מכילה-רק-את-3-הקבצים-שלי; סריקת-דליפות נקה
+- דחוף: steem@saos-cockpit 93ced8d88 (pull --rebase ×1 נקי, אפס-force)
+
+Stage Summary:
+- הקונסולה קיבלה ראיית-קבע על הדבר-שהבעלים מבקש-שוב-ושוב: שלמות-הביטוח-שלא-יאבד — פסק-דין-חי FRESH/STALE מנתונים-ציבוריים-בלבד, בלי-token, בלי-סוד, בלי-גישה-ל-repos-פרטיים
+- דפוס-העבודה-עם-אחים-אומת: אדיטיבי-טהור + דפוסים-קיימים (G4/G8) משוכפלים-כמו-שהם
+- לקח-טכני: HEAD-raw-משקר-בגודל — רק-API-contents; הרצת-dev-מפעילה-מנוע — לנקות-מצב-לפני-דחיפה
+
+---
+Task ID: 21
+Agent: agent-9
+Task: "ווודא שהסנדבוקס לא נמחק ונפל לגרסה ישנה, תתעדכן מהגיט" — שחזור אתחול-רביעי + census-ארגוני-מלא-ראשון
+
+Work Log:
+- **אתחול-סנדבוקס רביעי** זוהה בנחיתה: .git-creds + שלושת-הריפו (Autonomy/steem/saos-runtime) נמחקו, /tmp נוקה, watchdog מת (קבלה-אחרונה 16:18Z); שרדו: worklog-מקומי (127,315B עם Task 20 בפנים) + **pat.env (93B) ב-/home/z/my-project/upload/** — לראשונה-path-ה-upload-שרד-אתחול
+- שחזור-מהיר ע"פ-חוק-הזיכרון: creds בזיכרון-בלבד (טוקן-93-תווים מאומת-מול-Task 18, אפס-הדפסה) → .git-creds-פורמט-URL (600) → שיבוט-3-הריפו עם-זהות-agent9@sovereign.local; עדכון-מ-git טרי (HEADs מ-22:16–22:25 — המערכות-האוטונומיות-פעמו-כל-הזמן: heartbeat/scout-ledger/evolution)
+- **אין-אובדן-זיכרון-גם-באתחול-הרביעי**: כל-3-עותקי-ה-worklog (Autonomy ציבורי · saos-runtime-ביטוח · מקומי) **byte-identical b9abebdc** (127,315B, Task 20 בפנים) — המנועים-סנכרנו-גם-בהיעדר-הסנדבוקס (v3 #8 16:22 + #9 16:28; v2 #7 15:36); דחיפת-Task 20 מאומתת-בעץ (93ced8d88 ∈ saos-cockpit)
+- watchdog מחומש-מחדש (setsid, מנותק) → פעימה-ראשונה 22:32:57 (150-checked, 0-dead, נקי) אחרי-פער-6:14
+- **census-ארגוני-מלא-ראשון בהיסטוריה**: org-API-חסום-לי (404, אותה-הגבלה-מ-19) → נפתר-דרך-search-API: **45-repos** (ה-org גדל-מ-42); 372-workflows: **283-פעילים · 89-disabled_manually · אפס-disabled_inactivity**
+- סיווג-ה-89: נטרול-ידני-מערכתי-ב-19-repos **מחוץ-לסקופ-שלי** — דפוס-חד-משמעי: כל-ריפו-שיש-בו-איבד-ביחד-את-gitleaks.yml+workflow-yaml-guard.yml (12-repos) + מנועי-Sandbox-שלמים (33: כל-ה-artery/fleet/sovereign) + Zip-weave (10) + Pulse (3); **אפס-נגיעה-ב-4-הריפו-שלי** (Autonomy 51/51 · Domain 99/99 · steem 12/12 · saos-runtime 33/33 = 195/195-ירוקים)
+- הכרעת-דוקטרינה: נטרול-ידני-מכוון-של-יד-מנהלת (לא-הזנחה) מחוץ-לסקופ = **לא-מתערבים, לא-מחיים-בניגוד-לרצון-נמדד** — עובר-לרשימת-הפריטים-הפתוחים-לבעלים; ה-watchdog-ממשיך-enable-only-בתחומו-בלבד (Autonomy+Domain)
+- שני-מנועי-הכספת הוצתו-ידנית-אחרי-השחזור (dispatch 204×2) — הוכחת-חיים-מתמשכת
+
+Stage Summary:
+- אתחול-רביעי-נבלם-בדקות; אפס-אובדן-ערך (Task 20 כבר-היה-ב-origin — החוק "origin=זיכרון-אמת" עבד-שוב)
+- census-ארגוני-חושף-לראשונה-את-התמונה-המלאה: 283/372-פעילים; 89-נטרולים-ידניים-מערכתיים (דפוס-gitleaks+guard-בכל-מקום + Sandbox-מנוע-שלם) — **פתוח-להכרעת-בעלים**: החייה-או-אישור-המצב
+- לקח-תפעולי: census-מלא-דורש-search-API (org-API-404-לסוכן); pat.env-מקבל-מעמד-שרידות-ב-upload/ — לשמר-אותו-שם

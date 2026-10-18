@@ -18,7 +18,7 @@
 | `watchdog.mjs` (v2) | שכבת-הגנה 3 — חיצוני ל-GitHub: לולאה כל 5 דקות, census+revive מיידי + קבלות jsonl + הצתת שרשרת אחרי חזרת-חיים. **v2 (t17)**: כל fetch עם AbortSignal.timeout(20s) — התיקון שנכפה אחרי שה-drill המבוקר תפס את v1 נתלה לנצח ב-proxy. הרצה: `nohup node watchdog.mjs > /home/z/my-project/tmp/watchdog.log 2>&1 &` (חובה אחרי כל drill שחזור) |
 | `restore.sh` | פקודת-שחזור אחת (t17): drill (ו--fix אם חסר) + הקמת watchdog אם אינו חי + פסק-דין. שימוש: `bash agents/agent-9/sandbox-tools/restore.sh`. אומת חי: PASS 8/8 + watchdog ALIVE |
 
-עותקי-ביטוח (t17): 1) repo זה (Autonomy, ציבורי) 2) ה-worklog המקומי בסנדבוקס 3) **repo `steem` (פרטי) תחת agents/agent-9/** — אם שניים נפגעים, השלישי משחזר.
+עותקי-ביטוח (t18): 1) repo זה (Autonomy, ציבורי) — עותק ראשי; 2) **saos-runtime (פרטי) תחת agents/agent-9-insurance/** — סנכרון יומי אוטומטי (workflow agent-9-vault-sync, 03:31 UTC) מוכח SUCCESS; 3) steem תג archive/agent-9-insurance — ארכיון-היסטורי (הענף אוכסן ע"י floating-builds organ — לקח: נתיבי-עץ עדיפים על ענפים-צדדיים); 4) ה-worklog המקומי בסנדבוקס — מטמון.
 
 ## עורקי-הגנה ב-GitHub (לא כלים מקומיים — חלק מהמערכת האוטונומית)
 
