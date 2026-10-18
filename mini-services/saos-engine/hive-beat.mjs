@@ -9,6 +9,7 @@
 // honest log, no crash, next beat retries. The chain is the judge.
 import * as fs from "node:fs";
 import { buildTx, HIVE_CHAIN_ID, pubkeyFromSeed, wifDecode } from "./steemtx.mjs";
+import { dbCustodySnapshot } from "./db-custody.mjs";
 
 const HIVE_NODES = ["https://api.hive.blog", "https://api.hive.dev"];
 const RELAY = process.env.SAOS_RELAY ?? "http://localhost:3030";
@@ -47,25 +48,32 @@ async function runBeat() {
   beat++;
   try {
     const wif = loadWif();
-    if (!wif) return log({ beat, ok: false, error: "wif-absent", note: "vault slot not deployed — run vault auto-unseal first (boot-services)" });
+    // Bytebase-pattern schema custody: every beat fingerprints live DB DDL;
+    // when authority is live the fingerprint rides the signed payload →
+    // chain-anchored tamper evidence (unannounced schema change between
+    // beats becomes provable). Local log carries it even without authority.
+    const dbSnap = await dbCustodySnapshot();
+    const dbLog = { dbVerdict: dbSnap.verdict, dbFp: dbSnap.liveDdlFp ? dbSnap.liveDdlFp.slice(0, 16) : null };
+    if (!wif) return log({ beat, ok: false, error: "wif-absent", note: "vault slot not deployed — run vault auto-unseal first (boot-services)", ...dbLog });
     const pub = pubkeyFromSeed(wifDecode(wif));
 
     const [acct] = await rpc("condenser_api.get_accounts", [["headcorner"]]);
     const auths = acct.posting.key_auths.map((k) => k[0]);
-    if (!auths.includes(pub)) return log({ beat, ok: false, error: "authority-not-installed-yet", liveKeys: auths.length, awaiting: "owner account_update2" });
+    if (!auths.includes(pub)) return log({ beat, ok: false, error: "authority-not-installed-yet", liveKeys: auths.length, awaiting: "owner account_update2", ...dbLog });
 
     const payload = {
       protocol: "saos.weave.v1",
       kind: "hive-custody-beat",
       note: "autonomous sovereign beat — engine-held posting key, owner-installed authority, public relay transport",
       beat, newPub: pub, t: Math.floor(Date.now() / 1000),
+      ...(dbSnap.liveDdlFp ? { dbFp: dbSnap.liveDdlFp, dbDrift: dbSnap.drift } : {}),
     };
     const op = ["custom_json", { required_auths: [], required_posting_auths: ["headcorner"], id: "saos.weave.v1", json: JSON.stringify(payload) }];
     const dgpo = await rpc("condenser_api.get_dynamic_global_properties", []);
     const tx = buildTx({ ops: [op], dgpo, wifs: [wif], chainId: HIVE_CHAIN_ID });
     const r = await fetch(`${RELAY}/relay`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chain: "hive", tx: tx.json }) });
     const verdict = await r.json();
-    log({ beat, ok: !!verdict?.ok, authority: "live", sigs: tx.json.signatures.length, txid: verdict?.txid ?? null, verdictError: verdict?.error ?? null });
+    log({ beat, ok: !!verdict?.ok, authority: "live", sigs: tx.json.signatures.length, txid: verdict?.txid ?? null, verdictError: verdict?.error ?? null, ...dbLog });
   } catch (e) {
     log({ beat, ok: false, error: String(e).slice(0, 200) });
   }
