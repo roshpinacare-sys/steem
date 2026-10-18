@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { InsuranceCustodyCard } from "@/components/saos/InsuranceCustodyCard";
 
 /**
  * קונסולת המפעיל · הדף הראשי
@@ -772,6 +773,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               ) : (
                 <Empty text="הלוח אינו זמין" />
               )}
+            </Card>
+            <Card title="כספת הביטוח" hint="agent-9 · ארבעה עותקים · רענון 5 דק'">
+              <InsuranceCustodyCard />
             </Card>
           </div>
         ) : null}
