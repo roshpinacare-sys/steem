@@ -5656,6 +5656,78 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   fs.rmSync(path.dirname(flFile53), { recursive: true, force: true });
 }
 
+/* ═══ SECTION 54 · W12-D THE FILL LEDGER WIRE (fillWindow · one-body dedupe · sweep gate) ═
+ * The T-25 instrument was born broken: fills.mjs imported fillWindow which
+ * never existed in any commit — the module could not LOAD, the ledger froze
+ * on 10-02 while 125 fills/day ran, and the maker book's realized P&L was
+ * structurally invisible. These vectors pin the finished instrument:
+ * honest window math (per-day ONLY at ≥1 full day), the estate one-body
+ * dedupe (a fill_order trx sits in BOTH parties' histories), and the sweep
+ * gate. Zero network. */
+{
+  const { fillWindow, shouldFleetSweep } = await import("./lib.mjs");
+  const { mergeFillLedger } = await import("./fills.mjs");
+  const { aggregateRails } = await import("./lib.mjs");
+
+  /* 54.1 empty ledger → honest nulls, never fabricated zeros */
+  const fw0 = fillWindow({ fills: [], nowMs: 1800000000000, parity: 0.104, sbdUsd: 1 });
+  eq("54.1a empty: zero fills, null window, perDay NOT ready",
+    [fw0.fillsTotal, fw0.windowDays, fw0.perDayReady, fw0.realizedPerDaySbd, fw0.positionSteem], [0, null, false, null, 0]);
+
+  /* 54.2 a sub-day window NEVER annualizes (the 0.5981d lie class) */
+  const mk = (at, side, steem, sbd) => ({ seq: "t" + at + side, at, side, steem, sbd });
+  const NOW = 1800000000000, H = 3600_000;
+  const subDay = [
+    mk(NOW - 10 * H, "bid", 10, 1.04), mk(NOW - 8 * H, "ask", 10, 1.06), mk(NOW - 2 * H, "bid", 5, 0.52),
+  ];
+  const fwSub = fillWindow({ fills: subDay, nowMs: NOW, parity: 0.104 });
+  eq("54.2 sub-day window: windowDays measured, perDay held back honestly",
+    [fwSub.windowDays >= 0.4 && fwSub.windowDays < 1, fwSub.perDayReady, fwSub.realizedPerDaySbd], [true, false, null]);
+
+  /* 54.3 a ≥1-day window: per-day rate real, edge bps vs parity, 24h buckets */
+  const fullDay = [
+    mk(NOW - 30 * H, "bid", 10, 1.03),   /* outside 24h bucket */
+    mk(NOW - 20 * H, "ask", 10, 1.08),   /* inside; sell edge: (0.108−0.104)/0.104 = +385bps */
+    mk(NOW - 4 * H, "bid", 5, 0.53),     /* inside; buy edge: (0.106−0.104)/0.104 = +192bps */
+  ];
+  const fwFull = fillWindow({ fills: fullDay, nowMs: NOW, parity: 0.104, sbdUsd: 1 });
+  eq("54.3a full window: perDayReady, perDay = realized/windowDays",
+    [fwFull.perDayReady, fwFull.realizedPerDaySbd, fwFull.windowDays >= 1], [true, fwFull.realizedSbd / fwFull.windowDays, true]);
+  eq("54.3b 24h bucket: only the recent two fill it, volumes summed",
+    [fwFull.fills24h, fwFull.buys24h, fwFull.sells24h, fwFull.volSteem24h, fwFull.volSbd24h], [2, 1, 1, 15, 1.61]);
+  eq("54.3c edge bps honest vs parity", [fwFull.bidEdgeBps, fwFull.askEdgeBps], [192, 385]);
+  eq("54.3d realized: sell 10@1.08 vs avg-cost basis 0.103 → +0.05 profit shape",
+    fwFull.realizedSbd > 0, true);
+
+  /* 54.4 ESTATE ONE-BODY: the same fill trx in two histories counts ONCE,
+   * account tags attribute without duplicating (the double-count lie class) */
+  const dir54 = fs.mkdtempSync(path.join(os.tmpdir(), "saos-w54-"));
+  const led54 = path.join(dir54, "fills-ledger.json");
+  const a1 = { seq: "trxAAA", at: NOW - H, side: "bid", steem: 4, sbd: 0.42 };
+  const m1 = mergeFillLedger([a1], { now: "2026-10-19T14:30:00Z", account: "headcorner", file: led54 });
+  /* the SAME trx seen from the counterparty's history — different account tag */
+  const m2 = mergeFillLedger([{ ...a1, account: "cashmachine" }], { now: "2026-10-19T14:35:00Z", file: led54 });
+  eq("54.4a one-body dedupe: cross-account same-trx counted once",
+    [m2.ledger.fills.length, m2.added], [1, 0]);
+  eq("54.4b first tag wins (attribution, not identity)", m2.ledger.fills[0].account, "headcorner");
+  fs.rmSync(dir54, { recursive: true, force: true });
+
+  /* 54.5 the sweep gate: absent/fresh/stale/garbage */
+  eq("54.5 sweep gate",
+    [shouldFleetSweep(null), shouldFleetSweep(new Date(Date.now() - 5 * 60_000).toISOString()), shouldFleetSweep(new Date(Date.now() - 45 * 60_000).toISOString()), shouldFleetSweep("not-a-date")],
+    [true, false, true, true]);
+
+  /* 54.6 the rail flip economics uses: ledger-ready window ⇒ market-making
+   * measured; no window ⇒ blocked (never a fabricated zero) */
+  const rMeas = aggregateRails({ realizedSbdTotal: 0.42, realizedWindowDays: 2.0, sbdUsd: 1 });
+  const mmMeas = rMeas.rails.find((r) => r.id === "market-making");
+  eq("54.6a rail flip: measured with per-day rate + honest historic note",
+    [mmMeas.confidence, mmMeas.measuredUsdPerDay], ["measured", 0.21]);
+  const rBlocked = aggregateRails({ realizedSbdTotal: 0.42, realizedWindowDays: null, sbdUsd: 1 });
+  eq("54.6b rail stays blocked without a window (never annualized from nothing)",
+    rBlocked.rails.find((r) => r.id === "market-making").confidence, "blocked");
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).

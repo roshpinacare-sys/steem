@@ -16,10 +16,11 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import {
   planLadder, planConvert, planRedeploy, redeployBidCapSbd, redeployPacing, rebuildPacingFromEvents, inventorySkew, parityVerdict, pnlFromFills, classifyStale,
-  cycleHealth, cycleFailureBreakdown, signalDigest, measuredLayers, redeployIntel, blockageLedger,
+  cycleHealth, cycleFailureBreakdown, signalDigest, measuredLayers, redeployIntel, blockageLedger, shouldFleetSweep,
 } from "./lib.mjs";
 import { runCouncil } from "./council.mjs";
 import { mmGate } from "./rail-doctrine.mjs"; /* T-37: arm the measured MM verdict on runtime truth */
+import { mergeFillLedger, runFills, fillLedgerState } from "./fills.mjs"; /* W12-D: the fill-capture ledger (T-25, finally wired) */
 import {
   externalParity, internalFeed, accountState, openOrders, measureAll, fuelToUsdPerDay, marketPulse, rpcCall,
 } from "./measure.mjs";
@@ -57,7 +58,8 @@ import { runRcTank, rcTankState } from "./rctank.mjs";
 import { runPayouts, payoutsState } from "./payouts.mjs";
 import { runSoldierClaims } from "./soldier-claims.mjs";
 import { runWeave, weaveState } from "./weave.mjs";
-import { measureFleetMatrix } from "./fleet-matrix.mjs"; /* W12: the activation board */
+import { measureFleetMatrix, readFleetMatrix } from "./fleet-matrix.mjs"; /* W12: the activation board */
+import { MASTER } from "./fleet-rebalance.mjs"; /* W12-D: the one-body master identity for the fill sweep */
 import { runFleetRebalance } from "./fleet-rebalance.mjs"; /* W12: the mutual-support rail */
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -233,6 +235,18 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       writeJson(path.join(STATE, "observe.json"), { ...data, at: now });
       writeJson(path.join(STATE, "mm-gate.json"), mmGatePnl);
       appendLine(path.join(STATE, "events.jsonl"), { type: "observe.done", at: now, fills: meas.fills.length, parity: par.parity });
+      /* W12-D · THE LEDGER WIRE (the T-25 instrument was born unwired —
+       * mergeFillLedger had zero callers, the ledger froze on 10-02 while
+       * 125 fills/day ran): the observe fills land in the persistent
+       * chain-truth ledger and the rollup recomputes from raw. Fail-soft:
+       * a ledger problem never blunts observation itself. */
+      try {
+        const merged = mergeFillLedger(meas.fills, { now, account: ACCOUNT });
+        data.ledgerAdded = merged.added;
+        runFills({ now, parity: par.parity, sbdUsd: par.sbdUsd ?? null });
+      } catch (e) {
+        data.ledgerError = String(e?.message ?? e).slice(0, 140);
+      }
     }
     return { ...data, summary: `parity ${par.parity || "?"} (${par.source}) · fills ${meas.fills.length} · fuel ${fuelUsd ?? "?"}$` };
   });
@@ -890,6 +904,40 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       totals: m.totals,
       gaps: m.gaps.map((g) => `${g.name}:${g.class}`),
     };
+  });
+
+  /* W12-D · fleet-fills (the estate one-body fill sweep): the maker book is
+   * 13 accounts, but the ledger only ever saw the master — the fleet's
+   * realized P&L was structurally invisible. A cadence-gated sweep (≥30min,
+   * ≤14 accounts, fail-isolated per body) merges every GRID-ACTIVE/CURATE-
+   * ONLY body's chain fills into ONE global ledger with trx-level dedupe
+   * (a fill_order trx sits in BOTH parties' histories — counted once, the
+   * one-body law), then rolls the window up. Zero keys, read-only. */
+  report.steps.fleetFills = await stepWrap("fleet-fills", async () => {
+    const sweepMark = readJson(path.join(STATE, "fills-fleet-sweep.json"), null);
+    if (!shouldFleetSweep(sweepMark?.at)) return { verdict: "SKIP-RECENT", lastSweepAt: sweepMark.at };
+    const m = readFleetMatrix();
+    const rows = (m?.rows ?? []).filter((r) => r.name !== MASTER
+      && (r.class === "GRID-ACTIVE" || r.class === "CURATE-ONLY")
+      && (r.custody === "verified" || r.custody === "master-verified" || r.custody === "era-verified" || r.custody === "master-era-verified")).slice(0, 14);
+    let accounts = 0, added = 0, errs = [];
+    for (const r of rows) {
+      try {
+        const one = await measureAll(r.name, { window: 400 });
+        if (Array.isArray(one?.fills) && one.fills.length) {
+          const tagged = one.fills.map((f) => ({ ...f, account: r.name }));
+          const res = mergeFillLedger(tagged, { now });
+          added += res.added;
+        }
+        accounts += 1;
+      } catch (e) {
+        errs.push(`${r.name}:${String(e?.message ?? e).slice(0, 60)}`);
+      }
+    }
+    const roll = runFills({ now });
+    const mark = { at: now, accounts, added, errs: errs.slice(0, 6), roll: { fillsTotal: roll.fillsTotal, windowDays: roll.windowDays, perDayReady: roll.perDayReady, realizedSbd: roll.realizedSbd } };
+    if (persist) writeJson(path.join(STATE, "fills-fleet-sweep.json"), mark);
+    return { verdict: accounts ? `SWEPT-${accounts}` : "NO-ROWS", added, errs: errs.length, windowDays: roll.windowDays, perDayReady: roll.perDayReady };
   });
 
   /* W12 · fleet-rebalance (划转互填 — the mutual-support rail): plans the

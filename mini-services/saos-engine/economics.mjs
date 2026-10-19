@@ -52,14 +52,21 @@ export function runEconomics(now = new Date().toISOString()) {
               * pricing vests as steem is the lie class R282 killed */
 
   /* realized trading: measured by pnlFromFills over the observable fill
-   * window; per-day normalization waits for fill-timestamp windows (honest) */
-  const realizedSbd = daily?.rollup?.realizedSbd ?? null;
+   * window; per-day normalization waits for fill-timestamp windows (honest)
+   * W12-D · the window now comes from the PERSISTENT LEDGER ROLLUP (the
+   * T-25 instrument, finally wired + fleet-swept): perDayReady (≥1 full
+   * day of real fills) is the only key that flips the rail to measured —
+   * a partial window stays blocked instead of annualizing noise. */
+  const fillsRoll = readJson(path.join(STATE, "fills.json"), null);
+  const ledgerReady = fillsRoll?.perDayReady === true && fillsRoll?.realizedPerDaySbd != null;
+  const realizedSbd = ledgerReady ? fillsRoll.realizedSbd : (daily?.rollup?.realizedSbd ?? null);
+  const realizedWindowDays = ledgerReady ? fillsRoll.windowDays : null;
 
   const curationEst = (discovery?.opportunities ?? []).find((o) => o.id === "curation-share")?.potential ?? null;
 
   const out = aggregateRails({
     realizedSbdTotal: realizedSbd,
-    realizedWindowDays: null,
+    realizedWindowDays,
     sbdUsd, steemUsd, parity,
     curationEstSteemPerDay: curationEst,
     curationMeasuredUsdPerDay,
