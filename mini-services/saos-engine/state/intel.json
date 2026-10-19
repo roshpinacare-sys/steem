@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-19T20:02:03.125Z",
+  "at": "2026-10-19T21:30:05.627Z",
   "decisions": [
     {
       "kind": "book-depth",
@@ -10,16 +10,16 @@
         "bestAsk": 0.10170923913043478,
         "bestBid": 0.1015099255686077
       },
-      "at": "2026-10-19T20:02:03.125Z"
+      "at": "2026-10-19T21:30:05.627Z"
     },
     {
       "kind": "parity-drift",
       "decision": "arb-window",
-      "reason": "internal feed deviates -899bps from external parity",
+      "reason": "internal feed deviates -910bps from external parity",
       "action": {
-        "bps": -899
+        "bps": -910
       },
-      "at": "2026-10-19T20:02:03.125Z"
+      "at": "2026-10-19T21:30:05.627Z"
     },
     {
       "kind": "soldiers",
@@ -28,27 +28,40 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-19T20:02:03.125Z"
+      "at": "2026-10-19T21:30:05.627Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 438.464611 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 438.464611,
+        "any": true
+      },
+      "at": "2026-10-19T21:30:05.627Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 51%",
+      "reason": "RC at 51.8%",
       "action": {
-        "rcPct": 51
+        "rcPct": 51.8
       },
-      "at": "2026-10-19T20:02:03.125Z"
+      "at": "2026-10-19T21:30:05.627Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict BROADCAST-FAIL today (VP 36.9%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict DAY-CAP today (VP ?%) — gates hold until candidates pass",
       "action": {
-        "votesToday": 27,
-        "vpEff": 36.9,
-        "verdict": "BROADCAST-FAIL"
+        "votesToday": 30,
+        "vpEff": null,
+        "verdict": "DAY-CAP"
       },
-      "at": "2026-10-19T20:02:03.125Z"
+      "at": "2026-10-19T21:30:05.627Z"
     }
   ],
   "spreadBpsRec": 20,
