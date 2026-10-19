@@ -904,3 +904,21 @@ Stage Summary:
 - **4-כשלים-כרוניים-נוספים-הוכחו-ותוקנו-בריצה-חיה**: W11-סבב-2 (fleet-yield) · bake-wipe (world-evolver-404) · cp-אחרי-מחיקת-תיקייה · תחרות-קבלות (rebase-conflict)
 - עולם-הצוות-גדל-ל-v5; הארגון-ממשיך-373/373; הדופק-האורגני-הראשון-של-org-revival (cron 06:17Z)-עדיין-לפנינו — נקודת-האימות-הבאה
 - עותקי-האמת-של-רישום-זה (t26): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
+
+---
+Task ID: 27
+Agent: agent-9
+Task: הוראת-בעלים "כן חייב הכל מאשר תמשיך ודוף" — הפעלת-מפתח-ה-nvapi-מהכספת (האיבר-שהמתין-להוראה-מפורשת) + מדידת-ה-catalog-החי + סגירת-חקירת-ה-canary
+
+Work Log:
+- **מפתח-ה-nvapi-הופעל** (ביקורת.txt, לעולם-לא-נהדפ): אימות-ראשון מול-NIM — /v1/models-200-עם-81-מודלים; בדיקת-שיחה-חיה — `z-ai/glm-5.3-flash` **200-ב-0.8-שנ'** · `openai/gpt-oss-20b` **200-ב-14-שנ'**; מדוד-ושלול: deepseek-v4.1-flash (000-ב-75-שנ'×2) · nemotron-70b · mistral-large-2 · kimi-k2.6 (404-כולם — רשומים-בקטלוג-ולא-מוגשים)
+- **הסוד-הותקן-ב-Autonomy** (`NVIDIA_NIM_KEY`, sealed-box מול-מפתח-ה-public-key-של-ה-repo, PUT-204); החומר-האטום-המקומי-הושמד-מיד; אותר-ש-Autonomy-הוא-צרכן-היחיד-בארגון (Domain/saos-runtime/steem-אפס-אזכורים; sovereign-decider-משתמש-בסט-NVIDIA_API_KEY-נפרד-מ-[T31])
+- **סולם-המועמדים-עודכן-ב-world-evolver.mjs** לפי-המדידה-החיה (glm-flash-ראשון, gpt-oss-שני, deepseek-שלישי-כנפילה); **אימות-קצה-לקצה: world-evolver-`mode=llm v8 ok=true`** — העולם-ב-Domain-חתום-`evolvedBy: world-evolver (llm:openai/gpt-oss-20b)`, v8, 13-פריטים; הסולם-נפל-מ-glm-ל-gpt-oss-בדיוק-כמתוכנן — **מצב-ה-LLM-חזר-לחיות-אחרי-מות-ה-catalog-שנמדד-ב-t11**
+- **חקירת-ה-canary-נסגרת-בשלילה-מדידה**: עם-האישור-הכללי-נפתחה-הסמכות-ל-Sandbox — נמדד-שהכשל-**repo-שלם**: 31-כשלי-runner-acquisition-רצופים-על-פני-4-workflows-שונים (canary/artery-catchup/pages-deploy/sovereign-tick, 15.10–19.10), אפס-צעדים-ואפס-runner-בכולם, בזמן-שכל-שאר-הארגון-ירוק; ה-experiment-של-ubuntu-22.04-נוסה-ונשלל (כשל-זהה) ושוחזר-עם-רישום-השלילה; **המסקנה: מסילת-ה-runner-של-Sandbox-מתה-ברמת-תשתית-GitHub** — אינה-ניתנת-לתיקון-מהעץ; תפקיד-ה-canary (הוכחת-פתיחת-חומת-ה-billing) מוכח-ברציפות-ע"י-מאות-הריצות-הירוקות-של-הצי; הועבר-לבעלים-להחייה-ברמת-support
+- שרידי-הניסויים-המקומיים-נוקו (nim-*.json, seal/, repo-pk, stash-ים-של-ה-steem-הושארו-כמות-שהם — runtime-state-בלבד)
+
+Stage Summary:
+- **המוח-המלאכותי-של-הצי-חזר**: מפתח-הכספת-חי, מותקן-כסוד, וה-world-evolver-מציע-שינויים-דרך-LLM-אמיתי (סכמה-נאכפת, גידול-בלבד — v8)
+- **ה-canary-נסגר-באבחנה-מדויקת**: לא-באג-שלנו — תשתית-GitHub-repo-ספציפית; מתועד-לדורות-עם-כל-המדידות
+- דופק-06:17Z-האורגני-הראשון — האימות-הבא (GitHub-צד, בלתי-ניתן-לחיסול)
+- עותקי-האמת-של-רישום-זה (t27): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
