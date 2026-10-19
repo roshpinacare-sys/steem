@@ -28,14 +28,20 @@ const writeJson = (p, v) => {
   fs.renameSync(tmp, p);
 };
 
+const LEDGER_DEFAULT = path.join(STATE, "fills-ledger.json");
+
 export function fillsState() { return readJson(ROLLUP, null); }
-export function fillLedgerState() { return readJson(LEDGER, null); }
+export function fillLedgerState(file = LEDGER_DEFAULT) { return readJson(file, null); }
 
 /** merge new chain-truth fills into the persistent ledger (dedupe by seq+at,
  * atomic write, capped). Returns the merged ledger (raw fills ONLY — no
- * derived fields; every rollup recomputes from raw, the T-18 lesson). */
-export function mergeFillLedger(newFills = [], { now = new Date().toISOString() } = {}) {
-  const prev = readJson(LEDGER, { fills: [] });
+ * derived fields; every rollup recomputes from raw, the T-18 lesson).
+ * W12-D · the ESTATE ONE-BODY law: a fill_order trx appears in BOTH parties'
+ * histories — the ledger is global and dedupes by trx seq so an inter-estate
+ * trade is never double-counted; rows may carry an `account` tag (row-level
+ * wins over the opts default) for attribution, never for identity. */
+export function mergeFillLedger(newFills = [], { now = new Date().toISOString(), account = null, file = LEDGER } = {}) {
+  const prev = readJson(file, { fills: [] });
   const prevFills = Array.isArray(prev?.fills) ? prev.fills : [];
   const seen = new Set(prevFills.map((f) => `${f.seq}|${f.at}`));
   const fresh = [];
@@ -44,12 +50,14 @@ export function mergeFillLedger(newFills = [], { now = new Date().toISOString() 
     const key = `${f.seq}|${f.at}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    fresh.push({ seq: f.seq, at: Number(f.at), side: f.side, steem: Number(f.steem), sbd: Number(f.sbd) });
+    const row = { seq: f.seq, at: Number(f.at), side: f.side, steem: Number(f.steem), sbd: Number(f.sbd) };
+    if (f.account != null || account != null) row.account = f.account ?? account;
+    fresh.push(row);
   }
   const merged = [...fresh, ...prevFills]
     .sort((a, b) => b.at - a.at)
     .slice(0, CAP);
-  writeJson(LEDGER, { fills: merged, at: now, added: fresh.length });
+  writeJson(file, { fills: merged, at: now, added: fresh.length });
   return { ledger: { fills: merged, at: now }, added: fresh.length };
 }
 

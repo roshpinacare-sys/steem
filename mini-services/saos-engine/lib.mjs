@@ -1364,3 +1364,89 @@ export function moneyGateOpen({ selftestVerdict = null } = {}) {
   if (selftestVerdict === "SELFTEST-RAN-GREEN") return { open: true, reason: "selftest-green" };
   return { open: false, reason: `selftest-not-green:${selftestVerdict ?? "absent"}` };
 }
+
+/* ── T-25 · FILL WINDOW (W12-D: the instrument that was born missing) ──────
+ * fills.mjs imported this since birth but it never existed in any commit —
+ * the module could not even load, so the fill-capture ledger stayed frozen
+ * (measured 2026-10-19: ledger stale since 10-02 while 125 fills/day ran).
+ * The honest window math over RAW chain fills (recompute-from-raw law):
+ *   - windowDays = span newest→oldest fill (a 24h floor keeps a burst from
+ *     reading as an infinite rate; perDayReady only at ≥1 full day);
+ *   - realized P&L = pnlFromFills over the full ledger (estate one-body);
+ *   - perDay normalization ONLY when perDayReady — never annualize noise;
+ *   - edge vs parity in bps (ask = we sold STEEM, bid = we bought STEEM);
+ *   - venue share: estate fills/day ÷ venue fills/day (null when venue unknown).
+ * Pure, zero network, fully vector-tested (selftest section 54). */
+const FILL_DAY_MS = 86_400_000;
+
+export function fillWindow({ fills = [], nowMs = Date.now(), venueVolSteem24h = null, marketFillsPerDay = null, parity = null, sbdUsd = null } = {}) {
+  const rows = (Array.isArray(fills) ? fills : [])
+    .filter((f) => f && Number.isFinite(Number(f.at)) && Number.isFinite(Number(f.steem)) && Number.isFinite(Number(f.sbd)))
+    .map((f) => ({ seq: f.seq, at: Number(f.at), side: String(f.side ?? ""), steem: Number(f.steem), sbd: Number(f.sbd) }))
+    .sort((a, b) => a.at - b.at);
+  const r6 = (v) => Math.round(v * 1e6) / 1e6;
+  const law = "נתח-מילויים מדוד מול-כל-השוק — החלון נבנה מאמת-השרשרת שרשרת-fill_order, realized מחושב-מחדש מה-raw";
+
+  if (!rows.length) {
+    return { fillsTotal: 0, windowDays: null, lastFillAt: null, fills24h: 0, volSteem24h: 0, volSbd24h: 0,
+      buys24h: 0, sells24h: 0, avgAskUnit: null, avgBidUnit: null, parity: parity ?? null,
+      askEdgeBps: null, bidEdgeBps: null, realizedSbd: 0, realizedUsd: null, realizedPerDaySbd: null,
+      perDayReady: false, positionSteem: 0, positionAvgCost: null, unbasedSteem: 0,
+      fillSharePct: null, venueFillsPerDay: marketFillsPerDay ?? null, venueVolSteem24h: venueVolSteem24h ?? null, law };
+  }
+
+  const newestTs = rows[rows.length - 1].at;
+  const oldestTs = rows[0].at;
+  const windowDays = Math.max((nowMs - oldestTs) / FILL_DAY_MS, (newestTs - oldestTs) / FILL_DAY_MS, 0);
+
+  const dayAgo = nowMs - FILL_DAY_MS;
+  const rows24h = rows.filter((f) => f.at >= dayAgo);
+  const buys24h = rows24h.filter((f) => f.side === "bid");
+  const sells24h = rows24h.filter((f) => f.side === "ask");
+  const volSteem24h = r6(rows24h.reduce((s, f) => s + f.steem, 0));
+  const volSbd24h = r6(rows24h.reduce((s, f) => s + f.sbd, 0));
+
+  const unit = (fs, pick) => { const w = fs.filter((f) => f[pick] > 0); return w.length ? r6(w.reduce((s, f) => s + f.sbd / f[pick], 0) / w.length) : null; };
+  const avgBidUnit = unit(buys24h, "steem");   /* SBD per STEEM paid on buys  */
+  const avgAskUnit = unit(sells24h, "steem");  /* SBD per STEEM taken on sells */
+  const par = Number(parity) > 0 ? Number(parity) : null;
+  const bps = (u) => (u != null && par != null ? Math.round(((u - par) / par) * 1e4) : null);
+
+  const pnl = pnlFromFills(rows);
+  const perDayReady = windowDays >= 1 && pnl.realizedSbd != null;
+  const realizedPerDaySbd = perDayReady ? r6(pnl.realizedSbd / windowDays) : null;
+  const realizedUsd = pnl.realizedSbd != null && Number(sbdUsd) > 0 ? r6(pnl.realizedSbd * Number(sbdUsd)) : null;
+
+  /* venue share: estate fills/day estimate ÷ venue fills/day (capped, honest
+   * null when the venue meter is absent) */
+  const ourPerDay = windowDays > 0 ? rows.length / windowDays : null;
+  const fillSharePct = ourPerDay != null && Number(marketFillsPerDay) > 0
+    ? Math.min(100, Math.round((ourPerDay / (Number(marketFillsPerDay) + ourPerDay)) * 1e4) / 100)
+    : null;
+
+  return {
+    fillsTotal: rows.length,
+    windowDays: Math.round(windowDays * 1e6) / 1e6,
+    lastFillAt: new Date(newestTs).toISOString(),
+    fills24h: rows24h.length, volSteem24h, volSbd24h,
+    buys24h: buys24h.length, sells24h: sells24h.length,
+    avgAskUnit, avgBidUnit, parity: par,
+    askEdgeBps: bps(avgAskUnit), bidEdgeBps: bps(avgBidUnit),
+    realizedSbd: pnl.realizedSbd, realizedUsd, realizedPerDaySbd,
+    perDayReady,
+    positionSteem: pnl.positionSteem, positionAvgCost: pnl.positionAvgCost,
+    unbasedSteem: pnl.unbasedSteem,
+    fillSharePct, venueFillsPerDay: marketFillsPerDay ?? null, venueVolSteem24h: venueVolSteem24h ?? null,
+    law,
+  };
+}
+
+/* W12-c/D · sweep gate for the fleet fill capture: a full estate sweep (N ×
+ * get_account_history) is cadence-bounded — true only when the last sweep is
+ * absent or older than minGapMs (default 30min). Pure. */
+export function shouldFleetSweep(lastSweepAt, nowMs = Date.now(), minGapMs = 30 * 60_000) {
+  if (lastSweepAt == null) return true;
+  const t = Date.parse(String(lastSweepAt));
+  if (!Number.isFinite(t)) return true;
+  return nowMs - t >= minGapMs;
+}
