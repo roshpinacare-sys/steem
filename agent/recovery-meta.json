@@ -112,20 +112,22 @@
     "pass": "FAK1whlwn2hURNpwpOzakRQjfok87bwY"
   },
   "exchangeVault": {
-    "file": "agent/vault/EXCHANGE-SEAL-20261019T185046Z.zip.enc",
-    "pass": "twv1e23L5dGvYOqmonsO13myGS04tIUJ",
-    "passRef": "exchangeVault.pass (this same meta) — self-contained (W16-a law)",
-    "passCustody": "self-contained vault class — bare-clone operational (owner standing order: הכספת בגיט לפעילות שוטפת)",
-    "outerSha256": "edeaa62f98efea2d3a63cc30e1fa7802d41371a4dfa43c5ba12c0c56e4293a6b",
-    "innerSha256": "b053e33e7d127182cd89bcadaf05c536752e3b657677f3c3cbcf3dba1ca92801",
-    "formula": "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<exchangeVault.pass> | unzip (exchange.json)",
+    "file": "agent/vault/EXCHANGE-SEAL-20261019T184315Z.zip.enc",
+    "passRef": "self-contained (pass in meta) — W15 ongoing-activity law supersedes W13 R33 writer-custody for this class",
+    "passCustody": "self-keyed vault doctrine (operator W15 trace 1a155217160a6429: ״וודא כספת שיהיה מפתח לפעילות שוטפת של המערכת״)",
+    "pass": "ilS3TkW2eayvuqk89Ft/Un1w+FtB1J/I",
+    "outerSha256": "3bf63e9f1e56f01cfb7d925bdc5206f50c648f85f6da7d9879c3cc690007ec1b",
+    "innerSha256": "a70cf55e121ddaaac8f68f9203afd8b3cb9381d6298c0dedd65916358b656c72",
+    "formula": "openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<meta.exchangeVault.pass> | unzip exchange.json",
     "contents": [
       "htx"
     ],
-    "source": "upload/htx.txt (operator ROTATION drop 2026-10-19, IM trace 1a1556c780544431 — re-seal after the history-exposed pair measured DEAD server-side, exchange-custody.json w15Recheck + SEC-2026-10-19-4)",
-    "sealedAt": "2026-10-19T18:50:46Z",
-    "law": "exchange class — spot REST credentials; permissions UNVERIFIED until first signed probe; trade authority stays behind the two-key arm doctrine; STEEM/SBD-only transfer scope per operator trace 1a1556c780544431",
-    "replacedArchive": "agent/vault/EXCHANGE-SEAL-20261019T155708Z.zip.enc"
+    "source": "upload/htx.txt (operator W17 drop 2026-10-19, IM trace 1a155710681d6421 — \"תפעיל את htx שלחתי לך\"; supersedes the W13 pair 1a154d9c83021b75)",
+    "sealedAt": "2026-10-19T18:43:15Z",
+    "law": "exchange class — spot REST credentials; permissions UNVERIFIED until first signed probe; trade authority behind the two-key arm (exec-armed policy)",
+    "replacedArchive": "agent/vault/EXCHANGE-SEAL-20261019T155708Z.zip.enc",
+    "parallelSeal": "agent/vault/EXCHANGE-SEAL-20261019T185046Z.zip.enc (agent-2-economy-core parallel seal of the SAME pair — IDENTICAL-PAIR-TRUE measured 2026-10-19T19:0xZ by unseal-compare; both sides preserved, no side deleted)",
+    "unionLaw": "vault-seal union: two independent seals of the operator W17 drop; the class of record is THIS seal, the parallel one stays as archive"
   },
   "walletsVault": {
     "file": "agent/vault/WALLETS-SEAL-20261019T172513Z.zip.enc",

@@ -1630,3 +1630,21 @@ Work Log:
 
 Stage Summary:
 - The reaper war is documented and bounded: the office ran continuously through it (6/6 ports green at every final check), the keeper code is in git for the next host, and the fleet's continuity rides the git-vault + CI cadence, exactly the R282 law ("the vault in git IS the supply").
+
+---
+Task ID: W17
+Agent: zai-code (main)
+Task: owner IM trace 1a155710681d6421 — "אלו חיילים מתים אין לי מפתח שלהם hcsoldier1/2/3 · בנוסף תפעיל את htx שלחתי לך · מה קורה איתך מיד ... ליישם ודחוף" — the dead-soldiers verdict + the fresh HTX keypair drop + total activation.
+
+Work Log:
+- KEY-TRUTH PROBE (probe-w17-keytruth, verdict-only vs live chain): the wallets-vault WIFs for headcorner+hcsoldier1..6 are TRON-side derivation siblings — ZERO match vs live STEEM authorities. The owner's verdict is chain-true: hcsoldier1/2/3 are UNSIGNABLE (accounts remain on-chain, funds legible, never guessable). Marked status:"dead" in state/soldiers.json with the verbatim operator order + probe receipt.
+- THE MOVEMENT ROOT (answering "בכלל לא ראיתי תנועה בחשבון"): hyper-grid RUNNING (19,806 ticks, 3s cadence) but every tick dies CREDENTIAL-MISSING — the sandbox cold-reset wiped .secrets/headcorner.key. The whole organism was armed and starved of ONE file. Revival chain identified: armyseal-selfcontain (W16-b lane) writes meta.keysZipPass on Actions → engine boot revival unlocks KEYS-ZIP-2026-10-12-MASTER → chain-judged WIF adoption → signing alive. Workflow dispatch triggered twice (first run died 2s runner-side; re-dispatched, queued) + exec-cycle queued with MAIN_KEY.
+- W17 HTX ROTATION SEAL: the fresh drop (sha256 7f5f7500…73c) parsed (34-char access uuid-family + 32-char secret), sealed EXCHANGE-SEAL-20261019T184315Z.zip.enc — SELF-CONTAINED pass in meta (W15 ongoing-activity law; the W13 R33 writer-custody lane superseded for this class), roundtrip-verified before meta write, 0600 cache rebuilt, drop consumed. scripts/w17-reseal-htx.mjs.
+- THE SIGNING-CANON INCIDENT (honesty): the first census answered 1003 on every v2 endpoint — ROOT: my own probe called htxPrivate(cfg, path) while the real shape is htxPrivate(method, urlPath, params, null, {cfg}); the garbage-signed text also tripped HTX's signature-failure counter. Corrected census: accounts PASS (73986225 spot working — the new pair IS bound to the same account), balance PASS, openOrders PASS (trade-read), withdraw-quota PASS (steem1 chain, 999999999/day). Deposit-address endpoint answers api-code-500 server-side for every currency (honest block — never guess an address; retry + operator channel both open).
+- W17 EXCHANGE EXECUTOR BUILT (the never-built lane): mini-services/saos-engine/exchange-exec.mjs — deposit leg (T2 transfer headcorner→measured counterparty, 24h-rate-limited, cap 30/shot, liquid floor 5) + trade leg (limit orders behind htx-ecg, default-refusal, maxOrderValueUsdt/maxOpenOrders caps, maker pricing above ask/below bid by margin) — typed verdicts for EVERY blocked precondition (DEPOSIT-BLOCKED-NO-COUNTERPARTY, TRADE-WAIT-FUNDING, EXCHANGE-WAIT-CUSTODY...), journaled to state/exchange-exec.json + exec-log.jsonl, exposed on the engine's health. Wired into index.ts boot (startExchangeExec).
+- No order was placed this wave (read-only + seal lane only) — the deposit needs the measured address (endpoint 500) and trades need funded balances; the executor now exists so the moment those resolve, movement is automatic.
+
+Stage Summary:
+- hcsoldier1/2/3: dead per operator + chain truth; the fleet's money-access line for them is CLOSED honestly (W14-MINT-AGENTS hcsoldier7/8/9 lane is the replacement generation, keys pre-generated in the wallets vault).
+- The new HTX pair is sealed, self-contained, cache-live, and bound to account 73986225 (spot, working) — the funding/trading leg is one measured address away.
+- The one-file signing blocker (headcorner.key) has a self-healing path queued on Actions (armyseal + exec-cycle); local revival is automatic on next boot once meta.keysZipPass lands.
