@@ -5728,6 +5728,132 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
     rBlocked.rails.find((r) => r.id === "market-making").confidence, "blocked");
 }
 
+/* ═══ SECTION 55 · W13 THE EXCHANGE RAIL (HTX connector · fee guard · vault class) ════
+ * Operator order 2026-10-19: connect to exchange pairs, fee-aware economics
+ * ("שלא נפסיד שנרוויח"), keys sealed in the GIT vault (EXCHANGE-SEAL class).
+ * These vectors pin the pure laws: signature canon cross-checked against an
+ * INDEPENDENT implementation (openssl CLI — two engines must agree), the
+ * fees-eat-edge guard, the honest census shaping, and the vault cache gate.
+ * Zero network, zero secret material (test keys only). */
+{
+  const {
+    canonicalQuery, enc3986, htxTimestamp, preSignedText, signText,
+    buildSignedUrl, normSymbol, nonzeroBalances, htxConfigFrom, HTX_HOST,
+  } = await import("./htx.mjs");
+  const { ecgVerdict, pairGate, breakEvenBps } = await import("./htx-ecg.mjs");
+  const { execFileSync } = await import("node:child_process");
+
+  /* 55.1 canonical query: alphabetical sort + RFC3986 encoding */
+  eq("55.1a canonicalQuery sorts alphabetically and encodes RFC3986",
+    canonicalQuery({ Timestamp: "2026-10-19T16:00:00", AccessKeyId: "test-access", Symbol: "a b/c" }),
+    "AccessKeyId=test-access&Symbol=a%20b%2Fc&Timestamp=2026-10-19T16%3A00%3A00");
+  eq("55.1b enc3986 escapes the !'()* set that encodeURIComponent misses",
+    enc3986("a*b!c'd(e)f"), "a%2Ab%21c%27d%28e%29f");
+
+  /* 55.2 HTX timestamp: UTC second-precision, no Z, no ms */
+  eq("55.2 htxTimestamp is UTC YYYY-MM-DDTHH:mm:ss",
+    htxTimestamp(Date.UTC(2026, 9, 19, 16, 0, 0)), "2026-10-19T16:00:00");
+
+  /* 55.3 THE SIGNATURE CROSS-CHECK — node:crypto vs the INDEPENDENT openssl
+   * CLI engine. Two different implementations must produce the same
+   * base64(HMAC-SHA256) or the canon is broken. */
+  const text55 = preSignedText("GET", "api.htx.com", "/v1/account/accounts", {
+    AccessKeyId: "test-access", SignatureMethod: "HmacSHA256", SignatureVersion: "2",
+    Timestamp: "2026-10-19T16:00:00",
+  });
+  eq("55.3a preSignedText is the four-line canon",
+    text55, "GET\napi.htx.com\n/v1/account/accounts\nAccessKeyId=test-access&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2026-10-19T16%3A00%3A00");
+  const nodeSig = signText("test-secret", text55);
+  const opensslHex = execFileSync(
+    "openssl",
+    ["dgst", "-sha256", "-hmac", "test-secret"],
+    { input: text55, encoding: "utf8" }
+  ).trim().split("= ")[1];
+  const opensslSig = Buffer.from(opensslHex, "hex").toString("base64");
+  eq("55.3b node:crypto HMAC agrees with the independent openssl engine", nodeSig, opensslSig);
+  eq("55.3c signature is base64 (proper length for sha256)", nodeSig.length % 4 === 0 && nodeSig.length >= 40, true);
+
+  /* 55.4 buildSignedUrl: deterministic, structured, and NEVER embeds the secret */
+  const url55 = buildSignedUrl("GET", "/v1/account/accounts", {}, { accessKey: "test-access", secretKey: "test-secret" }, Date.UTC(2026, 9, 19, 16, 0, 0));
+  const url55b = buildSignedUrl("GET", "/v1/account/accounts", {}, { accessKey: "test-access", secretKey: "test-secret" }, Date.UTC(2026, 9, 19, 16, 0, 0));
+  eq("55.4a signed URL deterministic for a fixed clock", url55, url55b);
+  eq("55.4b signed URL structure: host+path+sorted auth params+Signature",
+    url55.startsWith(`https://${HTX_HOST}/v1/account/accounts?AccessKeyId=test-access&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2026-10-19T16%3A00%3A00&Signature=`),
+    true);
+  eq("55.4c the secret NEVER travels in the URL", url55.includes("test-secret"), false);
+
+  /* 55.5 THE FEES-EAT-EDGE GUARD (the operator's שלא-נפסיד law) */
+  const be = breakEvenBps({ takerBps: 20, slippageBps: 10 });
+  eq("55.5a break-even: 0.2% taker × 2 legs + 10bps slip = 50bps core",
+    [be.roundTripFeesBps, be.breakEvenCoreBps], [40, 50]);
+  const vUnder = ecgVerdict({ edgeBps: 30, takerBps: 20, slippageBps: 10, minProfitBps: 5 });
+  eq("55.5b edge 30 < break-even 55 → REFUSE fees-eat-edge, margin −25",
+    [vUnder.verdict, vUnder.why, vUnder.marginBps], ["REFUSE", "fees-eat-edge", -25]);
+  const vExact = ecgVerdict({ edgeBps: 55, takerBps: 20, slippageBps: 10, minProfitBps: 5 });
+  eq("55.5c edge exactly at break-even is still a REFUSE (margin must be > 0)",
+    [vExact.verdict, vExact.marginBps], ["REFUSE", 0]);
+  const vOver = ecgVerdict({ edgeBps: 100, takerBps: 20, slippageBps: 10, minProfitBps: 5 });
+  eq("55.5d edge 100 → EXEC with margin +45",
+    [vOver.verdict, vOver.why, vOver.marginBps], ["EXEC", "edge-clears-fees", 45]);
+  const vNull = ecgVerdict({ edgeBps: null, takerBps: 20, slippageBps: 10 });
+  eq("55.5e unmeasured edge is a REFUSE (never fabricated)", vNull.verdict, "REFUSE");
+  const vNeg = ecgVerdict({ edgeBps: -5, takerBps: 20, slippageBps: 10 });
+  eq("55.5f negative edge → REFUSE edge-not-positive", [vNeg.verdict, vNeg.why], ["REFUSE", "edge-not-positive"]);
+  const vDefault = ecgVerdict({ edgeBps: 30 });
+  eq("55.5g defaults are the conservative regular tier (40bps fees + 10 slip + 5 floor = 55)",
+    [vDefault.costModel.roundTripFeesBps, vDefault.costModel.slippageBps, vDefault.costModel.minProfitBps, vDefault.breakEvenBps],
+    [40, 10, 5, 55]);
+
+  /* 55.6 the per-pair gate: state gates BEFORE economics */
+  const gOffline = pairGate({ symbol: "steemusdt", state: "offline", edgeBps: 1000 });
+  eq("55.6a offline pair refused regardless of edge", [gOffline.verdict, gOffline.why], ["REFUSE", "state-offline"]);
+  const gOnline = pairGate({ symbol: "steemusdt", state: "online", edgeBps: 100, takerBps: 20, slippageBps: 10, minProfitBps: 5 });
+  eq("55.6b online pair with clearing edge → EXEC with the symbol carried",
+    [gOnline.verdict, gOnline.symbol, gOnline.marginBps], ["EXEC", "steemusdt", 45]);
+
+  /* 55.7 census shaping is honest about what is NOT measured */
+  const rowFull = normSymbol({
+    "base-currency": "steem", "quote-currency": "usdt", state: "online",
+    "amount-precision": 3, "price-precision": 5, "min-order-amt": 5,
+    "taker-fee-rate": 0.002, "maker-fee-rate": 0.002,
+  });
+  eq("55.7a normSymbol full row: symbol built, fees measured",
+    [rowFull.symbol, rowFull.state, rowFull.takerFeeRate, rowFull.feesMeasured],
+    ["steemusdt", "online", 0.002, true]);
+  const rowNoFees = normSymbol({ "base-currency": "steem", "quote-currency": "usdt", state: "online" });
+  eq("55.7b row without fee fields: fees honestly null + feesMeasured false",
+    [rowNoFees.takerFeeRate, rowNoFees.makerFeeRate, rowNoFees.feesMeasured], [null, null, false]);
+  eq("55.7c garbage row → null (never fabricated)", normSymbol({ nope: 1 }), null);
+
+  /* 55.8 balances: ZERO rows dropped (only strictly-zero — small-but-positive
+   * balances are REAL money and must never be silently dropped), sorted desc */
+  const nz = nonzeroBalances({ list: [
+    { currency: "steem", balance: "12.5", available: "12" },
+    { currency: "dust", balance: "0.000000000", available: "0" },
+    { currency: "usdt", balance: "100", available: "100" },
+  ] });
+  eq("55.8 nonzero census sorted desc, zero rows filtered",
+    nz.map((b) => `${b.currency}:${b.balance}`), ["usdt:100", "steem:12.5"]);
+
+  /* 55.9 config fail-closed with typed code */
+  let threw55 = null;
+  try { htxConfigFrom("/nonexistent/exchange-cache.json"); } catch (e) { threw55 = e.code ?? null; }
+  eq("55.9 absent credentials → typed HTX-NO-CRED death (never silent)", threw55, "HTX-NO-CRED");
+
+  /* 55.10 the GIT VAULT cache gate (conditional: the 0600 cache exists where
+   * the seal ran; in CI without it this vector SKIPS honestly) */
+  const cache55 = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "..", ".secrets", "exchange.json");
+  if (fs.existsSync(cache55)) {
+    const cache = JSON.parse(fs.readFileSync(cache55, "utf8"));
+    const it = (cache.items ?? []).find((x) => x.id === "htx");
+    eq("55.10 exchange cache schema: format, item shape, api base",
+      [cache.format, it != null, it?.apiBase === "https://api.htx.com", typeof it?.accessKey === "string" && it.accessKey.length >= 20, typeof it?.secretKey === "string" && it.secretKey.length >= 20],
+      ["exchange-1", true, true, true, true]);
+  } else {
+    console.log("  55.10 SKIP (honest): .secrets/exchange.json absent on this host — vault cache gate runs where the seal lives");
+  }
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).
