@@ -104,19 +104,24 @@ export function spLadderExecutedToday(receiptsFile, now, type = "fleet-rebalance
 
 /* W12-b · the execution partition — PURE in verdicts, identity-keeping in
  * selection (selftested): executable moves are the ORIGINAL objects with
- * vests+mode attached (mode flips to "EXEC" so the state filter excludes
- * them); planned moves become copies with an honest planWhy. Order of
- * laws: flag → order record → day-cap → math. */
-export function partitionSpLadder(moves, { flagArmed, orderArmed, dayExecuted = 0, maxPerDay = 6, vestsPerSp = null } = {}) {
+ * mode flipped to "EXEC" (the state filter reads mode); planned moves
+ * become copies with an honest planWhy. Order of laws: flag → order
+ * record → day-cap → SET-semantics never-reduce guard (the chain-judged
+ * lesson: delegate_vesting_shares SETS the level — an op amount ≤ the
+ * current master→soldier delegation would REDUCE support and is refused
+ * before any key material is touched). */
+export function partitionSpLadder(moves, { flagArmed, orderArmed, dayExecuted = 0, maxPerDay = 6, currentDelegations = {} } = {}) {
   const exec = [], plan = [];
   let budget = Math.max(0, maxPerDay - dayExecuted);
   for (const m of moves) {
     if (!flagArmed) { plan.push({ ...m, planWhy: "flag-off" }); continue; }
     if (!orderArmed) { plan.push({ ...m, planWhy: "order-record-missing" }); continue; }
     if (budget <= 0) { plan.push({ ...m, planWhy: "day-cap-reached" }); continue; }
-    const vests = vestsPerSp ? Math.round(m.sp * vestsPerSp) : 0;
-    if (!(vests > 0)) { plan.push({ ...m, planWhy: "no-vestsPerSp" }); continue; }
-    m.vests = vests; m.mode = "EXEC"; /* identity-kept: the state filter reads mode */
+    const setVests = Number(m.setVests ?? 0);
+    if (!(setVests > 0)) { plan.push({ ...m, planWhy: "no-setVests" }); continue; }
+    const cur = currentDelegations?.[m.to];
+    if (cur != null && !(setVests > Number(cur) + 1e-6)) { plan.push({ ...m, planWhy: "would-reduce-or-noop" }); continue; }
+    m.mode = "EXEC"; /* identity-kept: the state filter reads mode */
     exec.push(m);
     budget -= 1;
   }
@@ -136,23 +141,40 @@ export function planFleetRebalance(matrix, opts = {}) {
 
   /* 1 · sp-ladder — idle master SP → RC-starved trading soldiers.
    * Targets ONLY verified bodies with 24h activity (grid or curation):
-   * the trading proof is what makes the RC investment lawful (T-80+). */
-  if (masterSpOwn !== null && masterSpOwn > p.masterSpOwnFloor) {
+   * the trading proof is what makes the RC investment lawful (T-80+).
+   *
+   * W12-b CHAIN-JUDGED CORRECTION (the SET-semantics lesson): RC capacity is
+   * EFFECTIVE SP (own + RECEIVED — every soldier carries historical support
+   * since 09-29), and delegate_vesting_shares is a SET op, never additive.
+   * The grant is therefore sized against spEffective, and the emitted
+   * setVests = current master→soldier delegation + grant — an op amount that
+   * can only RAISE the support level. The execution leg re-proves this with
+   * a never-reduce guard (partitionSpLadder) before any broadcast. */
+  if (masterSpOwn !== null && masterSpOwn > p.masterSpOwnFloor && matrix.vestsPerSp > 0) {
     let headroom = masterSpOwn - p.masterSpOwnFloor;
+    const delegByTo = new Map();
+    for (const d of (Array.isArray(matrix.delegationsOutRows) ? matrix.delegationsOutRows : [])) {
+      if (d?.to && !delegByTo.has(d.to)) {
+        delegByTo.set(d.to, Number(String(d.vests ?? "0").split(" ")[0]) || 0);
+      }
+    }
     for (const r of matrix.rows) {
       if (moves.length >= p.maxSpMovesPerDay) break;
       if (r.name === MASTER) continue;
       if (!isVerified(r.custody)) continue;
       const active = r.class === "GRID-ACTIVE" || r.class === "CURATE-ONLY";
       if (!active) continue;
-      const cur = r.sp ?? 0;
+      const cur = r.spEffective ?? r.sp ?? 0;
       if (cur >= p.soldierSpTarget) continue;
       const grant = Math.min(p.soldierSpTarget - cur, headroom, 60);
       if (grant < 10) continue; // dust SP moves are churn, not support
+      const curDelegV = delegByTo.get(r.name) ?? 0;
+      const setVests = curDelegV + Math.round(grant * matrix.vestsPerSp);
       moves.push({
-        kind: "sp-ladder", from: MASTER, to: r.name, sp: grant,
+        kind: "sp-ladder", from: MASTER, to: r.name, sp: grant, setVests,
+        curSpEffective: Math.round(cur * 10) / 10, curMasterDelegationVests: curDelegV,
         mode: "PLAN-ONLY", requiredFlag: "policy.allowDelegation=true",
-        why: `RC bottleneck: tank ${r.rcMax != null ? (r.rcMax / 1e12).toFixed(2) : "?"}T vs master ${master?.rcMax != null ? (master.rcMax / 1e12).toFixed(1) : "?"}T; SP ${cur}→${cur + grant} ≈ RC ×${Math.round(((cur + grant) / Math.max(cur, 1)) * 10) / 10}`,
+        why: `RC bottleneck: tank ${r.rcMax != null ? (r.rcMax / 1e12).toFixed(2) : "?"}T vs master ${master?.rcMax != null ? (master.rcMax / 1e12).toFixed(1) : "?"}T; EFFECTIVE SP ${cur}→${Math.round((cur + grant) * 10) / 10} (received ${r.spReceived ?? 0}); master delegation +${grant} SP (SET ${Math.round(setVests * 1e6)/1e6})`,
       });
       headroom -= grant;
     }
@@ -226,10 +248,16 @@ export async function runFleetRebalance({ now = new Date().toISOString(), persis
   const dayExecuted = spLadderExecutedToday(RECEIPTS, now);
   const ladderMoves = moves.filter((m) => m.kind === "sp-ladder");
   const otherMoves = moves.filter((m) => m.kind !== "sp-ladder");
+  /* W12-b · the never-reduce guard's measured input: the CURRENT master→X
+   * delegation levels (the same rows the planner sized setVests against). */
+  const currentDelegations = {};
+  for (const d of (Array.isArray(matrix.delegationsOutRows) ? matrix.delegationsOutRows : [])) {
+    if (d?.to && !currentDelegations[d.to]) currentDelegations[d.to] = Number(String(d.vests ?? "0").split(" ")[0]) || 0;
+  }
   const { exec: ladderExec, plan: ladderPlan } = partitionSpLadder(ladderMoves, {
     flagArmed, orderArmed, dayExecuted,
     maxPerDay: REBALANCE_POLICY.maxSpMovesPerDay,
-    vestsPerSp: matrix.vestsPerSp ?? null,
+    currentDelegations,
   });
 
   for (const m of otherMoves) {
@@ -254,13 +282,13 @@ export async function runFleetRebalance({ now = new Date().toISOString(), persis
    * tx each, receipts for every attempt (ALLOW and REFUSED alike). */
   for (const m of ladderExec) {
     try {
-      const res = await executeAs(m.from, [["delegate_vesting_shares", { delegator: m.from, delegatee: m.to, vesting_shares: `${m.vests} VESTS` }]], { tag: "fleet-rebalance-sp-ladder", role: "active" });
-      const rec = { move: { kind: m.kind, from: m.from, to: m.to, sp: m.sp, vests: m.vests, why: m.why }, verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null, at: now };
+      const res = await executeAs(m.from, [["delegate_vesting_shares", { delegator: m.from, delegatee: m.to, vesting_shares: `${Number(m.setVests).toFixed(6)} VESTS` }]], { tag: "fleet-rebalance-sp-ladder", role: "active" });
+      const rec = { move: { kind: m.kind, from: m.from, to: m.to, sp: m.sp, setVests: m.setVests, curSpEffective: m.curSpEffective ?? null, why: m.why }, verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null, at: now };
       if (res.ok && (res.verdict === "BROADCAST" || res.verdict === "BROADCAST-SPLIT")) executed.push(rec); else refused.push(rec);
       appendLine(RECEIPTS, { type: "fleet-rebalance-sp-ladder", at: now, ...rec });
     } catch (e) {
       refused.push({ move: m, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160), at: now });
-      appendLine(RECEIPTS, { type: "fleet-rebalance-sp-ladder", at: now, move: { kind: m.kind, from: m.from, to: m.to, sp: m.sp, vests: m.vests }, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160) });
+      appendLine(RECEIPTS, { type: "fleet-rebalance-sp-ladder", at: now, move: { kind: m.kind, from: m.from, to: m.to, sp: m.sp, setVests: m.setVests ?? null }, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160) });
     }
   }
   for (const m of ladderPlan) {

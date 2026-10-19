@@ -5405,6 +5405,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   /* 51.4 planner: SP ladder — headroom-bounded, target-capped, trading
    * bodies only, day-cap enforced */
   const matrix51 = {
+    vestsPerSp: 1611.57, /* W12-b: SP moves are sized only when the rate is measured */
     rows: [
       { name: "headcorner", custody: "master-verified", spOwn: 2572, sp: 4270, steem: 542, sbd: 3.6, rcMax: 4.5e12, orders24h: 52 },
       { name: "cashmachine", custody: "era-verified", sp: 90, steem: 103, sbd: 0, rcMax: 0.1e12, orders24h: 4, votes24h: 21, class: "GRID-ACTIVE" },
@@ -5485,7 +5486,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 {
   const { partitionSpLadder, spLadderExecutedToday, operatorOrderArmed } = await import("./fleet-rebalance.mjs");
 
-  const mkMoves = (n) => Array.from({ length: n }, (_, i) => ({ kind: "sp-ladder", from: "headcorner", to: `soldier${i}`, sp: 60, mode: "PLAN-ONLY", why: "RC bottleneck" }));
+  const mkMoves = (n) => Array.from({ length: n }, (_, i) => ({ kind: "sp-ladder", from: "headcorner", to: `soldier${i}`, sp: 60, setVests: 216667.543161, mode: "PLAN-ONLY", why: "RC bottleneck (effective 80→140)" }));
 
   /* 52.1 flag off → everything plans, nothing executes (the default world) */
   const p1 = partitionSpLadder(mkMoves(3), { flagArmed: false, orderArmed: true, vestsPerSp: 1611.57 });
@@ -5497,22 +5498,57 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("52.2 order-record-missing blocks even with the flag on",
     [p2.exec.length, p2.plan.length, p2.plan[0].planWhy], [0, 2, "order-record-missing"]);
 
-  /* 52.3 both keys armed → exec with the vests math, identity-kept */
+  /* 52.3 both keys armed → exec with the SET amount, identity-kept, and the
+   * never-reduce guard fed the measured current delegations */
   const mv3 = mkMoves(2);
-  const p3 = partitionSpLadder(mv3, { flagArmed: true, orderArmed: true, vestsPerSp: 1611.57 });
-  eq("52.3a exec math: 60 SP × 1611.57 → 96694 VESTS", [p3.exec.length, p3.exec[0].vests], [2, 96694]);
+  const p3 = partitionSpLadder(mv3, { flagArmed: true, orderArmed: true, currentDelegations: { soldier0: 120973.543161 } });
+  eq("52.3a exec: setVests kept verbatim (cumulative-SET sizing)", [p3.exec.length, p3.exec[0].setVests], [2, 216667.543161]);
   eq("52.3b identity-kept: the ORIGINAL object flips mode to EXEC (state filter excludes it)",
-    [mv3[0].mode, mv3[0].vests, p3.exec[0] === mv3[0]], ["EXEC", 96694, true]);
+    [mv3[0].mode, p3.exec[0] === mv3[0]], ["EXEC", true]);
 
   /* 52.4 the REAL day-cap: budget = maxPerDay − measured executed today */
-  const p4 = partitionSpLadder(mkMoves(5), { flagArmed: true, orderArmed: true, dayExecuted: 3, maxPerDay: 6, vestsPerSp: 1000 });
+  const p4 = partitionSpLadder(mkMoves(5), { flagArmed: true, orderArmed: true, dayExecuted: 3, maxPerDay: 6, currentDelegations: {} });
   eq("52.4a day-cap headroom: 6−3 → exactly 3 exec, 2 plan", [p4.exec.length, p4.plan.length, p4.plan[0].planWhy], [3, 2, "day-cap-reached"]);
-  const p4b = partitionSpLadder(mkMoves(2), { flagArmed: true, orderArmed: true, dayExecuted: 6, maxPerDay: 6, vestsPerSp: 1000 });
+  const p4b = partitionSpLadder(mkMoves(2), { flagArmed: true, orderArmed: true, dayExecuted: 6, maxPerDay: 6, currentDelegations: {} });
   eq("52.4b cap spent: zero exec", [p4b.exec.length, p4b.plan[0].planWhy], [0, "day-cap-reached"]);
 
-  /* 52.5 no vestsPerSp (probe gap) → plan, never a blind broadcast */
-  const p5 = partitionSpLadder(mkMoves(1), { flagArmed: true, orderArmed: true, vestsPerSp: null });
-  eq("52.5 no-vestsPerSp plans honestly", [p5.exec.length, p5.plan[0].planWhy], [0, "no-vestsPerSp"]);
+  /* 52.5 no setVests (sizing unavailable) → plan, never a blind broadcast */
+  const m5 = [{ kind: "sp-ladder", from: "headcorner", to: "x", sp: 60, mode: "PLAN-ONLY" }];
+  const p5 = partitionSpLadder(m5, { flagArmed: true, orderArmed: true, currentDelegations: {} });
+  eq("52.5 no-setVests plans honestly", [p5.exec.length, p5.plan[0].planWhy], [0, "no-setVests"]);
+
+  /* 52.8 the SET-semantics never-reduce guard: an op amount ≤ the current
+   * master→soldier delegation would LOWER the soldier's support — refused
+   * before any key material is touched (the chain-judged round-1 lesson) */
+  const m8 = [
+    { kind: "sp-ladder", from: "headcorner", to: "lower", sp: 60, setVests: 96694, mode: "PLAN-ONLY" },   /* current 120973 → REDUCE */
+    { kind: "sp-ladder", from: "headcorner", to: "equal", sp: 60, setVests: 120973.543161, mode: "PLAN-ONLY" }, /* equal → no-op */
+    { kind: "sp-ladder", from: "headcorner", to: "raise", sp: 60, setVests: 217667.543161, mode: "PLAN-ONLY" }, /* current 120973 → RAISE */
+  ];
+  const p8 = partitionSpLadder(m8, { flagArmed: true, orderArmed: true, currentDelegations: { lower: 120973.543161, equal: 120973.543161, raise: 120973.543161 } });
+  eq("52.8 never-reduce: reduce+no-op plan, only the raise executes",
+    [p8.exec.map((m) => m.to), p8.plan.map((m) => m.planWhy)], [["raise"], ["would-reduce-or-noop", "would-reduce-or-noop"]]);
+
+  /* 52.9 the planner sizes against EFFECTIVE SP (own + received) and emits
+   * cumulative-SET amounts — the round-1 own-only blindness is dead */
+  const { planFleetRebalance: pfr52 } = await import("./fleet-rebalance.mjs");
+  const matrix52 = {
+    vestsPerSp: 1600,
+    delegationsOutRows: [
+      { to: "rich", vests: "120000.000000 VESTS", since: "2026-09-29" },
+      { to: "target", vests: "120000.000000 VESTS", since: "2026-09-29" },
+    ],
+    rows: [
+      { name: "headcorner", custody: "master-verified", class: "GRID-ACTIVE", spOwn: 2000, rcMax: 4.5e12, steem: 100, sbd: 1 },
+      { name: "rich", custody: "era-verified", class: "GRID-ACTIVE", sp: 5, spEffective: 180, spReceived: 175, rcMax: 3e11 },  /* above target → skip */
+      { name: "target", custody: "era-verified", class: "GRID-ACTIVE", sp: 5, spEffective: 80, spReceived: 75, rcMax: 2e11 }, /* 80+60=140 */
+    ],
+  };
+  const plan52 = pfr52(matrix52);
+  const ladder52 = plan52.moves.filter((m) => m.kind === "sp-ladder");
+  eq("52.9 planner: effective-SP sizing, cumulative SET amount, above-target skipped",
+    [ladder52.length, ladder52[0]?.to, ladder52[0]?.sp, ladder52[0]?.setVests],
+    [1, "target", 60, 120000 + 60 * 1600]);
 
   /* 52.6 the day-cap ledger counts ONLY today's BROADCAST receipts of the
    * ladder type — yesterday's, other types, and failures never inflate */
