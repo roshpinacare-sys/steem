@@ -1450,3 +1450,34 @@ export function shouldFleetSweep(lastSweepAt, nowMs = Date.now(), minGapMs = 30 
   if (!Number.isFinite(t)) return true;
   return nowMs - t >= minGapMs;
 }
+
+/* ═══ W17 · BACKING-FLOOR LAW (חוק-רצפת-הגיבוי · owner-approved, T29 spec) ═══
+ * The T27-measured root: the exchange arm sold custody anchor assets above the
+ * float WITHOUT crediting the credit (CSTEEM custody-deficit). The owner
+ * approved the prevention law ("כן תתקין") and transferred implementation to
+ * the W14 lane. THE LAW (per-asset 1:1): a custody sale of an anchor asset
+ * (STEEM→SBD · SBD→STEEM · market sale) may broadcast ONLY when
+ *   measured[asset] − sale_amount ≥ outstanding[credit]
+ * with the refusal verdict carrying the detail (steem_after=X < csteem=Y) —
+ * never a guess, never a crash (the MONEYGATE fail-closed family). The single
+ * override lane: an explicit owner order ref (recorded in the verdict).
+ * PURE — zero IO, zero deps (the lib's law); the custody-credit state reader
+ * + the refusal journal live in custody-credit.mjs (the wrapper). */
+export function backingFloorLaw(asset, saleAmount, measuredAvailable, outstanding, overrideRef = null) {
+  const isSteem = asset === "STEEM";
+  const isSbd = asset === "SBD";
+  if (!isSteem && !isSbd) return { allow: false, verdict: "UNKNOWN-ASSET", detail: { asset: asset ?? null } };
+  const sale = Number(saleAmount);
+  const measured = Number(measuredAvailable);
+  const floor = Number(outstanding);
+  if (!Number.isFinite(sale) || !Number.isFinite(measured) || !Number.isFinite(floor)) {
+    return { allow: false, verdict: "MEASUREMENT-GAP", detail: { asset: isSteem ? "STEEM" : "SBD", sale, measured, floor } };
+  }
+  const after = Math.round((measured - sale) * 1e6) / 1e6;
+  const detail = isSteem
+    ? { asset: "STEEM", steem_after: after, csteem: floor }
+    : { asset: "SBD", sbd_after: after, csbd: floor };
+  if (overrideRef) return { allow: true, verdict: "OVERRIDE-RECORDED", detail: { ...detail, overrideRef: String(overrideRef).slice(0, 80) } };
+  if (after >= floor) return { allow: true, verdict: "BACKING-FLOOR-OK", detail };
+  return { allow: false, verdict: "BACKING-FLOOR-REFUSED", detail };
+}
