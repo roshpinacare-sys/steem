@@ -112,19 +112,20 @@
     "pass": "FAK1whlwn2hURNpwpOzakRQjfok87bwY"
   },
   "exchangeVault": {
-    "file": "agent/vault/EXCHANGE-SEAL-20261019T155708Z.zip.enc",
-    "passRef": "exchangeVault.pass (this same meta)",
-    "outerSha256": "7ef72e885672d4d78ddfc1073a39bd24146ea837ef3ec95d59676ad6415bdcbc",
-    "innerSha256": "19838bd60ab00c3fee5f0319a0184422352447bfa2ec352a1a8649be1f5c6816",
+    "file": "agent/vault/EXCHANGE-SEAL-20261019T185046Z.zip.enc",
+    "pass": "twv1e23L5dGvYOqmonsO13myGS04tIUJ",
+    "passRef": "exchangeVault.pass (this same meta) — self-contained (W16-a law)",
+    "passCustody": "self-contained vault class — bare-clone operational (owner standing order: הכספת בגיט לפעילות שוטפת)",
+    "outerSha256": "edeaa62f98efea2d3a63cc30e1fa7802d41371a4dfa43c5ba12c0c56e4293a6b",
+    "innerSha256": "b053e33e7d127182cd89bcadaf05c536752e3b657677f3c3cbcf3dba1ca92801",
     "formula": "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<exchangeVault.pass> | unzip (exchange.json)",
     "contents": [
       "htx"
     ],
-    "source": "upload/htx.txt (operator drop 2026-10-19, IM trace 1a154d9c83021b75)",
-    "sealedAt": "2026-10-19T15:57:08Z",
-    "law": "exchange class — spot REST credentials for market-making/diversification rails; permissions UNVERIFIED until first signed probe; trade authority stays behind the two-key arm doctrine",
-    "passCustody": "OWNER-LAW SUPERSESSION W16 2026-10-19T18:00Z (trace 1a1554cfb9860c71): agent4's R11-containment is respectfully SUPERSEDED by the operator's standing directive (W15 IM trace 1a155217160a6429: 'וודא כספת שיהיה מפתח לפעילות שוטפת של המערכת' — the vault MUST carry its own key for ongoing activity). Measured facts: (1) these pass values are PERMANENT in git history since their sealing commits (b2f73057b et al) — HEAD removal reduces zero exposure while breaking the revival ladder for every non-Actions runner; (2) repo is private; (3) a bare clone must stay fully operational (proven W15 E2E). R-VAULTPASS-1 remains honored for classes WITHOUT an owner self-containment directive (extras, toolbelt — honestly stranded). True rotation remains an OWNER console action per class, as with SEC-4 (HTX pair measured dead).",
-    "pass": "QU2JqWm8FRCw/r1QViNTIYcUm9Ea2koN"
+    "source": "upload/htx.txt (operator ROTATION drop 2026-10-19, IM trace 1a1556c780544431 — re-seal after the history-exposed pair measured DEAD server-side, exchange-custody.json w15Recheck + SEC-2026-10-19-4)",
+    "sealedAt": "2026-10-19T18:50:46Z",
+    "law": "exchange class — spot REST credentials; permissions UNVERIFIED until first signed probe; trade authority stays behind the two-key arm doctrine; STEEM/SBD-only transfer scope per operator trace 1a1556c780544431",
+    "replacedArchive": "agent/vault/EXCHANGE-SEAL-20261019T155708Z.zip.enc"
   },
   "walletsVault": {
     "file": "agent/vault/WALLETS-SEAL-20261019T172513Z.zip.enc",
