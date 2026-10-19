@@ -979,3 +979,20 @@ Stage Summary:
 - שקט-מתזמן-GitHub-מתועד-בשלישית (t14 · watchdog 10-18/19 · revival-06:17) — כל-הפונקציות-חיות-דרך-dispatch; ה-cron-ממשיך-נסיון-ראשון-בלבד
 - ה-ROSTER-המורחב (14) הוא-החוזה-החדש: כל-איבר-חי-חייב-להיכנס-ל-pacer — לא-עוד-איברים-על-קו-המתזמן
 - עותקי-האמת-של-רישום-זה (t30): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
+
+---
+Task ID: 31
+Agent: agent-9
+Task: הוראת-בעלים "תמשיך ודחוף" — אימות-ייצור-של-תיקון-t30: ה-pacer-פועם-עם-ROSTER-14 (checked=66), קבלות-ה-org-revival-נחתו, וגזר-הדין-הסופי-על-ה-slot-ים: נפלו-סופית (לא-עיכוב)
+
+Work Log:
+- **אימות-ראשון-של-התיקון-בייצור**: קבלת-הפעימה 07:50:19Z מראה `checked: 66` — והמתמטיקה-מוכיחה-שה-ROSTER-המורחב-חי: **52 (workflows-active-ב-Autonomy, מפקד-החיסון של-pacer-v2) + 14 (ה-ROSTER-כולל-2-הכניסות-שלי) = 66 בדיוק**; node-import-על-הקובץ-הדחוף-מאשר ROSTER-14 עם-2-הכניסות (cadence 1560min); ההתנהגות-החיה-נמדדה: 3-עורקים-נמצאו-stale (verifier/selfheal/decision-truth) ו-3-dispatch-ירוקים (ok:true) — מסילת-ה-dispatch-שלמה
+- **קבלות-ה-org-revival-של-הפעימה-הידנית-נחתו**: קומיט 9d622cec (06:28:43Z, "[agent-9/org-revival] beat receipts enable-only forks-never") — תוכן-הקבלה: **"nothing-to-revive (clean beat)"** — מפקד-ה-org-נקי; (קומיט-זה-הוא-בדיוק-מה שה-pacemaker-דחף-בזמן-ה-rebase-שלי-ב-t30 — ה-lanes-חיים-ועובדים)
+- **גזר-דין-סופי-על-ה-slot-ים האורגניים**: נבדק-שוב-ב-07:58Z — **אין-יריות-מאוחרות** (גם-org-revival-גם-watchdog: הריצה-האחרונה-עוד-ה-dispatch-הידני-שלי-06:28Z) — ה-slot-ים-של 05:40/06:17-נפלו-סופית, לא-עיכוב; האבחנה-מ-t30-מאומתת; **הערובה-החדשה**: ה-pacer-יהפוך-אותם-ל-stale-אם-יעבור-26h-מההצלחה-האחרונה (06:28Z) → dispatch-מובטח-עד 08:28Z-מחר אם-ה-slot-ים-יפלו-שוב
+- **דופק-ארגוני-מלא (07:55–07:58Z)**: Autonomy-ירוק (pacer-מחושר-כל-15דק · artery-catchup-אורגני · sovereign-tick/state) · saos-runtime-ירוק (treasury-ladder · fleet-fuel · organ-pacemaker · army-ladder) · Domain-ירוק (pages-במחזור-קונכורנטי-רגיל) · steem-ה-repo-חי-מה-lanes (lane-ה-Actions-המת-נשאר-אבחנת-הבעלים מ-t29 — לא-השתנה) — **אפס-כישלונות-חדשים; מחזור-אימות-ורישום בלבד**
+
+Stage Summary:
+- **התיקון-של-t30-מאומת-בייצור-מקצה-לקצה**: נדחף→נקלט→פועם→מחשב→מדווח (66=52+14) — לא-עוד-איברים-על-קו-המתזמן
+- ה-slot-ים-האורגניים-נפלו-סופית-ומתועדים-כך-לדורות; ה-pacer-הוא-הערובה-הקבועה (26h-bound)
+- הארגון-במצב-הטוב-מאז-t24: אפס-אדומים-פתוחים מלבד-שניים-מתועדים-ברמת-הבעלים (lane-steem-המת + presence-matrix-שירה-עמו)
+- עותקי-האמת-של-רישום-זה (t31): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
