@@ -24,6 +24,18 @@
  *     dormant-keyless bodies (hcsoldier5 today) recalled to the master.
  *     Zero-amount recalls are also policy-gated (allowDelegationRecall).
  *
+ * W12-b · THE SP-LADDER LEAVE (the one-flag unlock, measured): the operator's
+ * W12 verbatim directive (mutual-support smart rebalancing) + the owner-
+ * approved command hierarchy (delegate_vesting_shares = T1 REVERSIBLE,
+ * 7-day undelegation, capped) arm the ladder's EXECUTION leg. Two keys must
+ * turn together or nothing leaves PLAN-ONLY: (1) the operator's live flag
+ * (.secrets/exec-armed.json policy.allowDelegation=true), (2) the committed
+ * order record (state/operator-orders.json W12B-SP-LADDER). A REAL day-cap
+ * ledger (measured from receipts, per UTC day — the planner knob counts
+ * per-cycle by design and must never be the execution cap) bounds the
+ * blast radius; every attempt lands a receipt; the think-gate owns every
+ * broadcast exactly as before — this rail never bypasses it.
+ *
  * LAWS: measured inputs only (fleet-matrix) · T-80 (frozen bodies never
  * receive) · day-cap on executed transfers (≤2/cycle, chain-spaced) ·
  * receipts for every attempt · pure planner fully selftested.
@@ -59,6 +71,57 @@ export const REBALANCE_POLICY = {
 };
 
 const isVerified = (c) => c === "verified" || c === "master-verified" || c === "era-verified" || c === "master-era-verified";
+
+/* W12-b · the committed order record — the LAWFUL ORDER the live flag must
+ * answer to. Zero secrets: quotes + scope only. If the record is missing,
+ * disarmed, or names another op, the ladder stays PLAN-ONLY even with the
+ * flag on (two keys, one door). */
+const ORDERS_FILE = path.join(STATE_DIR, "operator-orders.json");
+export function operatorOrderArmed(orderId) {
+  const o = readJson(ORDERS_FILE, null);
+  const ord = o?.orders?.[orderId];
+  return ord?.armed === true && ord?.op === "delegate_vesting_shares";
+}
+
+/* W12-b · the REAL day-cap ledger — counted from EXECUTED receipts of this
+ * UTC day. The planner's maxSpMovesPerDay counts per-cycle (by design: it
+ * bounds the PLAN), so the execution leg must measure its own day. A
+ * partial/corrupt receipts line counts as nothing (honest read). */
+export function spLadderExecutedToday(receiptsFile, now, type = "fleet-rebalance-sp-ladder") {
+  try {
+    const day = String(now).slice(0, 10);
+    let n = 0;
+    for (const line of String(fs.readFileSync(receiptsFile, "utf8")).split("\n")) {
+      if (!line) continue;
+      try {
+        const r = JSON.parse(line);
+        if (r.type === type && r.verdict === "BROADCAST" && String(r.at ?? "").slice(0, 10) === day) n += 1;
+      } catch { /* partial line — skip */ }
+    }
+    return n;
+  } catch { return 0; }
+}
+
+/* W12-b · the execution partition — PURE in verdicts, identity-keeping in
+ * selection (selftested): executable moves are the ORIGINAL objects with
+ * vests+mode attached (mode flips to "EXEC" so the state filter excludes
+ * them); planned moves become copies with an honest planWhy. Order of
+ * laws: flag → order record → day-cap → math. */
+export function partitionSpLadder(moves, { flagArmed, orderArmed, dayExecuted = 0, maxPerDay = 6, vestsPerSp = null } = {}) {
+  const exec = [], plan = [];
+  let budget = Math.max(0, maxPerDay - dayExecuted);
+  for (const m of moves) {
+    if (!flagArmed) { plan.push({ ...m, planWhy: "flag-off" }); continue; }
+    if (!orderArmed) { plan.push({ ...m, planWhy: "order-record-missing" }); continue; }
+    if (budget <= 0) { plan.push({ ...m, planWhy: "day-cap-reached" }); continue; }
+    const vests = vestsPerSp ? Math.round(m.sp * vestsPerSp) : 0;
+    if (!(vests > 0)) { plan.push({ ...m, planWhy: "no-vestsPerSp" }); continue; }
+    m.vests = vests; m.mode = "EXEC"; /* identity-kept: the state filter reads mode */
+    exec.push(m);
+    budget -= 1;
+  }
+  return { exec, plan };
+}
 
 /* ── pure planner (selftested) ─────────────────────────────────────────── */
 export function planFleetRebalance(matrix, opts = {}) {
@@ -154,7 +217,22 @@ export async function runFleetRebalance({ now = new Date().toISOString(), persis
   const { moves, why } = planFleetRebalance(matrix);
   const executed = [], refused = [];
 
-  for (const m of moves) {
+  /* W12-b · the two-key arm, measured: live flag × committed order record ×
+   * real day-cap ledger × vests math. Pure partition, then sequential
+   * execution — one tx per move (T-80 think-gate owns every broadcast). */
+  const confPol = armedConf().policy ?? {};
+  const flagArmed = confPol.allowDelegation === true;
+  const orderArmed = operatorOrderArmed("W12B-SP-LADDER");
+  const dayExecuted = spLadderExecutedToday(RECEIPTS, now);
+  const ladderMoves = moves.filter((m) => m.kind === "sp-ladder");
+  const otherMoves = moves.filter((m) => m.kind !== "sp-ladder");
+  const { exec: ladderExec, plan: ladderPlan } = partitionSpLadder(ladderMoves, {
+    flagArmed, orderArmed, dayExecuted,
+    maxPerDay: REBALANCE_POLICY.maxSpMovesPerDay,
+    vestsPerSp: matrix.vestsPerSp ?? null,
+  });
+
+  for (const m of otherMoves) {
     if (m.kind === "liquidity-sweep") {
       const amt = `${m.amount.toFixed(3)} ${m.asset}`;
       try {
@@ -166,18 +244,38 @@ export async function runFleetRebalance({ now = new Date().toISOString(), persis
         refused.push({ move: m, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160), at: now });
       }
     } else {
-      /* PLAN-ONLY: standing policy forbids delegation ops — the plan is the
-       * deliverable; the operator's one flag makes it live. Never bypassed. */
+      /* PLAN-ONLY (sp-recall: allowDelegationRecall not armed) — the plan is
+       * the deliverable; the operator's one flag makes it live. Never bypassed. */
       appendLine(RECEIPTS, { type: "fleet-rebalance-plan", at: now, move: m });
     }
+  }
+
+  /* W12-b · the SP-ladder leg — T1 REVERSIBLE ops, master active key, one
+   * tx each, receipts for every attempt (ALLOW and REFUSED alike). */
+  for (const m of ladderExec) {
+    try {
+      const res = await executeAs(m.from, [["delegate_vesting_shares", { delegator: m.from, delegatee: m.to, vesting_shares: `${m.vests} VESTS` }]], { tag: "fleet-rebalance-sp-ladder", role: "active" });
+      const rec = { move: { kind: m.kind, from: m.from, to: m.to, sp: m.sp, vests: m.vests, why: m.why }, verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null, at: now };
+      if (res.ok && (res.verdict === "BROADCAST" || res.verdict === "BROADCAST-SPLIT")) executed.push(rec); else refused.push(rec);
+      appendLine(RECEIPTS, { type: "fleet-rebalance-sp-ladder", at: now, ...rec });
+    } catch (e) {
+      refused.push({ move: m, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160), at: now });
+      appendLine(RECEIPTS, { type: "fleet-rebalance-sp-ladder", at: now, move: { kind: m.kind, from: m.from, to: m.to, sp: m.sp, vests: m.vests }, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160) });
+    }
+  }
+  for (const m of ladderPlan) {
+    /* PLAN-ONLY with the honest why: flag-off / order-record-missing /
+     * day-cap-reached / no-vestsPerSp. Never bypassed. */
+    appendLine(RECEIPTS, { type: "fleet-rebalance-plan", at: now, move: m });
   }
 
   const out = {
     schema: "fleet-rebalance-v1", at: now, why,
     policy: REBALANCE_POLICY,
+    arm: { flag: flagArmed, order: orderArmed, spLadderExecutedToday: dayExecuted, spLadderExecNow: ladderExec.length, spLadderPlannedNow: ladderPlan.length },
     planOnly: moves.filter((m) => m.mode === "PLAN-ONLY"),
     executed, refused,
-    verdict: executed.length ? `EXECUTED-${executed.length}` : (moves.length ? (moves.some((m) => m.mode === "PLAN-ONLY") ? "PLANNED-AWAITING-POLICY" : "NO-EXEC") : "BALANCED"),
+    verdict: executed.length ? `EXECUTED-${executed.length}` : (moves.length ? (moves.some((m) => m.mode === "PLAN-ONLY") ? (flagArmed && orderArmed ? "PLANNED-DAY-CAP" : "PLANNED-AWAITING-POLICY") : "NO-EXEC") : "BALANCED"),
   };
   if (persist) writeJson(REBALANCE_FILE, out);
   return out;

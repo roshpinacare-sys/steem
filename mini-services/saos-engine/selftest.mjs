@@ -5475,6 +5475,66 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   fs.rmSync(path.dirname(log51), { recursive: true, force: true });
 }
 
+/* ═══ SECTION 52 · W12-b SP-LADDER EXECUTION (the two-key arm) ════════════
+ * The owner's W12 verbatim directive arms the ladder's EXECUTION leg under
+ * the owner-approved T1 REVERSIBLE classification. These vectors pin the
+ * pure laws: the two-key gate (live flag × committed order record), the
+ * REAL day-cap ledger (the planner knob counts per-cycle and must never be
+ * the execution cap), the vests math, and the honest planWhy vocabulary.
+ * Zero network. */
+{
+  const { partitionSpLadder, spLadderExecutedToday, operatorOrderArmed } = await import("./fleet-rebalance.mjs");
+
+  const mkMoves = (n) => Array.from({ length: n }, (_, i) => ({ kind: "sp-ladder", from: "headcorner", to: `soldier${i}`, sp: 60, mode: "PLAN-ONLY", why: "RC bottleneck" }));
+
+  /* 52.1 flag off → everything plans, nothing executes (the default world) */
+  const p1 = partitionSpLadder(mkMoves(3), { flagArmed: false, orderArmed: true, vestsPerSp: 1611.57 });
+  eq("52.1a flag-off: all plan, zero exec", [p1.exec.length, p1.plan.length, p1.plan[0].planWhy], [0, 3, "flag-off"]);
+  eq("52.1b flag-off keeps the original mode untouched", p1.plan.every((m) => m.mode === "PLAN-ONLY"), true);
+
+  /* 52.2 flag on but the committed order record is missing/disarmed → plan */
+  const p2 = partitionSpLadder(mkMoves(2), { flagArmed: true, orderArmed: false, vestsPerSp: 1611.57 });
+  eq("52.2 order-record-missing blocks even with the flag on",
+    [p2.exec.length, p2.plan.length, p2.plan[0].planWhy], [0, 2, "order-record-missing"]);
+
+  /* 52.3 both keys armed → exec with the vests math, identity-kept */
+  const mv3 = mkMoves(2);
+  const p3 = partitionSpLadder(mv3, { flagArmed: true, orderArmed: true, vestsPerSp: 1611.57 });
+  eq("52.3a exec math: 60 SP × 1611.57 → 96694 VESTS", [p3.exec.length, p3.exec[0].vests], [2, 96694]);
+  eq("52.3b identity-kept: the ORIGINAL object flips mode to EXEC (state filter excludes it)",
+    [mv3[0].mode, mv3[0].vests, p3.exec[0] === mv3[0]], ["EXEC", 96694, true]);
+
+  /* 52.4 the REAL day-cap: budget = maxPerDay − measured executed today */
+  const p4 = partitionSpLadder(mkMoves(5), { flagArmed: true, orderArmed: true, dayExecuted: 3, maxPerDay: 6, vestsPerSp: 1000 });
+  eq("52.4a day-cap headroom: 6−3 → exactly 3 exec, 2 plan", [p4.exec.length, p4.plan.length, p4.plan[0].planWhy], [3, 2, "day-cap-reached"]);
+  const p4b = partitionSpLadder(mkMoves(2), { flagArmed: true, orderArmed: true, dayExecuted: 6, maxPerDay: 6, vestsPerSp: 1000 });
+  eq("52.4b cap spent: zero exec", [p4b.exec.length, p4b.plan[0].planWhy], [0, "day-cap-reached"]);
+
+  /* 52.5 no vestsPerSp (probe gap) → plan, never a blind broadcast */
+  const p5 = partitionSpLadder(mkMoves(1), { flagArmed: true, orderArmed: true, vestsPerSp: null });
+  eq("52.5 no-vestsPerSp plans honestly", [p5.exec.length, p5.plan[0].planWhy], [0, "no-vestsPerSp"]);
+
+  /* 52.6 the day-cap ledger counts ONLY today's BROADCAST receipts of the
+   * ladder type — yesterday's, other types, and failures never inflate */
+  const rec52 = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "saos-w52-")), "fleet-rebalance.jsonl");
+  fs.writeFileSync(rec52, [
+    JSON.stringify({ type: "fleet-rebalance-sp-ladder", at: "2026-10-19T08:00:00Z", verdict: "BROADCAST", txid: "a" }),
+    JSON.stringify({ type: "fleet-rebalance-sp-ladder", at: "2026-10-19T09:00:00Z", verdict: "BROADCAST", txid: "b" }),
+    JSON.stringify({ type: "fleet-rebalance-sp-ladder", at: "2026-10-19T09:30:00Z", verdict: "BROADCAST-FAIL", error: "x" }),
+    JSON.stringify({ type: "fleet-rebalance", at: "2026-10-19T10:00:00Z", verdict: "BROADCAST", txid: "c" }), // sweep, other type
+    JSON.stringify({ type: "fleet-rebalance-sp-ladder", at: "2026-10-18T23:59:00Z", verdict: "BROADCAST", txid: "d" }), // yesterday
+    "partial-line-without-newline",
+  ].join("\n") + "\n");
+  eq("52.6 ledger counts today's ladder BROADCASTs only",
+    [spLadderExecutedToday(rec52, "2026-10-19T11:00:00Z"), spLadderExecutedToday(rec52, "2026-10-18T12:00:00Z"), spLadderExecutedToday(path.join(os.tmpdir(), "does-not-exist-52"), "2026-10-19T11:00:00Z")],
+    [2, 1, 0]);
+  fs.rmSync(path.dirname(rec52), { recursive: true, force: true });
+
+  /* 52.7 the committed order record: armed for the ladder op, nothing else */
+  eq("52.7 operator order record gates by id+op",
+    [operatorOrderArmed("W12B-SP-LADDER"), operatorOrderArmed("NO-SUCH-ORDER")], [true, false]);
+}
+
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
