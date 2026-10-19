@@ -5572,6 +5572,90 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 }
 
 
+/* ═══ SECTION 53 · W12-c THE ABSOLUTE BOUNDARY (live re-proof · floor · restore) ═
+ * The 2026-10-19 incident (a stale-runner delta-SET reduced 6 soldiers for
+ * 8 minutes) proved the matrix-cached guard insufficient: a guard is only
+ * as fresh as the runner's checkout. These vectors pin the git-born laws:
+ * the chain-live re-proof, the monotonic support floor, and the day-cap-
+ * exempt restore leg. Zero network. */
+{
+  const { reproveAgainstLive, planSpRestores, mergeFloorFromBroadcast, readSupportFloor, writeSupportFloor, spLadderExecutedToday } = await import("./fleet-rebalance.mjs");
+
+  /* 53.1 LIVE RE-PROOF: the exact incident shape — a delta-SET (96694)
+   * against a live level (120973.543161) is demoted BEFORE key material,
+   * while a true raise passes; equal is a no-op and demoted. */
+  const mv53 = [
+    { kind: "sp-ladder", from: "headcorner", to: "cashmachine", sp: 60, setVests: 96694, mode: "EXEC" },        /* live 120973 → REDUCE */
+    { kind: "sp-ladder", from: "headcorner", to: "siq", sp: 60, setVests: 217667.543161, mode: "EXEC" },        /* live 131433 → RAISE */
+    { kind: "sp-ladder", from: "headcorner", to: "lsa", sp: 60, setVests: 120973.543161, mode: "EXEC" },        /* equal → NO-OP */
+  ];
+  const live53 = { cashmachine: 120973.543161, siq: 131433.457529, lsa: 120973.543161 };
+  const r53 = reproveAgainstLive(mv53, live53, {});
+  eq("53.1a live-guard demotes reduce+noop, keeps the raise",
+    [r53.exec.map((m) => m.to), r53.demoted.map((m) => m.planWhy)],
+    [["siq"], ["live-guard-would-reduce-or-noop", "live-guard-would-reduce-or-noop"]]);
+  eq("53.1b demotion never mutates the verdict vocabulary (honest why, PLAN-ONLY)",
+    [r53.demoted[0].mode, r53.demoted[0].setVests], ["PLAN-ONLY", 96694]);
+
+  /* 53.2 THE FLOOR: even with a LIED-TO live view (stale runner believes
+   * current = 0), a broadcast below the committed floor cannot pass. */
+  const r53b = reproveAgainstLive([mv53[0]], { cashmachine: 0 }, { cashmachine: { vests: 120973.543161 } });
+  eq("53.2 floor-guard blocks the delta-SET even when the live view is blind",
+    [r53b.exec.length, r53b.demoted[0]?.planWhy], [0, "floor-guard-would-reduce-or-noop"]);
+
+  /* 53.3 MONOTONIC MERGE: a broadcast can only RAISE a floor — the 96,694
+   * bug-shape broadcast can never drag 120,973 down; garbage never seeds. */
+  const fl53 = { cashmachine: { vests: 120973.543161 } };
+  eq("53.3a lower broadcast never lowers the floor", mergeFloorFromBroadcast(fl53, "cashmachine", 96694).cashmachine.vests, 120973.543161);
+  eq("53.3b raise broadcast raises the floor", mergeFloorFromBroadcast(fl53, "cashmachine", 217667.543161).cashmachine.vests, 217667.543161);
+  eq("53.3c garbage amount is a no-op (never seeds a floor from nothing)", mergeFloorFromBroadcast({}, "x", 0).x, undefined);
+  eq("53.3d new soldier raises from zero", mergeFloorFromBroadcast({}, "newblood", 96694).newblood.vests, 96694);
+
+  /* 53.4 THE RESTORE LEG: live < floor ⇒ exact-floor SET, day-cap-exempt,
+   * T-80-safe (verified + active bodies only), capped ≤6. */
+  const floors54 = {
+    cashmachine: { vests: 120973.543161 },  /* live dropped (the incident) */
+    siq: { vests: 131433.457529 },          /* live intact → no restore */
+    hcsoldier5: { vests: 50000 },           /* frozen/keyless → T-80 refuses */
+  };
+  const rows53 = [
+    { name: "cashmachine", custody: "era-verified", class: "GRID-ACTIVE" },
+    { name: "siq", custody: "era-verified", class: "GRID-ACTIVE" },
+    { name: "hcsoldier5", custody: "none", class: "FROZEN-NO-CUSTODY" },
+  ];
+  const rs53 = planSpRestores({ floors: floors54, liveDelegations: { cashmachine: 96694, siq: 131433.457529, hcsoldier5: 0 }, rows: rows53 });
+  eq("53.4a restore: exactly one move, exact floor, drop measured",
+    [rs53.length, rs53[0]?.to, rs53[0]?.setVests, rs53[0]?.dayCapExempt, rs53[0]?.drop],
+    [1, "cashmachine", 120973.543161, true, 24279.543161]);
+  eq("53.4b idempotent: live == floor plans nothing",
+    planSpRestores({ floors: floors54, liveDelegations: { cashmachine: 120973.543161, siq: 131433.457529 }, rows: rows53 }).length, 0);
+  eq("53.4c T-80: a frozen body below floor still gets nothing",
+    planSpRestores({ floors: { hcsoldier5: { vests: 50000 } }, liveDelegations: { hcsoldier5: 0 }, rows: rows53 }).length, 0);
+  eq("53.4d live-unreachable ⇒ zero restore moves (fail-closed, never guess)",
+    planSpRestores({ floors: floors54, liveDelegations: null, rows: rows53 }).length, 0);
+
+  /* 53.5 REPAIR IS NOT GROWTH: restore receipts never count toward the
+   * ladder's day-cap ledger (different type — the ledger measures ladder
+   * BROADCASTs only). */
+  const rec53 = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "saos-w53-")), "fleet-rebalance.jsonl");
+  fs.writeFileSync(rec53, [
+    JSON.stringify({ type: "fleet-rebalance-restore", at: "2026-10-19T11:20:18Z", verdict: "BROADCAST", txid: "f9356398" }),
+    JSON.stringify({ type: "fleet-rebalance-restore", at: "2026-10-19T11:20:24Z", verdict: "BROADCAST", txid: "ac938f46" }),
+    JSON.stringify({ type: "fleet-rebalance-sp-ladder", at: "2026-10-19T11:12:56Z", verdict: "BROADCAST", txid: "b5ae2db8" }),
+  ].join("\n") + "\n");
+  eq("53.5 restore broadcasts exempt from the ladder day-cap (2 restores + 1 ladder = cap 1)",
+    spLadderExecutedToday(rec53, "2026-10-19T13:00:00Z"), 1);
+  fs.rmSync(path.dirname(rec53), { recursive: true, force: true });
+
+  /* 53.6 the committed floor file round-trips with its schema gate */
+  const flFile53 = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "saos-w53f-")), "fleet-support-floor.json");
+  writeSupportFloor({ cashmachine: { vests: 120973.543161 } }, { at: "2026-10-19T14:05:00.000Z", why: "seeded" }, flFile53);
+  eq("53.6a floor file reads back through the schema gate", readSupportFloor(flFile53)?.floors?.cashmachine?.vests, 120973.543161);
+  fs.writeFileSync(flFile53, JSON.stringify({ schema: "wrong-schema", floors: {} }));
+  eq("53.6b foreign schema ⇒ null (fail-closed floor = none, guards still hold via live)", readSupportFloor(flFile53), null);
+  fs.rmSync(path.dirname(flFile53), { recursive: true, force: true });
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).

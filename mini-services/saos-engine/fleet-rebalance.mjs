@@ -36,6 +36,30 @@
  * blast radius; every attempt lands a receipt; the think-gate owns every
  * broadcast exactly as before — this rail never bypasses it.
  *
+ * W12-c · THE ABSOLUTE FLOOR (chain-judged 2026-10-19): a stale/divergent
+ * runner (old sandbox checkout — the exact disease the owner warns about:
+ * "שלא תעבוד על קומיט ישן מהסנדבוקס") re-broadcast the delta-SET bug
+ * (96694 vs live 120973) and REDUCED 6 soldiers for 8 minutes before its
+ * own heal leg restored byte-exact (receipts: 11:12 reduce → 11:20 restore).
+ * The matrix-cached never-reduce guard was proven insufficient: the guard
+ * is only as fresh as the runner's checkout. Three git-born laws close the
+ * class for ANY runner executing git code:
+ *   1. LIVE RE-PROOF — before any delegate_vesting_shares broadcast the
+ *      current master→soldier level is re-measured FROM THE CHAIN (never
+ *      from a cache); would-reduce-or-noop is refused at the boundary.
+ *      Chain-unavailable ⇒ fail-closed: zero exec, honest planWhy.
+ *   2. THE MONOTONIC SUPPORT FLOOR — state/fleet-support-floor.json records
+ *      the proven support level per soldier (seeded from chain truth,
+ *      updated ONLY upward by successful broadcasts: floor = max(floor,
+ *      broadcast)). A broadcast below the floor is refused before key
+ *      material — even if the runner's entire matrix view is a lie.
+ *      Deliberate reduction stays possible ONLY via a committed operator
+ *      order editing the floor file (same two-key culture as the ladder).
+ *   3. THE RESTORE LEG (day-cap-exempt) — whenever live < floor, the rail
+ *      plans and (two-key armed) broadcasts an exact floor restore, tagged
+ *      fleet-rebalance-restore, journaled, NEVER counted by the ladder's
+ *      day-cap ledger (repair is not growth). Capped ≤6 restores/cycle.
+ *
  * LAWS: measured inputs only (fleet-matrix) · T-80 (frozen bodies never
  * receive) · day-cap on executed transfers (≤2/cycle, chain-spaced) ·
  * receipts for every attempt · pure planner fully selftested.
@@ -45,6 +69,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { executeAs, armedConf, execPaused } from "./signer.mjs";
 import { readFleetMatrix, measureFleetMatrix } from "./fleet-matrix.mjs";
+import { rpcCall } from "./measure.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE_DIR = path.join(DIR, "state");
@@ -71,6 +96,81 @@ export const REBALANCE_POLICY = {
 };
 
 const isVerified = (c) => c === "verified" || c === "master-verified" || c === "era-verified" || c === "master-era-verified";
+
+/* ── W12-c · the monotonic support floor (the absolute never-reduce law) ──
+ * floors[soldier].vests is the LOWEST support level the estate has proven
+ * and committed; the chain may only be HIGHER. Updated exclusively by
+ * successful raise broadcasts (max-merge), so a buggy delta-SET can never
+ * drag the floor down — the 11:12 incident class dies at this file. */
+const FLOOR_FILE = path.join(STATE_DIR, "fleet-support-floor.json");
+export function readSupportFloor(file = FLOOR_FILE) {
+  const f = readJson(file, null);
+  return f?.schema === "fleet-support-floor-v1" && f.floors && typeof f.floors === "object" ? f : null;
+}
+export function writeSupportFloor(floors, meta, file = FLOOR_FILE) {
+  writeJson(file, { schema: "fleet-support-floor-v1", at: meta?.at ?? new Date().toISOString(), why: meta?.why ?? "seeded", floors });
+}
+export function mergeFloorFromBroadcast(floors, to, vests) {
+  const prev = Number(floors?.[to]?.vests ?? 0);
+  const next = Number(vests);
+  if (!(next > 0)) return floors; /* no-op on garbage — never seed from nothing */
+  if (next <= prev + 1e-6) return floors; /* monotonic: a broadcast never LOWERS the floor */
+  return { ...floors, [to]: { vests: next, since: new Date().toISOString(), why: "broadcast-raise" } };
+}
+/* W12-c · pure boundary guard: re-prove each EXEC move against LIVE chain
+ * levels AND the committed floor; a move that would reduce either is
+ * demoted to plan with an honest why (before any key material). */
+export function reproveAgainstLive(moves, liveDelegations, floors = {}) {
+  const exec = [], demoted = [];
+  for (const m of moves) {
+    const setVests = Number(m.setVests ?? 0);
+    const live = liveDelegations?.[m.to];
+    const floorV = Number(floors?.[m.to]?.vests ?? 0);
+    if (live != null && !(setVests > Number(live) + 1e-6)) { demoted.push({ ...m, mode: "PLAN-ONLY", planWhy: "live-guard-would-reduce-or-noop" }); continue; }
+    if (floorV > 0 && !(setVests > floorV + 1e-6)) { demoted.push({ ...m, mode: "PLAN-ONLY", planWhy: "floor-guard-would-reduce-or-noop" }); continue; }
+    exec.push(m);
+  }
+  return { exec, demoted };
+}
+/* W12-c · pure restore planner: live < floor ⇒ an exact-floor SET, T-80-safe
+ * (verified + active bodies only), capped, day-cap-exempt by type. */
+export function planSpRestores({ floors, liveDelegations, rows = [], maxRestores = 6 } = {}) {
+  const moves = [];
+  if (!floors || !liveDelegations) return moves;
+  const rowByName = new Map(rows.map((r) => [r.name, r]));
+  for (const [to, f] of Object.entries(floors)) {
+    if (moves.length >= maxRestores) break;
+    if (to === MASTER) continue;
+    const floorV = Number(f?.vests ?? 0);
+    const live = Number(liveDelegations?.[to] ?? 0);
+    if (!(floorV > 0) || !(live + 1e-6 < floorV)) continue;
+    const r = rowByName.get(to);
+    if (!r || !isVerified(r.custody)) continue; /* T-80: unknown/frozen bodies get nothing */
+    const active = r.class === "GRID-ACTIVE" || r.class === "CURATE-ONLY";
+    if (!active) continue;
+    moves.push({
+      kind: "sp-restore", from: MASTER, to, setVests: floorV,
+      curVests: live, drop: Math.round((floorV - live) * 1e6) / 1e6,
+      dayCapExempt: true, mode: "PLAN-ONLY", requiredFlag: "policy.allowDelegation=true",
+      why: `support dropped below the committed floor: live ${Math.round(live * 1e6) / 1e6} < floor ${Math.round(floorV * 1e6) / 1e6} — exact-floor restore (repair, not growth; never counted by the ladder day-cap)`,
+    });
+  }
+  return moves;
+}
+/* W12-c · LIVE chain re-proof (the boundary's measured input). Returns a
+ * plain map {delegatee: vests-number} or null when the chain is unreachable
+ * (fail-closed callers must then refuse every exec, not guess). */
+export async function liveMasterDelegations(timeoutMs = 12000) {
+  try {
+    const d = await rpcCall("condenser_api.get_vesting_delegations", [MASTER, null, 100], timeoutMs);
+    const out = {};
+    for (const x of (d?.result ?? [])) {
+      const v = Number(String(x?.vesting_shares ?? "0").split(" ")[0]);
+      if (x?.delegatee && v > 0 && !out[x.delegatee]) out[x.delegatee] = v;
+    }
+    return out;
+  } catch { return null; }
+}
 
 /* W12-b · the committed order record — the LAWFUL ORDER the live flag must
  * answer to. Zero secrets: quotes + scope only. If the record is missing,
@@ -260,6 +360,62 @@ export async function runFleetRebalance({ now = new Date().toISOString(), persis
     currentDelegations,
   });
 
+  /* ── W12-c · THE BOUNDARY LAWS (chain-judged 2026-10-19 incident) ─────
+   * 1) ONE live chain re-proof for every leg that might broadcast a
+   *    delegation op. Chain unreachable ⇒ fail-closed: everything plans,
+   *    nothing executes (an honest refusal is never a failure).
+   * 2) RESTORE FIRST: live < committed floor ⇒ exact-floor SET (day-cap
+   *    exempt — repair is not growth), same two-key arm, then the ladder. */
+  const floorsObj = readSupportFloor()?.floors ?? {};
+  const execDelegLegs = flagArmed && orderArmed && (ladderExec.length > 0 || Object.keys(floorsObj).length > 0);
+  const live = execDelegLegs ? await liveMasterDelegations() : null;
+  const liveProofOk = live != null;
+
+  let restoreMoves = [];
+  const restoreExec = [], restorePlan = [];
+  if (Object.keys(floorsObj).length > 0) {
+    restoreMoves = planSpRestores({ floors: floorsObj, liveDelegations: live, rows: matrix.rows });
+    if (liveProofOk && flagArmed && orderArmed && restoreMoves.length > 0) {
+      for (const m of restoreMoves) {
+        m.mode = "EXEC";
+        try {
+          const res = await executeAs(m.from, [["delegate_vesting_shares", { delegator: m.from, delegatee: m.to, vesting_shares: `${Number(m.setVests).toFixed(6)} VESTS` }]], { tag: "fleet-rebalance-restore", role: "active" });
+          const rec = { move: { kind: m.kind, from: m.from, to: m.to, setVests: m.setVests, curVests: m.curVests, why: m.why }, verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null, at: now };
+          if (res.ok && (res.verdict === "BROADCAST" || res.verdict === "BROADCAST-SPLIT")) { restoreExec.push(rec); }
+          else refused.push(rec);
+          appendLine(RECEIPTS, { type: "fleet-rebalance-restore", at: now, ...rec });
+        } catch (e) {
+          const rec = { move: m, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160), at: now };
+          refused.push(rec);
+          appendLine(RECEIPTS, { type: "fleet-rebalance-restore", at: now, ...rec });
+        }
+      }
+    } else {
+      for (const m of restoreMoves) {
+        const planWhy = !flagArmed ? "flag-off" : !orderArmed ? "order-record-missing" : "live-guard-unavailable";
+        restorePlan.push({ ...m, planWhy });
+        appendLine(RECEIPTS, { type: "fleet-rebalance-restore-plan", at: now, move: { ...m, planWhy } });
+      }
+    }
+  }
+
+  /* 3) LIVE RE-PROOF of the ladder's exec list (the matrix-cached guard
+   *    already passed — the chain is the final judge, the floor the
+   *    absolute one). Demotions land as honest plan receipts. */
+  let demotedByLive = [];
+  if (ladderExec.length > 0) {
+    if (liveProofOk) {
+      const rp = reproveAgainstLive(ladderExec, live, floorsObj);
+      demotedByLive = rp.demoted;
+      ladderExec.length = 0;
+      ladderExec.push(...rp.exec);
+      for (const d of demotedByLive) appendLine(RECEIPTS, { type: "fleet-rebalance-plan", at: now, move: d });
+    } else {
+      for (const m of ladderExec) { ladderPlan.push({ ...m, planWhy: "live-guard-unavailable" }); appendLine(RECEIPTS, { type: "fleet-rebalance-plan", at: now, move: { ...m, planWhy: "live-guard-unavailable" } }); }
+      ladderExec.length = 0;
+    }
+  }
+
   for (const m of otherMoves) {
     if (m.kind === "liquidity-sweep") {
       const amt = `${m.amount.toFixed(3)} ${m.asset}`;
@@ -279,12 +435,18 @@ export async function runFleetRebalance({ now = new Date().toISOString(), persis
   }
 
   /* W12-b · the SP-ladder leg — T1 REVERSIBLE ops, master active key, one
-   * tx each, receipts for every attempt (ALLOW and REFUSED alike). */
+   * tx each, receipts for every attempt (ALLOW and REFUSED alike).
+   * W12-c · every successful raise MERGES INTO THE MONOTONIC FLOOR (max-only),
+   * so this very broadcast becomes the next runner's absolute boundary. */
   for (const m of ladderExec) {
     try {
       const res = await executeAs(m.from, [["delegate_vesting_shares", { delegator: m.from, delegatee: m.to, vesting_shares: `${Number(m.setVests).toFixed(6)} VESTS` }]], { tag: "fleet-rebalance-sp-ladder", role: "active" });
       const rec = { move: { kind: m.kind, from: m.from, to: m.to, sp: m.sp, setVests: m.setVests, curSpEffective: m.curSpEffective ?? null, why: m.why }, verdict: res.verdict, txid: res.txid ?? null, error: res.error ?? null, at: now };
-      if (res.ok && (res.verdict === "BROADCAST" || res.verdict === "BROADCAST-SPLIT")) executed.push(rec); else refused.push(rec);
+      if (res.ok && (res.verdict === "BROADCAST" || res.verdict === "BROADCAST-SPLIT")) {
+        executed.push(rec);
+        const merged = mergeFloorFromBroadcast(floorsObj, m.to, m.setVests);
+        if (merged !== floorsObj) { floorsObj[m.to] = merged[m.to]; writeSupportFloor(floorsObj, { at: now, why: "broadcast-raise" }); }
+      } else refused.push(rec);
       appendLine(RECEIPTS, { type: "fleet-rebalance-sp-ladder", at: now, ...rec });
     } catch (e) {
       refused.push({ move: m, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 160), at: now });
@@ -299,8 +461,9 @@ export async function runFleetRebalance({ now = new Date().toISOString(), persis
 
   const out = {
     schema: "fleet-rebalance-v1", at: now, why,
+    railVersion: "W12-c",
     policy: REBALANCE_POLICY,
-    arm: { flag: flagArmed, order: orderArmed, spLadderExecutedToday: dayExecuted, spLadderExecNow: ladderExec.length, spLadderPlannedNow: ladderPlan.length },
+    arm: { flag: flagArmed, order: orderArmed, spLadderExecutedToday: dayExecuted, spLadderExecNow: ladderExec.length, spLadderPlannedNow: ladderPlan.length, restoreExecutedNow: restoreExec.length, restorePlannedNow: restorePlan.length, liveProof: liveProofOk },
     planOnly: moves.filter((m) => m.mode === "PLAN-ONLY"),
     executed, refused,
     verdict: executed.length ? `EXECUTED-${executed.length}` : (moves.length ? (moves.some((m) => m.mode === "PLAN-ONLY") ? (flagArmed && orderArmed ? "PLANNED-DAY-CAP" : "PLANNED-AWAITING-POLICY") : "NO-EXEC") : "BALANCED"),
