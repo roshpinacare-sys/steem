@@ -229,6 +229,49 @@ export async function htxTransactFeeRate(symbols, { timeoutMs = 10000, cfg = nul
   return htxPrivate("GET", "/v2/reference/transact-fee-rate", { symbols: list }, null, { timeoutMs, cfg, nowMs });
 }
 
+/** Deposit address for a currency — SIGNED (the money-leg counterparty).
+ * v2 envelope; for chain-with-memo assets (STEEM) the `addressTag` is the
+ * MEMO — a deposit without the exact memo is LOST. Fail-closed. */
+export async function htxDepositAddress(currency, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  if (!currency) return { ok: false, why: "no-currency" };
+  return htxPrivate("GET", "/v2/account/deposit/address", { currency }, null, { timeoutMs, cfg, nowMs });
+}
+
+/** Deposit history (credit confirmation probe). v2 envelope. */
+export async function htxDepositHistory(currency, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  if (!currency) return { ok: false, why: "no-currency" };
+  return htxPrivate("GET", "/v2/account/deposit/history", { currency }, null, { timeoutMs, cfg, nowMs });
+}
+
+/** PLACE A LIMIT ORDER — POST /v1/order/orders/place (signed; the TRADE arm).
+ * body: { account-id, symbol, type: "buy-limit"|"sell-limit", amount, price }.
+ * Callers MUST pass the ECG verdict + two-key gates BEFORE this function —
+ * the connector itself is gate-free by design (the law lives above it). */
+export async function htxPlaceOrder(body, { timeoutMs = 12000, cfg = null, nowMs = Date.now() } = {}) {
+  if (!body || !body["account-id"] || !body.symbol || !body.type) return { ok: false, why: "malformed-order-body" };
+  return htxPrivate("POST", "/v1/order/orders/place", {}, body, { timeoutMs, cfg, nowMs });
+}
+
+/** Open orders for a symbol — signed. */
+export async function htxOpenOrders(symbol, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  return htxPrivate("GET", "/v1/order/open_orders", symbol ? { symbol } : {}, null, { timeoutMs, cfg, nowMs });
+}
+
+/** Cancel an order — POST /v1/order/orders/{id}/submitcancel (signed). */
+export async function htxCancelOrder(orderId, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  if (!orderId) return { ok: false, why: "no-order-id" };
+  return htxPrivate("POST", `/v1/order/orders/${encodeURIComponent(String(orderId))}/submitcancel`, {}, null, { timeoutMs, cfg, nowMs });
+}
+
+/** Last market price (public /market/detail for one symbol → 0.5s candle close). */
+export async function htxLastPrice(symbol, { timeoutMs = 10000 } = {}) {
+  const r = await htxPublic("/market/detail/merged", { symbol, period: "1min", size: "1" }, { timeoutMs });
+  if (!r.ok || !Array.isArray(r.data) || !r.data.length) return { ok: false, why: r.why ?? "no-candle" };
+  const close = Number(r.data[0].close);
+  if (!Number.isFinite(close) || close <= 0) return { ok: false, why: "bad-close" };
+  return { ok: true, close };
+}
+
 /* ---------- census shaping (pure; honest about what is NOT measured) ---------- */
 
 /* HTX returns amounts/precisions as JSON strings in several endpoints (measured:

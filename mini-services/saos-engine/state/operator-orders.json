@@ -20,6 +20,52 @@
       "reversibility": "chain law: 7-day undelegation; blast radius ≤ 6 × 60 SP/day from the master's own idle headroom above the 1372 floor",
       "recordedAt": "2026-10-19T11:00:00Z",
       "recordedBy": "W12-b wave (zai-code main instance)"
+    },
+    "W14-EXCHANGE-ARM": {
+      "armed": true,
+      "op": "transfer+exchange-trade",
+      "direction": "master-to-htx-deposit-then-steemusdt-only",
+      "verbatim": "כן אני מאשר בצע",
+      "orderRef": "owner IM 2026-10-19 trace 1a154f822ab6e1b9 — explicit approval of the W13 report's declared next step (הפקדת טרנץ' STEEM ראשון + חימוש סמכות-מסחר) + same message: ״לפתוח טוקנים וארנקים על הרשת לחיילים ולסוכנים״ + ״בחן תכנן בצע דחוף״ + operator standing order 2026-09-29 (full autonomous execution, doctrine-capped)",
+      "scope": {
+        "depositor": "headcorner",
+        "depositAsset": "STEEM",
+        "maxDepositSteemOneShot": 30,
+        "depositCounterpartyAllowlist": "HTX-DEPOSIT-ADDRESS-MEASURED-AT-EXEC (the flag allowlist must carry the measured deposit account; the transfer refuses otherwise)",
+        "tradeSymbol": "steemusdt",
+        "tradeGuard": "htx-ecg.mjs — margin>0 over break-even (2×taker 20bps + slippage 10bps + floor 5bps = 55bps default), REFUSE by default",
+        "maxOrderValueUsdt": 10,
+        "maxOpenOrders": 2,
+        "exchangeAccount": "73986225",
+        "keysCustody": "agent/vault/EXCHANGE-SEAL-20261019T155708Z.zip.enc (W13 git vault, meta.exchangeVault)"
+      },
+      "reversibility": "deposit is T0-IRREVERSIBLE by chain law and explicitly owner-approved (״כן אני מאשר בצע״ answers the declared irreversible step); trade legs are T1 (limit orders cancelable); caps bound the blast radius; the ECG refuses fee-eaten edges",
+      "cappedCounted": {
+        "maxDepositOneShot": 30,
+        "tranchePlan": 30,
+        "liquidBefore": "measured 59.944 STEEM at 2026-10-19T16:20Z",
+        "liquidFloorAfter": 5
+      },
+      "createdAt": "2026-10-19T16:37:51Z"
+    },
+    "W14-MINT-AGENTS": {
+      "armed": true,
+      "op": "account_create",
+      "direction": "master-creates-agent-generation",
+      "verbatim": "אפשר לפתוח טוקנים וארנקים על הרשת לחיילים ולסוכנים ולכל האוטונומיה",
+      "orderRef": "owner IM 2026-10-19 trace 1a154f822ab6e1b9 (same directive): wallets+tokens for the soldiers/agents — self-empowerment of the autonomy. T3 lane: fresh TTL owner-grant recorded from THIS verbatim message + owner-live + bond intact at decision time (command-hierarchy law), + R246 single-use fee-capped name-bound order per name",
+      "scope": {
+        "creator": "headcorner",
+        "names": [
+          "hcsoldier7",
+          "hcsoldier8",
+          "hcsoldier9"
+        ],
+        "maxFeeSteemPerAccount": 1,
+        "keyCustody": "sealed agentAccountsVault class (self-contained pass in meta — EXCHANGE-SEAL precedent)"
+      },
+      "reversibility": "account creation is irreversible by chain law; names are fresh (no collision with the live roster); fee-capped",
+      "createdAt": "2026-10-19T16:37:51Z"
     }
   }
 }
