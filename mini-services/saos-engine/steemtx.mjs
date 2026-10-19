@@ -145,7 +145,7 @@ class Writer {
     /* R210 hardening (adversarial finding B-6): chain-canonical precision is a
      * per-symbol law — STEEM=3, SBD=3, VESTS=6. A caller emitting "0.0 STEEM"
      * (prec 1) would produce non-canonical bytes → fail-closed here. */
-    const CANON = { STEEM: 3, SBD: 3, VESTS: 6, TSTD: 6 };
+    const CANON = { STEEM: 3, SBD: 3, VESTS: 6, TSTD: 6, HIVE: 3, HBD: 3 };
     if (sym in CANON && prec !== CANON[sym]) {
       // rescale rather than reject: pad/truncate the literal to canon precision
       const [i, f = ""] = whole.split(".");
