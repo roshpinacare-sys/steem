@@ -922,3 +922,24 @@ Stage Summary:
 - **ה-canary-נסגר-באבחנה-מדויקת**: לא-באג-שלנו — תשתית-GitHub-repo-ספציפית; מתועד-לדורות-עם-כל-המדידות
 - דופק-06:17Z-האורגני-הראשון — האימות-הבא (GitHub-צד, בלתי-ניתן-לחיסול)
 - עותקי-האמת-של-רישום-זה (t27): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
+- עותקי-האמת-של-רישום-זה (t27): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
+
+---
+Task ID: 28
+Agent: agent-9
+Task: הוראת-בעלים "תמשיך ודחוף" — הכספת-החיה-מצאה-את-ארבעת-הספרים-המתים: אבחון-שורש-מרובע + תיקון-בשורש + הוכחה-חיה (4/4-ספרים-קמו, אמת-המשרד-13/13)
+
+Work Log:
+- **המדידה-שפתחה**: אמת-המשרד (agents/office-live.json) עמדה על **9/13-ספרים-טריים** — ארבעה-ספרים-מתים-מאז 2026-10-04 (curation-book · pnl-book · skill-library · tick-keeper — מיושנים-348–363-שע')
+- **שורש-1 (tick-keeper)**: agents/tick-keeper.cjs מגדיר-main()-ולעולם-לא-קורא-לה — שורת-ה-require.main-המוצהרת-בכותרת-שלו-עצמה (Z-49) אבדה ב-union-cure 7174f49e4; נמדד-בלוגי-ריצה 39185130881: ה-step-רץ-0.05-שנ', אפס-פלט, "no keeper changes" כל-שעה-מאז 10-04; **קשת-התחייה-המעצימה (12-שולחנות-נצפים) היתה-כבויה-15-ימים**
+- **שורש-2 (curation/pnl/skill-library)**: הכספת-נחתמה-מחדש 10-04 (R20c-deep) ועברה-רוטציה 10-12 ל-recovery-meta-3 (MASTER-DERIVE) — keysZipPass-המובנה-יצא-מהריפו (R-VAULTPASS-1: הקאסטודי-בסוד-STEEM_VAULT_PASSES על steem+saos-runtime, לא-Domain); אימות-sha256: קובץ-.enc-אחד-בלבד (KEYS-ZIP-2026-10-12-MASTER) תואם-למטא — ולמטא-אין-pass-מובנה; recoverVault()-של-Domain-לעולם-לא-יתאים-שוב; pnl-book.cjs+skill-library-gate.cjs: קוד-בריא, **אף-workflow-לא-מפעיל** (אבודים-במחיקות-של 10-16)
+- **התיקונים (Domain, קומיטים 698716e0d+2b395e9b8)**: C1-שורת-ההפעלה-הושבה+הקשת-הורחבה (curation-book+pnl-book-נצפים, cooldown-720); C3-recoverKeymapFromBundle — **chain-is-the-judge**: WIF-מה-bundle (CURATE_FLEET_KEYS=ROT2_FLEET_KEYS, פקודת-הבעלים-מ-T21) נצרך-רק-אם-המפתח-הנגזר-תואם-bit-exact-ל-authority-החי-על-השרשרת; C4-env-מחובר-ל-workflow; C5-books-revival-t28.yml-חדש (שעתי+dispatch, STASIS-gated) מריץ-את-שני-השולחנות-חסרי-המפתח
+- **מבחן-חי-ראשון-חשף-כשל-שני ותוקן**: ריצה 32 — `[refs] roster-unresolved` (FLEET_ROSTER_MAP-לא-הועבר) והשולחן-חזר-בשקט-בלי-לכתוב-ספר; cure2: roster-מחובר, **DRYRUN=1-ננעל (CR-0065 — הקצב-האנושי-הוא-בעל-ההצבעות)**, וה-bundle-מחזיר-{}-ולא-null-ב-roster-ריק — הספר-נכתב-תמיד
+- **ההוכחה-החיה**: dispatches-204 → ריצות-מוצלחות: tick-keeper-ספר 04:26:07Z (ראשון-מזה-15-ימים, **הצית-10-שולחנות-כולם-204**, errors[]); pnl 04:26:34Z; skill-library 04:26:35Z; curation **keys-10/10** (התאמה-bit-exact לשרשרת) + **272-הצבעות-CHAIN-RECONCILED** מחלון-המוות + 0-הצבעות-חדשות; office-artery-חישב-מחדש: **13/13-טריים, 0-מיושנים**
+- קבלה: receipts/remediation/agent9-t28-books-revival.json (VERIFIED, 7-פריטים) + agent9-latest-מוצב-על-t28
+
+Stage Summary:
+- **ארבעת-הספרים-המתים-קמו-לחיים-בשורש** — לא-מכה-על-השעון: ה-invocation-הושב, הקאסטודי-המודרני-חובר (chain-is-the-judge), השולחנות-היתומים-חוזרו-ל-workflow, והקשת-משגיחה-על-הכל-מעכשיו
+- **הקשת-המרפאת-חזרה-להיות-מרפאת**: היא-שהמתה-15-ימים-היא-זו-שתשמור-שהספרים-לא-ימותו-שוב-בשקט
+- גבולות-כנים: ה-.enc-על-Domain-נשאר-בלתי-ניתן-לפתיחה-עד-הוראת-בעלים (ה-bundle-ממלא-את-התפקיד); ה-curate-חי-ב-DRYRUN-בדיקה-בלבד (ההצבעות-בבעלות-ה-cadence)
+- עותקי-האמת-של-רישום-זה (t28): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
