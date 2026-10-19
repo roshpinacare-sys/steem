@@ -189,6 +189,8 @@ export async function measureFleetMatrix({ now = new Date().toISOString(), persi
       sbd: bal.ok ? Math.round((bal.sbd ?? 0) * 1000) / 1000 : null,
       sp: bal.ok ? Math.round(bal.spTotal ?? 0) : null,
       spOwn: bal.ok ? Math.round(bal.spOwn ?? 0) : null,
+      spReceived: bal.ok ? Math.round((bal.spReceived ?? 0) * 10) / 10 : null,
+      spEffective: bal.ok ? Math.round((bal.spEffective ?? 0) * 10) / 10 : null,
       rcMax: rcByAccount[name]?.rcMax ?? null,
       rcPct: rcByAccount[name]?.rcPct ?? null,
       ...activity,

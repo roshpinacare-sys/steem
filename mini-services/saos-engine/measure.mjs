@@ -225,6 +225,15 @@ export async function accountState(account) {
       const vestsPerSp = V(tvs) / V(tvf);
       const delegInV = bal(acc.delegated_vesting_shares);
       out.delegIn = delegInV;
+      /* W12-b · RECEIVED SUPPORT IS CAPACITY: the chain-judged lesson of the
+       * round-1 ladder — spTotal was OWN-vests-only while every soldier
+       * carries historical delegations IN (since 09-29). RC capacity is
+       * OWN + RECEIVED; a planner that reads own-only re-delegates blind
+       * and (SET semantics) REDUCES support. Both truths now measured. */
+      const receivedV = bal(acc.received_vesting_shares);
+      out.receivedVests = receivedV;
+      out.spReceived = receivedV / vestsPerSp;
+      out.spEffective = (out.vests + receivedV) / vestsPerSp;
       out.spOwn = (out.vests - delegInV) / vestsPerSp;
       out.spTotal = (out.vests) / vestsPerSp;
     }
