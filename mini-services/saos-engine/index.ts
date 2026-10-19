@@ -21,6 +21,7 @@ import { discoveryState } from "./discovery.mjs";
 import { fleetState } from "./fleet.mjs";
 import { startHyperGrid, hyperState } from "./hypergrid.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
+import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
 import { webintelState } from "./webintel.mjs";
 import { contentState } from "./content.mjs";
 import { streamState } from "./social-streamer.mjs"; /* R310: the live posts stream (one-body: the engine computes, the cockpit shows) */
@@ -138,6 +139,8 @@ async function handle(req) {
       hyper: hyperState(),
       /* R323 DEX-FLOW: the volume-TAKER layer — real fills + accumulating volume */
       dexflow: dexState(),
+      /* W17 EXCHANGE-EXEC: the HTX executor — deposit+trade verdicts (typed, journaled) */
+      exchangeExec: exchangeExecState(),
       /* T-22 ONE-BODY live layer — computed by the ENGINE (single source) */
       live: {
         orders: oo.orders ?? [],
@@ -480,6 +483,15 @@ try { startHyperGrid(); } catch (e) {
 // one self-cross trip per tick, the same signing rail + doctrine guards.
 try { startDexFlow(); } catch (e) {
   console.error(`dexflow boot failed: ${String(e?.message ?? e)}`);
+}
+
+// W17 · EXCHANGE-EXEC: the HTX executor — the deposit leg (T2 transfer to the
+// measured counterparty, 24h-rate-limited, cap-bounded) + the trade leg
+// (limit orders behind the ECG, default-refusal). Honest typed verdicts for
+// every blocked precondition; the lane moves the moment custody + funding
+// exist. One writer, own tick loop, journaled to state/exchange-exec.json.
+try { startExchangeExec(); } catch (e) {
+  console.error(`exchange-exec boot failed: ${String(e?.message ?? e)}`);
 }
 
 // R287 · REVENUE ARCHITECT LOOPS: the content compiler feeds the staging
