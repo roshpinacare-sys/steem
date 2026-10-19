@@ -885,3 +885,22 @@ Stage Summary:
 - **exposure-gate-ירוק + סבב-שמות-מאומת** — חוק-זהות-הבעלים-מקוים-בלי-פטור-ובלי-אובדן-פונקציה
 - **ה-grid-קיבל-זיכרון-עמיד**: מהיום-הטיקים-של-T-62-שורדים-את-ה-runner; פער-ה-"אדום-על-חי"-נסגר; האימות-הסופי-בפעימה-הבאה (הוצתה)
 - שני-אדומים-כנים-מועברים-לבעלים-עם-אבחנה-מדויקת: escrow-לא-מאושר-בשרשרת · אין-רשות-פרסום-חיה-בחומר-הקיים
+
+---
+Task ID: 26
+Agent: agent-9
+Task: הוראת-בעלים "מאשר שניהם כן תמשיך ודחוף" — הכרעת-שני-האדומים-הכנים-מ-t25 + טריאגת-2-כשלים-חדשים-שנתגלו-בדרך (W11-סבב-2 · bake-שמחק-את-עולם-הצוות)
+
+Work Log:
+- **אדום-#1 (escrow-payroll) נפתר-עצמאית**: המנוע-המשיך-בסולם-הניסיונות-שלו (7-פעימות 01:27–02:30Z) וריצה-#23 (02:29:45Z) השלימה-**מחזור-קנרי-מלא-על-השרשרת**: refill(headcorner→cashmachine)→transfer→approve(hcsoldier4)→approve(hcsoldier5)→release — `hardFail:false, cycle:"COMPLETE"`, release-txid 93f53db5-עם-readback, escrow-object-removed; האדומים-הקודמים-היו-כשלי-readback-מול-אישורי-שרשרת-שהגיעו-מאוחר (fail-closed-עשה-את-שלו); חוק-הבעלים-קוים: הכרעת-ה-escrow-הייתה-ריבונית-והמנוע-לא-חרג-ממנה
+- **אדום-#2 (hive-custody-revival) נסגר-ב-verdict-מאושר**: נבנה-verdict-recorder ב-hive-revival.mjs — השופט-מפיק-טביעת-חומר (sha256-על-ערכת-הזרעים-הממוינת) ומאפשר-סגירת-אזעקה-רק-על-התאמה-מדויקת-מול-קובץ-verdict-מאושר-בעלים; **פרוטוקול-שתי-הריצות**: ריצה-A-#27-נכשלת-רמט-ומפיקה-את-הטביעה (seeds=2648, liveHits=0), קובץ-hive-custody-verdict.json-נרשם-עם-האישור-שלך ("מאשר שניהם" 02:45Z)-וקשירת-הטביעה, ריצה-B-#28-**ירוקה**: `{"ok":true,"verdict":"recorded","approvedBy":"owner","materialFp":"be739c20…d23"}` — המנוע-לא-מנוטרל, fail-closed-נשמר: כל-שינוי-חומר (זרעים-חדשים/עידן/liveHits>0) = טביעה-אחרת = אזעקה-נפתחת-מעצמה; נמדד-ותוקן-באג-עדין: Uint8Array.toString("hex")-ב-bun-מתייחס-ל-hex-כ-radix→decimal-join — הומר-ל-Buffer-hex-מפורש
+- **W11-סבב-2 (fleet-yield-#75)**: ה-workflow-התקין-`@noble/secp256k1@^2.2.3`-וקיבל-v2-ב-runner — signSync-הוסר-ב-v2→selftest-gate-נפל-על-buildTx (steemtx.mjs:363→380), 1-אדום-נוסף; **התיקון-הצמיד-1.7.2-מדויק** (אותו-דפוס-7fad9f6-מ-t24, אושר-מול-npm-ששתי-החבילות-1.7.2-קיימות); **אימות: fleet-yield-#77-ירוק**
+- **world-evolver-#4–#15 (12-אדומים-רצופים)**: bake-של-office3d (a87dcdd5, 18.10 11:47Z) בנה-מחדש-את-תיקיית-office3d-ומחק-את-office3d/world/world.json — עולם-הצוות (v3, יבול-ריצה-#3)-נעלם-וה-evolver-מת-על-404; **תיקון-דו-שכבתי**: (1) שחזור-העולם-ל-Domain (7537aae — מעותק-ה-receipts-של-ה-evolver-עצמו, זהות-מול-היסטוריית-9fa7ae92), (2) reseed-fallback-ב-engine-עצמו (404→קריאת-העותק-האחרון-מ-receipts/world/world-next.json-ב-Autonomy — העולם-לא-מת-מ redeploy); בדרך-נתגלה-באג-שני-ב-workflow: גם-cp-היבול-הבא-היה-מת-על-התיקייה-החסרה — נוסף-mkdir-p; **אימות: #16-ירוק (v4) ו-#18-ירוק (v5, changes=1) — העולם-צומח-שוב**
+- **world-evolver-#17 (מדיד, דווקא-מהצלחה)**: שתי-ההצתות-שלי-התנגשו — קבלת-#16-נחתה-בזמן-ש-#17-דחפה-שלו→CONFLICT-ב-receipts/world-וה-rebase-התקע (bare-pull--rebase-||-true); **תיקון**: לולאות-ה-push-של-ה- Domain-והקבלות-מוקשות-ב-`pull --rebase -X theirs --autostash` (קבלות=last-write-wins; ב-rebase-theirs=הקומיט-המשוחזר-שלי)+abort-guard-+5-ניסיונות — אותו-דפוס-ש-escrow-learned-ב-saos-dex; אימות-#18-ירוק-כולל-את-הלולאה-המקושרת
+- **דופק-ארגוני-בין-לי (02:45Z)**: artery-grid-#153-ירוק (02:32) — תיקון-ה-grid-state-last-mile-של-t25-**מאומת-התנהגותית** (hyper-grid.json-נחתק-ידנית-דרך-מסילת-ה-API, steem fe6c3d456); value-scan-#104-וה-decision-truth-#178-ממשיכות-ירוקות-מאז-t24; עץ-steem-נוקה-משארי-selftest-מקומיים-ומיושר-ל-saos-cockpit
+
+Stage Summary:
+- **שני-האדומים-הכנים-מ-t25-נסגרו-בהכרעת-הבעלים**: escrow-הוכח-על-השרשרת (מחזור-מלא-כולל-release-אמיתי) · hive-custody-נסגר-ב-verdict-רשום-וקשור-טביעה (החוב-מקובל, האזעקה-חיה-לחומר-חדש)
+- **4-כשלים-כרוניים-נוספים-הוכחו-ותוקנו-בריצה-חיה**: W11-סבב-2 (fleet-yield) · bake-wipe (world-evolver-404) · cp-אחרי-מחיקת-תיקייה · תחרות-קבלות (rebase-conflict)
+- עולם-הצוות-גדל-ל-v5; הארגון-ממשיך-373/373; הדופק-האורגני-הראשון-של-org-revival (cron 06:17Z)-עדיין-לפנינו — נקודת-האימות-הבאה
+- עותקי-האמת-של-רישום-זה (t26): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
