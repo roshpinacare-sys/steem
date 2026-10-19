@@ -1,0 +1,74 @@
+{
+  "schema": "fleet-rebalance-v1",
+  "at": "2026-10-19T08:27:59.728Z",
+  "why": "planned",
+  "policy": {
+    "masterSpOwnFloor": 1372,
+    "soldierSpTarget": 175,
+    "maxSpMovesPerDay": 6,
+    "sweepSurplusSteem": 8,
+    "sweepSurplusSbd": 2,
+    "masterSteemFloor": 40,
+    "masterSbdFloor": 1,
+    "maxSweepsPerCycle": 2
+  },
+  "planOnly": [
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "cashmachine",
+      "sp": 60,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.12T vs master 4.5T; SP 5→65 ≈ RC ×13"
+    },
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "israelnews",
+      "sp": 60,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.16T vs master 4.5T; SP 1→61 ≈ RC ×61"
+    },
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "lsa",
+      "sp": 60,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.13T vs master 4.5T; SP 5→65 ≈ RC ×13"
+    },
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "macrame",
+      "sp": 60,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.12T vs master 4.5T; SP 2→62 ≈ RC ×31"
+    },
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "siq",
+      "sp": 60,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.14T vs master 4.5T; SP 5→65 ≈ RC ×13"
+    },
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "tov",
+      "sp": 60,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.14T vs master 4.5T; SP 5→65 ≈ RC ×13"
+    }
+  ],
+  "executed": [],
+  "refused": [],
+  "verdict": "PLANNED-AWAITING-POLICY"
+}

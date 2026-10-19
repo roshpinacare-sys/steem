@@ -290,6 +290,19 @@ async function handle(req) {
     const meas = await measureAll(ACCOUNT);
     return json({ ok: meas.ok, at: new Date().toISOString(), account: ACCOUNT, ...meas });
   }
+  /* W12 · the activation board — read-only over the last measured matrix
+   * (state/fleet-matrix.json, written every cycle). Never measures inline:
+   * a route must stay cheap; freshness lives in the cycle. */
+  if (p === "/fleet-matrix") {
+    const m = readJson(path.join(STATE, "fleet-matrix.json"), null);
+    if (!m) return json({ ok: false, error: "not-measured-yet (the cycle writes it every 10min)" }, 404);
+    return json({ ok: true, matrix: m });
+  }
+  if (p === "/fleet-rebalance") {
+    const m = readJson(path.join(STATE, "fleet-rebalance.json"), null);
+    if (!m) return json({ ok: false, error: "not-planned-yet (the cycle writes it every 10min)" }, 404);
+    return json({ ok: true, rebalance: m });
+  }
   if (p === "/exec-status") {
     try { return json({ ok: true, at: new Date().toISOString(), ...(await execStatus()) }); }
     catch (e) { return json({ ok: false, error: String(e?.message ?? e).slice(0, 160) }, 500); }

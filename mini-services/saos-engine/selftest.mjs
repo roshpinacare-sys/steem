@@ -5359,6 +5359,122 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   ok("50.15 section-50 fixtures cleaned by readback", !fs.existsSync(leaseRoot50) && !fs.existsSync(tmp50));
 }
 
+/* ═══ SECTION 51 · W12 FLEET MATRIX + REBALANCE (pure laws) ═══════════════
+ * The owner's W12 order: maximum activation of the whole fleet + mutual
+ * support (划转互填). These vectors pin the PURE laws: the activation
+ * classifier (custody first, T-80), the honest activation rate, the 24h
+ * chain-truth counter, and the rebalance planner (SP ladder headroom,
+ * idle-recall on frozen holders, liquidity sweep caps). Zero network. */
+{
+  const { classifyAccount, activationRateOf, count24hActivity, journaledCustody } = await import("./fleet-matrix.mjs");
+  const { planFleetRebalance, REBALANCE_POLICY } = await import("./fleet-rebalance.mjs");
+
+  /* 51.1 classifier: custody first — a keyless body is FROZEN no matter
+   * what it did on chain yesterday (T-80 honesty, never padded) */
+  eq("51.1a frozen stays frozen even with yesterday's activity", [
+    classifyAccount({ custody: "unverified", orders24h: 19, votes24h: 25 }),
+    classifyAccount({ custody: "none", orders24h: 5, votes24h: 0 }),
+  ], ["FROZEN-NO-CUSTODY", "FROZEN-NO-CUSTODY"]);
+  eq("51.1b verified + orders → GRID-ACTIVE beats CURATE-ONLY; votes alone → CURATE-ONLY; nothing → DORMANT", [
+    classifyAccount({ custody: "era-verified", orders24h: 3, votes24h: 9 }),
+    classifyAccount({ custody: "verified", orders24h: 0, votes24h: 9 }),
+    classifyAccount({ custody: "master-verified", orders24h: 0, votes24h: 0 }),
+    classifyAccount({ custody: "master-era-verified", orders24h: 0, votes24h: 0 }),
+  ], ["GRID-ACTIVE", "CURATE-ONLY", "DORMANT", "DORMANT"]);
+
+  /* 51.2 rate: honest denominator, frozen never counts as active */
+  const rows51 = [
+    { class: "GRID-ACTIVE" }, { class: "CURATE-ONLY" }, { class: "DORMANT" }, { class: "FROZEN-NO-CUSTODY" },
+  ];
+  eq("51.2 activation rate = (grid+curate)/total, grid counted separately", activationRateOf(rows51), { rate: 0.5, active: 2, grid: 1, total: 4 });
+  eq("51.2b empty estate → rate 0, never NaN", activationRateOf([]), { rate: 0, active: 0, grid: 0, total: 0 });
+
+  /* 51.3 24h counter: chain-truth rows only — a 25h-old order is invisible */
+  const NOW51 = Date.parse("2026-10-19T08:00:00Z");
+  const hist51 = [
+    { op: ["limit_order_create", { owner: "x" }], timestamp: "2026-10-19T07:55:00" },
+    { op: ["fill_order", {}], timestamp: "2026-10-19T07:56:00" },
+    { op: ["vote", { voter: "x" }], timestamp: "2026-10-18T09:00:00" }, // 23h old — counts
+    { op: ["limit_order_create", {}], timestamp: "2026-10-18T06:00:00" }, // 26h old — outside
+    { op: ["transfer", {}], timestamp: "2026-10-19T07:00:00" }, // not activity
+  ];
+  eq("51.3 counter: orders/votes/fills inside 24h only; transfers never counted",
+    count24hActivity(hist51, NOW51), { orders24h: 1, votes24h: 1, fills24h: 1, lastActivityAt: "2026-10-19T07:56:00" });
+  eq("51.3b empty history → zeroed activity", count24hActivity([], NOW51), { orders24h: 0, votes24h: 0, fills24h: 0, lastActivityAt: null });
+
+  /* 51.4 planner: SP ladder — headroom-bounded, target-capped, trading
+   * bodies only, day-cap enforced */
+  const matrix51 = {
+    rows: [
+      { name: "headcorner", custody: "master-verified", spOwn: 2572, sp: 4270, steem: 542, sbd: 3.6, rcMax: 4.5e12, orders24h: 52 },
+      { name: "cashmachine", custody: "era-verified", sp: 90, steem: 103, sbd: 0, rcMax: 0.1e12, orders24h: 4, votes24h: 21, class: "GRID-ACTIVE" },
+      { name: "haran", custody: "era-verified", sp: 90, steem: 4, sbd: 0.1, rcMax: 0.1e12, orders24h: 12, votes24h: 24, class: "GRID-ACTIVE" },
+      { name: "hcsoldier5", custody: "unverified", sp: 17, steem: 3, sbd: 0.1, rcMax: 0.03e12, orders24h: 0, votes24h: 0, class: "FROZEN-NO-CUSTODY" },
+      { name: "woq", custody: "era-verified", sp: 200, steem: 6, sbd: 0.1, rcMax: 0.1e12, orders24h: 7, votes24h: 22, class: "GRID-ACTIVE" }, // already ≥ target
+    ],
+    delegationsOutRows: [
+      { to: "hcsoldier5", vests: "27409.680707 VESTS" },
+      { to: "cashmachine", vests: "120973.543161 VESTS" },
+    ],
+  };
+  const plan51 = planFleetRebalance(matrix51);
+  eq("51.4 sp-ladder: only verified+trading bodies, grant ≤ 60 SP, target-capped, frozen excluded", [
+    plan51.moves.filter((m) => m.kind === "sp-ladder").map((m) => `${m.to}:${m.sp}`),
+    plan51.moves.some((m) => m.to === "hcsoldier5"),
+    plan51.moves.some((m) => m.to === "woq"),
+    plan51.moves.filter((m) => m.kind === "sp-ladder").every((m) => m.mode === "PLAN-ONLY" && m.requiredFlag === "policy.allowDelegation=true"),
+  ], [["cashmachine:60", "haran:60"], false, false, true]);
+
+  /* 51.5 idle-recall: delegation parked on a frozen body → recall plan */
+  eq("51.5 recall: hcsoldier5's idle vests planned home, flag-gated",
+    plan51.moves.filter((m) => m.kind === "sp-recall").map((m) => `${m.frozenHolder}:${String(m.vests).split(" ")[0]}:${m.requiredFlag}`),
+    ["hcsoldier5:27409.680707:policy.allowDelegationRecall=true"]);
+
+  /* 51.6 sweep: master below floor + verified surplus soldier → attempt-move;
+   * caps at maxSweepsPerCycle; SBD-only surplus never sweeps STEEM and vice versa */
+  const matrixSweep51 = {
+    rows: [
+      { name: "headcorner", custody: "master-verified", spOwn: 2572, sp: 4270, steem: 30, sbd: 0.4, rcMax: 4.5e12, class: "GRID-ACTIVE" },
+      { name: "cashmachine", custody: "era-verified", sp: 90, steem: 103.5, sbd: 0, rcMax: 0.1e12, orders24h: 4, class: "GRID-ACTIVE" },
+      { name: "haran", custody: "era-verified", sp: 90, steem: 4.3, sbd: 2.5, rcMax: 0.1e12, orders24h: 12, class: "GRID-ACTIVE" },
+      { name: "hcsoldier5", custody: "unverified", sp: 17, steem: 50, sbd: 9, class: "FROZEN-NO-CUSTODY" },
+    ],
+    delegationsOutRows: [],
+  };
+  const sweep51 = planFleetRebalance(matrixSweep51, { policy: { masterSpOwnFloor: 4000 } }); // ladder disabled: no headroom
+  eq("51.6 sweep: surplus from trading-verified bodies only, both assets, frozen never touched", [
+    sweep51.moves.filter((m) => m.kind === "liquidity-sweep").map((m) => `${m.from}:${m.asset}:${m.amount}`),
+    sweep51.moves.some((m) => m.from === "hcsoldier5"),
+  ], [["cashmachine:STEEM:95.5", "haran:SBD:0.5"], false]);
+
+  /* 51.7 purity + balanced no-moves */
+  const snap51 = JSON.stringify(matrix51);
+  planFleetRebalance(matrix51);
+  eq("51.7 planner pure (input unmutated) + balanced board → no moves",
+    [JSON.stringify(matrix51) === snap51, planFleetRebalance({ rows: [{ name: "headcorner", custody: "master-verified", spOwn: 100, sp: 100, steem: 500, sbd: 5, class: "GRID-ACTIVE" }], delegationsOutRows: [] }).why],
+    [true, "balanced-no-moves"]);
+  eq("51.8 planner honest on junk input", planFleetRebalance(null).why, "no-matrix");
+  ok("51.9 policy shape: conservative round-1 knobs", [
+    REBALANCE_POLICY.maxSpMovesPerDay <= 6, REBALANCE_POLICY.soldierSpTarget <= 200,
+    REBALANCE_POLICY.masterSpOwnFloor >= 1372, REBALANCE_POLICY.maxSweepsPerCycle <= 2,
+  ], [true, true, true, true]);
+
+  /* 51.10 journaled custody: chain-judged VERIFIED verdicts survive a
+   * clobbered state file; REFUSED never passes; stale passes never count */
+  const log51 = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "saos-w51-")), "exec-log.jsonl");
+  fs.mkdirSync(path.dirname(log51), { recursive: true });
+  fs.writeFileSync(log51, [
+    JSON.stringify({ at: "2026-10-19T07:30:00Z", tag: "army-custody-adopted", account: "cashmachine", verdict: "VERIFIED-VS-CHAIN" }),
+    JSON.stringify({ at: "2026-10-19T07:31:00Z", tag: "army-custody-adopted", account: "hcsoldier5", verdict: "ACTIVE-GEN-2-REFUSED:active-authority-mismatch" }),
+    JSON.stringify({ at: "2020-01-01T00:00:00Z", tag: "army-custody-adopted", account: "woq", verdict: "ALREADY-VERIFIED" }), // stale
+    "not-json-at-all",
+  ].join("\n") + "\n");
+  const jc51 = journaledCustody({ logFile: log51, nowMs: Date.parse("2026-10-19T08:00:00Z") });
+  eq("51.10 journal custody: VERIFIED kept, REFUSED+stale+junk excluded",
+    [!!jc51.cashmachine, jc51.hcsoldier5, jc51.woq], [true, undefined, undefined]);
+  fs.rmSync(path.dirname(log51), { recursive: true, force: true });
+}
+
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
