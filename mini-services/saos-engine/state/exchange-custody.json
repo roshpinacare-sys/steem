@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-19T16:45:00Z",
+  "wave": "W14",
+  "rail": "htx",
+  "verdict": "RAIL-BLOCKED-BY-VENUE-REGION",
+  "measured": {
+    "auth": "SIGNED-PROOF-OK (keys live; spot account 73986225; read rails work: accounts/balance/fee-tier/currencies/market-data)",
+    "feeTier": { "maker": 0.002, "taker": 0.002, "source": "signed /v2/reference/transact-fee-rate, our account, 2026-10-19" },
+    "tradeLeg": {
+      "verdict": "BLOCKED-BY-REGION",
+      "proof": "zero-risk order probe (no balance, cannot fill) answered api-code:order-trade-forbidden — 'Dear user, the service is not available to your country or region'",
+      "consequence": "no order may be placed from this venue; the W14-EXCHANGE-ARM order stands RECORDED for a venue that accepts our region"
+    },
+    "depositLeg": {
+      "verdict": "BLOCKED-DEPOSIT-ADDRESS-ENDPOINT",
+      "proof": "/v2/account/deposit/address answered api-code-500 'server error' for steem/hive/trx/usdt (5 retries, 3s backoff; uppercase → 2002 invalid-field so the form is right); consistent with the withdraw-permission requirement of this endpoint on HTX",
+      "consequence": "ZERO chain money moved — the honesty law held (never send to a guessed address); owner action item: deposit-address needs the key's withdraw permission enabled in the HTX console, or a different venue"
+    }
+  },
+  "losses": 0,
+  "note": "the W13 report's deep-examination law did its job: the rail was measured BEFORE any value moved; the fleet's 30-STEEM tranche stays home until a lawful venue exists"
+}

@@ -5854,6 +5854,84 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   }
 }
 
+/* ═══ SECTION 56 · W14 SELF-EMPOWERMENT (book-law token · mint gates · exchange verdict) ═
+ * Operator order 2026-10-19: wallets+tokens for the soldiers/agents — the
+ * autonomy uses itself. Pinned: the sha256-chained append-only ledger
+ * (tamper fails closed, balances derived, never negative), the T3 mint
+ * gate shapes (fresh TTL grant, single-use order, idempotence), and the
+ * measured exchange-custody verdict (RAIL-BLOCKED-BY-VENUE-REGION, zero
+ * losses — the examination-before-value law). Zero network. */
+{
+  const tl = await import("./token-ledger.mjs");
+  const { execFileSync } = await import("node:child_process");
+  const os = await import("node:os");
+  const rj56 = (p) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return null; } };
+
+  /* 56.1 the book-law token ledger (temp file — full lifecycle) */
+  const tmpLedger = path.join(os.tmpdir(), `hct-selftest-${process.pid}-${Date.now()}.json`);
+  try {
+    const g1 = tl.genesisLedger({ file: tmpLedger, supply: 1000, allocations: [{ to: "a", amount: 300, why: "t" }, { to: "b", amount: 200, why: "t" }] });
+    eq("56.1a genesis creates + self-verifies (mint 1000 + 2 transfers = 3 entries)",
+      [g1.created, g1.entries], [true, 3]);
+    const g2 = tl.genesisLedger({ file: tmpLedger, supply: 1000 });
+    eq("56.1b genesis is idempotent by file presence", g2.created, false);
+    const l1 = tl.loadLedger({ file: tmpLedger });
+    eq("56.1c chain verifies + balances derived (treasury 500, a 300, b 200)",
+      [l1.ok, tl.balances(l1.ledger)], [true, { "treasury:HCT-1": 500, a: 300, b: 200 }]);
+    const i1 = tl.appendEntry({ type: "issue", to: "c", amount: 50, file: tmpLedger });
+    eq("56.1d issue appends and chains", [i1.ok, i1.seq], [true, 4]);
+    const neg = tl.appendEntry({ type: "burn", from: "c", amount: 51, file: tmpLedger });
+    eq("56.1e over-burn refused (never negative)", neg.why, "balance-would-go-negative");
+    const badType = tl.appendEntry({ type: "credit", to: "c", amount: 1, file: tmpLedger });
+    eq("56.1f unknown entry type refused (no credit by construction)", badType.why, "bad-entry-type");
+    /* tamper: rewrite an amount in the middle → chain must fail closed */
+    const tampered = JSON.parse(fs.readFileSync(tmpLedger, "utf8"));
+    tampered.entries[1].amount = 9999;
+    fs.writeFileSync(tmpLedger, JSON.stringify(tampered));
+    const l2 = tl.loadLedger({ file: tmpLedger });
+    eq("56.1g tampered amount → hash-mismatch, fail-closed", l2.ok, false);
+    const l3 = tl.loadLedger({ file: "/nonexistent/hct.json" });
+    eq("56.1h absent ledger → honest ledger-absent", l3.why, "ledger-absent");
+  } finally { try { fs.rmSync(tmpLedger, { force: true }); } catch {} }
+
+  /* 56.2 the real committed ledger verifies (the W14 genesis on disk) */
+  {
+    const real = tl.loadLedger({});
+    const bal = real.ok ? tl.balances(real.ledger) : null;
+    eq("56.2 committed HCT-1 ledger: verifies, honesty label rides, generation pool exists",
+      [real.ok, real.ledger?.token?.honestyLabel?.includes("NOT a chain token") ?? false, bal?.["generation-hcsoldier7-9"] === 90000],
+      [true, true, true]);
+  }
+
+  /* 56.3 the exchange-custody verdict: measured, zero losses, both legs blocked */
+  {
+    const xc = rj56(path.join(ENGINE_STATE, "exchange-custody.json"));
+    eq("56.3 exchange custody: region-blocked verdict recorded with zero losses",
+      [xc?.verdict, xc?.losses, xc?.measured?.tradeLeg?.verdict, xc?.measured?.depositLeg?.verdict],
+      ["RAIL-BLOCKED-BY-VENUE-REGION", 0, "BLOCKED-BY-REGION", "BLOCKED-DEPOSIT-ADDRESS-ENDPOINT"]);
+  }
+
+  /* 56.4 the T3 mint gates: fresh TTL grant law (injected clock, temp file) */
+  {
+    const { ownerGrantCheck } = await import("./command-hierarchy.mjs");
+    const gf = path.join(os.tmpdir(), `grants-selftest-${process.pid}.jsonl`);
+    try {
+      const row = { kind: "account_create", grantedAt: "2026-10-19T16:45:00Z", ttlMin: 2880, note: "t" };
+      fs.writeFileSync(gf, JSON.stringify(row) + "\n");
+      const fresh = ownerGrantCheck("account_create", { now: new Date("2026-10-19T17:00:00Z"), file: gf });
+      const expired = ownerGrantCheck("account_create", { now: new Date("2026-10-22T00:00:00Z"), file: gf });
+      const absent = ownerGrantCheck("account_create", { now: new Date("2026-10-19T17:00:00Z"), file: "/nonexistent-grants.jsonl" });
+      eq("56.4a fresh TTL grant passes", [fresh.found, fresh.fresh], [true, true]);
+      eq("56.4b expired grant fails typed", expired.reason, "owner-grant-expired");
+      eq("56.4c absent grant fails typed (never a static flag)", absent.reason, "owner-grant-required");
+    } finally { try { fs.rmSync(gf, { force: true }); } catch {} }
+    const orders56 = rj56(path.join(ENGINE_STATE, "operator-orders.json"));
+    eq("56.4d committed orders: W14 exchange arm + mint agents both armed",
+      [orders56?.orders?.["W14-EXCHANGE-ARM"]?.armed, orders56?.orders?.["W14-MINT-AGENTS"]?.armed, orders56?.orders?.["W14-MINT-AGENTS"]?.scope?.names?.length],
+      [true, true, 3]);
+  }
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).
