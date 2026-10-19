@@ -6050,13 +6050,18 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   const tracked57 = execFileSync("git", ["ls-files"], { cwd: repoDir, encoding: "utf8" }).split("\n").filter(Boolean);
   eq("57.8a no tracked file under .secrets/ or upload/ (G2 law)",
     tracked57.some((f) => f.startsWith(".secrets/") || f.startsWith("upload/")), false);
-  const htxDrop57 = fs.readFileSync(path.join(repoDir, "upload", "htx.txt"), "utf8");
-  const tokens57 = (htxDrop57.split("\n").map((l) => l.trim()).filter((l) => /^[0-9a-zA-Z-]{20,}$/.test(l)));
-  const leaks57 = tracked57.filter((f) => {
-    try { return tokens57.some((t) => fs.readFileSync(path.join(repoDir, f), "utf8").includes(t)); }
-    catch { return false; } /* binary tracked files (vault .enc) cannot contain the plaintext */
-  });
-  eq("57.8b zero git-tracked files contain the raw HTX tokens", [leaks57.length, leaks57.slice(0, 3)], [0, []]);
+  const htxPath57 = path.join(repoDir, "upload", "htx.txt");
+  if (fs.existsSync(htxPath57)) {
+    const htxDrop57 = fs.readFileSync(htxPath57, "utf8");
+    const tokens57 = (htxDrop57.split("\n").map((l) => l.trim()).filter((l) => /^[0-9a-zA-Z-]{20,}$/.test(l)));
+    const leaks57 = tracked57.filter((f) => {
+      try { return tokens57.some((t) => fs.readFileSync(path.join(repoDir, f), "utf8").includes(t)); }
+      catch { return false; } /* binary tracked files (vault .enc) cannot contain the plaintext */
+    });
+    eq("57.8b zero git-tracked files contain the raw HTX tokens", [leaks57.length, leaks57.slice(0, 3)], [0, []]);
+  } else {
+    console.log("  57.8b SKIP (honest): upload/htx.txt absent on this host — exposure guard runs where the seal lives");
+  }
   const pins57 = census57.filter((c) => SELF_CONTAINED_CLASSES.includes(c.name) || meta57[c.name]?.pass);
   const { createHash } = await import("node:crypto");
   eq("57.8c every pass-carrying vault class's outer pin verifies (tamper evidence)",

@@ -83,7 +83,7 @@ export function listVaultClasses(meta) {
         sealedAt: v.sealedAt ?? null,
         contents: Array.isArray(v.contents) ? v.contents : [],
         custody: v.pass
-          ? "legacy self-contained (R11 pattern — migrating to actions-custody)"
+          ? "self-contained (pass in meta)"
           : v.passRef
             ? `actions-custody (${String(v.passRef).slice(0, 48)})`
             : "stranded-owner-pass (R-VAULTPASS-1)",
@@ -111,7 +111,7 @@ export function unsealVaultClass(repoDir, meta, className, opts = {}) {
   }
   const pass = cls.pass ?? envPassFor(className);
   if (!pass) {
-    throw typed("VAULT-PASS-CUSTODY", `vault: ${className} pass is under ACTIONS-CUSTODY (VAULT_PASS_* / VAULT_PASSES_R33) and was not provided in this environment — run the unseal inside Actions with the secret wired to env, or supply envPassFor source. NEVER guessed, NEVER inlined into git (R33 writer-custody law).`);
+    throw typed("VAULT-PASS-ABSENT", `vault: ${className} pass absent — never guessed. The sealed meta carries it (W16-a restored self-keyed law), or wire envPassFor (VAULT_PASS_* / VAULT_PASSES_R33) in Actions. NEVER inlined anywhere else.`);
   }
   const encPath = path.join(repoDir, cls.file);
   let enc;
