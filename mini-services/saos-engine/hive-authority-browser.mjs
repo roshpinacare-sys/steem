@@ -109,10 +109,15 @@ if (mode === "prepare") {
   if (rec < 0 || rec > 3) { log({ ok: false, failClosed: true, error: "bad-recovery-id" }); process.exit(0); }
   let signerStm = null;
   try {
-    const sig = secp.Signature.fromCompact(sig65.slice(1, 65)).addRecoveryBit(rec);
-    const pub33 = sig.recoverPublicKey(digest).toRawBytes(true);
-    signerStm = stmEncode(pub33);
-  } catch (e) { log({ ok: false, failClosed: true, error: "signature-unrecoverable" }); process.exit(0); }
+    /* גל-100 · מדוד מול @noble/secp256k1@1.7.2 (אותו-שורש-מהתיקון-ב-steemtx):
+     * Signature.addRecoveryBit אינו-קיים-ב-1.7.2 (1.6.x-API) · recoverPublicKey
+     * עליון: recoverPublicKey(hash, compact64, rec) · מחזיר 0x04-לא-דחוס →
+     * דחיסה-חובה לפני ה-STM-קידוד. נמדד round-trip: match:true. */
+    const raw65 = secp.recoverPublicKey(digest, sig65.slice(1, 65), rec);
+    if (!raw65) throw new Error("no-recovery");
+    const comp33 = secp.Point.fromHex(Buffer.from(raw65).toString("hex")).toRawBytes(true); // 1.7.2: fromHex (fromBytes אינו-קיים — נמדד)
+    signerStm = stmEncode(Buffer.from(comp33));
+  } catch (e) { log({ ok: false, failClosed: true, error: "signature-unrecoverable", why: String(e).slice(0, 80) }); process.exit(0); }
   const liveActive = (acct.active.key_auths ?? []).map((k) => k[0]);
   const liveOwner = (acct.owner.key_auths ?? []).map((k) => k[0]);
   const role = liveActive.includes(signerStm) ? "active" : liveOwner.includes(signerStm) ? "owner" : null;
