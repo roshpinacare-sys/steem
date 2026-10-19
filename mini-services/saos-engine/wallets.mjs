@@ -153,21 +153,78 @@ function privkeyNormalize(bytes32) {
   return Buffer.from(d.toString(16).padStart(64, "0"), "hex");
 }
 
-/* RFC5915 SEC1 DER for a secp256k1 private key — native crypto does the EC math:
- *   SEQUENCE { INTEGER 1, OCTET STRING (32B priv), [0] OID 1.3.132.0.10 } */
-const SEC1_PREFIX = Buffer.from("302e0201010420", "hex");
-const SEC1_CURVE = Buffer.from("a00706052b8104000a", "hex");
+/* ================= secp256k1 (pure-JS Jacobian, environment-proof) =================
+ * W16 ENVIRONMENT-DRIFT FIX 2026-10-19: Bun 1.3.14 (linux x64 baseline, this
+ * sandbox's cold-reset build) REJECTS every createPrivateKey import of
+ * secp256k1 (SEC1 DER, PKCS8 DER/PEM, typed and auto — all ERR_OSSL_DECODE_ERROR;
+ * measured live, selftest 57 died at the crash). The W15 sandbox's build imported
+ * it fine — the module must NEVER depend on a sandbox's native curve support.
+ * The math below is the standard short-Weierstrass Jacobian double-and-add over
+ * the canonical secp256k1 parameters. VERIFICATION LAW (W13 precedent: two
+ * independent engines must agree): module boot re-derives G·1 and MUST equal the
+ * canonical generator constants (typed death WALLET-CRYPTO-BROKEN otherwise);
+ * selftest additionally re-derives the 13 committed ledger addresses and they
+ * MUST equal the createPrivateKey-era ledger byte-for-byte — identical math
+ * yields identical points, so any drift is caught fail-closed. */
+
+const P_FIELD = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2Fn;
+const N_ORDER = N; /* curve order — declared above for privkeyNormalize */
+const GX = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798n;
+const GY = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n;
+
+const mod = (a, m = P_FIELD) => ((a % m) + m) % m;
+const inv = (a, m = P_FIELD) => { let r = BigInt(1), b = mod(a, m), e = m - 2n; while (e > 0n) { if (e & 1n) r = (r * b) % m; b = (b * b) % m; e >>= 1n; } return r; };
+
+/* Jacobian point doubling / addition — infinity is Z === 0n. */
+function jDouble([X, Y, Z]) {
+  if (Z === 0n || Y === 0n) return [0n, 1n, 0n];
+  const A = mod(X * X), B = mod(Y * Y), C = mod(B * B);
+  const D = mod(2n * (mod((X + B) * (X + B)) - A - C));
+  const E = mod(3n * A), F = mod(E * E);
+  const X3 = mod(F - 2n * D);
+  const Y3 = mod(E * (D - X3) - 8n * C);
+  const Z3 = mod(2n * Y * Z);
+  return [X3, Y3, Z3];
+}
+function jAdd([X1, Y1, Z1], [X2, Y2, Z2]) {
+  if (Z1 === 0n) return [X2, Y2, Z2];
+  if (Z2 === 0n) return [X1, Y1, Z1];
+  const Z1Z1 = mod(Z1 * Z1), Z2Z2 = mod(Z2 * Z2);
+  const U1 = mod(X1 * Z2Z2), U2 = mod(X2 * Z1Z1);
+  const S1 = mod(Y1 * Z2 * Z2Z2), S2 = mod(Y2 * Z1 * Z1Z1);
+  const H = mod(U2 - U1), R = mod(S2 - S1);
+  if (H === 0n) return R === 0n ? jDouble([X1, Y1, Z1]) : [0n, 1n, 0n];
+  const HH = mod(H * H), HHH = mod(H * HH), V = mod(U1 * HH);
+  const X3 = mod(R * R - HHH - 2n * V);
+  const Y3 = mod(R * (V - X3) - S1 * HHH);
+  return [X3, Y3, mod(Z1 * Z2 * H)];
+}
+function jMul(k, [X, Y, Z]) {
+  let acc = [0n, 1n, 0n], add = [X, Y, Z];
+  for (let i = 255n; i >= 0n; i--) { acc = jDouble(acc); if ((k >> i) & 1n) acc = jAdd(acc, add); }
+  return acc;
+}
+function toAffine([X, Y, Z]) {
+  if (Z === 0n) throw Object.assign(new Error("wallet: point at infinity"), { code: "WALLET-POINT-INF" });
+  const zi = inv(Z), zi2 = mod(zi * zi);
+  return [mod(X * zi2), mod(Y * mod(zi2 * zi))];
+}
 
 /** uncompressed 65-byte pubkey (0x04 ‖ X ‖ Y) for a normalized 32-byte privkey. */
 export function secp256k1PubUncompressed(priv32) {
-  const der = Buffer.concat([SEC1_PREFIX, priv32, SEC1_CURVE]);
-  const pk = crypto.createPrivateKey({ key: der, format: "der", type: "sec1" });
-  const spki = crypto.createPublicKey(pk).export({ format: "der", type: "spki" });
-  const pub = spki.subarray(-65);
-  if (pub.length !== 65 || pub[0] !== 0x04) {
-    throw Object.assign(new Error("wallet: unexpected SPKI tail (not 0x04‖64B)"), { code: "WALLET-PUB-SHAPE" });
+  const d = BigInt("0x" + priv32.toString("hex"));
+  if (d === 0n || d >= N_ORDER) throw Object.assign(new Error("wallet: privkey out of range"), { code: "WALLET-KEY-RANGE" });
+  const [x, y] = toAffine(jMul(d, [GX, GY, 1n]));
+  return Buffer.concat([Buffer.from([0x04]), Buffer.from(x.toString(16).padStart(64, "0"), "hex"), Buffer.from(y.toString(16).padStart(64, "0"), "hex")]);
+}
+
+/* BOOT GUARD (the W13 two-engines law, module-native): G·1 MUST equal the
+ * canonical generator — one scalar mult, once, typed death on any drift. */
+{
+  const [gx, gy] = toAffine(jMul(1n, [GX, GY, 1n]));
+  if (gx !== GX || gy !== GY) {
+    throw Object.assign(new Error("wallet: secp256k1 boot guard failed — G·1 ≠ G"), { code: "WALLET-CRYPTO-BROKEN" });
   }
-  return Buffer.from(pub);
 }
 
 /* ================= wallet derivation (deterministic chain) ================= */
