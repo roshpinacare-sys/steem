@@ -57,6 +57,8 @@ import { runRcTank, rcTankState } from "./rctank.mjs";
 import { runPayouts, payoutsState } from "./payouts.mjs";
 import { runSoldierClaims } from "./soldier-claims.mjs";
 import { runWeave, weaveState } from "./weave.mjs";
+import { measureFleetMatrix } from "./fleet-matrix.mjs"; /* W12: the activation board */
+import { runFleetRebalance } from "./fleet-rebalance.mjs"; /* W12: the mutual-support rail */
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -872,6 +874,37 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     return {
       verdict, deploy: deploy ? { verdict: deploy.verdict, txid: deploy.txid ?? null, error: deploy.error ?? null } : null,
       topups, grids: grids.soldiers ?? [],
+    };
+  });
+
+  /* W12 · fleet-matrix (owner order 2026-10-19: "קודם וודא הפעלה מרבית של
+   * כל הצי"): the measured activation board of the whole estate — custody,
+   * balances, RC tanks, 24h chain-truth activity, activation class + gap
+   * list. READ-ONLY, fail-isolated. Written every cycle so the cockpit and
+   * the rebalance rail always read a fresh board. */
+  report.steps.fleetMatrix = await stepWrap("fleet-matrix", async () => {
+    const m = await measureFleetMatrix({ now });
+    return {
+      verdict: `ACTIVATION-${Math.round(m.activation.rate * 100)}pct`,
+      activation: m.activation,
+      totals: m.totals,
+      gaps: m.gaps.map((g) => `${g.name}:${g.class}`),
+    };
+  });
+
+  /* W12 · fleet-rebalance (划转互填 — the mutual-support rail): plans the
+   * measured moves (sweep / sp-ladder / idle-recall) and executes EXACTLY
+   * as far as the standing policy allows — the think-gate owns every
+   * broadcast; delegation moves stay PLAN-ONLY with their one-flag arm.
+   * Fail-isolated like every step. */
+  report.steps.fleetRebalance = await stepWrap("fleet-rebalance", async () => {
+    const out = await runFleetRebalance({ now });
+    return {
+      verdict: out.verdict ?? "NO-OP",
+      planned: out.planOnly?.length ?? 0,
+      executed: out.executed?.length ?? 0,
+      refused: out.refused?.length ?? 0,
+      planPreview: (out.planOnly ?? []).slice(0, 4).map((m) => `${m.kind}:${m.to ?? ""}:${m.sp ?? m.vests ?? ""}`),
     };
   });
 
