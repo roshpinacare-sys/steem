@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-19T11:27:26.948Z",
+  "at": "2026-10-19T11:56:48.004Z",
   "why": "planned",
   "policy": {
     "masterSpOwnFloor": 1372,
@@ -13,7 +13,7 @@
     "maxSweepsPerCycle": 2
   },
   "arm": {
-    "flag": true,
+    "flag": false,
     "order": true,
     "spLadderExecutedToday": 6,
     "spLadderExecNow": 0,
@@ -25,75 +25,91 @@
       "from": "headcorner",
       "to": "cashmachine",
       "sp": 60,
-      "setVests": 217667.543161,
+      "setVests": 217666.543161,
       "curSpEffective": 80.4,
       "curMasterDelegationVests": 120973.543161,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.12T vs master 4.4T; EFFECTIVE SP 80.4→140.4 (received 75.1); master delegation +60 SP (SET 217667.543161)"
+      "why": "RC bottleneck: tank 0.12T vs master 4.4T; EFFECTIVE SP 80.4→140.4 (received 75.1); master delegation +60 SP (SET 217666.543161)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "israelnews",
       "sp": 60,
-      "setVests": 217667.81357300002,
+      "setVests": 217666.81357300002,
       "curSpEffective": 95.1,
       "curMasterDelegationVests": 120973.813573,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 4.4T; EFFECTIVE SP 95.1→155.1 (received 93.7); master delegation +60 SP (SET 217667.813573)"
+      "why": "RC bottleneck: tank 0.16T vs master 4.4T; EFFECTIVE SP 95.1→155.1 (received 93.7); master delegation +60 SP (SET 217666.813573)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "lsa",
       "sp": 60,
-      "setVests": 217667.543161,
+      "setVests": 217666.543161,
       "curSpEffective": 80.9,
       "curMasterDelegationVests": 120973.543161,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.13T vs master 4.4T; EFFECTIVE SP 80.9→140.9 (received 76.1); master delegation +60 SP (SET 217667.543161)"
+      "why": "RC bottleneck: tank 0.13T vs master 4.4T; EFFECTIVE SP 80.9→140.9 (received 76.1); master delegation +60 SP (SET 217666.543161)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "macrame",
       "sp": 60,
-      "setVests": 217667.320505,
+      "setVests": 217666.320505,
       "curSpEffective": 77.1,
       "curMasterDelegationVests": 120973.320505,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.12T vs master 4.4T; EFFECTIVE SP 77.1→137.1 (received 75.1); master delegation +60 SP (SET 217667.320505)"
+      "why": "RC bottleneck: tank 0.12T vs master 4.4T; EFFECTIVE SP 77.1→137.1 (received 75.1); master delegation +60 SP (SET 217666.320505)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "siq",
       "sp": 60,
-      "setVests": 228127.457529,
+      "setVests": 228126.457529,
       "curSpEffective": 87.3,
       "curMasterDelegationVests": 131433.457529,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.14T vs master 4.4T; EFFECTIVE SP 87.3→147.3 (received 82.6); master delegation +60 SP (SET 228127.457529)"
+      "why": "RC bottleneck: tank 0.14T vs master 4.4T; EFFECTIVE SP 87.3→147.3 (received 82.6); master delegation +60 SP (SET 228126.457529)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "tov",
       "sp": 60,
-      "setVests": 235883.776508,
+      "setVests": 235882.776508,
       "curSpEffective": 92.1,
       "curMasterDelegationVests": 139189.776508,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.14T vs master 4.4T; EFFECTIVE SP 92.1→152.1 (received 87.4); master delegation +60 SP (SET 235883.776508)"
+      "why": "RC bottleneck: tank 0.14T vs master 4.4T; EFFECTIVE SP 92.1→152.1 (received 87.4); master delegation +60 SP (SET 235882.776508)"
     }
   ],
   "executed": [],
-  "refused": [],
-  "verdict": "PLANNED-DAY-CAP"
+  "refused": [
+    {
+      "move": {
+        "kind": "liquidity-sweep",
+        "from": "cashmachine",
+        "to": "headcorner",
+        "asset": "STEEM",
+        "amount": 92.993,
+        "mode": "attempt",
+        "why": "master below floor (0 < 40) while cashmachine holds surplus"
+      },
+      "verdict": "THINK-GATE-REFUSED",
+      "txid": null,
+      "error": null,
+      "at": "2026-10-19T11:56:48.004Z"
+    }
+  ],
+  "verdict": "PLANNED-AWAITING-POLICY"
 }
