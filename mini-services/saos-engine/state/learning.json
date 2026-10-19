@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-19T08:37:24.179Z",
+  "at": "2026-10-19T08:53:59.615Z",
   "enabled": true,
-  "runsTotal": 438,
+  "runsTotal": 439,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,17 +17,17 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 237,
+      "totalVotes": 240,
       "window": 30,
       "verdicts": {
         "VOTED": 30
       },
-      "vpEff": 36.1,
-      "meanAgeMinutes": 97,
+      "vpEff": 35.3,
+      "meanAgeMinutes": 104,
       "tagsVoted": {
-        "steem": 1,
-        "technology": 1,
-        "crypto": 1
+        "crypto": 1,
+        "ai": 1,
+        "steem": 1
       },
       "dayCapsInRow": 0,
       "maxPerDay": 30
@@ -53,11 +53,10 @@
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+      "severity": "high",
+      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
     },
     {
       "id": "broadcast-fails",
@@ -72,8 +71,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 356,
-    "broadcast-fails": 78,
+    "signing-cred-blocked": 357,
+    "broadcast-fails": 79,
     "cycle-latency-tail": 12
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
