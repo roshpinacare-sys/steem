@@ -20,13 +20,16 @@
  *               → write 0600 cache (.secrets/<name>.json)
  *               → the rails run.
  *
- * CLASS DOCTRINE (as measured in recovery-meta.json):
- *   - SELF-CONTAINED (unsealable here, pass lives in the meta — the EXCHANGE-
- *     SEAL precedent the owner approved twice): exchangeVault, integrationsVault,
- *     agentsVault (when minted).
- *   - STRANDED-OWNER-PASS (R284/R-VAULTPASS-1 law: ONE pass left the repo by
- *     the owner's own directive): keysZip, toolbelt, extras, seedVault. These
- *     resolve to a typed honest strand — NEVER a guess, NEVER a brute force.
+ * CLASS DOCTRINE (as amended by R33 writer-custody law, 2026-10-19):
+ *   - ACTIONS-CUSTODY (R33 law: the pass NEVER travels with its archive —
+ *     CRITICAL-R11-KEY-BROADCAST): exchangeVault, integrationsVault, walletsVault,
+ *     agentsVault. Passes resolve from Actions secrets (VAULT_PASS_<CLASS> /
+ *     VAULT_PASSES_R33 bundle) at run time; seal scripts PUT them at seal time.
+ *   - LEGACY SELF-CONTAINED (pre-R33 metas, incl. history-restored): a
+ *     meta.<class>.pass that IS present still unseals — never a guess.
+ *   - STRANDED-OWNER-PASS (R284/R-VAULTPASS-1 law): keysZip, toolbelt, extras,
+ *     seedVault. These resolve to a typed honest strand — NEVER a guess,
+ *     NEVER a brute force.
  *
  * LAWS:
  *   - ZERO secret material in stdout/logs/returns — fingerprints only.
@@ -42,6 +45,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { envPassFor } from "../../scripts/actions-custody.mjs";
 
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
 const fp = (t) => (t ? `${t.slice(0, 6)}…${t.slice(-4)}(${t.length})` : "null");
@@ -78,7 +82,11 @@ export function listVaultClasses(meta) {
         file: v.file,
         sealedAt: v.sealedAt ?? null,
         contents: Array.isArray(v.contents) ? v.contents : [],
-        custody: v.pass ? "self-contained (pass in meta)" : "stranded-owner-pass (R-VAULTPASS-1)",
+        custody: v.pass
+          ? "legacy self-contained (R11 pattern — migrating to actions-custody)"
+          : v.passRef
+            ? `actions-custody (${String(v.passRef).slice(0, 48)})`
+            : "stranded-owner-pass (R-VAULTPASS-1)",
       });
     }
   }
@@ -101,8 +109,9 @@ export function unsealVaultClass(repoDir, meta, className, opts = {}) {
   if (!cls || typeof cls !== "object" || !cls.file) {
     throw typed("VAULT-CLASS-UNKNOWN", `vault: meta has no class ${className}`);
   }
-  if (!cls.pass) {
-    throw typed("VAULT-PASS-ABSENT", `vault: ${className} is STRANDED-OWNER-PASS (R-VAULTPASS-1) — owner-held, never guessed`);
+  const pass = cls.pass ?? envPassFor(className);
+  if (!pass) {
+    throw typed("VAULT-PASS-CUSTODY", `vault: ${className} pass is under ACTIONS-CUSTODY (VAULT_PASS_* / VAULT_PASSES_R33) and was not provided in this environment — run the unseal inside Actions with the secret wired to env, or supply envPassFor source. NEVER guessed, NEVER inlined into git (R33 writer-custody law).`);
   }
   const encPath = path.join(repoDir, cls.file);
   let enc;
@@ -120,7 +129,7 @@ export function unsealVaultClass(repoDir, meta, className, opts = {}) {
     const innerZip = path.join(tmp, "inner.zip");
     try {
       execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-        "-in", encPath, "-out", innerZip, "-pass", `pass:${cls.pass}`],
+        "-in", encPath, "-out", innerZip, "-pass", `pass:${pass}`],
         { stdio: ["ignore", "ignore", "pipe"] });
     } catch (e) {
       throw typed("VAULT-OPEN-FAIL", `vault: openssl open failed for ${className} — ${String(e?.status ?? "spawn")}`);
@@ -179,7 +188,7 @@ export function bootstrappableVerdict(repoDir) {
         return sha256(fs.readFileSync(path.join(repoDir, c.file))) === cls.outerSha256;
       } catch { return false; }
     })();
-    return { ...c, outerPinOk: encOk, reachable: !!(cls.pass && encOk) };
+    return { ...c, outerPinOk: encOk, reachable: !!((cls.pass || envPassFor(c.name)) && encOk) };
   });
   const selfContained = classes.filter((c) => SELF_CONTAINED_CLASSES.includes(c.name));
   const reachable = selfContained.filter((c) => c.reachable).length;
