@@ -1,23 +1,57 @@
 {
-  "at": "2026-10-19T10:45:53.004Z",
-  "verdict": "COVERED",
+  "at": "2026-10-19T11:12:22.678Z",
+  "verdict": "REPAIRED",
   "lanes": {
-    "hyper": 4,
-    "cancelableAsks": 6,
+    "hyper": 2,
+    "cancelableAsks": 10,
     "cancelableBids": 0,
-    "orphans": 2
+    "orphans": 6
   },
   "coverage": {
-    "askSum": 310.29,
-    "askCap": 451.4191,
-    "askOver": 0,
+    "askSum": 458.978,
+    "askCap": 339.28965,
+    "askOver": 119.68835,
     "bidSum": 0,
-    "bidCap": 1.84395,
+    "bidCap": 0.41895,
     "bidOver": 0
   },
-  "cancelIds": [],
-  "cancelWhy": [],
-  "broadcast": null,
+  "cancelIds": [
+    1792384320,
+    1792385840,
+    1792407987
+  ],
+  "cancelWhy": [
+    {
+      "id": 1792384320,
+      "side": "ask",
+      "amt": 73.88,
+      "unit": 0.107323,
+      "freed": 73.88,
+      "orphan": true
+    },
+    {
+      "id": 1792385840,
+      "side": "ask",
+      "amt": 36.411,
+      "unit": 0.107303,
+      "freed": 36.411,
+      "orphan": true
+    },
+    {
+      "id": 1792407987,
+      "side": "ask",
+      "amt": 33.704,
+      "unit": 0.104617,
+      "freed": 33.704,
+      "orphan": true
+    }
+  ],
+  "broadcast": {
+    "ok": true,
+    "txid": "434b467ef1a6d5d08b5eaf00cc33ecd8a09e1361",
+    "error": null,
+    "count": 3
+  },
   "laws": [
     "הספר לעולם לא מבטיח יותר מהיתרה — כיסוי נמדד כל מחזור (asks ≤ יתרת STEEM × 0.95, bids ≤ (יתרת SBD − 0.5 רזרבה) × 0.95)",
     "פס-ההיפר-גריד נגע-בלבד: ids ‎[2.1e9, 4.29e9]‎ נמדדים אך לעולם לא מבוטלים כאן",
