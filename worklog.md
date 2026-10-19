@@ -1511,3 +1511,25 @@ Stage Summary:
 - The 11:12 offender runs a stale checkout; until it re-syncs from git it will keep being REFUSED by its own guards' absence — its next reduce attempt dies at its own heal leg (or, once it pulls, at the boundary). The worklog is the fleet's notice.
 - Fleet state: 14/14 activated, soldiers ~75-92 effective SP, ladder resumes +60 SP/day at 00:00 UTC (day-cap ledger honest: today 6/6 spent on the incident, net-zero).
 - DEX phase 2 (owner's explicit second priority) remains the next wave.
+
+---
+Task ID: W12-D
+Agent: zai-code (main instance — SAOS fill-ledger wire wave, steem repo saos-cockpit)
+Task: owner — same directive (sandbox check · update from git · continue and push). W12 phase 2: DEX + tools for quality profit flows — this wave: make the trading rails' profit MEASURABLE.
+
+Work Log:
+- Git-first: sandbox alive, clone at tip e7503209e (my W12-c push), 0/0 divergence.
+- PHASE-2 SCOPING FROM MEASURED STATE: economics.json showed the market-making rail (the MOST active rail) as confidence "blocked" — realizedSbdTotal 0, "no fill window yet" — while 125 fills/day ran. The fleet's biggest rail was a P&L blind spot.
+- ROOT CAUSE (born-broken instrument): fills.mjs (T-25) imported fillWindow from lib.mjs — which NEVER existed in any commit (git -S across all history: zero hits). The module could not even LOAD; mergeFillLedger had ZERO callers; the ledger froze 2026-10-02 (19 fills) while the book traded. Another broken wire, this time never alive.
+- BUILT THE MISSING INSTRUMENT: fillWindow in lib.mjs (honest window math: windowDays from fill span with perDayReady ONLY at ≥1 full day — never annualize a sub-day window; realized P&L = pnlFromFills over the raw ledger; ask/bid edge bps vs parity; 24h volume buckets; venue-share honest-null) + shouldFleetSweep (cadence gate, 30min default).
+- THE ESTATE ONE-BODY LAW: a fill_order trx appears in BOTH parties' histories — the ledger is global with trx-level dedupe (counted once, never double-counted); rows carry an account tag for attribution, never identity. mergeFillLedger gained row-level account tags + injectable file (testability without polluting the real ledger).
+- WIRED daily.mjs: observe step now merges master fills + rolls up (fail-soft); NEW fail-isolated fleet-fills step — cadence-gated sweep of up to 14 verified active bodies (measureAll window 400 each), one merge, one rollup, sweep marker journaled.
+- WIRED economics.mjs: the MM rail's window comes from the ledger rollup; perDayReady (≥1 full day) is the ONLY key that flips confidence to "measured" — a partial window stays blocked (the R282 honesty family).
+- LIVE PROOF (read-only chain, zero keys): master 127 fills merged (+115) · fleet sweep 13 accounts (+14) → ledger 148 fills, window 17.596d · 24h: 119 fills, 16,355.792 STEEM + 1,661.529 SBD volume · realized −0.022189 SBD (≈ breakeven) · MM rail FLIPPED: confidence "measured", measuredUsdPerDay −0.000671, note honest ("היסטורי, אינו תחזית").
+- Selftest section 54 (11 vectors: empty-ledger nulls, sub-day hold-back, ≥1d per-day math + edge bps + realized shape, one-body cross-account dedupe, sweep gate, rail flip measured/blocked) → 1873/1873 PASS. rail-doctrine PASS.
+- PUSHED b3ccc10be → saos-cockpit @ 14:40:15Z (sovereign-push FF-only, doctrine-audit PASS, guards clean).
+
+Stage Summary:
+- The trading estate's realized P&L is now a MEASURED number with a live pipeline, not a "blocked" placeholder: ~16k STEEM/day volume at ≈breakeven — the market-making rail is a SOVEREIGNTY/VOLUME rail (presence + optionality + fill-share), and the profit rails are curation (est. 0.459 $/day, first payouts verifying) + convert-arb (armed, honest HOLD at −567bps) + author/promo.
+- The quality-profit playbook this unlocks: measure fill-share and edge per leg → tune the book (spread/side-skew) → scale volume as the SP ladder raises RC capacity (6/day resumes 00:00 UTC).
+- Next wave candidates (phase 2 continuation): per-account P&L attribution table for the cockpit; convert-arb trigger sharpening; venue-share wiring from market.json into the rollup.
