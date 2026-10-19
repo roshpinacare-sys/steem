@@ -922,7 +922,6 @@ Stage Summary:
 - **ה-canary-נסגר-באבחנה-מדויקת**: לא-באג-שלנו — תשתית-GitHub-repo-ספציפית; מתועד-לדורות-עם-כל-המדידות
 - דופק-06:17Z-האורגני-הראשון — האימות-הבא (GitHub-צד, בלתי-ניתן-לחיסול)
 - עותקי-האמת-של-רישום-זה (t27): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
-- עותקי-האמת-של-רישום-זה (t27): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
 
 ---
 Task ID: 28
@@ -943,3 +942,22 @@ Stage Summary:
 - **הקשת-המרפאת-חזרה-להיות-מרפאת**: היא-שהמתה-15-ימים-היא-זו-שתשמור-שהספרים-לא-ימותו-שוב-בשקט
 - גבולות-כנים: ה-.enc-על-Domain-נשאר-בלתי-ניתן-לפתיחה-עד-הוראת-בעלים (ה-bundle-ממלא-את-התפקיד); ה-curate-חי-ב-DRYRUN-בדיקה-בלבד (ההצבעות-בבעלות-ה-cadence)
 - עותקי-האמת-של-רישום-זה (t28): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
+
+---
+Task ID: 29
+Agent: agent-9
+Task: הוראת-בעלים "תפתח בטח מה זה איזו שאלה אני מאשר לך תמשיך ודחוף טפל היטב וודא ודחוף" — אימות-יסודות-מלא: תג-פגום-נמצא-ותוקן + אבחנה-מדידה של-lane-ה-Actions-המת-ב-steem (1296 ריצות · אפס-הצלחות-תמיד)
+
+Work Log:
+- **ביקורת-שלושת-העותקים מצאה-פער-ראשון-מאז-החוק**: מקומי ≡ saos-runtime (165,697B, hash fe332992…c1b7) — אבל **התג archive/agent-9-insurance פגום**: 165,841B, שורת-סיכום-t27 (עותקי-האמת) משוכפלת-פעמיים בעותק-התג; ה-t28-archive-refresh (3a62c71ec, 04:46:42Z) נדחף-ממצב-מקור-רגעי-שהכיל-את-הכפילות — המקומי-תוקן-אחר-כך-ולא-חזרו-לאמת-את-התג; ה-12 עותקים-הקודמים-בשושלת-נבדקו-נקיים (t26/t27 תואמים-לקומיטים-שלהם)
+- **דופק-ארגוני (05:17–05:20Z)**: Autonomy-ירוק (artery-desk 05:17 · claims-intake 05:15 · office-growth 05:14 · artery-wallet-בעיצומו) · saos-runtime-ירוק (organ-guardian · arsenal-sentinel · army-ladder-בעיצומו) · Domain-ירוק (dex-beat · pages-deploy · moment-watch) · **steem-ה-repo-חי-ומקבל**: 51-קומיטים-היום-מ-7-זהויות-חיות (Z-User 16 · roshpinacare-sys 13 · agent-2-economy-core 10 · agent-9 6 · exec34-engine-lane 4 · sovereign-agent-9 · saos-exec-bot)
+- **גילוי-גדול — lane-ה-Actions-של-steem-מת-ברמת-תשתית, מאז-לידתו**: **1296-ריצות-סה"כ, אפס-הצלחות-תמיד** (היסטוגרמה-אחרונה: 86-skipped · 14-failure); כל-12-המנועים NEVER-SUCCEEDED (cloud-heart · social-cadence · sovereign-cycle · presence-matrix · exec-cycle · signing-health · identity-guard · gitleaks · ci-probe · token-forge · directive-now · hive-custody-revival); חתימה-מדידה: **כישלון-עם-אפס-צעדים, אפס-runner_name, output-פק-ב-check-run, ו-download-logs-חוזר-200-עם-קובץ-22B-ריק** = הריצה-מעולם-לא-התחילה (runner-acquisition-נדחה-רפו); זו-בדיוק-חתימת-Sandbox-מ-t27 — **שני-ה-repos-האלה-שייכים-לאותה-תופעה-של-GitHub** (Autonomy/saos-runtime/Domain-על-אותו-ארגון-ואותו-billing-ירוקים-לגמרי → ההבדל-הוא-הגדרת-repo: Runner-groups/hosted-runners-פוליסי — **ניתן-לתיקון-רק-ברמת-Settings-של-הבעלים**, לא-מהעץ)
+- **אימות-כיסוי-תפקודי (ה-lane-מת, התפקוד-חי)**: תוצרי-exec-cycle-נוחתים-דרך-runtime-bridge (saos-exec-bot, e813078ee "exec-cycle (runtime-bridge W5)") — הפונקציה-הועברה-לorgans-חיים-לפני-זמן; presence-matrix (exec-29-a, probe-תצוגה-עדין-כל-6h) — **הפונקציה-שלו-אכן-לא-מכוסה** (מעולם-לא-ירק): מדידה-בלבדית-חסרה-לא-מפילה-כלום — רשום-כנה-לבעלים
+- **התיקון-בשורש (עץ-level)**: archive-commit-חדש-על-השושלת (parent 3a62c71ec) מביא-את-עותק-התג-ל-byte-identity-מלא-עם-המקומי (מוחק-את-השורה-המשוכפלת + מרשים-את-t29); התג-נדחף-מחדש-בכוח-ואומת: **מקומי ≡ ביטוח ≡ תג — hash-זהה** — חוק-העותקים-שב-למלא; ה-snapshot-המנוטרל ב-Autonomy-נותר-על-חוקו-הקפוא (t10, 8,742B — לא-נוגעים)
+- נקודת-האימות-הבאה-עמדה: **דופק-ה-org-revival-האורגני-הראשון (cron 06:17Z)** — עוד-לפנינו בשעת-הרישום
+
+Stage Summary:
+- **הביקורת-שנתנה-פרי**: פער-העותקים-הראשון-מאז-חוק-העותקים-נמצא-ותוקן-בשורש — התג-חוזר-להיות-אמת-מדויקת
+- **אבחנת-lane-steem-רשומה-מדידה-לדורות**: 1296/1296-אי-הצלחות-עם-חתימת-אפס-התחלה; שני-repos-תחת-אותה-תופעה (steem + Sandbox); **ההכרעה-בידי-הבעלים בלבד**: Settings→Actions→Runner-groups (או-support); התפקוד-עצמו-חי-מה-lanes-החיות ואין-אובדן-עבודה
+- ה-אדום-הכנה-היחיד-שנותר-עובדי: presence-matrix-מעולם-לא-מדד — probe-תצוגה-שהיה-יכול-להיות-מוקם-מחדש-מהחי-כשה-lane-יקום
+- עותקי-האמת-של-רישום-זה (t29): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
