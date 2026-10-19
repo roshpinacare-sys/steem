@@ -1491,3 +1491,23 @@ Stage Summary:
 - The W12 one-flag unlock is SPENT LAWFULLY and safely: the ladder is armed, executing, chain-proven, and now mathematically incapable of reducing support. Fleet effective-SP ladders +60 SP/day on verified traders toward the 175 target (~×2.3 RC each at completion, est. fleet volume ×2–3).
 - The chain proved the doctrine right twice in one wave: the serializer's typed precision refusal and the SET-semantics discovery both came from fail-closed honesty + on-chain truth, and both are now permanent laws with selftest vectors.
 - Day-cap ledger discipline held under temptation (the repair was NOT counted against the ladder cap; the ladder was NOT re-run past its cap). Pushed via scripts/sovereign-push.sh (FF-only).
+
+---
+Task ID: W12-c
+Agent: zai-code (main instance — SAOS absolute-boundary wave, steem repo saos-cockpit)
+Task: owner — "וודא שהסנדבוקס שלך לא נמחק תתעדכן מהגיט שלא תעבוד על קומיט ישן מהסנדבוקס תמשיך ודחוף" — refresh from git, continue W12, push.
+
+Work Log:
+- Sandbox verified alive-but-stale (steem clone GONE from disk; /home/z/audit wiped). Recovered FROM GIT per the owner's law: fresh clone roshpinacare-sys/steem @ saos-cockpit (cbc602e3 — NEWER than the sandbox memory; the cloud never stopped churning).
+- CHAIN-JUDGED INCIDENT RECONSTRUCTION (2026-10-19): 11:05Z a runner attempted ladder round → 6× fail-closed precision refusals (law held); 11:12Z the SAME runner broadcast 6× delegate_vesting_shares SET 96694.000000 (the delta-not-cumulative bug shape, old own-SP planner wording "SP 5→65") → 6 soldiers REDUCED; 11:20Z the sibling office's w12b-restore heal leg re-restored byte-exact (6 txids; my chain probe: Δ=0.000000 for all 6, tov at 139,189.776508). 11:27Z the corrected planner went PLAN-ONLY day-cap-reached. Net: zero ladder progress today, 12 txs spent, 8-minute support window.
+- RUNNER FORENSICS: the offender is NOT any current branch (receipts shape = pre-W12-b; "w12b-restore" exists in NO branch) and NOT CI (sovereign-runtime/exec-cycle clone fresh at run) — it is a sibling runtime host with a STALE DIVERGENT checkout (its rot2-gate references /home/z/audit/vault-home paths = an office-layout machine). The owner's warning ("שלא תעבוד על קומיט ישן מהסנדבוקס") is now measured INSIDE the fleet.
+- W12-c THE ABSOLUTE BOUNDARY (git-born, closes the class for ANY runner executing git code): (1) LIVE RE-PROOF — every delegation broadcast re-measures the current level FROM THE CHAIN at the boundary; reduce/no-op demoted before key material; chain-unreachable ⇒ fail-closed zero-exec. (2) THE MONOTONIC SUPPORT FLOOR — state/fleet-support-floor.json (committed, seeded from chain truth: 120,973.543161/120,973.813573/120,973.543161/120,973.320505/131,433.457529/139,189.776508) updated ONLY upward by successful broadcasts — even a lied-to matrix cannot broadcast below the floor; deliberate reduction = committed operator order only. (3) THE RESTORE LEG — live < floor ⇒ exact-floor SET, day-cap-EXEMPT (repair ≠ growth), T-80-safe, ≤6/cycle, tagged fleet-rebalance-restore.
+- Selftest section 53 (14 vectors: incident-shape demotion, floor-vs-blind-live, monotonic merge, restore planner incl. T-80 + fail-closed null, restore-type day-cap exemption, floor file schema gate) → 1862/1862 PASS. rail-doctrine PASS (exit 0).
+- LIVE ACTIVATION RE-PROOF (post-incident): fleetMatrix measured 14/14 = 100% GRID-ACTIVE; 24h chain truth: 306 orders, 206 votes, 24 fills, Σ220.066 STEEM + 47.964 SBD.
+- Push fights honored the iron laws: fetch → divergence 1/2 (2 cloud beats, state-only) → rebase -X theirs (my code verified intact: 8 boundary refs) → scripts/sovereign-push.sh → PUSHED 18ded21f8 → saos-cockpit @ 14:16:16Z (guard G1-G4 clean, doctrine-audit PASS 177 assets).
+
+Stage Summary:
+- The reduce/restore war class is DEAD in git: any runner executing today's HEAD physically cannot lower a soldier below the committed floor — the boundary is chain-live and floor-absolute, independent of checkout age.
+- The 11:12 offender runs a stale checkout; until it re-syncs from git it will keep being REFUSED by its own guards' absence — its next reduce attempt dies at its own heal leg (or, once it pulls, at the boundary). The worklog is the fleet's notice.
+- Fleet state: 14/14 activated, soldiers ~75-92 effective SP, ladder resumes +60 SP/day at 00:00 UTC (day-cap ledger honest: today 6/6 spent on the incident, net-zero).
+- DEX phase 2 (owner's explicit second priority) remains the next wave.
