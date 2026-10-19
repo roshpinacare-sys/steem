@@ -7,10 +7,12 @@
  *
  * The keys live in the GIT vault (agent/vault/EXCHANGE-SEAL-*.zip.enc, sealed
  * by scripts/seal-exchange-w13.mjs, meta.exchangeVault carries the pass + pins
- * — system-custody doctrine, R306 precedent). At run time the connector reads
- * the 0600 cache .secrets/exchange.json (rebuildable from the vault by the
- * seal script) or env overrides. ZERO secret material is ever logged,
- * returned, or committed.
+ * — system-custody doctrine, R306 precedent). At run time the connector
+ * resolves credentials env → 0600 cache (.secrets/exchange.json) → THE VAULT
+ * ITSELF (W15 vault-unseal.mjs: pin-verified openssl open, cache rebuilt
+ * 0600) — owner order 2026-10-19 "וודא כספת שיהיה מפתח לפעילות שוטפת של
+ * המערכת": a bare clone is a fully operational exchange rail. ZERO secret
+ * material is ever logged, returned, or committed.
  *
  * SIGNATURE SPEC (HTX/Huobi SignatureVersion=2 — the ONE formula):
  *   params must include AccessKeyId, SignatureMethod=HmacSHA256,
@@ -35,12 +37,24 @@ import * as path from "node:path";
 import * as crypto from "node:crypto";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
-const SECRETS_CACHE = path.join(DIR, "..", "..", ".secrets", "exchange.json");
+const REPO = path.join(DIR, "..", "..");
+const SECRETS_CACHE = path.join(REPO, ".secrets", "exchange.json");
 
 export const HTX_HOST = "api.htx.com";
 
-/* ---------- credentials (fail-closed, typed; zero secret in errors) ---------- */
-export function htxConfigFrom(cachePath) {
+/* ---------- credentials (fail-closed, typed; zero secret in errors) ----------
+ * Resolution ladder (W15 · the ongoing-activity key, owner order
+ * "וודא כספת שיהיה מפתח לפעילות שוטפת של המערכת"):
+ *   1. env SAOS_HTX_ACCESS_KEY/SAOS_HTX_SECRET_KEY (operator override)
+ *   2. 0600 cache .secrets/exchange.json (sandbox-local)
+ *   3. THE GIT VAULT — unsealExchange(): pin-verified openssl open
+ *      (AES-256-CBC · pbkdf2 · iter 300000, sha256 outer+inner pins),
+ *      then the 0600 cache is rebuilt so the next call is cheap.
+ * A bare clone therefore always reaches its keys — the vault is the key.
+ * ---------------------------------------------------------------------- */
+import { unsealExchange } from "./vault-unseal.mjs";
+
+export function htxConfigFrom(cachePath, opts = {}) {
   const accessKey = process.env.SAOS_HTX_ACCESS_KEY;
   const secretKey = process.env.SAOS_HTX_SECRET_KEY;
   if (accessKey && secretKey) return { accessKey, secretKey, source: "env" };
@@ -48,8 +62,14 @@ export function htxConfigFrom(cachePath) {
   try {
     raw = fs.readFileSync(cachePath, "utf8");
   } catch (e) {
+    /* LADDER RUNG 3 — the vault itself. Only for the default repo cache path;
+     * a caller pointing at a custom path gets the honest typed death. */
+    if (!opts.noVaultFallback && path.resolve(cachePath) === path.resolve(SECRETS_CACHE)) {
+      const fromVault = unsealExchange(REPO);
+      return { accessKey: fromVault.accessKey, secretKey: fromVault.secretKey, source: fromVault.source };
+    }
     const err = new Error(
-      "htx: credentials absent — run scripts/seal-exchange-w13.mjs (vault re-seal) or set SAOS_HTX_ACCESS_KEY/SAOS_HTX_SECRET_KEY"
+      "htx: credentials absent — set SAOS_HTX_ACCESS_KEY/SAOS_HTX_SECRET_KEY, or unseal the vault (scripts/unseal-runtime.mjs)"
     );
     err.code = "HTX-NO-CRED";
     throw err;

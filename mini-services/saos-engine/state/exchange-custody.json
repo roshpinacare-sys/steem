@@ -5,7 +5,11 @@
   "verdict": "RAIL-BLOCKED-BY-VENUE-REGION",
   "measured": {
     "auth": "SIGNED-PROOF-OK (keys live; spot account 73986225; read rails work: accounts/balance/fee-tier/currencies/market-data)",
-    "feeTier": { "maker": 0.002, "taker": 0.002, "source": "signed /v2/reference/transact-fee-rate, our account, 2026-10-19" },
+    "feeTier": {
+      "maker": 0.002,
+      "taker": 0.002,
+      "source": "signed /v2/reference/transact-fee-rate, our account, 2026-10-19"
+    },
     "tradeLeg": {
       "verdict": "BLOCKED-BY-REGION",
       "proof": "zero-risk order probe (no balance, cannot fill) answered api-code:order-trade-forbidden — 'Dear user, the service is not available to your country or region'",
@@ -18,5 +22,13 @@
     }
   },
   "losses": 0,
-  "note": "the W13 report's deep-examination law did its job: the rail was measured BEFORE any value moved; the fleet's 30-STEEM tranche stays home until a lawful venue exists"
+  "note": "the W13 report's deep-examination law did its job: the rail was measured BEFORE any value moved; the fleet's 30-STEEM tranche stays home until a lawful venue exists",
+  "w15Recheck": {
+    "at": "2026-10-19T17:28:15.618Z",
+    "verdict": "KEY-REJECTED-3011",
+    "measured": "two independent signed endpoints (/v2/reference/transact-fee-rate, /v1/account/accounts) answer Incorrect Access key after SIGNED-PROOF-OK at 16:45Z same day — server-side key state changed between the waves",
+    "reading": "consistent with the owner rotating the keypair in the console (the W14 ask) while re-attaching the STALE local htx.txt — the drop measured IDENTICAL to the W13 seal, yet the server rejects it",
+    "consequence": "the history-exposed keypair is INERT (residual risk of SEC-2026-10-19-1 ~zero); the rail awaits the NEW pair — one command re-seals (seal-exchange-w13.mjs) and the W15 vault ladder serves it everywhere",
+    "losses": 0
+  }
 }

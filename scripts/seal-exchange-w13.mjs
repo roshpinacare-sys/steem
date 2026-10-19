@@ -54,8 +54,12 @@ try {
 }
 const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
 /* HTX key tokens: dash-grouped alphanumeric (uuid-ish family, but groups are
- * lowercase base32-ish — e.g. access `98e420d7-a399d2df-uymylwhfeg-5e6c9` is
- * 4 groups, secret `a3394624-754df005-ab779f86-98a20` is 4 shorter groups).
+ * lowercase base32-ish — e.g. access `aaaaaaaa-bbbbbbbb-cccccccccc-ddddd` is
+ * 4 groups, secret `11112222-33334444-55556666-77777` is 4 shorter groups).
+ * REDACTION NOTE (W15, SEC-2026-10-19-5): this comment originally embedded the
+ * REAL tokens as "examples" — caught by the 57.8b exposure guard on its first
+ * run; redacted in-tree, history keeps the blob (FF-only law), measured inert
+ * (the pair is server-rejected, api-code-3011).
  * Honesty law: the shape gates NOTHING — the signed probe judges (R306-b). */
 const tokens = lines.map((l) => l.match(/^[0-9a-zA-Z-]{20,}$/)?.[0] ?? null).filter(Boolean);
 if (tokens.length !== 2) {

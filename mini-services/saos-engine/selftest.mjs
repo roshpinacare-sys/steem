@@ -5932,6 +5932,143 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   }
 }
 
+/* ═══ SECTION 57 · W15 THE ONGOING-ACTIVITY KEY (vault ladder · wallets · exposure guard) ═
+ * Operator order 2026-10-19 (trace 1a155217160a6429): "וודא שלא יחשף ... יישם
+ * הכל ... וודא כספת שיהיה מפתח לפעילות שוטפת של המערכת". Pinned here:
+ *  - 57.1 keccak-256 (pure JS) vs canonical vectors — NOTE: the famous empty
+ *    string hash ends a470 (c5d2…5d85a470, the Ethereum empty-code shape);
+ *    cross-verified against an independent from-scratch engine this wave.
+ *  - 57.2 base58check vs the Bitcoin-wiki vector + typed checksum death.
+ *  - 57.3 WIF (0x80, no compressed flag — graphene law) vs the canonical
+ *    5Hue… vector (leading-zero key 0C28FCA3…).
+ *  - 57.4 TRON address shape + determinism + 0x41 payload roundtrip.
+ *  - 57.5 Steem graphene public key shape.
+ *  - 57.6 the vault ladder: listVaultClasses custody census + unseal typed
+ *    deaths (unknown class / pass absent) + bootstrappableVerdict honesty.
+ *  - 57.7 wallet ledger hygiene: addresses only, no key material anywhere in
+ *    the committed ledger, derivation deterministic.
+ *  - 57.8 THE EXPOSURE GUARD (וודא שלא יחשף): no git-tracked file contains
+ *    the raw HTX tokens; .secrets/ and upload/ untracked; the sealed files'
+ *    outer pins verify (tamper evidence on every run). */
+{
+  const {
+    keccak256, base58Encode, base58Decode, base58checkEncode, base58checkDecode,
+    wifEncode, tronAddress, deriveWallet, deriveWallets, privkeyFor, steemPublicFromPriv,
+  } = await import("./wallets.mjs");
+  const {
+    listVaultClasses, unsealVaultClass, bootstrappableVerdict, SELF_CONTAINED_CLASSES,
+  } = await import("./vault-unseal.mjs");
+
+  /* 57.1 keccak-256 canonical vectors (original 0x01…0x80 padding, NOT sha3) */
+  eq("57.1a keccak256('abc') canonical",
+    keccak256("abc").toString("hex"),
+    "4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45");
+  eq("57.1b keccak256('hello') canonical",
+    keccak256("hello").toString("hex"),
+    "1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8");
+  eq("57.1c keccak256('The quick brown fox jumps over the lazy dog') canonical",
+    keccak256("The quick brown fox jumps over the lazy dog").toString("hex"),
+    "4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15");
+  eq("57.1d keccak256('') canonical (ends a470 — cross-verified vs independent engine)",
+    keccak256("").toString("hex"),
+    "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470");
+  eq("57.1e keccak256 output is exactly 32 bytes", keccak256("x").length, 32);
+
+  /* 57.2 base58check: Bitcoin-wiki vector + typed death */
+  eq("57.2a base58checkEncode Bitcoin-wiki vector",
+    base58checkEncode(Buffer.from("00010966776006953D5567439E5E39F86A0D273BEE", "hex")),
+    "16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM");
+  eq("57.2b base58checkDecode roundtrip",
+    base58checkDecode("16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM").toString("hex"),
+    "00010966776006953d5567439e5e39f86a0d273bee");
+  let b58died = "no";
+  try { base58checkDecode("16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvN"); } catch (e) { b58died = e.code; }
+  eq("57.2c corrupted checksum dies typed B58-CHECKSUM", b58died, "B58-CHECKSUM");
+  eq("57.2d base58 leading zeros map to '1's",
+    base58Encode(Buffer.from([0, 0, 1])), "112");
+
+  /* 57.3 WIF — graphene convention (0x80, NO 0x01 compressed byte) */
+  eq("57.3a wifEncode canonical vector (leading-zero key)",
+    wifEncode(Buffer.from("0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D", "hex")),
+    "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ");
+
+  /* 57.4 TRON: shape + determinism + versioned payload + label charset law */
+  const seed57 = Buffer.alloc(64, 7);
+  const w57a = deriveWallet(seed57, "treasury:test");
+  const w57b = deriveWallet(Buffer.alloc(64, 7), "treasury:test");
+  eq("57.4a same seed + same label → identical address (deterministic)", w57a.address, w57b.address);
+  eq("57.4b address shape ^T[base58]{33}$", /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(w57a.address), true);
+  const payload57 = base58checkDecode(w57a.address);
+  eq("57.4c TRON version byte is 0x41", payload57[0], 0x41);
+  eq("57.4d payload is exactly 21 bytes (0x41 + 20B hash)", payload57.length, 21);
+  eq("57.4e different label → different address", deriveWallet(seed57, "bridge:x").address === w57a.address, false);
+  let label57 = "no";
+  try { privkeyFor(seed57, "bad label with spaces"); } catch (e) { label57 = e.code; }
+  eq("57.7f label charset law dies typed WALLET-LABEL-BAD", label57, "WALLET-LABEL-BAD");
+  let seed57died = "no";
+  try { privkeyFor(Buffer.alloc(16, 1), "ok-label"); } catch (e) { seed57died = e.code; }
+  eq("57.4g weak seed dies typed WALLET-SEED-WEAK", seed57died, "WALLET-SEED-WEAK");
+
+  /* 57.5 Steem graphene public key shape */
+  eq("57.5a steemPublicFromPriv shape ^STM[base58]{50,52}$",
+    /^STM[1-9A-HJ-NP-Za-km-z]{50,52}$/.test(steemPublicFromPriv(privkeyFor(seed57, "soldier:x"))), true);
+  eq("57.5b derived wallets list is ordered and complete",
+    deriveWallets(seed57, ["a:1", "b:2"]).map((w) => w.label), ["a:1", "b:2"]);
+
+  /* 57.6 vault ladder: census custody + typed deaths + bootstrap verdict */
+  const repoDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..");
+  const meta57 = JSON.parse(fs.readFileSync(path.join(repoDir, "agent", "recovery-meta.json"), "utf8"));
+  const census57 = listVaultClasses(meta57);
+  eq("57.6a census lists exchangeVault as self-contained",
+    census57.find((c) => c.name === "exchangeVault")?.custody, "self-contained (pass in meta)");
+  let cls57 = "no";
+  try { unsealVaultClass(repoDir, meta57, "noSuchVault"); } catch (e) { cls57 = e.code; }
+  eq("57.6b unknown class dies typed VAULT-CLASS-UNKNOWN", cls57, "VAULT-CLASS-UNKNOWN");
+  const stripped57 = { ...meta57, exchangeVault: { ...meta57.exchangeVault, pass: undefined } };
+  let strand57 = "no";
+  try { unsealVaultClass(repoDir, stripped57, "exchangeVault"); } catch (e) { strand57 = e.code; }
+  eq("57.6c absent pass dies typed VAULT-PASS-ABSENT (never guessed)", strand57, "VAULT-PASS-ABSENT");
+  const boot57 = bootstrappableVerdict(repoDir);
+  eq("57.6d bootstrap verdict is ONGOING-ACTIVITY-KEY-OK (bare clone reaches its keys)",
+    [boot57.verdict, boot57.classes.filter((c) => c.reachable).length > 0], ["ONGOING-ACTIVITY-KEY-OK", true]);
+  eq("57.6e self-contained class roster carries the exchange vault",
+    SELF_CONTAINED_CLASSES.includes("exchangeVault"), true);
+
+  /* 57.7 committed wallet ledger hygiene: ADDRESSES ONLY */
+  const ledger57 = JSON.parse(fs.readFileSync(path.join(repoDir, "mini-services", "saos-engine", "state", "wallet-ledger.json"), "utf8"));
+  const ledgerText57 = JSON.stringify(ledger57);
+  eq("57.7a ledger schema", ledger57.schema, "wallet-ledger-v1");
+  eq("57.7b ledger holds no key material (no WIF 5J/5K/5H shapes, no 64-hex privkeys)",
+    [/5[JKH][1-9A-HJ-NP-Za-km-z]{50}/.test(ledgerText57), /[0-9a-f]{64}/.test(ledgerText57)], [false, false]);
+  eq("57.7c every ledger entry has a T-address and an UNFUNDED honesty label",
+    ledger57.wallets.every((w) => /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(w.address) && ledger57.status.includes("UNFUNDED-UNVERIFIED")), true);
+  eq("57.7d ledger address count matches the honest roster (13)",
+    ledger57.wallets.length, 13);
+
+  /* 57.8 THE EXPOSURE GUARD — וודא שלא יחשף */
+  const { execFileSync } = await import("node:child_process");
+  const tracked57 = execFileSync("git", ["ls-files"], { cwd: repoDir, encoding: "utf8" }).split("\n").filter(Boolean);
+  eq("57.8a no tracked file under .secrets/ or upload/ (G2 law)",
+    tracked57.some((f) => f.startsWith(".secrets/") || f.startsWith("upload/")), false);
+  const htxDrop57 = fs.readFileSync(path.join(repoDir, "upload", "htx.txt"), "utf8");
+  const tokens57 = (htxDrop57.split("\n").map((l) => l.trim()).filter((l) => /^[0-9a-zA-Z-]{20,}$/.test(l)));
+  const leaks57 = tracked57.filter((f) => {
+    try { return tokens57.some((t) => fs.readFileSync(path.join(repoDir, f), "utf8").includes(t)); }
+    catch { return false; } /* binary tracked files (vault .enc) cannot contain the plaintext */
+  });
+  eq("57.8b zero git-tracked files contain the raw HTX tokens", [leaks57.length, leaks57.slice(0, 3)], [0, []]);
+  const pins57 = census57.filter((c) => SELF_CONTAINED_CLASSES.includes(c.name) || meta57[c.name]?.pass);
+  const { createHash } = await import("node:crypto");
+  eq("57.8c every pass-carrying vault class's outer pin verifies (tamper evidence)",
+    pins57.every((c) => {
+      try {
+        return createHash("sha256").update(fs.readFileSync(path.join(repoDir, meta57[c.name].file))).digest("hex") === meta57[c.name].outerSha256;
+      } catch { return false; }
+    }), true);
+  eq("57.8d register holds the measured key-death entry (3011)",
+    (() => { try { const sr = JSON.parse(fs.readFileSync(path.join(repoDir, "mini-services/saos-engine/state/security-register.json"), "utf8")); return sr.entries.some((e) => e.id === "SEC-2026-10-19-4" && e.status === "CONTAINED-MEASURED"); } catch { return false; } })(), true);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).
