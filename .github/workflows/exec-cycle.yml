@@ -22,7 +22,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: exec-cycle
+  group: exec-cycle-v2  # t40: renamed past zombie-queued group-holder (uncancelable 409 runs from the private-minutes era); v2 is fresh and unblocked
   cancel-in-progress: false
 
 jobs:
