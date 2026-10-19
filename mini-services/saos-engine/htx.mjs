@@ -1,0 +1,272 @@
+/**
+ * htx.mjs — W13 · THE EXCHANGE RAIL (HTX spot REST connector).
+ *
+ * OPERATOR ORDER 2026-10-19 (verbatim distilled): "בוא ננסה להתחבר גם לצמדים
+ * בבורסה נקדם עוד אפשרויות מסחר ופיזור ... בחן היטב כמה עמלות וזה שלא נפסיד
+ * שנרוויח ... הקפד לאטום מפתחות בכספת שלא ימות עם הסנדבוקס שיהיה בגיט".
+ *
+ * The keys live in the GIT vault (agent/vault/EXCHANGE-SEAL-*.zip.enc, sealed
+ * by scripts/seal-exchange-w13.mjs, meta.exchangeVault carries the pass + pins
+ * — system-custody doctrine, R306 precedent). At run time the connector reads
+ * the 0600 cache .secrets/exchange.json (rebuildable from the vault by the
+ * seal script) or env overrides. ZERO secret material is ever logged,
+ * returned, or committed.
+ *
+ * SIGNATURE SPEC (HTX/Huobi SignatureVersion=2 — the ONE formula):
+ *   params must include AccessKeyId, SignatureMethod=HmacSHA256,
+ *   SignatureVersion=2, Timestamp(UTC `YYYY-MM-DDTHH:mm:ss`);
+ *   sorted alphabetically, RFC3986-encoded;
+ *   preSignedText = `METHOD\nhost\npath\nsortedQuery`;
+ *   signature = base64(HMAC-SHA256(secretKey, preSignedText));
+ *   appended as `&Signature=<encoded>`.
+ *
+ * HONESTY LAWS:
+ *  - Fail-closed: unreachable API / non-ok envelope → { ok:false, why } —
+ *    never fabricated data, never a guessed balance.
+ *  - The API is the judge of the keys (R306-b): until the first signed probe
+ *    answers, key permissions are UNVERIFIED — labeled as such in the vault.
+ *  - READ-ONLY until the operator's two-key arm doctrine is extended to the
+ *    exchange rail: this module places NO orders. Order placement belongs to
+ *    a separately-armed executor wave.
+ */
+
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as crypto from "node:crypto";
+
+const DIR = path.dirname(new URL(import.meta.url).pathname);
+const SECRETS_CACHE = path.join(DIR, "..", "..", ".secrets", "exchange.json");
+
+export const HTX_HOST = "api.htx.com";
+
+/* ---------- credentials (fail-closed, typed; zero secret in errors) ---------- */
+export function htxConfigFrom(cachePath) {
+  const accessKey = process.env.SAOS_HTX_ACCESS_KEY;
+  const secretKey = process.env.SAOS_HTX_SECRET_KEY;
+  if (accessKey && secretKey) return { accessKey, secretKey, source: "env" };
+  let raw;
+  try {
+    raw = fs.readFileSync(cachePath, "utf8");
+  } catch (e) {
+    const err = new Error(
+      "htx: credentials absent — run scripts/seal-exchange-w13.mjs (vault re-seal) or set SAOS_HTX_ACCESS_KEY/SAOS_HTX_SECRET_KEY"
+    );
+    err.code = "HTX-NO-CRED";
+    throw err;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    const err = new Error("htx: secrets cache is not valid JSON — refusing");
+    err.code = "HTX-NO-CRED";
+    throw err;
+  }
+  const it = (parsed.items ?? []).find((x) => x.id === "htx");
+  if (!it?.accessKey || !it?.secretKey) {
+    const err = new Error("htx: sealed cache missing the htx item (access/secret) — refusing");
+    err.code = "HTX-NO-CRED";
+    throw err;
+  }
+  return { accessKey: it.accessKey, secretKey: it.secretKey, source: "secrets-cache" };
+}
+
+export function htxConfig() {
+  return htxConfigFrom(SECRETS_CACHE);
+}
+
+/* ---------- signature canon (pure, deterministic, selftest-pinned) ---------- */
+
+/** RFC3986 encoding (encodeURIComponent + !'()* escape). */
+export function enc3986(s) {
+  return encodeURIComponent(String(s)).replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+}
+
+/** Canonical query: params sorted alphabetically, both sides RFC3986-encoded. */
+export function canonicalQuery(params) {
+  const keys = Object.keys(params ?? {}).sort();
+  return keys.map((k) => `${enc3986(k)}=${enc3986(params[k])}`).join("&");
+}
+
+/** Pre-signed text: `METHOD\nhost\npath\nsortedQuery`. */
+export function preSignedText(method, host, urlPath, params) {
+  return `${String(method).toUpperCase()}\n${host}\n${urlPath}\n${canonicalQuery(params)}`;
+}
+
+/** Signature: base64(HMAC-SHA256(secretKey, text)). */
+export function signText(secretKey, text) {
+  return crypto.createHmac("sha256", secretKey).update(text).digest("base64");
+}
+
+/** HTX timestamp: UTC `YYYY-MM-DDTHH:mm:ss` (second precision, no Z, no ms). */
+export function htxTimestamp(ms = Date.now()) {
+  return new Date(ms).toISOString().slice(0, 19);
+}
+
+/** Auth params merged with per-call params. */
+export function signedQueryParams(accessKey, extra, timestampMs) {
+  return {
+    ...(extra ?? {}),
+    AccessKeyId: accessKey,
+    SignatureMethod: "HmacSHA256",
+    SignatureVersion: "2",
+    Timestamp: htxTimestamp(timestampMs),
+  };
+}
+
+/** Full signed URL for a call. Never log the returned string (it embeds the signature). */
+export function buildSignedUrl(method, urlPath, extraParams, cfg, nowMs = Date.now()) {
+  const params = signedQueryParams(cfg.accessKey, extraParams, nowMs);
+  const text = preSignedText(method, HTX_HOST, urlPath, params);
+  const sig = signText(cfg.secretKey, text);
+  return `https://${HTX_HOST}${urlPath}?${canonicalQuery(params)}&Signature=${enc3986(sig)}`;
+}
+
+/* ---------- transport (honest envelope, timeouts, no secret logging) ---------- */
+
+async function fetchJson(url, { timeoutMs = 10000, method = "GET", body = null } = {}) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: body ? { "Content-Type": "application/json" } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: ac.signal,
+    });
+    const httpStatus = res.status;
+    let json = null;
+    try { json = await res.json(); } catch { /* non-json body stays null */ }
+    return { httpStatus, json };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+function envelope(json, httpStatus) {
+  if (!json) return { ok: false, why: `http-${httpStatus}-non-json` };
+  /* v2 endpoints answer { code:200, message, data } — v1 answers { status:"ok", data } (both measured live) */
+  if (typeof json.code === "number") {
+    if (json.code === 200) return { ok: true, data: json.data, ts: null };
+    return { ok: false, why: `api-code-${json.code}`, errMsg: json.message ?? null };
+  }
+  if (json.status !== "ok") {
+    return { ok: false, why: `api-${json["err-code"] ?? "unknown"}`, errMsg: json["err-msg"] ?? null };
+  }
+  return { ok: true, data: json.data, ts: json.ts ?? null };
+}
+
+/** Public GET — no signature, no credentials. */
+export async function htxPublic(urlPath, params = {}, { timeoutMs = 10000 } = {}) {
+  try {
+    const qs = canonicalQuery(params);
+    const url = `https://${HTX_HOST}${urlPath}${qs ? "?" + qs : ""}`;
+    const { httpStatus, json } = await fetchJson(url, { timeoutMs });
+    return envelope(json, httpStatus);
+  } catch (e) {
+    return { ok: false, why: `net-${e?.name === "AbortError" ? "timeout" : "error"}`, errMsg: String(e?.message ?? e).slice(0, 120) };
+  }
+}
+
+/** Private signed call (GET/POST; POST body is JSON, signature covers query only). */
+export async function htxPrivate(method, urlPath, params = {}, body = null, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  let c;
+  try {
+    c = cfg ?? htxConfig();
+  } catch (e) {
+    return { ok: false, why: "no-credentials", errMsg: e.code ?? null };
+  }
+  try {
+    const url = buildSignedUrl(method, urlPath, params, c, nowMs);
+    const { httpStatus, json } = await fetchJson(url, { timeoutMs, method, body });
+    return envelope(json, httpStatus);
+  } catch (e) {
+    return { ok: false, why: `net-${e?.name === "AbortError" ? "timeout" : "error"}`, errMsg: String(e?.message ?? e).slice(0, 120) };
+  }
+}
+
+/* ---------- probe helpers (census shape; all fail-closed) ---------- */
+
+/** Clock skew vs the exchange server (signature freshness gate).
+ * NOTE: /v1/common/timestamp answers { status:"ok", data:<ms> } — the ms live
+ * in `data`, not a top-level `ts` (measured live 2026-10-19). */
+export async function htxClockSkew({ timeoutMs = 8000 } = {}) {
+  const r = await htxPublic("/v1/common/timestamp", {}, { timeoutMs });
+  const ts = typeof r.ts === "number" ? r.ts : typeof r.data === "number" ? r.data : null;
+  if (!r.ok || ts == null) return { ok: false, why: r.why ?? "no-ts" };
+  return { ok: true, skewMs: Math.abs(ts - Date.now()), serverTs: ts };
+}
+
+/** Account list — the SIGNED AUTH PROOF (the API judges the keys). */
+export async function htxAccounts({ timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  return htxPrivate("GET", "/v1/account/accounts", {}, null, { timeoutMs, cfg, nowMs });
+}
+
+/** Spot balance census for one account-id. */
+export async function htxBalance(accountId, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  return htxPrivate("GET", `/v1/account/accounts/${encodeURIComponent(accountId)}/balance`, {}, null, { timeoutMs, cfg, nowMs });
+}
+
+/** Full symbol book (pairs + precision + whatever fee fields the API carries). */
+export async function htxSymbols({ timeoutMs = 12000 } = {}) {
+  return htxPublic("/v1/common/symbols", {}, { timeoutMs });
+}
+
+/** Chain reference (deposit/withdraw chains + fees per asset).
+ * PUBLIC but v2-envelope ({code:200,data}) — measured live 2026-10-19
+ * (unsigned works; the earlier failure was an envelope misread, honestly fixed). */
+export async function htxCurrencies({ timeoutMs = 12000, currency = null } = {}) {
+  return htxPublic("/v2/reference/currencies", currency ? { currency } : {}, { timeoutMs });
+}
+
+/** THE ACCOUNT'S REAL FEE TIER — signed /v2/reference/transact-fee-rate.
+ * This is the operator's "כמה עמלות" input: the measured maker/taker for THIS
+ * account (not the assumed regular tier). symbols: comma list, ≤10 per call
+ * (API cap); answers per-symbol rates incl actualMakerRate/actualTakerRate. */
+export async function htxTransactFeeRate(symbols, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  const list = (Array.isArray(symbols) ? symbols : [symbols]).filter(Boolean).join(",");
+  if (!list) return { ok: false, why: "no-symbols" };
+  return htxPrivate("GET", "/v2/reference/transact-fee-rate", { symbols: list }, null, { timeoutMs, cfg, nowMs });
+}
+
+/* ---------- census shaping (pure; honest about what is NOT measured) ---------- */
+
+/* HTX returns amounts/precisions as JSON strings in several endpoints (measured:
+ * balance rows are strings). Coerce honestly — non-numeric stays null. */
+const num = (v) => {
+  const n = typeof v === "string" && v.trim() !== "" ? Number(v) : v;
+  return typeof n === "number" && Number.isFinite(n) ? n : null;
+};
+
+/** Normalize one /v1/common/symbols row; fee fields are HONESTLY null when absent. */
+export function normSymbol(row) {
+  if (!row || typeof row !== "object") return null;
+  const base = row["base-currency"] ?? null;
+  const quote = row["quote-currency"] ?? null;
+  if (!base || !quote) return null;
+  const taker = num(row["taker-fee-rate"]);
+  const maker = num(row["maker-fee-rate"]);
+  return {
+    symbol: `${base}${quote}`.toLowerCase(),
+    base,
+    quote,
+    state: row.state ?? null,
+    amountPrecision: num(row["amount-precision"]),
+    pricePrecision: num(row["price-precision"]),
+    valuePrecision: num(row["value-precision"]),
+    minOrderAmt: num(row["min-order-amt"]),
+    minOrderValue: num(row["min-order-value"]),
+    takerFeeRate: taker,
+    makerFeeRate: maker,
+    feesMeasured: taker != null || maker != null,
+  };
+}
+
+/** Balance rows → non-zero census (zero-dust dropped; honest empty array). */
+export function nonzeroBalances(data) {
+  const list = Array.isArray(data?.list) ? data.list : [];
+  return list
+    .map((b) => ({ currency: b.currency, balance: num(b.balance), available: num(b.available) }))
+    .filter((b) => b.currency && b.balance != null && b.balance > 0)
+    .sort((a, b) => b.balance - a.balance);
+}
