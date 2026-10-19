@@ -59,14 +59,21 @@ const ROSTER = [
   { label: "reserve:hcsoldier9", role: "mint-lane reservation (W14 gate pending)" },
 ];
 
+import { envPassFor, pushClassPass } from "./actions-custody.mjs";
+
 function die(msg) { console.error(`WALLET-MINT-FAIL: ${msg}`); process.exit(1); }
 
 const meta = JSON.parse(fs.readFileSync(META, "utf8"));
 
-/* ---------- seed: unseal the existing class or mint a fresh one ---------- */
+/* ---------- seed: unseal the existing class or mint a fresh one ----------
+ * R33 custody law: the pass may come from the legacy meta OR from Actions
+ * custody (VAULT_PASS_WALLETS / VAULT_PASSES_R33). A seal WITHOUT a
+ * reachable pass MUST NOT be replaced — a replacement seed forks EVERY
+ * estate address. Fail closed. */
 let seed;
 let seedAction;
-if (meta.walletsVault?.file && meta.walletsVault?.pass) {
+const existingWalletsPass = meta.walletsVault?.pass ?? envPassFor("walletsVault");
+if (meta.walletsVault?.file && existingWalletsPass) {
   const encPath = path.join(REPO, meta.walletsVault.file);
   const tmp = fs.mkdtempSync("/tmp/wallet-seed-"); fs.chmodSync(tmp, 0o700);
   try {
@@ -74,7 +81,7 @@ if (meta.walletsVault?.file && meta.walletsVault?.pass) {
       die(`outer pin mismatch on existing ${meta.walletsVault.file} — tamper or drift; refusing to derive on a wrong root`);
     }
     execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-      "-in", encPath, "-out", path.join(tmp, "inner.zip"), "-pass", `pass:${meta.walletsVault.pass}`],
+      "-in", encPath, "-out", path.join(tmp, "inner.zip"), "-pass", `pass:${existingWalletsPass}`],
       { stdio: ["ignore", "ignore", "pipe"] });
     if (sha256(fs.readFileSync(path.join(tmp, "inner.zip"))) !== meta.walletsVault.innerSha256) {
       die("inner pin mismatch on the wallets seed bundle — refusing");
@@ -85,6 +92,8 @@ if (meta.walletsVault?.file && meta.walletsVault?.pass) {
     seed = Buffer.from(parsed.seedB64, "base64");
     seedAction = "UNSEALED (existing vault class)";
   } finally { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch {} }
+} else if (meta.walletsVault?.file && !existingWalletsPass) {
+  die(`walletsVault seal exists (${meta.walletsVault.file}) but its pass is under ACTIONS-CUSTODY (VAULT_PASS_WALLETS / VAULT_PASSES_R33) and was not provided in this environment — REFUSING to mint a replacement seed: a new seed forks EVERY estate address. Run inside Actions with the secrets wired, or supply the env pass.`);
 } else {
   seed = newMasterSeed();
   seedAction = "MINTED (new 64B master seed)";
@@ -106,9 +115,12 @@ if (unchanged && !process.argv.includes("--force")) {
   process.exit(0);
 }
 
-/* ---------- seal the seed as WALLETS-SEAL (roundtrip BEFORE meta write) ---------- */
+/* ---------- seal the seed as WALLETS-SEAL (roundtrip BEFORE meta write) ----------
+ * R33: reached ONLY when no walletsVault seal exists at all. The fresh pass is
+ * pushed to Actions custody FIRST; a failed push aborts BEFORE meta write, so
+ * a pass can never land in recovery-meta.json (R11 pattern — forbidden). */
 let metaOut = null;
-if (!meta.walletsVault?.file || !meta.walletsVault?.pass) {
+if (!meta.walletsVault?.file) {
   const pass = crypto.randomBytes(24).toString("base64");
   const stamp = now().replace(/[-:]/g, "").slice(0, 15);
   const file = `WALLETS-SEAL-${stamp}Z.zip.enc`;
@@ -117,7 +129,7 @@ if (!meta.walletsVault?.file || !meta.walletsVault?.pass) {
     sealedAt: now(),
     seedB64: seed.toString("base64"),
     note: "SAOS-WALLET-v1 master seed — HMAC-SHA512(seed, 'SAOS-WALLET-v1|'+label) → secp256k1; ONE seed backs every estate address; lose the seed = lose nothing on chain IF addresses are empty (they are, until funded)",
-    law: "self-contained class (pass in meta.walletsVault) — the EXCHANGE-SEAL precedent",
+    law: "actions-custody class (R33 law: pass NEVER travels with its archive — CRITICAL-R11-KEY-BROADCAST; pass lives in Actions secret VAULT_PASS_WALLETS)",
   };
   const tmp = fs.mkdtempSync("/tmp/wallet-seal-"); fs.chmodSync(tmp, 0o700);
   try {
@@ -142,13 +154,21 @@ if (!meta.walletsVault?.file || !meta.walletsVault?.pass) {
       const back = JSON.parse(fs.readFileSync(path.join(vtmp, "wallets-seed.json"), "utf8"));
       if (Buffer.from(back.seedB64, "base64").toString("hex") !== seed.toString("hex")) die("roundtrip seed mismatch");
     } finally { try { fs.rmSync(vtmp, { recursive: true, force: true }); } catch {} }
+    /* R33 writer-custody: the pass goes to Actions custody BEFORE any meta
+     * write; a failed push aborts here — the pass can never reach git. */
+    try {
+      const secret = await pushClassPass("walletsVault", pass);
+      console.log(`  custody: pass pushed to Actions secret ${secret} (write-only)`);
+    } catch (e) {
+      die(`actions-custody push failed — refusing to write meta: ${String(e?.message ?? e).slice(0, 160)}`);
+    }
     meta.walletsVault = {
       file: `agent/vault/${file}`,
-      passRef: "walletsVault.pass (this same meta)",
-      pass,
+      passRef: "actions:VAULT_PASS_WALLETS (PUT at seal time — never in git)",
+      passCustody: "R33 writer-custody law — see scripts/actions-custody.mjs",
       outerSha256,
       innerSha256,
-      formula: "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<walletsVault.pass> | unzip (wallets-seed.json)",
+      formula: "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<VAULT_PASS_WALLETS> | unzip (wallets-seed.json)",
       contents: ["wallets-seed"],
       source: "W15 estate wallet mint (operator order 2026-10-19, IM trace 1a155217160a6429)",
       sealedAt: now(),

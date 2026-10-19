@@ -31,6 +31,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { envPassFor, pushClassPass } from "./actions-custody.mjs";
 
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const UPLOAD = path.join(REPO, "upload");
@@ -99,8 +100,17 @@ if (meta.format !== "SAOS-RECOVERY-3" && !meta.sealedAt) {
   console.log(`note: meta.format=${meta.format ?? "null"} — proceeding (new class is self-contained)`);
 }
 
-/* ---------- idempotency: same fingerprints in the sealed truth → SKIP ---------- */
+/* ---------- idempotency: same fingerprints in the sealed truth → SKIP ----------
+ * R33 custody: when the seal exists but its pass is no longer in the meta
+ * (actions-custody) and no env pass was provided, the unseal-compare cannot
+ * run — treat as UNCHANGED (honest skip) instead of re-sealing on a dead
+ * compare. Only --force (operator) re-seals in that state. */
 const exExisted = !!meta.exchangeVault;
+const exPassAvail = !!(meta.exchangeVault?.pass ?? envPassFor("exchangeVault"));
+if (exExisted && !exPassAvail && !FORCE) {
+  console.log("exchange: SKIP — seal exists, pass under ACTIONS-CUSTODY (VAULT_PASS_EXCHANGE / VAULT_PASSES_R33) not provided; compare-skipped, not re-sealed (R33 custody law)");
+  process.exit(0);
+}
 const exchangeChanged = FORCE || !exExisted || (() => {
   try {
     const enc = fs.readFileSync(path.join(REPO, meta.exchangeVault.file));
@@ -108,7 +118,7 @@ const exchangeChanged = FORCE || !exExisted || (() => {
     const tmp = fs.mkdtempSync("/tmp/seal-ex-"); fs.chmodSync(tmp, 0o700);
     try {
       execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-        "-in", path.join(REPO, meta.exchangeVault.file), "-out", path.join(tmp, "inner.zip"), "-pass", `pass:${meta.exchangeVault.pass}`],
+        "-in", path.join(REPO, meta.exchangeVault.file), "-out", path.join(tmp, "inner.zip"), "-pass", `pass:${meta.exchangeVault.pass ?? envPassFor("exchangeVault")}`],
         { stdio: ["ignore", "ignore", "pipe"] });
       execFileSync("unzip", ["-o", "-q", path.join(tmp, "inner.zip"), "exchange.json", "-d", tmp], { stdio: ["ignore", "ignore", "pipe"] });
       const cur = JSON.parse(fs.readFileSync(path.join(tmp, "exchange.json"), "utf8"));
@@ -163,13 +173,21 @@ if (exchangeChanged) {
   const file = `EXCHANGE-SEAL-${stamp}Z.zip.enc`;
   const pins = sealToVault(exchange, "exchange.json", pass, file);
   const n = roundtripVerify(pins.encPath, pins, pass, "exchange.json");
+  /* R33 writer-custody: the fresh pass goes to Actions custody BEFORE any
+   * meta write; a failed push aborts here — the pass can never reach git. */
+  try {
+    const secret = await pushClassPass("exchangeVault", pass);
+    console.log(`  custody: pass pushed to Actions secret ${secret} (write-only)`);
+  } catch (e) {
+    die(`actions-custody push failed — refusing to write meta: ${String(e?.message ?? e).slice(0, 160)}`);
+  }
   meta.exchangeVault = {
     file: `agent/vault/${file}`,
-    passRef: "exchangeVault.pass (this same meta)",
-    pass,
+    passRef: "actions:VAULT_PASS_EXCHANGE (PUT at seal time — never in git)",
+    passCustody: "R33 writer-custody law — see scripts/actions-custody.mjs",
     outerSha256: pins.outerSha256,
     innerSha256: pins.innerSha256,
-    formula: "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<exchangeVault.pass> | unzip (exchange.json)",
+    formula: "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<VAULT_PASS_EXCHANGE> | unzip (exchange.json)",
     contents: exchange.items.map((i) => i.id),
     source: exchange.source,
     sealedAt: now(),

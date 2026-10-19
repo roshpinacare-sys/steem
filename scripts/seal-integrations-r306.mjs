@@ -38,6 +38,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { envPassFor, pushClassPass } from "./actions-custody.mjs";
 
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const UPLOAD = path.join(REPO, "upload");
@@ -193,9 +194,14 @@ function roundtripVerify(encPath, pins, pass, innerName) {
 const stamp = now().replace(/[-:]/g, "").replace("T", "T").slice(0, 15); /* 20261010T0930 */
 let out = [];
 
-/* ---------- SEAL 1: integrations vault (new class) ---------- */
+/* ---------- SEAL 1: integrations vault (new class) ----------
+ * R33 custody: pass may come from legacy meta OR Actions env. When neither is
+ * available the compare cannot run — honest SKIP (never re-seal on a dead
+ * compare). Only --force re-seals in that state. */
 const ivExisted = !!meta.integrationsVault;
-const integrationsChanged = FORCE || !ivExisted || (() => {
+const ivPassAvail = !!(meta.integrationsVault?.pass ?? envPassFor("integrationsVault"));
+const ivCompareSkipped = ivExisted && !ivPassAvail && !FORCE;
+const integrationsChanged = FORCE || !ivExisted || (ivPassAvail && (() => {
   /* idempotency: compare fingerprints of every item against the sealed truth */
   try {
     const enc = fs.readFileSync(path.join(REPO, meta.integrationsVault.file));
@@ -203,7 +209,7 @@ const integrationsChanged = FORCE || !ivExisted || (() => {
     const tmp = fs.mkdtempSync("/tmp/seal-iv-"); fs.chmodSync(tmp, 0o700);
     try {
       execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", "300000",
-        "-in", path.join(REPO, meta.integrationsVault.file), "-out", path.join(tmp, "inner.zip"), "-pass", `pass:${meta.integrationsVault.pass}`],
+        "-in", path.join(REPO, meta.integrationsVault.file), "-out", path.join(tmp, "inner.zip"), "-pass", `pass:${meta.integrationsVault.pass ?? envPassFor("integrationsVault")}`],
         { stdio: ["ignore", "ignore", "pipe"] });
       execFileSync("unzip", ["-o", "-q", path.join(tmp, "inner.zip"), "integrations.json", "-d", tmp], { stdio: ["ignore", "ignore", "pipe"] });
       const cur = JSON.parse(fs.readFileSync(path.join(tmp, "integrations.json"), "utf8"));
@@ -211,20 +217,29 @@ const integrationsChanged = FORCE || !ivExisted || (() => {
       return integrations.items.some((i) => byId.get(i.id) !== i.token);
     } finally { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch {} }
   } catch { return true; }
-})();
+}))();
 
 if (integrationsChanged) {
   const pass = crypto.randomBytes(24).toString("base64");
   const file = `INTEGRATIONS-SEAL-${stamp}Z.zip.enc`;
   const pins = sealToVault(integrations, "integrations.json", pass, file);
   const n = roundtripVerify(pins.encPath, pins, pass, "integrations.json");
+  /* R33 writer-custody: the fresh pass goes to Actions custody BEFORE any
+   * meta write; a failed push aborts here — the pass can never reach git. */
+  try {
+    const secret = await pushClassPass("integrationsVault", pass);
+    out.push(`custody: integrations pass pushed to Actions secret ${secret} (write-only)`);
+  } catch (e) {
+    console.error(`SEAL-FAIL: actions-custody push failed — refusing to write meta: ${String(e?.message ?? e).slice(0, 160)}`);
+    process.exit(1);
+  }
   meta.integrationsVault = {
     file: `agent/vault/${file}`,
-    passRef: "integrationsVault.pass (this same meta)",
-    pass,
+    passRef: "actions:VAULT_PASS_INTEGRATIONS (PUT at seal time — never in git)",
+    passCustody: "R33 writer-custody law — see scripts/actions-custody.mjs",
     outerSha256: pins.outerSha256,
     innerSha256: pins.innerSha256,
-    formula: "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<integrationsVault.pass> | unzip (integrations.json)",
+    formula: "openssl enc -aes-256-cbc -pbkdf2 -iter 300000 -pass pass:<VAULT_PASS_INTEGRATIONS> | unzip (integrations.json)",
     contents: integrations.items.map((i) => i.id),
     source: integrations.source,
     devMap: DEV_MAP,
@@ -232,6 +247,8 @@ if (integrationsChanged) {
     law: "search/AI capability class — web powers only, ZERO chain authority; unidentified items stay labeled until the operator names them",
   };
   out.push(`integrations: SEALED ${file} (${n} items) ${ivExisted ? "(re-seal)" : "(new class)"}`);
+} else if (ivCompareSkipped) {
+  out.push("integrations: SKIP — seal exists, pass under ACTIONS-CUSTODY (VAULT_PASS_INTEGRATIONS / VAULT_PASSES_R33) not provided; compare-skipped, not re-sealed (R33 custody law)");
 } else {
   out.push("integrations: SKIP — sealed fingerprints identical");
 }
