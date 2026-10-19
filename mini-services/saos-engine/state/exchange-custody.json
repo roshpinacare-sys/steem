@@ -30,5 +30,56 @@
     "reading": "consistent with the owner rotating the keypair in the console (the W14 ask) while re-attaching the STALE local htx.txt — the drop measured IDENTICAL to the W13 seal, yet the server rejects it",
     "consequence": "the history-exposed keypair is INERT (residual risk of SEC-2026-10-19-1 ~zero); the rail awaits the NEW pair — one command re-seals (seal-exchange-w13.mjs) and the W15 vault ladder serves it everywhere",
     "losses": 0
+  },
+  "w17Recheck": {
+    "at": "2026-10-19T18:52:41Z",
+    "verdict": "NEW-PAIR-LIVE",
+    "measured": {
+      "skewMs": 33,
+      "accountId": "73986225",
+      "balances": [],
+      "feeTier": {
+        "verdict": "MEASURED",
+        "ok": true,
+        "rows": [
+          {
+            "symbol": "sbdusdt",
+            "maker": 0.002,
+            "taker": 0.002
+          },
+          {
+            "symbol": "steemusdt",
+            "maker": 0.002,
+            "taker": 0.002
+          }
+        ]
+      },
+      "depositAddress": {
+        "steem": {
+          "ok": false,
+          "why": "api-code-500",
+          "errMsg": "server error"
+        },
+        "sbd": {
+          "ok": false,
+          "why": "api-code-500",
+          "errMsg": "server error"
+        }
+      },
+      "withdrawQuota": {
+        "steem": "PERMISSION-PRESENT",
+        "sbd": "PERMISSION-PRESENT"
+      },
+      "tradeLeg": {
+        "ok": false,
+        "verdict": "SKIP-no-price no-candle"
+      }
+    },
+    "noStrandingLaw": {
+      "depositLawful": false,
+      "reason": "deposit REFUSED: no measured return path (withdraw permission absent AND trade refused) — the fleet's money stays home (W14 custody law)"
+    },
+    "losses": 0,
+    "note": "operator rotation drop sealed (RESEAL-OK W17, EXCHANGE-SEAL-20261019T185046Z); this census measured the NEW pair against the live venue — every refusal recorded honestly; the STEEM/SBD-only transfer scope (trace 1a1556c780544431) governs all legs"
   }
 }
