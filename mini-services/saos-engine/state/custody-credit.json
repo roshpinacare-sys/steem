@@ -1,0 +1,17 @@
+{
+  "schema": "custody-credit-v1",
+  "at": "2026-10-19T18:55:00Z",
+  "source": "T27 live measurement (LOCKS · T27 · the live book custody block: CSTEEM custody-deficit 528.097 owed vs 61.452 STEEM in vault) + BACKING-FLOOR-SPEC.md (T29, owner-approved ״כן תתקין״) — the W17 lane seeds the canonical gate state from the measured truth",
+  "outstanding": {
+    "CSTEEM": 528.097,
+    "CSBD": 0
+  },
+  "law": "per-asset 1:1 backing floor — a custody sale of an anchor asset (STEEM/SBD) may broadcast only if measured[asset] − sale ≥ outstanding[credit]; the single override lane is an explicit owner order ref recorded in the verdict; unreadable state = REFUSE (fail-closed, the MONEYGATE family)",
+  "provenance": {
+    "CSTEEM": "528.097 — T27 measured custody-deficit (the exchange arm sold excess STEEM above the float without crediting the credit; the fleet must repair before anchor sales resume)",
+    "CSBD": "0 — T27 measured the SBD side in SURPLUS (over-covered); no deficit measured"
+  },
+  "refreshLaw": "the live book's custody block supersedes on refresh — the writer is the lane tooling that measures the credit (T27-class census); this file is the gate's ONLY outstanding source (fail-closed when absent)",
+  "gateWiring": "daily.mjs (ladder asks/bids) · dexflow.mjs (trip legs + completions) · hypergrid.mjs (grid creates) — all custody sell broadcasts pass backingFloorGate()",
+  "selftest": "scripts/w17-backingfloor-verify.mjs — 2×pass · 2×refuse vectors + the live refusal simulation (spec §4 acceptance)"
+}

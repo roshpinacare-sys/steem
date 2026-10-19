@@ -333,3 +333,43 @@ export function nonzeroBalances(data) {
     .filter((b) => b.currency && b.balance != null && b.balance > 0)
     .sort((a, b) => b.balance - a.balance);
 }
+
+/* ---------- W17 · THE WITHDRAW LEG (the import channel, operator trace
+ * 1a1556c780544431: "תעשה פעילות דרך steem sbd עמלות משיכה די נמוכות שם
+ * אפשר להשתמש בזה חשוב להעביר רק מטבעות אלו בנתיים"). Withdrawal-cheap
+ * coins (STEEM/SBD) are THE lawful path for exchange liquidity to enter
+ * our network. MEASURED GATES (W17 census, exchange-custody w17Recheck):
+ *   - the key's withdraw permission is PRESENT (quota endpoint answers live)
+ *   - the venue's ACCOUNT tier gates execution: L3 Advanced Verification
+ *     (legacy endpoint: api-base-operation-forbidden; v2: 404-not-found)
+ *   - connect is gate-free BY DESIGN (the law lives above it): callers MUST
+ *     pass the two-key doctrine (operator-orders + exec-armed), the coin
+ *     whitelist (STEEM/SBD until the operator orders otherwise), and the
+ *     destination allowlist BEFORE calling. Fail-closed upstream, always. */
+
+/** Withdraw quota for a currency — signed GET /v2/account/withdraw/quota.
+ * Answers while the key has withdraw permission even when the ACCOUNT tier
+ * still gates execution (measured W17). */
+export async function htxWithdrawQuota(currency, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  if (!currency) return { ok: false, why: "no-currency" };
+  return htxPrivate("GET", "/v2/account/withdraw/quota", { currency }, null, { timeoutMs, cfg, nowMs });
+}
+
+/** WITHDRAW — signed POST /v2/account/withdraw (the IMPORT leg).
+ * body: { currency, address, amount, chain, ["addr-tag"?] }.
+ * Measured W17: until the operator completes L3 Advanced Verification the
+ * v2 endpoint answers 404-not-found and the legacy endpoint answers
+ * api-base-operation-forbidden — the connector reports that honestly; it
+ * never retries blind and never guesses an address. */
+export async function htxWithdraw(body, { timeoutMs = 12000, cfg = null, nowMs = Date.now() } = {}) {
+  if (!body || !body.currency || !body.address || !body.amount) return { ok: false, why: "malformed-withdraw-body" };
+  return htxPrivate("POST", "/v2/account/withdraw", {}, body, { timeoutMs, cfg, nowMs });
+}
+
+/** Withdraw history — signed GET /v2/account/withdraw/history (fee + state
+ * census; the REAL withdraw fee is measured here after the first execution —
+ * the currencies endpoint honestly leaves it null). */
+export async function htxWithdrawHistory(currency, { timeoutMs = 10000, cfg = null, nowMs = Date.now() } = {}) {
+  if (!currency) return { ok: false, why: "no-currency" };
+  return htxPrivate("GET", "/v2/account/withdraw/history", { currency }, null, { timeoutMs, cfg, nowMs });
+}

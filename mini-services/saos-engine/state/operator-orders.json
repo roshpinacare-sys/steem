@@ -66,6 +66,38 @@
       },
       "reversibility": "account creation is irreversible by chain law; names are fresh (no collision with the live roster); fee-capped",
       "createdAt": "2026-10-19T16:37:51Z"
+    },
+    "W17-STEEM-SBD-IMPORT": {
+      "armed": true,
+      "op": "exchange-withdraw-import",
+      "direction": "htx-to-headcorner-only",
+      "verbatim": "תעשה פעילות דרך steem sbd עמלות משיכה די נמוכות שם אפשר להשתמש בזה חשוב להעביר רק מטבעות אלו בנתיים",
+      "orderRef": "owner IM 2026-10-19 trace 1a1556c780544431 — STEEM/SBD as THE import channel (withdrawal-cheap coins), transfer scope limited to these two coins until the operator orders otherwise; + same message: ״הייתי רוצה להכניס יותר מטבעות לרשת שלנו אבל אני מפחד מעמלות גבוהות קודם נראה שאנחנו עובדים טוב עם זה״ + ״תכניס אותו נכון למערכת תפעיל הכל ודחוף״ + operator standing order 2026-09-29 (full autonomous execution, doctrine-capped)",
+      "scope": {
+        "coins": [
+          "sbd",
+          "steem"
+        ],
+        "chains": {
+          "sbd": "sbd1",
+          "steem": "steem1"
+        },
+        "destination": "headcorner",
+        "maxWithdrawsPerDay": 12,
+        "minNetUsdt": 0.02,
+        "feeBufferPct": 0.1,
+        "exchangeAccount": "73986225",
+        "keysCustody": "agent/vault/EXCHANGE-SEAL-20261019T185046Z.zip.enc (W17 rotation re-seal, meta.exchangeVault self-contained)",
+        "flowsGate": "G27/G28 — POST /api/sovereign/flows (venue HTX, kind transfer) → ext-deposit · routing 25% pool / 75% vault"
+      },
+      "reversibility": "withdrawal to our OWN network account (headcorner) — chain-irreversible once broadcast but destination is the fleet treasury itself; caps bound frequency and dust; the venue's L3/region gates are measured and recorded honestly (nothing is guessed, nothing is stranded)",
+      "measuredGates": {
+        "keyPair": "NEW rotated pair LIVE (SIGNED-PROOF-OK, W17 census)",
+        "withdrawPermission": "PRESENT (quota endpoint, steem+sbd)",
+        "accountTier": "L3 Advanced Verification REQUIRED for execution (owner console action) — measured legacy api-base-operation-forbidden / v2 404",
+        "tradeLeg": "REGION-BLOCKED for our network class (order-trade-forbidden, re-measured W17) — no trading armed"
+      },
+      "createdAt": "2026-10-19T18:59:14Z"
     }
   }
 }
