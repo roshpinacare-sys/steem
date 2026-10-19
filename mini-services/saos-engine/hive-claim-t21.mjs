@@ -116,3 +116,53 @@ for (let i = 0; i < 20; i++) {
   }
 }
 console.log(JSON.stringify({ verdict: DRY ? "DRY-CENSUS-DONE" : "HIVE-CLAIM-DONE", ...tot }));
+
+// ── HIVE CURATION LANE (CURATE=1): posting-authority value operation ──
+// The custody accounts vote on fresh trending content in the estate's domains —
+// curation rewards accrue → the claim lane above harvests them on later beats.
+// Gates: no self-vote · fresh content (<36h) · modest weight · dupe → chain
+// rejects (fail-closed, harmless, receipted) · txid evidence only.
+const CURATE = process.env.CURATE === "1";
+const CURATE_WEIGHT = Math.max(100, Math.min(10000, parseInt(process.env.CURATE_WEIGHT || "2000", 10)));
+const TAGS = (process.env.CURATE_TAGS || "software,technology,programming,finance,cryptocurrency,life").split(",").map((s) => s.trim()).filter(Boolean);
+if (CURATE && !DRY) {
+  console.log(JSON.stringify({ lane: "hive-curation-t21", weight: CURATE_WEIGHT, tags: TAGS.length }));
+  let votes = 0, vfail = 0;
+  let ti = 0;
+  for (let i = 0; i < 20; i++) {
+    const ref = "acct-" + String(i).padStart(2, "0");
+    const name = REF2NAME[ref];
+    if (!name) continue;
+    try {
+      const { r: accs } = await rpcAny("condenser_api.get_accounts", [[name]]);
+      const acc = (accs || [])[0];
+      if (!acc) continue;
+      const postingPubs = (acc.posting?.key_auths || []).map((x) => x[0]);
+      const wif = BUNDLE.find((w) => {
+        const p = privPub(w);
+        return p && postingPubs.some((k) => pubBody(k) === pubBody(p));
+      });
+      if (!wif) continue;
+      const tag = TAGS[ti++ % TAGS.length];
+      const { r: disc } = await rpcAny("condenser_api.get_discussions_by_trending", [{ tag, limit: 12 }]);
+      const fresh = (disc || []).filter((d) => {
+        const ageH = (Date.now() - new Date(d.created + "Z").getTime()) / 3.6e6;
+        return ageH > 0.6 && ageH < 36 && d.author !== name;
+      });
+      if (!fresh.length) { console.log(`${ref}: CURATE-SKIP no-fresh-${tag}`); continue; }
+      const pick = fresh[Math.floor(Date.now() / 60000) % Math.min(fresh.length, 5)];
+      const { r: gp } = await rpcAny("condenser_api.get_dynamic_global_properties", []);
+      const tx = buildTx({
+        ops: [["vote", { voter: name, author: pick.author, permlink: pick.permlink, weight: CURATE_WEIGHT }]],
+        dgpo: gp, wifs: [wif], chainId: HIVE_CHAIN_ID,
+      });
+      const { r: bc } = await rpcAny("condenser_api.broadcast_transaction_synchronous", [tx.json]);
+      console.log(`${ref}: VOTED txid=${bc?.id ?? "?"} on @${pick.author.slice(0, 3)}*** /${String(pick.permlink).slice(0, 40)} tag=${tag} w=${CURATE_WEIGHT}`);
+      votes++;
+    } catch (e) {
+      console.log(`${ref}: CURATE-FAIL ${String(e.message || e).slice(0, 100)}`);
+      vfail++;
+    }
+  }
+  console.log(JSON.stringify({ verdict: "HIVE-CURATION-DONE", votes, vfail }));
+}
