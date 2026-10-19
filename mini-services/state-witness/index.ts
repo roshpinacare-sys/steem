@@ -2,9 +2,23 @@
 // Mission: the silent state-eater (R258, measured once, root cause open) must
 // never erase again without a same-second receipt. Logs every BORN/GONE to
 // /tmp/state-witness.log (append-only) + keeps recent events in memory.
+// W16 layout-fix: the watched dir is resolved RELATIVE to this repo first
+// (saos-steem layout), falling back to the legacy office absolute path —
+// the witness died with ENOENT on every non-office machine before this.
 import fs from "node:fs";
 
-const DIR = "/home/z/my-project/mini-services/saos-engine/state";
+function resolveStateDir(): string {
+  const candidates = [
+    new URL("../saos-engine/state", import.meta.url).pathname,
+    "/home/z/my-project/mini-services/saos-engine/state",
+  ];
+  for (const c of candidates) {
+    try { fs.accessSync(c); return c; } catch { /* next */ }
+  }
+  return candidates[0];
+}
+
+const DIR = resolveStateDir();
 const LOG = "/tmp/state-witness.log";
 const PORT = 3047;
 let recent: Array<{ at: string; ev: string; gone?: string[]; born?: string[] }> = [];
