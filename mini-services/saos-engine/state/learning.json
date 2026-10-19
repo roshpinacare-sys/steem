@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-18T22:37:09.406Z",
+  "at": "2026-10-19T00:18:20.849Z",
   "enabled": true,
-  "runsTotal": 432,
+  "runsTotal": 433,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,24 +17,25 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 222,
+      "totalVotes": 225,
       "window": 30,
       "verdicts": {
-        "VOTED": 27,
-        "BROADCAST-FAIL": 3
+        "BROADCAST-FAIL": 3,
+        "VOTED": 27
       },
       "vpEff": 37.8,
-      "meanAgeMinutes": 148.7,
+      "meanAgeMinutes": 153.7,
       "tagsVoted": {
-        "steem": 2,
-        "ai": 1
+        "crypto": 1,
+        "trading": 1,
+        "steem": 1
       },
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
     "exec": {
       "window": 1,
-      "fails": 1,
+      "fails": 0,
       "lastError": null
     },
     "watchdog": {
@@ -58,13 +59,6 @@
       "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "broadcast-fails",
-      "severity": "medium",
-      "evidence": "1/1 broadcasts failed · last: ",
-      "lesson": "broadcast failures burn RC and delay rails",
-      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
@@ -72,7 +66,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 350,
+    "signing-cred-blocked": 351,
     "broadcast-fails": 76,
     "cycle-latency-tail": 12
   },

@@ -20,6 +20,7 @@
 | **Console** | ניסוי-חלון-קונסולה | חי | P3-תמיכה |
 | **roshpina** | קונסולת-אמון-סוכנים-RTL (3100), תפר `saos:anchor/v1` | פרוטוטיפ | P6-תמיכה |
 | **FleetHQ / GridWatch / Domain / Adsmarket / vault-work** | עזר-רשת · צפייה-בגריד · דומיין · שיווק · כספת-עבודה | לפי-הצורך | לפי-תפקיד |
+| **execution-fabric** | מרשם-האמת-האלגוריתמי של הצי: שרשרת-גיבוב מאומתת-עצמית (append-only, hash-chained) · מנוע-משימות-LLM · מוניז-פסקי-דין · mutex-כתיבה · דלתא-אימות-O(1) · מסילת-חדשנות | חי — 506/506 מאומתות, head a5ef1773, census ציבורי (my-project sandbox) | P1-תמיכה | 2026-10-19 | Z.ai Code execution-fabric session · trace 1a1519f163178c6d |
 
 ## תבנית-רישום-ריפו-חדש (additive — הדבקו-מתחת-לשורה)
 
