@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-20T17:56:41.999Z",
+  "at": "2026-10-20T18:27:34.554Z",
   "enabled": true,
-  "runsTotal": 490,
+  "runsTotal": 491,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -27,11 +27,11 @@
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
-      "maxPerDay": 10
+      "maxPerDay": 30
     },
     "exec": {
-      "window": 7,
-      "fails": 1,
+      "window": 6,
+      "fails": 0,
       "lastError": null
     },
     "watchdog": {
@@ -50,19 +50,10 @@
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "broadcast-fails",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "1/7 broadcasts failed in the window (last: ) · last fail 2026-10-20T17:35:14.585Z < last OK broadcast 2026-10-20T17:57:17.619Z (live posting-role ops succeed)",
-      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
-      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
+      "severity": "high",
+      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
     }
   ],
   "tunings": {},
@@ -70,7 +61,7 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 408,
+    "signing-cred-blocked": 409,
     "broadcast-fails": 84,
     "cycle-latency-tail": 12
   },
