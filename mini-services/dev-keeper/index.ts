@@ -292,16 +292,86 @@ async function engineHealthy(): Promise<boolean> {
   }
 }
 
+/* R309 · gate-sync — dual-key KEY2→KEY1 transfer (the readiness-gate's own design):
+ * Autonomy SOCIAL-ARMING.json (owner standing law) says ARMED → the local engine's
+ * readiness.json must carry the SAME directiveRef as ARMED, preserving its anti-flood
+ * laws verbatim. Fail-closed: any fetch/parse failure = no-op. Never writes anything else. */
+const ARMING_URL = "https://raw.githubusercontent.com/roshpinacare-sys/Autonomy/main/ops/sovereign/DIRECTIVES/SOCIAL-ARMING.json";
+const ENGINE_READINESS = path.join(ENGINE_DIR, "state", "readiness.json");
+let lastGateSyncMs = 0;
+async function gateSync(): Promise<void> {
+  if (Date.now() - lastGateSyncMs < 300_000) return; /* 5min cadence */
+  lastGateSyncMs = Date.now();
+  try {
+    const r = await fetch(ARMING_URL, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) return; /* absent = gate stays as-is (fail-closed) */
+    const remote = await r.json();
+    if (remote?.status !== "ARMED" || typeof remote?.directiveRef !== "string" || !remote.directiveRef.trim()) return;
+    let local: any = {};
+    try { local = JSON.parse(fs.readFileSync(ENGINE_READINESS, "utf8")); } catch { local = {}; }
+    if (local.gate === "ARMED" && local.directiveRef === remote.directiveRef) return; /* already synced */
+    const next = {
+      gate: "ARMED",
+      at: new Date().toISOString(),
+      by: "dev-keeper gate-sync (R309 · KEY2 Autonomy SOCIAL-ARMING.json → KEY1 local, laws preserved)",
+      directiveRef: remote.directiveRef,
+      armedAt: remote.armedAt ?? new Date().toISOString(),
+      note: "dual-key transfer per readiness-gate.mjs design — anti-flood laws unchanged",
+      laws: local.laws ?? {},
+    };
+    fs.writeFileSync(ENGINE_READINESS, JSON.stringify(next, null, 1) + "\n");
+    log(`gate-sync: readiness.json → ARMED (ref=${remote.directiveRef}, laws preserved)`);
+  } catch { /* network fail = no-op (fail-closed) */ }
+}
+setInterval(() => { void gateSync(); }, 300_000);
+void gateSync(); /* boot check */
+
+/* R310 · CHAIN-MEMO CUSTODY POLL — the sovereign credential-renewal rail.
+ * The owner sends an encrypted memo transfer (headcorner, receive-only);
+ * chain-memo-custody.mjs decodes (chain-judged memo WIF), probes the token
+ * alive+org-scoped, installs upload/pat.env (0600) and seals it via
+ * sovereign-selfcustody. 10min cadence · fail-closed · verdict-only logging
+ * (zero credential material ever journaled). */
+const MEMO_POLL_MS = 600_000;
+let lastMemoPollMs = 0;
+function memoCustodyPoll(): void {
+  if (Date.now() - lastMemoPollMs < MEMO_POLL_MS) return;
+  lastMemoPollMs = Date.now();
+  try {
+    const r = spawnSync("bun", ["chain-memo-custody.mjs", "poll"], {
+      cwd: ENGINE_DIR,
+      encoding: "utf8",
+      timeout: 120_000,
+    });
+    let verdict = "unparsable";
+    try { verdict = JSON.parse(r.stdout ?? "{}").verdict ?? verdict; } catch { /* keep */ }
+    lastAction = `memo-custody:${verdict}`;
+    log(`memo-custody: ${verdict}`);
+  } catch (e) {
+    log(`memo-custody: poll-fail ${String(e).slice(0, 80)}`);
+  }
+}
+setInterval(memoCustodyPoll, MEMO_POLL_MS);
+memoCustodyPoll(); /* boot check */
+
 setInterval(async () => {
   heartbeat();
   devUp = await devHealthy();
   rssGuard(); /* R287: runs regardless of health — the ballooning process IS healthy-looking until it dies */
-  /* R291 · engine guardianship (3 dead ticks → respawn, own 60s cooldown) */
+  /* R291 · engine guardianship — W19-b amendment (measured 2026-10-20):
+   * the old 3-dead-ticks law left the economy dark up to 45min per engine
+   * death (3 × keeper cadence) while the sovereign auto-cycle now lives
+   * INSIDE the engine — engine downtime = economy downtime. NEW LAW: one
+   * dead tick + a 10s confirming re-probe → respawn (own 60s cooldown
+   * still guards against respawn storms; BOOT_GRACE_MS unchanged). A
+   * transient blip survives the re-probe and never spawns. */
   const engOk = await engineHealthy();
   engineUp = engOk;
   engineDownTicks = engOk ? 0 : engineDownTicks + 1;
-  if (!engOk && engineDownTicks >= 3 && Date.now() - lastEngineSpawnMs > 60_000 && Date.now() - booted > BOOT_GRACE_MS) {
-    spawnEngine();
+  if (!engOk && engineDownTicks >= 1 && Date.now() - lastEngineSpawnMs > 60_000 && Date.now() - booted > BOOT_GRACE_MS) {
+    const confirm = await new Promise((r) => setTimeout(r, 10_000)).then(() => engineHealthy());
+    if (!confirm) spawnEngine();
+    else engineDownTicks = 0; /* blip — the re-probe found it alive */
   }
   if (devUp) { lastAction = "dev-healthy"; return; }
   if (Date.now() - booted < BOOT_GRACE_MS) { lastAction = "boot-grace"; return; }

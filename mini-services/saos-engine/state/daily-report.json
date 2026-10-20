@@ -352,7 +352,7 @@
       "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
-        "parity-drift:arb-window",
+        "parity-drift:monitor",
         "soldiers:grids-live",
         "rc-health:healthy",
         "curation:curator-live"
@@ -413,7 +413,7 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
       "edgeBps": -581,
@@ -518,7 +518,7 @@
     "soldiers": {
       "name": "soldiers",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "DISABLED-T80-OPERATOR-STOP"
     },
     "fleetMatrix": {
@@ -614,10 +614,10 @@
       "name": "social",
       "ok": true,
       "ms": null,
-      "verdict": "SOCIAL-STANDBY",
+      "verdict": "PART-GATED",
       "executed": 0,
-      "refused": 0,
-      "due": 0
+      "refused": 4,
+      "due": 7
     },
     "streamer": {
       "name": "streamer",
@@ -680,11 +680,11 @@
     "profiles": {
       "name": "profiles",
       "ok": true,
-      "ms": 1,
-      "verdict": "SYNCED",
+      "ms": 13815,
+      "verdict": "CUSTODY-DEFERRED",
       "updated": 0,
-      "skipped": 0,
-      "deferred": 0
+      "skipped": 10,
+      "deferred": 4
     },
     "hive": {
       "name": "hive",
@@ -828,9 +828,9 @@
       "ms": 2,
       "verdict": "MESH-DARK",
       "organs": [
-        "custodian:DOWN",
+        "custodian:ALIVE",
         "metrics:DOWN",
-        "builder:DOWN"
+        "builder:ALIVE"
       ],
       "builderTask": {
         "verdict": "UNREACHABLE",
