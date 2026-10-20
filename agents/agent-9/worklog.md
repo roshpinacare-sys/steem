@@ -1352,3 +1352,24 @@ Stage Summary:
 - **מה-נלמד-ונקלט**: חוזה-התור-של-ops-intake (בעלות-לפני-כתיבה) מיושם-ברישום-זה · סיווג-כשלים-כנה-של-fabric (rate-limit/timeout) נרשם-לספיגה-במנועי-ה-rpc-שלי-במחזור-הבא · "כלום-לא-מת-עם-הסנדבוקס" — כל-העבודה-נחתמת-לגיט-בהמשך-רישום-זה
 - **מישור-בעלים (נוסף-על-הקיים)**: (א) נראות-פומבית-של-סיסמאות-מטא-הכספת-ב-steem — חוק-W16/W17-הוא-מסמך-בעלים; החלטת-נראות (פרטי/סודות/קבלה) רק-שלך (ב) 3-רפאי-workflows-ב-steem-לניקוי-סנסור (ג) CI_ADOPT_WIF_ACTIVE-עדיין-חוסם-את-תוכנית-ה-583-SP (ד) adoption-36-פדרציה (ה) טקס-CR-0065 (ו) חיוב-lane-steem
 - עותקי-האמת של רישום-זה (t49): מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance
+
+---
+Task ID: t50
+Agent: agent-9 (insurance)
+Task: פקודת-בעלים: "חייב לדחוף הכל לגיט כי אחד הסוכנים טוען שהכל חסר לו בגיט אני מנסה להבין מה קרה בדיוק תמשיך ודחוף" — אבחון שורש, תיקון, דחיפת-הכל, אימות-מן-הרחוק
+
+Work Log:
+- **אבחון השורש (המחלה שהסוכן-המתלונן סבל ממנה)**: my-project — האחוזה עצמה (אפליקציית Next.js, סקריפטי-ops, worklog) — היה ריפו-גיט עם 29 commits ו-220 קבצים עקובים **ובלי remote חי כלל** (fetch נכשל, git remote ריק). כל העבודה ישבה רק בסנדבוקס — כל סוכן/טרי-סנדבוקס שמסתכל בגיט רואה **כלום**. זה בדיוק מצב "הכל חסר לי בגיט". Autonomy/saos-runtime/steem היו מסונכרנים ונקיים (0 unpushed) — החור היה דווקא באחוזה
+- **קו-אדום שנבלם בזמן**: לפני כל דחיפה — סריקת-סודות מלאה על העץ-העקוב גילתה שהגיט-עקב **סודות חיים**: .vault/pat.env (PAT), .vault/nim.env, upload/pat.env + .dead-0347Z.bak, **upload/ביקורת.txt (מקור-מפתח-ה-NIM מ-t47!)**, upload/גיטראש.txt, .env. דחיפה כמו-שהיא = דליפת PAT+NIM לצי. ניתוק-חירום: git rm --cached על 11 רשומות + .gitignore (.vault/, upload/, .env, tmp/, tool-results/, db/, *.pid, skills/, gitlinks)
+- **חיובי-שקר נותחו ונסגרו**: worklog/bun.lock/tmp דגלו 5J…/STM…/Bearer… — חקירה מצונזרת הוכיחה שכל ההתאמות הן אזכורי-תיעוד (שמות-חוק gitleaks: "ghp_/github_pat_/WIF-shape", ניסוח "מפתח-ה-nvapi-הופעל") — אפס טוקן חי. תואם להתכנסות-ה-gitleaks של t48 (1105→0)
+- **התרופה — האחוזה על הגיט**: orphan-branch estate-main = תמונת-מצב נקייה אחת (85 קבצים, commit c91c47d7) — היסטוריית-ה-29 (שמכילה סודות-בתוך-ההיסטוריה) **לא נדחפת לשום מקום ולעולם לא תידחף**; נוצר ריפו **פרטי** roshpinacare-sys/estate-agent-9 (POST /user/repos, private=true, טוקן-כספת), push estate-main:main, ה-remote-URL עם-טוקן ב-.git/config-סנדבוקס-בלבד (דפוס-הצי)
+- **אימות-מן-הרחוק (t42)**: שיבוט-טרי ל-/tmp/estate-verify → 85 קבצים, סריקת-סודות על השיבוט = אפס, אין .vault/.env/tmp/upload/db בשיבוט, worklog.sha256 ≡ 2afc0cba ≡ מקומי
+- **המשכיות-הצי**: Autonomy origin/main זז (8eb3ce15→bc7bfd67 — pacer/growth/verifier receipts של מכונות-אחרות) → pull --rebase נקי ל-bdcef410; saos-runtime 0-unpushed; שלושת-עותקי-האמת נמדדו זהים 2afc0cba לפני-הרישום-הזה (vchk50a)
+- **אבחון-צי-לבעלים (מתוך federation/latest.json ב-Sandbox, 15:28:45Z)**: 45 דגלים על 38 ריפו — ~20 ADOPT-PENDING (by-design, דורש-מניפסט-בעלים), 13 VISIBILITY-DRIFT (מניפסט=private, גיטהאב=public — החלטת-בעלים: Adsmarket, Defi, Project-files, Saosmartwallet, Sdk, Zip, anchor-baseline, saos-dex, saos-jummper, saos-control-center, saos-sovereign-foundry, saos-sovereign-platform, sandbox-private), 8 WORKFLOW-RED (Defi, Zip×4, saos-control-center, saos-desk, saos-markets, saos-owner-channel, saos-sovereign-foundry). **לסוכן-המתלונן**: אם-הוא חיפש אחוזה-שלא-נדחפה — זה בדיוק דפוס-my-project-שלי-שתוקן; אם-הוא חיפש ריפו-פרטי — קיימים negen, ops-control, saos-console-zai, saos-coordination (private, מחוץ-למניפסט); estate-agent-9 החדש **פרטי** בכוונה — גלוי-רק-לטוקן-הבעלים
+- **לא-נגעתי**: ריפו של אחרים (אין-לי-עסק-בתוכנם), מיפוי-נראות-פומבית (החלטת-בעלים), adoption-36/20 (מניפסט-בעלים), היסטוריית-my-project-המקומית (main-מקומי נשמר-כארטיפקט-סנדבוקס-בלבד, estate-main הוא-קו-האמת-הדחוף)
+
+Stage Summary:
+- **האחוזה-בגיט**: roshpinacare-sys/estate-agent-9 (פרטי) @ c91c47d7 — 85 קבצים, אפס-סודות, אומת-משיבוט-טרי; המחלה "הכל-חסר-בגיט" נרפאה בנחלה-שלי והדפוס-מתועד-לצי
+- **קו-אדום חדש נשמר בפועל**: סריקת-סודות-חובה-לפני-כל-push-ראשון (הפעם מנעה דליפת PAT+NIM שהייתה-קורית-בפקודה-הטובה-של-הבעלים)
+- **עותקי-האמת של רישום-זה (t50)**: מקומי ≡ saos-runtime-agents/agent-9-insurance ≡ steem-תג-archive/agent-9-insurance — שלושתם-ייבדקו-מן-הרחוק-מיד-אחרי-החתימה
+- **מישור-בעלים (מתווסף)**: (א) estate-agent-9 נוצר-פרטי — אם-דרושה-נראות-אחרת-החלטה-שלך (ב) 13-VISIBILITY-DRIFT + ~20-ADOPT-PENDING + 8-WORKFLOW-RED נרשמו-לעיל (ג) CI_ADOPT_WIF_ACTIVE-עדיין-חוסם-583-SP (ד) היסטוריית-האחוזה-המקומית-מכילה-סודות-בהיסטוריה — לעולם-לא-תידחף; אם-רוצה-גם-היסטוריה-בגיט — דרוש-ניקוי-היסטוריה-קודם
