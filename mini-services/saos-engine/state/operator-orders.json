@@ -158,6 +158,21 @@
     "T-80 caps unchanged",
     "operating floor untouched"
    ]
+  },
+  "W23-LIQUIDITY-STANDDOWN": {
+   "armed": true,
+   "op": "policy-operator (allowPowerUp / allowDelegation / transferAllowlist / soldiers.enabled / hyperGrid.setpointPct)",
+   "direction": "fleet-wide liquidity mobilization + power-up stand-down",
+   "verbatim": "למה יש Power ups בסטימיט בנתיים לא צריך מי שהגדיר את זה אני מבקש לבטל בנתיים כי אנחנו עוד צריכים עוד נזילות כדי להשתמש בעוד שירותים ולגדול לעוד רשתות ומטבעות ולהגדיל סחר ורווחים אז בנתיים שלא יעלה ... וודא מסחר גריד בסטימיט שם של כל החשבונות ... אני רוצה להשיג וולויום ורווחוית הרבה הרבה יותר גבוהה תוך שימוש חכם וחזק בכל הצי שיחזקו אחד את השני ויעבדו כחברה משותפת ומתקשרת וממנמת אחת את השניה להישגיות גבוהה מאוד. תבחן היטב שלא תבצע בלי תכנון ... וודא פעילות אוטונמית מלאה ריבונית על זה",
+   "orderRef": "owner IM 2026-10-20 trace 1a15937c02271931 — explicit operator order: (1) power-ups STOPPED for now (liquidity hunger — re-arm later is allowed by the same order 'לאחר מכן נוכל לחזק גם את כולם'); (2) grid trading VERIFIED for ALL fleet accounts; (3) fleet acts as ONE company — mutual support, much higher volume and profits; (4) plan before execution; + operator standing order 2026-09-29 (full autonomous execution, doctrine-capped) + W12B-SP-LADDER order already armed",
+   "scope": {
+    "powerUpStandDown": "operator.allowPowerUp=false (signer REFUSES every transfer_to_vesting chain-wide) + redeploy.powerUpPct=0 (planner never plans) + excess STEEM re-routed buyBookPct=0.7/reservePct=0.3 — liquidity stays LIQUID",
+    "fleetCompany": "policy.allowDelegation=true arms W12B-SP-LADDER (already-committed caps: 60SP/move, ≤6 moves/day, master own-SP floor 1372, monotonic support floor, live re-proof); transferAllowlist=[headcorner] arms ONE-WAY masterward liquidity sweeps (≤2/cycle, surplus only); soldiers.enabled=true re-arms the soldier rail per owner order (allowSoldierDeploy stays FALSE — no new accounts); verified ARMY roster joins the grid rail",
+    "masterVolume": "hyperGrid.setpointPct 50→40 (floor minRcPct=25 UNCHANGED — the hard protection never moves)"
+   },
+   "reversibility": "every flag is a one-glance flip back; delegation is 7-day-undelegation reversible (T1); sweeps are masterward (company treasury, never out); power-up stand-down is itself the reversible state — re-arming needs only the operator's next word",
+   "recordedAt": "2026-10-20T12:30:00Z",
+   "recordedBy": "W23 wave (zai-code main instance, trace 1a15937c02271931)"
   }
  }
 }

@@ -184,15 +184,26 @@ export async function verifySoldierCustody() {
  * small front levels = 3 extra presences competing for the same measured
  * ~49 trades/day, without ever crossing the master's ladder — planLadder's
  * construction + the chain anchor keep every level lawful). */
-export async function runSoldierGrids({ parity, spreadBps = 0, now, bestBid = null, bestAsk = null, feedAnchor = null }) {
+export async function runSoldierGrids({ parity, spreadBps = 0, now, bestBid = null, bestAsk = null, feedAnchor = null, extraRoster = [] }) {
   const conf = soldierConf();
   const st = readJson(SOLDIERS_STATE, { deployed: false, accounts: [] });
-  if (!st.deployed) return { ok: true, verdict: "NOT-DEPLOYED", soldiers: [] };
-  if (execPaused()) return { ok: false, verdict: "OPERATOR-PAUSED" };
+  /* W23 (owner order trace 1a15937c02271931: "מסחר גריד בסטימיט של כל החשבונות"):
+   * the grid pass is FLEET-WIDE — the verified army bodies (fleet-matrix
+   * GRID-ACTIVE rows) join the legacy hcsoldier roster. The legacy
+   * deployed-gate only governs the legacy roster itself; an extraRoster
+   * present keeps the whole fleet trading even when no legacy soldier was
+   * ever deployed. The T-80 custody fast-gate below still freezes any body
+   * without a chain-verified credential — the gate is per-body, not
+   * per-roster, so keyless names in the matrix cost one row, zero reads. */
+  const legacy = st.deployed ? st.accounts : [];
+  const seen = new Set(legacy.map((r) => r.name));
+  const merged = [...legacy, ...(Array.isArray(extraRoster) ? extraRoster : []).filter((n) => typeof n === "string" && n && !seen.has(n)).map((n) => ({ name: n }))];
+  if (!merged.length) return { ok: true, verdict: "NO-ROSTER", soldiers: [] };
+  if (execPaused()) return { ok: false, verdict: "OPERATOR-PAUSED", soldiers: [] };
   if (!(parity > 0)) return { ok: true, verdict: "NO-PARITY", soldiers: [] };
 
   const out = [];
-  for (const rec of st.accounts) {
+  for (const rec of merged) {
     const name = rec.name;
     /* T-80 · CUSTODY FAST-GATE: a soldier without a chain-verified credential
      * gets ZERO network reads and ZERO ops — the measured rot (doomed
