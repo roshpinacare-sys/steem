@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-20T06:05:15.608Z",
+  "at": "2026-10-20T06:27:06.369Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 282bps → dragK 1.141",
+      "reason": "spread 3bps → dragK 1.0015",
       "action": {
-        "spreadBpsRec": 282,
-        "bestAsk": 0.10156432407191221,
-        "bestBid": 0.09873665429220985
+        "spreadBpsRec": 3,
+        "bestAsk": 0.09876708657196462,
+        "bestBid": 0.0987386677177769
       },
-      "at": "2026-10-20T06:05:15.608Z"
+      "at": "2026-10-20T06:27:06.369Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "arb-window",
+      "reason": "internal feed deviates -650bps from external parity",
+      "action": {
+        "bps": -650
+      },
+      "at": "2026-10-20T06:27:06.369Z"
     },
     {
       "kind": "soldiers",
@@ -19,33 +28,33 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-20T06:05:15.608Z"
+      "at": "2026-10-20T06:27:06.369Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 42%",
+      "reason": "RC at 39.7%",
       "action": {
-        "rcPct": 42
+        "rcPct": 39.7
       },
-      "at": "2026-10-20T06:05:15.608Z"
+      "at": "2026-10-20T06:27:06.369Z"
     },
     {
       "kind": "curation",
       "decision": "curator-live",
-      "reason": "voted 1 today (259 total) · VP 36.2% · txid 4e17285cb2a6",
+      "reason": "voted 1 today (260 total) · VP 36% · txid eabc85c2b51e",
       "action": {
-        "votesToday": 7,
-        "vpEff": 36.2,
+        "votesToday": 8,
+        "vpEff": 36,
         "verdict": "VOTED"
       },
-      "at": "2026-10-20T06:05:15.608Z"
+      "at": "2026-10-20T06:27:06.369Z"
     }
   ],
-  "spreadBpsRec": 282,
+  "spreadBpsRec": 3,
   "book": {
-    "bestAsk": 0.10156432407191221,
-    "bestBid": 0.09873665429220985,
-    "spreadBps": 282
+    "bestAsk": 0.09876708657196462,
+    "bestBid": 0.0987386677177769,
+    "spreadBps": 3
   }
 }
