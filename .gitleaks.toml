@@ -48,8 +48,53 @@ regexes = '''(idempotencyKey)":\s*"[0-9a-f][0-9a-f]+,OWNER_DIRECTIVE_TOKEN\s*=\s
 # absorbed by the monorepo). ONLY generic-api-key is silenced here — every
 # other rule (private-key, aws, slack, ...) stays live on these paths.
 [[rules.allowlists]]
-description = "measured inert corpus for generic-api-key only (t49): vault-meta by-design W16/W17 + chain identifiers + extracted archives; all other rules remain live"
+description = "measured inert corpus for generic-api-key only (t49): vault-meta by-design W16/W17 + chain identifiers + probe outputs + proof ledgers + extracted archives; all other rules remain live"
 condition = "and"
-paths = '''(^|/)agent/recovery-meta\.json$,(^|/)agent/vault/,(^|/)agent/harden_result\.json$,(^|/)download/,(^|/)mini-services/saos-engine/state/fleet-body-ledger\.json$'''
+paths = '''(^|/)agent/recovery-meta\.json$,(^|/)agent/vault/,(^|/)agent/harden_result\.json$,(^|/)download/,(^|/)mini-services/saos-engine/state/,(^|/)mini-services/saos-engine/evidence/,(^|/)sovereign/'''
+regexTarget = "match"
+regexes = '''.+'''
+
+# C — other-rule findings inside historical EXTRACTED ARCHIVES (t49): the
+# sentry/stripe/slack/private-key hits are synthetic fixtures inside
+# third-party release-evidence extracts absorbed by the monorepo (replicas,
+# ceremony proofs, test fixtures). Scoped to download/ ONLY and per-rule:
+# a real credential of any type outside download/ still alarms everywhere.
+[[rules]]
+id = "sentry-access-token"
+
+[[rules.allowlists]]
+description = "t49: synthetic fixtures in historical extracts only"
+condition = "and"
+paths = '''(^|/)download/'''
+regexTarget = "match"
+regexes = '''.+'''
+
+[[rules]]
+id = "stripe-access-token"
+
+[[rules.allowlists]]
+description = "t49: synthetic fixtures in historical extracts only"
+condition = "and"
+paths = '''(^|/)download/'''
+regexTarget = "match"
+regexes = '''.+'''
+
+[[rules]]
+id = "slack-webhook-url"
+
+[[rules.allowlists]]
+description = "t49: synthetic fixtures in historical extracts only"
+condition = "and"
+paths = '''(^|/)download/'''
+regexTarget = "match"
+regexes = '''.+'''
+
+[[rules]]
+id = "private-key"
+
+[[rules.allowlists]]
+description = "t49: synthetic signature-feed fixture in historical extract (V33_24) — real keys are vault-sealed, never in download/"
+condition = "and"
+paths = '''(^|/)download/'''
 regexTarget = "match"
 regexes = '''.+'''
