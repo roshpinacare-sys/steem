@@ -30,7 +30,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { masterAccount, adoptVerifiedWifIdentity, armyCustodyState } from "./signer.mjs";
+import { masterAccount, adoptVerifiedWifIdentity, armyCustodyState, materializeArmyCacheFromHeld } from "./signer.mjs";
 import { vaultPass } from "./vault-custody.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -350,11 +350,30 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
      * the git vault (sha-pinned) and adoption re-judged — the vault re-pulls
      * until the chain says yes. */
     const cacheIsDualGen = Array.isArray(readJson(CACHE_FILE, {})?.generations);
-    if (!fs.existsSync(CACHE_FILE) || !cacheIsDualGen) pulled = pullArmyKeysFromVault();
+    if (!fs.existsSync(CACHE_FILE) || !cacheIsDualGen) {
+      /* R312 · MEMORY-FIRST LAW (post-mortem 08:21 REVIVAL-FAIL): a vanished
+       * 0600 cache is NOT custody loss — the process may hold chain-verified
+       * identities (R302: chain-judged identity is independent of key files).
+       * Re-materialize the cache from held wifs FIRST; hit the git vault ONLY
+       * when custody is actually incomplete. A pass-less host keeps a green
+       * custody green instead of erasing it with REVIVAL-FAIL. */
+      const heldNow = armyCustodyState(roster);
+      const remat = heldNow.verified >= roster.length
+        ? materializeArmyCacheFromHeld(roster, CACHE_FILE)
+        : { ok: false, reason: "custody-incomplete" };
+      if (!remat.ok) pulled = pullArmyKeysFromVault();
+    }
     let adopted = await adoptFromCache();
     const after0 = armyCustodyState(roster);
     if (after0.verified < roster.length && !pulled) {
-      pulled = pullArmyKeysFromVault();
+      /* R312: a failing vault pull must not erase the cycle's honest verdict —
+       * the error rides in `pulled.error`, the doc below still measures and
+       * records the real chain-verified custody state. */
+      try {
+        pulled = pullArmyKeysFromVault();
+      } catch (e) {
+        pulled = { error: String(e?.message ?? e).slice(0, 200), extracted: 0, missing: [] };
+      }
       adopted = await adoptFromCache();
     }
     /* R273 · MASTER WIF CUSTODY — the vault IS the master delivery too.
@@ -422,7 +441,7 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       master: { roles: masterRoles, before: masterBefore, law: "chain-judged wif-direct, GEN-2 first" },
       before: { verified: before.verified }, after: { verified: after.verified, total: after.total },
       denominator: { law: "living-fleet (T-80 retirement, chain-judged)", living: living.length, retired: [...retired].sort(), retiredCount: retired.size, fullRosterVerified: fullCensus.verified, fullRosterTotal: fullCensus.total, provenance: retirementProvenance },
-      pulled: pulled ? { extracted: pulled.extracted, missing: pulled.missing } : null,
+      pulled: pulled ? { extracted: pulled.extracted, missing: pulled.missing, error: pulled.error ?? null } : null,
       adopted: adopted.results ?? null, law: "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
       ms: Date.now() - t0,
     };
@@ -434,6 +453,10 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
     const doc = { at: now, verdict: "REVIVAL-FAIL", error: String(e?.message ?? e).slice(0, 160), ms: Date.now() - t0 };
     fs.mkdirSync(STATE, { recursive: true });
     fs.writeFileSync(path.join(STATE, "army-custody.json"), JSON.stringify(doc, null, 2));
+    /* R312 · failures are journaled like successes — the events ledger must
+     * never be green-by-omission (the 08:11 failure was invisible because
+     * only the success path appended). */
+    appendLine(path.join(STATE, "events.jsonl"), { type: "army.custody", at: now, verdict: "REVIVAL-FAIL", error: doc.error });
     return doc;
   }
 }
