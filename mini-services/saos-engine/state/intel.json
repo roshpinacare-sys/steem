@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-20T18:27:34.554Z",
+  "at": "2026-10-20T21:41:59.814Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 22bps → dragK 1.011",
+      "reason": "spread 12bps → dragK 1.006",
       "action": {
-        "spreadBpsRec": 22,
-        "bestAsk": 0.1043253536452666,
-        "bestBid": 0.1040943789035392
+        "spreadBpsRec": 12,
+        "bestAsk": 0.10565754964406145,
+        "bestBid": 0.10553436391621494
       },
-      "at": "2026-10-20T18:27:34.554Z"
+      "at": "2026-10-20T21:41:59.814Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates 156bps from external parity",
+      "action": {
+        "bps": 156
+      },
+      "at": "2026-10-20T21:41:59.814Z"
     },
     {
       "kind": "soldiers",
@@ -19,46 +28,33 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-20T18:27:34.554Z"
-    },
-    {
-      "kind": "rewards",
-      "decision": "claim",
-      "reason": "unclaimed: 0 STEEM + 0 SBD + 8.05954 VESTS — free fuel, claim now",
-      "action": {
-        "ok": true,
-        "steem": 0,
-        "sbd": 0,
-        "vests": 8.05954,
-        "any": true
-      },
-      "at": "2026-10-20T18:27:34.554Z"
+      "at": "2026-10-20T21:41:59.814Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 30.7%",
+      "reason": "RC at 33.2%",
       "action": {
-        "rcPct": 30.7
+        "rcPct": 33.2
       },
-      "at": "2026-10-20T18:27:34.554Z"
+      "at": "2026-10-20T21:41:59.814Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 28.2%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 31.9%) — gates hold until candidates pass",
       "action": {
         "votesToday": 14,
-        "vpEff": 28.2,
+        "vpEff": 31.9,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-20T18:27:34.554Z"
+      "at": "2026-10-20T21:41:59.814Z"
     }
   ],
-  "spreadBpsRec": 22,
+  "spreadBpsRec": 12,
   "book": {
-    "bestAsk": 0.1043253536452666,
-    "bestBid": 0.1040943789035392,
-    "spreadBps": 22
+    "bestAsk": 0.10565754964406145,
+    "bestBid": 0.10553436391621494,
+    "spreadBps": 12
   }
 }
