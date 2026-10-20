@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-20T15:40:32.422Z",
+  "at": "2026-10-20T15:55:32.422Z",
   "verdict": "3-FLAGGED",
   "repos": [
     {
@@ -11,9 +11,17 @@
       "signedPct": 0,
       "signed": 0,
       "unsigned": 28,
-      "invalid": 1,
-      "untrusted": 1,
+      "invalid": 0,
+      "untrusted": 2,
       "flagged": [
+        {
+          "hash": "4d2197f0",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Z User",
+          "at": "2026-10-20T15:54:06Z",
+          "subject": "W23: owner-found live PAT in my-project git-trash CONFIRMED+PURGED (fi"
+        },
         {
           "hash": "3342190e",
           "gq": "U",
@@ -21,14 +29,6 @@
           "author": "Z User",
           "at": "2026-10-20T15:13:07Z",
           "subject": "live-state churn [R318-op]: איברי-הצי חיים — attestor 26/28 · dex/engi"
-        },
-        {
-          "hash": "3b43febd",
-          "gq": "E",
-          "sig": "INVALID",
-          "author": "github-actions[bot]",
-          "at": "2026-10-20T14:15:22Z",
-          "subject": "token-forge: verdict (metadata only) [ci]"
         }
       ]
     },
@@ -122,21 +122,21 @@
   ],
   "flagged": [
     {
+      "hash": "4d2197f0",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Z User",
+      "at": "2026-10-20T15:54:06Z",
+      "subject": "W23: owner-found live PAT in my-project git-trash CONFIRMED+PURGED (fi",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "3342190e",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "Z User",
       "at": "2026-10-20T15:13:07Z",
       "subject": "live-state churn [R318-op]: איברי-הצי חיים — attestor 26/28 · dex/engi",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "3b43febd",
-      "gq": "E",
-      "sig": "INVALID",
-      "author": "github-actions[bot]",
-      "at": "2026-10-20T14:15:22Z",
-      "subject": "token-forge: verdict (metadata only) [ci]",
       "repo": "steem.git(LOCAL)"
     },
     {
@@ -154,5 +154,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 5885
+  "ms": 5815
 }
