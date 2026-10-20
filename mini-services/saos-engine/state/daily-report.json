@@ -205,7 +205,7 @@
         "authorVestsPerDay": 0,
         "curationOps": 0,
         "authorOps": 0,
-        "windowSpanDays": 0.02,
+        "windowSpanDays": 0.03,
         "windowOps": 1001,
         "measured": true,
         "fuelUsdPerDay": 0,
@@ -307,12 +307,7 @@
         "reservePct": 0.2
       },
       "pacing": null,
-      "intel": {
-        "verdict": "FULL-DOCTRINE",
-        "scale": 1,
-        "reason": "grid not starved: liquid after power-up covers the ladder's ask need",
-        "urgency": null
-      }
+      "intel": null
     },
     "curate": {
       "name": "curate",
@@ -361,7 +356,7 @@
       "ms": 9,
       "verdict": "ROUTED",
       "actions": 6,
-      "ladderTop": 2.451014,
+      "ladderTop": 2.45102,
       "executed": []
     },
     "execute": {
@@ -382,7 +377,7 @@
         "limit_order_create",
         "limit_order_create"
       ],
-      "node": "https://steemapi.boylikegirl.club",
+      "node": "https://api.justyy.com",
       "error": null,
       "promo": {
         "verdict": "LEDGER-CRAFT-REFUSED",
@@ -471,7 +466,7 @@
     "fleetRebalance": {
       "name": "fleet-rebalance",
       "ok": true,
-      "ms": 4,
+      "ms": 2,
       "verdict": "PLANNED-AWAITING-POLICY",
       "planned": 6,
       "executed": 0,
@@ -486,7 +481,7 @@
     "community": {
       "name": "hive-457262",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "ALL-SUBSCRIBED",
       "phase": "live",
       "members": 14,
@@ -525,7 +520,7 @@
       "verdict": "CADENCE-GATED",
       "draftsQueued": 23,
       "exposureBlocked": 0,
-      "lastAt": "2026-10-20T05:21:43.269Z"
+      "lastAt": "2026-10-20T05:44:29.179Z"
     },
     "social": {
       "name": "social",
@@ -588,7 +583,7 @@
         "shell": 0,
         "spa": 14,
         "challenge": 0,
-        "error": 2
+        "error": 14
       },
       "altRenderedAccounts": 14,
       "judged": 28,
@@ -634,7 +629,7 @@
     "rcPool": {
       "name": "rcPool",
       "ok": true,
-      "ms": 5,
+      "ms": 6,
       "verdict": "HIVE-NO-CUSTODY",
       "lifts": 0,
       "measured": {},
@@ -643,7 +638,7 @@
     "hiveSocial": {
       "name": "hiveSocial",
       "ok": true,
-      "ms": 6,
+      "ms": 5,
       "verdict": "HIVE-NO-CUSTODY",
       "executed": 0,
       "custody": {
@@ -736,7 +731,7 @@
       "verdict": "MESH-ALIVE",
       "organs": [
         "custodian:ALIVE",
-        "metrics:ALIVE",
+        "metrics:DOWN",
         "builder:ALIVE"
       ],
       "builderTask": {
@@ -784,6 +779,12 @@
       "owner": "operator",
       "lawful": true,
       "reason": "T-80 stop-order (2026-10-04) — soldiers frozen until re-authorization"
+    },
+    {
+      "source": "redeploy",
+      "owner": "doctrine floor",
+      "lawful": true,
+      "reason": "below-min-powerup"
     }
   ],
   "finishedAt": "2026-10-20T06:26:48.124Z"
