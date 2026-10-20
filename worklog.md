@@ -2536,3 +2536,19 @@ Stage Summary:
 - Owner decisions pending: venue choice (or HTX withdraw permission), HTX key rotation (agent-2 hygiene flag).
 
 ---
+Task ID: W20
+Agent: zai-code (main instance — verify-everything + mortality-rescue wave)
+Task: owner trace 1a157eb649f27039 — "תמשיך ודחוף · בדוק שוב אל תסמוך על הטענות שלך · בחן תוצאות הסוכנים האחרים · הם בונים שמתים, הריבונות חייבת לעבוד בלעדיהם".
+
+Work Log:
+- MEASURED, not claimed: engine alive (health headcorner master-verified 10/14 army), auto-cycle FIRED at 06:05:15Z (autoRuns journal, 22min cadence), live txid 3f17448d (hcsoldier4 social-reply 06:08:03Z) — economy self-running without any agent present.
+- Examined the other agents' results: 40-repo audit estate (/home/z/audit/) WIPED from disk — only narrative survived in this mortal worklog (no remote!); their git pushes (saos-dex, saos-runtime, saos-control-center hub) survive on GitHub; fabric lane STILL committing today (rate-limit/auth proposals awaiting owner approval).
+- MORTALITY RESCUE: union-merged both worklogs (this file = audit Tasks 1-9-a + W2-W14; saos-steem = W15-W19-b) → saos-steem worklog now 2538 lines / full Task1→W19-b history, PUSHED ca128d0d; this file got W16-W19 appended (49 task records total).
+- Beat-keeper zombie ROOT-CAUSED: exit=127 every 30min since audit wipe (target script dead). Repointed to /home/z/saos-steem/scripts/beat-reconcile-push.sh (snapshot churn → reconcile → push, never force) — measured end-to-end: BEAT-PUSHED dae79e56. The mortal builder's corpse now serves the immortal sovereignty every 30min.
+- SEC: my-project upload/pat.env was TRACKED despite ignore rule → git rm --cached (W14 precedent); stale token fingerprint c029b0b7 vs live f4893de2 (owner's key-mixing incident fully mapped: גיטראש.txt 1e39c9b0 = live source).
+- Pushed this estate → roshpinacare-sys/saos-control-center branch builder-estate (not main — fabric agents' lane untouched).
+
+Stage Summary:
+- Owner's lesson enacted: builder agents are mortal; their value must land in git the moment it exists. The audit narrative + cockpit UI + beat machinery are now wipe-proof.
+- Sovereignty measured self-running: auto-cycle 22min + custody 2h + beat 30min state-push — three independent rhythms, zero agent dependency.
+- Everything the owner asked to verify was verified by fresh measurement, not by reading prior claims.
