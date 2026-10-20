@@ -296,12 +296,20 @@ setInterval(async () => {
   heartbeat();
   devUp = await devHealthy();
   rssGuard(); /* R287: runs regardless of health — the ballooning process IS healthy-looking until it dies */
-  /* R291 · engine guardianship (3 dead ticks → respawn, own 60s cooldown) */
+  /* R291 · engine guardianship — W19-b amendment (measured 2026-10-20):
+   * the old 3-dead-ticks law left the economy dark up to 45min per engine
+   * death (3 × keeper cadence) while the sovereign auto-cycle now lives
+   * INSIDE the engine — engine downtime = economy downtime. NEW LAW: one
+   * dead tick + a 10s confirming re-probe → respawn (own 60s cooldown
+   * still guards against respawn storms; BOOT_GRACE_MS unchanged). A
+   * transient blip survives the re-probe and never spawns. */
   const engOk = await engineHealthy();
   engineUp = engOk;
   engineDownTicks = engOk ? 0 : engineDownTicks + 1;
-  if (!engOk && engineDownTicks >= 3 && Date.now() - lastEngineSpawnMs > 60_000 && Date.now() - booted > BOOT_GRACE_MS) {
-    spawnEngine();
+  if (!engOk && engineDownTicks >= 1 && Date.now() - lastEngineSpawnMs > 60_000 && Date.now() - booted > BOOT_GRACE_MS) {
+    const confirm = await new Promise((r) => setTimeout(r, 10_000)).then(() => engineHealthy());
+    if (!confirm) spawnEngine();
+    else engineDownTicks = 0; /* blip — the re-probe found it alive */
   }
   if (devUp) { lastAction = "dev-healthy"; return; }
   if (Date.now() - booted < BOOT_GRACE_MS) { lastAction = "boot-grace"; return; }
