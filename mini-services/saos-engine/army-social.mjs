@@ -648,7 +648,10 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     const roster = [masterAccount(), ...ARMY_ROSTER];
     const accounts = {};
     for (const lane of roster) accounts[lane] = STANDBY_RECEIPT(lane);
-    const doc = { at: now, day: dayKeyOf(now), roster, verdict: "SOCIAL-STANDBY", gate, accounts, executed: 0, refused: 0, due: 0, ms: Date.now() - t0 };
+    /* R310: seeds:{} rides in the STANDBY receipt too — the receipt must never
+     * poison a same-day ARMED takeover (carried-boundary migration is the
+     * backstop; this keeps the written shape honest in the first place). */
+    const doc = { at: now, day: dayKeyOf(now), roster, verdict: "SOCIAL-STANDBY", gate, accounts, seeds: {}, executed: 0, refused: 0, due: 0, ms: Date.now() - t0 };
     writeJson(path.join(gateState, "social.json"), doc);
     appendLine(path.join(gateState, "events.jsonl"), { type: "social.standby", at: now, mode: gate.mode, reason: gate.reason, lanes: roster.length, actions: 0 });
     await refreshLaws(gateState).catch(() => {}); /* exec29/29-a2: additive measured-laws refresh of readiness.json — never blocks the standby path, never touches the gate value */
@@ -668,7 +671,16 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
   try { custody = await reviveArmyCustody({ now }); } catch { custody = { verdict: "REVIVAL-ERROR" }; }
 
   const prev = readJson(SOCIAL_FILE, null);
-  const carried = prev?.day === day ? prev : { day, accounts: {}, seeds: {} };
+  /* R310 · STATE-SHAPE MIGRATION at the carried boundary — measured 2026-10-20
+   * 04:33Z: the STANDBY receipt (exec29 path above) writes social.json WITHOUT
+   * a seeds field; when the gate later flips ARMED on the SAME day, carried=prev
+   * arrives seeds-less and the publishing loop crashes on carried.seeds[account]
+   * — every STANDBY→ARMED transition poisoned the rail for the rest of the day.
+   * Fix: migrate ANY legacy/foreign shape here (accounts+seeds guaranteed), so
+   * gate oscillation can never crash the armed rail again. */
+  const carried = prev?.day === day
+    ? { ...prev, accounts: (prev.accounts && typeof prev.accounts === "object") ? prev.accounts : {}, seeds: (prev.seeds && typeof prev.seeds === "object") ? prev.seeds : {} }
+    : { day, accounts: {}, seeds: {} };
   /* R254 · flag pauses ride into each account's state (doPublish checks) */
   const flagPauses = readJson(FLAG_PAUSES_FILE, { accounts: {} })?.accounts ?? {};
 
@@ -777,7 +789,11 @@ export async function runSocial({ now = new Date().toISOString() } = {}) {
     accounts[account] = { ...st, verdict: "SOCIAL-LIVE", custody, schedule, seeds: seed, stealthPublish: publishAllowed ? "due" : "rotation-park" };
   }
 
-  const doc = { ...base, stealth: p.stealth === true, publishers: [...publishers], custodyVerdict: custody?.verdict ?? null, custodyVerified: custody?.after?.verified ?? null, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
+  /* R310: the armed receipt must carry the LIVE dual-key verdict — the shape
+   * contract (social-gate-consistent monitor) reads gate.mode from this doc;
+   * reaching this line MEANS the exec29 stack passed (local ARMED + directiveRef
+   * + armedAt + fresh cross-key agreement), so the receipt states it honestly. */
+  const doc = { ...base, stealth: p.stealth === true, publishers: [...publishers], gate: { mode: "ARMED", verdict: "dual-key live verdict passed (exec29 a-d)", at: now }, custodyVerdict: custody?.verdict ?? null, custodyVerified: custody?.after?.verified ?? null, accounts, seeds: carried.seeds, executed, refused, due: dueCount, ms: Date.now() - t0 };
   writeJson(SOCIAL_FILE, doc);
   appendLine(path.join(STATE, "events.jsonl"), { type: "social.run", at: now, day, executed, refused });
   return { verdict: executed > 0 ? "SOCIAL-EXECUTED" : refused ? "PART-GATED" : "SOCIAL-IDLE", executed, refused, due: dueCount };

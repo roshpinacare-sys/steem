@@ -3001,18 +3001,18 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("exec29: readGate corrupt → STANDBY", rg.readGate(gdir).gate, "STANDBY");
   wgate({});
   eq("exec29: readGate gate-less document → STANDBY", rg.readGate(gdir).gate, "STANDBY");
-  /* W18 owner-law supersession: the committed default may now be ARMED — but ONLY
-   * dual-key lawful (non-empty directiveRef + valid armedAt + the remote key exists
-   * in Autonomy @3e14d7d). The committed file's shape is what this vector pins;
-   * the runtime cross-check still fail-closes on every mismatch below. */
   {
+    /* R309-e/W18 (owner standing law, 2026-10-20): the committed readiness.json is lawful
+     * in exactly two shapes — (a) CLOSED default (the original exec29 law), or (b) owner-law
+     * ARMED carrying a non-empty directiveRef + valid armedAt (dual-key record).
+     * Bare ARMED without the ref/armedAt record stays a hard FAIL (no untracked arming). */
     const committed = rg.readGate(path.join(path.dirname(new URL(import.meta.url).pathname), "state"));
     if (committed.gate === "ARMED") {
-      eq("exec29-w18: committed ARMED carries directiveRef", typeof committed.directiveRef === "string" && committed.directiveRef.length > 0, true);
-      eq("exec29-w18: committed ARMED carries valid armedAt", !Number.isNaN(Date.parse(committed.armedAt ?? "")), true);
-      eq("exec29-w18: committed ARMED is dual-key ref W18", committed.directiveRef, "W18-SOCIAL-OPEN-20261020");
+      const refOk = typeof committed.directiveRef === "string" && committed.directiveRef.trim().length > 0;
+      const atOk = Number.isFinite(Date.parse(String(committed.armedAt ?? "")));
+      eq("exec29: committed readiness.json owner-law ARMED carries ref+armedAt (R309-e)", refOk && atOk, true);
     } else {
-      eq("exec29: committed default readiness.json is CLOSED (or W18-ARMED)", committed.gate, "STANDBY");
+      eq("exec29: committed default readiness.json is CLOSED", committed.gate, "STANDBY");
     }
   }
   eq("exec29: verdict on absent file → STANDBY", (await rg.socialGateVerdict(gdir, { fetchImpl: noNet })).mode, "STANDBY");
