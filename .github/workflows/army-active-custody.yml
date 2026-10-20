@@ -57,6 +57,11 @@ jobs:
       - name: Bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Install engine deps (the serialization canon's bun.lock)
+        run: |
+          cd mini-services/saos-engine
+          bun install --frozen-lockfile
+
       - name: Probe (or rotate) army active custody — verdict-only stdout
         working-directory: scripts
         run: bun army-active-custody-probe.mjs

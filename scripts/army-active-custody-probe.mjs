@@ -139,16 +139,11 @@ async function rpc(method, params) {
   throw new Error("all-nodes-failed: " + last);
 }
 
-const { wifDecode, buildTx, fingerprint } = await import(path.join(REPO, "mini-services", "saos-engine", "steemtx.mjs"));
-import { getPublicKey } from "@noble/secp256k1";
-import { ripemd160 } from "@noble/hashes/ripemd160";
-import bs58 from "bs58";
-function pubOfWif(wif) {
-  const seed = wifDecode(wif);
-  const pub = getPublicKey(Buffer.from(seed), true);
-  const chk = Buffer.from(ripemd160(Buffer.from(pub))).slice(0, 4);
-  return "STM" + bs58.encode(Buffer.concat([Buffer.from(pub), chk]));
-}
+/* the engine's OWN serialization canon — one dependency edge, the same stack
+ * the master's every broadcast rides (the runner installs the engine's
+ * bun.lock first; zero re-implemented crypto anywhere in this lane) */
+const { wifDecode, pubkeyFromSeed, buildTx, fingerprint } = await import(path.join(REPO, "mini-services", "saos-engine", "steemtx.mjs"));
+const pubOfWif = (wif) => pubkeyFromSeed(wifDecode(wif));
 
 const liveRows = await rpc("condenser_api.get_accounts", [ARMY]);
 const live = {};
