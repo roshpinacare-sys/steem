@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-20T11:12:57.505Z",
+  "at": "2026-10-20T11:56:51.168Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 4bps → dragK 1.002",
+      "reason": "spread 1bps → dragK 1.0005",
       "action": {
-        "spreadBpsRec": 4,
-        "bestAsk": 0.0999501246882793,
-        "bestBid": 0.09990646683923173
+        "spreadBpsRec": 1,
+        "bestAsk": 0.09989823609226595,
+        "bestBid": 0.09988990320656911
       },
-      "at": "2026-10-20T11:12:57.505Z"
+      "at": "2026-10-20T11:56:51.168Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -440bps from external parity",
+      "action": {
+        "bps": -440
+      },
+      "at": "2026-10-20T11:56:51.168Z"
     },
     {
       "kind": "soldiers",
@@ -19,33 +28,33 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-20T11:12:57.505Z"
+      "at": "2026-10-20T11:56:51.168Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 31.4%",
+      "reason": "RC at 30.8%",
       "action": {
-        "rcPct": 31.4
+        "rcPct": 30.8
       },
-      "at": "2026-10-20T11:12:57.505Z"
+      "at": "2026-10-20T11:56:51.168Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 33.9%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 34.7%) — gates hold until candidates pass",
       "action": {
         "votesToday": 11,
-        "vpEff": 33.9,
+        "vpEff": 34.7,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-20T11:12:57.505Z"
+      "at": "2026-10-20T11:56:51.168Z"
     }
   ],
-  "spreadBpsRec": 4,
+  "spreadBpsRec": 1,
   "book": {
-    "bestAsk": 0.0999501246882793,
-    "bestBid": 0.09990646683923173,
-    "spreadBps": 4
+    "bestAsk": 0.09989823609226595,
+    "bestBid": 0.09988990320656911,
+    "spreadBps": 1
   }
 }
