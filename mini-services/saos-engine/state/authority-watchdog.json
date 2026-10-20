@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-20T14:25:26.605Z",
-  "verdict": "12-FLAGGED",
+  "at": "2026-10-20T14:55:32.422Z",
+  "verdict": "9-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -10,10 +10,18 @@
       "scanned": 30,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 19,
-      "invalid": 0,
-      "untrusted": 11,
+      "unsigned": 22,
+      "invalid": 1,
+      "untrusted": 7,
       "flagged": [
+        {
+          "hash": "3b43febd",
+          "gq": "E",
+          "sig": "INVALID",
+          "author": "github-actions[bot]",
+          "at": "2026-10-20T14:15:22Z",
+          "subject": "token-forge: verdict (metadata only) [ci]"
+        },
         {
           "hash": "90740788",
           "gq": "U",
@@ -69,38 +77,6 @@
           "author": "Z User",
           "at": "2026-10-20T13:00:22Z",
           "subject": "W23-fix: probe lane zero-external-deps (steemtx canon only) + runner b"
-        },
-        {
-          "hash": "261f1154",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-20T12:56:22Z",
-          "subject": "Merge remote-tracking branch 'origin/saos-cockpit' into saos-cockpit"
-        },
-        {
-          "hash": "d9bfe57e",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-20T12:56:20Z",
-          "subject": "state: live churn snapshot before reconcile (R321)"
-        },
-        {
-          "hash": "9adf4eb8",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-20T12:56:02Z",
-          "subject": "W23: power-up stand-down + fleet-wide grid rail + army active-key unlo"
-        },
-        {
-          "hash": "927c7bfb",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-20T12:43:00Z",
-          "subject": "T-555: the landing detector reads the chain LIVE every routing run — '"
         }
       ]
     },
@@ -194,6 +170,15 @@
   ],
   "flagged": [
     {
+      "hash": "3b43febd",
+      "gq": "E",
+      "sig": "INVALID",
+      "author": "github-actions[bot]",
+      "at": "2026-10-20T14:15:22Z",
+      "subject": "token-forge: verdict (metadata only) [ci]",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "90740788",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -257,42 +242,6 @@
       "repo": "steem.git(LOCAL)"
     },
     {
-      "hash": "261f1154",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-20T12:56:22Z",
-      "subject": "Merge remote-tracking branch 'origin/saos-cockpit' into saos-cockpit",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "d9bfe57e",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-20T12:56:20Z",
-      "subject": "state: live churn snapshot before reconcile (R321)",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "9adf4eb8",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-20T12:56:02Z",
-      "subject": "W23: power-up stand-down + fleet-wide grid rail + army active-key unlo",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "927c7bfb",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-20T12:43:00Z",
-      "subject": "T-555: the landing detector reads the chain LIVE every routing run — '",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
       "hash": "83555a78",
       "gq": "E",
       "sig": "INVALID",
@@ -307,5 +256,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 5813
+  "ms": 5839
 }
