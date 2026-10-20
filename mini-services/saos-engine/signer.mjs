@@ -528,7 +528,7 @@ export function defaultArmedConf() {
     // T-19b HYPER-GRID: the measured volume layer (rc-probe economics:
     // equilibrium ≈32k ops/day at current SP; cap = the measured equilibrium,
     // not an arbitrary number). Governor + RC-floor + id-partition inside.
-    hyperGrid: { enabled: true, tickMs: 3000, levels: 10, spacingBps: 15, ttlSec: 60, orderTtlSec: 3600, askBudgetPct: 0.12, minRcPct: 25, setpointPct: 50, burst: 3, maxOpsPerTick: 24, opsDayCap: 32000, chainTailSec: 60 },
+    hyperGrid: { enabled: true, tickMs: 3000, levels: 10, spacingBps: 15, ttlSec: 60, orderTtlSec: 3600, askBudgetPct: 0.12, minRcPct: 25, setpointPct: 40, burst: 3, maxOpsPerTick: 24, opsDayCap: 32000, chainTailSec: 60 },
   };
 }
 
