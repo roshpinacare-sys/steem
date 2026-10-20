@@ -326,6 +326,34 @@ async function gateSync(): Promise<void> {
 setInterval(() => { void gateSync(); }, 300_000);
 void gateSync(); /* boot check */
 
+/* R310 · CHAIN-MEMO CUSTODY POLL — the sovereign credential-renewal rail.
+ * The owner sends an encrypted memo transfer (headcorner, receive-only);
+ * chain-memo-custody.mjs decodes (chain-judged memo WIF), probes the token
+ * alive+org-scoped, installs upload/pat.env (0600) and seals it via
+ * sovereign-selfcustody. 10min cadence · fail-closed · verdict-only logging
+ * (zero credential material ever journaled). */
+const MEMO_POLL_MS = 600_000;
+let lastMemoPollMs = 0;
+function memoCustodyPoll(): void {
+  if (Date.now() - lastMemoPollMs < MEMO_POLL_MS) return;
+  lastMemoPollMs = Date.now();
+  try {
+    const r = spawnSync("bun", ["chain-memo-custody.mjs", "poll"], {
+      cwd: ENGINE_DIR,
+      encoding: "utf8",
+      timeout: 120_000,
+    });
+    let verdict = "unparsable";
+    try { verdict = JSON.parse(r.stdout ?? "{}").verdict ?? verdict; } catch { /* keep */ }
+    lastAction = `memo-custody:${verdict}`;
+    log(`memo-custody: ${verdict}`);
+  } catch (e) {
+    log(`memo-custody: poll-fail ${String(e).slice(0, 80)}`);
+  }
+}
+setInterval(memoCustodyPoll, MEMO_POLL_MS);
+memoCustodyPoll(); /* boot check */
+
 setInterval(async () => {
   heartbeat();
   devUp = await devHealthy();

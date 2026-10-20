@@ -215,7 +215,15 @@ function unlockGeneration({ ref, zip, metaRef, genLabel, eraRefs }) {
       const pub = a?.keys?.steem?.posting?.pub ?? a?.keys?.posting?.pub ?? null;
       const activeWif = a?.keys?.steem?.active?.wif ?? a?.keys?.active?.wif ?? null;
       const activePub = a?.keys?.steem?.active?.pub ?? a?.keys?.active?.pub ?? null;
-      if (wif) out[name] = { wif, pub, activeWif, activePub };
+      /* R310 · MEMO-CUSTODY EXTENSION (measured 2026-10-20: the chain-memo
+       * credential rail needs the receiver's memo WIF to decode owner memos;
+       * the vault carries FULL 4-role keys — only the extraction was
+       * posting+active). Additive STEEM-memo-only, chain-judged at use-time
+       * (derived pubkey MUST equal the LIVE chain memo_key before any decode;
+       * the 0600 cache dies with the sandbox exactly like the other roles). */
+      const memoWif = a?.keys?.steem?.memo?.wif ?? a?.keys?.memo?.wif ?? null;
+      const memoPub = a?.keys?.steem?.memo?.pub ?? a?.keys?.memo?.pub ?? null;
+      if (wif) out[name] = { wif, pub, activeWif, activePub, memoWif, memoPub };
     }
     return { gen: genLabel, outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), passVia, accounts: out };
   } finally {
