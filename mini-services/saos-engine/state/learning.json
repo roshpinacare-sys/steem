@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-20T17:24:49.598Z",
+  "at": "2026-10-20T17:34:42.415Z",
   "enabled": true,
-  "runsTotal": 488,
+  "runsTotal": 489,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -27,11 +27,11 @@
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
-      "maxPerDay": 30
+      "maxPerDay": 10
     },
     "exec": {
-      "window": 12,
-      "fails": 1,
+      "window": 8,
+      "fails": 2,
       "lastError": null
     },
     "watchdog": {
@@ -59,7 +59,7 @@
     {
       "id": "broadcast-fails",
       "severity": "medium",
-      "evidence": "1/12 broadcasts failed · last: ",
+      "evidence": "2/8 broadcasts failed · last: ",
       "lesson": "broadcast failures burn RC and delay rails",
       "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
@@ -69,8 +69,8 @@
   "lessonsTotal": {
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
-    "signing-cred-blocked": 406,
-    "broadcast-fails": 82,
+    "signing-cred-blocked": 407,
+    "broadcast-fails": 83,
     "cycle-latency-tail": 12
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
