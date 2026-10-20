@@ -6,19 +6,47 @@ export type Panel<T> = { ok: boolean; data: T | null; error?: string; at: string
 const GH = "https://api.github.com"
 const ORG = "roshpinacare-sys"
 
-function pat(): string {
-  try {
-    const raw = readPatFile()
-    const m = raw.match(/=(.+)/)
-    return (m ? m[1] : raw).replace(/[\r\n"'\s]/g, "")
-  } catch {
-    return ""
-  }
+// רוטציית-טוקן לעולם לא תעוור את הפיקוד: שרשרת-מועמדים, הריבונות (saos-steem) קודמת
+const PAT_FILES = [
+  "/home/z/saos-steem/upload/pat.env", // מקור-האמת הריבוני (אטום ב-git-vault, חי דרך כל הגלים)
+  "/home/z/my-project/upload/pat.env", // עותק מקומי של ה-builder (עלול להתיישן)
+]
+
+function parsePat(raw: string): string {
+  const m = raw.match(/=(.+)/)
+  return (m ? m[1] : raw).replace(/[\r\n"'\s]/g, "")
 }
 
-function readPatFile(): string {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require("fs").readFileSync("/home/z/my-project/upload/pat.env", "utf8")
+function patCandidates(): string[] {
+  const out: string[] = []
+  for (const f of PAT_FILES) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const tok = parsePat(require("fs").readFileSync(f, "utf8"))
+      if (tok && !out.includes(tok)) out.push(tok)
+    } catch {
+      /* כנה: קובץ חסר = דלג */
+    }
+  }
+  return out
+}
+
+function pat(): string {
+  return patCandidates()[0] ?? ""
+}
+
+async function authedFetch(url: string, ms = 9000): Promise<Response> {
+  const cands = patCandidates()
+  let last: Response | null = null
+  for (const tok of cands) {
+    const r = await fetchT(url, {
+      headers: { Authorization: `Bearer ${tok}`, Accept: "application/vnd.github+json" },
+    }, ms)
+    if (r.ok) return r
+    last = r
+    if (r.status !== 401 && r.status !== 403) return r // שגיאה שאינה-אימות: אין טעם לנסות טוקן אחר
+  }
+  return last as Response
 }
 
 async function fetchT(url: string, opts: RequestInit = {}, ms = 9000): Promise<Response> {
@@ -33,13 +61,11 @@ async function fetchT(url: string, opts: RequestInit = {}, ms = 9000): Promise<R
 
 // קובץ גולמי מ-main (ריפו ציבורי) — עם fallback ל-contents-API מאומת (ריפו פרטי)
 export async function rawFile(repo: string, path: string, branch = "main"): Promise<unknown> {
-  const tok = pat()
   const r = await fetchT(`https://raw.githubusercontent.com/${ORG}/${repo}/${branch}/${path}`)
   if (r.ok) return JSON.parse(await r.text())
-  // fallback: contents API (עבור ריפואים פרטיים)
-  const api = await fetchT(
+  // fallback: contents API (עבור ריפואים פרטיים) — עם שרשרת-טוקנים
+  const api = await authedFetch(
     `${GH}/repos/${ORG}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`,
-    { headers: { Authorization: `Bearer ${tok}`, Accept: "application/vnd.github+json" } },
   )
   if (!api.ok) throw new Error(`raw ${repo}/${path} → ${r.status}/${api.status}`)
   const j = (await api.json()) as { content?: string; encoding?: string }
@@ -50,12 +76,10 @@ export async function rawFile(repo: string, path: string, branch = "main"): Prom
 }
 
 export async function rawText(repo: string, path: string, branch = "main"): Promise<string> {
-  const tok = pat()
   const r = await fetchT(`https://raw.githubusercontent.com/${ORG}/${repo}/${branch}/${path}`)
   if (r.ok) return await r.text()
-  const api = await fetchT(
+  const api = await authedFetch(
     `${GH}/repos/${ORG}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`,
-    { headers: { Authorization: `Bearer ${tok}`, Accept: "application/vnd.github+json" } },
   )
   if (!api.ok) throw new Error(`rawText ${repo}/${path} → ${r.status}/${api.status}`)
   const j = (await api.json()) as { content?: string; encoding?: string }
@@ -64,11 +88,8 @@ export async function rawText(repo: string, path: string, branch = "main"): Prom
 }
 
 export async function ghApi<T>(path: string): Promise<T> {
-  const tok = pat()
-  const r = await fetchT(`${GH}${path}`, {
-    headers: { Authorization: `Bearer ${tok}`, Accept: "application/vnd.github+json" },
-  })
-  if (!r.ok) throw new Error(`ghApi ${path} → ${r.status}`)
+  const r = await authedFetch(`${GH}${path}`)
+  if (!r || !r.ok) throw new Error(`ghApi ${path} → ${r ? r.status : "no-token"}`)
   return (await r.json()) as T
 }
 
