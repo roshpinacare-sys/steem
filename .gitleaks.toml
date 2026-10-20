@@ -98,3 +98,23 @@ condition = "and"
 paths = '''(^|/)download/'''
 regexTarget = "match"
 regexes = '''.+'''
+
+[[rules]]
+id = "aws-access-token"
+
+[[rules.allowlists]]
+description = "t49: admission-proof/test fixtures (malicious-repository-admission-proof, sovereignty-edge-matrix) in historical extracts only"
+condition = "and"
+paths = '''(^|/)download/'''
+regexTarget = "match"
+regexes = '''.+'''
+
+[[rules]]
+id = "github-pat"
+
+[[rules.allowlists]]
+description = "t49: admission-proof fixture (fake ghp_ token in security-test script) in historical extract only"
+condition = "and"
+paths = '''(^|/)download/'''
+regexTarget = "match"
+regexes = '''.+'''
