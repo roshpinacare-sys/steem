@@ -32,11 +32,24 @@
 useDefault = true
 
 [[rules]]
-id = "generic-api-key"  # same-ID stub: base regex/entropy kept, allowlist appended
+id = "generic-api-key"  # same-ID stub: base regex/entropy kept, allowlists appended
 
-[rules.allowlists]
-description = "t49 census extension (2026-10-20): + inert short values/hex digests/32-char vault passes in measured by-design corpus (vault-meta W16/W17, receipts digests, harden_result identifiers, extracted archives, fleet-body-ledger weights) — rule-level per doctrine (no whole-file skips); WIF-length and long-hex stay outside the window"
+# A — shape-checked (t49): suppressed only when path AND value-shape both match.
+[[rules.allowlists]]
+description = "t49 census (2026-10-20): original documented pair + inert short values / hex digests / 32-char vault-pass window (WIF-length 51 and long hex 64+ stay outside the window)"
 condition = "and"
-paths = '''(^|/)agent/receipts/,(^|/)agent/reclaim-lost-soldiers\.cjs$,(^|/)agent/recovery-meta\.json$,(^|/)agent/vault/,(^|/)agent/harden_result\.json$,(^|/)download/,(^|/)mini-services/saos-engine/state/,(^|/)mini-services/saos-engine/evidence/,(^|/)sovereign/ledger\.json$,(^|/)sovereign/proofs/'''
+paths = '''(^|/)agent/receipts/,(^|/)agent/reclaim-lost-soldiers\.cjs$,(^|/)mini-services/saos-engine/state/,(^|/)mini-services/saos-engine/evidence/,(^|/)sovereign/ledger\.json$,(^|/)sovereign/proofs/'''
 regexTarget = "match"
 regexes = '''(idempotencyKey)":\s*"[0-9a-f][0-9a-f]+,OWNER_DIRECTIVE_TOKEN\s*=\s*'[A-Za-z0-9][A-Za-z0-9]+,":\s*"[A-Za-z0-9._:-]{1,24}",":\s*"[0-9a-f]{8,64}",":\s*"[A-Za-z0-9+/=_-]{24,40}"'''
+
+# B — measured corpus, path-only (t49): generic-api-key noise across ALL
+# historical value-shapes (vault-meta passes by owner-law W16/W17
+# self-contained vault; harden_result chain identifiers; extracted archives
+# absorbed by the monorepo). ONLY generic-api-key is silenced here — every
+# other rule (private-key, aws, slack, ...) stays live on these paths.
+[[rules.allowlists]]
+description = "measured inert corpus for generic-api-key only (t49): vault-meta by-design W16/W17 + chain identifiers + extracted archives; all other rules remain live"
+condition = "and"
+paths = '''(^|/)agent/recovery-meta\.json$,(^|/)agent/vault/,(^|/)agent/harden_result\.json$,(^|/)download/,(^|/)mini-services/saos-engine/state/fleet-body-ledger\.json$'''
+regexTarget = "match"
+regexes = '''.+'''
