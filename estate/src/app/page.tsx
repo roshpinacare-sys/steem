@@ -14,6 +14,24 @@ type Organ = {
   verdict: string
   fails24h: number
 }
+type SovereignEnginePanel = {
+  ok: boolean
+  at: string
+  account: string | null
+  healthAt: string | null
+  custody: { verified: number; total: number; accounts: Record<string, string> } | null
+  inventory: { steem: number | null; sbd: number | null; spOwn: number | null; rcPct: number | null } | null
+  pnl: { fills: number | null; buys: number | null; sells: number | null; realizedSbd: number | null } | null
+  orders: number | null
+  lastFillAt: string | null
+  feed: number | null
+  conversions: number | null
+  cycles: { autoRuns?: number; ok?: number; fail?: number; blocked?: number; lastAutoRunAt?: string | null; lastMs?: number | null } | null
+  armed: Array<{ id: string; armed?: boolean; op?: string }>
+  execLog: Array<{ at?: string; tag?: string; account?: string; txid?: string | null; error?: string | null; verdict?: string }>
+  sources: { engine: string; sovereign: string; orders: string; exec: string }
+}
+
 type SovereignData = {
   at: string
   chain: {
@@ -68,6 +86,7 @@ type SovereignData = {
   secrets?: { ok: boolean; error?: string; data?: { clean: boolean; suspects: string[]; scanned: string[] } }
   signing?: { ok: boolean; error?: string; data?: { conclusion: 'success' | 'failure' | 'unknown'; startedAt: string | null; url: string | null } }
   engine?: { ok: boolean; error?: string; data?: { conclusion: 'success' | 'failure' | 'running' | 'unknown'; event: string | null; at: string | null; url: string | null } }
+  sovereignEngine?: Panel<SovereignEnginePanel>
   decisions?: {
     ok: boolean
     error?: string
@@ -305,6 +324,134 @@ export default function Home() {
                 })}
               </div>
             </Panel>
+
+            {/* המנוע-הריבוני · חי (W22-a) — הקופה-האמיתית על-Steem */}
+            {(() => {
+              const se = data.sovereignEngine
+              const e = se?.data
+              const cycAge = e?.cycles?.lastAutoRunAt ? Math.round((Date.now() - Date.parse(e.cycles.lastAutoRunAt)) / 1000) : null
+              const fillAge = e?.lastFillAt ? Math.round((Date.now() - Date.parse(e.lastFillAt)) / 1000) : null
+              const inv = e?.inventory
+              const cust = e?.custody
+              return (
+                <Panel
+                  title="המנוע-הריבוני · חי"
+                  sub={e ? `${e.account ?? '—'} · ${se!.ok ? 'מחובר-ישירות' : 'לא-מחובר · מציג-GitHub'}` : se?.error?.slice(0, 60)}
+                  className="md:col-span-2 xl:col-span-3"
+                >
+                  {!e ? (
+                    <div className="rounded-lg border border-rose-900/50 bg-rose-950/20 p-4 text-sm text-rose-300">
+                      המנוע בלתי-נראה: <span className="font-mono">{se?.error ?? 'אין-נתונים'}</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {/* שורת-דופק */}
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                        <div className="rounded-lg bg-black/30 p-3">
+                          <div className="text-[10px] text-zinc-400">מחזור-אוטונומי</div>
+                          <div className="mt-1 font-mono text-lg font-bold text-emerald-300" dir="ltr">
+                            {e.cycles?.autoRuns ?? '—'}
+                          </div>
+                          <div className="text-[10px] text-zinc-500">לפני {cycAge !== null ? ageHe(cycAge) : '—'}</div>
+                        </div>
+                        <div className="rounded-lg bg-black/30 p-3">
+                          <div className="text-[10px] text-zinc-400">custody צבא</div>
+                          <div className="mt-1 font-mono text-lg font-bold text-emerald-300" dir="ltr">
+                            {cust ? `${cust.verified}/${cust.total}` : '—'}
+                          </div>
+                          <div className="text-[10px] text-zinc-500">מפתחות-חיים מול-השרשרת</div>
+                        </div>
+                        <div className="rounded-lg bg-black/30 p-3">
+                          <div className="text-[10px] text-zinc-400">פקודות-פתוחות</div>
+                          <div className="mt-1 font-mono text-lg font-bold text-amber-300" dir="ltr">
+                            {e.orders ?? '—'}
+                          </div>
+                          <div className="text-[10px] text-zinc-500">ספר-דו-צדדי</div>
+                        </div>
+                        <div className="rounded-lg bg-black/30 p-3">
+                          <div className="text-[10px] text-zinc-400">מילויים (רץ-נוכחי)</div>
+                          <div className="mt-1 font-mono text-lg font-bold text-emerald-300" dir="ltr">
+                            {e.pnl?.fills ?? '—'}
+                          </div>
+                          <div className="text-[10px] text-zinc-500">מילוי-אחרון {fillAge !== null ? ageHe(fillAge) : '—'}</div>
+                        </div>
+                        <div className="rounded-lg bg-black/30 p-3">
+                          <div className="text-[10px] text-zinc-400">PnL ממומש</div>
+                          <div className={`mt-1 font-mono text-lg font-bold ${(e.pnl?.realizedSbd ?? 0) >= 0 ? 'text-emerald-300' : 'text-rose-300'}`} dir="ltr">
+                            {e.pnl?.realizedSbd !== null && e.pnl?.realizedSbd !== undefined ? `${e.pnl.realizedSbd.toFixed(4)} SBD` : '—'}
+                          </div>
+                          <div className="text-[10px] text-zinc-500">קניות {e.pnl?.buys ?? '—'} · מכירות {e.pnl?.sells ?? '—'}</div>
+                        </div>
+                        <div className="rounded-lg bg-black/30 p-3">
+                          <div className="text-[10px] text-zinc-400">feed</div>
+                          <div className="mt-1 font-mono text-lg font-bold text-zinc-200" dir="ltr">
+                            {e.feed ?? '—'}
+                          </div>
+                          <div className="text-[10px] text-zinc-500">SBD→STEEM · conversions {e.conversions ?? '—'}</div>
+                        </div>
+                      </div>
+
+                      {/* מלאי */}
+                      <div className="grid grid-cols-4 gap-2 font-mono text-[11px]">
+                        {[
+                          ['STEEM', inv?.steem],
+                          ['SBD', inv?.sbd],
+                          ['SP', inv?.spOwn],
+                          ['RC%', inv?.rcPct],
+                        ].map(([k, v]) => (
+                          <div key={String(k)} className="rounded bg-black/20 px-2 py-1.5 text-center" dir="ltr">
+                            <span className="text-zinc-500">{k}</span>{' '}
+                            <b className="text-emerald-300">{typeof v === 'number' ? (k === 'SP' || k === 'RC%' ? v.toFixed(1) : v.toFixed(3)) : '—'}</b>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* קיר-הקבלות החי */}
+                      <div>
+                        <div className="mb-1 flex items-center justify-between">
+                          <span className="text-[10px] text-zinc-400">קבלות-שרשרת אחרונות (exec-log)</span>
+                          <span className="font-mono text-[9px] text-zinc-600" dir="ltr">
+                            engine:{e.sources.engine} · state:{e.sources.sovereign}
+                          </span>
+                        </div>
+                        <div className="max-h-44 space-y-1 overflow-y-auto pr-1 font-mono text-[11px]" style={{ scrollbarWidth: 'thin' }}>
+                          {e.execLog.map((x, i) => (
+                            <div key={i} className="flex items-center justify-between gap-2 rounded bg-black/20 px-2 py-1">
+                              <span className="truncate">
+                                <span className="text-zinc-500">{x.at?.slice(11, 19) ?? '—'}</span>{' '}
+                                <span className="text-emerald-400">{x.tag ?? '—'}</span>
+                                {x.account ? <span className="text-zinc-400"> · {x.account}</span> : null}
+                              </span>
+                              <span className={`shrink-0 ${x.error ? 'text-rose-400' : 'text-zinc-500'}`} dir="ltr">
+                                {x.error ? `err: ${x.error.slice(0, 26)}` : x.txid ? x.txid.slice(0, 14) : (x.verdict ?? '')}
+                              </span>
+                            </div>
+                          ))}
+                          {e.execLog.length === 0 ? <div className="text-zinc-500">— אין-קבלות-טריות</div> : null}
+                        </div>
+                      </div>
+
+                      {/* הפסים החמושים */}
+                      <div className="flex flex-wrap gap-1.5 border-t border-emerald-900/30 pt-2">
+                        {e.armed.map((a) => (
+                          <span
+                            key={a.id}
+                            className={`rounded px-2 py-0.5 font-mono text-[10px] ${
+                              a.armed ? 'border border-emerald-800/60 bg-emerald-950/40 text-emerald-300' : 'border border-zinc-800 bg-black/30 text-zinc-500'
+                            }`}
+                            title={a.op ?? a.id}
+                            dir="ltr"
+                          >
+                            {a.armed ? '▸ ' : '○ '}
+                            {a.id}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </Panel>
+              )
+            })()}
 
             {/* כלכלה */}
             <Panel title="כלכלה חיה" sub="Σ credits · feeMeter">
