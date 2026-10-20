@@ -78,8 +78,23 @@ jobs:
               echo "no receipt churn — skip commit"
             else
               git commit -m "army-active-custody [$ROTATE_MODE]: fleet active-key lane receipts (pubs/fingerprints only, zero key material) [skip ci]"
-              git pull --rebase origin saos-cockpit || true
-              git push origin HEAD:saos-cockpit || { git pull --rebase origin saos-cockpit || true; git push origin HEAD:saos-cockpit; }
+              # [19.43 · DECISIONS #32-E] retry + alive-wins: 13:00-13:02Z push-race failed twice and self-healed —
+              # the receipt content landing at origin (any writer) is success; only content-absent stays loud.
+              OK=0
+              for i in 1 2 3 4 5; do
+                if git pull --rebase origin saos-cockpit && git push origin HEAD:saos-cockpit; then OK=1; echo "push ok (attempt $i)"; break; fi
+                git rebase --abort 2>/dev/null || true
+                sleep $((i * 3))
+              done
+              if [ "$OK" != "1" ]; then
+                git fetch -q origin saos-cockpit
+                if git diff --quiet HEAD origin/saos-cockpit -- custody-receipt.jsonl; then
+                  echo "alive-wins: custody receipt content already at origin (live sibling writer) — honest skip per DECISIONS #30/#32-E, not a regression"
+                else
+                  echo "custody receipt push failed after 5 attempts and content NOT at origin — honest failure"
+                  exit 1
+                fi
+              fi
             fi
           else
             echo "no receipt file — nothing to publish"
