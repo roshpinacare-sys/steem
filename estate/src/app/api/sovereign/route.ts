@@ -11,6 +11,7 @@ import {
   sovereignDecisions,
   fabricQueue,
   irreversiblesQuote,
+  engineLive,
   ORGAN_NAMES,
   ORGAN_FRESHNESS_SEC,
   type Snapshot,
@@ -67,7 +68,7 @@ export async function GET() {
     return NextResponse.json(g.__sovCache.payload)
   }
 
-  const [snapP, armyP, volP, klinesP, makersP, gridP, runsP, claimsP, digestP, policiesP, feedP, recoveryP, sweepP, signingP, engineP, decisionsP, fabricP, irrevP] = await Promise.all([
+  const [snapP, armyP, volP, klinesP, makersP, gridP, runsP, claimsP, digestP, policiesP, feedP, recoveryP, sweepP, signingP, engineP, decisionsP, fabricP, irrevP, sovEngineP] = await Promise.all([
     panel(rawFile("saos-dex", "db/state-snapshot.json").then((j) => j as Snapshot), "state-snapshot"),
     panel(rawFile("saos-dex", "grids/state/army-public.json").then((j) => j as ArmyPublic), "army-public"),
     panel(rawFile("saos-dex", "grids/state/volume-verify.json").then((j) => j as VolumeVerify), "volume-verify"),
@@ -116,6 +117,8 @@ export async function GET() {
     // תור-האשרורים: הצעות-fabric + הבלתי-הפיכים — מה-מחכה-להחלטת-הבעלים
     panel(fabricQueue(), "fabric-queue"),
     panel(irreversiblesQuote(), "irreversibles"),
+    // המנוע-הריבוני · חי (W22-a): הקופה-האמיתית על-Steem — מנוע-בן-מארח + נפילה-GitHub
+    panel(engineLive(), "sovereign-engine"),
   ])
 
   // קבלות-צבא: 8 השורות האחרונות מה-jsonl
@@ -224,6 +227,7 @@ export async function GET() {
     decisions: decisionsP,
     fabric: fabricP,
     irreversibles: irrevP,
+    sovereignEngine: sovEngineP,
   }
 
   g.__sovCache = { at: Date.now(), payload }

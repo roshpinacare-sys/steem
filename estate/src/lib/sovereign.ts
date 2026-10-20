@@ -407,3 +407,198 @@ export const ORGAN_FRESHNESS_SEC: Record<string, number> = {
   "system-map": 93600,
   "directive-now": 93600,
 }
+
+// —— המנוע-הריבוני · חי (W22-a) ——
+// הקופה האמיתית של הריבונות על-גבי Steem: headcorner + הצבא + הספרים.
+// עד-היום המנוע היה בלתי-נראה במרכז-הפיקוד — ה-owner ביקש זרימה וראה ריק.
+// מקורות: קריאה-ישירה למנוע בן-אותו-מארח (אפס-שהות), קבצי-מדינה מקומיים,
+// ונפילה-ל-GitHub (rawFile) כשהקופסא מתה — הפאנל לעולם לא שקרי.
+
+export type EngineExecEntry = {
+  at?: string
+  tag?: string
+  account?: string
+  txid?: string | null
+  error?: string | null
+  verdict?: string
+}
+
+export type EngineLive = {
+  ok: boolean
+  at: string
+  account: string | null
+  healthAt: string | null
+  custody: { verified: number; total: number; accounts: Record<string, string> } | null
+  credentialMode: string | null
+  inventory: { steem: number | null; sbd: number | null; spOwn: number | null; rcPct: number | null } | null
+  pnl: { fills: number | null; buys: number | null; sells: number | null; realizedSbd: number | null } | null
+  orders: number | null
+  lastFillAt: string | null
+  feed: number | null
+  conversions: number | null
+  cycles: { autoRuns?: number; ok?: number; fail?: number; blocked?: number; lastAutoRunAt?: string | null; lastMs?: number | null } | null
+  armed: Array<{ id: string; armed?: boolean; op?: string }>
+  execLog: EngineExecEntry[]
+  sources: { engine: string; sovereign: string; orders: string; exec: string }
+}
+
+async function engineHttp<T>(path: string, ms: number): Promise<T> {
+  const ctl = new AbortController()
+  const t = setTimeout(() => ctl.abort(), ms)
+  try {
+    const r = await fetch(`http://127.0.0.1:3040${path}`, { signal: ctl.signal, cache: "no-store" })
+    if (!r.ok) throw new Error(`engine ${path} → ${r.status}`)
+    return (await r.json()) as T
+  } finally {
+    clearTimeout(t)
+  }
+}
+
+function localJson<T>(p: string): T | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return JSON.parse(require("fs").readFileSync(p, "utf8")) as T
+  } catch {
+    return null
+  }
+}
+
+function localTextTail(p: string, lines: number): string | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const t = require("fs").readFileSync(p, "utf8").trim()
+    if (!t) return null
+    return t.split("\n").filter(Boolean).slice(-lines).join("\n")
+  } catch {
+    return null
+  }
+}
+
+async function githubJsonFallback<T>(repo: string, path: string): Promise<T | null> {
+  try {
+    return (await rawFile(repo, path)) as T
+  } catch {
+    return null
+  }
+}
+
+type OperatorOrdersFile = { orders?: Record<string, { armed?: boolean; op?: string }> }
+
+export async function engineLive(): Promise<EngineLive> {
+  const STEEM = "/home/z/saos-steem/mini-services/saos-engine"
+  const sources = { engine: "dead", sovereign: "dead", orders: "dead", exec: "dead" }
+
+  // 1) המנוע חי? (אפס-שהות — אותו-מארח)
+  let status: Record<string, unknown> | null = null
+  let health: Record<string, unknown> | null = null
+  try {
+    status = await engineHttp<Record<string, unknown>>("/status", 9000)
+    sources.engine = "live-local"
+  } catch {
+    try {
+      health = await engineHttp<Record<string, unknown>>("/health", 5000)
+      sources.engine = "health-only"
+    } catch {
+      /* המנוע מת — כנות */
+    }
+  }
+  if (!health) {
+    try {
+      health = await engineHttp<Record<string, unknown>>("/health", 5000)
+    } catch {
+      /* כנות */
+    }
+  }
+
+  // 2) מדינה מקומית → GitHub נפילה
+  let cycles = localJson<EngineLive["cycles"]>(`${STEEM}/state/sovereign.json`)?.cycles ?? null
+  if (cycles) sources.sovereign = "local"
+  else {
+    const gh = await githubJsonFallback<{ cycles?: EngineLive["cycles"] }>("steem", "mini-services/saos-engine/state/sovereign.json")
+    if (gh?.cycles) {
+      cycles = gh.cycles
+      sources.sovereign = "github"
+    }
+  }
+
+  let ordersFile = localJson<OperatorOrdersFile>(`${STEEM}/state/operator-orders.json`)
+  if (ordersFile) sources.orders = "local"
+  else {
+    ordersFile = await githubJsonFallback<OperatorOrdersFile>("steem", "mini-services/saos-engine/state/operator-orders.json")
+    if (ordersFile) sources.orders = "github"
+  }
+
+  let execRaw = localTextTail(`${STEEM}/state/exec-log.jsonl`, 8)
+  if (execRaw) sources.exec = "local"
+  else {
+    try {
+      execRaw = await rawText("steem", "mini-services/saos-engine/state/exec-log.jsonl")
+      sources.exec = "github"
+    } catch {
+      execRaw = null
+    }
+  }
+  const execLog: EngineExecEntry[] = (execRaw ?? "")
+    .split("\n")
+    .filter(Boolean)
+    .map((l) => {
+      try {
+        const j = JSON.parse(l) as Record<string, unknown>
+        return {
+          at: typeof j.at === "string" ? j.at : undefined,
+          tag: typeof j.tag === "string" ? j.tag : undefined,
+          account: typeof j.account === "string" ? j.account : undefined,
+          txid: typeof j.txid === "string" ? j.txid : null,
+          error: typeof j.error === "string" ? j.error : null,
+          verdict: typeof j.verdict === "string" ? j.verdict : undefined,
+        }
+      } catch {
+        return { tag: "unparsed" }
+      }
+    })
+
+  // 3) מוזיאון-הנתונים מה-/status החי
+  const observe = (status?.observe ?? null) as Record<string, unknown> | null
+  const inv = (observe?.inventory ?? null) as Record<string, number> | null
+  const pnl = (observe?.pnl ?? null) as Record<string, number> | null
+  const ordersArr = (observe?.orders ?? null) as unknown[] | null
+  const ac = (health?.armyCustody ?? null) as { verified?: number; total?: number; accounts?: Record<string, string> } | null
+  const convArr = (status?.conversions ?? null) as unknown[] | null
+
+  const armed: Array<{ id: string; armed?: boolean; op?: string }> = Object.entries(ordersFile?.orders ?? {}).map(
+    ([id, v]) => ({ id, armed: v?.armed, op: v?.op }),
+  )
+
+  return {
+    ok: !!status,
+    at: (typeof status?.at === "string" ? status.at : null) ?? new Date().toISOString(),
+    account: (typeof status?.account === "string" ? status.account : null) ?? (typeof health?.account === "string" ? (health.account as string) : null),
+    healthAt: typeof health?.at === "string" ? health.at : null,
+    custody: ac ? { verified: ac.verified ?? 0, total: ac.total ?? 0, accounts: ac.accounts ?? {} } : null,
+    credentialMode: typeof health?.credentialMode === "string" ? health.credentialMode : null,
+    inventory: inv
+      ? {
+          steem: typeof inv.steem === "number" ? inv.steem : null,
+          sbd: typeof inv.sbd === "number" ? inv.sbd : null,
+          spOwn: typeof inv.spOwn === "number" ? inv.spOwn : null,
+          rcPct: typeof inv.rcPct === "number" ? inv.rcPct : null,
+        }
+      : null,
+    pnl: pnl
+      ? {
+          fills: typeof pnl.fills === "number" ? pnl.fills : null,
+          buys: typeof pnl.buys === "number" ? pnl.buys : null,
+          sells: typeof pnl.sells === "number" ? pnl.sells : null,
+          realizedSbd: typeof pnl.realizedSbd === "number" ? pnl.realizedSbd : null,
+        }
+      : null,
+    orders: Array.isArray(ordersArr) ? ordersArr.length : null,
+    lastFillAt: typeof observe?.lastFillAt === "string" ? (observe.lastFillAt as string) : null,
+    feed: typeof observe?.feed === "number" ? observe.feed : null,
+    conversions: Array.isArray(convArr) ? convArr.length : null,
+    cycles,
+    armed,
+    execLog,
+    sources,
+  }
+}

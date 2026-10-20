@@ -1,25 +1,25 @@
 {
-  "at": "2026-10-20T08:16:36.897Z",
+  "at": "2026-10-20T08:38:49.443Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 38bps → dragK 1.019",
+      "reason": "spread 24bps → dragK 1.012",
       "action": {
-        "spreadBpsRec": 38,
+        "spreadBpsRec": 24,
         "bestAsk": 0.1,
-        "bestBid": 0.09962342345932376
+        "bestBid": 0.09976057462090981
       },
-      "at": "2026-10-20T08:16:36.897Z"
+      "at": "2026-10-20T08:38:49.443Z"
     },
     {
       "kind": "parity-drift",
-      "decision": "monitor",
-      "reason": "internal feed deviates -397bps from external parity",
+      "decision": "arb-window",
+      "reason": "internal feed deviates -502bps from external parity",
       "action": {
-        "bps": -397
+        "bps": -502
       },
-      "at": "2026-10-20T08:16:36.897Z"
+      "at": "2026-10-20T08:38:49.443Z"
     },
     {
       "kind": "soldiers",
@@ -28,33 +28,46 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-20T08:16:36.897Z"
+      "at": "2026-10-20T08:38:49.443Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 12.895602 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 12.895602,
+        "any": true
+      },
+      "at": "2026-10-20T08:38:49.443Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 35.9%",
+      "reason": "RC at 35.1%",
       "action": {
-        "rcPct": 35.9
+        "rcPct": 35.1
       },
-      "at": "2026-10-20T08:16:36.897Z"
+      "at": "2026-10-20T08:38:49.443Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 34.5%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 34.2%) — gates hold until candidates pass",
       "action": {
         "votesToday": 8,
-        "vpEff": 34.5,
+        "vpEff": 34.2,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-20T08:16:36.897Z"
+      "at": "2026-10-20T08:38:49.443Z"
     }
   ],
-  "spreadBpsRec": 38,
+  "spreadBpsRec": 24,
   "book": {
     "bestAsk": 0.1,
-    "bestBid": 0.09962342345932376,
-    "spreadBps": 38
+    "bestBid": 0.09976057462090981,
+    "spreadBps": 24
   }
 }
