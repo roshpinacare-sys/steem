@@ -33,7 +33,7 @@ import { postDailyReport } from "./promo.mjs";
 /* R292 · CAPITAL ROUTER: profit-maximization + routing engine — computes the
  * ranked action matrix from the deep probe, executes pure-recall actions
  * (zero-amount delegation — structurally unable to create exposure). */
-import { computeRouterReport, executeRouterActions } from "./capital-router.mjs";
+import { computeRouterReport, executeRouterActions, probeLanding } from "./capital-router.mjs";
 import { runCurator } from "./curator.mjs";
 import { runArmyCuration } from "./army-curation.mjs";
 import { runOnce as runStreamer } from "./social-streamer.mjs"; /* R308: THE POSTING STREAM — wired at last */
@@ -198,7 +198,14 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
    * matrix — reads the deep probe, computes the yield ladder + ranked
    * actions, and executes pure-recall actions through the think gate. */
   const capitalRouteP = stepWrap("capital-route", async () => {
-    const rep = computeRouterReport({ now });
+    /* T-555 · the landing detector reads the chain LIVE every routing run —
+     * "landing is detected not assumed" is now structural: the deep-probe
+     * snapshot fossilized a 767.69 SP queue while the chain truth was 407.12
+     * SP (partial re-deploy of the recall wave, 6 rows × +59.96 SP measured).
+     * Fail-isolated: a probe failure degrades to the cached derivation, and
+     * the report labels its source honestly either way. */
+    const liveLanding = await probeLanding().catch(() => null);
+    const rep = computeRouterReport({ now, liveLanding });
     if (rep.verdict !== "ROUTED") return rep;
     const ex = await executeRouterActions({ now, plan: rep, executeAsFn: executeAs, verifyRolesFn: verifyRoles, masterAcct: masterAccount() });
     return { verdict: rep.verdict, actions: rep.actions?.length ?? 0, ladderTop: rep.ladder?.stages?.[rep.ladder.stages.length - 1]?.spPerDay ?? null, executed: ex.executed ?? [] };
