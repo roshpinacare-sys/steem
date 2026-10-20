@@ -3001,7 +3001,20 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("exec29: readGate corrupt → STANDBY", rg.readGate(gdir).gate, "STANDBY");
   wgate({});
   eq("exec29: readGate gate-less document → STANDBY", rg.readGate(gdir).gate, "STANDBY");
-  eq("exec29: committed default readiness.json is CLOSED", rg.readGate(path.join(path.dirname(new URL(import.meta.url).pathname), "state")).gate, "STANDBY");
+  {
+    /* R309-e/W18 (owner standing law, 2026-10-20): the committed readiness.json is lawful
+     * in exactly two shapes — (a) CLOSED default (the original exec29 law), or (b) owner-law
+     * ARMED carrying a non-empty directiveRef + valid armedAt (dual-key record).
+     * Bare ARMED without the ref/armedAt record stays a hard FAIL (no untracked arming). */
+    const committed = rg.readGate(path.join(path.dirname(new URL(import.meta.url).pathname), "state"));
+    if (committed.gate === "ARMED") {
+      const refOk = typeof committed.directiveRef === "string" && committed.directiveRef.trim().length > 0;
+      const atOk = Number.isFinite(Date.parse(String(committed.armedAt ?? "")));
+      eq("exec29: committed readiness.json owner-law ARMED carries ref+armedAt (R309-e)", refOk && atOk, true);
+    } else {
+      eq("exec29: committed default readiness.json is CLOSED", committed.gate, "STANDBY");
+    }
+  }
   eq("exec29: verdict on absent file → STANDBY", (await rg.socialGateVerdict(gdir, { fetchImpl: noNet })).mode, "STANDBY");
   /* the local key alone is never enough */
   wgate({ gate: "ARMED", armedAt: "2026-10-14T00:00:00Z" });

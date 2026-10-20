@@ -95,6 +95,38 @@ function lastEdgeBps(): number | null {
   return null;
 }
 
+/* R309-d · multi-network market oracle (connectors: BTC/ETH/HIVE/BLURT/STEEM → the
+ * sovereign book's wind-vane). Public ladders only, zero keys; honest fail → null
+ * prices; 5min cadence. Lands in each snapshot's raw blob + state/markets.json. */
+let MARKETS: { at: string; prices: Record<string, number | null>; src: Record<string, string> } | null = null;
+async function refreshMarkets(): Promise<void> {
+  const prices: Record<string, number | null> = {};
+  const src: Record<string, string> = {};
+  /* binance: BTC/ETH/STEEM */
+  for (const [id, sym] of [["btc", "BTCUSDT"], ["eth", "ETHUSDT"], ["steem", "STEEMUSDT"]] as const) {
+    try {
+      const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${sym}`, { cache: "no-store", signal: AbortSignal.timeout(8000) });
+      const p = parseFloat((await r.json())?.price);
+      if (Number.isFinite(p)) { prices[id] = p; src[id] = "binance"; }
+    } catch { /* next rung */ }
+  }
+  /* coingecko: hive/blurt (+ fill any binance gaps) */
+  try {
+    const r = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,hive,blurt,steem&vs_currencies=usd", { cache: "no-store", signal: AbortSignal.timeout(8000) });
+    const j = await r.json();
+    for (const id of ["bitcoin", "ethereum", "hive", "blurt", "steem"]) {
+      const p = j?.[id]?.usd;
+      if (Number.isFinite(p)) { prices[id] = p; if (!src[id]) src[id] = "coingecko"; }
+    }
+  } catch { /* honest fail — prices stay null */ }
+  if (Object.keys(prices).length) {
+    MARKETS = { at: new Date().toISOString(), prices, src };
+    try { fs.writeFileSync(path.join(STATE_DIR, "markets.json"), JSON.stringify(MARKETS, null, 1) + "\n"); } catch { /* best effort */ }
+  }
+}
+void refreshMarkets().catch(() => {});
+setInterval(() => { void refreshMarkets().catch(() => {}); }, 300_000);
+
 function snap(): Record<string, any> {
   const now = Date.now();
   const ts = new Date(now).toISOString();
@@ -140,7 +172,7 @@ function snap(): Record<string, any> {
     paused: typeof sov.paused === "boolean" ? (sov.paused ? 1 : 0) : null,
     custody_age_sec: num(anchor.at) !== null ? Math.round((now - anchor.at) / 1000) : null,
   };
-  row.raw = JSON.stringify({ cur, grid, tank, eco, cyc, obs }).slice(0, 8000);
+  row.raw = JSON.stringify({ cur, grid, tank, eco, cyc, obs, markets: MARKETS }).slice(0, 8000);
   return row;
 }
 
