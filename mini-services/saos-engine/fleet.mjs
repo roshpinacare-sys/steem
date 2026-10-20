@@ -42,11 +42,20 @@ export function classifyAgent({ lastRunAt, nowMs, freshnessMin, idleReasons = []
   return { status: "DEAD", ageMin: age, blockedBy: null };
 }
 
-/* the CYCLE freshness is the cadence + grace; each agent gets its own window */
+/* the CYCLE freshness is the cadence + grace; each agent gets its own window.
+ * R310 CORRECTION (measured 2026-10-20: the daily cycle is the LAWFUL cadence
+ * — midnight run + lawful manual re-runs — while these windows were 15–30min
+ * from the lost continuous-runner era; the registry measured FALSE-DEAD for
+ * ~23h of every day, a R309-b violation: a limitation with no measured
+ * release condition). Windows now measure CADENCE-BREAK: daily cadence + 6h
+ * grace (1560min); promo is a 2-day lane. A truly-dead runner (watchdog
+ * process, 6 days silent) still reads DEAD — the window is honest, not lax. */
+const DAY_PLUS_GRACE = 1560;
 const FRESH = {
-  engine: 2, watchdog: 5, cycle: 15, grid: 15, peg: 15, intel: 15,
-  curator: 30, learning: 15, discovery: 30, convert: 15, soldiers: 15,
-  promo: 1440, book: 15,
+  engine: 2, watchdog: 30, cycle: DAY_PLUS_GRACE, grid: DAY_PLUS_GRACE, peg: DAY_PLUS_GRACE,
+  intel: DAY_PLUS_GRACE, curator: DAY_PLUS_GRACE, learning: DAY_PLUS_GRACE,
+  discovery: DAY_PLUS_GRACE, convert: DAY_PLUS_GRACE, soldiers: DAY_PLUS_GRACE,
+  promo: 2880, book: DAY_PLUS_GRACE,
 };
 
 export function fleetState({ now = new Date().toISOString(), credential = null, armedConf = null } = {}) {
@@ -84,12 +93,21 @@ export function fleetState({ now = new Date().toISOString(), credential = null, 
     `serving this response · pid ${typeof process !== "undefined" ? process.pid : enginePidVal} (state/engine.pid: ${enginePidVal})`));
 
   /* 2 · sovereign-watchdog — pulse + self-heal.
-   * SOV_FILE holds core.state DIRECTLY (not wrapped) — measured live:
-   * lastCheckAt lives at sov.watchdog.lastCheckAt, counters at sov.watchdog.* */
-  const wdAt = sov?.watchdog?.lastCheckAt ?? sov?.state?.lastCheckAt ?? null;
-  agents.push(mk("watchdog", "pulse check every 60s · resurrects dead engine",
-    classifyAgent({ lastRunAt: wdAt, nowMs, freshnessMin: FRESH.watchdog }),
-    `sovereign.json lastCheckAt=${wdAt ?? "—"} · checks=${sov?.watchdog?.checks ?? "?"} heals=${sov?.watchdog?.healVerified ?? "?"}${sov?.cred && sov.cred.present === false ? " · cred-missing detected" : ""}`));
+   * R310 REWIRE (measured 2026-10-20): the old sovereign.json pulse process
+   * (pre-reset era) was superseded by the dev-keeper ENGINE GUARDIAN (R291:
+   * 3-dead-ticks → respawn, engineSpawns evidence) — the old file went 6 days
+   * stale while the LIVE mechanism kept guarding. The registry now measures
+   * the live mechanism: keeper.lock heartbeat (pid+at, written every loop)
+   * — verdicts stay derived, never claimed. */
+  const keeperLock = readJson(path.join(DIR, "..", "dev-keeper", "state", "keeper.lock"), null);
+  const keeperAlive = !!(keeperLock?.pid && pidAlive(keeperLock.pid) && keeperLock.at && nowMs - Number(keeperLock.at) < 5 * 60_000);
+  const keeperAt = keeperAlive ? new Date(Number(keeperLock.at)).toISOString() : null;
+  agents.push(mk("watchdog", "engine guardian — pulse + self-heal (dev-keeper R291, supersedes the pre-reset sovereign pulse)",
+    keeperAlive ? { status: "ALIVE", ageMin: Math.max(0, Math.round((nowMs - Number(keeperLock.at)) / 60000)), blockedBy: null }
+      : classifyAgent({ lastRunAt: wdAt, nowMs, freshnessMin: FRESH.watchdog }),
+    keeperAlive
+      ? `dev-keeper guardian heartbeat fresh (pid ${keeperLock.pid}) — engine respawns handled by R291`
+      : `keeper.lock stale/absent AND sovereign.json lastCheckAt=${wdAt ?? "—"} · checks=${sov?.watchdog?.checks ?? "?"} heals=${sov?.watchdog?.healVerified ?? "?"}${sov?.cred && sov.cred.present === false ? " · cred-missing detected" : ""}`));
 
   /* 3 · cycle-runner — the 10-step autonomous cycle */
   const cycleAt = daily?.finishedAt ?? null;
