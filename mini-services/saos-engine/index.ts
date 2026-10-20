@@ -20,6 +20,7 @@ adaptationBoot(); // R210 §XVI: restart counter — adaptation store proves per
 import { discoveryState } from "./discovery.mjs";
 import { fleetState } from "./fleet.mjs";
 import { startHyperGrid, hyperState } from "./hypergrid.mjs";
+import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
 import { webintelState } from "./webintel.mjs";
@@ -477,6 +478,14 @@ try {
 // the same watchdog (process-lifetime = engine lifetime).
 try { startHyperGrid(); } catch (e) {
   console.error(`hypergrid boot failed: ${String(e?.message ?? e)}`);
+}
+
+// W24 WEAVE-WITNESS: the saos.weave.core.v1 anchor cadence revival — the
+// census-verified 5-day-dead checkpoint line (cp#1655, 2026-10-15) rides
+// cashmachine's EXISTING posting custody; T0 op, fail-closed continuation,
+// 29min beat. Cures Console agent-verify A10 (freshness STALE 196.8h).
+try { startWeaveWitness({}); } catch (e) {
+  console.error(`weave-witness boot failed: ${String(e?.message ?? e)}`);
 }
 
 // R323 DEX-FLOW: the volume-TAKER layer — real fills, accumulating volume,

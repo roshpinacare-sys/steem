@@ -79,7 +79,12 @@ export const HYPER_DEFAULTS = {
   orderTtlSec: 3600,      // chain-side self-clean if we ever die (1h)
   askBudgetPct: 0.12,     // of liquid STEEM (T-19 flow tranche doctrine)
   minRcPct: 25,           // hard floor — the votes' RC is never starved
-  setpointPct: 50,        // governor equilibrium target
+  /* W24 (owner liquidity doctrine, trace 1a1599a1f656e08d): the setpoint is
+   * now a CODE law, not runtime state — the W23-d 50→40 change died with the
+   * sandbox wipe because it lived only in memory. 40 = the measured 7×
+   * quoting-pace equilibrium; floor 25 untouched; ladder to 35 only after
+   * 24h of stable PnL at 40 (measured, reversible, one notch at a time). */
+  setpointPct: 40,        // governor equilibrium target (W23-d measured, W24 made wipe-proof)
   burst: 3,               // transient burn multiplier above equilibrium
   maxOpsPerTick: 24,      // per-broadcast op ceiling
   opsDayCap: 32000,       // doctrine cap = the MEASURED equilibrium

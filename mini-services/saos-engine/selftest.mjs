@@ -6087,6 +6087,40 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
     (() => { try { const sr = JSON.parse(fs.readFileSync(path.join(repoDir, "mini-services/saos-engine/state/security-register.json"), "utf8")); return sr.entries.some((e) => e.id === "SEC-2026-10-19-4" && e.status === "CONTAINED-MEASURED"); } catch { return false; } })(), true);
 }
 
+/* ══════════════ section 58 · WEAVE-WITNESS (W24) ══════════════
+ * Pure vectors: the anchor payload contract + the continuation law table.
+ * The live module is imported (the same functions the boot organ runs) —
+ * no network, no keys, deterministic. */
+{
+  const ww = await import("./weave-witness.mjs");
+  /* 58.1 payload contract — the census parser's exact shape */
+  const good = ww.buildAnchorPayload({ latest: 1655, root: "0x" + "a".repeat(64), at: "2026-10-20T14:00:00.000Z", witness: "cashmachine" });
+  eq("58.1a anchor payload builds on a valid sha-chain root", good.ok, true);
+  eq("58.1b checkpoint continues +1 (never skips, never reuses)", good.ok ? good.payload.checkpoint : null, 1656);
+  eq("58.1c action/checkpoint/protocol fields present",
+    good.ok ? [good.payload.action, typeof good.payload.checkpoint, good.payload.protocol] : null, ["checkpoint", "number", ww.WITNESS_ACCOUNT ? "saos.weave.core.v1" : ""]);
+  eq("58.1d headHash is the sha-chain of root:at:witness",
+    good.ok ? good.payload.headHash : null, ww.sha256Hex(`0x${"a".repeat(64)}:2026-10-20T14:00:00.000Z:cashmachine`));
+  /* 58.2 payload refusals — fail-closed on every malformed input */
+  eq("58.2a refuses non-sha root", ww.buildAnchorPayload({ latest: 1, root: "deadbeef", at: "2026-10-20T14:00:00.000Z", witness: "cashmachine" }).ok, false);
+  eq("58.2b refuses negative latest", ww.buildAnchorPayload({ latest: -2, root: "0x" + "a".repeat(64), at: "2026-10-20T14:00:00.000Z", witness: "cashmachine" }).ok, false);
+  eq("58.2c refuses bad timestamp", ww.buildAnchorPayload({ latest: 1, root: "0x" + "a".repeat(64), at: "not-a-date", witness: "cashmachine" }).ok, false);
+  eq("58.2d refuses bad witness name", ww.buildAnchorPayload({ latest: 1, root: "0x" + "a".repeat(64), at: "2026-10-20T14:00:00.000Z", witness: "NOT AN ACCOUNT" }).ok, false);
+  /* 58.3 continuation law table — deterministic, no I/O */
+  const root = "0x" + "b".repeat(64);
+  const NOW = Date.parse("2026-10-20T15:00:00.000Z");
+  const ab = ww.continuationVerdict({ censusLatest: null, chainLatest: null, nowMs: NOW });
+  eq("58.3a both-silent ⇒ ABSTAIN (never invent a root)", ab.verdict, "ABSTAIN-NO-ANCHOR");
+  const hold = ww.continuationVerdict({ censusLatest: { checkpoint: 1655, root }, lastAnchorAt: "2026-10-20T14:50:00.000Z", nowMs: NOW });
+  eq("58.3b 10min-old anchor ⇒ HOLD-CADENCE (20min re-anchor floor)", hold.verdict, "HOLD-CADENCE");
+  const revive = ww.continuationVerdict({ censusLatest: { checkpoint: 1655, root }, lastAnchorAt: "2026-10-12T00:00:00.000Z", nowMs: NOW });
+  eq("58.3c 196h-old anchor ⇒ REVIVE-STALE (the measured A10 gap class)", revive.verdict, "REVIVE-STALE");
+  const steady = ww.continuationVerdict({ censusLatest: { checkpoint: 1655, root }, lastAnchorAt: "2026-10-20T14:25:00.000Z", nowMs: NOW });
+  eq("58.3d 35min-old anchor ⇒ steady ANCHOR beat", steady.verdict, "ANCHOR");
+  const best = ww.continuationVerdict({ censusLatest: { checkpoint: 1650, root }, chainLatest: { checkpoint: 1655, root }, lastAnchorAt: "2026-10-20T14:25:00.000Z", nowMs: NOW });
+  eq("58.3e alive-wins: the larger checkpoint is the continuation point", best.latest.checkpoint, 1655);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).
