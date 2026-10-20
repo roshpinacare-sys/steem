@@ -550,6 +550,42 @@ try {
   };
   runDeepProbe(); /* once at boot — the router computes from fresh truth */
   intervals.push(setInterval(runDeepProbe, 3 * 60 * 60_000));
+  /* W19-a · THE SOVEREIGN AUTO-CYCLE (measured gap 2026-10-20): the interval
+   * table ran receipts/watchdog/health loops — but runCycle had NO timer, so
+   * the economy only moved when an operator POSTed /cycle (the owner's
+   * overnight "no activity seen" was this exact gap: green receipts, dead
+   * economy). New law: the engine SELF-TRIGGERS the sovereign cycle on a
+   * fixed cadence, guarded by cycleRunning() (no overlap — daily.mjs mutex
+   * holds regardless), journaled to state/sovereign.json (autoRuns counter)
+   * so "what runs while nobody watches" is always state-provable. The cycle
+   * itself carries the revival path (curate → convert → ladder → soldiers),
+   * so one interval = the whole living economy. */
+  const AUTO_CYCLE_MS = 22 * 60_000; /* ~65 cycles/day; caps are per-cycle so pacing stays lawful */
+  let autoCycleStarted = false;
+  const autoCycle = async () => {
+    if (cycleRunning()) return; /* typed skip — a cycle is already in flight */
+    try {
+      await reviveArmyCustody(); /* cheap when verified; revives after any restart */
+    } catch { /* revival failure must never block the cycle attempt */ }
+    try {
+      void runCycle().catch(() => null);
+      const sp = path.join(STATE, "sovereign.json");
+      const s = readJson(sp, null) ?? {};
+      s.cycles = s.cycles ?? {};
+      s.cycles.autoRuns = (s.cycles.autoRuns ?? 0) + 1;
+      s.cycles.lastAutoRunAt = new Date().toISOString();
+      s.cycles.lastAutoRunMs = AUTO_CYCLE_MS;
+      fs.writeFileSync(sp, JSON.stringify(s, null, 2));
+    } catch (e) {
+      console.error(`auto-cycle journal failed: ${String(e?.message ?? e).slice(0, 100)}`);
+    }
+  };
+  setTimeout(() => { autoCycleStarted = true; void autoCycle(); }, 90_000).unref?.(); /* first run 90s after boot */
+  intervals.push(setInterval(() => { if (autoCycleStarted) void autoCycle(); }, AUTO_CYCLE_MS));
+  /* W19-a · CUSTODY HEARTBEAT (2h): the vault-revival chain-judge re-runs on
+   * its own cadence too — a mid-run rotation by the chain (or a new GEN seal
+   * landing via git pull) re-adopts without waiting for the next cycle. */
+  intervals.push(setInterval(() => { Promise.resolve(reviveArmyCustody()).catch(() => null); }, 2 * 60 * 60_000));
   /* R291 · MUTUAL GUARDIANSHIP (engine side): measured death 2026-10-09 — the
    * kernel OOM-killed next-server AND the keeper; nobody hatched the keeper,
    * so the cockpit stayed dark for hours. The engine is a surviving lineage

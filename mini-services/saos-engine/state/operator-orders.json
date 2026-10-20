@@ -110,6 +110,40 @@
         "exec33 NO-ARMING §ד R6 step-1"
       ],
       "innerLimitsUnchanged": true
+    },
+    "W19-ALL-ARM": {
+      "armed": true,
+      "op": "power-up+soldier-topup+delegation-ladder+internal-market-ladders+convert",
+      "direction": "self-custody-only (verified-custody accounts, T-80 law)",
+      "verbatim": "תמשיך ודחוף ... לא ראיתי פעילות כלל ... תפעיל הכל ואז שגם הסוכנים האחרים יוכלו לשפר פעילויות ריבונית אוטונמית לפי הצורך",
+      "orderRef": "owner IM 2026-10-20 trace 1a157c5b05a04cf5 — activate everything + agents self-improve sovereign activities; extends standing order 2026-09-29 (full autonomous execution, doctrine-capped) + W12B ladder + T-90 round-2 soldier deploy authorization",
+      "scope": {
+        "powerUp": {
+          "accounts": "headcorner",
+          "maxSteemPerDay": 20,
+          "purpose": "SP growth → curation weight + RC headroom + W12B delegation feed"
+        },
+        "soldierTopups": {
+          "verifiedOnly": true,
+          "maxSteemPerSoldierPerDay": 2,
+          "maxSoldiersPerDay": 4
+        },
+        "delegation": {
+          "orderRef": "W12B-SP-LADDER",
+          "caps": "60 SP/move, 6 moves/day (unchanged)"
+        },
+        "internalMarket": {
+          "twoSidedLadders": true,
+          "cap": "exec-armed.json per-cycle caps (maxBidSbdPerCycle/maxAskSteemPerCycle)"
+        },
+        "convert": {
+          "armed": true,
+          "pacing": "existing R231 cooldown law"
+        }
+      },
+      "reversibility": "power-up is T2-QUASI (7.4-day unwind via withdraw route); topups/ladders/convert are T1-REVERSIBLE-or-escrow; no T0 irreversible legs inside this order",
+      "recordedAt": "2026-10-20T05:35:00Z",
+      "trace": "1a157c5b05a04cf5"
     }
   }
 }
