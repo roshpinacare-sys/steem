@@ -381,7 +381,7 @@ export function buildTx({ ops, dgpo, wifs, ttlSec = 45, nowSec = Math.floor(Date
   return {
     digestHex: Buffer.from(digest).toString("hex"),
     serializedHex: bin.toString("hex"),
-    json: { ...body, expiration: iso(expiration), operations: ops.map(([n, v]) => [n, { ...v, expiration: v.expiration ? iso(v.expiration) : undefined, extensions: "extensions" in v ? v.extensions : undefined }]), signatures: sigs },
+    json: { ...body, expiration: iso(expiration), operations: ops.map(([n, v]) => [n, { ...v, expiration: v?.expiration ? iso(v.expiration) : undefined, extensions: v && "extensions" in v ? v.extensions : undefined }]), signatures: sigs },
   };
 }
 
