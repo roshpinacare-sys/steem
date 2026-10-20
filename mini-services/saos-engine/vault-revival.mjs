@@ -396,18 +396,39 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       }
       appendLine(path.join(STATE, "events.jsonl"), { type: "master.custody", at: now, verdict: masterRoles.length ? "MASTER-CUSTODY-ALIVE" : "MASTER-CUSTODY-REFUSED", roles: masterRoles, errors: mErrors });
     }
-    const after = armyCustodyState(roster);
+    /* R311 · LIVING-DENOMINATOR LAW (owner approved the yield decision 2026-10-20,
+     * IM trace 1a157f3c9973fe45): the W19-a chain-judged retirement (b62e1c395)
+     * retired 4 keyless dead bodies (siq,tov,wog,hcsoldier5) per T-80 — the
+     * chain itself judged them (vault WIFs' derived pubkeys do NOT match the
+     * live chain authorities; no key material exists to revive them). A
+     * full-roster 14/14 gate was structurally unreachable: the yield rail was
+     * frozen forever over BODIES THAT DO NOT EXIST. The gate now measures the
+     * LIVING fleet: every living body must be chain-verified (verified ===
+     * livingCount — still 100% custody of everything that exists, fail-closed).
+     * If the retirement record is missing/unparseable the set is EMPTY — the
+     * gate reverts to the full-roster demand (conservative by construction). */
+    let retired = new Set();
+    let retirementProvenance = null;
+    try {
+      const rr = JSON.parse(fs.readFileSync(path.join(STATE, "fleet-retired.json"), "utf8"));
+      for (const r of (rr.retired ?? [])) if (r?.account) retired.add(String(r.account));
+      retirementProvenance = rr.provenance ?? null;
+    } catch { /* absent record = no exclusions — full-roster gate holds */ }
+    const living = roster.filter((n) => !retired.has(n));
+    const after = armyCustodyState(living);
+    const fullCensus = armyCustodyState(roster);
     const doc = {
-      at: now, verdict: after.verified === roster.length ? "FLEET-CUSTODY-ALIVE" : "PARTIAL",
+      at: now, verdict: after.verified === living.length && living.length > 0 ? "FLEET-CUSTODY-ALIVE" : "PARTIAL",
       master: { roles: masterRoles, before: masterBefore, law: "chain-judged wif-direct, GEN-2 first" },
       before: { verified: before.verified }, after: { verified: after.verified, total: after.total },
+      denominator: { law: "living-fleet (T-80 retirement, chain-judged)", living: living.length, retired: [...retired].sort(), retiredCount: retired.size, fullRosterVerified: fullCensus.verified, fullRosterTotal: fullCensus.total, provenance: retirementProvenance },
       pulled: pulled ? { extracted: pulled.extracted, missing: pulled.missing } : null,
       adopted: adopted.results ?? null, law: "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
       ms: Date.now() - t0,
     };
     fs.mkdirSync(STATE, { recursive: true });
     fs.writeFileSync(path.join(STATE, "army-custody.json"), JSON.stringify(doc, null, 2));
-    appendLine(path.join(STATE, "events.jsonl"), { type: "army.custody", at: now, verdict: doc.verdict, verified: after.verified, total: after.total });
+    appendLine(path.join(STATE, "events.jsonl"), { type: "army.custody", at: now, verdict: doc.verdict, verified: after.verified, total: after.total, living: living.length, retired: retired.size });
     return doc;
   } catch (e) {
     const doc = { at: now, verdict: "REVIVAL-FAIL", error: String(e?.message ?? e).slice(0, 160), ms: Date.now() - t0 };
