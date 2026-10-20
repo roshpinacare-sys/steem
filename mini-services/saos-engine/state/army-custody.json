@@ -1,21 +1,36 @@
 {
-  "at": "2026-10-20T09:44:54.288Z",
-  "verdict": "PARTIAL",
+  "at": "2026-10-20T10:26:12.356Z",
+  "verdict": "FLEET-CUSTODY-ALIVE",
   "master": {
     "roles": [],
     "before": "master-verified",
     "law": "chain-judged wif-direct, GEN-2 first"
   },
   "before": {
-    "verified": 10
+    "verified": 0
   },
   "after": {
     "verified": 10,
-    "total": 14
+    "total": 10
+  },
+  "denominator": {
+    "law": "living-fleet (T-80 retirement, chain-judged)",
+    "living": 10,
+    "retired": [
+      "hcsoldier5",
+      "siq",
+      "tov",
+      "wog"
+    ],
+    "retiredCount": 4,
+    "fullRosterVerified": 10,
+    "fullRosterTotal": 14,
+    "provenance": "W19-a THE RESURRECTION (commit b62e1c395): vault internally consistent BUT live chain authorities point elsewhere — the chain is the only judge, the bodies are dead, no key material exists to revive them; owner approved the yield decision 2026-10-20 (IM trace 1a157f3c9973fe45: 'כן מאשר תמשיך ודחוף')"
   },
   "pulled": {
     "extracted": 14,
-    "missing": []
+    "missing": [],
+    "error": null
   },
   "adopted": [
     {
@@ -38,12 +53,20 @@
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
     },
     {
+      "account": "cashmachine",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
+    },
+    {
       "account": "haran",
       "verdict": "ALREADY-VERIFIED"
     },
     {
       "account": "haran",
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
+    },
+    {
+      "account": "haran",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
     },
     {
       "account": "israelnews",
@@ -54,6 +77,10 @@
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
     },
     {
+      "account": "israelnews",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
+    },
+    {
       "account": "lsa",
       "verdict": "ALREADY-VERIFIED"
     },
@@ -62,20 +89,36 @@
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
     },
     {
+      "account": "lsa",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
+    },
+    {
       "account": "macrame",
       "verdict": "ALREADY-VERIFIED"
     },
     {
       "account": "macrame",
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
+    },
+    {
+      "account": "macrame",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
     },
     {
       "account": "siq",
       "verdict": "GEN-2-REFUSED:posting-authority-mismatch"
     },
     {
+      "account": "siq",
+      "verdict": "GEN-1-REFUSED:posting-authority-mismatch"
+    },
+    {
       "account": "tov",
       "verdict": "GEN-2-REFUSED:posting-authority-mismatch"
+    },
+    {
+      "account": "tov",
+      "verdict": "GEN-1-REFUSED:posting-authority-mismatch"
     },
     {
       "account": "wic",
@@ -84,12 +127,20 @@
     {
       "account": "wic",
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
+    },
+    {
+      "account": "wic",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
     },
     {
       "account": "wog",
       "verdict": "GEN-2-REFUSED:posting-authority-mismatch"
     },
     {
+      "account": "wog",
+      "verdict": "GEN-1-REFUSED:posting-authority-mismatch"
+    },
+    {
       "account": "woq",
       "verdict": "ALREADY-VERIFIED"
     },
@@ -98,26 +149,42 @@
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
     },
     {
+      "account": "woq",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
+    },
+    {
       "account": "hcsoldier4",
       "verdict": "ALREADY-VERIFIED"
     },
     {
       "account": "hcsoldier4",
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
+    },
+    {
+      "account": "hcsoldier4",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
     },
     {
       "account": "hcsoldier5",
       "verdict": "GEN-2-REFUSED:posting-authority-mismatch"
     },
     {
+      "account": "hcsoldier5",
+      "verdict": "GEN-1-REFUSED:posting-authority-mismatch"
+    },
+    {
       "account": "hcsoldier6",
       "verdict": "ALREADY-VERIFIED"
     },
     {
       "account": "hcsoldier6",
       "verdict": "ACTIVE-GEN-2-REFUSED:active-authority-mismatch"
+    },
+    {
+      "account": "hcsoldier6",
+      "verdict": "ACTIVE-GEN-1-REFUSED:active-authority-mismatch"
     }
   ],
   "law": "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
-  "ms": 27628
+  "ms": 63284
 }
