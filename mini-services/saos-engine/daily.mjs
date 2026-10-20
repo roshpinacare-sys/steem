@@ -56,6 +56,7 @@ import { syncCommunityMembership, readCommunityState } from "./community.mjs";
 import { runBus } from "./bus.mjs";
 import { runRcTank, rcTankState } from "./rctank.mjs";
 import { runPayouts, payoutsState } from "./payouts.mjs";
+import { runIncome, incomeState } from "./income.mjs"; /* T-553: the orphaned instrument gets its caller — runIncome had ZERO callers since 10-02 */
 import { runSoldierClaims } from "./soldier-claims.mjs";
 import { runWeave, weaveState } from "./weave.mjs";
 import { measureFleetMatrix, readFleetMatrix } from "./fleet-matrix.mjs"; /* W12: the activation board */
@@ -1150,6 +1151,23 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     }
     const out = await runPayouts({ now, account: ACCOUNT });
     return { verdict: out.verdict, day: out.day, pendingVests: out.pending?.vests ?? null, daysRemaining: out.payout?.daysRemaining ?? null, rollupConfidence: out.rollup?.confidence ?? null, firstVoteDay: out.scan?.firstVoteDay ?? null };
+  });
+
+  /* T-553 · INCOME STEP WIRING: runIncome (T-29) was an orphaned instrument —
+   * exported, correct, and called by NOBODY; income.json froze at 2026-10-02
+   * for 18 days while the wall rendered it as if alive. Same discipline as the
+   * payouts step: day-gated (one chain scan/day), read-only chain truth
+   * (get_accounts + dynamic props + account_history), zero credentials,
+   * zero signing. The income classes never merge (claims / trading / pending
+   * face / estimate — each labeled). */
+  report.steps.income = await stepWrap("income", async () => {
+    const today = now.slice(0, 10);
+    const cached = incomeState();
+    if (cached?.day === today && cached?.verdict) {
+      return { verdict: cached.verdict, day: today, usdPerDay7d: cached.income?.usdPerDay7d ?? null, totalRealizedUsd: cached.income?.totalRealizedUsd ?? null, cached: true };
+    }
+    const out = await runIncome({ now, account: ACCOUNT });
+    return { verdict: out.verdict, day: out.day ?? today, usdPerDay7d: out.income?.usdPerDay7d ?? null, totalRealizedUsd: out.income?.totalRealizedUsd ?? null, cached: false };
   });
 
   /* R282 · SOLDIER CLAIMS: the income-capture rail — chain-truth pending

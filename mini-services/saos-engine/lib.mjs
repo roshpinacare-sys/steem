@@ -569,6 +569,88 @@ export function countDayVotesFromHistory(rows, voter, day) {
   return n;
 }
 
+/* T-553 RESTORED: countPostsFromHistory vanished from lib.mjs during the
+ * 016a7311c alive-wins soft-union (GEN-3 re-seal) while income.mjs AND
+ * publish.mjs kept importing it — every runIncome call would throw
+ * "Export named 'countPostsFromHistory' not found", and with ZERO callers
+ * nobody noticed for 18 days (income.json frozen at 2026-10-02). Rebuilt
+ * from the T-29 contract ("account-level publish truth: non-reply comment
+ * ops") and the row idiom of the sibling count* functions. */
+export function countPostsFromHistory(rows, day) {
+  if (!Array.isArray(rows)) return null;
+  const d = String(day ?? "").slice(0, 10);
+  if (d.length !== 10) return null;
+  let n = 0;
+  for (const row of rows) {
+    const e = Array.isArray(row) ? row[1] : row;
+    if (!e || typeof e !== "object") continue;
+    const ts = typeof e.timestamp === "string" ? e.timestamp : null;
+    if (!ts || !ts.startsWith(d)) continue;
+    const op = Array.isArray(e.op) ? e.op : null;
+    const type = op ? op[0] : e.type;
+    const val = op ? op[1] : e.value;
+    if (type !== "comment" || !val || typeof val !== "object") continue;
+    if (!val.parent_author) n++; /* root post — replies carry a parent author */
+  }
+  return n;
+}
+
+/* T-553 RESTORED: incomeRollup — vanished from lib.mjs in the same
+ * alive-wins soft-union as countPostsFromHistory. Rebuilt from its single
+ * call site (income.mjs runIncome) and the 2026-10-02 income.json instance
+ * it last produced. Laws carried verbatim from the T-29 contract:
+ *  · income classes NEVER merge: claims measured / trading realized /
+ *    pending-author FACE value / estimates — every number wears its class
+ *  · usdPerDay is computed only over FULL days of all sources (T-25
+ *    full-day law) — a partial window is never divided, it returns null
+ *  · zero is zero — a measured 0 is MEASURED, not waiting */
+export function incomeRollup({
+  claims = null, trading = null, pendingAuthorSbd = null,
+  unclaimed = null, steemUsd = null, sbdUsd = null, vestsPerSteem = null,
+} = {}) {
+  const r6 = (x) => (Number.isFinite(x) ? Math.round(x * 1e6) / 1e6 : null);
+  const usdFromVests = (vests) =>
+    vestsPerSteem && vestsPerSteem > 0 && steemUsd != null ? (vests / vestsPerSteem) * steemUsd : null;
+
+  /* claims class — measured from chain reward-claim ops */
+  const cl = claims ?? { steem: 0, sbd: 0, vests: 0, windowDays: null };
+  const clSteem = Number(cl.steem) || 0;
+  const clSbd = Number(cl.sbd) || 0;
+  const clVests = Number(cl.vests) || 0;
+  const claimsUsdParts = [clSteem * (steemUsd ?? 0), clSbd * (sbdUsd ?? 0), usdFromVests(clVests)];
+  const claimsUsd = claimsUsdParts.every((p) => p != null) ? r6(claimsUsdParts.reduce((a, b) => a + b, 0)) : (clSteem + clSbd + clVests === 0 ? 0 : null);
+  const claimsHasActivity = clSteem + clSbd + clVests > 0;
+  const claimsWindow = claimsHasActivity ? (cl.windowDays ?? null) : 7; /* zero claims → the 7d scan window is trivially full */
+
+  /* trading class — realized only (proceeds stay in the observe step) */
+  const tr = trading ?? { realizedSbd: 0, proceedsSbd: 0, windowDays: null };
+  const realizedSbd = Number(tr.realizedSbd) || 0;
+  const proceedsSbd = Number(tr.proceedsSbd) || 0;
+  const tradingUsd = sbdUsd != null ? r6(realizedSbd * sbdUsd) : (realizedSbd === 0 ? 0 : null);
+  const tradingHasActivity = realizedSbd !== 0 || proceedsSbd !== 0;
+  const tradingWindow = tradingHasActivity ? (tr.windowDays ?? null) : 7;
+
+  /* pending-author class — FACE value until cashout, never counted as realized */
+  const paSbd = pendingAuthorSbd != null ? Number(pendingAuthorSbd) : null;
+  const paUsdFace = paSbd != null && sbdUsd != null ? r6(paSbd * sbdUsd) : null;
+
+  /* the full-day law: every ACTIVE source must carry a full day window */
+  const windows = [claimsWindow, tradingWindow].filter((w) => w != null);
+  const windowDaysFull = windows.length ? Math.min(...windows) : null;
+  const totalRealizedUsd = claimsUsd != null && tradingUsd != null ? r6(claimsUsd + tradingUsd) : null;
+  const usdPerDay7d = windowDaysFull != null && windowDaysFull >= 1 && totalRealizedUsd != null ? r6(totalRealizedUsd / windowDaysFull) : null;
+
+  return {
+    usdPerDay7d,
+    windowDaysFull: windowDaysFull != null ? Math.round(windowDaysFull * 100) / 100 : null,
+    claims: { steem: clSteem, sbd: clSbd, vests: clVests, windowDays: cl.windowDays ?? null, usd: claimsUsd },
+    trading: { realizedSbd, proceedsSbd, windowDays: tr.windowDays ?? null, usd: tradingUsd },
+    pendingAuthor: { sbd: paSbd, usdFace: paUsdFace, note: "face-value עד ה-cashout — לא מזומן" },
+    unclaimed: unclaimed ?? { vests: 0, sbd: 0, steem: 0 },
+    totalRealizedUsd,
+  };
+}
+
 /* cycle-run marker classification — the sovereign polls the ENGINE's own
  * marker instead of holding an HTTP wait that any slow-but-healthy cycle
  * outlives. Pure. */
