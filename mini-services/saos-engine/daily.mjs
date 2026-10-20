@@ -846,7 +846,20 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
     if (!st.deployed) deploy = await deploySoldiers();
     const stNow = deploy?.ok ? soldiersState() : st;
     const live = (stNow.deployed ? stNow.accounts : []).filter((r) => custodyOf(r.name) === "verified");
-    if (!live.length) {
+    /* W23 · FLEET-WIDE GRID (owner trace 1a15937c02271931: "מסחר גריד בסטימיט
+     * של כל החשבונות … יעבדו כחברה משותפת"): every GRID-ACTIVE body on the
+     * freshest measured board joins the grid pass — computed BEFORE the
+     * legacy early-return (the measured bug: the keyless legacy roster
+     * blocked the whole verified fleet from ever quoting). The master is
+     * excluded (its hyper-grid IS its ladder); the custody fast-gate inside
+     * runSoldierGrids freezes keyless names per-body (zero reads, one row). */
+    const fmBoard = readFleetMatrix();
+    const legacyNames = new Set((stNow.deployed ? stNow.accounts : []).map((s) => s.name));
+    const fleetRoster = (fmBoard?.rows ?? [])
+      .filter((r) => r.name && r.name !== ACCOUNT && r.class === "GRID-ACTIVE" && !legacyNames.has(r.name))
+      .map((r) => r.name);
+    if (fleetRoster.length) appendLine(path.join(STATE, "events.jsonl"), { type: "soldiers.fleet-roster", at: now, count: fleetRoster.length, roster: fleetRoster });
+    if (!live.length && !fleetRoster.length) {
       return {
         verdict: deploy && !deploy.ok ? `DEPLOY-${deploy.verdict}` : "NO-CUSTODY-FROZEN",
         deploy: deploy ? { verdict: deploy.verdict, error: deploy.error ?? null } : null,
@@ -880,18 +893,6 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
      * anchor passed through so their small ladders sit AT the market front
      * (never below the witness feed, never crossing the master's ladder). */
     const pegOffer = readJson(path.join(STATE, "offer.json"), null);
-    /* W23 · FLEET-WIDE GRID (owner trace 1a15937c02271931: "מסחר גריד בסטימיט
-     * של כל החשבונות … יעבדו כחברה משותפת"): every GRID-ACTIVE body on the
-     * freshest measured board joins the grid pass — the custody fast-gate
-     * inside runSoldierGrids freezes keyless names per-body (zero reads),
-     * verified bodies quote from their own balances. The master is excluded
-     * (its hyper-grid IS its ladder); legacy roster names dedupe first. */
-    const fmBoard = readFleetMatrix();
-    const legacyNames = new Set((stNow.deployed ? stNow.accounts : []).map((s) => s.name));
-    const fleetRoster = (fmBoard?.rows ?? [])
-      .filter((r) => r.name && r.name !== ACCOUNT && r.class === "GRID-ACTIVE" && !legacyNames.has(r.name))
-      .map((r) => r.name);
-    if (fleetRoster.length) appendLine(path.join(STATE, "events.jsonl"), { type: "soldiers.fleet-roster", at: now, count: fleetRoster.length, roster: fleetRoster });
     const grids = await runSoldierGrids({
       parity, spreadBps: intelOut?.spreadBpsRec ?? 0, now,
       bestBid: pegOffer?.book?.bestBid ?? null, bestAsk: pegOffer?.book?.bestAsk ?? null,

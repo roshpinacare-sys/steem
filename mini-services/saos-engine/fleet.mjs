@@ -102,6 +102,11 @@ export function fleetState({ now = new Date().toISOString(), credential = null, 
   const keeperLock = readJson(path.join(DIR, "..", "dev-keeper", "state", "keeper.lock"), null);
   const keeperAlive = !!(keeperLock?.pid && pidAlive(keeperLock.pid) && keeperLock.at && nowMs - Number(keeperLock.at) < 5 * 60_000);
   const keeperAt = keeperAlive ? new Date(Number(keeperLock.at)).toISOString() : null;
+  /* W23 fix (measured 12:22: ReferenceError wdAt crashed the whole /status
+   * registry when the guardian heartbeat was stale): the legacy sovereign.json
+   * pulse timestamp is the honest fallback input — define it, never reference
+   * an undefined name. */
+  const wdAt = sov?.watchdog?.lastCheckAt ?? null;
   agents.push(mk("watchdog", "engine guardian — pulse + self-heal (dev-keeper R291, supersedes the pre-reset sovereign pulse)",
     keeperAlive ? { status: "ALIVE", ageMin: Math.max(0, Math.round((nowMs - Number(keeperLock.at)) / 60000)), blockedBy: null }
       : classifyAgent({ lastRunAt: wdAt, nowMs, freshnessMin: FRESH.watchdog }),
