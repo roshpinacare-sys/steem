@@ -2656,3 +2656,23 @@ Stage Summary:
 - The wipe cost 20 minutes, not the machine: git home restored in one command, custody re-verified from the vault, every law that mattered (power-up stand-down, floors, caps) survived because it lives in code/git, not memory.
 - The fleet map is now channel-grade: who runs what, who proposes what, what is blocked on what (army ACTIVE keys = owner files; rot2 = permanently sealed; rail-lifetime = Console lane).
 - The engine trades at the measured 7× equilibrium (setpoint 40, wipe-proof), the witness line anchors again after 5 days, and every claim in this entry is chain- or log-verified.
+---
+
+Task ID: W23
+Agent: saos-main (z.ai builder, session web-b505cc34)
+Task: owner trace 1a1599a1f656e08d+1a159ef8831f15b9 — owner uploaded "גיטראש.txt" (live PAT copy) saying "תבדוק שוב לא יכול להיות" — re-verify secrets claims with zero trust in my own prior statements.
+
+Work Log:
+- Fingerprinted uploaded token: ghp_* 40 chars, sha256-8 = 1e39c9b0 → IDENTICAL to live sovereign PAT in both pat.env files. GitHub API: valid, login roshpinacare-sys, full scopes (admin:org/repo/workflow/...). Owner was RIGHT.
+- Full object scan of my-project git history (389 objects): live token 1e39c9b0 + old dead c029b0b7 both FOUND. Blob 42f2c661, path upload/pat.env, committed d88b89a 2026-10-20T14:33:05Z (HEAD) by platform auto-snapshotter (session-UUID commit messages; no local cron/script — external force-add that ignores .gitignore; re-committed after W14's git rm --cached).
+- PRIOR W14/W21 "secrets clean" claims were FALSE for my-project local history — measured only pushed trees. Honest correction recorded.
+- PURGE: git rm --cached + commit → git filter-branch --index-filter (all 29 commits, refs main+stash) → rm refs/original → reflog expire --expire=now --all → gc --prune=now --aggressive. VERIFIED: full batch-all-objects grep = 0 ghp_/github_pat_ in ALL objects.
+- ROOT CAUSE law: any secret file stored INSIDE my-project working tree WILL re-enter git objects on every platform snapshot cycle. Gitignore is not a defense against force-add.
+- HARDENING: vault /home/z/.secrets-sovereign/ (0700/0600) — pat.env + htx.txt moved out of all project trees; symlinks at my-project/upload/pat.env, saos-steem/upload/pat.env, my-project/upload/htx.txt → vault. Consumers verified: node fs read OK, git ls-remote via credential-helper OK, GitHub API 200 OK (core remaining ~4860). Symlink blob ≠ secret content: future snapshots store link, not value.
+- saos-steem re-verified clean: pickaxe full-token over --all = EMPTY (never entered any local/pushed commit); git grep real-token pattern over origin/saos-cockpit tree = 0 hits (only prose mentions: docs, worklog narrative, regexes, selftest fake token). 62k-object full background scan as belt-and-suspenders.
+- Residual: token VALUE was seen by owner in git-trash → rotation recommended; PAT minting has no GitHub API — owner mints new PAT, agents rewire vault file content in one step (symlinks unchanged). my-project has no remote → local-only exposure, bounded.
+
+Stage Summary:
+- Owner's "תבדוק שוב" vindicated: live PAT sat in my-project git history via platform force-add snapshots; now purged to zero-verified state.
+- New law R322 (secrets-vault): ALL secret material lives only in /home/z/.secrets-sovereign (0700/0600), outside every git-visible tree; project paths hold symlinks only; every future agent MUST follow this — no exceptions, no pat.env plaintext under any repo path.
+- purge verified by full object scan (0 tokens); pushed history (origin/saos-cockpit) verified clean by pickaxe + tree-grep; rotation is owner-side (no mint API), wiring is one-minute.

@@ -1,110 +1,143 @@
 {
   "verdict": "OFFER-BLOCKED",
-  "parityBps": -47,
+  "parityBps": 0,
   "blocker": [
     "ask-budget-below-min-level"
   ],
   "plan": {
     "asks": [],
-    "bids": [],
+    "bids": [
+      {
+        "side": "bid",
+        "amountSbd": 4.374741,
+        "unit": 0.103873,
+        "at": "2026-10-20T15:32:14.427Z",
+        "tranche": "value"
+      },
+      {
+        "side": "bid",
+        "amountSbd": 4.374741,
+        "unit": 0.103759,
+        "at": "2026-10-20T15:32:14.427Z",
+        "tranche": "value"
+      },
+      {
+        "side": "bid",
+        "amountSbd": 4.374741,
+        "unit": 0.103645,
+        "at": "2026-10-20T15:32:14.427Z",
+        "tranche": "value"
+      },
+      {
+        "side": "bid",
+        "amountSbd": 3.715177,
+        "unit": 0.103531,
+        "at": "2026-10-20T15:32:14.427Z",
+        "tranche": "value"
+      }
+    ],
     "flowAsks": [],
     "flowBids": [
       {
         "side": "bid",
-        "amountSbd": 0.5,
-        "unit": 0.103369,
-        "steemOut3": 4.837,
-        "at": "2026-10-20T15:10:03.816Z",
+        "amountSbd": 1.46115,
+        "unit": 0.103727,
+        "steemOut3": 14.085,
+        "at": "2026-10-20T15:32:14.427Z",
         "tranche": "flow"
       },
       {
         "side": "bid",
-        "amountSbd": 0.5,
-        "unit": 0.103241,
-        "steemOut3": 4.843,
-        "at": "2026-10-20T15:10:03.816Z",
+        "amountSbd": 1.46115,
+        "unit": 0.103572,
+        "steemOut3": 14.106,
+        "at": "2026-10-20T15:32:14.427Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "bid",
+        "amountSbd": 1.46115,
+        "unit": 0.103418,
+        "steemOut3": 14.127,
+        "at": "2026-10-20T15:32:14.427Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "bid",
+        "amountSbd": 1.46115,
+        "unit": 0.103265,
+        "steemOut3": 14.148,
+        "at": "2026-10-20T15:32:14.427Z",
         "tranche": "flow"
       }
     ]
   },
   "flow": {
-    "bestAsk": 0.107347,
-    "bestBid": 0.106293,
+    "bestAsk": 0.10576,
+    "bestBid": 0.103724,
     "spacingBps": 15,
     "levels": 4,
     "askBudgetSteem": 0.09852,
-    "bidBudgetSbd": 1.00452,
+    "bidBudgetSbd": 5.8446,
     "feedAnchor": 0.104082,
     "flowAsks": 0,
-    "flowBids": 2
+    "flowBids": 4
   },
   "book": {
-    "bestAsk": 0.10734732824427481,
-    "bestBid": 0.10629251700680271,
-    "askDepthSteem": 58.412,
-    "bidDepthSbd": 1980.486,
-    "at": "2026-10-20T15:10:03.816Z"
+    "bestAsk": 0.10576,
+    "bestBid": 0.10372368011617052,
+    "askDepthSteem": 123.715,
+    "bidDepthSbd": 1936.839,
+    "at": "2026-10-20T15:32:14.427Z"
   },
   "market": {
-    "at": "2026-10-20T14:48:19.525Z",
+    "at": "2026-10-20T15:32:22.054Z",
     "windowHours": 24,
     "class": "measured",
     "trades": 1000,
     "tradesPerDay": 1000,
-    "volSteem": 20024.869,
+    "volSteem": 20061.971,
     "priceMin": 0.096386,
     "priceMax": 0.102041,
     "rangeBps": 587,
     "sizeP50": 1.596,
     "sizeP90": 65.353,
     "book": {
-      "bestAsk": 0.10734732824427481,
-      "bestBid": 0.10628247520075579,
-      "spreadBps": 100.19,
-      "askDepthSteem": 58.412,
-      "bidDepthSbd": 1956.113
+      "bestAsk": 0.10576,
+      "bestBid": 0.10372368011617052,
+      "spreadBps": 196.32,
+      "askDepthSteem": 123.715,
+      "bidDepthSbd": 1936.839
     }
   },
   "marks": {
-    "paritySbdPerSteem": 0.103595,
-    "source": "coingecko",
-    "lowConfidence": false,
+    "paritySbdPerSteem": 0.104082,
+    "source": "internal-feed-fallback+derived-sbd",
+    "lowConfidence": true,
     "internalFeed": 0.104082,
-    "dragK": 1.0495,
-    "floor": 0.103803,
-    "ceiling": 0.103387,
-    "spreadBpsFed": 99
+    "dragK": 1.097,
+    "floor": 0.104291,
+    "ceiling": 0.103873,
+    "spreadBpsFed": 194
   },
   "skew": {
-    "skew": -0.294302,
-    "askMult": 0.705698,
-    "bidMult": 1.294302,
+    "skew": -0.29896,
+    "askMult": 0.70104,
+    "bidMult": 1.29896,
     "reason": "hummingbot-inventory-skew"
   },
   "stale": {
-    "count": 11,
-    "orderids": [
-      1792507732,
-      1792507733,
-      1792507734,
-      1792507735,
-      1792507949,
-      1792507950,
-      1792507951,
-      1792507952,
-      2100002371,
-      2100002372,
-      2100002373
-    ]
+    "count": 0,
+    "orderids": []
   },
   "liquidity": {
     "deployedAsks": 0,
-    "deployedBids": 72.043,
+    "deployedBids": 31.709,
     "askBudget": 0.493,
-    "bidBudget": 0,
-    "bidBudgetUncapped": 0,
-    "buyBookCapSbd": 4.1855,
+    "bidBudget": 16.839,
+    "bidBudgetUncapped": 16.839,
+    "buyBookCapSbd": 24.3525,
     "deployCap": 0.6
   },
-  "publishedAt": "2026-10-20T15:10:03.816Z"
+  "publishedAt": "2026-10-20T15:32:14.427Z"
 }
