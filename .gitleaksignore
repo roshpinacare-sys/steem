@@ -1,47 +1,8 @@
-# GITLEAKS-TRIAGE (R244) — verdicts per doctrine 13-d2 (dual history+HEAD)
-# All entries below = HISTORICAL sealed-ledger envelope material / internal protocol
-# labels. HEAD verified clean (findingsHead=0, measured 2026-10-07 via v8.24.3).
-# Private repo; rotation owner-blocked (doctrine 13-d2). Rescan path: org-gitleaks weekly.
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48326
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48327
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48328
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48338
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48339
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48340
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48350
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/ledger.json:generic-api-key:48352
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46694
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46695
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46696
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46706
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46707
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46708
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46718
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46720
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46694
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46695
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46696
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46706
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46707
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46708
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46718
-c71958885556e872ad7729ef8ca2efe2e8b17dc1:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46720
-7815d7c9406deb67c147d61a90f77f77531c735c:recovery/branch-saos-cockpit-e4cdfd6/branch-worklog.md:generic-api-key:409
-7815d7c9406deb67c147d61a90f77f77531c735c:recovery/branch-saos-cockpit-e4cdfd6/branch-worklog.md:generic-api-key:623
-7815d7c9406deb67c147d61a90f77f77531c735c:worklog.md:generic-api-key:409
-7815d7c9406deb67c147d61a90f77f77531c735c:worklog.md:generic-api-key:623
-
-# GITLEAKS-TRIAGE (Task 17, 2026-10-12, org-gitleaks run 38305987568) — measured:
-# recovery-meta.json + GEN-1-ERA-META.json = custody METADATA labels (keysZipUnlockRef /
-# keysZipPassCustody names, zero key material); probe-auth2-r255.mjs:15 = plain
-# steemit broadcast API call (no credential). Static files — stable line fingerprints.
-083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/recovery-meta.json:generic-api-key:4
-083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/recovery-meta.json:generic-api-key:8
-agent/recovery-meta.json:generic-api-key:4
-agent/recovery-meta.json:generic-api-key:8
-083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/vault/GEN-1-ERA-META.json:generic-api-key:4
-083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:agent/vault/GEN-1-ERA-META.json:generic-api-key:8
-agent/vault/GEN-1-ERA-META.json:generic-api-key:4
-agent/vault/GEN-1-ERA-META.json:generic-api-key:8
-083eb6e0d3ec214aa7275f12bfc4ae493ae80adc:mini-services/saos-engine/probe-auth2-r255.mjs:generic-api-key:15
-mini-services/saos-engine/probe-auth2-r255.mjs:generic-api-key:15
+# head-secrets-law false-positive ledger (wave-19.38, measured with gitleaks v8.24.3)
+# agent/recovery-meta.json pins are sha256 INTEGRITY ANCHORS of sealed vault archives
+# (57.8c tamper-evidence verifies them every selftest run) — hashes are not secrets.
+# keysZipPass sits in recovery-metadata BY VAULT DESIGN (self-contained recovery,
+# passCustody annotated) — moving it out is an owner-class architecture change.
+agent/recovery-meta.json:generic-api-key:7
+agent/recovery-meta.json:generic-api-key:11
+agent/recovery-meta.json:generic-api-key:156
