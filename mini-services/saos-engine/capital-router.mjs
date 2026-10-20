@@ -39,6 +39,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { rpcCall } from "./measure.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const stateDir = () => process.env.SAOS_STATE_DIR || path.join(DIR, "state");
@@ -135,7 +136,7 @@ export function sbdRoutingRule({ premiumPct, bookBid, feedSteemSbd, inventorySbd
 }
 
 /* ── pure: action ranking (the routing matrix) ──────────────────── */
-export function rankActions({ deep, custodyOk = true, vpFloorPct = 60, headVpPct = null, armyPolicy = { maxPerDay: 12, avgWeightPct: 60 } } = {}) {
+export function rankActions({ deep, custodyOk = true, vpFloorPct = 60, headVpPct = null, armyPolicy = { maxPerDay: 12, avgWeightPct: 60 }, liveQueueSp = null } = {}) {
   const actions = [];
   const add = (id, klass, note, gainSpPerDay = 0, evidence = null) => actions.push({ id, class: klass, note: String(note).slice(0, 240), expectedSpPerDay: r6(gainSpPerDay), evidence });
   const hc = deep?.accounts?.headcorner ?? {};
@@ -150,9 +151,11 @@ export function rankActions({ deep, custodyOk = true, vpFloorPct = 60, headVpPct
   const expiring = (deep?.headcornerDelegations?.expiring ?? []).reduce((s, e) => s + finite(e.vestsSp ?? e.vests) / 1612, 0);
   const delegOut = finite(hc.delegatedOutSp);
   const activeRows = deep?.headcornerDelegations?.outFlows?.reduce((s, f) => s + finite(f.vests), 0) ?? 0;
-  const expiringSp = delegOut - activeRows / 1612.65;
+  /* T-555: chain-live queue when the detector ran — the deep-probe derivation
+   * only stands in when the live probe failed, and then says so by name. */
+  const expiringSp = liveQueueSp != null ? finite(liveQueueSp) : delegOut - activeRows / 1612.65;
   if (expiringSp > 1) {
-    add("await-landing", "schedule", `${r2(expiringSp)} SP measured in the expiring queue (recalled delegation wave) — detector armed; retune rails the day it lands`, 0, { delegOut, activeRowsVests: r2(activeRows) });
+    add("await-landing", "schedule", `${r2(expiringSp)} SP in the expiring queue${liveQueueSp != null ? " (chain-live: delegated field − active rows, measured this run)" : " (deep-probe derivation — chain probe unavailable, honestly labeled)"} — detector armed; retune rails the day it lands`, 0, { delegOut, activeRowsVests: r2(activeRows), source: liveQueueSp != null ? "chain-live" : "deep-probe-cached" });
   }
   /* external shell leak */
   const flows = deep?.headcornerDelegations?.outFlows ?? [];
@@ -191,8 +194,71 @@ export function rankActions({ deep, custodyOk = true, vpFloorPct = 60, headVpPct
   return { actions, sbdRoute, armyBudget: budget };
 }
 
+/* ── live: the landing detector — read from the chain, not from a cached probe ──
+ * T-555 law-finding: the queue derived from the static deep-probe snapshot
+ * (yield-deep-R292.json) rendered a FOSSIL — 767.69 SP claimed in the queue
+ * while the chain truth (delegated field − live active rows) was 407.12 SP,
+ * because part of the recall wave was re-delegated between snapshots
+ * (6 rows × +59.96 SP measured 10:41→12:25). The router law already said
+ * "landing is detected not assumed" — this function is the detection made
+ * structural: public keyless reads, every routing run, no cache in the path.
+ * Also captures the scheduled power-down (next_vesting_withdrawal) as RAW
+ * chain fields — start time, size, progress — never interpreted away.
+ * Fail-closed: every read failure returns { ok:false } — the caller labels
+ * the cached derivation honestly instead of silently trusting a fossil. */
+export async function probeLanding({ account = "headcorner", rowsLimit = 1000 } = {}) {
+  const acc = await rpcCall("condenser_api.get_accounts", [[account]], 9000);
+  if (!acc.ok || !Array.isArray(acc.result) || !acc.result[0]) return { ok: false, error: "account-read-failed" };
+  const a = acc.result[0];
+  const gp = await rpcCall("condenser_api.get_dynamic_global_properties", [], 9000);
+  if (!gp.ok || !gp.result) return { ok: false, error: "props-read-failed" };
+  const vests = (x) => parseFloat(String(x ?? "0").split(" ")[0].replace(/,/g, "")) || 0;
+  const tvsh = vests(gp.result.total_vesting_shares);
+  const tvfund = vests(gp.result.total_vesting_fund_steem);
+  const vestsPerSp = tvsh > 0 ? tvsh / tvfund : 0; /* VESTS per 1 SP */
+  const toSp = (v) => (vestsPerSp > 0 ? v / vestsPerSp : 0);
+  const delegFieldVests = vests(a.delegated_vesting_shares);
+  /* active outgoing rows — paginated; the deep-probe snapshot missed rows
+   * grown after its stamp, which is exactly how the fossil was born */
+  const rows = [];
+  let from = "";
+  const page = Math.min(Math.max(1, Math.floor(finite(rowsLimit))), 1000);
+  for (let p = 0; p < 5; p++) {
+    const d = await rpcCall("condenser_api.get_vesting_delegations", [account, from, page], 9000);
+    if (!d.ok || !Array.isArray(d.result)) break;
+    rows.push(...d.result);
+    if (d.result.length < page) break;
+    from = String(d.result[d.result.length - 1]?.delegatee ?? "");
+    if (!from) break;
+  }
+  const activeVests = rows.reduce((s, r) => s + vests(r.vesting_shares), 0);
+  const queueVests = Math.max(0, delegFieldVests - activeVests);
+  const nwRaw = String(a.next_vesting_withdrawal ?? "");
+  const nw = nwRaw && !/^(1969|1970)/.test(nwRaw) ? nwRaw : null;
+  return {
+    ok: true,
+    at: new Date().toISOString(),
+    source: "chain-live",
+    account,
+    vestsPerSp: r6(vestsPerSp),
+    delegatedFieldSp: r2(toSp(delegFieldVests)),
+    activeRowsSp: r2(toSp(activeVests)),
+    activeRowsCount: rows.length,
+    expiringQueueSp: r2(toSp(queueVests)),
+    powerDown: nw ? {
+      scheduled: true,
+      nextWithdrawal: nw,
+      toWithdrawVests: r2(finite(a.to_withdraw)),
+      toWithdrawSp: r2(toSp(finite(a.to_withdraw))),
+      withdrawnVests: r2(finite(a.withdrawn)),
+      withdrawRateVests: String(a.vesting_withdraw_rate ?? ""),
+      note: "raw chain fields — a vesting-withdraw schedule is active: start, size, progress; per-week semantics kept raw, never interpreted away",
+    } : { scheduled: false, note: "no vesting-withdraw schedule on the account" },
+  };
+}
+
 /* ── live: run the router from the deep probe state ─────────────── */
-export function computeRouterReport({ now = new Date().toISOString(), custodyOk = true } = {}) {
+export function computeRouterReport({ now = new Date().toISOString(), custodyOk = true, liveLanding = null } = {}) {
   const deep = readJson(path.join(stateDir(), "yield-deep-R292.json"), null);
   if (!deep) return { verdict: "NO-PROBE", note: "yield-deep-R292.json missing — probe first", at: now };
   const hc = deep.accounts?.headcorner ?? {};
@@ -206,18 +272,42 @@ export function computeRouterReport({ now = new Date().toISOString(), custodyOk 
     accounts: armyAccounts.map((a) => ({ ...a, maxPerDay: sustainableVoteBudget({ maxPerDay: 12, avgWeightPct: 60 }) })),
     vestsPerSp, vpPct: 90, weightPct: 60, spPerGrs: CONSTANTS.curveEarly,
   });
+  /* T-555 · the landing queue: chain-live when the probe succeeded — the
+   * deep-probe derivation is kept ONLY as the drift comparison, so a fossil
+   * can never masquerade as a measurement again. Fail-isolated: no probe →
+   * cached derivation with an honest label. */
+  const deepQueueSp = Math.max(0, finite(hc.delegatedOutSp) - ((deep.headcornerDelegations?.outFlows ?? []).reduce((s, f) => s + finite(f.vests), 0)) / 1612.65);
+  const landing = liveLanding && liveLanding.ok
+    ? {
+        source: "chain-live",
+        queueSp: liveLanding.expiringQueueSp,
+        delegatedFieldSp: liveLanding.delegatedFieldSp,
+        activeRowsSp: liveLanding.activeRowsSp,
+        activeRowsCount: liveLanding.activeRowsCount,
+        vestsPerSp: liveLanding.vestsPerSp,
+        deepProbeQueueSp: r2(deepQueueSp),
+        driftVsDeepProbeSp: r2(liveLanding.expiringQueueSp - deepQueueSp),
+        at: liveLanding.at,
+      }
+    : {
+        source: "deep-probe-cached",
+        queueSp: r2(deepQueueSp),
+        note: "live chain probe unavailable this run — the deep-probe derivation stands, honestly labeled (a cached derivation is a hypothesis, not a detection)",
+      };
   const ladder = yieldLadder({
     headEffectiveSp: finite(hc.effectiveSp),
     headAprPct: 17.7,
     tagBoostPct: 40,
     armyDailySp,
     steemUsd: finite(deep.chain?.steemSbdFeed) || 0.104095,
-    pendingLandingSp: Math.max(0, finite(hc.delegatedOutSp) - ((deep.headcornerDelegations?.outFlows ?? []).reduce((s, f) => s + finite(f.vests), 0)) / 1612.65),
+    pendingLandingSp: landing.queueSp,
   });
-  const ranked = rankActions({ deep, custodyOk, headVpPct: Number.isFinite(hc.vpPct) ? hc.vpPct : null });
+  const ranked = rankActions({ deep, custodyOk, headVpPct: Number.isFinite(hc.vpPct) ? hc.vpPct : null, liveQueueSp: landing.source === "chain-live" ? landing.queueSp : null });
   const report = {
     at: now, law: ROUTER_LAW, verdict: "ROUTED",
     capital: deep.routing?.capital ?? null,
+    landing,
+    powerDown: liveLanding && liveLanding.ok ? liveLanding.powerDown : null,
     ladder,
     actions: ranked.actions,
     armyBudget: ranked.armyBudget,
