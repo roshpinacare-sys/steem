@@ -880,10 +880,23 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
      * anchor passed through so their small ladders sit AT the market front
      * (never below the witness feed, never crossing the master's ladder). */
     const pegOffer = readJson(path.join(STATE, "offer.json"), null);
+    /* W23 · FLEET-WIDE GRID (owner trace 1a15937c02271931: "מסחר גריד בסטימיט
+     * של כל החשבונות … יעבדו כחברה משותפת"): every GRID-ACTIVE body on the
+     * freshest measured board joins the grid pass — the custody fast-gate
+     * inside runSoldierGrids freezes keyless names per-body (zero reads),
+     * verified bodies quote from their own balances. The master is excluded
+     * (its hyper-grid IS its ladder); legacy roster names dedupe first. */
+    const fmBoard = readFleetMatrix();
+    const legacyNames = new Set((stNow.deployed ? stNow.accounts : []).map((s) => s.name));
+    const fleetRoster = (fmBoard?.rows ?? [])
+      .filter((r) => r.name && r.name !== ACCOUNT && r.class === "GRID-ACTIVE" && !legacyNames.has(r.name))
+      .map((r) => r.name);
+    if (fleetRoster.length) appendLine(path.join(STATE, "events.jsonl"), { type: "soldiers.fleet-roster", at: now, count: fleetRoster.length, roster: fleetRoster });
     const grids = await runSoldierGrids({
       parity, spreadBps: intelOut?.spreadBpsRec ?? 0, now,
       bestBid: pegOffer?.book?.bestBid ?? null, bestAsk: pegOffer?.book?.bestAsk ?? null,
       feedAnchor: obs.ok && obs.feed > 0 ? obs.feed : null,
+      extraRoster: fleetRoster,
     });
     const verdict = deploy && !deploy.ok ? `DEPLOY-${deploy.verdict}` : grids.verdict;
     return {

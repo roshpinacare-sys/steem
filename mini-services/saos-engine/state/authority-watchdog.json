@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-20T11:57:22.245Z",
-  "verdict": "5-FLAGGED",
+  "at": "2026-10-20T12:23:16.084Z",
+  "verdict": "3-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -10,10 +10,18 @@
       "scanned": 30,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 26,
+      "unsigned": 28,
       "invalid": 0,
-      "untrusted": 4,
+      "untrusted": 2,
       "flagged": [
+        {
+          "hash": "e0586789",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Z User",
+          "at": "2026-10-20T11:44:31Z",
+          "subject": "R315: claims-attestor async (non-blocking — lying-by-freezing removed)"
+        },
         {
           "hash": "54f7abc5",
           "gq": "U",
@@ -21,30 +29,6 @@
           "author": "Z User",
           "at": "2026-10-20T11:20:45Z",
           "subject": "R314: claims-attestor organ :3045 — continuous honest ledger measureme"
-        },
-        {
-          "hash": "47811378",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-20T09:43:06Z",
-          "subject": "union: alive-wins soft-union onto origin tip (R313 re-materialization "
-        },
-        {
-          "hash": "3836d90e",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-20T09:42:57Z",
-          "subject": "beat: live-state churn (R313 · organs alive, engine cycling)"
-        },
-        {
-          "hash": "2f8757fd",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-20T09:42:21Z",
-          "subject": "R313 re-materialization: sandbox-death revival measured — organs rebui"
         }
       ]
     },
@@ -138,39 +122,21 @@
   ],
   "flagged": [
     {
+      "hash": "e0586789",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Z User",
+      "at": "2026-10-20T11:44:31Z",
+      "subject": "R315: claims-attestor async (non-blocking — lying-by-freezing removed)",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "54f7abc5",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "Z User",
       "at": "2026-10-20T11:20:45Z",
       "subject": "R314: claims-attestor organ :3045 — continuous honest ledger measureme",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "47811378",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-20T09:43:06Z",
-      "subject": "union: alive-wins soft-union onto origin tip (R313 re-materialization ",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "3836d90e",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-20T09:42:57Z",
-      "subject": "beat: live-state churn (R313 · organs alive, engine cycling)",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "2f8757fd",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-20T09:42:21Z",
-      "subject": "R313 re-materialization: sandbox-death revival measured — organs rebui",
       "repo": "steem.git(LOCAL)"
     },
     {
@@ -188,5 +154,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 5579
+  "ms": 5753
 }

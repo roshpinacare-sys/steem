@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-20T11:56:51.168Z",
-  "verdict": "PARTIAL",
+  "at": "2026-10-20T12:24:28.839Z",
+  "verdict": "FLEET-CUSTODY-ALIVE",
   "master": {
     "roles": [],
     "before": "master-verified",
@@ -11,11 +11,26 @@
   },
   "after": {
     "verified": 10,
-    "total": 14
+    "total": 10
+  },
+  "denominator": {
+    "law": "living-fleet (T-80 retirement, chain-judged)",
+    "living": 10,
+    "retired": [
+      "hcsoldier5",
+      "siq",
+      "tov",
+      "wog"
+    ],
+    "retiredCount": 4,
+    "fullRosterVerified": 10,
+    "fullRosterTotal": 14,
+    "provenance": "W19-a THE RESURRECTION (commit b62e1c395): vault internally consistent BUT live chain authorities point elsewhere — the chain is the only judge, the bodies are dead, no key material exists to revive them; owner approved the yield decision 2026-10-20 (IM trace 1a157f3c9973fe45: 'כן מאשר תמשיך ודחוף')"
   },
   "pulled": {
     "extracted": 14,
-    "missing": []
+    "missing": [],
+    "error": null
   },
   "adopted": [
     {
@@ -119,5 +134,5 @@
     }
   ],
   "law": "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
-  "ms": 27524
+  "ms": 38614
 }
