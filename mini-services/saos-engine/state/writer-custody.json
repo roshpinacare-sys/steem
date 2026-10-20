@@ -1,17 +1,17 @@
 {
-  "at": "2026-10-19T11:27:13.043Z",
+  "at": "2026-10-20T07:41:47.269Z",
   "verdict": "WRITER-IDENTITY-PARTIAL",
   "git": {
-    "verdict": "GIT-CUSTODY-FAIL",
+    "verdict": "GIT-CUSTODY-DEAD",
     "ok": false,
-    "tokenExpiresAt": null,
-    "error": "Command failed: openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -in /home/z/audit/steem/upload/.gitcred.tmp.12212 -out /home/z/audit/steem/upload/.gitcred.tmp."
+    "tokenExpiresAt": "2026-12-12 13:08:14 UTC",
+    "error": null
   },
   "signing": {
-    "verdict": "SIGNING-REVIVE-FAIL",
-    "ok": false,
-    "fingerprint": null,
-    "error": "Command failed: openssl enc -d -aes-256-cbc -pbkdf2 -iter 300000 -in /tmp/.w1key.12212 -pass env:SAOS_VAULT_PASS\nNo environment variable SAOS_VAULT_PASS\nError g"
+    "verdict": "SIGNING-ALREADY-ALIVE",
+    "ok": true,
+    "fingerprint": "301E53150D283869A614D78114F411FEF0FC3424",
+    "error": null
   },
   "law": "the autonomy owns its writer identity: fresh clone → reviveWriterIdentity() → sign+push, zero operator"
 }
