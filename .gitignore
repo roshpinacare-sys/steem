@@ -140,3 +140,7 @@ nvx/
 # agent/vault/*.enc + agent/recovery-meta.json + FACTORY_MASTER derivation; history untouched.
 # Keep it out of accidental re-adds (git add .); recovery material lives in the vault chain, not here.
 nv.zip
+
+# R319 custody law: plaintext secrets never in public git
+# (vault = GEN-3 ciphertext + runtime shard; plaintext custody = private saos-coordination vaults/steem-secrets)
+.secrets/
