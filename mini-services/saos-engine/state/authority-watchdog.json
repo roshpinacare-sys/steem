@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-19T11:27:13.077Z",
-  "verdict": "ALL-SIGNED",
+  "at": "2026-10-20T05:33:30.008Z",
+  "verdict": "5-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -10,10 +10,43 @@
       "scanned": 30,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 30,
+      "unsigned": 26,
       "invalid": 0,
-      "untrusted": 0,
-      "flagged": []
+      "untrusted": 4,
+      "flagged": [
+        {
+          "hash": "f45af54c",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Z User",
+          "at": "2026-10-20T04:58:49Z",
+          "subject": "R310 builds: (1) chain-memo-custody — sovereign credential-renewal rai"
+        },
+        {
+          "hash": "35b5cf4b",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Z User",
+          "at": "2026-10-20T04:15:55Z",
+          "subject": "selftest exec29 vector updated per R309-e/W18 owner standing law (2026"
+        },
+        {
+          "hash": "a13b19df",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Z User",
+          "at": "2026-10-20T04:12:21Z",
+          "subject": "metrics fix: MARKETS block hoisted above snap() (TDZ — COLS computes s"
+        },
+        {
+          "hash": "74619208",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Z User",
+          "at": "2026-10-20T04:06:44Z",
+          "subject": "R309 builds: (1) dev-keeper gate-sync — dual-key KEY2(Autonomy owner-l"
+        }
+      ]
     },
     {
       "repo": "saos-runtime",
@@ -69,20 +102,91 @@
     },
     {
       "repo": "TruthRail",
-      "coverage": "UNREACHABLE",
-      "reason": "fatal: could not read Username for 'https://github.com': No such device or addre"
+      "coverage": "MEASURED",
+      "method": "git-native",
+      "scanned": 10,
+      "signed": 0,
+      "unsigned": 10,
+      "invalid": 0,
+      "untrusted": 0,
+      "unknown": 0,
+      "signedPct": 0,
+      "flagged": []
     },
     {
       "repo": "saos-agents",
-      "coverage": "UNREACHABLE",
-      "reason": "fatal: could not read Username for 'https://github.com': No such device or addre"
+      "coverage": "MEASURED",
+      "method": "git-native",
+      "scanned": 10,
+      "signed": 0,
+      "unsigned": 9,
+      "invalid": 1,
+      "untrusted": 0,
+      "unknown": 0,
+      "signedPct": 0,
+      "flagged": [
+        {
+          "hash": "83555a78",
+          "gq": "E",
+          "sig": "INVALID",
+          "author": "roshpinacare-sys",
+          "at": "2026-10-14T05:25:57+03:00",
+          "subject": "FLEET-COORDINATION/1: anti-overwrite protocol — merged by R41 (החוק-נע"
+        }
+      ]
     }
   ],
-  "flagged": [],
+  "flagged": [
+    {
+      "hash": "f45af54c",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Z User",
+      "at": "2026-10-20T04:58:49Z",
+      "subject": "R310 builds: (1) chain-memo-custody — sovereign credential-renewal rai",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "35b5cf4b",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Z User",
+      "at": "2026-10-20T04:15:55Z",
+      "subject": "selftest exec29 vector updated per R309-e/W18 owner standing law (2026",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "a13b19df",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Z User",
+      "at": "2026-10-20T04:12:21Z",
+      "subject": "metrics fix: MARKETS block hoisted above snap() (TDZ — COLS computes s",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "74619208",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Z User",
+      "at": "2026-10-20T04:06:44Z",
+      "subject": "R309 builds: (1) dev-keeper gate-sync — dual-key KEY2(Autonomy owner-l",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "83555a78",
+      "gq": "E",
+      "sig": "INVALID",
+      "author": "roshpinacare-sys",
+      "at": "2026-10-14T05:25:57+03:00",
+      "subject": "FLEET-COORDINATION/1: anti-overwrite protocol — merged by R41 (החוק-נע",
+      "repo": "saos-agents"
+    }
+  ],
   "coverage": {
-    "measured": 5,
+    "measured": 7,
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 4484
+  "ms": 5441
 }
