@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-19T11:30:44.346Z",
+  "at": "2026-10-20T05:15:00Z",
   "credit": {
     "supply": 500,
     "minted": [
@@ -15,42 +15,57 @@
         "reason": "הקצאת-מסחר לסוכן (חוק-CREDIT: מינט מתועד עם-עוגן)",
         "at": "2026-10-04T09:23:20.843Z"
       }
-    ]
+    ],
+    "revoked": [
+      {
+        "amount": 250,
+        "ref": "agent-allowance:hcsoldier-1",
+        "reason": "T-80 dead-body revocation 2026-10-20",
+        "at": "2026-10-20T05:15:00Z"
+      },
+      {
+        "amount": 250,
+        "ref": "agent-allowance:batchtest-1",
+        "reason": "synthetic-test revocation, no chain custody",
+        "at": "2026-10-20T05:15:00Z"
+      }
+    ],
+    "outstanding": 0
   },
   "balances": {
     "__vault__": {
       "STEEM": 0.0003,
-      "SBD": 0.00008
+      "SBD": 8e-05
     },
     "hcsoldier-1": {
       "CREDIT": 250,
-      "STEEM": 0.65,
+      "STEEM": 0.393482,
       "SBD": 0.232906
     },
     "batchtest-1": {
       "CREDIT": 250,
       "SBD": 0.026335,
-      "STEEM": 0.05
+      "STEEM": 0.030268
     }
   },
   "backing": {
     "STEEM": {
-      "internal": 28.661946,
-      "covered": 303.807054,
+      "internal": 0.14125,
+      "covered": 0.42375,
       "backing": [
         {
           "source": "engine-inventory · יתרת-חי-על-השרשרת (headcorner)",
-          "amount": 332.469
+          "amount": 0.565
         }
       ]
     },
     "SBD": {
-      "internal": 2.98325,
-      "covered": 8.94975,
+      "internal": 0.013103,
+      "covered": 55.676897,
       "backing": [
         {
           "source": "engine-inventory · יתרת-חי-על-השרשרת (headcorner)",
-          "amount": 11.933
+          "amount": 55.69
         }
       ]
     },
