@@ -1,59 +1,76 @@
 {
-  "at": "2026-10-20T03:36:34.568Z",
+  "at": "2026-10-20T05:42:22.263Z",
   "steem": {
     "chain": "steem",
     "ok": true,
     "levers": {},
-    "vestsPerSp": 1611.49,
+    "vestsPerSp": 1611.48,
     "steemPerRshare": null,
-    "headBlock": 110590321,
-    "time": "2026-10-20T03:36:33",
+    "headBlock": 110592810,
+    "time": "2026-10-20T05:42:21",
     "headcorner": {
-      "ownSp": 4031.08,
-      "effectiveSp": 2740.64,
-      "delegatedOutSp": 1534.78,
+      "ownSp": 4031.17,
+      "effectiveSp": 2740.72,
+      "delegatedOutSp": 1534.79,
       "receivedSp": 244.33,
       "vpEffPct": 10,
-      "liquidSteem": 1.065,
-      "liquidSbd": 53.651,
+      "liquidSteem": 0.677,
+      "liquidSbd": 17.592,
       "rcPct": null,
-      "delegatedOutDeltaVsR289": 1522.42,
+      "delegatedOutDeltaVsR289": 1522.41,
       "historyScan": {
         "opsRead": 6060,
         "error": null,
-        "oldestTs": "2026-10-19T09:37:09"
+        "oldestTs": "2026-10-19T12:16:30"
       },
       "opsHistogram": {
-        "limit_order_create": 3086,
-        "fill_order": 781,
-        "limit_order_cancel": 1782,
+        "fill_order": 473,
+        "limit_order_create": 3000,
+        "limit_order_cancel": 2168,
         "curation_reward": 26,
-        "custom_json": 342,
-        "claim_reward_balance": 7,
-        "vote": 18,
-        "delegate_vesting_shares": 12,
+        "custom_json": 345,
+        "claim_reward_balance": 8,
         "return_vesting_delegation": 1,
-        "comment": 3,
-        "account_update2": 2
+        "vote": 29,
+        "comment": 5,
+        "account_update2": 2,
+        "transfer": 3
       },
-      "transfersWindow": [],
+      "transfersWindow": [
+        {
+          "at": "2026-10-20T05:09:15",
+          "from": "headcorner",
+          "to": "headcorner",
+          "amount": "0.001 STEEM",
+          "memo": "ESC-11 rail canary | SAOS sovereign dividend lane | zero-val"
+        },
+        {
+          "at": "2026-10-20T05:10:33",
+          "from": "headcorner",
+          "to": "headcorner",
+          "amount": "0.001 STEEM",
+          "memo": "ESC-11 sync-debug"
+        },
+        {
+          "at": "2026-10-20T05:12:36",
+          "from": "headcorner",
+          "to": "headcorner",
+          "amount": "0.001 STEEM",
+          "memo": "ESC-11 in-service canary"
+        }
+      ],
       "measuredWindowDays": 1,
       "curation7d": {
         "ops": 26,
-        "sp": 0.598,
-        "perDay": 0.598
+        "sp": 0.593,
+        "perDay": 0.593
       },
       "author7d": {
         "ops": 0,
         "sp": 0
       },
-      "claims7dSp": 0.543,
+      "claims7dSp": 0.593,
       "curationSamples": [
-        {
-          "at": "2026-10-19T10:30:30",
-          "sp": 0.012,
-          "comment": "snehuu/7kvsrz-jugando-a-mi-favorito-de-la-infancia-el-juego-sky-tower"
-        },
         {
           "at": "2026-10-19T12:29:06",
           "sp": 0.014,
@@ -78,9 +95,14 @@
           "at": "2026-10-19T17:13:03",
           "sp": 0.008,
           "comment": "leos11/tron-price-12-10-2026"
+        },
+        {
+          "at": "2026-10-19T20:18:57",
+          "sp": 0.052,
+          "comment": "tarajda/4egdkn"
         }
       ],
-      "aprPct": 8
+      "aprPct": 7.9
     },
     "army": [
       {
@@ -110,7 +132,7 @@
       },
       {
         "account": "siq",
-        "effectiveSp": 82.69,
+        "effectiveSp": 82.7,
         "vpEffPct": 10
       },
       {
@@ -135,22 +157,22 @@
       }
     ],
     "armyTotals": {
-      "effectiveSp": 744.97,
+      "effectiveSp": 744.98,
       "vpIdlePct": 10
     },
     "market": {
-      "latest": 0.10100216152485754,
-      "lowestAsk": 0.10099069955519611,
-      "highestBid": 0.096702,
-      "percentChange": -1.5834938101788134
+      "latest": 0.10223490252020923,
+      "lowestAsk": 0.10013697983090077,
+      "highestBid": 0.0981520416067279,
+      "percentChange": 0
     },
     "feed": {
-      "steemSbdFeed": 0.1040835309157847,
-      "steemUsd": 0.1040835309157847,
+      "steemSbdFeed": 0.10408350143210926,
+      "steemUsd": 0.10408350143210926,
       "sbdUsd": 1
     },
-    "sbdPremiumPct": -2.96,
-    "arbNote": "STEEM trades below feed on internal market — SBD→STEEM buys at ~2.96% discount"
+    "sbdPremiumPct": -1.78,
+    "arbNote": "STEEM trades below feed on internal market — SBD→STEEM buys at ~1.78% discount"
   },
   "hive": {
     "chain": "hive",
@@ -300,34 +322,34 @@
     {
       "id": "steem-curation-headcorner",
       "state": "LIVE",
-      "measuredSpPerDay": 0.598,
-      "measuredUsdPerDay": 0.0622,
-      "aprPct": 8,
-      "note": "7d measured 26 ops; effective 2740.64 SP; R289 tune ×4 VP utilization + recalls 1522.42 SP already back"
+      "measuredSpPerDay": 0.593,
+      "measuredUsdPerDay": 0.0617,
+      "aprPct": 7.9,
+      "note": "7d measured 26 ops; effective 2740.72 SP; R289 tune ×4 VP utilization + recalls 1522.41 SP already back"
     },
     {
       "id": "steem-curation-army",
       "state": "R290-NEW",
-      "armySp": 744.97,
+      "armySp": 744.98,
       "vpIdlePct": 10,
       "sustainableVotesPerDay": 120,
-      "projectedSpPerDay": 0.059,
-      "projectedUsdPerDay": 0.0061,
+      "projectedSpPerDay": 0.058,
+      "projectedUsdPerDay": 0.006,
       "note": "10 accounts × 12 votes/day × ~60% weight = 7.2%/day VP burn < 20% regen (external-only, VP-floor 35)"
     },
     {
       "id": "sbd-peg-arb",
       "state": "DORMANT",
-      "premiumPct": -2.96,
-      "liquidSbd": 53.651,
-      "note": "SBD within peg band (-2.96%) or inventory dust — no arb edge today"
+      "premiumPct": -1.78,
+      "liquidSbd": 17.592,
+      "note": "SBD within peg band (-1.78%) or inventory dust — no arb edge today"
     },
     {
       "id": "steem-market-making",
       "state": "LIVE-THIN",
-      "liquidSteem": 1.065,
-      "liquidSbd": 53.651,
-      "note": "STEEM/SBD book rail runs; inventory ~1.065 STEEM — fills pay spread bps, capital-bound"
+      "liquidSteem": 0.677,
+      "liquidSbd": 17.592,
+      "note": "STEEM/SBD book rail runs; inventory ~0.677 STEEM — fills pay spread bps, capital-bound"
     },
     {
       "id": "hive-multi-chain",
