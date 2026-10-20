@@ -59,6 +59,7 @@ start_svc saos-engine    3040 || CRIT_FAIL=1
 start_svc saos-custodian 3041 || CRIT_FAIL=1
 start_svc saos-metrics   3042 || CRIT_FAIL=1
 start_svc saos-builder   3043 || CRIT_FAIL=1
+start_svc claims-attestor 3045 || warn "claims-attestor לא עלה (לא-קריטי)"
 
 # ── 4 · אתר-מפעיל ──
 if port_ok 3046 /health; then
