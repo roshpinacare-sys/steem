@@ -129,6 +129,39 @@ export function armyCustodyState(roster) {
   return { verified, total: roster.length, accounts };
 }
 
+/* R312 · CACHE RE-MATERIALIZATION (memory-first law). Post-mortem 08:21:
+ * the 0600 army-keys cache died with a wipe while EVERY living identity was
+ * still chain-verified in this process (R302: chain-judged identity is
+ * independent of key files) — yet the custody cycle treated the vanished
+ * cache as custody loss, hit the pass-less git vault, and erased a green
+ * custody file with REVIVAL-FAIL. This writes the 0600 cache back from HELD
+ * chain-verified wifs ONLY (memory → file; never from the vault; material
+ * never logged — verdict-only journal). Verdict: { ok, accounts | reason }. */
+export function materializeArmyCacheFromHeld(roster, cachePath) {
+  const accounts = [];
+  for (const name of roster) {
+    const id = mem.identities[name];
+    const posting = id?.wifs?.posting ?? null;
+    if (!posting) continue;
+    accounts.push({ name, gens: [{ gen: "HELD", wif: posting, activeWif: id?.wifs?.active ?? null }] });
+  }
+  if (!accounts.length) return { ok: false, reason: "no-held-wifs" };
+  const doc = {
+    at: new Date().toISOString(),
+    law: "R312 memory-first re-materialization — chain-verified held wifs only; adoption re-judged vs live chain on every load",
+    accounts,
+    generations: [{ gen: "HELD", extracted: accounts.length, missing: [] }],
+  };
+  try {
+    fs.mkdirSync(path.dirname(cachePath), { recursive: true, mode: 0o700 });
+    fs.writeFileSync(cachePath, JSON.stringify(doc, null, 1), { mode: 0o600 });
+    appendLine(LOG_FILE, { at: doc.at, tag: "army-cache-rematerialized", accounts: accounts.length, verdict: "FROM-HELD-MEMORY" });
+    return { ok: true, accounts: accounts.length };
+  } catch (e) {
+    return { ok: false, reason: String(e?.message ?? e).slice(0, 120) };
+  }
+}
+
 export function thinkGate(account, ops, { source = "execute", conf = null, journal = true, custodyOverride = null } = {}) {
   /* R233: conf/journal/custody injection — the gate's LAW is unit-testable
    * offline now (selftest vectors cover every refusal class; the battery
