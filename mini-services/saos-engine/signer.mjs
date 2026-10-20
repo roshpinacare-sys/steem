@@ -406,6 +406,17 @@ function noteForeignCredential(fileAcct) {
 export function credentialState() {
   let present = false;
   try { fs.accessSync(KEY_FILE, fs.constants.R_OK); present = true; } catch { present = false; }
+  /* R310 · CUSTODY-CHANNEL HONESTY (measured 2026-10-20: the master signed 6
+   * lawful votes via the chain-judged vault-adopted WIF while credentialState
+   * reported present=false — the fleet matrix graded the curator SIGNING-DEAD
+   * over a LIVE signing rail: lying-by-composition, the exact T-16 rot).
+   * Per the R302 VAULT-ADOPTED-CUSTODY LAW, a wif-direct chain-judged identity
+   * is independent of the key file — so "can we sign" = file OR live master
+   * custody. The channel is named so the truth stays auditable. */
+  const masterCustody = custodyOf(masterAccount());
+  const vaultLive = masterCustody === "master-verified";
+  const signingLive = present || vaultLive;
+  const channel = present ? "key-file" : (vaultLive ? "vault-adopted-wif" : null);
   const alarm = readJson(CRED_ALARM_FILE, { missingSince: null, lastAlertAt: null, alerts: 0 });
   const conf = armedConf();
   /* T-21 transparency: the file's own account vs the doctrine account of
@@ -414,17 +425,20 @@ export function credentialState() {
   const doctrine = masterAccount();
   const foreign = present && fileAcct != null && fileAcct !== doctrine;
   return {
-    present,
+    present: signingLive,
     keyFile: ".secrets/headcorner.key",
+    keyFilePresent: present,
+    custodyChannel: channel,
+    masterCustody,
     doctrineAccount: doctrine,
-    credentialAccount: fileAcct,
+    credentialAccount: fileAcct ?? (vaultLive ? doctrine : null),
     foreignCredential: foreign,
     foreignSince: foreign ? (alarm.foreignSince ?? null) : null,
-    armedButNoCredential: !!conf.armed && !present,
-    missingSince: present ? null : (alarm.missingSince ?? null),
+    armedButNoCredential: !!conf.armed && !signingLive,
+    missingSince: signingLive ? null : (alarm.missingSince ?? null),
     alerts: alarm.alerts ?? 0,
-    agentsAffected: present ? (foreign ? ["curate", "execute", "soldiers", "promo"] : []) : ["curate", "execute", "soldiers", "promo"],
-    revival: present
+    agentsAffected: signingLive ? (foreign ? ["curate", "execute", "soldiers", "promo"] : []) : ["curate", "execute", "soldiers", "promo"],
+    revival: signingLive
       ? (foreign ? `the key file holds "${fileAcct}" but the account of record is "${doctrine}" — paste the ${doctrine} credential in the wallet console` : null)
       : "drop the CURRENT master-password file as upload/headcorner.txt → engine secures+adopts automatically (0600, upload copy removed, zero restart)",
   };
