@@ -50,7 +50,7 @@ function sh(cmd, args, opts = {}) {
 }
 
 /* revival — idempotent; re-seals nothing; fail-closed on every pin */
-export function reviveToolbelt() {
+export async function reviveToolbelt() {
   let meta;
   try {
     meta = JSON.parse(fs.readFileSync(META, "utf8"));

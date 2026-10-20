@@ -79,7 +79,7 @@ function gitShowBytes(ref, file) {
 }
 
 /* revival — idempotent; re-seals nothing; fail-closed on every pin */
-export function reviveIntegrations() {
+export async function reviveIntegrations() {
   let meta;
   try {
     meta = JSON.parse(fs.readFileSync(META, "utf8"));
