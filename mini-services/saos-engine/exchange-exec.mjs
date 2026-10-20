@@ -95,8 +95,10 @@ async function openOrders(accountId, cfg, symbol) {
   return { ok: true, orders: r.data ?? [], count: (r.data ?? []).length };
 }
 
-async function steemBook() {
-  const d = await htxPublic("/market/depth", { symbol: "steemusdt", type: "step0", depth: 5 });
+/* W18 multi-network widening: the book reader is symbol-generic — the fleet
+ * trades the network's pairs (steem/sbd/hive/trx), not one symbol. */
+async function bookFor(symbol) {
+  const d = await htxPublic("/market/depth", { symbol, type: "step0", depth: 5 });
   if (!d.ok) return { ok: false, why: d.why };
   const bids = (d.data?.tick?.bids ?? []).map(([p, q]) => [Number(p), Number(q)]);
   const asks = (d.data?.tick?.asks ?? []).map(([p, q]) => [Number(p), Number(q)]);
@@ -131,59 +133,68 @@ async function depositLeg(account, pol) {
   return rec;
 }
 
+/* W18 THE MULTI-NETWORK TRADE LEG — one ECG-guarded loop over the network's
+ * pairs (default steem/sbd/hive/trx vs USDT). Every per-symbol verdict is
+ * typed and journaled; the default is still refusal — the widening adds
+ * REACH, never permission. Base-asset map is explicit, never guessed. */
+const TRADE_BASE = { steemusdt: "steem", sbdusdt: "sbd", hiveusdt: "hive", trxusdt: "trx" };
+
 async function tradeLeg(account, pol) {
   if (!pol?.allowExchangeTrade) return { verdict: "TRADE-DISARMED" };
   let cfg;
   try { cfg = htxConfig(); } catch (e) { return { verdict: "TRADE-BLOCKED-NO-CRED", why: e.code ?? null }; }
 
   const accountId = pol?.exchange?.accountId ?? "73986225";
-  const symbol = pol?.exchange?.tradeSymbol ?? "steemusdt";
+  const symbols = pol?.exchange?.tradeSymbols ?? Object.keys(TRADE_BASE);
   const maxOpen = Number(pol?.exchange?.maxOpenOrders ?? 2);
   const maxValUsdt = Number(pol?.exchange?.maxOrderValueUsdt ?? 10);
   const floorBps = Number(pol?.exchange?.ecgFloorBps ?? 55);
 
-  const oo = await openOrders(accountId, cfg, symbol);
-  if (!oo.ok) return { verdict: "TRADE-BLOCKED-CENSUS-DENIED", why: oo.why, errMsg: oo.errMsg ?? null }; /* the API judges permissions */
-  if (oo.count >= maxOpen) return { verdict: "TRADE-SKIP-OPEN-ORDER-CAP", open: oo.count, cap: maxOpen };
-
   const bal = await htxBalances(accountId, cfg);
   if (!bal.ok) return { verdict: "TRADE-BLOCKED-BALANCE-DENIED", why: bal.why };
-  const steemBal = bal.nonzero.steem ?? 0;
   const usdtBal = bal.nonzero.usdt ?? 0;
-  if (steemBal < 1 && usdtBal < 1) return { verdict: "TRADE-WAIT-FUNDING", note: "both legs empty — the deposit leg funds the sell side", steemBal, usdtBal };
 
-  const book = await steemBook();
-  if (!book.ok) return { verdict: "TRADE-BLOCKED-BOOK-UNMEASURED", why: book.why };
+  const results = [];
+  let placed = 0, funding = 0, refused = 0, blocked = 0;
+  for (const symbol of symbols) {
+    const base = TRADE_BASE[symbol];
+    if (!base) { results.push({ symbol, verdict: "TRADE-SKIP-UNKNOWN-SYMBOL" }); blocked++; continue; }
+    const baseBal = bal.nonzero[base] ?? 0;
+    if (baseBal < 1 && usdtBal < 1) { results.push({ symbol, verdict: "TRADE-WAIT-FUNDING", baseBal, usdtBal }); funding++; continue; }
 
-  /* the ECG judges (default refusal) — floor from the armed policy */
-  const v = ecgVerdict({ edgeBps: book.edgeBps, minProfitBps: floorBps - 50 /* policy floor 55 = 5 profit + 50 core; the guard recomputes core internally */ });
-  if (v.verdict !== "EXEC") return { verdict: `TRADE-REFUSE-${v.why.toUpperCase()}`, breakEvenBps: v.breakEvenBps, marginBps: v.marginBps, edgeBps: +book.edgeBps.toFixed(2) };
+    const oo = await openOrders(accountId, cfg, symbol);
+    if (!oo.ok) { results.push({ symbol, verdict: "TRADE-BLOCKED-CENSUS-DENIED", why: oo.why, errMsg: oo.errMsg ?? null }); blocked++; continue; }
+    if (oo.count >= maxOpen) { results.push({ symbol, verdict: "TRADE-SKIP-OPEN-ORDER-CAP", open: oo.count, cap: maxOpen }); blocked++; continue; }
 
-  /* SELL side first (the deposit funds it) — maker limit ABOVE the ask by the
-   * margin; value cap in USDT. */
-  if (steemBal >= 1) {
-    const price = +(book.bestAsk * (1 + Math.min(v.marginBps, 100) / 10_000)).toFixed(6);
-    const qty = Math.min(steemBal, +(maxValUsdt / price).toFixed(3));
-    if (qty >= 1) {
-      const place = await htxPrivate("POST", "/v1/order/orders/place", {}, { "account-id": Number(accountId), amount: qty.toString(), symbol, type: "sell-limit", price: price.toString() }, { cfg });
-      const rec = { at: now(), side: "sell", symbol, amount: qty, price, orderId: place?.data ?? null, verdict: place.ok ? "ORDER-PLACED" : "ORDER-REFUSED", why: place.why ?? null, marginBps: v.marginBps, breakEvenBps: v.breakEvenBps };
-      state.trades.push(rec);
-      if (state.trades.length > 200) state.trades = state.trades.slice(-200);
-      return rec;
+    const book = await bookFor(symbol);
+    if (!book.ok) { results.push({ symbol, verdict: "TRADE-BLOCKED-BOOK-UNMEASURED", why: book.why }); blocked++; continue; }
+
+    /* the ECG judges (default refusal) — floor from the armed policy */
+    const v = ecgVerdict({ edgeBps: book.edgeBps, minProfitBps: floorBps - 50 /* policy floor 55 = 5 profit + 50 core; the guard recomputes core internally */ });
+    if (v.verdict !== "EXEC") { results.push({ symbol, verdict: `TRADE-REFUSE-${v.why.toUpperCase()}`, breakEvenBps: v.breakEvenBps, marginBps: v.marginBps, edgeBps: +book.edgeBps.toFixed(2) }); refused++; continue; }
+
+    /* SELL side first (the deposit funds it) — maker limit ABOVE the ask by the margin; value cap in USDT. */
+    let rec = null;
+    if (baseBal >= 1) {
+      const price = +(book.bestAsk * (1 + Math.min(v.marginBps, 100) / 10_000)).toFixed(6);
+      const qty = Math.min(baseBal, +(maxValUsdt / price).toFixed(3));
+      if (qty >= 1) {
+        const place = await htxPrivate("POST", "/v1/order/orders/place", {}, { "account-id": Number(accountId), amount: qty.toString(), symbol, type: "sell-limit", price: price.toString() }, { cfg });
+        rec = { at: now(), side: "sell", symbol, amount: qty, price, orderId: place?.data ?? null, verdict: place.ok ? "ORDER-PLACED" : "ORDER-REFUSED", why: place.why ?? null, marginBps: v.marginBps, breakEvenBps: v.breakEvenBps };
+      }
+    } else if (usdtBal >= 1) {
+      const price = +(book.bestBid * (1 - Math.min(v.marginBps, 100) / 10_000)).toFixed(6);
+      const qty = Math.min(+(usdtBal / price).toFixed(3), +(maxValUsdt / price).toFixed(3));
+      if (qty >= 1) {
+        const place = await htxPrivate("POST", "/v1/order/orders/place", {}, { "account-id": Number(accountId), amount: qty.toString(), symbol, type: "buy-limit", price: price.toString() }, { cfg });
+        rec = { at: now(), side: "buy", symbol, amount: qty, price, orderId: place?.data ?? null, verdict: place.ok ? "ORDER-PLACED" : "ORDER-REFUSED", why: place.why ?? null, marginBps: v.marginBps, breakEvenBps: v.breakEvenBps };
+      }
     }
+    if (rec) { results.push(rec); state.trades.push(rec); placed++; }
+    else results.push({ symbol, verdict: "TRADE-NO-LEG-ABOVE-MIN", baseBal, usdtBal });
   }
-  if (usdtBal >= 1) {
-    const price = +(book.bestBid * (1 - Math.min(v.marginBps, 100) / 10_000)).toFixed(6);
-    const qty = Math.min(+(usdtBal / price).toFixed(3), +(maxValUsdt / price).toFixed(3));
-    if (qty >= 1) {
-      const place = await htxPrivate("POST", "/v1/order/orders/place", {}, { "account-id": Number(accountId), amount: qty.toString(), symbol, type: "buy-limit", price: price.toString() }, { cfg });
-      const rec = { at: now(), side: "buy", symbol, amount: qty, price, orderId: place?.data ?? null, verdict: place.ok ? "ORDER-PLACED" : "ORDER-REFUSED", why: place.why ?? null, marginBps: v.marginBps, breakEvenBps: v.breakEvenBps };
-      state.trades.push(rec);
-      if (state.trades.length > 200) state.trades = state.trades.slice(-200);
-      return rec;
-    }
-  }
-  return { verdict: "TRADE-NO-LEG-ABOVE-MIN", steemBal, usdtBal };
+  if (state.trades.length > 200) state.trades = state.trades.slice(-200);
+  return { verdict: placed ? `TRADE-MULTI-PLACED-${placed}` : (blocked ? `TRADE-MULTI-BLOCKED-${blocked}` : (funding ? "TRADE-MULTI-WAIT-FUNDING" : `TRADE-MULTI-REFUSED-${refused}`)), symbols: symbols.length, placed, refused, blocked, funding, results };
 }
 
 /* ---------- the tick ---------- */

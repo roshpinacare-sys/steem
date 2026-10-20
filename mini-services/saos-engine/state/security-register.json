@@ -45,7 +45,18 @@
       "containment": "redacted in-tree this wave (generic aaaa-bbbb placeholders + REDACTION NOTE); history keeps the blob (FF-only law)",
       "residualRisk": "zero-effective — the pair is measured DEAD server-side (SEC-2026-10-19-4, api-code-3011); tokens exposed in comments and in the agent-2 plaintext commit are the same inert pair",
       "status": "REDACTED-INERT"
+    },
+    {
+      "id": "SEC-6",
+      "at": "2026-10-20T04:07:45Z",
+      "kind": "git-cred-death",
+      "measured": "the 93-char fine-grained PAT (pat.env + sealed GIT-CRED) authenticated OK at 03:42Z (Autonomy push 512f4f0..3e14d7d) and answered 401 everywhere from 03:49Z — dead within minutes, consistent with server-side revocation (watchdog containment class) or a short-expiry landing. Classic sealed token = the same 93-char blob (revival overwrote pat.env from the seal).",
+      "impact": "ALL local git writes to the org are blocked (steem AND Autonomy). W18 (2fab46df) sits local, ahead-1, doctrine-audit PASS. The Autonomy carrier lane (steem-relay workflow + W18 bundle) is built and staged in the local Autonomy clone — one valid token publishes it and CI relays W18 automatically.",
+      "containment": "zero secret material exposed (the token never entered any commit — probed); organism unaffected (CI keeps its own auth; chains keep signing); local office runs the W18 truth live",
+      "unblock": "ONE GitHub-account act: a fresh PAT (any, with contents:write on roshpinacare-sys/*) dropped into upload/pat.env (or Actions secrets via an authorized console) → revive + sovereign-push + carrier relay is automatic. This is the ONE credential class with no vault self-mint path — GitHub issues tokens only to the account session.",
+      "residualRisk": "bounded — W18 pending push carries the arming dual-key (remote key ALREADY published @3e14d7d before the death) and the widened executor; the local office executes both in the interim"
     }
   ],
-  "law": "the register is append-only in spirit: entries are amended only with a measured finding, never erased"
+  "law": "the register is append-only in spirit: entries are amended only with a measured finding, never erased",
+  "updatedAt": "2026-10-20T04:07:45Z"
 }

@@ -251,7 +251,7 @@
         "book-depth:hold-shape",
         "soldiers:grids-live",
         "rc-health:healthy",
-        "curation:curator-armed"
+        "curation:curator-live"
       ],
       "spreadBpsRec": 5,
       "book": {
@@ -328,7 +328,12 @@
         "reservePct": 0.2
       },
       "pacing": null,
-      "intel": null
+      "intel": {
+        "verdict": "FULL-DOCTRINE",
+        "scale": 1,
+        "reason": "grid not starved: liquid after power-up covers the ladder's ask need",
+        "urgency": null
+      }
     },
     "curate": {
       "name": "curate",
@@ -444,7 +449,7 @@
       "verdict": "PLANNED-AWAITING-POLICY",
       "planned": 6,
       "executed": 0,
-      "refused": 1,
+      "refused": 0,
       "planPreview": [
         "sp-ladder:cashmachine:60",
         "sp-ladder:israelnews:60",
@@ -471,7 +476,7 @@
         "signing-cred-blocked"
       ],
       "tunings": [],
-      "discoveryVerdict": "OPTIONS-FOUND",
+      "discoveryVerdict": "FRESH-CACHED",
       "topOpportunities": [
         "spread-wide(measured)",
         "tags-realloc(measured)",
@@ -673,9 +678,9 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "CADENCE-GATED",
-      "pass": 1941,
+      "pass": 1944,
       "fail": 0,
       "at": "2026-10-20T02:37:36.955Z"
     },
@@ -693,9 +698,9 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 2,
+      "ms": 1,
       "verdict": "RECRUITED",
-      "active": 10,
+      "active": 9,
       "total": 11
     },
     "council": {
@@ -753,12 +758,6 @@
       "owner": "operator",
       "lawful": true,
       "reason": "T-80 stop-order (2026-10-04) — soldiers frozen until re-authorization"
-    },
-    {
-      "source": "redeploy",
-      "owner": "doctrine floor",
-      "lawful": true,
-      "reason": "at-or-below-floor"
     }
   ],
   "finishedAt": "2026-10-20T05:40:16.658Z"

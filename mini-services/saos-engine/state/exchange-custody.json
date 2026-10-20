@@ -81,5 +81,18 @@
     },
     "losses": 0,
     "note": "operator rotation drop sealed (RESEAL-OK W17, EXCHANGE-SEAL-20261019T185046Z); this census measured the NEW pair against the live venue — every refusal recorded honestly; the STEEM/SBD-only transfer scope (trace 1a1556c780544431) governs all legs"
+  },
+  "w18Recheck": {
+    "at": "2026-10-20T03:46:06Z",
+    "verdict": "READ-LIVE·WRITE-LEG-BLOCKED-VENUE",
+    "measured": {
+      "auth": "vault-ladder OK (dbuqg6hk…, account 73986225)",
+      "read": "accounts/balance/openOrders/withdraw-quota PASS (quota 7.8M/day steem1)",
+      "depositAddress": "api-code-500 ×4 variants (v2 bare/v2+network=steem1/v1/sbd) — server-side, never guessed",
+      "orderPlace": "api-gateway-internal-error ×4 (zero-risk far-off-market buy-limit, empty balance ⇒ cannot fill) — NOT the W14 region-forbidden shape; write leg wall persists server-side",
+      "balances": "spot EMPTY — funding leg is the gap",
+      "wind": "sbdusdt 0.544 ×1.77M vol vs chain-convert ~$1.00 (the standing arb, both legs need the deposit wall lifted); steemusdt thin (2562/24h); hiveusdt dead (41); TRX deep 10.7M"
+    },
+    "note": "executor armed + multi-pair widening this wave; movement is automatic the moment the venue answers the write legs"
   }
 }
