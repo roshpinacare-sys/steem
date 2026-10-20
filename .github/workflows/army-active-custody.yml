@@ -78,7 +78,8 @@ jobs:
               echo "no receipt churn — skip commit"
             else
               git commit -m "army-active-custody [$ROTATE_MODE]: fleet active-key lane receipts (pubs/fingerprints only, zero key material) [skip ci]"
-              git push origin HEAD:saos-cockpit
+              git pull --rebase origin saos-cockpit || true
+              git push origin HEAD:saos-cockpit || { git pull --rebase origin saos-cockpit || true; git push origin HEAD:saos-cockpit; }
             fi
           else
             echo "no receipt file — nothing to publish"

@@ -153,14 +153,14 @@ receipt({ step: "live-authorities", bodies: ARMY.map((n) => ({ name: n, activeFp
 /* ── the sweep: every seal × every pass → judge army actives ───────────── */
 const seals = fs.readdirSync(VAULT_DIR).filter((f) => f.endsWith(".zip.enc")).sort();
 const passes = bundlePasses();
-receipt({ step: "sweep-plan", seals: seals.length, passes: passes.length, boundedCombos: Math.min(seals.length * passes.length, 40) });
+receipt({ step: "sweep-plan", seals: seals.length, passes: passes.length, boundedCombos: Math.min(seals.length * passes.length, 200) });
 
 const heldOriginal = {};  // name -> { wif, pub, via }
 let combos = 0;
 OUTER:
 for (const seal of seals) {
   for (const { ref, pass } of passes) {
-    if (combos >= 40) { receipt({ step: "sweep", verdict: "COMBO-BOUND-REACHED" }); break OUTER; }
+    if (combos >= 200) { receipt({ step: "sweep", verdict: "COMBO-BOUND-REACHED" }); break OUTER; }
     combos++;
     let vault = null;
     try { vault = unlockZip(path.join(VAULT_DIR, seal), pass); } catch { continue; }
