@@ -1,25 +1,25 @@
 {
-  "at": "2026-10-20T06:48:58.289Z",
+  "at": "2026-10-20T07:11:01.548Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 27bps → dragK 1.0135",
+      "reason": "spread 16bps → dragK 1.008",
       "action": {
-        "spreadBpsRec": 27,
-        "bestAsk": 0.09900108792404312,
-        "bestBid": 0.09873617693522907
+        "spreadBpsRec": 16,
+        "bestAsk": 0.0989010989010989,
+        "bestBid": 0.09873949579831932
       },
-      "at": "2026-10-20T06:48:58.289Z"
+      "at": "2026-10-20T07:11:01.548Z"
     },
     {
       "kind": "parity-drift",
       "decision": "arb-window",
-      "reason": "internal feed deviates -627bps from external parity",
+      "reason": "internal feed deviates -540bps from external parity",
       "action": {
-        "bps": -627
+        "bps": -540
       },
-      "at": "2026-10-20T06:48:58.289Z"
+      "at": "2026-10-20T07:11:01.548Z"
     },
     {
       "kind": "soldiers",
@@ -28,33 +28,46 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-20T06:48:58.289Z"
+      "at": "2026-10-20T07:11:01.548Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 11.283698 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 11.283698,
+        "any": true
+      },
+      "at": "2026-10-20T07:11:01.548Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 39.3%",
+      "reason": "RC at 38.5%",
       "action": {
-        "rcPct": 39.3
+        "rcPct": 38.5
       },
-      "at": "2026-10-20T06:48:58.289Z"
+      "at": "2026-10-20T07:11:01.548Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict NO-CANDIDATES today (VP 35.5%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict NO-CANDIDATES today (VP 35.9%) — gates hold until candidates pass",
       "action": {
         "votesToday": 8,
-        "vpEff": 35.5,
+        "vpEff": 35.9,
         "verdict": "NO-CANDIDATES"
       },
-      "at": "2026-10-20T06:48:58.289Z"
+      "at": "2026-10-20T07:11:01.548Z"
     }
   ],
-  "spreadBpsRec": 27,
+  "spreadBpsRec": 16,
   "book": {
-    "bestAsk": 0.09900108792404312,
-    "bestBid": 0.09873617693522907,
-    "spreadBps": 27
+    "bestAsk": 0.0989010989010989,
+    "bestBid": 0.09873949579831932,
+    "spreadBps": 16
   }
 }
