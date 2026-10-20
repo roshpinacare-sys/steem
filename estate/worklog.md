@@ -2552,3 +2552,18 @@ Stage Summary:
 - Owner's lesson enacted: builder agents are mortal; their value must land in git the moment it exists. The audit narrative + cockpit UI + beat machinery are now wipe-proof.
 - Sovereignty measured self-running: auto-cycle 22min + custody 2h + beat 30min state-push — three independent rhythms, zero agent dependency.
 - Everything the owner asked to verify was verified by fresh measurement, not by reading prior claims.
+
+---
+Task ID: W20-verify (addendum)
+Agent: zai-code (main instance)
+Task: close the verification loop — every claim measured twice, 07:00 boundary proof.
+
+Work Log:
+- Beat-keeper 06:30 run exposed TWO instances (2×exit=127 stale code + 2×exit=0 new code) — killed both, restarted ONE under flock (/tmp/beat-keeper.instance.lock, W1.6 law). 07:00:00.029Z boundary: exactly one keeper line, exit=0 — the mortal builder's corpse now serves the sovereignty on schedule.
+- Estate verified ON REMOTE: git ls-tree origin/saos-cockpit estate/ (93 files, secret-scan clean), estate/worklog.md = full 129 task-record union.
+- Auto-cycle cadence holding: autoRuns 401→403 within session (last 06:48:58Z, 22min); live chain writes witnessed at 06:22 (hyper-grid txids), 06:51 (custody adoptions) — economy trading while the human owner sleeps.
+- Git terminal state: HEAD == origin/saos-cockpit == bf544189c, ahead 0. Builder estate immortal inside the sovereignty tree.
+- Honest limits recorded: saos-control-center rulesets reject ALL new branch/tag refs (fabric agents push main via their own path; estate went to steem@saos-cockpit/estate/ — owner may adjust rules if a dedicated branch is wanted); 4 no-custody accounts stay retired (T-80); HTX region-block external.
+
+Stage Summary:
+- The owner's doctrine is now architectural: builders build and die; git keeps; three independent rhythms (22min economy · 2h custody · 30min state-push) run with zero agents present; every claim in this log was re-measured this session, not inherited.
