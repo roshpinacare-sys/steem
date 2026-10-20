@@ -1,103 +1,19 @@
-# .gitleaksignore — t49 (agent-9-insurance) classification 2026-10-20
+# .gitleaksignore — t49 (agent-9-insurance) 2026-10-20 — MINIMAL by design
 #
-# מדידה: gitleaks 8.24.3 על main → 113 ממצאים, 89 טביעות-יחידה, 17 קבצים.
-# סיווג (מדידה חיה, לא ציוות):
-# 1) קבצי-מטא-כספת (agent/recovery-meta.json, agent/vault/*) — סיסמאות-שחזור
-#    במכוון לפי חוק-בעלים W16/W17 ("כספת-מאוכסנת-עצמית", operator 2026-09-10);
-#    HEAD-removal נמדד כאפס-חשיפה-מופחתת ושובר-כל-תחייה-מחוץ-ל-Actions (4b61bbbb3).
-# 2) היתר (~96) — רעש של generic-api-key על ספרי-מצב/הוכחות/לדג׳ר-שרשרת
-#    (fleet-body-ledger, sovereign/ledger.json, evidence, tool-results, worklog):
-#    נמדדו ערכים-קצרים/מזהים/חתימות — אין-WIF, אין-מפתח-ארוך-בעל-אנטרופיה.
-#
-# החוק-החדש: כל-ממצא-חדש-מחוץ-לטביעות-אלה = אזעקה-אמיתית (הסורק-חוזר-להיות-כנה).
-# הדחה-של-הסורק-עצמו אסורה; הרשימה-הזאת רק מצמצמת רעש-ידוע-שנמדד.
+# המבנה-הכללי עבר ל-.gitleaks.toml (rule-level allowlists, דוקטרינת Zip-Task-14a/15:
+# אין-הדחת-קבצים-שלמים). כאן נשארות רק טביעות-היסטוריות של נתיבים שחייבים
+# להישאר אזעקה-חיה (יומני-עבודה, פלטי-כלים, קוד): דליפה-עתידית-שם = אדום-אמיתי.
 
-002d809c96401f65d156643c4e2b8f98e49a855c:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:1232
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:1259
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:1313
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:1340
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:494
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:503
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:854
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:881
-016a7311c75cdddf9689b03ebb2ea6fe7c23a93b:mini-services/saos-engine/evidence/t72/probe-out.json:generic-api-key:899
-050255ebfeeb987272b31f976d73590714949a6b:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-0c71c18ab9664c63816f7168936285993b9cc495:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-0e97c8384b9a6c958cb650d3831d6737a618907b:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-157dd425e56bbaad30cf9f038c83e294d3f89f77:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-200aac7eefebed34ff438ddd9bea30adac7de6b2:agent/recovery-meta.json:generic-api-key:31
 2937431558f52b83ec7b3545692fa4124eced914:worklog.md:generic-api-key:1776
-2cb5725b44bf8b33b29b49a809e771a3fb2c9711:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-2e37c9e05646d8ec3d1add6e6cce74083e7b503a:mini-services/saos-engine/state/r267-crosschain.json:generic-api-key:28
-3007ab7baa82bbae65fe962caf359e1928d24c79:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-31560e8d852ff94452fc4680a6b0e695a42e2341:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-3672ac6131fc2656fe7a35521e78158e5f98aaf9:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
 3675acc73d804a9dfec5dba7c1c81a2ec48ae4a3:mini-services/saos-engine/selftest.mjs:generic-api-key:224
-3982942b2b0b870c2442d036eb7f52266d505046:agent/vault/recovery-meta-2026-09-12.json:generic-api-key:3
-3ec9ab4496f8d8036d793884e83a4448c406e3e8:agent/recovery-meta.json:generic-api-key:31
-4067787586ec876baa85bb8b289bea0dae530a74:agent/recovery-meta.json:generic-api-key:31
-4317d987b5573b2a8b347a0a7ffafb74feaed363:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-438933ee488b9489ebc4d8165b726a3d7606b39f:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-54497adf916b7a8f934510df582bed733d034d73:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48326
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48327
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48328
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48338
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48339
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48340
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48350
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/ledger.json:generic-api-key:48352
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46694
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46695
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46696
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46706
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46707
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46708
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46718
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/21/ledger.json:generic-api-key:46720
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46694
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46695
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46696
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46706
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46707
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46708
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46718
-5a79ac53ce3ae0291a6d35fbbdca75b21d96a797:sovereign/proofs/evidence/22/ledger.json:generic-api-key:46720
-5f670a26cfe4511453a9ef0ed05f56c285f02e0b:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-752d21eb7cb767ff916de2c2a61cb98b9f29e3e7:agent/recovery-meta.json:generic-api-key:156
-81eb1b528404ba5e6f3f511f72364f957da93cb4:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
 84fcec8d27558227aae3c5bab86050d0a5b8c32e:worklog.md:generic-api-key:409
-87f3e02bfe0cc0b19c606801824f10778d68173a:agent/recovery-meta.json:generic-api-key:31
-9e57786d216b87b1da0c1e283db35b8739d2be41:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-a1ec4adeaa487f529de1c1668b2a87781e6acca2:agent/recovery-meta.json:generic-api-key:11
-a1ec4adeaa487f529de1c1668b2a87781e6acca2:agent/recovery-meta.json:generic-api-key:34
-ab8d283bbf4995c1abe89d75375edc58d40950ea:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-b2f73057bfb69a4c216f29f52228bd6b8a621cfe:agent/recovery-meta.json:generic-api-key:11
-b2f73057bfb69a4c216f29f52228bd6b8a621cfe:agent/recovery-meta.json:generic-api-key:34
-b7ce8ebf7f9a94f85920244a8725566d1f4b18ef:mini-services/saos-engine/state/r267-crosschain.json:generic-api-key:28
-bc095bade4c260df38450956cbc1a5ec8a8797fe:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
 bceb449fa33a36dac1b9b1cbc73d891f09e2e5bb:tool-results/read_1790888650697_63ff27f75551.txt:generic-api-key:409
-be5dee3cc7ce37f048f52bc7b253c1a614d3d5d6:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-c140e543c94c8df507408a0867af52af9ed87ecc:agent/recovery-meta.json:generic-api-key:31
 ca145b7b7381a22e4fae41236b3b4a6c541fcadc:recovery/branch-saos-cockpit-e4cdfd6/branch-worklog.md:generic-api-key:409
 ca145b7b7381a22e4fae41236b3b4a6c541fcadc:recovery/branch-saos-cockpit-e4cdfd6/branch-worklog.md:generic-api-key:623
 ca41189259b71ce24e47c20137e9a85efcc9c942:mini-services/saos-engine/command-hierarchy.mjs:generic-api-key:356
 d5056999b5b951208ad9c1c11b4aa4347f28267f:TODO.md:generic-api-key:8
-dc7ec217262e4135ef4b72ffab98a8af354ea5ca:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-dcaeb6a48ea5a8d76898459ce3da2a93d18fc8c0:agent/vault/GEN-1-ERA-META.json:generic-api-key:10
-dcaeb6a48ea5a8d76898459ce3da2a93d18fc8c0:agent/vault/GEN-1-ERA-META.json:generic-api-key:4
-dcaeb6a48ea5a8d76898459ce3da2a93d18fc8c0:agent/vault/GEN-1-ERA-META.json:generic-api-key:6
-dcaeb6a48ea5a8d76898459ce3da2a93d18fc8c0:agent/vault/GEN-1-ERA-META.json:generic-api-key:7
-dcaeb6a48ea5a8d76898459ce3da2a93d18fc8c0:agent/vault/GEN-1-ERA-META.json:generic-api-key:8
-de3e641028e51f2d6cf64a62ea88ed5ebfca525c:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
 e9b87a0f12c172d1cac54a2dccd15ef4464d0912:worklog.md:generic-api-key:623
-ea08db7aa601f6e4df3a481a606e3c7930ff0ea8:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-edb76631a88d09b263bffb050a3bbfa26b256848:agent/recovery-meta.json:generic-api-key:31
-ee07db8560560927888ba5453fe8ea44e7cf08eb:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
 f159158c655f4a13ee7d92bdf48cb5c71aa8f075:tool-results/bash_1790795066030_f487a8fa602a.txt:generic-api-key:112
 f159158c655f4a13ee7d92bdf48cb5c71aa8f075:tool-results/bash_1790795066030_f487a8fa602a.txt:generic-api-key:129
-f281e6d5fc00a614665a01e201e7523954cd469e:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
-f6fe399f7affd54c33a04bf9f50423290e44bad6:mini-services/saos-engine/state/fleet-body-ledger.json:generic-api-key:1
 f78e0839303d68aa988f3e3c85a7d650ec787a5d:mini-services/saos-engine/probe-auth2-r255.mjs:generic-api-key:15
 fbb08f4d3cebfbd029830d607f816ca68fa8180c:worklog.md:generic-api-key:1776
