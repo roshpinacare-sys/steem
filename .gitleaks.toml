@@ -35,8 +35,8 @@ useDefault = true
 id = "generic-api-key"  # same-ID stub: base regex/entropy kept, allowlist appended
 
 [rules.allowlists]
-description = "idempotency sha256 digests in receipts + operator directive constant (zero-rotation, not a credential) — headcorner cockpit triage 2026-10-06"
+description = "t49 census extension (2026-10-20): + inert short values/hex digests/32-char vault passes in measured by-design corpus (vault-meta W16/W17, receipts digests, harden_result identifiers, extracted archives, fleet-body-ledger weights) — rule-level per doctrine (no whole-file skips); WIF-length and long-hex stay outside the window"
 condition = "and"
-paths = '''(^|/)agent/receipts/(cognition-beat|capital-decisions)\.jsonl$,(^|/)agent/reclaim-lost-soldiers\.cjs$'''
+paths = '''(^|/)agent/receipts/,(^|/)agent/reclaim-lost-soldiers\.cjs$,(^|/)agent/recovery-meta\.json$,(^|/)agent/vault/,(^|/)agent/harden_result\.json$,(^|/)download/,(^|/)mini-services/saos-engine/state/,(^|/)mini-services/saos-engine/evidence/,(^|/)sovereign/ledger\.json$,(^|/)sovereign/proofs/'''
 regexTarget = "match"
-regexes = '''(idempotencyKey)":\s*"[0-9a-f][0-9a-f]+,OWNER_DIRECTIVE_TOKEN\s*=\s*'[A-Za-z0-9][A-Za-z0-9]+'''
+regexes = '''(idempotencyKey)":\s*"[0-9a-f][0-9a-f]+,OWNER_DIRECTIVE_TOKEN\s*=\s*'[A-Za-z0-9][A-Za-z0-9]+,":\s*"[A-Za-z0-9._:-]{1,24}",":\s*"[0-9a-f]{8,64}",":\s*"[A-Za-z0-9+/=_-]{24,40}"'''
