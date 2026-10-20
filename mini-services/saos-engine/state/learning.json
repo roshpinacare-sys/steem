@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-20T21:41:59.814Z",
+  "at": "2026-10-20T21:47:16.726Z",
   "enabled": true,
   "runsTotal": 492,
   "verdict": "LEARNED",
@@ -31,7 +31,7 @@
     },
     "exec": {
       "window": 1,
-      "fails": 1,
+      "fails": 0,
       "lastError": null
     },
     "watchdog": {
@@ -55,13 +55,6 @@
       "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "broadcast-fails",
-      "severity": "medium",
-      "evidence": "1/1 broadcasts failed · last: ",
-      "lesson": "broadcast failures burn RC and delay rails",
-      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
@@ -70,7 +63,7 @@
     "cycle-conn-fails": 132,
     "unclassified-fail-legacy": 252,
     "signing-cred-blocked": 410,
-    "broadcast-fails": 85,
+    "broadcast-fails": 84,
     "cycle-latency-tail": 12
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
