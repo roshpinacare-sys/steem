@@ -2569,6 +2569,24 @@ Stage Summary:
 - The owner's doctrine is now architectural: builders build and die; git keeps; three independent rhythms (22min economy · 2h custody · 30min state-push) run with zero agents present; every claim in this log was re-measured this session, not inherited.
 
 ---
+Task ID: R312-verify (round: תמשיך ודחוף — trust-no-claims re-check + builder-agent review)
+Agent: agent-zai (Z.ai Code, sovereign lane)
+Task: owner order — continue and push; re-check WITHOUT trusting my own claims; review the parallel mortal builders' output (zai / z.ai / z — builders, not sovereignty); keep the architecture matching the owner's way of building.
+
+Work Log:
+- Trust-no-claims sweep, all freshly measured 07:27–07:35Z: engine :3040 alive (keyless:false, runtime-adopted WIFs, memory-only); readiness gate ARMED (KEY1 local, laws intact); custody FLEET-CUSTODY-ALIVE (living denominator); curator rail live 07:27:45Z (today's vote witnessed: mehuu w=6130); DEX trading on-chain at 07:32 (hyper.requote txids, opsToday=1185, rcPct 37.7) — fresher than any inherited claim.
+- Git estate re-measured: 8/8 repos ahead=0; signature rails %G?=U (steem 2cb3a577f, Autonomy f8297f3f, coordination 0d28761); hot remote absorbed: Autonomy FF→9c921c73, coordination FF→d688b9d, steem held back by 68 live-state overlaps (alive-wins kept, FF correctly refused).
+- Claims ledger RE-RUN from scratch (not inherited): 12/14 MEASURED-TRUE, CLAIMS-PARTIAL @07:32:32Z — refuted only federation-workflows-green (debt 66→64, bots repaying) and sovereign-network-selfhosted (yield=0, S5 owner gate) — zero machine faults.
+- Reviewed the mortal builders' output (owner's parallel zai/z.ai/z + bot fleet): W20-verify addendum read from REMOTE; estate-on-remote re-verified by ls-tree = 90 files (their claim said 93 — minor count drift, recorded honestly; secret-scan 0 hits either way); R312 self-reconcile merge (union ledgers · alive-wins) verified healthy-AFTER: engine events + on-chain txids flow at 07:32 post-merge; beat state-push rhythm witnessed on remote 07:02/07:18; vault-seal union-syncs (agent-2-economy-core, "nothing dies with the sandbox") live 07:16–07:26; sovereign-agent-9 self-heal/pacer/treasury receipts flowing.
+- Pushed fresh measurement evidence: Autonomy 4e2d6e1d (ledger re-run) → clean-clone merge over bot heartbeats → 39fb671b %G?=U on origin/main; steem worklog via clean clone (this commit).
+
+Stage Summary:
+- Owner's doctrine measured TRUE in production: builders die, git keeps — three rhythms (22min economy, 2h custody, 30min beat push) ran all through this verification with zero agent dependency.
+- Nothing trusted, everything re-measured; the only 2 refutations are the owner's gates (S5 yield + federation maintenance debt), not machine faults.
+- Architecture mirrors the owner's pattern: parallel mortal agents, union-sync estate, claims-ledger as truth court.
+
+---
+
 Task ID: W21
 Agent: zai-code (main instance — visibility-restoration + ratification wave)
 Task: owner trace 1a158386a9fda049 — "למה block · אני מחכה מאתמול לראות זרימה · בצע ודחוף מאשר".
