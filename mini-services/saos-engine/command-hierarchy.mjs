@@ -361,7 +361,7 @@ export function selftest({ auditFile = path.join(STATE, "hierarchy-selftest-audi
   });
   t("scrub: WIF-like evidence never reaches the journal", () => {
     const wif = "5" + "J".repeat(50);
-    journalHier({ at: "t", type: "selftest.scrub", detail: `wif=${wif} token=ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ123456` }, { file: auditFile });
+    journalHier({ at: "t", type: "selftest.scrub", detail: `wif=${wif} token=REDACTED-BY-HEAD-SECRETS-LAW` }, { file: auditFile });
     const line = fs.readFileSync(auditFile, "utf8").split("\n").filter(Boolean).pop();
     return ok(!line.includes(wif) && line.includes("[redacted-wif]") && line.includes("[redacted-token]"), "scrubbed");
   });
