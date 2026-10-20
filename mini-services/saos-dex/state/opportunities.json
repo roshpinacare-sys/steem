@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-20T12:38:16.123Z",
+  "at": "2026-10-20T13:13:21.144Z",
   "venues": [
     {
       "id": "internal:STEEM-SBD",
@@ -10,8 +10,8 @@
       "mid": 0.104082,
       "kind": "pool",
       "reserves": {
-        "A": 12.50025,
-        "B": 1.301051
+        "A": 2.13525,
+        "B": 0.222241
       },
       "status": "measured",
       "source": "הבריכה-הפנימית של הרשת (משכן-נמדד)"
@@ -22,13 +22,13 @@
         "STEEM",
         "SBD"
       ],
-      "mid": 0.103787,
+      "mid": 0.105193,
       "kind": "book",
       "touch": {
-        "bestAsk": 0.10379937776939757,
-        "bestBid": 0.10377491870493426,
-        "askDepth": 12.653975,
-        "bidDepth": 1955.786
+        "bestAsk": 0.10541110330288124,
+        "bestBid": 0.10497475357176599,
+        "askDepth": 26.439108,
+        "bidDepth": 1961.99
       },
       "status": "measured",
       "source": "ספר-השוק-הפנימי של Steem (נמדד-חי)"
@@ -51,32 +51,32 @@
   "opportunities": [
     {
       "pair": "STEEM/SBD",
-      "buy": "steem-book",
-      "sell": "internal:STEEM-SBD",
+      "buy": "internal:STEEM-SBD",
+      "sell": "steem-book",
       "midA": 0.104082,
-      "midB": 0.103787,
-      "edgeBps": 27.2,
-      "netBps": -32.8,
+      "midB": 0.105193,
+      "edgeBps": 85.8,
+      "netBps": 25.8,
       "cls": "POOL-TOUCH",
       "kind": "TRADEABLE",
-      "verdict": "EDGE-BELOW-FEES",
+      "verdict": "EDGE-AFTER-FEES",
       "touch": {
-        "buyAt": 0.103799,
-        "sellAt": 0.104082
+        "buyAt": 0.104082,
+        "sellAt": 0.104975
       },
       "impact": "pool-impact-at-execution",
-      "maxNotional": 0.130105,
+      "maxNotional": 0.022224,
       "depthVerdict": "CAPPED",
       "depthBasis": [
         {
-          "leg": "steem-book",
-          "cap": 6.326988,
-          "source": "askDepth × 0.5"
+          "leg": "internal:STEEM-SBD",
+          "cap": 0.022224,
+          "source": "reserveA × spot × 0.1"
         },
         {
-          "leg": "internal:STEEM-SBD",
-          "cap": 0.130105,
-          "source": "reserveB × 0.1"
+          "leg": "steem-book",
+          "cap": 980.995,
+          "source": "bidDepth × 0.5"
         }
       ],
       "depthWhy": null,
@@ -87,12 +87,12 @@
     },
     {
       "pair": "STEEM/SBD",
-      "buy": "oracle-steem-sbd",
-      "sell": "steem-book",
-      "midA": 0.103787,
+      "buy": "steem-book",
+      "sell": "oracle-steem-sbd",
+      "midA": 0.105193,
       "midB": 0.104082,
-      "edgeBps": 28.4,
-      "netBps": -31.6,
+      "edgeBps": -105.6,
+      "netBps": 45.6,
       "cls": "FAIR-SIGNAL",
       "kind": "SIGNAL",
       "verdict": "SIGNAL-ONLY",

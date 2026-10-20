@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-20T12:59:56.767Z",
+  "at": "2026-10-20T13:01:38.146Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -14,14 +14,14 @@
     "maxSweepsPerCycle": 2
   },
   "arm": {
-    "flag": true,
+    "flag": false,
     "order": true,
-    "spLadderExecutedToday": 6,
+    "spLadderExecutedToday": 0,
     "spLadderExecNow": 0,
     "spLadderPlannedNow": 6,
     "restoreExecutedNow": 0,
     "restorePlannedNow": 0,
-    "liveProof": true
+    "liveProof": false
   },
   "planOnly": [
     {
@@ -107,13 +107,13 @@
         "asset": "STEEM",
         "amount": 92.993,
         "mode": "attempt",
-        "why": "master below floor (13.121 < 40) while cashmachine holds surplus"
+        "why": "master below floor (9.041 < 40) while cashmachine holds surplus"
       },
-      "verdict": "ROLE-KEY-ABSENT",
+      "verdict": "THINK-GATE-REFUSED",
       "txid": null,
       "error": null,
-      "at": "2026-10-20T12:59:56.767Z"
+      "at": "2026-10-20T13:01:38.146Z"
     }
   ],
-  "verdict": "PLANNED-DAY-CAP"
+  "verdict": "PLANNED-AWAITING-POLICY"
 }
