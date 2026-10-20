@@ -373,7 +373,7 @@ export function buildTx({ ops, dgpo, wifs, ttlSec = 45, nowSec = Math.floor(Date
   const ref_block_num = headNum & 0xffff;
   const ref_block_prefix = idBytes.length >= 8 ? idBytes.readUInt32LE(4) : 0;
   const expiration = nowSec + ttlSec;
-  const iso = (sec) => new Date(sec * 1000).toISOString().slice(0, 19);
+  const iso = (sec) => Number.isFinite(sec) ? new Date(sec * 1000).toISOString().slice(0, 19) : String(sec ?? "");
   const body = { ref_block_num, ref_block_prefix, expiration, operations: ops, extensions: [] };
   const bin = serializeTx({ ...body, expiration });
   const digest = sha256(Buffer.concat([chainId, bin]));
