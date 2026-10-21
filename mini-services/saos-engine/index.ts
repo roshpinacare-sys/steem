@@ -24,10 +24,10 @@ import { startArmyGrid, armyGridState } from "./armygrid.mjs";
 import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startManyHands, manyhandsState } from "./manyhands.mjs"; // G43 ONE-BODY-MANY-HANDS + the sharp taker (shadow-first)
-import { startSharpTaker, sharpTakerState } from "./sharp-taker.mjs"; // G44: the master-rail dislocation taker (takeLaw on the custody that lives)
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
 import { startExternalQuotes, externalQuotesState } from "./external-quotes.mjs"; // W27-c: the REAL-MONEY external price anchor (Poloniex/Bithumb/Gecko)
 import { startFfGate, ffGateState } from "./ff-gate.mjs"; // W27-a: the FixedFloat real-money gate (PENDING-ACTIVATION → ACTIVE → promote)
+import { startHedgeDesk, hedgeDeskState } from "./hedge-desk.mjs"; // W28-b: the AutoHedge-adopted advisory hedge desk (risk-first, ZERO signing authority)
 import { webintelState } from "./webintel.mjs";
 import { contentState } from "./content.mjs";
 import { streamState } from "./social-streamer.mjs"; /* R310: the live posts stream (one-body: the engine computes, the cockpit shows) */
@@ -147,14 +147,14 @@ async function handle(req) {
       dexflow: dexState(),
       /* G43 MANY-HANDS: the one-body fleet grid + the sharp taker (shadow-first) */
       manyhands: manyhandsState(),
-      /* G44 SHARP-TAKER: the master-rail dislocation taker (takeLaw, FOK, capped) */
-      sharpTaker: sharpTakerState(),
       /* W17 EXCHANGE-EXEC: the HTX executor — deposit+trade verdicts (typed, journaled) */
       exchangeExec: exchangeExecState(),
       /* W27-c EXT-QUOTES: the real-money external anchor (steemUsd/sbdUsd/implied cross unit) */
       externalQuotes: externalQuotesState(),
       /* W27-a FF-GATE: FixedFloat real-money lane — PENDING-ACTIVATION → ACTIVE → promote plan */
       ffGate: ffGateState(),
+      /* W28-b HEDGE-DESK: the AutoHedge-adopted advisory risk desk — GO/TRIM/WIDEN/RETIER/HALT/ABSTAIN from measured book+anchor state (advisory-only forever) */
+      hedgeDesk: hedgeDeskState(),
       /* T-22 ONE-BODY live layer — computed by the ENGINE (single source) */
       live: {
         orders: oo.orders ?? [],
@@ -527,15 +527,6 @@ try { startManyHands(); } catch (e) {
   console.error(`manyhands boot failed: ${String(e?.message ?? e)}`);
 }
 
-// G44 SHARP-TAKER: the dislocation-capture layer on the MASTER rail — the
-// owner's blanket approval (2026-10-21 "אני מאשר קדימה") executed where
-// custody actually lives: takeLaw (ONE law, imported from manyhands) with
-// FOK, caps, own id partition [1.7e9,1.79e9), standing-order gate in
-// exec-armed.json (fail-closed DISARMED default).
-try { startSharpTaker(); } catch (e) {
-  console.error(`sharp-taker boot failed: ${String(e?.message ?? e)}`);
-}
-
 // W17 · EXCHANGE-EXEC: the HTX executor — the deposit leg (T2 transfer to the
 // measured counterparty, 24h-rate-limited, cap-bounded) + the trade leg
 // (limit orders behind the ECG, default-refusal). Honest typed verdicts for
@@ -560,6 +551,16 @@ try { startExternalQuotes(); } catch (e) {
 // before approval — the owner's explicit wait order.
 try { startFfGate(); } catch (e) {
   console.error(`ff-gate boot failed: ${String(e?.message ?? e)}`);
+}
+
+// W28-b · HEDGE-DESK: the AutoHedge-adopted advisory risk layer (the
+// Director→Quant→Risk pattern port, native, zero deps): reads fills + hyper
+// + the external anchor every 5min and journals GO/TRIM/WIDEN/RETIER/HALT/
+// ABSTAIN verdicts. Advisory-only — it can never sign, never execute; it
+// feeds the doctrine layer that owns every cap (owner trace 1a15cc9fb5220725:
+// AutoHedge examined, what serves sovereignty adopted).
+try { startHedgeDesk(); } catch (e) {
+  console.error(`hedge-desk boot failed: ${String(e?.message ?? e)}`);
 }
 
 // R287 · REVENUE ARCHITECT LOOPS: the content compiler feeds the staging
