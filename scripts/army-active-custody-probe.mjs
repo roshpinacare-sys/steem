@@ -167,19 +167,51 @@ for (const a of liveRows ?? []) live[a.name] = { active: a.active.key_auths[0]?.
 receipt({ step: "live-authorities", bodies: ARMY.map((n) => ({ name: n, activeFp: live[n]?.active ? fingerprint(live[n].active) : null })) });
 
 /* ── the sweep: every seal × every pass → judge army actives ───────────── */
+/* W119 · HISTORICAL-SEALS LAW (the measured gap that hid the army actives):
+ * vault seals get ABSORBED/pruned from the branch tip over time (measured:
+ * KEYS-ROT2-2026-10-12.zip.enc + KEYS-PACK-2026-10-04-r20a.zip.enc + GEN-2-era
+ * seals live in history commit 0d6f142ce but NOT on the tip — the tip-only
+ * sweep of 2026-10-21T03:41Z scanned 1872 combos and could never see them).
+ * The sweep now enumerates EVERY .zip.enc that was EVER added anywhere in
+ * git history (the runner checks out fetch-depth:0), materializes each blob
+ * into the 0700 tmp, and sweeps it with the same pass bundles. */
 const seals = fs.readdirSync(VAULT_DIR).filter((f) => f.endsWith(".zip.enc")).sort();
+const hist = new Set(seals);
+const histSeals = [];
+try {
+  const out = execFileSync("git", ["log", "--all", "--diff-filter=A", "--name-only", "--format=", "--", "agent/vault/"], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+  for (const line of out.split("\n")) {
+    const p = line.trim();
+    if (p.endsWith(".zip.enc") && !hist.has(path.basename(p))) { hist.add(path.basename(p)); histSeals.push(p); }
+  }
+} catch { /* history walk failed — tip-only sweep still runs */ }
+receipt({ step: "historical-seals", tip: seals.length, historical: histSeals.length, names: histSeals.map((p) => path.basename(p)).slice(0, 24) });
+const HIST_DIR = path.join(TMP, "hist");
+try { fs.mkdirSync(HIST_DIR, { recursive: true, mode: 0o700 }); } catch { /* tmp */ }
+const histPaths = [];
+for (const p of histSeals.slice(0, 40)) {
+  try {
+    const sha = execFileSync("git", ["log", "--all", "--diff-filter=A", "--format=%H", "--", p], { encoding: "utf8" }).trim().split("\n")[0];
+    if (!sha) continue;
+    const blob = execFileSync("git", ["show", `${sha}:${p}`], { maxBuffer: 64 * 1024 * 1024 });
+    const dst = path.join(HIST_DIR, path.basename(p));
+    fs.writeFileSync(dst, blob, { mode: 0o600 });
+    histPaths.push(dst);
+  } catch { /* seal not materializable at its adder — skip */ }
+}
+const allSeals = [...seals.map((s) => path.join(VAULT_DIR, s)), ...histPaths];
 const passes = bundlePasses();
-receipt({ step: "sweep-plan", seals: seals.length, passes: passes.length, bundles: bundles.map((b) => `${b.name}:${b.note}`), boundedCombos: Math.min(seals.length * passes.length, 2000) });
+receipt({ step: "sweep-plan", seals: allSeals.length, passes: passes.length, bundles: bundles.map((b) => `${b.name}:${b.note}`), boundedCombos: Math.min(allSeals.length * passes.length, 4000) });
 
 const heldOriginal = {};  // name -> { wif, pub, via }
 let combos = 0;
 OUTER:
-for (const seal of seals) {
+for (const sealPath of allSeals) {
   for (const { ref, pass } of passes) {
-    if (combos >= 2000) { receipt({ step: "sweep", verdict: "COMBO-BOUND-REACHED" }); break OUTER; }
+    if (combos >= 4000) { receipt({ step: "sweep", verdict: "COMBO-BOUND-REACHED" }); break OUTER; }
     combos++;
     let vault = null;
-    try { vault = unlockZip(path.join(VAULT_DIR, seal), pass); } catch { continue; }
+    try { vault = unlockZip(sealPath, pass); } catch { continue; }
     const roles = accountRoles(vault);
     for (const name of ARMY) {
       if (heldOriginal[name]) continue;
@@ -187,7 +219,7 @@ for (const seal of seals) {
       if (!act?.wif) continue;
       try {
         if (pubOfWif(act.wif) === live[name]?.active) {
-          heldOriginal[name] = { wif: act.wif, pub: act.pub ?? pubOfWif(act.wif), via: `${seal}::${ref}` };
+          heldOriginal[name] = { wif: act.wif, pub: act.pub ?? pubOfWif(act.wif), via: `${path.basename(sealPath)}::${ref}` };
           receipt({ step: "original-active-held", account: name, pub: heldOriginal[name].pub, fp: fingerprint(heldOriginal[name].pub), via: heldOriginal[name].via });
         }
       } catch { /* malformed token — skip */ }
