@@ -7,16 +7,25 @@ name: gitleaks
 # Fail-closed: a finding reds the run.
 # ═══════════════════════════════════════════════════════════════════════════
 # TOMBSTONE-HONEST (exec-20, 03:2xZ — owner=active, house law zai-13b + the
-# social-cadence precedent): this repo is PRIVATE (467MB) and its Actions sit
-# behind the billing wall — every push-triggered run dies job-level BEFORE any
+# social-cadence precedent): this repo was PRIVATE (467MB) and its Actions sat
+# behind the billing wall — every push-triggered run died job-level BEFORE any
 # step (measured 2026-10-12: conclusion=failure, log blob BlobNotFound, zero
-# steps; 6/6 runs). A red that can never be green is false-alarm noise that
-# masks real failures — exactly the disease zai-13b outlawed. The SCAN ITSELF
-# IS ALIVE on the public artery (T-53 contract: external re-scan every 2h on
-# public minutes) + this file on main still scans PRs + workflow_dispatch.
-# Kept dispatch-only so the owner can always fire a full in-repo scan when
-# billing returns. Evidence: issue #29.
+# steps; 6/6 runs). Evidence: issue #29.
+#
+# SUPERSESSION (wave 19.52, trace 1a15da21aec52bd5 — measured 2026-10-21 09:0xZ,
+# LAW-A): the tombstone's two premises are BOTH dead — (1) steem is PUBLIC now
+# (API measured: visibility=public, 60.6MB), so Actions run free; (2) scheduled
+# lanes are alive on this repo (1762 runs; sovereign-arming-flip schedule+dispatch
+# SUCCESS 08:59Z run 39573504640). The billing wall is gone and the owner approved
+# compute anyway. The T-53 first-line law returns: scan on push + weekly + dispatch.
+# Fail-closed: a finding reds the run (the 19.38/19.52 .gitleaksignore ledger holds
+# the measured false-positive pins — verified clean in BOTH no-git and git modes,
+# gitleaks v8.24.3).
 on:
+  push:
+    branches: [saos-cockpit]
+  schedule:
+    - cron: "17 5 * * 1" # weekly Monday 05:17Z — drift-catcher between pushes
   workflow_dispatch:
 
 permissions:
