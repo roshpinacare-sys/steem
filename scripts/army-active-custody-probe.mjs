@@ -179,10 +179,19 @@ const seals = fs.readdirSync(VAULT_DIR).filter((f) => f.endsWith(".zip.enc")).so
 const hist = new Set(seals);
 const histSeals = [];
 try {
-  const out = execFileSync("git", ["log", "--all", "--diff-filter=A", "--name-only", "--format=", "--", "agent/vault/"], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
-  for (const line of out.split("\n")) {
-    const p = line.trim();
-    if (p.endsWith(".zip.enc") && !hist.has(path.basename(p))) { hist.add(path.basename(p)); histSeals.push(p); }
+  /* the pruned-seal lineages (measured: ROT2/GEN-2-era seals) live ONLY on
+   * origin/main — the dispatch checkout carries just the saos-cockpit ref,
+   * so fetch main explicitly (checkout persists its token) before walking */
+  try { execFileSync("git", ["fetch", "origin", "main", "--quiet"], { stdio: ["ignore", "ignore", "ignore"], timeout: 180000 }); receipt({ step: "main-fetch", verdict: "ok" }); } catch (e) { receipt({ step: "main-fetch", verdict: "failed", note: String(e?.message ?? e).slice(0, 80) }); }
+  const walks = ["--all", "origin/main"];
+  for (const walk of walks) {
+    try {
+      const out = execFileSync("git", ["log", walk, "--diff-filter=A", "--name-only", "--format=", "--", "agent/vault/"], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+      for (const line of out.split("\n")) {
+        const p = line.trim();
+        if (p.endsWith(".zip.enc") && !hist.has(path.basename(p))) { hist.add(path.basename(p)); histSeals.push(p); }
+      }
+    } catch { /* this walk ref unavailable — next */ }
   }
 } catch { /* history walk failed — tip-only sweep still runs */ }
 receipt({ step: "historical-seals", tip: seals.length, historical: histSeals.length, names: histSeals.map((p) => path.basename(p)).slice(0, 24) });
