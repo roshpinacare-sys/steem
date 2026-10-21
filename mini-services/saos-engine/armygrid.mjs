@@ -58,6 +58,10 @@ import {
 import { rpcCall, accountState, openOrders } from "./measure.mjs";
 import { executeAs, armedConf, execPaused, masterAccount, custodyOf } from "./signer.mjs";
 import { ARMY_ROSTER_VAULT } from "./vault-revival.mjs";
+/* T-564 · ABSORPTION RUNGS (owner order; AutoHedge/agency-agents study):
+ * two-phase idempotent order commit + per-fill PnL attribution → routing */
+import { journalPendingCreates, markCommits, settleCommits, guardedKeys, createContentKey, commitsSummary } from "./twophase.mjs";
+import { sweepAll as sweepPnl, routingTable as pnlRoutingTable, pnlState } from "./fills-pnl.mjs";
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -99,6 +103,7 @@ export const ARMYGRID_DEFAULTS = {
   failBackoffMs: 10 * 60_000,
   maxConsecFails: 3,
   minLiquidSteem: 1.0,
+  pnlSweepSec: 600,       /* T-564: fills→PnL sweep cadence (10min) */
 };
 
 const G = globalThis;
@@ -147,8 +152,10 @@ export function armyGridState() {
       lastTxid: st.lastTxid ?? null,
       lastBalances: st.balances ?? null,
       liveHyper: st.liveHyper ?? null,
+      commits: commitsSummary(a), /* T-564: two-phase commit journal truth */
     });
   }
+  const pnl = pnlState(); /* T-564: per-fill PnL truth + routing proposal */
   return {
     running: G.__saosArmyTimer != null,
     startedAt: G.__saosArmyStartedAt ?? null,
@@ -157,6 +164,14 @@ export function armyGridState() {
     roster: roster.length,
     eligible: accounts.filter((x) => x.custody === "verified").length,
     accounts,
+    pnl: {
+      hands: pnl.hands,
+      routing: pnl.routing,
+      totals: {
+        fills: pnl.hands.reduce((s, h) => s + (h.totals?.fills ?? 0), 0),
+        realizedSbd: Math.round(pnl.hands.reduce((s, h) => s + (h.totals?.realizedSbd ?? 0), 0) * 1e6) / 1e6,
+      },
+    },
     totals: {
       opsToday: accounts.reduce((s, x) => s + (x.opsToday ?? 0), 0),
       liveOrders: accounts.reduce((s, x) => s + (x.liveHyper ?? 0), 0),
@@ -263,6 +278,12 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
   const effTickMs = ag.tickMs * Math.max(1, rosterLen ?? 1);
 
   const st = readJson(FILE, {}) ?? {};
+
+  /* T-564 · PHASE-2 chain-judge first: resolve any stale PENDING commits
+   * against live open orders, THEN read the young-PENDING guard. The sweep
+   * is a rare path (only when old PENDINGs exist) — one openOrders probe. */
+  await settleCommits(account).catch(() => null);
+  const guard = guardedKeys(account);
   const opsDay = readJson(OPS_FILE, { day: null, opsToday: 0, chainTail: null }) ?? {};
   if (opsDay.day !== today) { opsDay.day = today; opsDay.opsToday = 0; opsDay.chainTail = null; }
 
@@ -335,6 +356,9 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
   const liveForDiff = liveR.live.map((o) => ({ ...o, orderid: Number(o.orderid) }));
   const diff = diffHyperTick({ planned, live: liveForDiff, epsBps: 2, ttlMs: ag.ttlSec * 1000, nowMs });
   const cancelIds = [...diff.cancelIds];
+  /* T-564: a level whose identical content is PENDING (outcome unknown) is
+   * NOT re-created — this is the duplicate-order killer (see twophase.mjs). */
+  let guardSkipped = 0;
   if (diff.unchanged && cancelIds.length === 0) {
     return finish(withCarry({ lastVerdict: "NO-CHANGE", lastVerdictAt: now.toISOString(), rcPct: rc.pct, liveHyper: liveR.live.length, planned: planned.length, balances: bal, balancesAt: nowMs, lastMaxRc: rc.max, governor: g }));
   }
@@ -346,6 +370,7 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
   let nextId = Math.max(ID_LO, st.nextId ?? ID_LO);
   const createdIds = [];
   const createOps = [];
+  const journalCreates = []; /* T-564 phase-1 intent rows */
   for (const lvl of diff.creates) {
     if (createOps.length >= opsBudget || createOps.length >= ag.maxOpsPerTx) break;
     if (nextId > ID_HI) nextId = ID_LO;
@@ -354,19 +379,28 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
       const amt = Number(lvl.amountSteem.toFixed(3));
       const sOut = lvl.sbdOut3 != null ? lvl.sbdOut3 : amt * lvl.unit;
       if (!(amt >= 0.001)) continue;
+      const key = createContentKey(account, { side: "ask", amt, min: Number(Number(sOut).toFixed(3)) });
+      if (guard.has(key)) { guardSkipped++; continue; } /* outcome unknown — hold */
       createOps.push(["limit_order_create", { owner: account, orderid: id, amount_to_sell: `${amt.toFixed(3)} STEEM`, min_to_receive: `${Number(sOut).toFixed(3)} SBD`, fill_or_kill: false, expiration: tSec + ag.orderTtlSec }]);
+      journalCreates.push({ key, side: "ask", amt, min: Number(Number(sOut).toFixed(3)), orderid: id });
     } else {
       const amt = Number(lvl.amountSbd.toFixed(3));
       const stOut = lvl.steemOut3 != null ? lvl.steemOut3 : amt / lvl.unit;
       if (!(amt >= 0.001)) continue;
+      const key = createContentKey(account, { side: "bid", amt, min: Number(Number(stOut).toFixed(3)) });
+      if (guard.has(key)) { guardSkipped++; continue; } /* outcome unknown — hold */
       createOps.push(["limit_order_create", { owner: account, orderid: id, amount_to_sell: `${amt.toFixed(3)} SBD`, min_to_receive: `${Number(stOut).toFixed(3)} STEEM`, fill_or_kill: false, expiration: tSec + ag.orderTtlSec }]);
+      journalCreates.push({ key, side: "bid", amt, min: Number(Number(stOut).toFixed(3)), orderid: id });
     }
     createdIds.push({ id, side: lvl.side, unit: lvl.unit, tranche: "army", at: now.toISOString() });
   }
   const ops = [...cancelOps, ...createOps];
   if (!ops.length) {
-    return finish(withCarry({ lastVerdict: "GOVERNOR-THROTTLED", lastVerdictAt: now.toISOString(), rcPct: rc.pct, governor: g, lastMaxRc: rc.max }));
+    const v = guardSkipped > 0 ? "PENDING-UNSETTLED" : "GOVERNOR-THROTTLED";
+    return finish(withCarry({ lastVerdict: v, lastVerdictAt: now.toISOString(), rcPct: rc.pct, governor: g, guardSkipped, lastMaxRc: rc.max }));
   }
+  /* T-564 · PHASE-1: journal the intent BEFORE anything is signed */
+  if (journalCreates.length) journalPendingCreates(account, journalCreates);
 
   /* the ONE execution rail — full gate stack, per-account custody, journal */
   const res = await executeAs(account, ops, { tag: "army-grid", rcPct: rc.pct });
@@ -388,10 +422,15 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
        * achieved by the other writer — not a sticky error */
       return finish(withCarry({ lastVerdict: "CANCEL-RACE-LOST", lastVerdictAt: now.toISOString(), rcPct: rc.pct, consecFails: 0, skipUntil: null, lastMaxRc: rc.max }));
     }
+    /* T-564 phase-2: a definite failure settles the intent as ABANDONED */
+    if (journalCreates.length) markCommits(account, journalCreates.map((c) => c.key), "ABANDONED", { note: err.slice(0, 120) });
     const fails = (st.consecFails ?? 0) + 1;
     const skipUntil = fails >= ag.maxConsecFails ? nowMs + ag.failBackoffMs : (st.skipUntil ?? null);
     return finish(withCarry({ lastVerdict: "BROADCAST-FAIL", lastVerdictAt: now.toISOString(), rcPct: rc.pct, lastError: err.slice(0, 160), consecFails: fails, skipUntil, lastMaxRc: rc.max, governor: g }));
   }
+
+  /* T-564 phase-2: the rail answered — settle the intent CONFIRMED */
+  if (journalCreates.length) markCommits(account, journalCreates.map((c) => c.key), "CONFIRMED", { txid: res.txid ?? null });
 
   /* success bookkeeping */
   const cancelledSet = new Set(cancelOps.map(([, o]) => o.orderid));
@@ -411,7 +450,7 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
     opsToday, nextId, lastTxid: res.txid ?? null, lastError: null, consecFails: 0, skipUntil: null,
     liveHyper: Math.max(0, liveR.live.length - cancelOps.length + createOps.length),
     planned: planned.length, label, balances: bal, balancesAt: nowMs, lastMaxRc: rc.max,
-    economics: econ,
+    economics: econ, guardSkipped,
   }));
 }
 
@@ -484,5 +523,20 @@ export function startArmyGrid() {
   void tick();
   void tailSample().catch(() => {});
   G.__saosArmyTailTimer = setInterval(() => { void tailSample().catch(() => {}); }, 60_000);
+  /* T-564 · the fills→PnL sweeper: chain-truth PnL per hand + routing
+   * proposal. Fail-soft per hand; the trading loop never depends on it. */
+  if (G.__saosArmyPnlTimer) clearInterval(G.__saosArmyPnlTimer);
+  if (G.__saosArmyPnlFirst) clearTimeout(G.__saosArmyPnlFirst);
+  const pnlSweep = async () => {
+    try {
+      const rows = await sweepPnl(armyRoster().filter((a) => custodyOf(a) === "verified"));
+      pnlRoutingTable(rows.map((r) => ({ account: r.account })));
+      appendLine(EVENTS_FILE, { type: "army.pnl-sweep", at: new Date().toISOString(), hands: rows.length, ok: rows.filter((r) => r.ok).length });
+    } catch (e) {
+      appendLine(EVENTS_FILE, { type: "army.pnl-sweep-error", at: new Date().toISOString(), error: String(e?.message ?? e).slice(0, 160) });
+    }
+  };
+  G.__saosArmyPnlFirst = setTimeout(() => { void pnlSweep(); }, 45_000); /* first sweep after custody settles */
+  G.__saosArmyPnlTimer = setInterval(() => { void pnlSweep(); }, Math.max(60_000, (ag.pnlSweepSec ?? 600) * 1000));
   return armyGridState();
 }
