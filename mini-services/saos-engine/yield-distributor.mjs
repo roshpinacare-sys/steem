@@ -179,12 +179,17 @@ export async function runYieldDistribution({ now = new Date().toISOString(), exe
   const custody = readJson(path.join(S, "army-custody.json"), null);
   const roster = soldierRoster().filter((n) => n !== TREASURY);
 
-  /* today's executed count + last executed at — from the receipts, not memory */
+  /* today's executed count + last executed at — from the receipts, not memory.
+   * FIX (measured 2026-10-21T07:04Z): the cap counted ATTEMPT rows
+   * (executed===true) so 4 THINK-GATE-REFUSED transfers — zero value moved —
+   * burned the whole day's perDayCap and froze the rail (COOLDOWN).
+   * The honest cap counts money that ACTUALLY moved: ok===true (txid present).
+   * A refusal protects funds; it must not tax the day's dividend capacity. */
   const rec = readLines(path.join(receiptsDir(), "yield-distribution.jsonl"), 200);
   const day = String(now).slice(0, 10);
-  const todayRows = rec.filter((r) => typeof r?.at === "string" && r.at.slice(0, 10) === day && r.executed === true);
-  const executedToday = todayRows.length;
-  const lastExecutedAt = rec.filter((r) => r.executed === true).map((r) => r.at).sort().at(-1) ?? null;
+  const isMovedRow = (r) => typeof r?.at === "string" && r.executed === true && r.ok === true;
+  const executedToday = rec.filter((r) => isMovedRow(r) && r.at.slice(0, 10) === day).length;
+  const lastExecutedAt = rec.filter(isMovedRow).map((r) => r.at).sort().at(-1) ?? null;
 
   const acc = await accountState(TREASURY).catch(() => ({ ok: false }));
   if (!acc.ok) {
