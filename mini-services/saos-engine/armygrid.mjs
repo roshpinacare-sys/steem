@@ -85,10 +85,11 @@ const ID_HI = 4_294_967_290;
 export const ARMYGRID_DEFAULTS = {
   enabled: true,          // the owner's activation order IS the doctrine
   tickMs: 4000,           // ONE hand per tick — staggered presence
-  levels: 2,              // per side (small books, small tanks)
-  spacingBps: 15,         // same front-anchored spacing as the hyper layer
-  ttlSec: 90,             // presence-refresh cadence (calmer than master)
+  levels: 3,              // per side (T-565: 2→3, deeper coverage per requote)
+  spacingBps: 25,         // T-565: 15→25 — the DEDUP/ceil3 law merges sub-milli levels anyway; 25bps = ~2.6 millis at army amounts = DISTINCT achievable prices
+  ttlSec: 600,            // T-565: 90→600 — rest, don't chase (presence refresh 10min)
   orderTtlSec: 3600,      // chain-side self-clean (1h)
+  epsBps: 25,             // T-565 GRILL FIX: was hardcoded 2 — achievable-price granularity is ~36bps per milli at army amounts (T-19 ACHIEVABLE-PRICE LAW), so eps 2 = the diff could NEVER rest → creates≈cancels treadmill with zero fills. 25bps tolerates front wiggle below 2.6 millis.
   askBudgetPct: 0.5,      // of liquid STEEM (small accounts quote visibly)
   steemReserve: 0.5,      // never spend the last half STEEM
   bidMinSbd: 0.5,         // bid side arms only above this (self-bootstrap)
@@ -129,11 +130,18 @@ export function armyGridState() {
   let retired = [];
   try { retired = readJson(path.join(STATE, "army-custody.json"), {})?.denominator?.retired ?? []; } catch { /* measurement lives without it */ }
   const accounts = [];
+  const FRESH_MS = 30 * 60_000; /* chain-truth samples newer than 30min are display truth */
   for (const a of roster) {
     const st = readJson(acctFile(a), {}) ?? {};
     const ops = readJson(path.join(AG_DIR, `${a}-ops.json`), {}) ?? {};
     const rawCustody = custodyOf(a);
     const isRetired = (retired ?? []).includes(a);
+    /* T-565 GRILL FIX — DISPLAY-TRUTH LAW: the grill proved opsToday (boot-local
+     * counter) and liveHyper (in-memory bookkeeping) UNDERCOUNT vs the chain
+     * (166 vs 374; 0 vs real orders). When a fresh chain-tail exists, the chain
+     * numbers ARE the display; the local counters remain as boot-since fallback. */
+    const tailFresh = ops.chainTailAt && (Date.now() - Date.parse(ops.chainTailAt)) < FRESH_MS;
+    const liveFresh = ops.chainLive?.at && (Date.now() - Date.parse(ops.chainLive.at)) < FRESH_MS;
     accounts.push({
       account: a,
       custody: isRetired && rawCustody === "no-custody" ? "retired-operator-approved" : rawCustody,
@@ -143,7 +151,9 @@ export function armyGridState() {
       lastError: st.lastError ?? null,
       rcPct: st.rcPct ?? null,
       lastMaxRc: st.lastMaxRc ?? null,
-      opsToday: ops.day === new Date().toISOString().slice(0, 10) ? ops.opsToday ?? 0 : 0,
+      opsToday: ops.day === new Date().toISOString().slice(0, 10)
+        ? (tailFresh && ops.chainTail?.total != null ? ops.chainTail.total : ops.opsToday ?? 0)
+        : 0,
       opsDayCap: conf.opsDayCap,
       chainTail: ops.chainTail ?? null,
       nextId: st.nextId ?? ID_LO,
@@ -151,7 +161,8 @@ export function armyGridState() {
       lastBroadcastAt: st.lastBroadcastAt ?? null,
       lastTxid: st.lastTxid ?? null,
       lastBalances: st.balances ?? null,
-      liveHyper: st.liveHyper ?? null,
+      liveHyper: liveFresh && ops.chainLive?.mine != null ? ops.chainLive.mine : (st.liveHyper ?? null),
+      liveOrdersChain: liveFresh ? ops.chainLive?.total ?? null : null,
       commits: commitsSummary(a), /* T-564: two-phase commit journal truth */
     });
   }
@@ -354,7 +365,7 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
   }
 
   const liveForDiff = liveR.live.map((o) => ({ ...o, orderid: Number(o.orderid) }));
-  const diff = diffHyperTick({ planned, live: liveForDiff, epsBps: 2, ttlMs: ag.ttlSec * 1000, nowMs });
+  const diff = diffHyperTick({ planned, live: liveForDiff, epsBps: ag.epsBps ?? 25, ttlMs: ag.ttlSec * 1000, nowMs });
   const cancelIds = [...diff.cancelIds];
   /* T-564: a level whose identical content is PENDING (outcome unknown) is
    * NOT re-created — this is the duplicate-order killer (see twophase.mjs). */
@@ -489,7 +500,7 @@ async function tick() {
   } finally { G.__saosArmyInFlight = false; }
 }
 
-/* per-account chain-truth tail sampler (honest day counters) */
+/* per-account chain-truth tail sampler (honest day counters + live presence) */
 let lastTailAt = {};
 async function tailSample() {
   const ag = armyGridConf();
@@ -498,12 +509,21 @@ async function tailSample() {
   const day = new Date().toISOString().slice(0, 10);
   for (const account of armyRoster()) {
     if (custodyOf(account) !== "verified") continue;
-    const tail = await chainTailCount(account, day);
-    if (!tail) continue;
+    /* T-565 GRILL FIX: the tail sample now ALSO reads live presence from the
+     * chain — the grill proved the in-memory liveHyper bookkeeping drifts to 0
+     * while the chain holds real orders; the chain is the display truth. */
+    const [tail, oo] = await Promise.all([
+      chainTailCount(account, day),
+      openOrders(account).catch(() => ({ ok: false, orders: [] })),
+    ]);
+    const chainLive = oo.ok
+      ? { total: (oo.orders ?? []).length, mine: (oo.orders ?? []).filter((o) => Number(o.orderid) >= ID_LO && Number(o.orderid) <= ID_HI).length, at: new Date().toISOString() }
+      : null;
+    if (!tail && !chainLive) continue;
     const OPS_FILE = path.join(AG_DIR, `${account}-ops.json`);
     const opsDay = readJson(OPS_FILE, { day, opsToday: 0 }) ?? {};
     if (opsDay.day !== day) { opsDay.day = day; opsDay.opsToday = 0; }
-    writeJson(OPS_FILE, { ...opsDay, chainTail: tail, chainTailAt: new Date().toISOString() });
+    writeJson(OPS_FILE, { ...opsDay, ...(tail ? { chainTail: tail, chainTailAt: new Date().toISOString() } : {}), ...(chainLive ? { chainLive } : {}) });
   }
 }
 
