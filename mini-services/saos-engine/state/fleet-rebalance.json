@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-21T04:04:33.396Z",
+  "at": "2026-10-21T04:18:52.005Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -16,31 +16,15 @@
   "arm": {
     "flag": true,
     "order": true,
-    "spLadderExecutedToday": 0,
-    "spLadderExecNow": 1,
+    "spLadderExecutedToday": 1,
+    "spLadderExecNow": 0,
     "spLadderPlannedNow": 0,
     "restoreExecutedNow": 0,
     "restorePlannedNow": 0,
     "liveProof": true
   },
   "planOnly": [],
-  "executed": [
-    {
-      "move": {
-        "kind": "sp-ladder",
-        "from": "headcorner",
-        "to": "cashmachine",
-        "sp": 34.5,
-        "setVests": 273253.543161,
-        "curSpEffective": 140.5,
-        "why": "RC bottleneck: tank 0.22T vs master 2.8T; EFFECTIVE SP 140.5→175 (received 135.1); master delegation +34.5 SP (SET 273253.543161)"
-      },
-      "verdict": "BROADCAST",
-      "txid": "23feeb68cd2dcc82d898428f1dcd61adfdd67373",
-      "error": null,
-      "at": "2026-10-21T04:04:33.396Z"
-    }
-  ],
+  "executed": [],
   "refused": [
     {
       "move": {
@@ -52,9 +36,9 @@
         "why": "support dropped below the committed floor: live 64455.110102 < floor 217660.813573 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
       },
       "verdict": "BROADCAST-FAIL",
-      "txid": "017b336867a7b64322e3af9debda100dbf7b190c",
-      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205703471\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"864957",
-      "at": "2026-10-21T04:04:33.396Z"
+      "txid": "fd49dc3705830d4f768fdd41794f8d435465f8f0",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205703471\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"365076",
+      "at": "2026-10-21T04:18:52.005Z"
     },
     {
       "move": {
@@ -66,9 +50,9 @@
         "why": "support dropped below the committed floor: live 64455.110102 < floor 217660.543161 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
       },
       "verdict": "BROADCAST-FAIL",
-      "txid": "b74d520ad9bf9570761ecc2bbb30e1c67ebe8963",
-      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205433059\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865149",
-      "at": "2026-10-21T04:04:33.396Z"
+      "txid": "5d2fb60257bdfde2bca464433e1e3f9d5d9fa141",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205433059\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"365264",
+      "at": "2026-10-21T04:18:52.005Z"
     },
     {
       "move": {
@@ -80,9 +64,9 @@
         "why": "support dropped below the committed floor: live 64455.110102 < floor 217660.320505 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
       },
       "verdict": "BROADCAST-FAIL",
-      "txid": "656771064015b3a6764b2a18fc40325b8511f31d",
-      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205210403\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865341",
-      "at": "2026-10-21T04:04:33.396Z"
+      "txid": "97bc04783333a28acf1e28835cffa2036944c537",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205210403\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"365452",
+      "at": "2026-10-21T04:18:52.005Z"
     },
     {
       "move": {
@@ -94,9 +78,9 @@
         "why": "support dropped below the committed floor: live 64455.110102 < floor 228120.457529 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
       },
       "verdict": "BROADCAST-FAIL",
-      "txid": "49623980898bd560a3e020e8e008cf982665ea4c",
-      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"163665347427\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865725",
-      "at": "2026-10-21T04:04:33.396Z"
+      "txid": "e61a35d12b7162d9f236f56ab38acad7b1b635fb",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"163665347427\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"365639",
+      "at": "2026-10-21T04:18:52.005Z"
     },
     {
       "move": {
@@ -108,10 +92,10 @@
         "why": "support dropped below the committed floor: live 64455.110102 < floor 235876.776508 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
       },
       "verdict": "BROADCAST-FAIL",
-      "txid": "e368a49c2cd37204724c2e06464cdb644cbb9478",
-      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"171421666406\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865916",
-      "at": "2026-10-21T04:04:33.396Z"
+      "txid": "e36a88636f3cdcb158d549b2abbf00fb4c0c49d8",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"171421666406\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"365827",
+      "at": "2026-10-21T04:18:52.005Z"
     }
   ],
-  "verdict": "EXECUTED-1"
+  "verdict": "NO-EXEC"
 }
