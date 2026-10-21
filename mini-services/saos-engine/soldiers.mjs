@@ -203,7 +203,23 @@ export async function runSoldierGrids({ parity, spreadBps = 0, now, bestBid = nu
   if (!(parity > 0)) return { ok: true, verdict: "NO-PARITY", soldiers: [] };
 
   const out = [];
-  for (const rec of merged) {
+  /* W27-c TIERED FLEET BOOK (owner trace 1a15c67385c253b5 — "שוק חריף דווקא
+   * על הדקס שלנו" · "גוף אחד חכם עם הרבה ידיים"): the roster order IS the
+   * tier — body t quotes its value-ask ladder t×tierSpacingBps deeper
+   * (clamped by planLadder's bookCap law) and spreads its front-presence
+   * tranches with t×tierFlowBpsStep extra spacing, so the fleet forms a
+   * WIDE two-sided book instead of N copies at one price. Ask side spreads
+   * inside the G41 cap (clamps to the lawful front in a depressed book);
+   * bid side staggers BELOW the common ceiling (always lawful — no body
+   * ever pays more). Deep tiers beyond the anchor cap degrade gracefully
+   * to the base ladder. */
+  const tierMax = Math.max(1, conf.tierMax ?? 8);
+  const tierSpacingBps = Math.max(0, conf.tierSpacingBps ?? 20);
+  const tierFlowBpsStep = Math.max(0, conf.tierFlowBpsStep ?? 5);
+  const baseFlowSpacing = conf.flowSpacingBps ?? 15;
+  for (let mi = 0; mi < merged.length; mi++) {
+    const rec = merged[mi];
+    const tier = mi % tierMax;
     const name = rec.name;
     /* T-80 · CUSTODY FAST-GATE: a soldier without a chain-verified credential
      * gets ZERO network reads and ZERO ops — the measured rot (doomed
@@ -226,8 +242,10 @@ export async function runSoldierGrids({ parity, spreadBps = 0, now, bestBid = nu
         spreadBps, skew, levels: 3, minLevel: conf.minLevel ?? 0.2, now,
         bestBid, bestAsk, feedAnchor,
         flowTranchePct: conf.flowTranchePct ?? 0.5,
-        flowSpacingBps: conf.flowSpacingBps ?? 15,
+        flowSpacingBps: baseFlowSpacing + tier * tierFlowBpsStep,
         flowLevels: conf.flowLevels ?? 2,
+        askParityBps: tier * tierSpacingBps,
+        bidCeilingBps: tier * tierSpacingBps,
       });
       const ops = [];
       for (const o of staleCls.stale.slice(0, 3)) ops.push(["limit_order_cancel", { owner: name, orderid: o.orderid }]);
@@ -244,7 +262,7 @@ export async function runSoldierGrids({ parity, spreadBps = 0, now, bestBid = nu
       let res;
       if (!ops.length) res = { ok: true, verdict: "NO-OPS", ops: 0 };
       else res = await executeAs(name, ops, { tag: "soldier-grid" });
-      out.push({ name, verdict: res.verdict ?? "SENT", txid: res.txid ?? null, ops: ops.length, stale: staleCls.stale.length, live: live.length, steem: acc.steem, sbd: acc.sbd, error: res.error ?? null });
+      out.push({ name, tier, verdict: res.verdict ?? "SENT", txid: res.txid ?? null, ops: ops.length, stale: staleCls.stale.length, live: live.length, steem: acc.steem, sbd: acc.sbd, error: res.error ?? null });
     } catch (e) {
       out.push({ name, verdict: "ERROR", error: String(e?.message ?? e).slice(0, 120) });
     }
