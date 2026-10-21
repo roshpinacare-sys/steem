@@ -57,6 +57,15 @@ const PIDFILE = "/tmp/saos-office-supervisor.pid";
 const LOG = "/tmp/office-keeper-v2.log";
 const RECEIPTS = path.join(GIT_HOME, ".zscripts", "office-receipts.jsonl");
 const ORG = "roshpinacare-sys";
+/* W35: pull/rebase need a REAL remote ref (HEAD is ambiguous there); push rides
+ * HEAD. The cockpit home rides branch "saos-cockpit" — detected, never assumed. */
+const BRANCH = (() => {
+  try {
+    const r = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd: GIT_HOME, timeout: 15_000 });
+    const b = r.stdout?.toString().trim();
+    return b && b !== "HEAD" ? b : "saos-cockpit";
+  } catch { return "saos-cockpit"; }
+})();
 
 /* ── the office map (v2: every organ has a UNIQUE port now) ───────────── */
 const PORTS: Record<number, string> = {
@@ -209,6 +218,31 @@ function healMirror(): string[] {
   return healed;
 }
 
+/* ── P2.5 DEPS (a re-cloned home has source but NOT node_modules — measured
+ *    W35: saos-engine + saos-custodian crashed "Cannot find module
+ *    '@noble/hashes/sha256'" until bun install ran; the wipe had eaten the
+ *    gitignored trees. The office reinstalls them itself, bounded, honestly.) */
+function depsEnsure(): string[] {
+  const installed: string[] = [];
+  try {
+    if (!fs.existsSync(GIT_MINI)) return installed;
+    for (const svc of fs.readdirSync(GIT_MINI)) {
+      const dir = path.join(MY_MINI, svc);
+      const pkg = path.join(dir, "package.json");
+      if (!fs.existsSync(pkg)) continue;
+      try {
+        const deps = JSON.parse(fs.readFileSync(pkg, "utf8"))?.dependencies ?? {};
+        if (!Object.keys(deps).length) continue;        /* bun-builtins only */
+        if (fs.existsSync(path.join(dir, "node_modules"))) continue;
+        const r = spawnSync("bun", ["install"], { cwd: dir, timeout: 180_000, stdio: ["ignore", "ignore", "pipe"] });
+        if (r.status === 0) { installed.push(svc); log(`DEPS-INSTALL ${svc} (re-established after wipe)`); }
+        else log(`DEPS-INSTALL-FAIL ${svc}: ${r.stderr?.toString().slice(0, 120)}`);
+      } catch { /* honest next */ }
+    }
+  } catch { /* honest */ }
+  return installed;
+}
+
 /* ── P3 SERVICES (probe + flock respawn) ──────────────────────────────── */
 async function portAlive(port: number): Promise<boolean> {
   try {
@@ -257,7 +291,7 @@ function pushReceipt(kind: string, body: Record<string, unknown>): void {
     fs.appendFileSync(RECEIPTS, rec + "\n");
   } catch (e) { log(`RECEIPT-WRITE-FAIL: ${String(e).slice(0, 120)}`); return; }
   if (!cachedToken) { log("RECEIPT-PUSH-SKIP: no token"); return; }
-  const env = { ...process.env, SAOS_TOKEN: cachedToken };
+  const env = { ...process.env, SAOS_TOKEN: cachedToken, GIT_EDITOR: "true", GIT_TERMINAL_PROMPT: "0", GIT_PAGER: "cat" };
   const helper = "!f(){ echo username=x-access-token; echo password=$SAOS_TOKEN; }; f";
   const g = (args: string[]) => spawnSync("git", args, { cwd: GIT_HOME, env, timeout: 120_000 });
   /* W35: the cockpit home rides branch "saos-cockpit" (measured — "src refspec
@@ -265,7 +299,19 @@ function pushReceipt(kind: string, body: Record<string, unknown>): void {
    * Push HEAD: whatever branch the clone sits on is the branch that publishes. */
   g(["add", "-A", ".zscripts/office-receipts.jsonl"]);
   g(["commit", "-q", "-m", `office-boot: ${kind} · self-re-establishment receipt ${new Date().toISOString()} [trace:1a160970c4c4a575]`]);
-  g(["pull", "--rebase", "-q", "-X", "theirs", "origin", "HEAD"]); /* sibling law */
+  /* W35 measured TWICE: (1) `pull origin HEAD` is ambiguous — pull demands a
+   * real remote ref; (2) a wedged spawnSync'd rebase freezes the repo mid-
+   * flight ("interactive rebase in progress, No commands done") and the whole
+   * office goes mute. Law: fetch the real branch, rebase --autostash
+   * non-interactively, and if ANYTHING jams — self-abort, stay alive, retry
+   * on the next state change. The office can never wedge itself again. */
+  g(["fetch", "-q", "origin", BRANCH]);
+  const rb = g(["rebase", "--autostash", `origin/${BRANCH}`]);
+  if (rb.status !== 0) {
+    g(["rebase", "--abort"]);
+    log(`RECEIPT-REBASE-FAIL: ${rb.stderr?.toString().slice(0, 160)} — aborted clean, retry on next change`);
+    return;
+  }
   const p = g(["push", "-q", "origin", "HEAD"]);
   if (p.status === 0) log(`RECEIPT-PUSHED ${kind}`);
   else log(`RECEIPT-PUSH-FAIL: ${p.stderr?.toString().slice(0, 200)}`);
@@ -278,7 +324,8 @@ async function reassert(firstBoot: boolean): Promise<void> {
   custodyHow = custody.how;
   const homes = await ensureHomes();
   const healed = healMirror();
-  const sig = JSON.stringify([custody.ok, custody.how, homes.restored, healed]);
+  const depsInstalled = depsEnsure();
+  const sig = JSON.stringify([custody.ok, custody.how, homes.restored, healed, depsInstalled]);
   const changed = sig !== lastSig;
   if (changed) {
     lastSig = sig;
@@ -289,9 +336,10 @@ async function reassert(firstBoot: boolean): Promise<void> {
     if (homes.restored.length) reasons.push(`homes re-cloned: ${homes.restored.join(", ")}`);
     if (homes.missing.length) reasons.push(`homes still missing: ${homes.missing.join(", ")}`);
     if (healed.length) reasons.push(`mirror healed: ${healed.join(", ")}`);
+    if (depsInstalled.length) reasons.push(`deps reinstalled: ${depsInstalled.join(", ")}`);
     pushReceipt(firstBoot ? "boot" : "reassert", {
       custody: custody.ok, custodyHow: custody.how,
-      homesRestored: homes.restored, homesMissing: homes.missing, mirrorHealed: healed,
+      homesRestored: homes.restored, homesMissing: homes.missing, mirrorHealed: healed, depsInstalled,
       reasons: reasons.length ? reasons : ["state change"],
     });
   }
