@@ -182,7 +182,7 @@ try {
   /* the pruned-seal lineages (measured: ROT2/GEN-2-era seals) live ONLY on
    * origin/main — the dispatch checkout carries just the saos-cockpit ref,
    * so fetch main explicitly (checkout persists its token) before walking */
-  try { execFileSync("git", ["fetch", "origin", "main", "--quiet"], { stdio: ["ignore", "ignore", "ignore"], timeout: 60000 }); } catch { /* offline/off-token — walk what we have */ }
+  try { execFileSync("git", ["fetch", "origin", "main", "--quiet"], { stdio: ["ignore", "ignore", "ignore"], timeout: 180000 }); receipt({ step: "main-fetch", verdict: "ok" }); } catch (e) { receipt({ step: "main-fetch", verdict: "failed", note: String(e?.message ?? e).slice(0, 80) }); }
   const walks = ["--all", "origin/main"];
   for (const walk of walks) {
     try {
