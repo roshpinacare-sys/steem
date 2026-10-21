@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-21T04:35:33.855Z",
+  "at": "2026-10-21T04:50:39.793Z",
   "verdict": "21-FLAGGED",
   "repos": [
     {
@@ -10,10 +10,34 @@
       "scanned": 30,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 8,
+      "unsigned": 10,
       "invalid": 0,
-      "untrusted": 22,
+      "untrusted": 20,
       "flagged": [
+        {
+          "hash": "08bf54af",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T04:48:36Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
+        {
+          "hash": "0fcb586d",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T04:38:16Z",
+          "subject": "vault-sync [seal-host]: union-sync — אף-צד-לא-נמחק"
+        },
+        {
+          "hash": "250bdc80",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T04:38:15Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "b509a6a5",
           "gq": "U",
@@ -149,30 +173,6 @@
           "author": "Z User",
           "at": "2026-10-21T03:59:38Z",
           "subject": "W119 [agent-2]: probe history-walk fix — the ROT2/GEN-2-era seal linea"
-        },
-        {
-          "hash": "169d4c8f",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "agent-2-economy-core",
-          "at": "2026-10-21T03:56:35Z",
-          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
-        },
-        {
-          "hash": "0736127d",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "agent-2-economy-core",
-          "at": "2026-10-21T03:55:16Z",
-          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
-        },
-        {
-          "hash": "38b6a854",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-21T03:50:42Z",
-          "subject": "W119 [agent-2]: probe HISTORICAL-SEALS law — the tip-only sweep could "
         }
       ]
     },
@@ -257,6 +257,33 @@
     }
   ],
   "flagged": [
+    {
+      "hash": "08bf54af",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T04:48:36Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "0fcb586d",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T04:38:16Z",
+      "subject": "vault-sync [seal-host]: union-sync — אף-צד-לא-נמחק",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "250bdc80",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T04:38:15Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
     {
       "hash": "b509a6a5",
       "gq": "U",
@@ -411,33 +438,6 @@
       "repo": "steem.git(LOCAL)"
     },
     {
-      "hash": "169d4c8f",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "agent-2-economy-core",
-      "at": "2026-10-21T03:56:35Z",
-      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "0736127d",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "agent-2-economy-core",
-      "at": "2026-10-21T03:55:16Z",
-      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "38b6a854",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-21T03:50:42Z",
-      "subject": "W119 [agent-2]: probe HISTORICAL-SEALS law — the tip-only sweep could ",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
       "hash": "83555a78",
       "gq": "E",
       "sig": "INVALID",
@@ -452,5 +452,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 5935
+  "ms": 6197
 }
