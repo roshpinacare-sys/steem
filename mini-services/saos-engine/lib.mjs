@@ -87,6 +87,8 @@ export function planLadder({
   bestBid = null, bestAsk = null, feedAnchor = null,
   flowTranchePct = 0.2, flowSpacingBps = 15, flowLevels = 4,
   flowAskBudgetSteem = null, flowBidBudgetSbd = null,
+  askParityBps = 0, // W27 tiered-fleet-book: THIS body's value-ask ladder starts askParityBps deeper (cap-clamped)
+  bidCeilingBps = 0, // W27 tiered-fleet-book: THIS body's bid ladder sits bidCeilingBps BELOW the common ceiling (more conservative, always lawful)
 }) {
   if (!(parity > 0)) return { verdict: "NO-PARITY", asks: [], bids: [], blocker: ["no-external-parity"] };
   const k = dragK(spreadBps);
@@ -100,8 +102,23 @@ export function planLadder({
    * when no live book exists (bestAsk falsy/junk) the parity floor law alone
    * stands, exactly as before — zero behavior change without a live book. */
   const bookCap = Number(bestAsk) > 0 ? Number(bestAsk) * (1 + ASK_ANCHOR_BPS / 10000) : Infinity;
-  const floorRaw = Math.min(parity * (1 + ASK_FLOOR_BPS / 10000), bookCap);
-  const ceilRaw = parity * (1 - ASK_FLOOR_BPS / 10000); // bids never above parity−20bps
+  /* W27-c TIERED FLEET BOOK (owner trace 1a15c67385c253b5 — "גוף אחד חכם עם הרבה
+   * ידיים" · many hands, one body): the fleet is one market-maker wearing N
+   * bodies. askParityBps shifts ONLY this body's value-ask FLOOR deeper into
+   * the lawful band [floor…front+ASK_ANCHOR] so N bodies form a real ask WALL
+   * instead of stacking on one price. The bookCap law above is UNTOUCHED (no
+   * ask may ever sit above the live front + anchor) — in a book-depressed
+   * market the cap binds and every tier clamps to the same lawful front (the
+   * G41 fillability law wins by design); the bid-side tier below carries the
+   * spread there. When askParityBps=0 the math is byte-identical to before. */
+  const floorRaw = Math.min(parity * (1 + (ASK_FLOOR_BPS + Math.max(0, askParityBps)) / 10000), bookCap);
+  /* W27-c bid-side tier: the body's bid ladder starts BELOW the common
+   * ceiling — a lower bid is ALWAYS lawful (never pays one tick more than
+   * the un-tiered law allows) and N bodies form a real descending bid WALL
+   * instead of stacking on one price. askParityBps above does the mirrored
+   * job for the ask ladder inside the G41 cap. Both defaults (0,0) are
+   * byte-identical to the pre-W27 math. */
+  const ceilRaw = parity * (1 - (ASK_FLOOR_BPS + Math.max(0, bidCeilingBps)) / 10000); // bids never above parity−20bps (tiered bodies sit lower)
   // T-9 fix (same family as the T-5 rounding blocker): 6dp rounding must
   // NEVER push an ask below floor or a bid above ceiling — round asks UP,
   // bids DOWN, and law-check with ε tolerance.

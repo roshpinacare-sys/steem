@@ -332,8 +332,19 @@ async function tickInner() {
 
   /* the trip size: scarce-money reserves + hard notional ceiling + parity trigger */
   const mid = (book.bestAsk + book.bestBid) / 2;
+  /* W27-c REAL-MONEY ANCHOR (owner trace 1a15c67385c253b5 — "תזרים אמיתי מבחוץ"):
+   * when the external-quotes sweep is fresh, the REAL outside cross unit
+   * (steemUsd/sbdUsd — what Poloniex/Bithumb actually pay) REPLACES the
+   * internal feed as the parity trigger's anchor: the trigger then measures
+   * our book against real money, not against the feed we ourselves quote.
+   * Stale/absent anchor → the internal feed, byte-identical behavior. */
+  const ext = readJson(path.join(STATE, "external-quotes.json"), null);
+  const extAge = ext?.at ? (nowMs - (Date.parse(ext.at) || 0)) : Infinity;
+  const extFresh = Number.isFinite(extAge) && extAge >= 0 && extAge < 15 * 60_000;
+  const extUnit = extFresh && Number(ext.impliedUnitSbdPerSteem) > 0 ? Number(ext.impliedUnitSbdPerSteem) : 0;
   const feed = readJson(path.join(STATE, "observe.json"), null);
-  const feedUnit = feed?.feed ?? null; /* SBD per STEEM (internal feed, same unit as the book) */
+  const feedUnit = extUnit > 0 && extUnit < 2 ? extUnit : (feed?.feed ?? null); /* SBD per STEEM — external real-money first */
+  const extGapBps = extUnit > 0 && mid > 0 ? Math.round((extUnit - mid) / mid * 10000) / 10 : null;
   const trig = parityTrigger(mid, feedUnit > 0 && feedUnit < 2 ? feedUnit : 0, dc.bandBps);
 
   const steemAvail = Math.max(0, (acc.steem ?? 0) - dc.reserveSteem);
@@ -394,6 +405,7 @@ async function tickInner() {
     rcPct, opsToday, trips, nextId, lastTxid: res.txid ?? null, lastError: null,
     lastTrip: { A, B, u: Math.round(u * 1e6) / 1e6, askId, bidId, at: now.toISOString(), trigger: trig.id ?? null },
     trigger: trig.id ?? null, spreadBps: Math.round(spreadBps * 10) / 10,
+    extAnchor: { source: extUnit > 0 ? "external-real-money" : "internal-feed", unit: feedUnit ? Math.round(feedUnit * 1e6) / 1e6 : null, gapBps: extGapBps, at: ext?.at ?? null },
   });
 }
 
