@@ -25,6 +25,7 @@ import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startManyHands, manyhandsState } from "./manyhands.mjs"; // G43 ONE-BODY-MANY-HANDS + the sharp taker (shadow-first)
 import { runDisperse, disperseState, disperseConf } from "./disperse.mjs"; // W120 internal liquidity dispersion rail
+import { startSharpTaker, sharpTakerState } from "./sharp-taker.mjs"; // G44: the master-rail dislocation taker (takeLaw on the custody that lives)
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
 import { startExternalQuotes, externalQuotesState } from "./external-quotes.mjs"; // W27-c: the REAL-MONEY external price anchor (Poloniex/Bithumb/Gecko)
 import { startFfGate, ffGateState } from "./ff-gate.mjs"; // W27-a: the FixedFloat real-money gate (PENDING-ACTIVATION → ACTIVE → promote)
@@ -147,6 +148,8 @@ async function handle(req) {
       dexflow: dexState(),
       /* G43 MANY-HANDS: the one-body fleet grid + the sharp taker (shadow-first) */
       manyhands: manyhandsState(),
+      /* G44 SHARP-TAKER: the master-rail dislocation taker (takeLaw, FOK, capped) */
+      sharpTaker: sharpTakerState(),
       /* W17 EXCHANGE-EXEC: the HTX executor — deposit+trade verdicts (typed, journaled) */
       exchangeExec: exchangeExecState(),
       /* W27-c EXT-QUOTES: the real-money external anchor (steemUsd/sbdUsd/implied cross unit) */
@@ -536,6 +539,15 @@ try { startDexFlow(); } catch (e) {
 // sharp taker against feed-fair dislocations, SHADOW-first (takerLive flag).
 try { startManyHands(); } catch (e) {
   console.error(`manyhands boot failed: ${String(e?.message ?? e)}`);
+}
+
+// G44 SHARP-TAKER: the dislocation-capture layer on the MASTER rail — the
+// owner's blanket approval (2026-10-21 "אני מאשר קדימה") executed where
+// custody actually lives: takeLaw (ONE law, imported from manyhands) with
+// FOK, caps, own id partition [1.7e9,1.79e9), standing-order gate in
+// exec-armed.json (fail-closed DISARMED default).
+try { startSharpTaker(); } catch (e) {
+  console.error(`sharp-taker boot failed: ${String(e?.message ?? e)}`);
 }
 
 // W17 · EXCHANGE-EXEC: the HTX executor — the deposit leg (T2 transfer to the
