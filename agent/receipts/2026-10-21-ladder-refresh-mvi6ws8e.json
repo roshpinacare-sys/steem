@@ -1,0 +1,156 @@
+{
+  "receipt": "ladder-refresh",
+  "task": "16-b — ladder-refresh executor run (≤3 cancel+replace pairs, ±2% band, floor-anchored, no fresh capital)",
+  "at": "2026-10-21T14:11:00.973Z",
+  "node": "https://api.steemit.com",
+  "account": "headcorner",
+  "market": {
+    "bestBid": 0.101002,
+    "bestAsk": 0.10361621,
+    "mid": 0.1023091,
+    "spreadPct": 2.56,
+    "depthBids": 12,
+    "depthAsks": 20,
+    "headBlock": 110631495
+  },
+  "ladderShape": {
+    "openOrders": 9,
+    "sells": 9,
+    "buys": 0,
+    "steemOfferedSellSide": 215.241,
+    "steemSoughtBuySide": 0,
+    "oldestOrderHours": 2.5,
+    "orders": [
+      {
+        "orderid": 12740284,
+        "side": "sell-steem",
+        "price": 0.10371596,
+        "baseAmount": 23.574,
+        "steemVolume": 23.574,
+        "vsMidPct": 1.38,
+        "ageHours": 2.5,
+        "expiration": "2026-10-22T11:40:50"
+      },
+      {
+        "orderid": 12740330,
+        "side": "sell-steem",
+        "price": 0.10370728,
+        "baseAmount": 18.639,
+        "steemVolume": 18.639,
+        "vsMidPct": 1.37,
+        "ageHours": 0.44,
+        "expiration": "2026-10-22T13:44:34"
+      },
+      {
+        "orderid": 12740331,
+        "side": "sell-steem",
+        "price": 0.10381458,
+        "baseAmount": 18.639,
+        "steemVolume": 18.639,
+        "vsMidPct": 1.47,
+        "ageHours": 0.44,
+        "expiration": "2026-10-22T13:44:34"
+      },
+      {
+        "orderid": 12740332,
+        "side": "sell-steem",
+        "price": 0.10397554,
+        "baseAmount": 18.639,
+        "steemVolume": 18.639,
+        "vsMidPct": 1.63,
+        "ageHours": 0.44,
+        "expiration": "2026-10-22T13:44:34"
+      },
+      {
+        "orderid": 12740333,
+        "side": "sell-steem",
+        "price": 0.10407397,
+        "baseAmount": 17.305,
+        "steemVolume": 17.305,
+        "vsMidPct": 1.73,
+        "ageHours": 0.44,
+        "expiration": "2026-10-22T13:44:34"
+      },
+      {
+        "orderid": 12740334,
+        "side": "sell-steem",
+        "price": 0.10372525,
+        "baseAmount": 30.253,
+        "steemVolume": 30.253,
+        "vsMidPct": 1.38,
+        "ageHours": 0.18,
+        "expiration": "2026-10-22T13:59:53"
+      },
+      {
+        "orderid": 12740335,
+        "side": "sell-steem",
+        "price": 0.10382441,
+        "baseAmount": 30.253,
+        "steemVolume": 30.253,
+        "vsMidPct": 1.48,
+        "ageHours": 0.18,
+        "expiration": "2026-10-22T13:59:53"
+      },
+      {
+        "orderid": 12740336,
+        "side": "sell-steem",
+        "price": 0.10395663,
+        "baseAmount": 30.253,
+        "steemVolume": 30.253,
+        "vsMidPct": 1.61,
+        "ageHours": 0.18,
+        "expiration": "2026-10-22T13:59:53"
+      },
+      {
+        "orderid": 12740337,
+        "side": "sell-steem",
+        "price": 0.10405981,
+        "baseAmount": 27.686,
+        "steemVolume": 27.686,
+        "vsMidPct": 1.71,
+        "ageHours": 0.18,
+        "expiration": "2026-10-22T13:59:53"
+      }
+    ]
+  },
+  "churn": {
+    "marketOpsInLast100AcctOps": 54,
+    "spanFirstLastSeconds": 8802,
+    "verdict": "HIGH-FREQUENCY CONCURRENT MANAGER OBSERVED — another process is actively churning this ladder; this executor stays cap-limited and staleness-gated inside that reality"
+  },
+  "caps": {
+    "maxPairsPerRun": 3,
+    "staleMinAgeHours": 168,
+    "staleDistPct": 2,
+    "replaceBandPct": 2,
+    "targetOffsetPct": 1.5,
+    "floorLowestAsks": 2,
+    "floorHighestBids": 2,
+    "standingMinAfter": 4,
+    "bookMinDepthLevels": 3,
+    "bookAnomalySpreadPct": 15,
+    "orderLifetimeHours": 24,
+    "accountLock": "headcorner",
+    "neverTouch": [
+      "^ynet",
+      "^tov-hive"
+    ]
+  },
+  "gates": {
+    "liveGate28b": false,
+    "ladderArm": false,
+    "executorDisabled": false,
+    "dryForced": false
+  },
+  "dryRunPlanPrint": [],
+  "drops": [
+    {
+      "orderid": null,
+      "reason": "side-guard: plan would empty the buy-steem side"
+    }
+  ],
+  "anomaly": "side-guard",
+  "status": "abort-anomaly",
+  "ops": [],
+  "executed": []
+}
