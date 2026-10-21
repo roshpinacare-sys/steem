@@ -30,6 +30,7 @@ const PORTS: Record<number, string> = {
   3042: "saos-metrics",
   3043: "saos-builder",
   3047: "state-witness",
+  3045: "dex-beat-service", /* W25: the hourly :53 chain-home keeper-driver (lives in my-project, symlinked here for office respawn) */
 };
 const COOLDOWN_MS = 600_000;
 const INTERVAL_MS = 60_000;
