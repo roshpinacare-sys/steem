@@ -14,6 +14,7 @@ import {
   scanWalkPlan, coverageVerdict, mergeHistoryWindows,
   signalDigest, measuredLayers, redeployIntel, blockageLedger, organVerdict, meshVerdict,
 } from "./lib.mjs";
+import { createHmac } from "node:crypto";
 import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE, openingFresh, openingSimilarity } from "./content.mjs";
 import { sanitizeReply, replyFresh, textSimilarity, pickColdPost, buildDaySchedule } from "./army-social.mjs";
 import { spamVerdict, organicVerdict, crossChainVerdict, titleVerdict, tagVerdict, bodyVerdict, selfSimVerdict, groundingVerdict, frequencyVerdict, spamPhraseHits, dupSentenceRatio, jaccard, shingles, normalizeText, GATE_DEFAULTS } from "./spamgate.mjs";
@@ -6262,8 +6263,15 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("59.3b pending by message text (belt+braces)", fg.classifyFfResponse({ code: "500", msg: "you do Not have permission", resOk: true, data: null }), "PENDING-ACTIVATION");
   eq("59.3c permitted json body ⇒ ACTIVE (the promote gate opens)", fg.classifyFfResponse({ code: "0", msg: "", resOk: true, data: { currencies: [] } }), "ACTIVE");
   eq("59.3d anything else ⇒ UNEXPECTED (ABSTAIN, never guessed)", fg.classifyFfResponse({ code: "403", msg: "forbidden", resOk: false, data: null }), "UNEXPECTED");
-  eq("59.3e ffSig is deterministic HMAC-SHA256 of url-encoded params",
-    fg.ffSig("k", {}) === fg.ffSig("k", {}), true);
+  eq("59.3e ffSig is deterministic HMAC-SHA256 of the exact body string (W120 measured convention)",
+    fg.ffSig("k", "") === fg.ffSig("k", ""), true);
+  // W120 vectors: real FF v2 convention — X-API-SIGN = HMAC(secret, exact body string)
+  eq("59.3f ffSig empty-body matches the measured console-rail convention (HMAC of \"\")",
+    fg.ffSig("k", ""), crypto.createHmac("sha256", "k").update("").digest("hex"));
+  eq("59.3g code 401 ⇒ KEY-REJECTED (fail-closed, no retry storm)",
+    fg.classifyFfResponse({ code: "401", msg: "API key invalid", resOk: false, data: null }), "KEY-REJECTED");
+  eq("59.3h code 0 but data missing ⇒ UNEXPECTED (ABSTAIN, never guessed)",
+    fg.classifyFfResponse({ code: "0", msg: "", resOk: true, data: null }), "UNEXPECTED");
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
