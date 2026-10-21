@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-21T05:43:43.112Z",
+  "at": "2026-10-21T05:58:43.113Z",
   "verdict": "21-FLAGGED",
   "repos": [
     {
@@ -10,10 +10,26 @@
       "scanned": 30,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 4,
+      "unsigned": 3,
       "invalid": 0,
-      "untrusted": 26,
+      "untrusted": 27,
       "flagged": [
+        {
+          "hash": "44d4bbde",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T05:51:10Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
+        {
+          "hash": "3ada426d",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T05:45:52Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "6e30627a",
           "gq": "U",
@@ -157,22 +173,6 @@
           "author": "Z User",
           "at": "2026-10-21T05:00:19Z",
           "subject": "merge r2 resolution — alive-wins · union"
-        },
-        {
-          "hash": "87ff37fc",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-21T05:00:16Z",
-          "subject": "live-state seal [G44 r2] — engine truth at reconcile point"
-        },
-        {
-          "hash": "fac91938",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Z User",
-          "at": "2026-10-21T05:00:11Z",
-          "subject": "live-state seal [G44 r1] — engine truth at reconcile point"
         }
       ]
     },
@@ -257,6 +257,24 @@
     }
   ],
   "flagged": [
+    {
+      "hash": "44d4bbde",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T05:51:10Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "3ada426d",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T05:45:52Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
     {
       "hash": "6e30627a",
       "gq": "U",
@@ -420,24 +438,6 @@
       "repo": "steem.git(LOCAL)"
     },
     {
-      "hash": "87ff37fc",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-21T05:00:16Z",
-      "subject": "live-state seal [G44 r2] — engine truth at reconcile point",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "fac91938",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Z User",
-      "at": "2026-10-21T05:00:11Z",
-      "subject": "live-state seal [G44 r1] — engine truth at reconcile point",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
       "hash": "83555a78",
       "gq": "E",
       "sig": "INVALID",
@@ -452,5 +452,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 6636
+  "ms": 6123
 }
