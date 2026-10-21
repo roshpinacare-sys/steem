@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-21T02:44:04.286Z",
-  "verdict": "3-FLAGGED",
+  "at": "2026-10-21T02:55:34.654Z",
+  "verdict": "4-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -10,10 +10,18 @@
       "scanned": 30,
       "signedPct": 13,
       "signed": 4,
-      "unsigned": 24,
+      "unsigned": 23,
       "invalid": 0,
-      "untrusted": 2,
+      "untrusted": 3,
       "flagged": [
+        {
+          "hash": "acfa0f32",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T02:47:03Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "62c6b431",
           "gq": "U",
@@ -122,6 +130,15 @@
   ],
   "flagged": [
     {
+      "hash": "acfa0f32",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T02:47:03Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "62c6b431",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -154,5 +171,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 13979
+  "ms": 6500
 }
