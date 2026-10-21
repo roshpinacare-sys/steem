@@ -17,6 +17,14 @@
 #     (labels, never key bytes).
 #  4) hcs* tokens in recovery branch worklog snapshots = account-name prose
 #     about the measured LOST-NO-CUSTODY soldier keys (lines 409/623).
+#  5) [wave 19.54 · trace 1a15e3e419138aa5] agent/harden_result.json =
+#     HISTORICAL-ONLY artifact (absent at HEAD, measured: git log --all --
+#     agent/harden_result.json → removed in the snapshot reorganization) whose
+#     body is a PUBLIC token dossier — "contract address / 144,444,444 tokens /
+#     polygon" prose trips generic-api-key on chain-PUBLIC identifiers
+#     (measured 267 findings across 5+ commits in the 11:43Z full-history run
+#     39594092581, all in this one file, Secret:REDACTED in every entry).
+#     Contract addresses are public identifiers by design, not credentials.
 # NOTE: gitleaks 8.24.3 silently ignores [[allowlists]] array-of-tables with
 # condition=AND (measured) - single [allowlist] with OR semantics is used;
 # each entry is therefore kept deliberately narrow instead of AND-scoped.
@@ -33,4 +41,5 @@ regexes = [
 ]
 paths = [
   'mini-services/saos-engine/selftest\.mjs$',
+  'agent/harden_result\.json$',
 ]
