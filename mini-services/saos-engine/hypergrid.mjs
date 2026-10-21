@@ -37,7 +37,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import {
   planLadder, rcEconomics, rcGovernor, RC_COSTS,
-  countDayOrderOpsFromHistory, diffHyperTick, rcAnomaly, backoffDelayMs,
+  countDayOrderOpsFromHistory, diffHyperTick, rcAnomaly,
 } from "./lib.mjs";
 import { rpcCall, accountState, openOrders } from "./measure.mjs";
 import { executeOps, armedConf, execPaused, masterAccount, loadCredential } from "./signer.mjs";
@@ -398,29 +398,9 @@ async function tickInner() {
 
 async function tick() {
   if (G.__saosHyperInFlight === true) return;
-  /* G44 BACKOFF LAW (AutoHedge cadence pattern, adopted fail-closed): after
-   * consecutive TICK-ERRORs the loop skips until base·2^k (cap 60s) elapses —
-   * no retry-storm against a failing venue, no stopped loop either. The
-   * interval keeps firing; the gate below just skips during the backoff
-   * window (zero scheduler surgery on the hottest loop in the engine). */
-  const backoffUntil = G.__saosHyperBackoffUntil ?? 0;
-  if (Date.now() < backoffUntil) return;
   G.__saosHyperInFlight = true;
-  try {
-    await tickInner();
-    if (G.__saosHyperErrK) {
-      appendLine(EVENTS_FILE, { type: "hyper.backoff-cleared", at: new Date().toISOString(), consecutiveErrors: G.__saosHyperErrK });
-      G.__saosHyperErrK = 0;
-      G.__saosHyperBackoffUntil = 0;
-    }
-  } catch (e) {
-    G.__saosHyperErrK = (G.__saosHyperErrK ?? 0) + 1;
-    const hc2 = hyperConf();
-    const delay = backoffDelayMs(G.__saosHyperErrK, hc2.tickMs, 60_000);
-    G.__saosHyperBackoffUntil = Date.now() + delay;
-    const journal = G.__saosHyperErrK === 1 || G.__saosHyperErrK % 5 === 0;
-    if (journal) appendLine(EVENTS_FILE, { type: "hyper.tick-error", at: new Date().toISOString(), consecutiveErrors: G.__saosHyperErrK, backoffMs: delay, error: String(e?.message ?? e).slice(0, 140) });
-    writeJson(HYPER_FILE, { ...(readJson(HYPER_FILE, {})), lastVerdict: "TICK-ERROR", lastError: String(e?.message ?? e).slice(0, 200), lastTickAt: new Date().toISOString(), backoff: { consecutiveErrors: G.__saosHyperErrK, until: new Date(G.__saosHyperBackoffUntil).toISOString() } });
+  try { await tickInner(); } catch (e) {
+    writeJson(HYPER_FILE, { ...(readJson(HYPER_FILE, {})), lastVerdict: "TICK-ERROR", lastError: String(e?.message ?? e).slice(0, 200), lastTickAt: new Date().toISOString() });
   } finally { G.__saosHyperInFlight = false; }
 }
 
