@@ -53,6 +53,7 @@ import * as path from "node:path";
 import { takeLaw } from "./manyhands.mjs";
 import { rpcCall, accountState } from "./measure.mjs";
 import { executeOps, armedConf, execPaused, masterAccount, loadCredential } from "./signer.mjs";
+import { backoffDelayMs } from "./lib.mjs"; // ONE backoff law — defined in lib, re-used here (no duplicate)
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
@@ -82,22 +83,17 @@ export function takerIdOk(id) {
 
 /** BACKOFF LAW (AutoHedge cadence pattern, adopted fail-closed): on
  * consecutive errors the layer waits base·2^k (capped), never a fixed
- * retry-storm, never a stop. k=0 → base. Garbage inputs → base (fail-closed
- * to the least surprising value, never a throw). */
-export function backoffDelayMs(k, baseMs = 3000, capMs = 60_000) {
-  const kk = Number.isFinite(Number(k)) && Number(k) >= 0 ? Math.floor(Number(k)) : 0;
-  const base = Number.isFinite(Number(baseMs)) && Number(baseMs) > 0 ? Number(baseMs) : 3000;
-  const cap = Number.isFinite(Number(capMs)) && Number(capMs) >= base ? Number(capMs) : 60_000;
-  let d = base;
-  for (let i = 0; i < kk && d < cap; i++) d = Math.min(d * 2, cap);
-  return Math.min(d, cap);
-}
+ * retry-storm, never a stop. Defined ONCE in lib.mjs (shared law home) —
+ * imported and re-exported here for the selftest and for hypergrid's wire. */
+export { backoffDelayMs } from "./lib.mjs";
 
 /** OP BUILDER LAW: the single lawful shape of a master-rail take.
  * buy  ⇒ sell SBD, receive STEEM (amounts to 3dp strings — chain format).
  * sell ⇒ sell STEEM, receive SBD. fill_or_kill ALWAYS true. The orderid is
- * rejected unless it sits in the sharp partition. Pure. */
-export function masterTakeOp({ side, orderid, tSec, ttlSec = 600, spendSbd, receiveSbd, qtySteem }) {
+ * rejected unless it sits in the sharp partition. owner is required (pure —
+ * no file reads). Pure. */
+export function masterTakeOp({ side, owner, orderid, tSec, ttlSec = 600, spendSbd, receiveSbd, qtySteem }) {
+  if (typeof owner !== "string" || !owner) return { error: "OWNER-REQUIRED" };
   if (side !== "buy" && side !== "sell") return { error: "SIDE-INVALID" };
   if (!takerIdOk(orderid)) return { error: "ORDERID-OUTSIDE-PARTITION" };
   if (!Number.isFinite(Number(tSec)) || Number(tSec) <= 0) return { error: "TSEC-INVALID" };
@@ -212,7 +208,7 @@ async function tick() {
 
     /* EXECUTE — master custody, one FOK op, the lawful signer path */
     const tid = (st.nextId && takerIdOk(st.nextId)) ? st.nextId : TAKER_BASE0 + 7;
-    const built = masterTakeOp({ side: t.side, orderid: tid, tSec: Math.floor(nowMs / 1000), ttlSec: sc.ttlSec, spendSbd: t.spendSbd, receiveSbd: t.receiveSbd, qtySteem: t.qtySteem });
+    const built = masterTakeOp({ side: t.side, owner: masterAccount(), orderid: tid, tSec: Math.floor(nowMs / 1000), ttlSec: sc.ttlSec, spendSbd: t.spendSbd, receiveSbd: t.receiveSbd, qtySteem: t.qtySteem });
     if (built.error) {
       appendLine(EVENTS_FILE, { type: "sharp.take-refused", at: now.toISOString(), error: built.error, ...t });
       return finish(sc, { lastVerdict: `REFUSED:${built.error}`, lastVerdictAt: now.toISOString(), takesToday, fair, rcPct, nextId: tid });
