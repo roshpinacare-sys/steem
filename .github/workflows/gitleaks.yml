@@ -42,7 +42,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          # [wave 19.54 · trace 1a15e3e419138aa5] shallow-history cure, measured root:
+          # with fetch-depth 1 the action's computed push range `BASE^..HEAD`
+          # (e.g. 6aba38f^..95d410b) cannot resolve in a depth-1 clone — gitleaks
+          # logs "no leaks found in partial scan" and exits 1 -> the action reds
+          # with "Unexpected exit code [1]" on a CLEAN scan (measured 4x red
+          # 10:10-10:41Z, runs incl. 39586404894, all zero findings; the same
+          # action measured SUCCESS with `--log-opts=-1` at 09:13Z run 39575291396).
+          # Full history lets the push range resolve; the law is unchanged:
+          # fail-closed, a finding still reds the run.
+          fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
