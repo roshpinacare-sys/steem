@@ -135,6 +135,10 @@ export async function sweepHand(account) {
   const realized = prev.realized ?? {};
   let basisGaps = prev.basisGaps ?? 0;
   const totals = prev.totals ?? { fills: 0, askFills: 0, bidFills: 0, realizedSbd: 0, volSteem: 0, volSbd: 0 };
+  /* T-566 GRILL: the window edges track FILL rows only — the grill caught the
+   * window drifting to create/cancel timestamps (non-fill ops ride the same
+   * incremental rows) which mislabeled "measured window" on the card. */
+  let lastFillTs = null;
   for (const [, x] of rows) {
     const { type, value } = opOf(x);
     if (type !== "fill_order" && type !== "fill_order_operation") continue;
@@ -144,6 +148,7 @@ export async function sweepHand(account) {
     const mine = isCur ? cur : opn, theirs = isCur ? opn : cur;
     const day = String(x?.timestamp ?? "").slice(0, 10);
     if (!day) continue;
+    lastFillTs = String(x?.timestamp ?? "") || lastFillTs;
     realized[day] = realized[day] ?? { realizedSbd: 0, askFills: 0, bidFills: 0, volSteem: 0, volSbd: 0 };
     let d = realized[day];
 
@@ -177,8 +182,12 @@ export async function sweepHand(account) {
   const st = {
     account, cursor: Math.max(prev.cursor ?? 0, rows.length ? rows[rows.length - 1][0] : (prev.cursor ?? 0)),
     adoptedAt: prev.adoptedAt ?? new Date().toISOString(),
-    windowFrom: rows.length && rows[0] ? String(rows[0][1]?.timestamp ?? "") : null, /* T-565: measured-window honesty */
-    windowTo: rows.length && rows[rows.length - 1] ? String(rows[rows.length - 1][1]?.timestamp ?? "") : null,
+    /* T-566 GRILL (self-caught regression): windowFrom is STICKY — it records the
+     * oldest edge of the measured window SINCE ADOPTION, not the last batch's
+     * first row (the grill saw woq/siq collapse from==to after one incremental
+     * sweep). windowTo advances ONLY with the newest FILL (not create/cancel). */
+    windowFrom: prev.windowFrom ?? (rows.length && rows[0] ? String(rows[0][1]?.timestamp ?? "") : null),
+    windowTo: lastFillTs ?? prev.windowTo ?? null,
     lots: { steemQty: r6(lots.steemQty), avgCostSbd: r6(lots.avgCostSbd) },
     realized: Object.fromEntries(Object.entries(realized).slice(-30).map(([k, v]) => [k, {
       realizedSbd: r6(v.realizedSbd), askFills: v.askFills, bidFills: v.bidFills,
