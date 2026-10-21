@@ -43,9 +43,9 @@ const DISPATCH_URL =
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE_FILE = path.join(DIR, "state", "attestations.jsonl");
 const LEDGER_SH =
-  process.env.CLAIMS_LEDGER_SH || "/home/z/audit/run-claims-ledger.sh";
+  process.env.CLAIMS_LEDGER_SH || path.join(DIR, "run-claims-ledger.sh");
 const ARMY_CUSTODY_JSON =
-  "/home/z/audit/steem/mini-services/saos-engine/state/army-custody.json";
+  "/home/z/audit/repos/steem/mini-services/saos-engine/state/army-custody.json";
 
 fs.mkdirSync(path.join(DIR, "state"), { recursive: true });
 

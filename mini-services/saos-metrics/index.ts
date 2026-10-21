@@ -24,8 +24,8 @@ import { initAudits, maybeRunAudit, forceRunAudit } from "./audit"; // R218-b cl
 import { merkleSnapshot, anchorNewBatch } from "./merkle"; // R218-c merkle event anchoring
 
 const PORT = 3042;
-const STATE_DIR = "/home/z/my-project/mini-services/saos-engine/state";
-const DB_DIR = "/home/z/my-project/mini-services/saos-metrics/state";
+const STATE_DIR = "/home/z/audit/repos/steem/mini-services/saos-engine/state";
+const DB_DIR = "/home/z/audit/repos/steem/mini-services/saos-metrics/state";
 const DB_PATH = path.join(DB_DIR, "metrics.db");
 const EVERY_MS = 60_000; // 1 snapshot/min => ~1440 rows/day, 7d retention ~= 3MB
 const RETAIN_MS = 7 * 24 * 3600 * 1000;
