@@ -760,7 +760,16 @@ eq("19 flow first-level ceil3-joins-front (one milli above bestAsk)", p19f.flowA
 ok("19 flow-ask-real-is-sbdOut3-over-sell", p19f.flowAsks[0].unit === Math.ceil(5 * 0.104244 * 1000) / 1000 / 5);
 ok("19 flow-asks-step-up", p19f.flowAsks[1].unit > p19f.flowAsks[0].unit);
 ok("19 flow-asks-never-cross-best-bid", p19f.flowAsks.every((a) => a.unit > 0.1042));
-ok("19 flow-asks-below-value-floor", p19f.flowAsks.every((a) => a.unit < p19f.floor));
+/* G41 law change (2026-10-21, owner volume mandate trace 1a15c3717053dcad):
+ * the value floor now JOINS the live book (≤ front + ASK_ANCHOR_BPS=10) instead
+ * of floating at parity+20bps — measured: parity-anchored asks sat ~2.8% above
+ * the front and NEVER filled (master: bought 721.7 / sold 266.2 STEEM — a
+ * one-sided accumulator). The old relation "flow < value-floor" is
+ * intentionally replaced: both tranches are front-fillable now. */
+ok("19 G41 value-floor-joins-book", p19f.floor <= 0.104244 * (1 + 10 / 10000) + 2e-6);
+ok("19 G41 value-ask-entry-at-book", p19f.asks[0]?.unit <= 0.104244 * (1 + 10 / 10000) + 2e-6);
+ok("19 G41 value-ladder-tighter-than-parity-law", p19f.asks.every((a) => a.unit < P * (1 + ASK_FLOOR_BPS / 10000)));
+ok("19 G41 flow-still-joins-front", p19f.flowAsks.every((a) => a.unit >= 0.104244 - 1e-9));
 ok("19 value-tranche-still-lawful", p19f.asks.every((a) => a.unit >= p19f.floor - 1e-12));
 ok("19 flow-bids-join-within-one-steem-milli", Math.abs(p19f.flowBids[0]?.unit - 0.1042) < 0.0002);
 ok("19 flow-bids-step-down", p19f.flowBids.every((b, i, arr) => i === 0 || b.unit < arr[i - 1].unit));
