@@ -1,7 +1,7 @@
 {
   "running": true,
-  "lastTickAt": "2026-10-21T05:00:17.210Z",
-  "ticks": 286,
+  "lastTickAt": "2026-10-21T05:03:17.212Z",
+  "ticks": 301,
   "day": "2026-10-21",
   "conf": {
     "enabled": true,
@@ -22,23 +22,25 @@
     "takerMaxSbd": 2,
     "takerMinSbd": 0.05,
     "takerDayCap": 60,
-    "takerLive": false
+    "takerLive": true,
+    "note": "G44 owner blanket approval 2026-10-21 (trace web-d6bba2fd): \"אני מאשר קדימה\" — per-hand sharp taker flips LIVE now that ACTIVE CUSTODY 14/14 measured (peer agent-2 W119 unlock, chain-judged). Caps unchanged: edge 100bps · band 800bps · <=2 SBD/take · <=60/day/rail · FOK.",
+    "enabledAt": "2026-10-21T05:02:19.141Z"
   },
   "lastVerdict": "MANYHANDS-TICK",
-  "lastVerdictAt": "2026-10-21T05:00:17.210Z",
+  "lastVerdictAt": "2026-10-21T05:03:17.212Z",
   "hands": 9,
   "handsPending": 0,
   "pendingWhy": "on-chain active authorities match no held active WIF (measured G43); hands auto-join the moment custody verifies",
   "eligible": 9,
   "pending": [],
-  "cursor": 0,
+  "cursor": 3,
   "perHand": {
-    "wic": {
-      "hand": "wic",
-      "rcPct": 92.1,
+    "haran": {
+      "hand": "haran",
+      "rcPct": 92,
       "balances": {
-        "steem": 11.9,
-        "sbd": 1.142
+        "steem": 19.3,
+        "sbd": 1.134
       },
       "opsAdded": 0,
       "governor": {
@@ -48,17 +50,17 @@
       "verdict": "HAND-GOVERNOR-ACCUMULATING",
       "takerCandidate": true
     },
-    "woq": {
-      "hand": "woq",
-      "rcPct": 77.2,
+    "hcsoldier4": {
+      "hand": "hcsoldier4",
+      "rcPct": null,
       "balances": {
-        "steem": 5.99,
-        "sbd": 0.305
+        "steem": 11.25,
+        "sbd": 0.407
       },
       "opsAdded": 0,
       "governor": {
         "pairs": 0,
-        "reason": "no-economics"
+        "reason": "no-rc-evidence"
       },
       "verdict": "HAND-GOVERNOR-ACCUMULATING",
       "takerCandidate": true
@@ -66,7 +68,7 @@
   },
   "railOpsToday": 0,
   "takerToday": 0,
-  "takerMode": "SHADOW",
+  "takerMode": "LIVE",
   "fair": 0.104082,
   "book": {
     "bestAsk": 0.103897,
