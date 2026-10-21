@@ -6230,7 +6230,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
     fg.ffSig("k", "") === fg.ffSig("k", ""), true);
   // W120 vectors: real FF v2 convention — X-API-SIGN = HMAC(secret, exact body string)
   eq("59.3f ffSig empty-body matches the measured console-rail convention (HMAC of \"\")",
-    fg.ffSig("k", ""), crypto.createHmac("sha256", "k").update("").digest("hex"));
+    fg.ffSig("k", ""), createHmac("sha256", "k").update("").digest("hex"));
   eq("59.3g code 401 ⇒ KEY-REJECTED (fail-closed, no retry storm)",
     fg.classifyFfResponse({ code: "401", msg: "API key invalid", resOk: false, data: null }), "KEY-REJECTED");
   eq("59.3h code 0 but data missing ⇒ UNEXPECTED (ABSTAIN, never guessed)",

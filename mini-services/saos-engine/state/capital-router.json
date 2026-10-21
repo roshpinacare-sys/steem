@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-21T04:57:52.235Z",
+  "at": "2026-10-21T05:02:27.556Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
@@ -8,8 +8,8 @@
     "fleetEffectiveSp": 2997.7,
     "delegatedOutSp": 2746.39,
     "expiringSoon": [],
-    "liquidSteem": 170.802,
-    "liquidSbd": 5.782,
+    "liquidSteem": 168.377,
+    "liquidSbd": 3.833,
     "unclaimedSp": 0,
     "unclaimedSbd": 0,
     "unclaimedSteem": 0
@@ -20,10 +20,10 @@
     "delegatedFieldSp": 2746.39,
     "activeRowsSp": 1289.59,
     "activeRowsCount": 14,
-    "vestsPerSp": 1611.371962,
+    "vestsPerSp": 1611.37162,
     "deepProbeQueueSp": 1457.82,
     "driftVsDeepProbeSp": -1.02,
-    "at": "2026-10-21T04:57:56.273Z"
+    "at": "2026-10-21T05:02:30.657Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -106,13 +106,13 @@
     },
     {
       "id": "sbd-route",
-      "class": "execute-now",
-      "note": "SBD routing: book bid buys STEEM 1.69% below feed — sell SBD into the bid, power up the STEEM",
+      "class": "dormant-lane",
+      "note": "SBD routing: book at/below feed value — conversion arb stays dormant",
       "expectedSpPerDay": 0,
       "evidence": {
-        "verdict": "ROUTE-VIA-BOOK",
-        "discountPct": 1.69,
-        "note": "book bid buys STEEM 1.69% below feed — sell SBD into the bid, power up the STEEM"
+        "verdict": "HOLD",
+        "premiumPct": -2.28,
+        "note": "book at/below feed value — conversion arb stays dormant"
       }
     },
     {
