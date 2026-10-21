@@ -1590,3 +1590,16 @@ export function backingFloorLaw(asset, saleAmount, measuredAvailable, outstandin
   if (after >= floor) return { allow: true, verdict: "BACKING-FLOOR-OK", detail };
   return { allow: false, verdict: "BACKING-FLOOR-REFUSED", detail };
 }
+
+/* ── G44 · BACKOFF LAW (AutoHedge cadence pattern, adopted fail-closed) ──
+ * On consecutive errors a layer waits base·2^k (capped) — never a fixed
+ * retry-storm, never a stop. k=0 → base. Garbage inputs → base (fail-closed
+ * to the least surprising value, never a throw). Pure. */
+export function backoffDelayMs(k, baseMs = 3000, capMs = 60_000) {
+  const kk = Number.isFinite(Number(k)) && Number(k) >= 0 ? Math.floor(Number(k)) : 0;
+  const base = Number.isFinite(Number(baseMs)) && Number(baseMs) > 0 ? Number(baseMs) : 3000;
+  const cap = Number.isFinite(Number(capMs)) && Number(capMs) >= base ? Number(capMs) : 60_000;
+  let d = base;
+  for (let i = 0; i < kk && d < cap; i++) d = Math.min(d * 2, cap);
+  return Math.min(d, cap);
+}
