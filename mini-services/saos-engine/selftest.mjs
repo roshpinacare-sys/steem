@@ -877,7 +877,7 @@ eq("diff ttl-cancels-all-aged", dTtl.cancelIds, [2_100_000_001, 2_100_000_002]);
 eq("diff ttl-replaces-both", dTtl.creates.length, 2);
 
 /* G43 MANY-HANDS: the one-body roster/id/budget/taker/shadow laws */
-import { handIdBase, inHandSpace, livingRoster, handBudgets, takeLaw, shadowGate, MANYHANDS_DEFAULTS } from "./manyhands.mjs";
+import { handIdBase, inHandSpace, livingRoster, handBudgets, takeLaw, shadowGate, MANYHANDS_DEFAULTS, HAND_BASE0 } from "./manyhands.mjs";
 eq("mh id-base-0", handIdBase(0), 2_400_000_000);
 eq("mh id-base-3", handIdBase(3), 2_400_300_000);
 eq("mh id-base-invalid-null", handIdBase(21), null);
@@ -925,6 +925,43 @@ eq("mh taker-no-evidence", takeLaw({ fair: 0, bestAsk: 0.1043, bestBid: 0.1042, 
 eq("mh shadow-default", shadowGate(MANYHANDS_DEFAULTS), "SHADOW");
 eq("mh shadow-string-true-is-shadow", shadowGate({ takerLive: "true" }), "SHADOW");
 eq("mh shadow-live-flag", shadowGate({ takerLive: true }), "LIVE");
+
+/* ── G44 · SHARP-TAKER: master-rail dislocation taker (partition · backoff · op) ── */
+import {
+  TAKER_BASE0, TAKER_STRIDE, takerIdOk, masterTakeOp, SHARP_DEFAULTS,
+} from "./sharp-taker.mjs";
+import { backoffDelayMs } from "./lib.mjs";
+eq("sharp id-base", TAKER_BASE0, 1_700_000_000);
+eq("sharp id-stride", TAKER_STRIDE, 90_000_000);
+eq("sharp id-lower-true", takerIdOk(1_700_000_000), true);
+eq("sharp id-upper-true", takerIdOk(1_789_999_999), true);
+eq("sharp id-below-false", takerIdOk(1_699_999_999), false);
+eq("sharp id-above-false", takerIdOk(1_790_000_000), false);
+eq("sharp id-fraction-false", takerIdOk(1_700_000_000.5), false);
+eq("sharp id-garbage-false", takerIdOk("deadbeef"), false);
+ok("sharp partition-below-dexflow-ceiling", TAKER_BASE0 >= 1.7e9 && TAKER_BASE0 < 2.1e9);
+ok("sharp partition-below-epoch-horizon", TAKER_BASE0 + TAKER_STRIDE === 1_790_000_000 && Math.floor(Date.now() / 1000) > 1_790_000_000);
+ok("sharp partition-disjoint-hyper", TAKER_BASE0 + TAKER_STRIDE <= 2.1e9);
+ok("sharp partition-disjoint-hands", TAKER_BASE0 + TAKER_STRIDE <= HAND_BASE0);
+const sbBuy = masterTakeOp({ side: "buy", owner: "headcorner", orderid: 1_700_000_042, tSec: 1000, ttlSec: 600, spendSbd: 1.5, qtySteem: 14.4 });
+ok("sharp op-buy-shape", sbBuy.op?.[0] === "limit_order_create" && sbBuy.op[1].amount_to_sell === "1.500 SBD" && sbBuy.op[1].min_to_receive === "14.400 STEEM" && sbBuy.op[1].fill_or_kill === true && sbBuy.op[1].owner === "headcorner" && sbBuy.op[1].expiration === 1600 && sbBuy.op[1].orderid === 1_700_000_042);
+const sbSell = masterTakeOp({ side: "sell", owner: "headcorner", orderid: 1_705_000_000, tSec: 1000, receiveSbd: 2.25, qtySteem: 21.7 });
+ok("sharp op-sell-shape", sbSell.op?.[1].amount_to_sell === "21.700 STEEM" && sbSell.op[1].min_to_receive === "2.250 SBD" && sbSell.op[1].fill_or_kill === true);
+eq("sharp op-owner-required", masterTakeOp({ side: "buy", orderid: 1_700_000_042, tSec: 1000, spendSbd: 1, qtySteem: 9 }).error, "OWNER-REQUIRED");
+eq("sharp op-side-invalid", masterTakeOp({ side: "hold", owner: "headcorner", orderid: 1_700_000_042, tSec: 1000, spendSbd: 1, qtySteem: 9 }).error, "SIDE-INVALID");
+eq("sharp op-id-outside-partition", masterTakeOp({ side: "buy", owner: "headcorner", orderid: 2_100_000_000, tSec: 1000, spendSbd: 1, qtySteem: 9 }).error, "ORDERID-OUTSIDE-PARTITION");
+eq("sharp op-tsec-invalid", masterTakeOp({ side: "buy", owner: "headcorner", orderid: 1_700_000_042, tSec: -5, spendSbd: 1, qtySteem: 9 }).error, "TSEC-INVALID");
+eq("sharp op-amounts-invalid", masterTakeOp({ side: "buy", owner: "headcorner", orderid: 1_700_000_042, tSec: 1000, spendSbd: 0, qtySteem: 9 }).error, "AMOUNTS-INVALID");
+eq("sharp backoff-k0", backoffDelayMs(0, 3000, 60_000), 3000);
+eq("sharp backoff-k1", backoffDelayMs(1, 3000, 60_000), 6000);
+eq("sharp backoff-k2", backoffDelayMs(2, 3000, 60_000), 12_000);
+eq("sharp backoff-cap", backoffDelayMs(9, 3000, 60_000), 60_000);
+eq("sharp backoff-cap-edge", backoffDelayMs(5, 3000, 60_000), 60_000);
+eq("sharp backoff-garbage-k", backoffDelayMs("boom", 3000, 60_000), 3000);
+eq("sharp backoff-negative-k", backoffDelayMs(-3, 3000, 60_000), 3000);
+eq("sharp backoff-base-override", backoffDelayMs(1, 10_000, 60_000), 20_000);
+eq("sharp backoff-cap-override", backoffDelayMs(4, 3000, 30_000), 30_000);
+eq("sharp defaults-armed-off", SHARP_DEFAULTS.dayCap, 60);
 const dEps = diffHyperTick({ planned: [{ side: "ask", unit: 0.104244 }], live: [LIVE({ unit: 0.10425 })], epsBps: 2, ttlMs: 60_000, nowMs: 10_000 });
 eq("diff within-eps-holds (2bps≈0.104244×2e-4)", dEps.unchanged, true);
 const dEmpty = diffHyperTick({ planned: [], live: [LIVE()], epsBps: 2, ttlMs: 60_000, nowMs: 10_000 });
