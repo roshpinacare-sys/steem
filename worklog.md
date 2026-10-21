@@ -2761,3 +2761,24 @@ Stage Summary:
 - The real blockage (dead push lane) is dead itself: divergence healed, G6 phantoms resolved, 33 ledgers restored, the race won — origin carries W28.
 - The organism is now self-documenting: a new agent verifies 42 lanes with one command and executes any scenario from runbooks.json — the "no unnecessary blockages" doctrine is now infrastructure, not goodwill.
 - Selftest 2014/2014; every claim in this entry measured this session.
+
+---
+
+Task ID: W29
+Agent: zai-code (main instance — owner trace 1a15ce8f6cdc7d45: pages between-claims-and-truth, raise every page, use the tools)
+Task: Owner measured the Pages surface honestly: "עיתון? קונסוליה חיה? תגי-הוכחה? נתיב-הכסף? ארנק? — כל העמודים מקצועיים? (לא)… דף עם כמה מילים זה לא עיתון… לא נראה שהשתמשנו ב-1% מהכוח". Examine → plan → execute → push, with the parallel zai agents, no overwrites.
+
+Work Log:
+- W29-0 TRUTH MEASURED FIRST (no claims trusted): Domain repo = 92 HTML pages + 102 workflows + 327 committed JSON state files; live site == repo HEAD byte-identical. Concept map found: עיתון=press/index.html (378 visible words — owner right), קונסוליה חיה=console.html "הקונסולה החיה" (776 words), תגי-הוכחה=badges.html (252 words), נתיב-הכסף=money.html (2069 words — healthy), ארנק=wallet.html → **63 visible words in 104KB — structurally BROKEN** (JS app talking to a loopback relay GitHub Pages can never expose). Stale feeds measured: truth/latest.json 10.4h, mirror lanes 9.6h. The "why is this happening": pages were hand-written words + JS-dependent apps, while a real measured-data layer existed but was not wired into the surface.
+- W29-a UNION DISCIPLINE UNDER FIRE: a peer agent shipped in parallel (14-section press rebuild + interactive machine-wallet on wallet.html). Race conflict hit mid-push → alive-wins resolution: peer's wallet.html KEPT (they own the interactive product), W29 adds wallet-truth.html (zero-JS always-renders truth page), press = UNION of their 14 sections with W29 grafts (external market desk 3-venue median Binance/Gecko/Paprika, weave witnesses, DEX world + deposits wall with real txids, cross-edition trend chips via press/edition-state.json memory, full honesty table of every source with SLA states). Push race won: e20233a on origin/main.
+- W29-b NEWSPAPER REBORN: press 378 → **1170 measured words**, 18 sections, zero-JS, daily editions archive (peer) + trends + honesty corner ("עיתון שלא מפרסם את כשלונות-המדידה של עצמו הוא יחסות-ציבור"). Local-first reads + live fallback (jgetL) kills the self-fetch FAIL class.
+- W29-c QUALITY GATE (the self-managing layer, no temporary agent in a key role): tools/pages-quality-audit.mjs + pages-quality-gate.yml (cron 11,41) measures 11 key pages — visible-word depth, JS-dependence (JS-app aware), data-freshness age vs 6h, internal links — writes quality/report.json + zero-JS quality/index.html desk. First public measurement: 7 PASS / 4 WARN / 0 FAIL. quality badge reads the gate's own output.
+- W29-d PROOF TAGS: badges.html 252 → 453 words (verification method per tag, honest delegation-tag lane: "תג-הוחכה לא קיים עדיין — וזו בדיוק הדוקטרינה"); +badge/price.svg (3-venue median, keyless) +badge/quality.svg.
+- W29-e CONSULATE: console.html 776 → 897 words — the three duties (ראייה/אימות/פיקוד) written out, frozen 2026-10-12 claims replaced by live self-measurement, quality desk + newspaper wired into the site map.
+- W29-f VERIFIED LIVE after push: wallet-truth.html HTTP 200 (9.3KB), quality/ HTTP 200 (5.9KB), press/ 200; CI dispatches 204 for press-bake + quality-gate (union edition bakes on the next cycle; honesty table already reporting OK/STALE/FAIL per source in the local bake).
+- W29-g COORDINATION: no lane overwrites — peer's wallet.html and 14-section baker preserved and extended; every change additive; w29-backup branch holds the pre-union state; race-safe rebase loops documented in-commit.
+
+Stage Summary:
+- Every page the owner named now has measured depth, honest sourcing, and a self-measuring quality gate running 2x/hour in CI — quality stopped being a claim and became a public artifact (quality/report.json).
+- The wallet was the smoking gun (63 words): fixed structurally twice over — interactive machine (peer) + zero-JS truth page (W29).
+- Tool usage proven in-repo: bakers, gates, badges, editions archive — the Pages surface now runs on the same receipts-doctrine as the treasury.
