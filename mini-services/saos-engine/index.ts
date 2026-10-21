@@ -20,6 +20,7 @@ adaptationBoot(); // R210 §XVI: restart counter — adaptation store proves per
 import { discoveryState } from "./discovery.mjs";
 import { fleetState } from "./fleet.mjs";
 import { startHyperGrid, hyperState } from "./hypergrid.mjs";
+import { startArmyGrid, armyGridState } from "./armygrid.mjs";
 import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
@@ -199,6 +200,11 @@ async function handle(req) {
   if (p === "/hyper") {
     return json({ ok: true, at: new Date().toISOString(), account: ACCOUNT, ...hyperState() });
   }
+  // T-559 ARMY-GRID: one smart body, many hands — the custody-verified army
+  // books live (staggered requotes, per-account governors, full gate stack).
+  if (p === "/army-grid") {
+    return json({ ok: true, at: new Date().toISOString(), master: ACCOUNT, ...armyGridState() });
+  }
   if (p === "/payouts") {
     return json({ ok: true, at: new Date().toISOString(), account: ACCOUNT, payouts: payoutsState() });
   }
@@ -345,7 +351,7 @@ async function handle(req) {
                      : "credential secured but not matching this account's authorities — install the proposedPubkeys on steemit.com, or paste the CURRENT password instead",
     });
   }
-  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential", "/finance-digest", "/yield", "/yield-run"] }, 404);
+  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential", "/finance-digest", "/yield", "/yield-run", "/army-grid"] }, 404);
 }
 
 // T-15 SINGLE-INSTANCE LAW (measured live: 3 duplicate engine processes were
@@ -478,6 +484,14 @@ try {
 // the same watchdog (process-lifetime = engine lifetime).
 try { startHyperGrid(); } catch (e) {
   console.error(`hypergrid boot failed: ${String(e?.message ?? e)}`);
+}
+
+// T-559 ARMY-GRID: the many-hands layer — staggered per-account requotes on
+// the custody-verified army books. Booted after custody revival's first run
+// begins; per-tick custody checks keep it fail-closed until each identity is
+// chain-verified. Owner activation order 2026-10-21 (see armygrid.mjs).
+try { startArmyGrid(); } catch (e) {
+  console.error(`armygrid boot failed: ${String(e?.message ?? e)}`);
 }
 
 // W24 WEAVE-WITNESS: the saos.weave.core.v1 anchor cadence revival — the
