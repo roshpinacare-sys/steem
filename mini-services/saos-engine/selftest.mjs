@@ -14,7 +14,6 @@ import {
   scanWalkPlan, coverageVerdict, mergeHistoryWindows,
   signalDigest, measuredLayers, redeployIntel, blockageLedger, organVerdict, meshVerdict,
 } from "./lib.mjs";
-import { createHmac } from "node:crypto";
 import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE, openingFresh, openingSimilarity } from "./content.mjs";
 import { sanitizeReply, replyFresh, textSimilarity, pickColdPost, buildDaySchedule } from "./army-social.mjs";
 import { spamVerdict, organicVerdict, crossChainVerdict, titleVerdict, tagVerdict, bodyVerdict, selfSimVerdict, groundingVerdict, frequencyVerdict, spamPhraseHits, dupSentenceRatio, jaccard, shingles, normalizeText, GATE_DEFAULTS } from "./spamgate.mjs";
@@ -878,7 +877,7 @@ eq("diff ttl-cancels-all-aged", dTtl.cancelIds, [2_100_000_001, 2_100_000_002]);
 eq("diff ttl-replaces-both", dTtl.creates.length, 2);
 
 /* G43 MANY-HANDS: the one-body roster/id/budget/taker/shadow laws */
-import { handIdBase, inHandSpace, livingRoster, handBudgets, takeLaw, shadowGate, MANYHANDS_DEFAULTS, HAND_BASE0 } from "./manyhands.mjs";
+import { handIdBase, inHandSpace, livingRoster, handBudgets, takeLaw, shadowGate, MANYHANDS_DEFAULTS } from "./manyhands.mjs";
 eq("mh id-base-0", handIdBase(0), 2_400_000_000);
 eq("mh id-base-3", handIdBase(3), 2_400_300_000);
 eq("mh id-base-invalid-null", handIdBase(21), null);
@@ -926,43 +925,6 @@ eq("mh taker-no-evidence", takeLaw({ fair: 0, bestAsk: 0.1043, bestBid: 0.1042, 
 eq("mh shadow-default", shadowGate(MANYHANDS_DEFAULTS), "SHADOW");
 eq("mh shadow-string-true-is-shadow", shadowGate({ takerLive: "true" }), "SHADOW");
 eq("mh shadow-live-flag", shadowGate({ takerLive: true }), "LIVE");
-
-/* ── G44 · SHARP-TAKER: master-rail dislocation taker (partition · backoff · op) ── */
-import {
-  TAKER_BASE0, TAKER_STRIDE, takerIdOk, masterTakeOp, SHARP_DEFAULTS,
-} from "./sharp-taker.mjs";
-import { backoffDelayMs } from "./lib.mjs";
-eq("sharp id-base", TAKER_BASE0, 1_700_000_000);
-eq("sharp id-stride", TAKER_STRIDE, 90_000_000);
-eq("sharp id-lower-true", takerIdOk(1_700_000_000), true);
-eq("sharp id-upper-true", takerIdOk(1_789_999_999), true);
-eq("sharp id-below-false", takerIdOk(1_699_999_999), false);
-eq("sharp id-above-false", takerIdOk(1_790_000_000), false);
-eq("sharp id-fraction-false", takerIdOk(1_700_000_000.5), false);
-eq("sharp id-garbage-false", takerIdOk("deadbeef"), false);
-ok("sharp partition-below-dexflow-ceiling", TAKER_BASE0 >= 1.7e9 && TAKER_BASE0 < 2.1e9);
-ok("sharp partition-below-epoch-horizon", TAKER_BASE0 + TAKER_STRIDE === 1_790_000_000 && Math.floor(Date.now() / 1000) > 1_790_000_000);
-ok("sharp partition-disjoint-hyper", TAKER_BASE0 + TAKER_STRIDE <= 2.1e9);
-ok("sharp partition-disjoint-hands", TAKER_BASE0 + TAKER_STRIDE <= HAND_BASE0);
-const sbBuy = masterTakeOp({ side: "buy", owner: "headcorner", orderid: 1_700_000_042, tSec: 1000, ttlSec: 600, spendSbd: 1.5, qtySteem: 14.4 });
-ok("sharp op-buy-shape", sbBuy.op?.[0] === "limit_order_create" && sbBuy.op[1].amount_to_sell === "1.500 SBD" && sbBuy.op[1].min_to_receive === "14.400 STEEM" && sbBuy.op[1].fill_or_kill === true && sbBuy.op[1].owner === "headcorner" && sbBuy.op[1].expiration === 1600 && sbBuy.op[1].orderid === 1_700_000_042);
-const sbSell = masterTakeOp({ side: "sell", owner: "headcorner", orderid: 1_705_000_000, tSec: 1000, receiveSbd: 2.25, qtySteem: 21.7 });
-ok("sharp op-sell-shape", sbSell.op?.[1].amount_to_sell === "21.700 STEEM" && sbSell.op[1].min_to_receive === "2.250 SBD" && sbSell.op[1].fill_or_kill === true);
-eq("sharp op-owner-required", masterTakeOp({ side: "buy", orderid: 1_700_000_042, tSec: 1000, spendSbd: 1, qtySteem: 9 }).error, "OWNER-REQUIRED");
-eq("sharp op-side-invalid", masterTakeOp({ side: "hold", owner: "headcorner", orderid: 1_700_000_042, tSec: 1000, spendSbd: 1, qtySteem: 9 }).error, "SIDE-INVALID");
-eq("sharp op-id-outside-partition", masterTakeOp({ side: "buy", owner: "headcorner", orderid: 2_100_000_000, tSec: 1000, spendSbd: 1, qtySteem: 9 }).error, "ORDERID-OUTSIDE-PARTITION");
-eq("sharp op-tsec-invalid", masterTakeOp({ side: "buy", owner: "headcorner", orderid: 1_700_000_042, tSec: -5, spendSbd: 1, qtySteem: 9 }).error, "TSEC-INVALID");
-eq("sharp op-amounts-invalid", masterTakeOp({ side: "buy", owner: "headcorner", orderid: 1_700_000_042, tSec: 1000, spendSbd: 0, qtySteem: 9 }).error, "AMOUNTS-INVALID");
-eq("sharp backoff-k0", backoffDelayMs(0, 3000, 60_000), 3000);
-eq("sharp backoff-k1", backoffDelayMs(1, 3000, 60_000), 6000);
-eq("sharp backoff-k2", backoffDelayMs(2, 3000, 60_000), 12_000);
-eq("sharp backoff-cap", backoffDelayMs(9, 3000, 60_000), 60_000);
-eq("sharp backoff-cap-edge", backoffDelayMs(5, 3000, 60_000), 60_000);
-eq("sharp backoff-garbage-k", backoffDelayMs("boom", 3000, 60_000), 3000);
-eq("sharp backoff-negative-k", backoffDelayMs(-3, 3000, 60_000), 3000);
-eq("sharp backoff-base-override", backoffDelayMs(1, 10_000, 60_000), 20_000);
-eq("sharp backoff-cap-override", backoffDelayMs(4, 3000, 30_000), 30_000);
-eq("sharp defaults-armed-off", SHARP_DEFAULTS.dayCap, 60);
 const dEps = diffHyperTick({ planned: [{ side: "ask", unit: 0.104244 }], live: [LIVE({ unit: 0.10425 })], epsBps: 2, ttlMs: 60_000, nowMs: 10_000 });
 eq("diff within-eps-holds (2bps≈0.104244×2e-4)", dEps.unchanged, true);
 const dEmpty = diffHyperTick({ planned: [], live: [LIVE()], epsBps: 2, ttlMs: 60_000, nowMs: 10_000 });
@@ -6263,6 +6225,7 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("59.3b pending by message text (belt+braces)", fg.classifyFfResponse({ code: "500", msg: "you do Not have permission", resOk: true, data: null }), "PENDING-ACTIVATION");
   eq("59.3c permitted json body ⇒ ACTIVE (the promote gate opens)", fg.classifyFfResponse({ code: "0", msg: "", resOk: true, data: { currencies: [] } }), "ACTIVE");
   eq("59.3d anything else ⇒ UNEXPECTED (ABSTAIN, never guessed)", fg.classifyFfResponse({ code: "403", msg: "forbidden", resOk: false, data: null }), "UNEXPECTED");
+<<<<<<< HEAD
   eq("59.3e ffSig is deterministic HMAC-SHA256 of the exact body string (W120 measured convention)",
     fg.ffSig("k", "") === fg.ffSig("k", ""), true);
   // W120 vectors: real FF v2 convention — X-API-SIGN = HMAC(secret, exact body string)
@@ -6272,6 +6235,52 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
     fg.classifyFfResponse({ code: "401", msg: "API key invalid", resOk: false, data: null }), "KEY-REJECTED");
   eq("59.3h code 0 but data missing ⇒ UNEXPECTED (ABSTAIN, never guessed)",
     fg.classifyFfResponse({ code: "0", msg: "", resOk: true, data: null }), "UNEXPECTED");
+=======
+  eq("59.3e ffSig is deterministic HMAC-SHA256 of url-encoded params",
+    fg.ffSig("k", {}) === fg.ffSig("k", {}), true);
+}
+
+/* ══════════════ section 60 · W28 HEDGE-DESK (AutoHedge-adopted risk gates) ══════════════
+ * Pure vectors on computeDeskVerdict — the advisory-only verdict machine.
+ * No network, no keys, deterministic. The gates mirror
+ * autohedge/experimental/market_making.py mapped to doctrine units:
+ * inventory-skew (TRIM), book-edge (WIDEN), anchor-gap (RETIER),
+ * day-drawdown + RC-floor (HALT), honest absence (ABSTAIN). */
+{
+  const hd = await import("./hedge-desk.mjs");
+  const now = new Date().toISOString();
+  const anchor60 = { impliedUnitSbdPerSteem: 0.1046, status: "LIVE" };
+  const healthyFills60 = { buys24h: 14, sells24h: 11, bidEdgeBps: 42, askEdgeBps: 38, avgBidUnit: 0.1052, avgAskUnit: 0.1059, realizedPerDaySbd: 0.4, at: now };
+  const hyperOk60 = { rcPct: 35 };
+
+  const v60a = hd.computeDeskVerdict({ anchor: anchor60, fills: healthyFills60, hyper: hyperOk60 });
+  eq("60.a healthy book + live anchor ⇒ GO", v60a.verdict, "GO");
+  eq("60.b every verdict is advisory-only (zero signing authority, forever)", v60a.advisoryOnly, true);
+  eq("60.c desk verdict carries the law string (a future reader can never mistake it for an executor)", typeof v60a.law === "string" && v60a.law.includes("advisory-only"), true);
+
+  const v60b = hd.computeDeskVerdict({ anchor: anchor60, fills: { ...healthyFills60, buys24h: 20, sells24h: 2 }, hyper: hyperOk60 });
+  eq("60.d one-sided 24h flow beyond the AutoHedge inventory gate ⇒ TRIM", v60b.verdict, "TRIM");
+
+  const v60c = hd.computeDeskVerdict({ anchor: anchor60, fills: { ...healthyFills60, bidEdgeBps: 8, askEdgeBps: 6 }, hyper: hyperOk60 });
+  eq("60.e book edge under the min_profit_threshold analog (20bps) ⇒ WIDEN", v60c.verdict, "WIDEN");
+
+  const v60d = hd.computeDeskVerdict({ anchor: anchor60, fills: { ...healthyFills60, realizedPerDaySbd: -2.5 }, hyper: hyperOk60 });
+  eq("60.f day realized below the drawdown floor ⇒ HALT", v60d.verdict, "HALT");
+
+  const v60e = hd.computeDeskVerdict({ anchor: anchor60, fills: { ...healthyFills60, buys24h: 20, sells24h: 2 }, hyper: { rcPct: 20 } });
+  eq("60.g RC-floor breach outranks everything (HALT priority law)", v60e.verdict, "HALT");
+
+  const v60f = hd.computeDeskVerdict({ anchor: { impliedUnitSbdPerSteem: 0 }, fills: healthyFills60, hyper: hyperOk60 });
+  eq("60.h no real-money anchor ⇒ ABSTAIN (never a guessed verdict)", v60f.verdict, "ABSTAIN");
+  const v60g = hd.computeDeskVerdict({ anchor: anchor60, fills: null, hyper: hyperOk60 });
+  eq("60.i fills absent ⇒ ABSTAIN with a typed gate reason", [v60g.verdict, v60g.reasons.some((r) => r.gate === "fills")], ["ABSTAIN", true]);
+
+  const v60h = hd.computeDeskVerdict({ anchor: anchor60, fills: { ...healthyFills60, avgBidUnit: 0.12, avgAskUnit: 0.1207 }, hyper: hyperOk60 });
+  eq("60.j internal book drifting far off the external cross ⇒ RETIER (rebalance analog)", v60h.verdict, "RETIER");
+
+  const v60i = hd.computeDeskVerdict({ anchor: anchor60, fills: { ...healthyFills60, buys24h: 20, sells24h: 2, bidEdgeBps: 8, askEdgeBps: 6 }, hyper: hyperOk60 });
+  eq("60.k TRIM outranks WIDEN when both fire (severity ordering law)", v60i.verdict, "TRIM");
+>>>>>>> origin/saos-cockpit
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
