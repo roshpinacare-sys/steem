@@ -24,11 +24,8 @@ import { startArmyGrid, armyGridState } from "./armygrid.mjs";
 import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startManyHands, manyhandsState } from "./manyhands.mjs"; // G43 ONE-BODY-MANY-HANDS + the sharp taker (shadow-first)
-<<<<<<< HEAD
 import { runDisperse, disperseState, disperseConf } from "./disperse.mjs"; // W120 internal liquidity dispersion rail
 import { startSharpTaker, sharpTakerState } from "./sharp-taker.mjs"; // G44: the master-rail dislocation taker (takeLaw on the custody that lives)
-=======
->>>>>>> origin/saos-cockpit
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
 import { startExternalQuotes, externalQuotesState } from "./external-quotes.mjs"; // W27-c: the REAL-MONEY external price anchor (Poloniex/Bithumb/Gecko)
 import { startFfGate, ffGateState } from "./ff-gate.mjs"; // W27-a: the FixedFloat real-money gate (PENDING-ACTIVATION → ACTIVE → promote)
