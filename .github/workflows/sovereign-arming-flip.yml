@@ -40,6 +40,11 @@ jobs:
           ref=$(python3 -c "import json;print(json.load(open('/tmp/arming.json')).get('directiveRef','').strip())")
           if [ "$status" != "ARMED" ] || [ -z "$ref" ]; then echo "status=$status ref=$ref — not an owner-law arming; gate untouched"; exit 0; fi
           f="mini-services/saos-engine/state/readiness.json"
+          # wave-19.52 false-failure cure: "already synced" must end the run CLEAN — the old
+          # writer fell through to `git commit` (nothing to commit → exit 1) and failed the
+          # run even when the gate was already in the owner-law state. A flip is now signalled
+          # by a flag file; no flag = clean exit. Push retry hardened (5 × growing backoff).
+          rm -f /tmp/flip_needed
           python3 - "$ref" <<'EOF'
           import json, sys, datetime
           ref = sys.argv[1]
@@ -61,15 +66,21 @@ jobs:
           }
           json.dump(next, open(p, "w"), ensure_ascii=False, indent=1)
           open(p, "a").write("\n")
+          open("/tmp/flip_needed", "w").write("1")
           print("flipped → ARMED ref=" + ref)
           EOF
+          if [ ! -f /tmp/flip_needed ]; then
+            echo "gate already synced (ARMED ref=$ref) — nothing to do, clean exit"
+            exit 0
+          fi
           git config user.name "roshpinacare-sys"
           git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
           git add "$f"
+          if git diff --cached --quiet; then echo "no staged change — nothing to commit, clean exit"; exit 0; fi
           git commit -qm "sovereign-arming-flip: readiness.json → ARMED (ref=$ref) per Autonomy owner-law R309 — anti-flood laws preserved, readiness-gate dual-key law honored [skip ci]"
           ok=0
-          for i in 1 2 3; do
+          for i in 1 2 3 4 5; do
             if git pull --rebase -q origin saos-cockpit && git push -q origin saos-cockpit; then ok=1; break; fi
-            sleep 3
+            sleep $((i * 4))
           done
-          [ "$ok" = "1" ] || { echo "PUSH-FAIL after 3 — honest red, next run retries"; exit 1; }
+          [ "$ok" = "1" ] || { echo "PUSH-FAIL after 5 retries — honest red, next run retries"; exit 1; }
