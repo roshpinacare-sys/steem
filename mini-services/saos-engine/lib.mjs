@@ -24,6 +24,7 @@
 export const MIN_LEVEL = 0.5;          // SBD/STEEM dust-break per level (mission gate)
 export const LEVELS = 5;               // per side (5 asks + 5 bids)
 export const ASK_FLOOR_BPS = 20;       // r134-VF1: asks re-placed at floor+20bps
+export const ASK_ANCHOR_BPS = 10;      // G41: value asks ≤ live book front + 10bps (fillable)
 export const PARITY_BAND_BPS = 5000;   // price-truth-or-nothing refuse band
 export const NOISE_BPS = 10;           // stale classification tolerance
 export const DRAG_DIVISOR = 2000;      // dragK = clamp(1+spreadBps/2000, 1, 3)
@@ -90,7 +91,16 @@ export function planLadder({
   if (!(parity > 0)) return { verdict: "NO-PARITY", asks: [], bids: [], blocker: ["no-external-parity"] };
   const k = dragK(spreadBps);
   const step = 1 + 0.001 * k;                        // per-level spacing
-  const floorRaw = parity * (1 + ASK_FLOOR_BPS / 10000);
+  /* G41 · BOOK-ANCHOR LAW (measured live 2026-10-21, owner volume mandate trace
+   * 1a15c3717053dcad): value asks anchored ONLY to parity parked ~2.8% above the
+   * live front (bestAsk 0.1039 vs fleet asks 0.1068-0.1146) → zero ask fills
+   * across the whole fleet while the bid side kept filling (master PnL: bought
+   * 721.7 STEEM / sold 266.2 — a one-sided accumulator, not a grid). The value
+   * ladder may NEVER quote an ask above the live book front + ASK_ANCHOR_BPS;
+   * when no live book exists (bestAsk falsy/junk) the parity floor law alone
+   * stands, exactly as before — zero behavior change without a live book. */
+  const bookCap = Number(bestAsk) > 0 ? Number(bestAsk) * (1 + ASK_ANCHOR_BPS / 10000) : Infinity;
+  const floorRaw = Math.min(parity * (1 + ASK_FLOOR_BPS / 10000), bookCap);
   const ceilRaw = parity * (1 - ASK_FLOOR_BPS / 10000); // bids never above parity−20bps
   // T-9 fix (same family as the T-5 rounding blocker): 6dp rounding must
   // NEVER push an ask below floor or a bid above ceiling — round asks UP,
