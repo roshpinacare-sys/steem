@@ -1,36 +1,19 @@
 {
-  "at": "2026-10-21T16:11:31.746Z",
-  "verdict": "4-FLAGGED",
+  "at": "2026-10-21T16:26:31.748Z",
+  "verdict": "1-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 3,
-      "signedPct": 0,
-      "signed": 0,
-      "unsigned": 1,
+      "scanned": 9,
+      "signedPct": 56,
+      "signed": 5,
+      "unsigned": 4,
       "invalid": 0,
-      "untrusted": 2,
-      "flagged": [
-        {
-          "hash": "c20b9a53",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "agent-2-economy-core",
-          "at": "2026-10-21T16:09:29Z",
-          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
-        },
-        {
-          "hash": "db814454",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "agent-2-economy-core",
-          "at": "2026-10-21T15:58:34Z",
-          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
-        }
-      ]
+      "untrusted": 0,
+      "flagged": []
     },
     {
       "repo": "saos-runtime",
@@ -77,21 +60,12 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 9,
-      "invalid": 1,
+      "unsigned": 10,
+      "invalid": 0,
       "untrusted": 0,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": [
-        {
-          "hash": "aa183bd9",
-          "gq": "E",
-          "sig": "INVALID",
-          "author": "roshpinacare-sys",
-          "at": "2026-10-21T16:07:29Z",
-          "subject": "runner-kit truth-refresh: 3rd receipt 352a5b1c anchored via manual dis"
-        }
-      ]
+      "flagged": []
     },
     {
       "repo": "TruthRail",
@@ -131,33 +105,6 @@
   ],
   "flagged": [
     {
-      "hash": "c20b9a53",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "agent-2-economy-core",
-      "at": "2026-10-21T16:09:29Z",
-      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "db814454",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "agent-2-economy-core",
-      "at": "2026-10-21T15:58:34Z",
-      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
-      "repo": "steem.git(LOCAL)"
-    },
-    {
-      "hash": "aa183bd9",
-      "gq": "E",
-      "sig": "INVALID",
-      "author": "roshpinacare-sys",
-      "at": "2026-10-21T16:07:29Z",
-      "subject": "runner-kit truth-refresh: 3rd receipt 352a5b1c anchored via manual dis",
-      "repo": "Domain"
-    },
-    {
       "hash": "83555a78",
       "gq": "E",
       "sig": "INVALID",
@@ -172,5 +119,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 7457
+  "ms": 6049
 }
