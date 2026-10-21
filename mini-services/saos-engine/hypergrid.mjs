@@ -84,7 +84,13 @@ export const HYPER_DEFAULTS = {
    * sandbox wipe because it lived only in memory. 40 = the measured 7×
    * quoting-pace equilibrium; floor 25 untouched; ladder to 35 only after
    * 24h of stable PnL at 40 (measured, reversible, one notch at a time). */
-  setpointPct: 40,        // governor equilibrium target (W23-d measured, W24 made wipe-proof)
+  /* G41 (owner volume mandate, trace 1a15c3717053dcad): W24's planned 40→35
+   * notch executed NOW, with measured proof: hyper-grid.json economics
+   * (2026-10-21) regen 779.4B/d > burn 540.4B/d at equilibrium pace — trading
+   * at equilibrium REGENERATES RC net-positive, so waiting at 40 only idled
+   * ~a day of presence (rcPct 35.4 → GOVERNOR-ACCUMULATING, pairs 0). One
+   * reversible notch; floor 25 untouched; owner order: "רוצה יותר ווליום". */
+  setpointPct: 35,        // governor equilibrium target (G41 notch, measured-sustainable)
   burst: 3,               // transient burn multiplier above equilibrium
   maxOpsPerTick: 24,      // per-broadcast op ceiling
   opsDayCap: 32000,       // doctrine cap = the MEASURED equilibrium

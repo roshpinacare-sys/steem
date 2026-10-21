@@ -1,25 +1,25 @@
 {
-  "at": "2026-10-21T00:43:19.948Z",
+  "at": "2026-10-21T03:00:10.583Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 7bps → dragK 1.0035",
+      "reason": "spread 4bps → dragK 1.002",
       "action": {
-        "spreadBpsRec": 7,
-        "bestAsk": 0.10535196058581359,
-        "bestBid": 0.10527382339530877
+        "spreadBpsRec": 4,
+        "bestAsk": 0.10427538222100155,
+        "bestBid": 0.1042375502629137
       },
-      "at": "2026-10-21T00:43:19.948Z"
+      "at": "2026-10-21T03:00:10.583Z"
     },
     {
       "kind": "parity-drift",
-      "decision": "monitor",
-      "reason": "internal feed deviates 174bps from external parity",
+      "decision": "arb-window",
+      "reason": "internal feed deviates 750bps from external parity",
       "action": {
-        "bps": 174
+        "bps": 750
       },
-      "at": "2026-10-21T00:43:19.948Z"
+      "at": "2026-10-21T03:00:10.583Z"
     },
     {
       "kind": "soldiers",
@@ -28,33 +28,46 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-21T00:43:19.948Z"
+      "at": "2026-10-21T03:00:10.583Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 27.401745 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 27.401745,
+        "any": true
+      },
+      "at": "2026-10-21T03:00:10.583Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 35.3%",
+      "reason": "RC at 32.6%",
       "action": {
-        "rcPct": 35.3
+        "rcPct": 32.6
       },
-      "at": "2026-10-21T00:43:19.948Z"
+      "at": "2026-10-21T03:00:10.583Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 34.4%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 34.9%) — gates hold until candidates pass",
       "action": {
-        "votesToday": 0,
-        "vpEff": 34.4,
+        "votesToday": 3,
+        "vpEff": 34.9,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-21T00:43:19.948Z"
+      "at": "2026-10-21T03:00:10.583Z"
     }
   ],
-  "spreadBpsRec": 7,
+  "spreadBpsRec": 4,
   "book": {
-    "bestAsk": 0.10535196058581359,
-    "bestBid": 0.10527382339530877,
-    "spreadBps": 7
+    "bestAsk": 0.10427538222100155,
+    "bestBid": 0.1042375502629137,
+    "spreadBps": 4
   }
 }
