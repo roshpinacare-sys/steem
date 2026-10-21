@@ -2407,9 +2407,22 @@ ok("roster new-stations-planned-without-evidence", roster23NoEvidence.roster.fil
   ok("ledger: carries the markdown table (format law)", body.includes("| Measure | Value |"));
   ok("ledger: ends with an inviting question", /\?\s*$/.test(body.trim()));
   ok("ledger title: neutral, dash-free, no codenames", !/—|saos|sovereign/i.test(ledgerTitle("2026-10-08T04:00:00Z")));
-  let codenameCaught = false;
-  try { buildLedgerBody({ dayIso: "2026-10-08", parity: 1, orders: 1, fills: 1, realizedSbd: 1, curationUsd: 1, authorUsd: 1, decisions: [{ kind: "curate", decision: "ok", reason: "the fleet aligned on parity" }] }); } catch (e) { codenameCaught = String(e.message).includes("exposure"); }
-  ok("ledger negative control: a planted codename (even inside a reason) is REFUSED", codenameCaught);
+  /* גל-19.51 — the negative control follows the evolved defense-in-depth:
+   * the seal-host (agent-2, 6c1b90b) added the publicize rewriter for operator-
+   * supplied decision text, so the law's OUTCOME is now enforced on TWO paths —
+   * (1) reason/decision text: codename rewritten to public vocabulary, never
+   * reaches the body; (2) every other field (e.g. gridVerdict): the ban list
+   * still REFUSES the body outright. Both paths tested; zero codenames on chain
+   * either way — the R264 outcome law unchanged, the mechanism documented. */
+  let codenameRewritten = false;
+  try {
+    const body2 = buildLedgerBody({ dayIso: "2026-10-08", parity: 1, orders: 1, fills: 1, realizedSbd: 1, curationUsd: 1, authorUsd: 1, decisions: [{ kind: "curate", decision: "ok", reason: "the fleet aligned on parity" }] });
+    codenameRewritten = !body2.toLowerCase().includes("fleet") && body2.toLowerCase().includes("the desk");
+  } catch { codenameRewritten = false; }
+  ok("ledger negative control: a planted codename in a reason NEVER reaches the body (rewritten to public vocabulary)", codenameRewritten);
+  let codenameRefused = false;
+  try { buildLedgerBody({ dayIso: "2026-10-08", parity: 1, orders: 1, fills: 1, realizedSbd: 1, curationUsd: 1, authorUsd: 1, gridVerdict: "the fleet aligned", decisions: [] }); } catch (e) { codenameRefused = String(e.message).includes("ledger-body-exposure"); }
+  ok("ledger negative control: a planted codename outside the rewriter is REFUSED outright (ban list intact)", codenameRefused);
   /* R270 · THE ANTI-GENERIC LAW: the ledger must never read like yesterday's
    * page with new numbers. Title, lede and closer rotate day-seeded. */
   const titles7 = ["01", "02", "03", "04", "05", "06", "07"].map((d) => ledgerTitle(`2026-10-${d}T04:00:00Z`));
