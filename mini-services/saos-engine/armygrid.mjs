@@ -181,11 +181,21 @@ export function armyGridState() {
       totals: {
         fills: pnl.hands.reduce((s, h) => s + (h.totals?.fills ?? 0), 0),
         realizedSbd: Math.round(pnl.hands.reduce((s, h) => s + (h.totals?.realizedSbd ?? 0), 0) * 1e6) / 1e6,
+        /* T-566 GRILL: measured-window honesty surfaced on the card (the state
+         * carried windowFrom/windowTo since T-565 — the card never showed them) */
+        windowFrom: pnl.hands.length ? (pnl.hands.map((h) => h.windowFrom).filter(Boolean).sort()[0] ?? null) : null,
+        windowTo: pnl.hands.length ? (pnl.hands.map((h) => h.windowTo).filter(Boolean).sort().slice(-1)[0] ?? null) : null,
       },
     },
     totals: {
       opsToday: accounts.reduce((s, x) => s + (x.opsToday ?? 0), 0),
-      liveOrders: accounts.reduce((s, x) => s + (x.liveHyper ?? 0), 0),
+      /* T-566 GRILL FIX — DISPLAY-TRUTH-2 (multi-writer fleet): the grill measured
+       * liveOrders=10 (writer-band only) while the CHAIN holds 54 open orders in
+       * our name — sibling engines' bands own the rest. The card now reports the
+       * chain-fleet number as liveOrders; the writer-band total stays honest as
+       * liveOrdersMine. Chain numbers are fresh-gated (stale → band fallback). */
+      liveOrders: accounts.reduce((s, x) => s + (x.liveOrdersChain ?? x.liveHyper ?? 0), 0),
+      liveOrdersMine: accounts.reduce((s, x) => s + (x.liveHyper ?? 0), 0),
     },
   };
 }
