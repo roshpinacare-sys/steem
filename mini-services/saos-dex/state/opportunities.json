@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-20T18:06:24.442Z",
+  "at": "2026-10-21T02:59:24.134Z",
   "venues": [
     {
       "id": "internal:STEEM-SBD",
@@ -7,11 +7,11 @@
         "STEEM",
         "SBD"
       ],
-      "mid": 0.104082,
+      "mid": 0.111642,
       "kind": "pool",
       "reserves": {
-        "A": 46.703561,
-        "B": 4.861
+        "A": 14.667419,
+        "B": 1.6375
       },
       "status": "measured",
       "source": "הבריכה-הפנימית של הרשת (משכן-נמדד)"
@@ -22,13 +22,13 @@
         "STEEM",
         "SBD"
       ],
-      "mid": 0.103413,
+      "mid": 0.104273,
       "kind": "book",
       "touch": {
-        "bestAsk": 0.103913491246138,
-        "bestBid": 0.10291242152927858,
-        "askDepth": 86.309715,
-        "bidDepth": 1995.093
+        "bestAsk": 0.10430793777423215,
+        "bestBid": 0.1042375502629137,
+        "askDepth": 89.545235,
+        "bidDepth": 2005.493
       },
       "status": "measured",
       "source": "ספר-השוק-הפנימי של Steem (נמדד-חי)"
@@ -39,7 +39,7 @@
         "SBD",
         "STEEM"
       ],
-      "mid": 9.607823,
+      "mid": 8.957183,
       "kind": "oracle",
       "status": "estimated",
       "source": "אורקל — יחס-USD:SBD:STEEM (מדידת-המנוע)"
@@ -47,16 +47,52 @@
   ],
   "quarantined": [],
   "arbGuardLaw": "משמר-סטייה: בריכה-שקועה-מעל-הרצועה נכנסת-להסגר — mid שקוע אינו מחיר-מילוי; אין-קצה-פנטום מספר-דק",
-  "executable": 0,
+  "executable": 1,
   "opportunities": [
+    {
+      "pair": "STEEM/SBD",
+      "buy": "steem-book",
+      "sell": "internal:STEEM-SBD",
+      "midA": 0.111642,
+      "midB": 0.104273,
+      "edgeBps": 703.1,
+      "netBps": 643.1,
+      "cls": "POOL-TOUCH",
+      "kind": "TRADEABLE",
+      "verdict": "EDGE-AFTER-FEES",
+      "touch": {
+        "buyAt": 0.104308,
+        "sellAt": 0.111642
+      },
+      "impact": "pool-impact-at-execution",
+      "maxNotional": 0.16375,
+      "depthVerdict": "CAPPED",
+      "depthBasis": [
+        {
+          "leg": "steem-book",
+          "cap": 44.772618,
+          "source": "askDepth × 0.5"
+        },
+        {
+          "leg": "internal:STEEM-SBD",
+          "cap": 0.16375,
+          "source": "reserveB × 0.1"
+        }
+      ],
+      "depthWhy": null,
+      "sources": [
+        "הבריכה-הפנימית של הרשת (משכן-נמדד)",
+        "ספר-השוק-הפנימי של Steem (נמדד-חי)"
+      ]
+    },
     {
       "pair": "STEEM/SBD",
       "buy": "oracle-steem-sbd",
       "sell": "steem-book",
-      "midA": 0.103413,
-      "midB": 0.104082,
-      "edgeBps": 64.7,
-      "netBps": 4.7,
+      "midA": 0.104273,
+      "midB": 0.111642,
+      "edgeBps": 706.7,
+      "netBps": 646.7,
       "cls": "FAIR-SIGNAL",
       "kind": "SIGNAL",
       "verdict": "SIGNAL-ONLY",

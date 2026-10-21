@@ -498,10 +498,15 @@ export function spoilagePublic(now = new Date().toISOString()) {
 export function defaultArmedConf() {
   return {
     armed: true,
-    note: "operator standing order 2026-09-29: full autonomous execution, doctrine-capped",
-    maxOpsPerCycle: 12,
+    /* W118 (2026-10-21, owner mandate verbatim): "רוצה לפזר הרבה עסקאות הרבה
+     * יותר ולשמור על רווחיות ולהפעיל לנסות לייצר יותר ווליום ורווחיות" —
+     * ops-cap raised 12→40 and bid capacity 20→60 SBD. Safety untouched:
+     * booklaw coverage desk (asks ≤ steem×0.95 · bids ≤ (sbd−reserve)×0.95),
+     * T-80 keyless-frozen, minRcPct floor, hyper-grid band untouchable. */
+    note: "W118 operator mandate 2026-10-21: volume-up, doctrine-capped (booklaw guards unchanged)",
+    maxOpsPerCycle: 40,
     maxAskSteemPerCycle: 200,
-    maxBidSbdPerCycle: 20,
+    maxBidSbdPerCycle: 60,
     bidReserveSbd: 0.5,
     minRcPct: 20,
     /* T-80 defaults are SAFE-BY-DEFAULT: outbound funds and delegation are
