@@ -53,18 +53,29 @@ function receipt(o) {
   try { fs.appendFileSync(path.join(REPO, "custody-receipt.jsonl"), JSON.stringify(row) + "\n"); } catch { /* public material best-effort */ }
 }
 
-const ARMY = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "wic", "woq", "hcsoldier4", "hcsoldier6"];
+/* W119 (owner trace web-39a3a21d, 2026-10-21): "לגבי active יש בכספות הכל תיישם תפעיל
+ * תוודא דחוף" — the sweep now merges EVERY pass bundle the repo holds
+ * (STEEM_VAULT_PASSES + VAULT_PASSES_R33 + ROT2_FLEET_KEYS + MAIN_KEY) and covers
+ * ALL 13 army bodies — posting-dead bodies (siq/tov/wog/hcsoldier5) still rotate:
+ * the rotation needs only the HELD original active WIF, not posting custody. */
+const ARMY = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq",
+  "hcsoldier4", "hcsoldier5", "hcsoldier6"];
 
-/* ── the bundle (Actions-held) ─────────────────────────────────────────── */
-const BUNDLE_RAW = process.env.STEEM_VAULT_PASSES ?? "";
-if (BUNDLE_RAW.length < 8) {
-  receipt({ step: "bundle", verdict: "BUNDLE-ABSENT", note: "probe runs only where STEEM_VAULT_PASSES resolves — honest death beats a fake green" });
+/* ── the bundles (Actions-held; every one the repo carries) ────────────── */
+const BUNDLE_NAMES = ["STEEM_VAULT_PASSES", "VAULT_PASSES_R33", "ROT2_FLEET_KEYS", "MAIN_KEY"];
+const bundles = [];
+for (const bname of BUNDLE_NAMES) {
+  const raw = process.env[bname] ?? "";
+  if (raw.length < 8) { bundles.push({ name: bname, raw: null, note: "absent" }); continue; }
+  try { bundles.push({ name: bname, raw: JSON.parse(raw), note: "json" }); }
+  catch { bundles.push({ name: bname, raw, note: "raw-string" }); }
+}
+if (!bundles.some((b) => b.raw != null)) {
+  receipt({ step: "bundle", verdict: "ALL-BUNDLES-ABSENT", note: "probe runs only where a pass bundle resolves — honest death beats a fake green" });
   try { fs.rmSync(TMP, { recursive: true, force: true }); } catch { /* tmp */ }
   process.exit(0);
 }
-let bundle;
-try { bundle = JSON.parse(BUNDLE_RAW); } catch { receipt({ step: "bundle", verdict: "BUNDLE-NOT-JSON" }); process.exit(1); }
-function passFor(refPath) {
+function passFor(bname, bundle, refPath) {
   let v = bundle;
   for (const seg of String(refPath).split(".")) {
     if (v == null || typeof v !== "object") throw new Error("bundle-missing-" + refPath);
@@ -75,12 +86,17 @@ function passFor(refPath) {
 }
 function bundlePasses() {
   const out = [];
+  const seen = new Set();
   const walk = (node, prefix) => {
     if (node == null) return;
-    if (typeof node === "string") { if (node.length >= 8) out.push({ ref: prefix, pass: node }); return; }
+    if (typeof node === "string") { if (node.length >= 8 && !seen.has(node)) { seen.add(node); out.push({ ref: prefix, pass: node }); } return; }
     if (typeof node === "object") for (const [k, v] of Object.entries(node)) walk(v, prefix ? `${prefix}.${k}` : k);
   };
-  walk(bundle, "");
+  for (const b of bundles) {
+    if (b.raw == null) continue;
+    if (typeof b.raw === "string") walk(b.raw, `${b.name}.raw`);
+    else walk(b.raw, b.name);
+  }
   return out;
 }
 
@@ -153,14 +169,14 @@ receipt({ step: "live-authorities", bodies: ARMY.map((n) => ({ name: n, activeFp
 /* ── the sweep: every seal × every pass → judge army actives ───────────── */
 const seals = fs.readdirSync(VAULT_DIR).filter((f) => f.endsWith(".zip.enc")).sort();
 const passes = bundlePasses();
-receipt({ step: "sweep-plan", seals: seals.length, passes: passes.length, boundedCombos: Math.min(seals.length * passes.length, 200) });
+receipt({ step: "sweep-plan", seals: seals.length, passes: passes.length, bundles: bundles.map((b) => `${b.name}:${b.note}`), boundedCombos: Math.min(seals.length * passes.length, 600) });
 
 const heldOriginal = {};  // name -> { wif, pub, via }
 let combos = 0;
 OUTER:
 for (const seal of seals) {
   for (const { ref, pass } of passes) {
-    if (combos >= 200) { receipt({ step: "sweep", verdict: "COMBO-BOUND-REACHED" }); break OUTER; }
+    if (combos >= 600) { receipt({ step: "sweep", verdict: "COMBO-BOUND-REACHED" }); break OUTER; }
     combos++;
     let vault = null;
     try { vault = unlockZip(path.join(VAULT_DIR, seal), pass); } catch { continue; }
