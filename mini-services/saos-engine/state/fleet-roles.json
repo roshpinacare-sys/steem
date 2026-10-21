@@ -1,6 +1,6 @@
 {
   "verdict": "RECRUITED",
-  "active": 9,
+  "active": 10,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/market.json: 1000 trades/24h measured (vol 27015.809 STEEM)",
+      "evidence": "state/market.json: 810 trades/24h measured (vol 18293.945 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -21,12 +21,12 @@
       "role": "כלכלן-RC",
       "lane": "resource",
       "capability": "RC tank economics + equilibrium governor — the volume ceiling law",
-      "status": "planned",
+      "status": "active",
       "cadence": "3s tick",
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": null,
-      "priorStatus": "active"
+      "evidence": "state/hyper-grid.json: equilibrium 14158 ops/day measured (RC governor live)",
+      "priorStatus": "planned"
     },
     {
       "id": "fill-auditor",
@@ -37,7 +37,7 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/observe.json: 24 chain-truth fills counted (last 2026-10-21T05:40:36.000Z)",
+      "evidence": "state/observe.json: 11 chain-truth fills counted (last 2026-10-21T06:42:00.000Z)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-01T21:39:37.902Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 55bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 0bps)",
       "priorStatus": "active"
     },
     {
@@ -133,10 +133,10 @@
       "cadence": "daily",
       "truthContract": "their votes counted from chain history minus our journal, never from our own logs",
       "recruitedAt": "2026-10-02T00:11:15.336Z",
-      "evidence": "state/weave.json: saos.weave.core.v1 published, age 5h — second-writer votes today 0 — החוזה-האחד פומבי",
+      "evidence": "state/weave.json: saos.weave.core.v1 published, age 6h — second-writer votes today 0 — החוזה-האחד פומבי",
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-21T06:03:15.462Z",
-  "pid": 2347
+  "at": "2026-10-21T06:45:24.000Z",
+  "pid": 5943
 }
