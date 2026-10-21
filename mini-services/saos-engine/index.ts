@@ -24,6 +24,8 @@ import { startArmyGrid, armyGridState } from "./armygrid.mjs";
 import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
+import { startExternalQuotes, externalQuotesState } from "./external-quotes.mjs"; // W27-c: the REAL-MONEY external price anchor (Poloniex/Bithumb/Gecko)
+import { startFfGate, ffGateState } from "./ff-gate.mjs"; // W27-a: the FixedFloat real-money gate (PENDING-ACTIVATION → ACTIVE → promote)
 import { webintelState } from "./webintel.mjs";
 import { contentState } from "./content.mjs";
 import { streamState } from "./social-streamer.mjs"; /* R310: the live posts stream (one-body: the engine computes, the cockpit shows) */
@@ -143,6 +145,10 @@ async function handle(req) {
       dexflow: dexState(),
       /* W17 EXCHANGE-EXEC: the HTX executor — deposit+trade verdicts (typed, journaled) */
       exchangeExec: exchangeExecState(),
+      /* W27-c EXT-QUOTES: the real-money external anchor (steemUsd/sbdUsd/implied cross unit) */
+      externalQuotes: externalQuotesState(),
+      /* W27-a FF-GATE: FixedFloat real-money lane — PENDING-ACTIVATION → ACTIVE → promote plan */
+      ffGate: ffGateState(),
       /* T-22 ONE-BODY live layer — computed by the ENGINE (single source) */
       live: {
         orders: oo.orders ?? [],
@@ -515,6 +521,23 @@ try { startDexFlow(); } catch (e) {
 // exist. One writer, own tick loop, journaled to state/exchange-exec.json.
 try { startExchangeExec(); } catch (e) {
   console.error(`exchange-exec boot failed: ${String(e?.message ?? e)}`);
+}
+
+// W27-c · EXTERNAL-QUOTES: the REAL-MONEY anchor — keyless public reads of
+// what the outside world pays for STEEM (Poloniex/Bithumb/Gecko) + SBD/USD,
+// 5min cadence, per-venue honesty; feeds the dexflow parity trigger and the
+// arb-watch math (owner trace 1a15c67385c253b5: real inflow, real market).
+try { startExternalQuotes(); } catch (e) {
+  console.error(`external-quotes boot failed: ${String(e?.message ?? e)}`);
+}
+
+// W27-a · FF-GATE: the FixedFloat real-money lane. One gentle signed probe
+// per 30min; PENDING-ACTIVATION (owner word + measured code 501) keeps the
+// gate closed; the moment the key gains permission the gate flips ACTIVE
+// and the promote plan arms (treasury caps, operator word). Zero execution
+// before approval — the owner's explicit wait order.
+try { startFfGate(); } catch (e) {
+  console.error(`ff-gate boot failed: ${String(e?.message ?? e)}`);
 }
 
 // R287 · REVENUE ARCHITECT LOOPS: the content compiler feeds the staging
