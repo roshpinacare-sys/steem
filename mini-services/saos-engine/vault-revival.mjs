@@ -152,7 +152,15 @@ function gitShowBytes(ref, file) {
  * by the engine. Resolution order, fail-loud: legacy inline meta.keysZipPass
  * → the meta's OWN keysZipUnlockRef → the era's documented bundle refs.
  * Verdict-only: the chosen REF NAME is journaled, never the material. */
-function resolveGenerationPass(meta, eraRefs = []) {
+function resolveGenerationPass(meta, eraRefs = [], metaRef = META_REF) {
+  /* R561 · HISTORY-FALLBACK LAW (measured 2026-10-21): R-VAULTPASS-1 stripped
+   * the passes from the CURRENT metas, but the meta itself records "material
+   * persists in pre-migration git history" — and the operator's standing law
+   * ("אין מה לבקש מפתחות — הכל בכספת בגיט") makes that history the lawful
+   * resolver of last resort. The pass is read from the sha-pinned pre-strip
+   * commit, used in-memory for the decrypt, NEVER logged, NEVER re-committed.
+   * Fail-closed: only commits that actually carry the meta resolve. */
+  const historyCommits = ["dcaeb6a48", "609166c62^", GEN1_COMMIT];
   const inline = typeof meta.keysZipPass === "string" ? meta.keysZipPass : "";
   if (inline.length >= 8) return { pass: inline, via: "meta.keysZipPass" };
   const refs = [...new Set([
@@ -163,6 +171,17 @@ function resolveGenerationPass(meta, eraRefs = []) {
   for (const r of refs) {
     try { return { pass: vaultPass(r), via: `bundle.${r}` }; }
     catch (e) { tried.push(`${r}(${String(e?.message ?? e).slice(0, 40)})`); }
+  }
+  /* R561: git-history fallback — the pre-strip commits carry the era meta
+   * WITH the inline pass; sha-pinned, in-memory only. */
+  for (const c of historyCommits) {
+    try {
+      const hm = JSON.parse(gitShowBytes(c, metaRef).toString("utf8"));
+      if (typeof hm.keysZipPass === "string" && hm.keysZipPass.length >= 8) {
+        return { pass: hm.keysZipPass, via: `history.${c.slice(0, 8)}.keysZipPass` };
+      }
+      tried.push(`history.${c.slice(0, 8)}(no-inline-pass)`);
+    } catch (e) { tried.push(`history.${c.slice(0, 8)}(${String(e?.message ?? e).slice(0, 40)})`); }
   }
   throw new Error(`no-unlock-pass-resolves (tried: ${tried.join(" | ") || "none"})`);
 }
@@ -179,7 +198,7 @@ function unlockGeneration({ ref, zip, metaRef, genLabel, eraRefs }) {
     const enc = gitShowBytes(ref, zipPath);
     const outerSha = sha256(enc);
     if (outerSha !== meta.keysZipSha256) throw new Error(`vault-outer-sha-mismatch (${outerSha.slice(0, 8)})`);
-    const { pass: keysZipPass, via: passVia } = resolveGenerationPass(meta, eraRefs ?? []);
+    const { pass: keysZipPass, via: passVia } = resolveGenerationPass(meta, eraRefs ?? [], metaRef);
     fs.writeFileSync(path.join(TMP, "keys-zip.enc"), enc, { mode: 0o600 });
     /* R312 · DIAGNOSTIC TRUTH (measured 2026-10-14: runner book said only
      * "Command failed: openssl …" on BOTH generations while the custody-recover

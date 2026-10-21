@@ -188,8 +188,24 @@ async function readBookShared() {
 }
 
 async function readRc(account) {
-  const r = await rpcCall("rc_api.find_rc_accounts", { accounts: [account] });
-  const a = r.ok ? r.result?.rc_accounts?.[0] : null;
+  let r = await rpcCall("rc_api.find_rc_accounts", { accounts: [account] });
+  let a = r.ok ? r.result?.rc_accounts?.[0] : null;
+  /* R561 · EMPTY-RC NODE-DEFECT LAW (measured 2026-10-21): boylikegirl returns
+   * an ok-but-EMPTY rc_accounts for live custody-verified accounts (hcsoldier4/
+   * 5/6 measured 407B max_rc on api.steemit.com) — treating "answered, empty"
+   * as truth amputated three live hands from the grid (NO-RC-EVIDENCE). An
+   * empty answer for a live account is a NODE DEFECT, not a chain truth →
+   * failover to the remaining nodes before declaring no-evidence. */
+  if (!a) {
+    for (const node of ["https://api.justyy.com", "https://api.steemit.com"]) {
+      try {
+        const resp = await fetch(node, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method: "rc_api.find_rc_accounts", params: { accounts: [account] }, id: 1 }), signal: AbortSignal.timeout(8000) });
+        const j = await resp.json().catch(() => null);
+        const cand = j?.result?.rc_accounts?.[0];
+        if (cand) { a = cand; break; }
+      } catch { /* next node */ }
+    }
+  }
   if (!a) return null;
   const cur = parseInt(a.rc_manabar?.current_mana ?? "0", 10);
   const max = parseInt(a.max_rc ?? "0", 10);
