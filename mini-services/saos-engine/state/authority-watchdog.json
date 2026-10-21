@@ -1,16 +1,16 @@
 {
-  "at": "2026-10-21T16:41:31.748Z",
-  "verdict": "ALL-SIGNED",
+  "at": "2026-10-21T16:56:31.748Z",
+  "verdict": "1-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 11,
-      "signedPct": 64,
-      "signed": 7,
-      "unsigned": 4,
+      "scanned": 18,
+      "signedPct": 61,
+      "signed": 11,
+      "unsigned": 7,
       "invalid": 0,
       "untrusted": 0,
       "flagged": []
@@ -60,28 +60,24 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
-      "invalid": 0,
+      "unsigned": 9,
+      "invalid": 1,
       "untrusted": 0,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "988ad4c0",
+          "gq": "E",
+          "sig": "INVALID",
+          "author": "roshpinacare-sys",
+          "at": "2026-10-21T16:55:19Z",
+          "subject": "wallet: VAULT EXPOSURE alarm published on the money page itself (roast"
+        }
+      ]
     },
     {
       "repo": "TruthRail",
-      "coverage": "MEASURED",
-      "method": "git-native",
-      "scanned": 10,
-      "signed": 0,
-      "unsigned": 10,
-      "invalid": 0,
-      "untrusted": 0,
-      "unknown": 0,
-      "signedPct": 0,
-      "flagged": []
-    },
-    {
-      "repo": "saos-agents",
       "coverage": "MEASURED",
       "method": "git-native",
       "scanned": 10,
@@ -92,13 +88,36 @@
       "unknown": 0,
       "signedPct": 10,
       "flagged": []
+    },
+    {
+      "repo": "saos-agents",
+      "coverage": "MEASURED",
+      "method": "git-native",
+      "scanned": 10,
+      "signed": 2,
+      "unsigned": 8,
+      "invalid": 0,
+      "untrusted": 0,
+      "unknown": 0,
+      "signedPct": 20,
+      "flagged": []
     }
   ],
-  "flagged": [],
+  "flagged": [
+    {
+      "hash": "988ad4c0",
+      "gq": "E",
+      "sig": "INVALID",
+      "author": "roshpinacare-sys",
+      "at": "2026-10-21T16:55:19Z",
+      "subject": "wallet: VAULT EXPOSURE alarm published on the money page itself (roast",
+      "repo": "Domain"
+    }
+  ],
   "coverage": {
     "measured": 7,
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 7116
+  "ms": 5677
 }
