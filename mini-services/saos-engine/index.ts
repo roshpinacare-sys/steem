@@ -149,6 +149,8 @@ async function handle(req) {
       dexflow: dexState(),
       /* G43 MANY-HANDS: the one-body fleet grid + the sharp taker (shadow-first) */
       manyhands: manyhandsState(),
+      /* G44 SHARP-TAKER: the master-rail dislocation taker (takeLaw · FOK · own id partition) — wiring union-restored W120 */
+      sharpTaker: sharpTakerState(),
       /* W17 EXCHANGE-EXEC: the HTX executor — deposit+trade verdicts (typed, journaled) */
       exchangeExec: exchangeExecState(),
       /* W27-c EXT-QUOTES: the real-money external anchor (steemUsd/sbdUsd/implied cross unit) */
@@ -576,6 +578,10 @@ try { startFfGate(); } catch (e) {
 // AutoHedge examined, what serves sovereignty adopted).
 try { startHedgeDesk(); } catch (e) {
   console.error(`hedge-desk boot failed: ${String(e?.message ?? e)}`);
+}
+/* G44 SHARP-TAKER boot (union-restored W120 — the churn had erased the wiring, not the module) */
+try { startSharpTaker(); } catch (e) {
+  console.error(`sharp-taker boot failed: ${String(e?.message ?? e)}`);
 }
 
 // R287 · REVENUE ARCHITECT LOOPS: the content compiler feeds the staging
