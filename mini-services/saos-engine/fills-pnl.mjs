@@ -95,27 +95,28 @@ async function pagedHistory(account, lookbackDays = 8) {
   return [...byIdx.values()].sort((a, b) => a[0] - b[0]);
 }
 
-/* one hand: process fills newer than cursor with the average-cost law */
+/* one hand: process fills newer than cursor with the average-cost law.
+ * T-565 GRILL FIX — ADOPTION LAW: the original cursor law pinned the cursor
+ * at the NEWEST index on first sweep, so every fill before adoption was
+ * invisible — the grill caught the shipped module measuring honest-looking
+ * ZEROS while the chain held 121 real fills in window. NEW LAW: adoption
+ * processes the FULL bounded window (the same 8×1000 pages we already
+ * fetched); early asks without basis are honest basis-gaps (zero PnL
+ * invented), and the cursor pins at the window's newest index as before. */
 export async function sweepHand(account) {
   const FILE = path.join(PNL_DIR, `${account}.json`);
   const prev = readJson(FILE, null) ?? {};
   const hist = await pagedHistory(account);
   if (!hist.length) return { ok: false, reason: "no-history" };
 
-  const rows = prev.cursor != null ? hist.filter(([idx]) => idx > prev.cursor) : [];
+  /* cursor law: adoption processes the FULL bounded window; afterwards only
+   * rows newer than the cursor. The window span is recorded for honesty. */
+  const rows = prev.cursor != null ? hist.filter(([idx]) => idx > prev.cursor) : hist;
   const adopting = prev.cursor == null;
-  /* cursor law: on first sweep, pin at the newest index — measure from now on */
   const newestIdx = hist.length ? hist[hist.length - 1][0] : null;
   if (adopting) {
-    const st = {
-      account, cursor: newestIdx, adoptedAt: new Date().toISOString(),
-      lots: { steemQty: 0, avgCostSbd: 0 },
-      realized: {}, basisGaps: 0,
-      totals: { fills: 0, askFills: 0, bidFills: 0, realizedSbd: 0, volSteem: 0, volSbd: 0 },
-      updatedAt: new Date().toISOString(),
-    };
-    writeJson(FILE, st);
-    return { ok: true, adopted: true, cursor: newestIdx };
+    /* process the whole window NOW (fall through with rows = hist) — the
+     * state is written once at the end of this call, with adoptedAt kept */
   }
   if (!rows.length) { writeJson(FILE, { ...prev, updatedAt: new Date().toISOString() }); return { ok: true, fresh: true }; }
 
@@ -123,7 +124,6 @@ export async function sweepHand(account) {
   const realized = prev.realized ?? {};
   let basisGaps = prev.basisGaps ?? 0;
   const totals = prev.totals ?? { fills: 0, askFills: 0, bidFills: 0, realizedSbd: 0, volSteem: 0, volSbd: 0 };
-
   for (const [, x] of rows) {
     const { type, value } = opOf(x);
     if (type !== "fill_order" && type !== "fill_order_operation") continue;
@@ -166,6 +166,8 @@ export async function sweepHand(account) {
   const st = {
     account, cursor: Math.max(prev.cursor ?? 0, rows.length ? rows[rows.length - 1][0] : (prev.cursor ?? 0)),
     adoptedAt: prev.adoptedAt ?? new Date().toISOString(),
+    windowFrom: rows.length && rows[0] ? String(rows[0][1]?.timestamp ?? "") : null, /* T-565: measured-window honesty */
+    windowTo: rows.length && rows[rows.length - 1] ? String(rows[rows.length - 1][1]?.timestamp ?? "") : null,
     lots: { steemQty: r6(lots.steemQty), avgCostSbd: r6(lots.avgCostSbd) },
     realized: Object.fromEntries(Object.entries(realized).slice(-30).map(([k, v]) => [k, {
       realizedSbd: r6(v.realizedSbd), askFills: v.askFills, bidFills: v.bidFills,
