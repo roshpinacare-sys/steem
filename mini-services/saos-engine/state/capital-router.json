@@ -1,29 +1,29 @@
 {
-  "at": "2026-10-21T14:45:15.869Z",
+  "at": "2026-10-21T15:58:13.406Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
-    "headcornerEffectiveSp": 1644.74,
-    "armyEffectiveSp": 792.53,
-    "fleetEffectiveSp": 2437.27,
-    "delegatedOutSp": 2781.5,
+    "headcornerEffectiveSp": 1645.03,
+    "armyEffectiveSp": 792.56,
+    "fleetEffectiveSp": 2437.59,
+    "delegatedOutSp": 2781.55,
     "expiringSoon": [],
-    "liquidSteem": 158.091,
+    "liquidSteem": 242.299,
     "liquidSbd": 1.108,
-    "unclaimedSp": 0,
+    "unclaimedSp": 0.03,
     "unclaimedSbd": 0,
     "unclaimedSteem": 0
   },
   "landing": {
     "source": "chain-live",
-    "queueSp": 2017.34,
-    "delegatedFieldSp": 2781.54,
-    "activeRowsSp": 764.2,
+    "queueSp": 2017.35,
+    "delegatedFieldSp": 2781.55,
+    "activeRowsSp": 764.21,
     "activeRowsCount": 14,
-    "vestsPerSp": 1611.32758,
-    "deepProbeQueueSp": 2017.92,
-    "driftVsDeepProbeSp": -0.58,
-    "at": "2026-10-21T14:45:48.691Z"
+    "vestsPerSp": 1611.322098,
+    "deepProbeQueueSp": 2017.97,
+    "driftVsDeepProbeSp": -0.62,
+    "at": "2026-10-21T15:58:16.875Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -39,32 +39,32 @@
       {
         "id": "today",
         "label": "as-measured now",
-        "spPerDay": 0.797586,
-        "usdPerDay": 0.083014,
+        "spPerDay": 0.797727,
+        "usdPerDay": 0.083028,
         "note": "curation-only lane, author dust, other lanes dormant",
         "multiplierVsToday": 1
       },
       {
         "id": "landing",
         "label": "recall wave lands (expiring→effective)",
-        "spPerDay": 1.775858,
-        "usdPerDay": 0.184833,
-        "note": "2017.34 SP measured in the expiring queue",
+        "spPerDay": 1.776003,
+        "usdPerDay": 0.184848,
+        "note": "2017.35 SP measured in the expiring queue",
         "multiplierVsToday": 2.23
       },
       {
         "id": "tags",
         "label": "tag-ROI budget shift to measured top tags",
-        "spPerDay": 2.486201,
-        "usdPerDay": 0.258766,
+        "spPerDay": 2.486405,
+        "usdPerDay": 0.258788,
         "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
         "multiplierVsToday": 3.12
       },
       {
         "id": "fleet",
         "label": "army battery deployed (regen-bounded slots × SP)",
-        "spPerDay": 2.555045,
-        "usdPerDay": 0.265932,
+        "spPerDay": 2.555249,
+        "usdPerDay": 0.265953,
         "note": "army adds 0.068844 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
         "multiplierVsToday": 3.2
       }
@@ -75,12 +75,23 @@
   },
   "actions": [
     {
-      "id": "await-landing",
-      "class": "schedule",
-      "note": "2017.34 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
+      "id": "claim-rewards",
+      "class": "execute-now",
+      "note": "unclaimed rewards on the table: 0.03 SP + 0 SBD + 0 STEEM — claim sweeps value into the battery",
       "expectedSpPerDay": 0,
       "evidence": {
-        "delegOut": 2781.5,
+        "unclaimedSp": 0.03,
+        "unclaimedSbd": 0,
+        "unclaimedSteem": 0
+      }
+    },
+    {
+      "id": "await-landing",
+      "class": "schedule",
+      "note": "2017.35 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
+      "expectedSpPerDay": 0,
+      "evidence": {
+        "delegOut": 2781.55,
         "activeRowsVests": 1231384.06,
         "source": "chain-live"
       }
@@ -88,11 +99,11 @@
     {
       "id": "vp-pace-headcorner",
       "class": "schedule",
-      "note": "headcorner VP 2.97% below floor 60% — rail lawfully paused; unlocks in ~68.44h at 20%/day regen; do NOT burn early",
+      "note": "headcorner VP 7.09% below floor 60% — rail lawfully paused; unlocks in ~63.49h at 20%/day regen; do NOT burn early",
       "expectedSpPerDay": 0,
       "evidence": {
-        "vpPct": 2.97,
-        "etaHours": 68.44
+        "vpPct": 7.09,
+        "etaHours": 63.49
       }
     },
     {
