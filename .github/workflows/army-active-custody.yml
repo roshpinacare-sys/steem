@@ -44,9 +44,12 @@ concurrency:
 jobs:
   custody:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     env:
       STEEM_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
+      VAULT_PASSES_R33: ${{ secrets.VAULT_PASSES_R33 }}
+      ROT2_FLEET_KEYS: ${{ secrets.ROT2_FLEET_KEYS }}
+      MAIN_KEY: ${{ secrets.MAIN_KEY }}
       ROTATE_MODE: ${{ github.event.inputs.mode }}
     steps:
       - name: Checkout

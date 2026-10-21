@@ -20,10 +20,13 @@ adaptationBoot(); // R210 §XVI: restart counter — adaptation store proves per
 import { discoveryState } from "./discovery.mjs";
 import { fleetState } from "./fleet.mjs";
 import { startHyperGrid, hyperState } from "./hypergrid.mjs";
+import { startArmyGrid, armyGridState } from "./armygrid.mjs";
 import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startManyHands, manyhandsState } from "./manyhands.mjs"; // G43 ONE-BODY-MANY-HANDS + the sharp taker (shadow-first)
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
+import { startExternalQuotes, externalQuotesState } from "./external-quotes.mjs"; // W27-c: the REAL-MONEY external price anchor (Poloniex/Bithumb/Gecko)
+import { startFfGate, ffGateState } from "./ff-gate.mjs"; // W27-a: the FixedFloat real-money gate (PENDING-ACTIVATION → ACTIVE → promote)
 import { webintelState } from "./webintel.mjs";
 import { contentState } from "./content.mjs";
 import { streamState } from "./social-streamer.mjs"; /* R310: the live posts stream (one-body: the engine computes, the cockpit shows) */
@@ -145,6 +148,10 @@ async function handle(req) {
       manyhands: manyhandsState(),
       /* W17 EXCHANGE-EXEC: the HTX executor — deposit+trade verdicts (typed, journaled) */
       exchangeExec: exchangeExecState(),
+      /* W27-c EXT-QUOTES: the real-money external anchor (steemUsd/sbdUsd/implied cross unit) */
+      externalQuotes: externalQuotesState(),
+      /* W27-a FF-GATE: FixedFloat real-money lane — PENDING-ACTIVATION → ACTIVE → promote plan */
+      ffGate: ffGateState(),
       /* T-22 ONE-BODY live layer — computed by the ENGINE (single source) */
       live: {
         orders: oo.orders ?? [],
@@ -201,6 +208,11 @@ async function handle(req) {
   }
   if (p === "/hyper") {
     return json({ ok: true, at: new Date().toISOString(), account: ACCOUNT, ...hyperState() });
+  }
+  // T-559 ARMY-GRID: one smart body, many hands — the custody-verified army
+  // books live (staggered requotes, per-account governors, full gate stack).
+  if (p === "/army-grid") {
+    return json({ ok: true, at: new Date().toISOString(), master: ACCOUNT, ...armyGridState() });
   }
   if (p === "/payouts") {
     return json({ ok: true, at: new Date().toISOString(), account: ACCOUNT, payouts: payoutsState() });
@@ -348,7 +360,7 @@ async function handle(req) {
                      : "credential secured but not matching this account's authorities — install the proposedPubkeys on steemit.com, or paste the CURRENT password instead",
     });
   }
-  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential", "/finance-digest", "/yield", "/yield-run"] }, 404);
+  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential", "/finance-digest", "/yield", "/yield-run", "/army-grid"] }, 404);
 }
 
 // T-15 SINGLE-INSTANCE LAW (measured live: 3 duplicate engine processes were
@@ -483,6 +495,14 @@ try { startHyperGrid(); } catch (e) {
   console.error(`hypergrid boot failed: ${String(e?.message ?? e)}`);
 }
 
+// T-559 ARMY-GRID: the many-hands layer — staggered per-account requotes on
+// the custody-verified army books. Booted after custody revival's first run
+// begins; per-tick custody checks keep it fail-closed until each identity is
+// chain-verified. Owner activation order 2026-10-21 (see armygrid.mjs).
+try { startArmyGrid(); } catch (e) {
+  console.error(`armygrid boot failed: ${String(e?.message ?? e)}`);
+}
+
 // W24 WEAVE-WITNESS: the saos.weave.core.v1 anchor cadence revival — the
 // census-verified 5-day-dead checkpoint line (cp#1655, 2026-10-15) rides
 // cashmachine's EXISTING posting custody; T0 op, fail-closed continuation,
@@ -511,6 +531,23 @@ try { startManyHands(); } catch (e) {
 // exist. One writer, own tick loop, journaled to state/exchange-exec.json.
 try { startExchangeExec(); } catch (e) {
   console.error(`exchange-exec boot failed: ${String(e?.message ?? e)}`);
+}
+
+// W27-c · EXTERNAL-QUOTES: the REAL-MONEY anchor — keyless public reads of
+// what the outside world pays for STEEM (Poloniex/Bithumb/Gecko) + SBD/USD,
+// 5min cadence, per-venue honesty; feeds the dexflow parity trigger and the
+// arb-watch math (owner trace 1a15c67385c253b5: real inflow, real market).
+try { startExternalQuotes(); } catch (e) {
+  console.error(`external-quotes boot failed: ${String(e?.message ?? e)}`);
+}
+
+// W27-a · FF-GATE: the FixedFloat real-money lane. One gentle signed probe
+// per 30min; PENDING-ACTIVATION (owner word + measured code 501) keeps the
+// gate closed; the moment the key gains permission the gate flips ACTIVE
+// and the promote plan arms (treasury caps, operator word). Zero execution
+// before approval — the owner's explicit wait order.
+try { startFfGate(); } catch (e) {
+  console.error(`ff-gate boot failed: ${String(e?.message ?? e)}`);
 }
 
 // R287 · REVENUE ARCHITECT LOOPS: the content compiler feeds the staging

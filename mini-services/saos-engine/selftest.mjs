@@ -6180,6 +6180,55 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("58.3e alive-wins: the larger checkpoint is the continuation point", best.latest.checkpoint, 1655);
 }
 
+/* ══════════════ section 59 · W27 OUR-DEX HOT MARKET (tiered fleet book ·
+ * real-money anchor · ff-gate status machine) ══════════════
+ * Owner trace 1a15c67385c253b5: "שוק חריף של גרידים וארביטראזים דווקא על
+ * הדקס שלנו" + "תזרים אמיתי מבחוץ". Pure vectors, zero network/keys. */
+{
+  /* 59.1 TIERED FLEET BOOK — in a healthy book (cap not binding) the tier
+   * deepens ONLY the ask floor and LOWERS only this body's bid ceiling; in
+   * a book-depressed market the G41 cap clamps asks to the lawful front;
+   * tier=0 math byte-identical to before (regression law). */
+  const nowS = "2026-10-21T00:00:00Z";
+  const baseArgs = { parity: 0.1119, askBudgetSteem: 10, bidBudgetSbd: 5, levels: 3, minLevel: 0.2, now: nowS, bestAsk: 0.115, bestBid: 0.1145, feedAnchor: 0.1145 };
+  const base = planLadder({ ...baseArgs, askParityBps: 0, bidCeilingBps: 0 });
+  const t1 = planLadder({ ...baseArgs, askParityBps: 20, bidCeilingBps: 20 });
+  const t3 = planLadder({ ...baseArgs, askParityBps: 60, bidCeilingBps: 60 });
+  eq("59.1a tier-0 floor/ceiling byte-identical to the legacy call (no-param)",
+    [planLadder({ ...baseArgs }).floor, planLadder({ ...baseArgs }).ceiling], [base.floor, base.ceiling]);
+  eq("59.1b tier ask floor deepens monotonically with askParityBps (healthy book)", [t1.floor > base.floor, t3.floor > t1.floor], [true, true]);
+  eq("59.1c tier bid ceiling sinks monotonically with bidCeilingBps (more conservative)", [t1.ceiling < base.ceiling, t3.ceiling < t1.ceiling], [true, true]);
+  eq("59.1d tier bids NEVER pay more than the un-tiered ceiling law (VF1 eternal)", t3.bids.every((b) => b.unit <= base.ceiling + 1e-9), true);
+  eq("59.1e tier asks stay inside the lawful band [floor..bookCap]",
+    t3.asks.every((a) => a.unit >= t3.floor - 1e-9 && a.unit <= 0.115 * 1.001 + 1e-9), true);
+  eq("59.1f depressed book: G41 cap clamps every tier to the lawful front (fillability wins)",
+    (() => { const d = { ...baseArgs, bestAsk: 0.104, bestBid: 0.1035, feedAnchor: 0.1035 }; return planLadder({ ...d, askParityBps: 60, bidCeilingBps: 60 }).floor === planLadder({ ...d, askParityBps: 0, bidCeilingBps: 0 }).floor; })(), true);
+  eq("59.1g deep tier never empty (clamped, lawful, OFFER-READY)", t3.verdict, "OFFER-READY");
+
+  /* 59.2 REAL-MONEY ANCHOR — median of prints resists a lying venue; the
+   * implied cross unit rides the same axis as the internal book (SBD/STEEM). */
+  const extq = await import("./external-quotes.mjs");
+  const a1 = extq.computeAnchor({ prints: [0.05489, 0.0523, 0.05484], sbdUsd: 0.49 });
+  eq("59.2a median picks the middle print (Poloniex/Bithumb/Gecko)", a1.steemUsd, 0.05484);
+  eq("59.2b implied cross unit = steemUsd/sbdUsd (6dp, book axis)", a1.impliedUnitSbdPerSteem, Math.round((0.05484 / 0.49) * 1e6) / 1e6);
+  const a2 = extq.computeAnchor({ prints: [0.05489, 0.5489, 0.05484], sbdUsd: 0.49 }); /* one venue lies ×10 */
+  eq("59.2c a ×10 lying venue never drags the median (honest middle print holds)", a2.steemUsd, 0.05489);
+  const a3 = extq.computeAnchor({ prints: [], sbdUsd: 0.49 });
+  eq("59.2d no prints ⇒ ok:false + zero implied (honest absence)", [a3.ok, a3.impliedUnitSbdPerSteem], [false, 0]);
+  const a4 = extq.computeAnchor({ prints: [0.05489], sbdUsd: 0 });
+  eq("59.2e no SBD/USD ⇒ ok:false (no unit can exist)", a4.ok, false);
+
+  /* 59.3 FF-GATE STATUS MACHINE — the measured pending signature is the
+   * only open path to ACTIVE; everything else stays UNEXPECTED (ABSTAIN). */
+  const fg = await import("./ff-gate.mjs");
+  eq("59.3a measured pending answer (code 501) ⇒ PENDING-ACTIVATION", fg.classifyFfResponse({ code: "501", msg: "Not have permission", resOk: true, data: null }), "PENDING-ACTIVATION");
+  eq("59.3b pending by message text (belt+braces)", fg.classifyFfResponse({ code: "500", msg: "you do Not have permission", resOk: true, data: null }), "PENDING-ACTIVATION");
+  eq("59.3c permitted json body ⇒ ACTIVE (the promote gate opens)", fg.classifyFfResponse({ code: "0", msg: "", resOk: true, data: { currencies: [] } }), "ACTIVE");
+  eq("59.3d anything else ⇒ UNEXPECTED (ABSTAIN, never guessed)", fg.classifyFfResponse({ code: "403", msg: "forbidden", resOk: false, data: null }), "UNEXPECTED");
+  eq("59.3e ffSig is deterministic HMAC-SHA256 of url-encoded params",
+    fg.ffSig("k", {}) === fg.ffSig("k", {}), true);
+}
+
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
 /* exec36 · lane 36-a · EXECUTION-EVIDENCE VERDICT (R354 candidate): the
  * last-run write is now runId-bound + self-verified (defense in depth).
