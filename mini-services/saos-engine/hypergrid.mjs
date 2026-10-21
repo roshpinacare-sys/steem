@@ -84,7 +84,7 @@ export const HYPER_DEFAULTS = {
    * sandbox wipe because it lived only in memory. 40 = the measured 7×
    * quoting-pace equilibrium; floor 25 untouched; ladder to 35 only after
    * 24h of stable PnL at 40 (measured, reversible, one notch at a time). */
-  setpointPct: 40,        // governor equilibrium target (W23-d measured, W24 made wipe-proof)
+  setpointPct: 35,        // governor equilibrium target — W26 owner-direct ladder 40→35 (״גם שם זה לא מספיק״ trace 1a15c405881bfeb5); floor 25 untouched
   burst: 3,               // transient burn multiplier above equilibrium
   maxOpsPerTick: 24,      // per-broadcast op ceiling
   opsDayCap: 32000,       // doctrine cap = the MEASURED equilibrium
