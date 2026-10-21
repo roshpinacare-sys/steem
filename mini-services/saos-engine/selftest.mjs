@@ -6225,7 +6225,6 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
   eq("59.3b pending by message text (belt+braces)", fg.classifyFfResponse({ code: "500", msg: "you do Not have permission", resOk: true, data: null }), "PENDING-ACTIVATION");
   eq("59.3c permitted json body ⇒ ACTIVE (the promote gate opens)", fg.classifyFfResponse({ code: "0", msg: "", resOk: true, data: { currencies: [] } }), "ACTIVE");
   eq("59.3d anything else ⇒ UNEXPECTED (ABSTAIN, never guessed)", fg.classifyFfResponse({ code: "403", msg: "forbidden", resOk: false, data: null }), "UNEXPECTED");
-<<<<<<< HEAD
   eq("59.3e ffSig is deterministic HMAC-SHA256 of the exact body string (W120 measured convention)",
     fg.ffSig("k", "") === fg.ffSig("k", ""), true);
   // W120 vectors: real FF v2 convention — X-API-SIGN = HMAC(secret, exact body string)
@@ -6235,9 +6234,6 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
     fg.classifyFfResponse({ code: "401", msg: "API key invalid", resOk: false, data: null }), "KEY-REJECTED");
   eq("59.3h code 0 but data missing ⇒ UNEXPECTED (ABSTAIN, never guessed)",
     fg.classifyFfResponse({ code: "0", msg: "", resOk: true, data: null }), "UNEXPECTED");
-=======
-  eq("59.3e ffSig is deterministic HMAC-SHA256 of url-encoded params",
-    fg.ffSig("k", {}) === fg.ffSig("k", {}), true);
 }
 
 /* ══════════════ section 60 · W28 HEDGE-DESK (AutoHedge-adopted risk gates) ══════════════
@@ -6280,7 +6276,6 @@ import { MEASURED as M36, vpBurnPerDayPct, vpHeadroom, routeVpBattery, mmVerdict
 
   const v60i = hd.computeDeskVerdict({ anchor: anchor60, fills: { ...healthyFills60, buys24h: 20, sells24h: 2, bidEdgeBps: 8, askEdgeBps: 6 }, hyper: hyperOk60 });
   eq("60.k TRIM outranks WIDEN when both fire (severity ordering law)", v60i.verdict, "TRIM");
->>>>>>> origin/saos-cockpit
 }
 
 console.log(`\nSELFTEST ${pass}/${pass + fail} ${fail === 0 ? "PASS" : "FAIL"}`);
