@@ -1,19 +1,27 @@
 {
-  "at": "2026-10-21T22:29:31.049Z",
-  "verdict": "5-FLAGGED",
+  "at": "2026-10-21T22:44:31.051Z",
+  "verdict": "7-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 3,
+      "scanned": 30,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 1,
+      "unsigned": 26,
       "invalid": 0,
-      "untrusted": 2,
+      "untrusted": 4,
       "flagged": [
+        {
+          "hash": "9067fef9",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T22:35:11Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "194e3e8e",
           "gq": "U",
@@ -29,6 +37,14 @@
           "author": "agent-2-economy-core",
           "at": "2026-10-21T22:14:29Z",
           "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
+        {
+          "hash": "8cf4618f",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T18:07:39Z",
+          "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות"
         }
       ]
     },
@@ -139,6 +155,15 @@
   ],
   "flagged": [
     {
+      "hash": "9067fef9",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T22:35:11Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "194e3e8e",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -154,6 +179,15 @@
       "author": "agent-2-economy-core",
       "at": "2026-10-21T22:14:29Z",
       "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "8cf4618f",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T18:07:39Z",
+      "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות",
       "repo": "steem.git(LOCAL)"
     },
     {
@@ -189,5 +223,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 7067
+  "ms": 5677
 }
