@@ -88,7 +88,13 @@ const inDfSpace = (id) => Number(id) >= DF_LO && Number(id) <= DF_HI;
 export const DEXFLOW_DEFAULTS = {
   enabled: true,
   tickMs: 6000,          // one trip attempt per tick (≤ 600 trips/h ceiling)
-  minRcPct: 40,          // own hard floor — above hyper's 25% floor
+  /* G43 notch (owner volume mandate, trace 1a15c84153ee8595): floor 40→30.
+   * Measured proof (hyper-grid.json economics 2026-10-21): regen 816B/d >
+   * burn 419B/d at equilibrium — trading REGENERATES RC net-positive, so a
+   * floor above the live tank (32.5%) only idled a net-positive machine
+   * (RC-FLOOR verdict, 0 trips while hands sat full). One reversible notch;
+   * the tank law itself (never below 25) untouched; hyper's floor stays 25. */
+  minRcPct: 30,          // own hard floor — above hyper's 25% floor
   backoff65Pct: 0.5,     // rcPct < 65 → half rate
   backoff50Pct: 0.25,    // rcPct < 50 → quarter rate
   maxTripSbd: 8.0,       // hard notional ceiling per trip (SBD side)
@@ -261,6 +267,8 @@ async function tickInner() {
         lastVerdictAt: now.toISOString(), rcPct, swept: mine.live.length,
         lastTxid: ok ? res.txid ?? null : st.lastTxid ?? null,
         lastError: ok ? null : String(res.error ?? res.verdict).slice(0, 160),
+        /* honesty hygiene: a success verdict must not carry a stale error */
+        ...(ok ? { staleErrorCleared: st.lastError ?? null } : {}),
       });
     }
 
