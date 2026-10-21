@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-21T23:04:36.741Z",
+  "at": "2026-10-21T23:14:38.340Z",
   "policy": {
     "reservePct": 60,
     "fleetPct": 40,
@@ -15,20 +15,50 @@
   "treasury": "headcorner",
   "rosterSize": 10,
   "executedToday": 0,
-  "perShare": 0,
-  "plannedTotal": 0,
-  "reserveSteem": 0,
+  "perShare": 3.742,
+  "plannedTotal": 14.968,
+  "reserveSteem": 78.604,
   "reserveSbd": 0,
-  "transfers": [],
-  "deferred": 0,
+  "transfers": [
+    {
+      "to": "cashmachine",
+      "amount": 3.742,
+      "asset": "STEEM"
+    },
+    {
+      "to": "haran",
+      "amount": 3.742,
+      "asset": "STEEM"
+    },
+    {
+      "to": "israelnews",
+      "amount": 3.742,
+      "asset": "STEEM"
+    },
+    {
+      "to": "lsa",
+      "amount": 3.742,
+      "asset": "STEEM"
+    }
+  ],
+  "deferred": 6,
   "executed": [],
-  "verdict": "CUSTODY-FROZEN",
-  "custody": null,
+  "verdict": "READY",
+  "pool": {
+    "steem": 93.572,
+    "sbd": 0
+  },
+  "perShareSbd": 0,
+  "invariantOk": true,
   "law": "pool = liquid above the operating floor; custody gate first; dust rolls back; caps bound the run; execution only through executeAs with the think gate; verdicts and txids journaled, keys never",
   "executeRequested": false,
   "liquidMeasured": {
-    "steem": 99.96,
-    "sbd": 0.111
+    "steem": 143.572,
+    "sbd": 1.108
   },
-  "custodyAfter": null
+  "custody": "FLEET-CUSTODY-ALIVE",
+  "custodyAfter": {
+    "verified": 10,
+    "total": 10
+  }
 }
