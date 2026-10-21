@@ -260,10 +260,13 @@ function pushReceipt(kind: string, body: Record<string, unknown>): void {
   const env = { ...process.env, SAOS_TOKEN: cachedToken };
   const helper = "!f(){ echo username=x-access-token; echo password=$SAOS_TOKEN; }; f";
   const g = (args: string[]) => spawnSync("git", args, { cwd: GIT_HOME, env, timeout: 120_000 });
+  /* W35: the cockpit home rides branch "saos-cockpit" (measured — "src refspec
+   * main does not match any" was the first receipt push's honest failure).
+   * Push HEAD: whatever branch the clone sits on is the branch that publishes. */
   g(["add", "-A", ".zscripts/office-receipts.jsonl"]);
   g(["commit", "-q", "-m", `office-boot: ${kind} · self-re-establishment receipt ${new Date().toISOString()} [trace:1a160970c4c4a575]`]);
-  g(["pull", "--rebase", "-q", "-X", "theirs", "origin", "main"]); /* sibling law */
-  const p = g(["push", "-q", "origin", "main"]);
+  g(["pull", "--rebase", "-q", "-X", "theirs", "origin", "HEAD"]); /* sibling law */
+  const p = g(["push", "-q", "origin", "HEAD"]);
   if (p.status === 0) log(`RECEIPT-PUSHED ${kind}`);
   else log(`RECEIPT-PUSH-FAIL: ${p.stderr?.toString().slice(0, 200)}`);
 }
