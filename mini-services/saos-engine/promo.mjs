@@ -44,8 +44,16 @@ const kindLabel = (k) => KIND_LABELS[String(k ?? "").toLowerCase()] ?? "system c
 export function buildLedgerBody({ dayIso, parity, paritySource, lowConfidence, orders, fills, realizedSbd, curationUsd, authorUsd, gridVerdict, decisions }) {
   const day = String(dayIso ?? "").slice(0, 10);
   const conf = lowConfidence ? " (low-confidence reading, published anyway, labeled honestly)" : "";
+  const publicize = (s) => String(s ?? "")
+    .replace(/\|/g, "/")
+    .replace(/fleet/gi, "the desk")
+    .replace(/soldier[s]?/gi, "sub-account")
+    .replace(/army/gi, "roster")
+    .replace(/saos/gi, "the network")
+    .replace(/sovereign/gi, "the network")
+    .replace(/doctrine/gi, "policy");
   const decRows = (Array.isArray(decisions) ? decisions : []).slice(0, 6)
-    .map((d) => `| ${kindLabel(d?.kind)} | ${String(d?.decision ?? "?").replace(/\|/g, "/")} | ${String(d?.reason ?? "").replace(/\|/g, "/").slice(0, 80)} |`)
+    .map((d) => `| ${publicize(kindLabel(d?.kind))} | ${publicize(d?.decision).slice(0, 60)} | ${publicize(d?.reason).slice(0, 80)} |`)
     .join("\n");
   const seed = daySeed(String(dayIso ?? ""));
   const ledeCore = `market parity between the two chain tokens closed the day at ${fmt(parity, 6)}${conf}, read from ${paritySource ?? "public feeds"}. The order book held ${orders ?? "?"} open orders and ${fills} real fills in the measured window. Realized result, accounted by average cost, no smoothing: ${fmt(realizedSbd, 6)} SBD.`;
