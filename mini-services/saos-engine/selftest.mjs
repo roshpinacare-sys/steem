@@ -875,6 +875,56 @@ eq("diff drift-creates-both", dMove.creates.length, 2);
 const dTtl = diffHyperTick({ planned: PLANNED, live: [LIVE(), LIVE({ orderid: 2_100_000_002, unit: 0.104442 })], epsBps: 2, ttlMs: 60_000, nowMs: 61_000 });
 eq("diff ttl-cancels-all-aged", dTtl.cancelIds, [2_100_000_001, 2_100_000_002]);
 eq("diff ttl-replaces-both", dTtl.creates.length, 2);
+
+/* G43 MANY-HANDS: the one-body roster/id/budget/taker/shadow laws */
+import { handIdBase, inHandSpace, livingRoster, handBudgets, takeLaw, shadowGate, MANYHANDS_DEFAULTS } from "./manyhands.mjs";
+eq("mh id-base-0", handIdBase(0), 2_400_000_000);
+eq("mh id-base-3", handIdBase(3), 2_400_300_000);
+eq("mh id-base-invalid-null", handIdBase(21), null);
+eq("mh id-base-fraction-null", handIdBase(1.5), null);
+eq("mh in-space-true", inHandSpace(2_400_000_042, 0), true);
+eq("mh in-space-upper-true", inHandSpace(2_400_099_999, 0), true);
+eq("mh in-space-overrun-false", inHandSpace(2_400_100_000, 0), false);
+eq("mh in-space-neighbor-false", inHandSpace(2_400_099_999, 1), false);
+ok("mh partitions-disjoint", (() => {
+  for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) {
+    if (handIdBase(i) + 100_000 > handIdBase(j)) return false;
+  }
+  return true;
+})());
+const custodyOk = {
+  at: new Date().toISOString(), verdict: "FLEET-CUSTODY-ALIVE",
+  denominator: { retired: ["siq"] },
+  fullRoster: { living: ["headcorner", "cashmachine", "haran", "siq"] },
+};
+const rosterR = livingRoster(custodyOk, { nowMs: Date.now() });
+eq("mh roster-minus-master-minus-retired", rosterR.hands.join(","), "cashmachine,haran");
+eq("mh roster-missing-doc", livingRoster(null).hands.length, 0);
+eq("mh roster-stale-doc", livingRoster({ ...custodyOk, at: new Date(Date.now() - 13 * 3600_000).toISOString() }, { nowMs: Date.now() }).why, "CUSTODY-STALE");
+eq("mh roster-wrong-verdict", livingRoster({ ...custodyOk, verdict: "SOMETHING-ELSE" }, { nowMs: Date.now() }).why, "CUSTODY-NOT-ALIVE");
+const mhBudgets = handBudgets({ steem: 100, sbd: 2.3 }, MANYHANDS_DEFAULTS);
+ok("mh budgets-ask-12pct", Math.abs(mhBudgets.askBudget - 12) < 0.001);
+ok("mh budgets-bid-minus-reserve", Math.abs(mhBudgets.bidBudget - 1.8) < 0.002);
+eq("mh budgets-dust-sbd-no-bid", handBudgets({ steem: 100, sbd: 0.3 }, MANYHANDS_DEFAULTS).canBid, false);
+const mid = 0.104266, fair = 0.104081;
+const tNoEdge = takeLaw({ fair, bestAsk: 0.104308, bestBid: 0.104225, mid, edgeBps: 100, bandBps: 800 });
+eq("mh taker-no-edge-inside-band", tNoEdge.skip, "NO-EDGE");
+const tBuy = takeLaw({ fair: 0.112, bestAsk: 0.1043, bestBid: 0.1042, mid: 0.10425, edgeBps: 100, bandBps: 800, steemFree: 50, sbdFree: 2 });
+eq("mh taker-buys-discount", tBuy.side, "buy");
+ok("mh taker-buy-edge-gte-min", tBuy.edgeBps >= 100);
+ok("mh taker-buy-foq", tBuy.fillOrKill === true);
+ok("mh taker-buy-capped-2sbd", tBuy.spendSbd <= 2 + 1e-9);
+const tSell = takeLaw({ fair: 0.097, bestAsk: 0.1043, bestBid: 0.1042, mid: 0.10425, edgeBps: 100, bandBps: 800, steemFree: 50, sbdFree: 2 });
+eq("mh taker-sells-premium", tSell.side, "sell");
+ok("mh taker-sell-edge-gte-min", tSell.edgeBps >= 100);
+const tHalt = takeLaw({ fair: 0.2, bestAsk: 0.1043, bestBid: 0.1042, mid: 0.10425, edgeBps: 100, bandBps: 800 });
+eq("mh taker-fair-anomaly-halt", tHalt.halt, "BOOK-FAIR-ANOMALY");
+const tDust = takeLaw({ fair: 0.112, bestAsk: 0.1043, bestBid: 0.1042, mid: 0.10425, edgeBps: 100, bandBps: 800, steemFree: 50, sbdFree: 0.001, minTakeSbd: 0.05 });
+eq("mh taker-dust-refuse", tDust.skip, "TAKE-DUST");
+eq("mh taker-no-evidence", takeLaw({ fair: 0, bestAsk: 0.1043, bestBid: 0.1042, mid }).skip, "NO-EVIDENCE");
+eq("mh shadow-default", shadowGate(MANYHANDS_DEFAULTS), "SHADOW");
+eq("mh shadow-string-true-is-shadow", shadowGate({ takerLive: "true" }), "SHADOW");
+eq("mh shadow-live-flag", shadowGate({ takerLive: true }), "LIVE");
 const dEps = diffHyperTick({ planned: [{ side: "ask", unit: 0.104244 }], live: [LIVE({ unit: 0.10425 })], epsBps: 2, ttlMs: 60_000, nowMs: 10_000 });
 eq("diff within-eps-holds (2bps≈0.104244×2e-4)", dEps.unchanged, true);
 const dEmpty = diffHyperTick({ planned: [], live: [LIVE()], epsBps: 2, ttlMs: 60_000, nowMs: 10_000 });

@@ -23,6 +23,7 @@ import { startHyperGrid, hyperState } from "./hypergrid.mjs";
 import { startArmyGrid, armyGridState } from "./armygrid.mjs";
 import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
+import { startManyHands, manyhandsState } from "./manyhands.mjs"; // G43 ONE-BODY-MANY-HANDS + the sharp taker (shadow-first)
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
 import { startExternalQuotes, externalQuotesState } from "./external-quotes.mjs"; // W27-c: the REAL-MONEY external price anchor (Poloniex/Bithumb/Gecko)
 import { startFfGate, ffGateState } from "./ff-gate.mjs"; // W27-a: the FixedFloat real-money gate (PENDING-ACTIVATION → ACTIVE → promote)
@@ -143,6 +144,8 @@ async function handle(req) {
       hyper: hyperState(),
       /* R323 DEX-FLOW: the volume-TAKER layer — real fills + accumulating volume */
       dexflow: dexState(),
+      /* G43 MANY-HANDS: the one-body fleet grid + the sharp taker (shadow-first) */
+      manyhands: manyhandsState(),
       /* W17 EXCHANGE-EXEC: the HTX executor — deposit+trade verdicts (typed, journaled) */
       exchangeExec: exchangeExecState(),
       /* W27-c EXT-QUOTES: the real-money external anchor (steemUsd/sbdUsd/implied cross unit) */
@@ -512,6 +515,13 @@ try { startWeaveWitness({}); } catch (e) {
 // one self-cross trip per tick, the same signing rail + doctrine guards.
 try { startDexFlow(); } catch (e) {
   console.error(`dexflow boot failed: ${String(e?.message ?? e)}`);
+}
+
+// G43 MANY-HANDS: the one-body-many-hands fleet grid (per-hand RC governors,
+// hands auto-join when active custody verifies — the authority-gap law) + the
+// sharp taker against feed-fair dislocations, SHADOW-first (takerLive flag).
+try { startManyHands(); } catch (e) {
+  console.error(`manyhands boot failed: ${String(e?.message ?? e)}`);
 }
 
 // W17 · EXCHANGE-EXEC: the HTX executor — the deposit leg (T2 transfer to the
