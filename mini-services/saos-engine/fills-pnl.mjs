@@ -109,9 +109,20 @@ export async function sweepHand(account) {
   const hist = await pagedHistory(account);
   if (!hist.length) return { ok: false, reason: "no-history" };
 
-  /* cursor law: adoption processes the FULL bounded window; afterwards only
-   * rows newer than the cursor. The window span is recorded for honesty. */
-  const rows = prev.cursor != null ? hist.filter(([idx]) => idx > prev.cursor) : hist;
+  /* cursor law (T-566 GRILL REVISION): the incremental filter is TIMESTAMP-based,
+   * not index-based. The grill proved account_history INDICES ARE NODE-DEPENDENT
+   * (steemit vs boylikegirl interleave virtual ops differently — same account,
+   * same day, same op at DIFFERENT indices), so an idx>cursor filter mixes index
+   * spaces whenever the NODES failover list answers from a different family —
+   * silently skipping or double-counting fills. Timestamps are node-independent.
+   * Edge (recorded, accepted): fills in the SAME second as windowTo are skipped
+   * — bounded by the 10min sweep cadence and node truncation being rarer still. */
+  const rows = prev.cursor != null && prev.windowTo
+    ? hist.filter(([idx, x]) => {
+        const ts = x?.timestamp ? Date.parse(x.timestamp + (x.timestamp.endsWith("Z") ? "" : "Z")) : 0;
+        return ts > Date.parse(prev.windowTo.endsWith("Z") ? prev.windowTo : prev.windowTo + "Z");
+      })
+    : hist;
   const adopting = prev.cursor == null;
   const newestIdx = hist.length ? hist[hist.length - 1][0] : null;
   if (adopting) {
@@ -242,6 +253,9 @@ export function pnlState() {
       account: st.account,
       adoptedAt: st.adoptedAt ?? null,
       cursor: st.cursor ?? null,
+      /* T-566 GRILL: measured-window honesty on the card (state had it, card didn't) */
+      windowFrom: st.windowFrom ?? null,
+      windowTo: st.windowTo ?? null,
       today: { ...(st.realized?.[today] ?? { realizedSbd: 0, askFills: 0, bidFills: 0, volSteem: 0, volSbd: 0 }) },
       totals: st.totals ?? null,
       basisGaps: st.basisGaps ?? 0,
