@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # run-claims-ledger.sh — רץ-פנקס-הטענות-החי-מהצומת-:3016 (W121 · גל-115 · agent-2)
 # החוזה של claims-attestor (parseLedger):
-#   == LEDGER: <measured-true> / <refuted> (of <total>)
+#   == LEDGER: <measured> MEASURED-TRUE / <refuted> REFUTED (of <total>)
 #   == refuted:<id1> <id2> ...
 # אפס-המצאה: כל-טענה-נמדדת-טרייה-מהמקור-החי; כשל-אחזור = טענה-כושלת-אחת-כנה.
 python3 - <<'PY'
@@ -13,9 +13,9 @@ try:
     refuted = [str(c.get("id", "?")) for c in claims if c.get("pass") is False]
     measured = sum(1 for c in claims if c.get("pass") is True)
     total = len(claims)
-    print(f"== LEDGER: {measured} / {len(refuted)} (of {total})")
+    print(f"== LEDGER: {measured} MEASURED-TRUE / {len(refuted)} REFUTED (of {total})")
     print("== refuted:" + (" ".join(refuted) if refuted else ""))
-except Exception as e:
-    print("== LEDGER: 0 / 1 (of 1)")
+except Exception:
+    print("== LEDGER: 0 MEASURED-TRUE / 1 REFUTED (of 1)")
     print("== refuted:claims-fetch-failed")
 PY
