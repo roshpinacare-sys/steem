@@ -1,103 +1,134 @@
 {
-  "verdict": "OFFER-EMPTY",
-  "parityBps": 0,
-  "blocker": null,
+  "verdict": "OFFER-BLOCKED",
+  "parityBps": 552,
+  "blocker": [
+    "bid-budget-below-min-level"
+  ],
   "plan": {
     "asks": [],
     "bids": [],
-    "flowAsks": [],
+    "flowAsks": [
+      {
+        "side": "ask",
+        "amountSteem": 4.30482,
+        "unit": 0.104298,
+        "sbdOut3": 0.449,
+        "at": "2026-10-21T18:47:40.798Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "ask",
+        "amountSteem": 4.30482,
+        "unit": 0.10453,
+        "sbdOut3": 0.45,
+        "at": "2026-10-21T18:47:40.798Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "ask",
+        "amountSteem": 4.30482,
+        "unit": 0.104762,
+        "sbdOut3": 0.451,
+        "at": "2026-10-21T18:47:40.798Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "ask",
+        "amountSteem": 4.30482,
+        "unit": 0.104995,
+        "sbdOut3": 0.452,
+        "at": "2026-10-21T18:47:40.798Z",
+        "tranche": "flow"
+      }
+    ],
     "flowBids": []
   },
   "flow": {
-    "bestAsk": 0.103114,
-    "bestBid": 0.101482,
+    "bestAsk": 0.102917,
+    "bestBid": 0.101012,
     "spacingBps": 15,
     "levels": 4,
-    "askBudgetSteem": 0.01944,
-    "bidBudgetSbd": 0,
+    "askBudgetSteem": 17.21928,
+    "bidBudgetSbd": 0.07296,
     "feedAnchor": 0.104081,
-    "flowAsks": 0,
+    "flowAsks": 4,
     "flowBids": 0
   },
   "book": {
-    "bestAsk": 0.10311404413281089,
-    "bestBid": 0.10148163182463973,
-    "askDepthSteem": 376.252,
-    "bidDepthSbd": 2045.442,
-    "at": "2026-10-21T17:46:42.702Z"
+    "bestAsk": 0.10291734197730956,
+    "bestBid": 0.101012,
+    "askDepthSteem": 357.448,
+    "bidDepthSbd": 2043.945,
+    "at": "2026-10-21T18:47:40.798Z"
   },
   "market": {
-    "at": "2026-10-21T17:24:46.331Z",
+    "at": "2026-10-21T18:47:44.809Z",
     "windowHours": 24,
     "class": "measured",
-    "trades": 581,
-    "tradesPerDay": 581,
-    "volSteem": 16377.266,
+    "trades": 549,
+    "tradesPerDay": 549,
+    "volSteem": 16193.297,
     "priceMin": 0.098814,
     "priceMax": 0.105691,
     "rangeBps": 696,
     "sizeP50": 22.411,
     "sizeP90": 70.768,
     "book": {
-      "bestAsk": 0.10341261633919338,
-      "bestBid": 0.10147582697201017,
-      "spreadBps": 190.86,
-      "askDepthSteem": 480.201,
-      "bidDepthSbd": 2044.892
+      "bestAsk": 0.10291734197730956,
+      "bestBid": 0.101012,
+      "spreadBps": 188.63,
+      "askDepthSteem": 357.448,
+      "bidDepthSbd": 2043.945
     }
   },
   "marks": {
-    "paritySbdPerSteem": 0.104081,
-    "source": "internal-feed-fallback+derived-sbd",
-    "lowConfidence": true,
+    "paritySbdPerSteem": 0.10983,
+    "source": "coingecko",
+    "lowConfidence": false,
     "internalFeed": 0.104081,
-    "dragK": 1.08,
-    "floor": 0.103218,
-    "ceiling": 0.103873,
-    "spreadBpsFed": 160
+    "dragK": 1.0935,
+    "floor": 0.103021,
+    "ceiling": 0.109609,
+    "spreadBpsFed": 187
   },
   "skew": {
-    "skew": -0.220878,
-    "askMult": 0.779122,
-    "bidMult": 1.220878,
+    "skew": 0.260588,
+    "askMult": 1.260588,
+    "bidMult": 0.739412,
     "reason": "hummingbot-inventory-skew"
   },
   "stale": {
-    "count": 23,
+    "count": 19,
     "orderids": [
-      1792602315,
-      1792602319,
-      1792602323,
-      1792602327,
-      1792602331,
-      1792602336,
-      1792602338,
-      1792602342,
       1792602343,
-      1792602344,
       1792602347,
-      1792602348,
       1792602351,
-      1792602352,
       1792602355,
-      1792602356,
       1792602359,
-      1792602360,
       1792602363,
-      1792602364,
       1792602367,
-      1792602368,
-      1792602371
+      1792602371,
+      1792606032,
+      1792606033,
+      1792606034,
+      1792606035,
+      1792607694,
+      1792607695,
+      1792608232,
+      1792608233,
+      1792608234,
+      1792608235,
+      2100000001
     ]
   },
   "liquidity": {
-    "deployedAsks": 358.573,
-    "deployedBids": 0.997,
+    "deployedAsks": 215.241,
+    "deployedBids": 0,
     "askBudget": 0,
-    "bidBudget": 0,
-    "bidBudgetUncapped": 0,
-    "buyBookCapSbd": 0,
+    "bidBudget": 0.304,
+    "bidBudgetUncapped": 0.608,
+    "buyBookCapSbd": 0.304,
     "deployCap": 0.6
   },
-  "publishedAt": "2026-10-21T17:46:42.702Z"
+  "publishedAt": "2026-10-21T18:47:40.798Z"
 }
