@@ -14,6 +14,7 @@ import {
   scanWalkPlan, coverageVerdict, mergeHistoryWindows,
   signalDigest, measuredLayers, redeployIntel, blockageLedger, organVerdict, meshVerdict,
 } from "./lib.mjs";
+import { createHmac } from "node:crypto";
 import { sanitizeDraft, eligibleDrafts, PUBLISH_ELIGIBLE_SINCE, openingFresh, openingSimilarity } from "./content.mjs";
 import { sanitizeReply, replyFresh, textSimilarity, pickColdPost, buildDaySchedule } from "./army-social.mjs";
 import { spamVerdict, organicVerdict, crossChainVerdict, titleVerdict, tagVerdict, bodyVerdict, selfSimVerdict, groundingVerdict, frequencyVerdict, spamPhraseHits, dupSentenceRatio, jaccard, shingles, normalizeText, GATE_DEFAULTS } from "./spamgate.mjs";
