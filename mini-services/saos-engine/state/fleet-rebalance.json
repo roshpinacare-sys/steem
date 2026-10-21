@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-21T03:40:04.114Z",
+  "at": "2026-10-21T04:04:33.396Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -14,90 +14,104 @@
     "maxSweepsPerCycle": 2
   },
   "arm": {
-    "flag": false,
+    "flag": true,
     "order": true,
     "spLadderExecutedToday": 0,
-    "spLadderExecNow": 0,
-    "spLadderPlannedNow": 6,
+    "spLadderExecNow": 1,
+    "spLadderPlannedNow": 0,
     "restoreExecutedNow": 0,
     "restorePlannedNow": 0,
-    "liveProof": false
+    "liveProof": true
   },
-  "planOnly": [
+  "planOnly": [],
+  "executed": [
     {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "cashmachine",
-      "sp": 60,
-      "setVests": 257821.023848,
-      "curSpEffective": 105.4,
-      "curMasterDelegationVests": 161138.023848,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 4.1T; EFFECTIVE SP 105.4→165.4 (received 100); master delegation +60 SP (SET 257821.023848)"
-    },
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "israelnews",
-      "sp": 55,
-      "setVests": 249764.023848,
-      "curSpEffective": 120,
-      "curMasterDelegationVests": 161138.023848,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.20T vs master 4.1T; EFFECTIVE SP 120→175 (received 118.6); master delegation +55 SP (SET 249764.023848)"
-    },
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "lsa",
-      "sp": 60,
-      "setVests": 257821.023848,
-      "curSpEffective": 105.8,
-      "curMasterDelegationVests": 161138.023848,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.17T vs master 4.1T; EFFECTIVE SP 105.8→165.8 (received 101); master delegation +60 SP (SET 257821.023848)"
-    },
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "macrame",
-      "sp": 60,
-      "setVests": 257821.023848,
-      "curSpEffective": 102.1,
-      "curMasterDelegationVests": 161138.023848,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 4.1T; EFFECTIVE SP 102.1→162.1 (received 100); master delegation +60 SP (SET 257821.023848)"
-    },
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "siq",
-      "sp": 60,
-      "setVests": 257821.023848,
-      "curSpEffective": 105.7,
-      "curMasterDelegationVests": 161138.023848,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 4.1T; EFFECTIVE SP 105.7→165.7 (received 101); master delegation +60 SP (SET 257821.023848)"
-    },
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "tov",
-      "sp": 60,
-      "setVests": 257821.023848,
-      "curSpEffective": 105.7,
-      "curMasterDelegationVests": 161138.023848,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.17T vs master 4.1T; EFFECTIVE SP 105.7→165.7 (received 101.1); master delegation +60 SP (SET 257821.023848)"
+      "move": {
+        "kind": "sp-ladder",
+        "from": "headcorner",
+        "to": "cashmachine",
+        "sp": 34.5,
+        "setVests": 273253.543161,
+        "curSpEffective": 140.5,
+        "why": "RC bottleneck: tank 0.22T vs master 2.8T; EFFECTIVE SP 140.5→175 (received 135.1); master delegation +34.5 SP (SET 273253.543161)"
+      },
+      "verdict": "BROADCAST",
+      "txid": "23feeb68cd2dcc82d898428f1dcd61adfdd67373",
+      "error": null,
+      "at": "2026-10-21T04:04:33.396Z"
     }
   ],
-  "executed": [],
-  "refused": [],
-  "verdict": "PLANNED-AWAITING-POLICY"
+  "refused": [
+    {
+      "move": {
+        "kind": "sp-restore",
+        "from": "headcorner",
+        "to": "israelnews",
+        "setVests": 217660.81357300002,
+        "curVests": 64455.110102,
+        "why": "support dropped below the committed floor: live 64455.110102 < floor 217660.813573 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
+      },
+      "verdict": "BROADCAST-FAIL",
+      "txid": "017b336867a7b64322e3af9debda100dbf7b190c",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205703471\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"864957",
+      "at": "2026-10-21T04:04:33.396Z"
+    },
+    {
+      "move": {
+        "kind": "sp-restore",
+        "from": "headcorner",
+        "to": "lsa",
+        "setVests": 217660.543161,
+        "curVests": 64455.110102,
+        "why": "support dropped below the committed floor: live 64455.110102 < floor 217660.543161 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
+      },
+      "verdict": "BROADCAST-FAIL",
+      "txid": "b74d520ad9bf9570761ecc2bbb30e1c67ebe8963",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205433059\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865149",
+      "at": "2026-10-21T04:04:33.396Z"
+    },
+    {
+      "move": {
+        "kind": "sp-restore",
+        "from": "headcorner",
+        "to": "macrame",
+        "setVests": 217660.320505,
+        "curVests": 64455.110102,
+        "why": "support dropped below the committed floor: live 64455.110102 < floor 217660.320505 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
+      },
+      "verdict": "BROADCAST-FAIL",
+      "txid": "656771064015b3a6764b2a18fc40325b8511f31d",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"153205210403\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865341",
+      "at": "2026-10-21T04:04:33.396Z"
+    },
+    {
+      "move": {
+        "kind": "sp-restore",
+        "from": "headcorner",
+        "to": "siq",
+        "setVests": 228120.457529,
+        "curVests": 64455.110102,
+        "why": "support dropped below the committed floor: live 64455.110102 < floor 228120.457529 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
+      },
+      "verdict": "BROADCAST-FAIL",
+      "txid": "49623980898bd560a3e020e8e008cf982665ea4c",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"163665347427\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865725",
+      "at": "2026-10-21T04:04:33.396Z"
+    },
+    {
+      "move": {
+        "kind": "sp-restore",
+        "from": "headcorner",
+        "to": "tov",
+        "setVests": 235876.776508,
+        "curVests": 64455.110102,
+        "why": "support dropped below the committed floor: live 64455.110102 < floor 235876.776508 — exact-floor restore (repair, not growth; never counted by the ladder day-cap)"
+      },
+      "verdict": "BROADCAST-FAIL",
+      "txid": "e368a49c2cd37204724c2e06464cdb644cbb9478",
+      "error": "Assert Exception:available_shares >= delta: Account headcorner does not have enough mana to delegate. required: {\"amount\":\"171421666406\",\"precision\":6,\"nai\":\"@@000000037\"} available: {\"amount\":\"865916",
+      "at": "2026-10-21T04:04:33.396Z"
+    }
+  ],
+  "verdict": "EXECUTED-1"
 }
