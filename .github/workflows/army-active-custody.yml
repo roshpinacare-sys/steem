@@ -65,6 +65,9 @@ jobs:
           cd mini-services/saos-engine
           bun install --frozen-lockfile
 
+      - name: Fetch the pruned lineages (main — the ROT2/GEN-2-era seals live ONLY there)
+        run: git fetch origin main --no-tags --quiet || echo "main-fetch-failed (walking what we have)"
+
       - name: Probe (or rotate) army active custody — verdict-only stdout
         working-directory: scripts
         run: bun army-active-custody-probe.mjs
