@@ -1,19 +1,36 @@
 {
-  "at": "2026-10-21T15:56:16.982Z",
-  "verdict": "1-FLAGGED",
+  "at": "2026-10-21T16:11:31.746Z",
+  "verdict": "4-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 1,
+      "scanned": 3,
       "signedPct": 0,
       "signed": 0,
       "unsigned": 1,
       "invalid": 0,
-      "untrusted": 0,
-      "flagged": []
+      "untrusted": 2,
+      "flagged": [
+        {
+          "hash": "c20b9a53",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T16:09:29Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
+        {
+          "hash": "db814454",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T15:58:34Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        }
+      ]
     },
     {
       "repo": "saos-runtime",
@@ -60,12 +77,21 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
-      "invalid": 0,
+      "unsigned": 9,
+      "invalid": 1,
       "untrusted": 0,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "aa183bd9",
+          "gq": "E",
+          "sig": "INVALID",
+          "author": "roshpinacare-sys",
+          "at": "2026-10-21T16:07:29Z",
+          "subject": "runner-kit truth-refresh: 3rd receipt 352a5b1c anchored via manual dis"
+        }
+      ]
     },
     {
       "repo": "TruthRail",
@@ -105,6 +131,33 @@
   ],
   "flagged": [
     {
+      "hash": "c20b9a53",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T16:09:29Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "db814454",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T15:58:34Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "aa183bd9",
+      "gq": "E",
+      "sig": "INVALID",
+      "author": "roshpinacare-sys",
+      "at": "2026-10-21T16:07:29Z",
+      "subject": "runner-kit truth-refresh: 3rd receipt 352a5b1c anchored via manual dis",
+      "repo": "Domain"
+    },
+    {
       "hash": "83555a78",
       "gq": "E",
       "sig": "INVALID",
@@ -119,5 +172,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 14762
+  "ms": 7457
 }
