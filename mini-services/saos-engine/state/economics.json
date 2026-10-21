@@ -3,20 +3,20 @@
     {
       "id": "market-making",
       "label": "מעשה-שוק · ספר-STEEM/SBD",
-      "measuredUsdPerDay": 0.001152,
+      "measuredUsdPerDay": 0.001169,
       "estUsdPerDay": null,
       "confidence": "measured",
-      "note": "realized 0.043 SBD over 19.378579d (chain fills) — היסטורי, אינו תחזית",
+      "note": "realized 0.043 SBD over 19.392825d (chain fills) — היסטורי, אינו תחזית",
       "meta": {
         "realizedSbdTotal": 0.042946,
-        "fillsToday": 13
+        "fillsToday": 18
       }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.502717,
+      "estUsdPerDay": 0.502776,
       "confidence": "estimated",
       "note": "~9.15 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
@@ -32,9 +32,9 @@
       "id": "convert-arb",
       "label": "ארביטרז'-המרה · SBD print path",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0,
+      "estUsdPerDay": null,
       "confidence": "blocked",
-      "note": "HOLD honest (154bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "note": "HOLD honest (0bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
     },
     {
       "id": "promo",
@@ -49,25 +49,25 @@
       "label": "היפר-גריד · נוכחות-ספר",
       "measuredUsdPerDay": null,
       "estUsdPerDay": null,
-      "confidence": "measured",
-      "note": "13862 ops/day measured — presence + optionality, deliberately NOT priced as profit",
+      "confidence": "blocked",
+      "note": "no ops evidence",
       "meta": {
-        "opsPerDay": 13862
+        "opsPerDay": null
       }
     }
   ],
-  "totalMeasuredUsdPerDay": 0.001152,
-  "totalEstUsdPerDay": 0.502717,
-  "measuredCount": 2,
+  "totalMeasuredUsdPerDay": 0.001169,
+  "totalEstUsdPerDay": 0.502776,
+  "measuredCount": 1,
   "estimatedCount": 2,
-  "blockedCount": 2,
+  "blockedCount": 3,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.10568270566193075,
-  "asof": "2026-10-21T09:25:33.190Z",
+  "parity": 0.1040814359713723,
+  "asof": "2026-10-21T09:46:04.111Z",
   "context": {
-    "venueFillsPerDay": 762,
-    "venueVolSteem24h": 18118.462,
-    "ourFillsObservable": 13,
+    "venueFillsPerDay": 791,
+    "venueVolSteem24h": 18132.87,
+    "ourFillsObservable": 18,
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": {
@@ -88,7 +88,7 @@
     "currentUsdPerDay": 0.0012,
     "targetUsdPerDay": 1000,
     "currentSp": 1400,
-    "factor": 868055.6,
+    "factor": 855432,
     "rows": [
       {
         "mult": 1,
@@ -110,13 +110,13 @@
       },
       {
         "mult": 100,
-        "sp": 140039,
+        "sp": 140040,
         "usdPerDay": 0.12,
         "reachesTarget": false
       },
       {
-        "mult": 868056,
-        "sp": 1215615569,
+        "mult": 855432,
+        "sp": 1197946772,
         "usdPerDay": 1000,
         "reachesTarget": true
       }
@@ -140,17 +140,17 @@
     "plan": {
       "verdict": "REDEPLOY-PLAN",
       "reason": "doctrine-ratios",
-      "powerUpSteem": 46.373,
-      "excessSteem": 154.577,
+      "powerUpSteem": 66.594,
+      "excessSteem": 221.983,
       "pacing": {
         "minIntervalSec": 3600,
         "maxPerDay": 12,
         "powerUpsToday": 0,
         "lastPowerUpAt": "2026-10-20T11:34:56.486Z",
-        "sinceLastSec": 78640,
+        "sinceLastSec": 79872,
         "verdict": null
       },
-      "at": "2026-10-21T09:25:33.190Z"
+      "at": "2026-10-21T09:46:04.111Z"
     },
     "state": {
       "day": "2026-10-20",
