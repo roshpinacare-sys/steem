@@ -1,19 +1,36 @@
 {
-  "at": "2026-10-21T22:14:14.837Z",
-  "verdict": "3-FLAGGED",
+  "at": "2026-10-21T22:29:31.049Z",
+  "verdict": "5-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 1,
+      "scanned": 3,
       "signedPct": 0,
       "signed": 0,
       "unsigned": 1,
       "invalid": 0,
-      "untrusted": 0,
-      "flagged": []
+      "untrusted": 2,
+      "flagged": [
+        {
+          "hash": "194e3e8e",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T22:24:45Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
+        {
+          "hash": "f9867752",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T22:14:29Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        }
+      ]
     },
     {
       "repo": "saos-runtime",
@@ -122,6 +139,24 @@
   ],
   "flagged": [
     {
+      "hash": "194e3e8e",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T22:24:45Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "f9867752",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T22:14:29Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "7354a69c",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -154,5 +189,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 16210
+  "ms": 7067
 }
