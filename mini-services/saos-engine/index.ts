@@ -24,6 +24,7 @@ import { startArmyGrid, armyGridState } from "./armygrid.mjs";
 import { startWeaveWitness } from "./weave-witness.mjs";
 import { startDexFlow, dexState } from "./dexflow.mjs"; // R323 DEX-FLOW: the volume-taker layer (self-cross trips)
 import { startManyHands, manyhandsState } from "./manyhands.mjs"; // G43 ONE-BODY-MANY-HANDS + the sharp taker (shadow-first)
+import { runDisperse, disperseState, disperseConf } from "./disperse.mjs"; // W120 internal liquidity dispersion rail
 import { startExchangeExec, exchangeExecState } from "./exchange-exec.mjs"; // W17: the HTX executor (deposit+trade, ECG-gated)
 import { startExternalQuotes, externalQuotesState } from "./external-quotes.mjs"; // W27-c: the REAL-MONEY external price anchor (Poloniex/Bithumb/Gecko)
 import { startFfGate, ffGateState } from "./ff-gate.mjs"; // W27-a: the FixedFloat real-money gate (PENDING-ACTIVATION → ACTIVE → promote)
@@ -214,6 +215,19 @@ async function handle(req) {
   if (p === "/army-grid") {
     return json({ ok: true, at: new Date().toISOString(), master: ACCOUNT, ...armyGridState() });
   }
+  // W120 LIQUIDITY-DISPERSE: the internal top-up rail (master → own roster
+  // bodies) — GET is the last-run state, POST executes one capped, idempotent
+  // run (allowlist + master floor + run caps; ?dry=1 for a measured plan).
+  if (p === "/disperse") {
+    if (req.method === "POST") {
+      try {
+        const dry = new URL(req.url, "http://x").searchParams.get("dry") === "1";
+        const out = await runDisperse({ dryRun: dry });
+        return json({ ok: true, at: new Date().toISOString(), master: ACCOUNT, result: out });
+      } catch (e) { return json({ ok: false, error: String(e?.message ?? e).slice(0, 160) }, 500); }
+    }
+    return json({ ok: true, at: new Date().toISOString(), master: ACCOUNT, disperse: disperseState(), conf: disperseConf() });
+  }
   if (p === "/payouts") {
     return json({ ok: true, at: new Date().toISOString(), account: ACCOUNT, payouts: payoutsState() });
   }
@@ -360,7 +374,7 @@ async function handle(req) {
                      : "credential secured but not matching this account's authorities — install the proposedPubkeys on steemit.com, or paste the CURRENT password instead",
     });
   }
-  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential", "/finance-digest", "/yield", "/yield-run", "/army-grid"] }, 404);
+  return json({ ok: false, error: "not-found", routes: ["/health", "/status", "/hyper", "/payouts", "/weave", "/social", "/redeploy", "/cycle", "/cycle-status", "/live", "/fills", "/exec-status", "/fleet", "/adopt-credential", "/finance-digest", "/yield", "/yield-run", "/army-grid", "/disperse"] }, 404);
 }
 
 // T-15 SINGLE-INSTANCE LAW (measured live: 3 duplicate engine processes were

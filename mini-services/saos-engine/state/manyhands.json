@@ -1,7 +1,7 @@
 {
   "running": true,
-  "lastTickAt": "2026-10-21T04:58:46.024Z",
-  "ticks": 187,
+  "lastTickAt": "2026-10-21T05:09:13.798Z",
+  "ticks": 239,
   "day": "2026-10-21",
   "conf": {
     "enabled": true,
@@ -22,38 +22,24 @@
     "takerMaxSbd": 2,
     "takerMinSbd": 0.05,
     "takerDayCap": 60,
-    "takerLive": false
+    "takerLive": true,
+    "takerLaw": "W120 owner approval: shadow-first evidence pooled + owner word — LIVE within standing caps (2 SBD/take, 60/day, edge 100bps, band 800bps)"
   },
   "lastVerdict": "MANYHANDS-TICK",
-  "lastVerdictAt": "2026-10-21T04:58:46.024Z",
+  "lastVerdictAt": "2026-10-21T05:09:13.798Z",
   "hands": 9,
   "handsPending": 0,
   "pendingWhy": "on-chain active authorities match no held active WIF (measured G43); hands auto-join the moment custody verifies",
   "eligible": 9,
   "pending": [],
-  "cursor": 5,
+  "cursor": 3,
   "perHand": {
-    "hcsoldier6": {
-      "hand": "hcsoldier6",
-      "rcPct": null,
+    "haran": {
+      "hand": "haran",
+      "rcPct": 91.1,
       "balances": {
-        "steem": 21.086,
-        "sbd": 0.63
-      },
-      "opsAdded": 0,
-      "governor": {
-        "pairs": 0,
-        "reason": "no-rc-evidence"
-      },
-      "verdict": "HAND-GOVERNOR-ACCUMULATING",
-      "takerCandidate": true
-    },
-    "israelnews": {
-      "hand": "israelnews",
-      "rcPct": 91.9,
-      "balances": {
-        "steem": 11.821,
-        "sbd": 1.04
+        "steem": 19,
+        "sbd": 1.134
       },
       "opsAdded": 0,
       "governor": {
@@ -62,11 +48,26 @@
       },
       "verdict": "HAND-GOVERNOR-ACCUMULATING",
       "takerCandidate": true
+    },
+    "hcsoldier4": {
+      "hand": "hcsoldier4",
+      "rcPct": null,
+      "balances": {
+        "steem": 13.266,
+        "sbd": 0.407
+      },
+      "opsAdded": 0,
+      "governor": {
+        "pairs": 0,
+        "reason": "no-rc-evidence"
+      },
+      "verdict": "HAND-GOVERNOR-ACCUMULATING",
+      "takerCandidate": true
     }
   },
   "railOpsToday": 0,
   "takerToday": 0,
-  "takerMode": "SHADOW",
+  "takerMode": "LIVE",
   "fair": 0.104082,
   "book": {
     "bestAsk": 0.103897,
