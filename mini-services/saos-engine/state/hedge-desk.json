@@ -1,19 +1,32 @@
 {
-  "verdict": "ABSTAIN",
+  "verdict": "TRIM",
   "reasons": [
     {
-      "type": "ABSTAIN",
-      "gate": "anchor",
-      "why": "no real-money implied unit (external quotes absent or zero)"
+      "type": "TRIM",
+      "gate": "inventory-skew",
+      "why": "24h flow one-sided (644B/0S, imbalance 1 > 0.6) — AutoHedge max_inventory_exposure analog"
     }
   ],
   "gates": {
-    "anchor": "ABSENT",
-    "fills": "OK"
+    "anchor": "OK",
+    "fills": "OK",
+    "flow24h": 644,
+    "imbalance": 1,
+    "realizedPerDaySbd": 0,
+    "rcPct": 28.6
+  },
+  "measured": {
+    "buys24h": 644,
+    "sells24h": 0,
+    "minEdgeBps": null,
+    "anchorGapBps": null,
+    "realizedPerDaySbd": 0,
+    "rcPct": 28.6
   },
   "advisoryOnly": true,
   "law": "advisory-only · zero signing authority · verdicts feed the doctrine layer that owns every cap (T2/G41/VF1/RC-floors) — AutoHedge risk-first design without duplicated execution power",
-  "at": "2026-10-22T04:04:04.567Z",
+  "at": "2026-10-22T04:07:45.941Z",
   "cadenceSec": 300,
-  "since": "2026-10-22T04:04:04.567Z"
+  "since": "2026-10-22T02:52:45.940Z",
+  "lastHeartbeatAt": "2026-10-22T03:57:45.941Z"
 }

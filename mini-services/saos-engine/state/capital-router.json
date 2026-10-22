@@ -1,15 +1,15 @@
 {
-  "at": "2026-10-22T03:58:37.981Z",
+  "at": "2026-10-22T04:10:22.838Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
-    "headcornerEffectiveSp": 2083.39,
-    "armyEffectiveSp": 792.59,
-    "fleetEffectiveSp": 2875.98,
-    "delegatedOutSp": 2343.43,
+    "headcornerEffectiveSp": 2178.62,
+    "armyEffectiveSp": 792.6,
+    "fleetEffectiveSp": 2971.22,
+    "delegatedOutSp": 2248.23,
     "expiringSoon": [],
-    "liquidSteem": 5.237,
-    "liquidSbd": 0.169,
+    "liquidSteem": 156.853,
+    "liquidSbd": 1.108,
     "unclaimedSp": 0,
     "unclaimedSbd": 0,
     "unclaimedSteem": 0
@@ -20,10 +20,10 @@
     "delegatedFieldSp": 2248.23,
     "activeRowsSp": 764.23,
     "activeRowsCount": 14,
-    "vestsPerSp": 1611.267719,
-    "deepProbeQueueSp": 1579.85,
-    "driftVsDeepProbeSp": -95.85,
-    "at": "2026-10-22T03:58:40.159Z"
+    "vestsPerSp": 1611.266828,
+    "deepProbeQueueSp": 1484.65,
+    "driftVsDeepProbeSp": -0.65,
+    "at": "2026-10-22T04:10:25.709Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -39,37 +39,37 @@
       {
         "id": "today",
         "label": "as-measured now",
-        "spPerDay": 1.010301,
-        "usdPerDay": 0.105153,
+        "spPerDay": 1.056481,
+        "usdPerDay": 0.10996,
         "note": "curation-only lane, author dust, other lanes dormant",
         "multiplierVsToday": 1
       },
       {
         "id": "landing",
         "label": "recall wave lands (expiring→effective)",
-        "spPerDay": 1.72994,
-        "usdPerDay": 0.180054,
+        "spPerDay": 1.77612,
+        "usdPerDay": 0.18486,
         "note": "1484 SP measured in the expiring queue",
-        "multiplierVsToday": 1.71
+        "multiplierVsToday": 1.68
       },
       {
         "id": "tags",
         "label": "tag-ROI budget shift to measured top tags",
-        "spPerDay": 2.421916,
-        "usdPerDay": 0.252075,
+        "spPerDay": 2.486568,
+        "usdPerDay": 0.258804,
         "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
-        "multiplierVsToday": 2.4
+        "multiplierVsToday": 2.35
       },
       {
         "id": "fleet",
         "label": "army battery deployed (regen-bounded slots × SP)",
-        "spPerDay": 2.49076,
-        "usdPerDay": 0.259241,
+        "spPerDay": 2.555412,
+        "usdPerDay": 0.26597,
         "note": "army adds 0.068844 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
-        "multiplierVsToday": 2.47
+        "multiplierVsToday": 2.42
       }
     ],
-    "compoundAprPct": 43.64,
+    "compoundAprPct": 42.81,
     "armyDailySp": 0.068844,
     "note": "curation rewards settle as VESTS — the battery itself compounds"
   },
@@ -80,7 +80,7 @@
       "note": "1484 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
       "expectedSpPerDay": 0,
       "evidence": {
-        "delegOut": 2343.43,
+        "delegOut": 2248.23,
         "activeRowsVests": 1231384.06,
         "source": "chain-live"
       }
@@ -88,11 +88,11 @@
     {
       "id": "vp-pace-headcorner",
       "class": "schedule",
-      "note": "headcorner VP 34.48% below floor 60% — rail lawfully paused; unlocks in ~30.62h at 20%/day regen; do NOT burn early",
+      "note": "headcorner VP 34.61% below floor 60% — rail lawfully paused; unlocks in ~30.47h at 20%/day regen; do NOT burn early",
       "expectedSpPerDay": 0,
       "evidence": {
-        "vpPct": 34.48,
-        "etaHours": 30.62
+        "vpPct": 34.61,
+        "etaHours": 30.47
       }
     },
     {
@@ -107,11 +107,11 @@
     {
       "id": "sbd-route",
       "class": "dormant-lane",
-      "note": "SBD routing: inventory 0.17 SBD below dust floor 2 — no route",
+      "note": "SBD routing: inventory 1.11 SBD below dust floor 2 — no route",
       "expectedSpPerDay": 0,
       "evidence": {
         "verdict": "DUST-HOLD",
-        "note": "inventory 0.17 SBD below dust floor 2 — no route"
+        "note": "inventory 1.11 SBD below dust floor 2 — no route"
       }
     },
     {
