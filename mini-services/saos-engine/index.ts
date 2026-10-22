@@ -670,8 +670,7 @@ try {
       console.error(`auto-cycle journal failed: ${String(e?.message ?? e).slice(0, 100)}`);
     }
   };
-  const firstCycleTimer = setTimeout(() => { autoCycleStarted = true; void autoCycle(); }, 90_000); firstCycleTimer.unref?.(); /* first run 90s after boot */
-  intervals.push(firstCycleTimer); /* W38: cleared with the rest on hot re-eval — no double autoCycle */
+  setTimeout(() => { autoCycleStarted = true; void autoCycle(); }, 90_000).unref?.(); /* first run 90s after boot */
   intervals.push(setInterval(() => { if (autoCycleStarted) void autoCycle(); }, AUTO_CYCLE_MS));
   /* W19-a · CUSTODY HEARTBEAT (2h): the vault-revival chain-judge re-runs on
    * its own cadence too — a mid-run rotation by the chain (or a new GEN seal
@@ -706,18 +705,7 @@ try {
   };
   keeperGuardian(); /* once at boot */
   intervals.push(setInterval(() => { Promise.resolve(keeperGuardian()).catch(() => null); }, 60_000));
-  /* W38 (trace 1a1619c722f4fd59) --hot REAPER-ARMOR: the engine was the only
-   * heavy organ running plain `bun index.ts` — measured 2026-10-22: SIX
-   * instances (agent-spawned and keeper-spawned alike) vanished by GROUP-
-   * SIGKILL with zero exit trace, while every --hot organ survived. The
-   * codebase's own measured law (dex-beat W1.3): --hot loops survive the
-   * sandbox reaper. Cost of --hot: hot-reload re-evals this module and would
-   * STACK a second scheduler on the same process (W1.5 class). Law: ONE
-   * scheduler per process — a re-eval clears its own timers instantly; the
-   * first armed instance keeps the clock. */
-  const G = globalThis as typeof globalThis & { __engineLoopsArmed?: boolean };
-  if (G.__engineLoopsArmed) { for (const t of intervals) clearInterval(t); }
-  else { G.__engineLoopsArmed = true; for (const t of intervals) t.unref?.(); }
+  for (const t of intervals) t.unref?.();
 } catch (e) {
   console.error(`revenue loops boot failed: ${String(e?.message ?? e)}`);
 }
