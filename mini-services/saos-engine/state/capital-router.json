@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-22T20:57:12.870Z",
+  "at": "2026-10-22T21:50:10.708Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
@@ -16,14 +16,14 @@
   },
   "landing": {
     "source": "chain-live",
-    "queueSp": 1466.5,
-    "delegatedFieldSp": 2230.77,
+    "queueSp": 1466.51,
+    "delegatedFieldSp": 2230.78,
     "activeRowsSp": 764.27,
     "activeRowsCount": 14,
-    "vestsPerSp": 1611.190842,
+    "vestsPerSp": 1611.186858,
     "deepProbeQueueSp": 1467.16,
-    "driftVsDeepProbeSp": -0.66,
-    "at": "2026-10-22T20:57:33.459Z"
+    "driftVsDeepProbeSp": -0.65,
+    "at": "2026-10-22T21:50:14.177Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -47,23 +47,23 @@
       {
         "id": "landing",
         "label": "recall wave lands (expiring→effective)",
-        "spPerDay": 1.776304,
+        "spPerDay": 1.776309,
         "usdPerDay": 0.18488,
-        "note": "1466.5 SP measured in the expiring queue",
+        "note": "1466.51 SP measured in the expiring queue",
         "multiplierVsToday": 1.67
       },
       {
         "id": "tags",
         "label": "tag-ROI budget shift to measured top tags",
-        "spPerDay": 2.486826,
-        "usdPerDay": 0.258831,
+        "spPerDay": 2.486833,
+        "usdPerDay": 0.258832,
         "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
         "multiplierVsToday": 2.33
       },
       {
         "id": "fleet",
         "label": "army battery deployed (regen-bounded slots × SP)",
-        "spPerDay": 2.55567,
+        "spPerDay": 2.555677,
         "usdPerDay": 0.265997,
         "note": "army adds 0.068844 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
         "multiplierVsToday": 2.4
@@ -77,7 +77,7 @@
     {
       "id": "await-landing",
       "class": "schedule",
-      "note": "1466.5 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
+      "note": "1466.51 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
       "expectedSpPerDay": 0,
       "evidence": {
         "delegOut": 2230.74,
