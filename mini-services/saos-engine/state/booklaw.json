@@ -1,23 +1,84 @@
 {
-  "at": "2026-10-21T22:08:04.719Z",
-  "verdict": "COVERED",
+  "at": "2026-10-22T00:26:07.333Z",
+  "verdict": "REPAIRED",
   "lanes": {
     "hyper": 3,
-    "cancelableAsks": 8,
-    "cancelableBids": 0,
-    "orphans": 4
+    "cancelableAsks": 5,
+    "cancelableBids": 3,
+    "orphans": 8
   },
   "coverage": {
-    "askSum": 126.954,
-    "askCap": 212.42095,
-    "askOver": 0,
-    "bidSum": 0,
-    "bidCap": 0.5776,
-    "bidOver": 0
+    "askSum": 322.253,
+    "askCap": 33.2329,
+    "askOver": 289.0201,
+    "bidSum": 0.939,
+    "bidCap": 0,
+    "bidOver": 0.939
   },
-  "cancelIds": [],
-  "cancelWhy": [],
-  "broadcast": null,
+  "cancelIds": [
+    2026102109,
+    2026102108,
+    2026102107,
+    2026102110,
+    2026102111,
+    2026102112
+  ],
+  "cancelWhy": [
+    {
+      "id": 2026102109,
+      "side": "ask",
+      "amt": 101.499,
+      "unit": 0.112513,
+      "freed": 101.499,
+      "orphan": true
+    },
+    {
+      "id": 2026102108,
+      "side": "ask",
+      "amt": 101.499,
+      "unit": 0.111637,
+      "freed": 101.499,
+      "orphan": true
+    },
+    {
+      "id": 2026102107,
+      "side": "ask",
+      "amt": 101.499,
+      "unit": 0.11075,
+      "freed": 101.499,
+      "orphan": true
+    },
+    {
+      "id": 2026102110,
+      "side": "bid",
+      "amt": 0.313,
+      "unit": 0.099523,
+      "freed": 0.313,
+      "orphan": true
+    },
+    {
+      "id": 2026102111,
+      "side": "bid",
+      "amt": 0.313,
+      "unit": 0.098027,
+      "freed": 0.313,
+      "orphan": true
+    },
+    {
+      "id": 2026102112,
+      "side": "bid",
+      "amt": 0.313,
+      "unit": 0.096486,
+      "freed": 0.313,
+      "orphan": true
+    }
+  ],
+  "broadcast": {
+    "ok": true,
+    "txid": "8d730be3615ce8a27c63c0d598645f694c929b87",
+    "error": null,
+    "count": 6
+  },
   "laws": [
     "הספר לעולם לא מבטיח יותר מהיתרה — כיסוי נמדד כל מחזור (asks ≤ יתרת STEEM × 0.95, bids ≤ (יתרת SBD − 0.5 רזרבה) × 0.95)",
     "פס-ההיפר-גריד נגע-בלבד: ids ‎[2.1e9, 4.29e9]‎ נמדדים אך לעולם לא מבוטלים כאן",

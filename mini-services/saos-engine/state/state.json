@@ -1,45 +1,59 @@
 {
-  "runCount": 586,
-  "simFills": 25,
-  "simFeesMu": 12500,
-  "sim": {
-    "retired": true,
-    "note": "R237: sim fills retired — real fills measured from chain; counters frozen"
+ "runCount": 585,
+ "simFills": 25,
+ "simFeesMu": 12500,
+ "sim": {
+  "retired": true,
+  "note": "R237: sim fills retired — real fills measured from chain; counters frozen"
+ },
+ "asof": "2026-10-21T23:51:22.888Z",
+ "market": {
+  "refPrice": 0.10968527967287721,
+  "source": "engine",
+  "stale": false
+ },
+ "grids": [
+  {
+   "id": "value-ladder",
+   "real": true,
+   "active": true,
+   "levels": 51,
+   "evidence": "our-orders.json tranches"
   },
-  "asof": "2026-10-22T00:26:42.016Z",
-  "market": {
-    "refPrice": 0.1101185137349167,
-    "source": "engine",
-    "stale": false
+  {
+   "id": "flow-tranche",
+   "real": true,
+   "active": false,
+   "levels": 0,
+   "evidence": "our-orders.json tranches"
   },
-  "grids": [
-    {
-      "id": "value-ladder",
-      "real": true,
-      "active": true,
-      "levels": 51,
-      "evidence": "our-orders.json tranches"
-    },
-    {
-      "id": "flow-tranche",
-      "real": true,
-      "active": false,
-      "levels": 0,
-      "evidence": "our-orders.json tranches"
-    },
-    {
-      "id": "hyper-tranche",
-      "real": true,
-      "active": true,
-      "levels": 36,
-      "evidence": "hyper-grid.json ops"
-    },
-    {
-      "id": "soldier-grids",
-      "real": true,
-      "active": false,
-      "levels": 0,
-      "evidence": "custody-verified accounts"
-    }
-  ]
+  {
+   "id": "hyper-tranche",
+   "real": true,
+   "active": true,
+   "levels": 36,
+   "evidence": "hyper-grid.json ops"
+  },
+  {
+   "id": "soldier-grids",
+   "real": true,
+   "active": false,
+   "levels": 0,
+   "evidence": "custody-verified accounts"
+  },
+  {
+   "id": "value-ladder",
+   "real": true,
+   "active": true,
+   "levels": 55,
+   "evidence": "our-orders.json tranches"
+  },
+  {
+   "id": "hyper-tranche",
+   "real": true,
+   "active": true,
+   "levels": 1577,
+   "evidence": "hyper-grid.json ops"
+  }
+ ]
 }
