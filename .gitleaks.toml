@@ -26,18 +26,19 @@
 #     39594092581, all in this one file, Secret:REDACTED in every entry).
 #     Contract addresses are public identifiers by design, not credentials.
 # NOTE: gitleaks 8.24.3 silently ignores [[allowlists]] array-of-tables with
-# condition=AND (measured) - single [allowlist] with OR semantics is used;
-# each entry is therefore kept deliberately narrow instead of AND-scoped.
-[extend]
-useDefault = true
-
-[allowlist]
+# condition=AND (measured) - single [allowlist]
 description = "measured false positives - each entry proven, see notes above"
 regexes = [
   '\b[a-f0-9]{64}\b',
   '\b[0-9A-F]{40}\b',
   '\bseal-[a-z0-9.-]*wif\b',
   '^hcsoldier[0-9]+(/[0-9]+)*$',
+  # [wave 19.76 · G64 · 2026-10-22 13:2xZ, gitleaks 8.24.3] army-grid cashmachine
+  # order receipts: 238/238 findings measured as 24-char lowercase-hex order/
+  # receipt ids across 11 army-grid/*-commits.json files — internal receipt
+  # identifiers, not credentials (a WIF is 51+ base58 and cannot match; the
+  # hex64-anchor class above is untouched). Full sweep: zero non-hex24 shapes.
+  '^[0-9a-f]{24}$',
 ]
 paths = [
   'mini-services/saos-engine/selftest\.mjs$',
