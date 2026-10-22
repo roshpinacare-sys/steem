@@ -1,19 +1,43 @@
 {
-  "at": "2026-10-22T16:50:29.327Z",
-  "verdict": "14-FLAGGED",
+  "at": "2026-10-22T17:05:29.327Z",
+  "verdict": "17-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 12,
+      "scanned": 18,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 3,
+      "unsigned": 6,
       "invalid": 1,
-      "untrusted": 8,
+      "untrusted": 11,
       "flagged": [
+        {
+          "hash": "2ac74d64",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-22T17:03:15Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
+        {
+          "hash": "0de1b688",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-22T16:52:49Z",
+          "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות"
+        },
+        {
+          "hash": "2cfd42e8",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-22T16:52:48Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "e98a7473",
           "gq": "U",
@@ -107,21 +131,12 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 9,
+      "unsigned": 10,
       "invalid": 0,
-      "untrusted": 1,
+      "untrusted": 0,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": [
-        {
-          "hash": "4acfed37",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "sandbox-voice",
-          "at": "2026-10-22T16:35:44Z",
-          "subject": "sandbox voice: ports 8/8 · engine alive [skip ci]"
-        }
-      ]
+      "flagged": []
     },
     {
       "repo": "Console",
@@ -129,12 +144,20 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 9,
+      "unsigned": 8,
       "invalid": 0,
-      "untrusted": 1,
+      "untrusted": 2,
       "unknown": 0,
       "signedPct": 0,
       "flagged": [
+        {
+          "hash": "519b5f06",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-22T17:04:50Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T17:04Z"
+        },
         {
           "hash": "b5c45b48",
           "gq": "U",
@@ -212,6 +235,33 @@
     }
   ],
   "flagged": [
+    {
+      "hash": "2ac74d64",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-22T17:03:15Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "0de1b688",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-22T16:52:49Z",
+      "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "2cfd42e8",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-22T16:52:48Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
     {
       "hash": "e98a7473",
       "gq": "U",
@@ -294,13 +344,13 @@
       "repo": "steem.git(LOCAL)"
     },
     {
-      "hash": "4acfed37",
+      "hash": "519b5f06",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
-      "author": "sandbox-voice",
-      "at": "2026-10-22T16:35:44Z",
-      "subject": "sandbox voice: ports 8/8 · engine alive [skip ci]",
-      "repo": "FleetHQ"
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-22T17:04:50Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T17:04Z",
+      "repo": "Console"
     },
     {
       "hash": "b5c45b48",
@@ -344,5 +394,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 5863
+  "ms": 5703
 }
