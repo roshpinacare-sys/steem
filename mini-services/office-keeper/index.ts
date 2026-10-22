@@ -196,7 +196,18 @@ async function ensureHomes(): Promise<{ restored: string[]; missing: string[] }>
   return { restored, missing };
 }
 
-/* ── P2 MIRROR (fill-missing-only heal) ───────────────────────────────── */
+/* ── P2 MIRROR (fill-missing-only heal + W37 DE-SYMLINK law) ────────────
+ * W37 measured (boot 2026-10-22T01:07Z): the tar captured my-project
+ * mini-services as SYMLINKS into /home/z/saos-steem. On wipe the symlinks
+ * dangle → this keeper's own spawn cwd vanished → hatch ENOENT → dark
+ * office. CURE: a symlink is NEVER a healthy mirror — replace it with a
+ * REAL physical copy (only tar-real dirs survive; "symlinks are forbidden
+ * in this sandbox" is now ENFORCED, not assumed). Fill-missing-only for
+ * real dirs, replace-links-always for symlinks. */
+function isSymlink(p: string): boolean {
+  try { return fs.lstatSync(p).isSymbolicLink(); } catch { return false; }
+}
+
 function healMirror(): string[] {
   const healed: string[] = [];
   try {
@@ -205,12 +216,15 @@ function healMirror(): string[] {
       const src = path.join(GIT_MINI, svc);
       const dst = path.join(MY_MINI, svc);
       if (!fs.existsSync(path.join(src, "index.ts"))) continue;
-      if (!fs.existsSync(path.join(dst, "index.ts"))) {
+      const dstMissing = !fs.existsSync(path.join(dst, "index.ts"));
+      const dstIsLink = isSymlink(dst);
+      if (dstMissing || dstIsLink) {
         try {
+          if (dstIsLink) { fs.rmSync(dst, { force: true }); log(`DE-SYMLINK ${svc} (W37 law: tar must capture real dirs)`); }
           fs.mkdirSync(path.dirname(dst), { recursive: true });
-          fs.cpSync(src, dst, { recursive: true });
+          fs.cpSync(src, dst, { recursive: true, dereference: true });
           healed.push(svc);
-          log(`MIRROR-HEAL ${svc} filled from git home`);
+          log(dstIsLink ? `MIRROR-HEAL ${svc} symlink → real copy` : `MIRROR-HEAL ${svc} filled from git home`);
         } catch (e) { log(`MIRROR-HEAL-FAIL ${svc}: ${String(e).slice(0, 120)}`); }
       }
     }
@@ -255,15 +269,26 @@ async function portAlive(port: number): Promise<boolean> {
 }
 
 function respawn(svc: string): boolean {
-  const dir = path.join(MY_MINI, svc);
-  if (!fs.existsSync(path.join(dir, "index.ts"))) { log(`RESPAWN-SKIP ${svc}: no index.ts (mirror absent)`); return false; }
+  /* W37: saos-engine imports repo-relative '../../scripts/…' — it can only
+   * run from the GIT HOME layout; a my-project mirror copy crashes on the
+   * missing sibling (measured 02:30Z "Cannot find module
+   * '../../scripts/sovereign-selfcustody.mjs'"). Per-service run-dir law. */
+  const GIT_HOME_ONLY = new Set(["saos-engine"]);
+  const dir = GIT_HOME_ONLY.has(svc) ? path.join(GIT_MINI, svc) : path.join(MY_MINI, svc);
+  if (!fs.existsSync(path.join(dir, "index.ts"))) { log(`RESPAWN-SKIP ${svc}: no index.ts (dir absent)`); return false; }
   try {
     const out = fs.openSync(`/tmp/mini-service-${svc}.log`, "a");
-    const child = spawn("/bin/bash", ["-c", `exec flock -n /tmp/${svc}.instance.lock bun index.ts`], {
+    /* W37 single-source law: the LOCK NAME lives in each service's own
+     * package.json dev script — the keeper never re-defines it. This kills
+     * the duplicate-definition conflict class (owner trace
+     * 1a1616b148aa6bf9: "וודא שאין כפילויות ודריסות") and lets a service
+     * migrate its own lockfile without touching the keeper. */
+    const child = spawn("/bin/bash", ["-c", "exec bun run dev"], {
       cwd: dir, detached: true, stdio: ["ignore", out, out], env: process.env,
     });
+    child.on("error", (e) => log(`RESPAWN-ERROR ${svc}: ${String(e).slice(0, 120)}`));
     child.unref();
-    log(`RESPAWN ${svc} pid=${child.pid}`);
+    log(`RESPAWN ${svc} pid=${child.pid} (via bun run dev)`);
     return true;
   } catch (e) { log(`RESPAWN-FAIL ${svc}: ${String(e).slice(0, 120)}`); return false; }
 }
@@ -317,6 +342,22 @@ function pushReceipt(kind: string, body: Record<string, unknown>): void {
   else log(`RECEIPT-PUSH-FAIL: ${p.stderr?.toString().slice(0, 200)}`);
 }
 
+/* W37: also push the keeper's own code so the cure outruns the next wipe */
+function pushKeeperCode(): void {
+  if (!cachedToken) { log("CODE-PUSH-SKIP: no token"); return; }
+  const env = { ...process.env, SAOS_TOKEN: cachedToken, GIT_EDITOR: "true", GIT_TERMINAL_PROMPT: "0", GIT_PAGER: "cat" };
+  const g = (args: string[]) => spawnSync("git", args, { cwd: GIT_HOME, env, timeout: 120_000 });
+  g(["add", "-A", "mini-services/office-keeper", "mini-services/beat-keeper", "mini-services/state-witness/package.json", ".gitattributes"]);
+  const c = g(["commit", "-q", "-m", `keeper: W37 de-symlink + single-source respawn laws [trace:1a1616b148aa6bf9]`]);
+  if (c.status !== 0) return; /* nothing to commit — fine */
+  g(["fetch", "-q", "origin", BRANCH]);
+  const rb = g(["rebase", "--autostash", `origin/${BRANCH}`]);
+  if (rb.status !== 0) { g(["rebase", "--abort"]); log("CODE-REBASE-FAIL — aborted clean"); return; }
+  const p = g(["push", "-q", "origin", "HEAD"]);
+  if (p.status === 0) log("CODE-PUSHED office-keeper v2.1");
+  else log(`CODE-PUSH-FAIL: ${p.stderr?.toString().slice(0, 200)}`);
+}
+
 /* ── the ladder ───────────────────────────────────────────────────────── */
 async function reassert(firstBoot: boolean): Promise<void> {
   const t0 = custodyHow;
@@ -342,6 +383,7 @@ async function reassert(firstBoot: boolean): Promise<void> {
       homesRestored: homes.restored, homesMissing: homes.missing, mirrorHealed: healed, depsInstalled,
       reasons: reasons.length ? reasons : ["state change"],
     });
+    if (firstBoot) pushKeeperCode(); /* W37: the cure itself rides to GitHub on boot */
   }
   if (firstBoot) log(`office-keeper v2 up — boot ${BOOT_ID}, custody=${custody.ok}/${custody.how}, homesRestored=[${homes.restored}], mirrorHealed=[${healed}]`);
 }
