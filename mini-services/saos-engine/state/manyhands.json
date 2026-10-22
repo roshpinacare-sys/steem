@@ -1,7 +1,7 @@
 {
   "running": true,
-  "lastTickAt": "2026-10-22T03:52:48.182Z",
-  "ticks": 192,
+  "lastTickAt": "2026-10-22T03:52:22.964Z",
+  "ticks": 29,
   "day": "2026-10-22",
   "conf": {
     "enabled": true,
@@ -24,40 +24,40 @@
     "takerDayCap": 60,
     "takerLive": false
   },
-  "lastVerdict": "MANYHANDS-TICK",
-  "lastVerdictAt": "2026-10-22T03:52:48.182Z",
-  "hands": 0,
-  "handsPending": 0,
+  "lastVerdict": "HANDS-AUTHORITY-PENDING",
+  "lastVerdictAt": "2026-10-22T03:52:22.964Z",
+  "hands": 9,
+  "handsPending": 9,
   "eligible": 9,
   "pending": [],
-  "cursor": 4,
+  "cursor": 8,
   "perHand": {
-    "hcsoldier4": {
-      "hand": "hcsoldier4",
-      "rcPct": null,
+    "macrame": {
+      "hand": "macrame",
+      "rcPct": 46.1,
       "balances": {
-        "steem": 17.113,
-        "sbd": 0.214
+        "steem": 13.304,
+        "sbd": 1.162
       },
       "opsAdded": 0,
       "governor": {
         "pairs": 0,
-        "reason": "no-rc-evidence"
+        "reason": "no-economics"
       },
       "verdict": "HAND-GOVERNOR-ACCUMULATING",
       "takerCandidate": true
     },
-    "hcsoldier6": {
-      "hand": "hcsoldier6",
-      "rcPct": null,
+    "wic": {
+      "hand": "wic",
+      "rcPct": 43.9,
       "balances": {
-        "steem": 19.791,
-        "sbd": 0.13
+        "steem": 15.011,
+        "sbd": 1.142
       },
       "opsAdded": 0,
       "governor": {
         "pairs": 0,
-        "reason": "no-rc-evidence"
+        "reason": "no-economics"
       },
       "verdict": "HAND-GOVERNOR-ACCUMULATING",
       "takerCandidate": true
@@ -68,7 +68,8 @@
   "takerMode": "SHADOW",
   "fair": 0.104081,
   "book": {
-    "bestAsk": 0.103286,
+    "bestAsk": 0.103333,
     "bestBid": 0.101012
-  }
+  },
+  "pendingWhy": "on-chain active authorities match no held active WIF (measured G43); hands auto-join the moment custody verifies"
 }
