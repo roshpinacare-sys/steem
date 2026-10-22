@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-22T08:26:26.642Z",
+  "at": "2026-10-22T08:41:26.642Z",
   "verdict": "13-FLAGGED",
   "repos": [
     {
@@ -7,13 +7,21 @@
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 13,
+      "scanned": 14,
       "signedPct": 0,
       "signed": 0,
       "unsigned": 6,
       "invalid": 0,
-      "untrusted": 7,
+      "untrusted": 8,
       "flagged": [
+        {
+          "hash": "d6eb34f6",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-22T08:36:11Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "896e8c49",
           "gq": "U",
@@ -104,12 +112,20 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 7,
+      "unsigned": 8,
       "invalid": 0,
-      "untrusted": 3,
+      "untrusted": 2,
       "unknown": 0,
       "signedPct": 0,
       "flagged": [
+        {
+          "hash": "8bef0372",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-22T08:33:27Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T08:33Z"
+        },
         {
           "hash": "424b57f4",
           "gq": "U",
@@ -117,22 +133,6 @@
           "author": "Roshpina Care Sovereign",
           "at": "2026-10-22T08:25:53Z",
           "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T08:25Z"
-        },
-        {
-          "hash": "0f22e30e",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Roshpina Care Sovereign",
-          "at": "2026-10-22T08:06:48Z",
-          "subject": "truth-gate: cadence hourly (public repo, free minutes) — heartbeat SLO"
-        },
-        {
-          "hash": "73747572",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "Roshpina Care Sovereign",
-          "at": "2026-10-22T08:03:26Z",
-          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T08:03Z"
         }
       ]
     },
@@ -204,6 +204,15 @@
   ],
   "flagged": [
     {
+      "hash": "d6eb34f6",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-22T08:36:11Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "896e8c49",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -267,30 +276,21 @@
       "repo": "steem.git(LOCAL)"
     },
     {
+      "hash": "8bef0372",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-22T08:33:27Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T08:33Z",
+      "repo": "Console"
+    },
+    {
       "hash": "424b57f4",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "Roshpina Care Sovereign",
       "at": "2026-10-22T08:25:53Z",
       "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T08:25Z",
-      "repo": "Console"
-    },
-    {
-      "hash": "0f22e30e",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Roshpina Care Sovereign",
-      "at": "2026-10-22T08:06:48Z",
-      "subject": "truth-gate: cadence hourly (public repo, free minutes) — heartbeat SLO",
-      "repo": "Console"
-    },
-    {
-      "hash": "73747572",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "Roshpina Care Sovereign",
-      "at": "2026-10-22T08:03:26Z",
-      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-22T08:03Z",
       "repo": "Console"
     },
     {
@@ -326,5 +326,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 8174
+  "ms": 6502
 }
