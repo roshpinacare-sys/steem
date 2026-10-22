@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-22T01:06:35.526Z",
+  "at": "2026-10-22T01:28:36.346Z",
   "decisions": [
     {
       "kind": "book-depth",
@@ -10,7 +10,16 @@
         "bestAsk": 0.10259567046270647,
         "bestBid": 0.101012
       },
-      "at": "2026-10-22T01:06:35.526Z"
+      "at": "2026-10-22T01:28:36.346Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "arb-window",
+      "reason": "internal feed deviates 592bps from external parity",
+      "action": {
+        "bps": 592
+      },
+      "at": "2026-10-22T01:28:36.346Z"
     },
     {
       "kind": "soldiers",
@@ -19,27 +28,40 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-22T01:06:35.526Z"
+      "at": "2026-10-22T01:28:36.346Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 3.223531 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 3.223531,
+        "any": true
+      },
+      "at": "2026-10-22T01:28:36.346Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 38.6%",
+      "reason": "RC at 35.4%",
       "action": {
-        "rcPct": 38.6
+        "rcPct": 35.4
       },
-      "at": "2026-10-22T01:06:35.526Z"
+      "at": "2026-10-22T01:28:36.346Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 34.2%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 34.4%) — gates hold until candidates pass",
       "action": {
         "votesToday": 0,
-        "vpEff": 34.2,
+        "vpEff": 34.4,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-22T01:06:35.526Z"
+      "at": "2026-10-22T01:28:36.346Z"
     }
   ],
   "spreadBpsRec": 156,

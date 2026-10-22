@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-22T01:14:24.816Z",
-  "verdict": "1-FLAGGED",
+  "at": "2026-10-22T01:29:24.817Z",
+  "verdict": "3-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -8,9 +8,9 @@
       "ok": true,
       "branch": "saos-cockpit",
       "scanned": 30,
-      "signedPct": 80,
-      "signed": 24,
-      "unsigned": 6,
+      "signedPct": 70,
+      "signed": 21,
+      "unsigned": 9,
       "invalid": 0,
       "untrusted": 0,
       "flagged": []
@@ -60,12 +60,29 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
-      "invalid": 0,
+      "unsigned": 8,
+      "invalid": 2,
       "untrusted": 0,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "7c099147",
+          "gq": "E",
+          "sig": "INVALID",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-22T01:28:27Z",
+          "subject": "runner-kit: chip internal flex-wrap — bfix hash-links overflowed 60px "
+        },
+        {
+          "hash": "db658b40",
+          "gq": "E",
+          "sig": "INVALID",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-22T01:26:16Z",
+          "subject": "runner-kit: 5th consecutive cron run 1ccc7461 01:00Z, 10 receipts — th"
+        }
+      ]
     },
     {
       "repo": "TruthRail",
@@ -105,6 +122,24 @@
   ],
   "flagged": [
     {
+      "hash": "7c099147",
+      "gq": "E",
+      "sig": "INVALID",
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-22T01:28:27Z",
+      "subject": "runner-kit: chip internal flex-wrap — bfix hash-links overflowed 60px ",
+      "repo": "Domain"
+    },
+    {
+      "hash": "db658b40",
+      "gq": "E",
+      "sig": "INVALID",
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-22T01:26:16Z",
+      "subject": "runner-kit: 5th consecutive cron run 1ccc7461 01:00Z, 10 receipts — th",
+      "repo": "Domain"
+    },
+    {
       "hash": "83555a78",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -119,5 +154,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 6544
+  "ms": 6650
 }
