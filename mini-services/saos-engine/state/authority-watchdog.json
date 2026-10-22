@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-22T16:35:29.327Z",
+  "at": "2026-10-22T16:50:29.327Z",
   "verdict": "14-FLAGGED",
   "repos": [
     {
@@ -7,13 +7,21 @@
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 11,
+      "scanned": 12,
       "signedPct": 0,
       "signed": 0,
       "unsigned": 3,
       "invalid": 1,
-      "untrusted": 7,
+      "untrusted": 8,
       "flagged": [
+        {
+          "hash": "e98a7473",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-22T16:42:26Z",
+          "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "0105fb22",
           "gq": "U",
@@ -99,26 +107,18 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 8,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 2,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
       "flagged": [
         {
-          "hash": "8c0d608d",
+          "hash": "4acfed37",
           "gq": "U",
           "sig": "SIGNED-UNTRUSTED",
           "author": "sandbox-voice",
-          "at": "2026-10-22T16:05:16Z",
-          "subject": "sandbox voice: ports 6/8 · engine down [skip ci]"
-        },
-        {
-          "hash": "f568980a",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "sandbox-voice",
-          "at": "2026-10-22T15:59:52Z",
+          "at": "2026-10-22T16:35:44Z",
           "subject": "sandbox voice: ports 8/8 · engine alive [skip ci]"
         }
       ]
@@ -213,6 +213,15 @@
   ],
   "flagged": [
     {
+      "hash": "e98a7473",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-22T16:42:26Z",
+      "subject": "vault-seal [seal-host]: 10 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "0105fb22",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -285,20 +294,11 @@
       "repo": "steem.git(LOCAL)"
     },
     {
-      "hash": "8c0d608d",
+      "hash": "4acfed37",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "sandbox-voice",
-      "at": "2026-10-22T16:05:16Z",
-      "subject": "sandbox voice: ports 6/8 · engine down [skip ci]",
-      "repo": "FleetHQ"
-    },
-    {
-      "hash": "f568980a",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "sandbox-voice",
-      "at": "2026-10-22T15:59:52Z",
+      "at": "2026-10-22T16:35:44Z",
       "subject": "sandbox voice: ports 8/8 · engine alive [skip ci]",
       "repo": "FleetHQ"
     },
@@ -344,5 +344,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 5717
+  "ms": 5863
 }
