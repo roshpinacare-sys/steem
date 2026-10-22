@@ -76,13 +76,34 @@ const readLines = (p, n = 20) => {
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 
+/* T-583 PUBLIC VISIBILITY: the pulse heartbeat reads /health every 30min and
+ * publishes the fleet's activity — until now the ops count lived only in this
+ * events stream, so every public pulse carried "ops ?". opsToday = today's
+ * lines in state/events.jsonl, cached 30s (the keeper cross-checks /health
+ * every 8s — zero per-poll re-read of the ~2MB stream; string-match on the
+ * ISO day prefix, no JSON-parse per line). */
+const EVENTS_FILE = path.join(STATE, "events.jsonl");
+let opsCache: { day: string; n: number; at: number } = { day: "", n: 0, at: 0 };
+function opsTodayCount(): number {
+  const now = Date.now();
+  const day = new Date().toISOString().slice(0, 10);
+  if (opsCache.day === day && now - opsCache.at < 30_000) return opsCache.n;
+  let n = 0;
+  try {
+    const buf = fs.readFileSync(EVENTS_FILE, "utf8");
+    for (const line of buf.split("\n")) if (line.includes(`"at":"${day}`)) n++;
+  } catch { /* no stream yet — honest 0 */ }
+  opsCache = { day, n, at: now };
+  return n;
+}
+
 // T-16 brute-force bound for /adopt-credential (in-memory timestamps)
 const adoptAttempts: number[] = [];
 
 async function handle(req) {
   const url = new URL(req.url);
   const p = url.pathname;
-  if (p === "/health") return json({ ok: true, service: "saos-engine", account: ACCOUNT, at: new Date().toISOString(), keyless: false, credentialMode: "runtime-adopted · WIFs derived on demand (signer.mjs) · memory-only — never persisted, never logged, never returned", armyCustody: armyCustodyState([ACCOUNT, ...ARMY_ROSTER_VAULT]), doctrine: "capped-autonomy" });
+  if (p === "/health") return json({ ok: true, service: "saos-engine", account: ACCOUNT, at: new Date().toISOString(), keyless: false, credentialMode: "runtime-adopted · WIFs derived on demand (signer.mjs) · memory-only — never persisted, never logged, never returned", opsToday: opsTodayCount(), armyCustody: armyCustodyState([ACCOUNT, ...ARMY_ROSTER_VAULT]), doctrine: "capped-autonomy" });
   if (p === "/status") {
     const execLog = (() => { try { return fs.readFileSync(path.join(STATE, "exec-log.jsonl"), "utf8").trim().split("\n").filter(Boolean).slice(-8).map((l) => { try { return JSON.parse(l); } catch { return { unparsed: l.slice(0, 80) }; } }); } catch { return []; } })();
     let exec = null;
