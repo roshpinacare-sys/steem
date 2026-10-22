@@ -630,3 +630,29 @@
 {"type":"dexflow.boot","at":"2026-10-22T02:52:18.489Z","pid":18574,"conf":{"enabled":true,"tickMs":6000,"minRcPct":30,"backoff65Pct":0.5,"backoff50Pct":0.25,"maxTripSbd":8,"minTripSbd":0.05,"reserveSteem":0.1,"reserveSbd":0.5,"steemUsePct":0.75,"sbdUsePct":0.85,"bandBps":150,"bookSpreadHaltBps":500,"opsDayCap":8000,"combinedDayCap":32000,"ttlSec":1800,"sweepAgeSec":90,"sweepEveryTicks":20,"tailEveryTicks":15,"tailWindow":400}}
 {"type":"manyhands.boot","at":"2026-10-22T02:52:18.494Z","pid":18574,"conf":{"enabled":true,"tickMs":12000,"handsPerTick":2,"levels":6,"spacingBps":15,"ttlSec":90,"orderTtlSec":3600,"handAskBudgetPct":0.12,"reserveSbd":0.5,"minRcPct":25,"setpointPct":35,"handOpsDayCap":600,"railOpsDayCap":6000,"takerEdgeBps":100,"takerBandBps":800,"takerMaxSbd":2,"takerMinSbd":0.05,"takerDayCap":60,"takerLive":false}}
 {"type":"sharp.boot","at":"2026-10-22T02:52:18.519Z","pid":18574,"armed":false,"conf":{"tickMs":10000,"edgeBps":100,"bandBps":800,"maxTakeSbd":2,"minTakeSbd":0.05,"dayCap":60,"ttlSec":600,"minRcPct":25,"reserveSbd":0.5}}
+{"type":"rot2.custody","at":"2026-10-22T02:52:26.731Z","verdict":"GATE-REFUSED","reason":"gate-missing (probed: /home/z/audit/repos/vault-home/supervise/deploy-fleet-env.sh | /home/z/audit/repos/steem/vault-home/supervise/deploy-fleet-env.sh | /home/z/estate/vault-home/supervise/deploy-fleet-env.sh | /home/z/.secrets/vault-home/supervise/deploy-fleet-env.sh)"}
+{"type":"dexflow.verdict","at":"2026-10-22T02:52:33.586Z","verdict":"RC-FLOOR"}
+{"type":"army.custody","at":"2026-10-22T02:52:17.692Z","verdict":"FLEET-CUSTODY-ALIVE","verified":10,"total":10,"living":10,"retired":4}
+{"type":"army.custody","at":"2026-10-22T02:53:56.665Z","verdict":"FLEET-CUSTODY-ALIVE","verified":10,"total":10,"living":10,"retired":4}
+{"type":"observe.done","at":"2026-10-22T02:54:14.893Z","fills":130,"parity":0.10827349185503926}
+{"type":"grid.tick","at":"2026-10-22T02:54:14.893Z","runCount":592,"refPrice":0.10827349185503926,"internalFeed":0.10408103796949938,"dragK":1.201403347205687,"inv":{"steem":5.237,"sbd":0.169}}
+{"type":"arb.signal","at":"2026-10-22T02:54:14.893Z","grid":"micro-arb","gapBps":403,"dir":"sell-external"}
+{"type":"sweep.scan","at":"2026-10-22T02:54:14.893Z","grid":"sweep","dustSteem":0.2370000000000001}
+{"type":"anchor.quote","at":"2026-10-22T02:54:14.893Z","grid":"anchor-quote","bid":0.10801333158398267,"ask":0.10853365212609584}
+{"type":"offer.published","at":"2026-10-22T02:54:14.893Z","verdict":"OFFER-READY","asks":0,"bids":0,"flowAsks":1,"flowBids":0,"bestAsk":0.10333333333333333,"bestBid":0.101012}
+{"type":"convert.planned","at":"2026-10-22T02:54:14.893Z","verdict":"CONVERT-HOLD","edgeBps":403,"amountSbd":0}
+{"type":"redeploy.planned","at":"2026-10-22T02:54:14.893Z","verdict":"REDEPLOY-HOLD","reason":"below-min-powerup","powerUpSteem":0.071,"excessSteem":0.237,"ratios":{"buyBookPct":0.5,"powerUpPct":0.3,"reservePct":0.2},"pacing":null,"intel":null}
+{"type":"weave-witness","ok":true,"verdict":"BROADCAST","checkpoint":1749,"txid":"91d942c7a1a30eabf32131f5ca9527dba9cae603","error":null,"at":"2026-10-22T02:54:18.489Z"}
+{"type":"learn.done","at":"2026-10-22T02:54:14.893Z","verdict":"LEARNED","lessons":["signing-cred-blocked"],"tunings":[]}
+{"type":"discover.done","at":"2026-10-22T02:54:14.893Z","verdict":"OPTIONS-FOUND","tags":12,"opportunities":["spread-wide","tags-realloc","curation-share","fleet-growth"]}
+{"type":"army.custody","at":"2026-10-22T02:54:14.893Z","verdict":"FLEET-CUSTODY-ALIVE","verified":10,"total":10,"living":10,"retired":4}
+{"type":"social.run","at":"2026-10-22T02:54:14.893Z","day":"2026-10-22","executed":0,"refused":0}
+{"type":"organic.verdict","at":"2026-10-22T02:54:14.893Z","verdict":"ZERO-ORGANIC-TIGHTEN","tighten":true,"rows":5,"activePauses":0}
+{"type":"hive.custody","at":"2026-10-22T02:54:14.893Z","verdict":"UNLOCK-FAIL","error":"vault-custody: STEEM_VAULT_PASSES absent — pass material moved off-repo (R-VAULTPASS-1, 2026-10-11); inject the sealed bundle via env on the"}
+{"type":"hive.custody","at":"2026-10-22T02:54:14.893Z","verdict":"UNLOCK-FAIL","error":"vault-custody: STEEM_VAULT_PASSES absent — pass material moved off-repo (R-VAULTPASS-1, 2026-10-11); inject the sealed bundle via env on the"}
+{"type":"hive.custody","at":"2026-10-22T02:54:14.893Z","verdict":"UNLOCK-FAIL","error":"vault-custody: STEEM_VAULT_PASSES absent — pass material moved off-repo (R-VAULTPASS-1, 2026-10-11); inject the sealed bundle via env on the"}
+{"type":"hive.custody","at":"2026-10-22T02:54:14.893Z","verdict":"UNLOCK-FAIL","error":"vault-custody: STEEM_VAULT_PASSES absent — pass material moved off-repo (R-VAULTPASS-1, 2026-10-11); inject the sealed bundle via env on the"}
+{"type":"bus.sent","at":"2026-10-22T02:54:14.893Z","kind":"cycle.receipt","txid":"e418022c20788c5e4cbe9459bad6e2a9a5ab3368"}
+{"type":"army.custody","at":"2026-10-22T02:54:14.893Z","verdict":"FLEET-CUSTODY-ALIVE","verified":10,"total":10,"living":10,"retired":4}
+{"type":"dexflow.verdict","at":"2026-10-22T02:56:09.595Z","verdict":"RC-FLOOR"}
+{"type":"hyper.requote","at":"2026-10-22T02:56:50.812Z","label":"requote-front","ops":2,"cancels":1,"creates":1,"txid":"e6ebc68b5fde95500e5673b43bb0c774c8d3de3d","rcPct":28.9,"opsToday":556,"equilibriumOpsPerDay":17556,"bestAsk":0.10333333333333333,"bestBid":0.101012}
