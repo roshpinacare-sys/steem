@@ -71,9 +71,14 @@ function resolveGen1Spec() {
   throw new Error(`no-carrying-ref-for-gen1-meta (tried ${candidates.length} carriers)`);
 }
 
-/* measured 2026-10-07: these 9 hold FULL custody on Hive (owner+active+
- * posting all match the GEN-1 pubs); tov/ynet/headcorner rotated there;
- * hcsoldier4/5/6 were born post-fork (not on Hive). */
+/* G50 2026-10-22: these 9 hold FULL custody on Hive again (owner+active+
+ * posting all match the MASTER-vault pubs — live-measured 0/27 → 27/27).
+ * History: 2026-10-07 GEN-1 custody held; at some later rotation the HIVE
+ * active/posting moved off the held pubs (owner stayed) — G50 re-installed
+ * the vault pubs ADDITIVELY (account_update2 owner-elevation, no removals,
+ * no owner/memo change) via hive-authority-upgrade.mjs; idempotent re-run
+ * reports already-live for all 9. tov/headcorner: owner-rotated on Hive
+ * (no owner-match) — not eligible; hcsoldier4/5/6 born post-fork. */
 export const HIVE_ROSTER = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "wic", "wog", "woq"];
 
 const HIVE_NODES = ["https://api.hive.blog", "https://api.openhive.network", "https://api.deathwing.me"];
