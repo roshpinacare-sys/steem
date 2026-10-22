@@ -3,22 +3,22 @@
     {
       "id": "market-making",
       "label": "מעשה-שוק · ספר-STEEM/SBD",
-      "measuredUsdPerDay": -0.004112,
+      "measuredUsdPerDay": -0.004192,
       "estUsdPerDay": null,
       "confidence": "measured",
-      "note": "realized -0.011 SBD over 1.356862d (chain fills) — היסטורי, אינו תחזית",
+      "note": "realized -0.012 SBD over 1.376422d (chain fills) — היסטורי, אינו תחזית",
       "meta": {
-        "realizedSbdTotal": -0.011191,
-        "fillsToday": 18
+        "realizedSbdTotal": -0.011575,
+        "fillsToday": 19
       }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.480655,
+      "estUsdPerDay": 0.483759,
       "confidence": "estimated",
-      "note": "~9.17 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+      "note": "~9.18 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
     {
       "id": "fuel",
@@ -34,7 +34,7 @@
       "measuredUsdPerDay": null,
       "estUsdPerDay": 0,
       "confidence": "blocked",
-      "note": "HOLD honest (105bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "note": "HOLD honest (161bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
     },
     {
       "id": "promo",
@@ -49,25 +49,25 @@
       "label": "היפר-גריד · נוכחות-ספר",
       "measuredUsdPerDay": null,
       "estUsdPerDay": null,
-      "confidence": "measured",
-      "note": "18508 ops/day measured — presence + optionality, deliberately NOT priced as profit",
+      "confidence": "blocked",
+      "note": "no ops evidence",
       "meta": {
-        "opsPerDay": 18508
+        "opsPerDay": null
       }
     }
   ],
-  "totalMeasuredUsdPerDay": -0.004112,
-  "totalEstUsdPerDay": 0.480655,
-  "measuredCount": 2,
+  "totalMeasuredUsdPerDay": -0.004192,
+  "totalEstUsdPerDay": 0.483759,
+  "measuredCount": 1,
   "estimatedCount": 2,
-  "blockedCount": 2,
+  "blockedCount": 3,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.10516962292421778,
-  "asof": "2026-10-22T13:13:46.907Z",
+  "parity": 0.10575787056074297,
+  "asof": "2026-10-22T13:41:56.840Z",
   "context": {
     "venueFillsPerDay": 664,
     "venueVolSteem24h": 6749.653,
-    "ourFillsObservable": 18,
+    "ourFillsObservable": 19,
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": {
@@ -85,10 +85,10 @@
     "any": false
   },
   "x2": {
-    "currentUsdPerDay": 0.4807,
+    "currentUsdPerDay": 0.4838,
     "targetUsdPerDay": 1000,
     "currentSp": 1952,
-    "factor": 2080.5,
+    "factor": 2067.2,
     "rows": [
       {
         "mult": 1,
@@ -99,25 +99,25 @@
       {
         "mult": 10,
         "sp": 19521,
-        "usdPerDay": 4.81,
+        "usdPerDay": 4.84,
         "reachesTarget": false
       },
       {
         "mult": 40,
         "sp": 78083,
-        "usdPerDay": 19.23,
+        "usdPerDay": 19.35,
         "reachesTarget": false
       },
       {
         "mult": 100,
-        "sp": 195206,
-        "usdPerDay": 48.07,
+        "sp": 195207,
+        "usdPerDay": 48.38,
         "reachesTarget": false
       },
       {
-        "mult": 2081,
-        "sp": 4062244,
-        "usdPerDay": 1000.24,
+        "mult": 2068,
+        "sp": 4036873,
+        "usdPerDay": 1000.41,
         "reachesTarget": true
       }
     ],
@@ -140,17 +140,17 @@
     "plan": {
       "verdict": "REDEPLOY-PLAN",
       "reason": "doctrine-ratios",
-      "powerUpSteem": 7.801,
-      "excessSteem": 26.006,
+      "powerUpSteem": 11.231,
+      "excessSteem": 37.438,
       "pacing": {
         "minIntervalSec": 3600,
         "maxPerDay": 12,
         "powerUpsToday": 0,
         "lastPowerUpAt": "2026-10-20T11:34:56.486Z",
-        "sinceLastSec": 178734,
+        "sinceLastSec": 180453,
         "verdict": null
       },
-      "at": "2026-10-22T13:13:46.907Z"
+      "at": "2026-10-22T13:41:56.840Z"
     },
     "state": {
       "day": "2026-10-20",
@@ -159,5 +159,5 @@
     },
     "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
   },
-  "pid": 1525
+  "pid": 2557
 }
