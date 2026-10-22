@@ -12,9 +12,9 @@
       "status": "active",
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
-      "evidence": "state/market.json: 643 trades/24h measured (vol 6416.472 STEEM)",
-      "priorStatus": "active"
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
+      "evidence": "state/market.json: 664 trades/24h measured (vol 6749.653 STEEM)",
+      "priorStatus": null
     },
     {
       "id": "rc-economist",
@@ -24,13 +24,9 @@
       "status": "planned",
       "cadence": "3s tick",
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
-<<<<<<< HEAD
+      "recruitedAt": null,
       "evidence": null,
-=======
-      "evidence": "state/hyper-grid.json: equilibrium 18508 ops/day measured (RC governor live)",
->>>>>>> 3dc42af064e05d9ac953a1c9f48a799c9036120a
-      "priorStatus": "active"
+      "priorStatus": null
     },
     {
       "id": "fill-auditor",
@@ -40,14 +36,9 @@
       "status": "active",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
-<<<<<<< HEAD
-      "recruitedAt": "2026-10-22T12:57:35.101Z",
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
       "evidence": "state/observe.json: 18 chain-truth fills counted (last 2026-10-22T12:48:54.000Z)",
-=======
-      "recruitedAt": null,
-      "evidence": null,
->>>>>>> 3dc42af064e05d9ac953a1c9f48a799c9036120a
-      "priorStatus": "planned"
+      "priorStatus": null
     },
     {
       "id": "treasury-sentinel",
@@ -57,13 +48,9 @@
       "status": "active",
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
-<<<<<<< HEAD
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 129bps)",
-=======
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 152bps)",
->>>>>>> 3dc42af064e05d9ac953a1c9f48a799c9036120a
-      "priorStatus": "active"
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 126bps)",
+      "priorStatus": null
     },
     {
       "id": "content-strategist",
@@ -73,9 +60,9 @@
       "status": "active",
       "cadence": "daily",
       "truthContract": "posted txid journaled; claims never exceed the measured state",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
-      "evidence": "state/daily-report.json: report step ok (promo rail armed in doctrine, perDay ≥ 1)",
-      "priorStatus": "active"
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
+      "evidence": "state/content-ops.json: 22 non-exposing drafts queued (exposure-blocked so far: 0) — broadcast gated on credential",
+      "priorStatus": null
     },
     {
       "id": "curation-steward",
@@ -85,9 +72,9 @@
       "status": "active",
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
       "evidence": "state/curator.json: VP-FLOOR (budgetCounted ?, basis state)",
-      "priorStatus": "active"
+      "priorStatus": null
     },
     {
       "id": "integrity-auditor",
@@ -97,13 +84,9 @@
       "status": "active",
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
-<<<<<<< HEAD
-      "evidence": "state/selftest-last-run.json: 2018/2018 PASS at 2026-10-22T11:20:49.876Z",
-=======
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
       "evidence": "state/selftest-last-run.json: 2018/2018 PASS at 2026-10-22T12:47:13.771Z",
->>>>>>> 3dc42af064e05d9ac953a1c9f48a799c9036120a
-      "priorStatus": "active"
+      "priorStatus": null
     },
     {
       "id": "fleet-recruiter",
@@ -113,9 +96,9 @@
       "status": "active",
       "cadence": "cycle",
       "truthContract": "a role exists only with named evidence in state",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
       "evidence": "this roster file — the recruiter ran and wrote it",
-      "priorStatus": "active"
+      "priorStatus": null
     },
     {
       "id": "web-intel",
@@ -127,7 +110,7 @@
       "truthContract": "findings carry url+date from real search results; no finding without a source",
       "recruitedAt": null,
       "evidence": null,
-      "priorStatus": "planned"
+      "priorStatus": null
     },
     {
       "id": "payout-auditor",
@@ -137,9 +120,9 @@
       "status": "active",
       "cadence": "daily",
       "truthContract": "pending balances and history rows from chain reads only; the clock, never a guess, gates the estimated→measured flip",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
       "evidence": "state/payouts.json: MEASURED at 2026-10-22T00:04:41.598Z — pending(vests 0), payout clock 6d remaining — המכשיר-להפיכת-הקיורציה-למדוד חי",
-      "priorStatus": "active"
+      "priorStatus": null
     },
     {
       "id": "weave-ambassador",
@@ -149,16 +132,11 @@
       "status": "active",
       "cadence": "daily",
       "truthContract": "their votes counted from chain history minus our journal, never from our own logs",
-      "recruitedAt": "2026-10-22T12:02:02.286Z",
+      "recruitedAt": "2026-10-22T13:19:36.383Z",
       "evidence": "state/weave.json: saos.weave.core.v1 published, age 13h — second-writer votes today 0 — החוזה-האחד פומבי",
-      "priorStatus": "active"
+      "priorStatus": null
     }
   ],
-<<<<<<< HEAD
-  "at": "2026-10-22T12:57:35.101Z",
+  "at": "2026-10-22T13:19:36.383Z",
   "pid": 1552
-=======
-  "at": "2026-10-22T12:47:13.831Z",
-  "pid": 2071
->>>>>>> 3dc42af064e05d9ac953a1c9f48a799c9036120a
 }
