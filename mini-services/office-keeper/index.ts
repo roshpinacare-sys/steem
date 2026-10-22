@@ -78,6 +78,7 @@ const PORTS: Record<number, string> = {
   3045: "claims-attestor", /* R314/R315 attestations machine         */
   3046: "dex-beat-service",/* W25/W34 hourly :53 keeper-driver       */
   3047: "state-witness",   /* R271 state-dir event watcher           */
+  3048: "grid-backtest",   /* W45 sovereign backtester (advisory)    */
 };
 
 /* canonical git homes the office stands on (dir → repo) */
