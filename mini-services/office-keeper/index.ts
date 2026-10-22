@@ -283,7 +283,13 @@ function respawn(svc: string): boolean {
      * the duplicate-definition conflict class (owner trace
      * 1a1616b148aa6bf9: "וודא שאין כפילויות ודריסות") and lets a service
      * migrate its own lockfile without touching the keeper. */
-    const child = spawn("/bin/bash", ["-c", "exec bun run dev"], {
+    /* W38 (trace 1a1619c722f4fd59): death-evidence law — no more silent organ
+     * loss. Measured: saos-engine instances (agent-spawned AND keeper-spawned)
+     * vanish by GROUP-SIGKILL with zero exit trace (wrapper's echo never ran).
+     * The exit-logger wrapper survives as the organ's black box: every exit
+     * appends svc + rc + UTC to /tmp/organ-exits.log. "exec" is deliberately
+     * dropped — bash must live to write the record. */
+    const child = spawn("/bin/bash", ["-c", `bun run dev; echo "$(date -u +%FT%TZ) svc=${svc} rc=$?" >> /tmp/organ-exits.log`], {
       cwd: dir, detached: true, stdio: ["ignore", out, out], env: process.env,
     });
     child.on("error", (e) => log(`RESPAWN-ERROR ${svc}: ${String(e).slice(0, 120)}`));
@@ -295,11 +301,17 @@ function respawn(svc: string): boolean {
 
 async function serviceSweep(): Promise<{ revived: string[]; dead: string[] }> {
   const revived: string[] = [], dead: string[] = [];
+  /* W38: the engine is the sovereign brain — a 10-minute cooldown on its
+   * revival halves its duty cycle while the sandbox reaper hunts it
+   * (measured: group-SIGKILL on every instance, keeper-spawned included).
+   * Critical organs revive on a fast lane; the rest keep the gentle law. */
+  const FAST_RESPAWN_MS = new Set(["saos-engine"]);
   for (const [portStr, svc] of Object.entries(PORTS)) {
     if (await portAlive(Number(portStr))) continue;
     dead.push(svc);
     const now = Date.now();
-    if (now - (lastRespawn[svc] ?? 0) <= RESPAWN_COOLDOWN_MS) continue;
+    const cooldown = FAST_RESPAWN_MS.has(svc) ? 120_000 : RESPAWN_COOLDOWN_MS;
+    if (now - (lastRespawn[svc] ?? 0) <= cooldown) continue;
     lastRespawn[svc] = now;
     if (respawn(svc)) revived.push(svc);
   }
