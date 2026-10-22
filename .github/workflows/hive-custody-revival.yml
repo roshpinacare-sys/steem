@@ -31,6 +31,11 @@ jobs:
         run: |
           set +e
           bun install > install.log 2>&1; INSTALL=$?
+          if [ "$INSTALL" -ne 0 ]; then
+            # W39 (trace 1a1620a81bc92505): runner bun-install flake measured (run #9) — npm fallback over the same public dep tree
+            echo "bun-install-failed → npm fallback" >> install.log
+            npm install --omit=dev --no-audit --no-fund --loglevel=error >> install.log 2>&1; INSTALL=$?
+          fi
           bun run gen1-sign-hive.mjs > stdout.log 2> stderr.log; EXIT=$?
           touch custody-receipt.jsonl
           if [ "$INSTALL" -ne 0 ]; then
