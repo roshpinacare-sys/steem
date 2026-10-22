@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-22T00:46:05.596Z",
+  "at": "2026-10-22T01:06:35.526Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -18,7 +18,7 @@
     "order": true,
     "spLadderExecutedToday": 0,
     "spLadderExecNow": 0,
-    "spLadderPlannedNow": 5,
+    "spLadderPlannedNow": 6,
     "restoreExecutedNow": 0,
     "restorePlannedNow": 0,
     "liveProof": false
@@ -34,7 +34,7 @@
       "curMasterDelegationVests": 120973.813573,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.12T vs master 3.0T; EFFECTIVE SP 80.5→140.5 (received 75.1); master delegation +60 SP (SET 217650.813573)"
+      "why": "RC bottleneck: tank 0.12T vs master 3.4T; EFFECTIVE SP 80.5→140.5 (received 75.1); master delegation +60 SP (SET 217650.813573)"
     },
     {
       "kind": "sp-ladder",
@@ -46,7 +46,7 @@
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.10T vs master 3.0T; EFFECTIVE SP 60→120 (received 58.6); master delegation +60 SP (SET 161132.110102)"
+      "why": "RC bottleneck: tank 0.10T vs master 3.4T; EFFECTIVE SP 60→120 (received 58.6); master delegation +60 SP (SET 161132.110102)"
     },
     {
       "kind": "sp-ladder",
@@ -58,7 +58,7 @@
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.0T; EFFECTIVE SP 45.8→105.8 (received 41); master delegation +60 SP (SET 161132.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.4T; EFFECTIVE SP 45.8→105.8 (received 41); master delegation +60 SP (SET 161132.110102)"
     },
     {
       "kind": "sp-ladder",
@@ -70,19 +70,31 @@
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.0T; EFFECTIVE SP 42.1→102.1 (received 40); master delegation +60 SP (SET 161132.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.4T; EFFECTIVE SP 42.1→102.1 (received 40); master delegation +60 SP (SET 161132.110102)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "siq",
-      "sp": 35,
-      "setVests": 120850.110102,
+      "sp": 60,
+      "setVests": 161132.110102,
       "curSpEffective": 45.7,
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.0T; EFFECTIVE SP 45.7→80.7 (received 41); master delegation +35 SP (SET 120850.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.4T; EFFECTIVE SP 45.7→105.7 (received 41); master delegation +60 SP (SET 161132.110102)"
+    },
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "tov",
+      "sp": 60,
+      "setVests": 161132.110102,
+      "curSpEffective": 45.7,
+      "curMasterDelegationVests": 64455.110102,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.07T vs master 3.4T; EFFECTIVE SP 45.7→105.7 (received 41.1); master delegation +60 SP (SET 161132.110102)"
     }
   ],
   "executed": [],
