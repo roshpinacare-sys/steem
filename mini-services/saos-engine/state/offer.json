@@ -1,25 +1,43 @@
 {
-  "verdict": "OFFER-READY",
-<<<<<<< HEAD
-  "parityBps": 403,
-=======
+  "verdict": "OFFER-BLOCKED",
   "parityBps": 0,
->>>>>>> 07c2606c90db745cd6fb6f6901f56d8484778f39
-  "blocker": null,
+  "blocker": [
+    "bid-budget-below-min-level"
+  ],
   "plan": {
     "asks": [],
     "bids": [],
     "flowAsks": [
       {
         "side": "ask",
-        "amountSteem": 0.5,
-        "unit": 0.106,
-        "sbdOut3": 0.053,
-<<<<<<< HEAD
-        "at": "2026-10-22T02:54:14.893Z",
-=======
-        "at": "2026-10-22T03:04:24.643Z",
->>>>>>> 07c2606c90db745cd6fb6f6901f56d8484778f39
+        "amountSteem": 3.0687,
+        "unit": 0.104269,
+        "sbdOut3": 0.32,
+        "at": "2026-10-22T03:14:37.602Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "ask",
+        "amountSteem": 3.0687,
+        "unit": 0.104595,
+        "sbdOut3": 0.321,
+        "at": "2026-10-22T03:14:37.602Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "ask",
+        "amountSteem": 3.0687,
+        "unit": 0.104921,
+        "sbdOut3": 0.322,
+        "at": "2026-10-22T03:14:37.602Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "ask",
+        "amountSteem": 3.0687,
+        "unit": 0.105247,
+        "sbdOut3": 0.323,
+        "at": "2026-10-22T03:14:37.602Z",
         "tranche": "flow"
       }
     ],
@@ -30,35 +48,26 @@
     "bestBid": 0.101012,
     "spacingBps": 15,
     "levels": 4,
-    "askBudgetSteem": 0.62844,
-    "bidBudgetSbd": 0,
+    "askBudgetSteem": 12.2748,
+    "bidBudgetSbd": 0.07296,
     "feedAnchor": 0.104081,
-    "flowAsks": 1,
+    "flowAsks": 4,
     "flowBids": 0
   },
   "book": {
     "bestAsk": 0.10333333333333333,
     "bestBid": 0.101012,
-<<<<<<< HEAD
-    "askDepthSteem": 556.98,
-    "bidDepthSbd": 2049.748,
-    "at": "2026-10-22T02:54:14.893Z"
+    "askDepthSteem": 427.222,
+    "bidDepthSbd": 2051.417,
+    "at": "2026-10-22T03:14:37.602Z"
   },
   "market": {
-    "at": "2026-10-22T02:32:03.658Z",
-=======
-    "askDepthSteem": 555.611,
-    "bidDepthSbd": 2049.748,
-    "at": "2026-10-22T03:04:24.643Z"
-  },
-  "market": {
-    "at": "2026-10-22T02:42:26.452Z",
->>>>>>> 07c2606c90db745cd6fb6f6901f56d8484778f39
+    "at": "2026-10-22T03:14:40.904Z",
     "windowHours": 24,
     "class": "measured",
-    "trades": 981,
-    "tradesPerDay": 981,
-    "volSteem": 20916.19,
+    "trades": 1000,
+    "tradesPerDay": 1000,
+    "volSteem": 21108.394,
     "priceMin": 0.09901,
     "priceMax": 0.104266,
     "rangeBps": 531,
@@ -68,35 +77,8 @@
       "bestAsk": 0.10333333333333333,
       "bestBid": 0.101012,
       "spreadBps": 229.81,
-<<<<<<< HEAD
-      "askDepthSteem": 578.854,
-      "bidDepthSbd": 2055.934
-    }
-  },
-  "marks": {
-    "paritySbdPerSteem": 0.108273,
-    "source": "coingecko",
-    "lowConfidence": false,
-    "internalFeed": 0.104081,
-    "dragK": 1.1135,
-    "floor": 0.103437,
-    "ceiling": 0.108056,
-    "spreadBpsFed": 227
-  },
-  "skew": {
-    "skew": 0.162234,
-    "askMult": 1.162234,
-    "bidMult": 0.837766,
-    "reason": "hummingbot-inventory-skew"
-  },
-  "stale": {
-    "count": 1,
-    "orderids": [
-      2100000037
-    ]
-=======
-      "askDepthSteem": 472.451,
-      "bidDepthSbd": 2052.978
+      "askDepthSteem": 427.222,
+      "bidDepthSbd": 2051.417
     }
   },
   "marks": {
@@ -110,28 +92,23 @@
     "spreadBpsFed": 227
   },
   "skew": {
-    "skew": 0.157998,
-    "askMult": 1.157998,
-    "bidMult": 0.842002,
+    "skew": 0.243443,
+    "askMult": 1.243443,
+    "bidMult": 0.756557,
     "reason": "hummingbot-inventory-skew"
   },
   "stale": {
     "count": 0,
     "orderids": []
->>>>>>> 07c2606c90db745cd6fb6f6901f56d8484778f39
   },
   "liquidity": {
-    "deployedAsks": 353.498,
-    "deployedBids": 0.939,
+    "deployedAsks": 256.445,
+    "deployedBids": 0,
     "askBudget": 0,
-    "bidBudget": 0,
-    "bidBudgetUncapped": 0,
-    "buyBookCapSbd": 0,
+    "bidBudget": 0.304,
+    "bidBudgetUncapped": 0.608,
+    "buyBookCapSbd": 0.304,
     "deployCap": 0.6
   },
-<<<<<<< HEAD
-  "publishedAt": "2026-10-22T02:54:14.893Z"
-=======
-  "publishedAt": "2026-10-22T03:04:24.643Z"
->>>>>>> 07c2606c90db745cd6fb6f6901f56d8484778f39
+  "publishedAt": "2026-10-22T03:14:37.602Z"
 }
