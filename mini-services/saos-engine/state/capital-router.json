@@ -1,14 +1,14 @@
 {
-  "at": "2026-10-22T12:02:02.286Z",
+  "at": "2026-10-22T12:31:16.671Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
-    "headcornerEffectiveSp": 2196.33,
-    "armyEffectiveSp": 792.62,
-    "fleetEffectiveSp": 2988.95,
-    "delegatedOutSp": 2230.71,
+    "headcornerEffectiveSp": 2196.43,
+    "armyEffectiveSp": 792.63,
+    "fleetEffectiveSp": 2989.06,
+    "delegatedOutSp": 2230.72,
     "expiringSoon": [],
-    "liquidSteem": 115.057,
+    "liquidSteem": 105.14,
     "liquidSbd": 1.108,
     "unclaimedSp": 0,
     "unclaimedSbd": 0,
@@ -20,10 +20,10 @@
     "delegatedFieldSp": 2230.72,
     "activeRowsSp": 764.25,
     "activeRowsCount": 14,
-    "vestsPerSp": 1611.231222,
-    "deepProbeQueueSp": 1467.13,
-    "driftVsDeepProbeSp": -0.66,
-    "at": "2026-10-22T12:02:05.180Z"
+    "vestsPerSp": 1611.229029,
+    "deepProbeQueueSp": 1467.14,
+    "driftVsDeepProbeSp": -0.67,
+    "at": "2026-10-22T12:31:18.858Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -39,32 +39,32 @@
       {
         "id": "today",
         "label": "as-measured now",
-        "spPerDay": 1.06507,
-        "usdPerDay": 0.110854,
+        "spPerDay": 1.065118,
+        "usdPerDay": 0.110859,
         "note": "curation-only lane, author dust, other lanes dormant",
         "multiplierVsToday": 1
       },
       {
         "id": "landing",
         "label": "recall wave lands (expiring→effective)",
-        "spPerDay": 1.776207,
-        "usdPerDay": 0.184869,
+        "spPerDay": 1.776256,
+        "usdPerDay": 0.184874,
         "note": "1466.47 SP measured in the expiring queue",
         "multiplierVsToday": 1.67
       },
       {
         "id": "tags",
         "label": "tag-ROI budget shift to measured top tags",
-        "spPerDay": 2.48669,
-        "usdPerDay": 0.258817,
+        "spPerDay": 2.486758,
+        "usdPerDay": 0.258824,
         "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
         "multiplierVsToday": 2.33
       },
       {
         "id": "fleet",
         "label": "army battery deployed (regen-bounded slots × SP)",
-        "spPerDay": 2.555534,
-        "usdPerDay": 0.265983,
+        "spPerDay": 2.555602,
+        "usdPerDay": 0.26599,
         "note": "army adds 0.068844 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
         "multiplierVsToday": 2.4
       }
@@ -80,7 +80,7 @@
       "note": "1466.47 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
       "expectedSpPerDay": 0,
       "evidence": {
-        "delegOut": 2230.71,
+        "delegOut": 2230.72,
         "activeRowsVests": 1231384.06,
         "source": "chain-live"
       }
@@ -88,11 +88,11 @@
     {
       "id": "vp-pace-headcorner",
       "class": "schedule",
-      "note": "headcorner VP 34.22% below floor 60% — rail lawfully paused; unlocks in ~30.94h at 20%/day regen; do NOT burn early",
+      "note": "headcorner VP 34.87% below floor 60% — rail lawfully paused; unlocks in ~30.16h at 20%/day regen; do NOT burn early",
       "expectedSpPerDay": 0,
       "evidence": {
-        "vpPct": 34.22,
-        "etaHours": 30.94
+        "vpPct": 34.87,
+        "etaHours": 30.16
       }
     },
     {
