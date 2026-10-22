@@ -1,16 +1,25 @@
 {
-  "at": "2026-10-22T09:02:40.109Z",
+  "at": "2026-10-22T09:24:37.446Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 10bps → dragK 1.005",
+      "reason": "spread 125bps → dragK 1.0625",
       "action": {
-        "spreadBpsRec": 10,
-        "bestAsk": 0.10184810468096588,
-        "bestBid": 0.10175010175010175
+        "spreadBpsRec": 125,
+        "bestAsk": 0.10229367192299815,
+        "bestBid": 0.10102335345053792
       },
-      "at": "2026-10-22T09:02:40.109Z"
+      "at": "2026-10-22T09:24:37.446Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates 176bps from external parity",
+      "action": {
+        "bps": 176
+      },
+      "at": "2026-10-22T09:24:37.446Z"
     },
     {
       "kind": "soldiers",
@@ -19,33 +28,33 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-22T09:02:40.109Z"
+      "at": "2026-10-22T09:24:37.446Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 26.3%",
+      "reason": "RC at 26.2%",
       "action": {
-        "rcPct": 26.3
+        "rcPct": 26.2
       },
-      "at": "2026-10-22T09:02:40.109Z"
+      "at": "2026-10-22T09:24:37.446Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 33.9%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 34.6%) — gates hold until candidates pass",
       "action": {
-        "votesToday": 6,
-        "vpEff": 33.9,
+        "votesToday": 9,
+        "vpEff": 34.6,
         "verdict": "VP-FLOOR"
       },
-      "at": "2026-10-22T09:02:40.109Z"
+      "at": "2026-10-22T09:24:37.446Z"
     }
   ],
-  "spreadBpsRec": 10,
+  "spreadBpsRec": 125,
   "book": {
-    "bestAsk": 0.10184810468096588,
-    "bestBid": 0.10175010175010175,
-    "spreadBps": 10
+    "bestAsk": 0.10229367192299815,
+    "bestBid": 0.10102335345053792,
+    "spreadBps": 125
   }
 }
