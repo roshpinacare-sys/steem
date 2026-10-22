@@ -107,6 +107,41 @@ export const ARMYGRID_DEFAULTS = {
   pnlSweepSec: 600,       /* T-564: fills→PnL sweep cadence (10min) */
 };
 
+/* ── T-571 VALUE ROUND · LADDER-VARIANT LAW ────────────────────────────────
+ * Owner-delegated decision (trace 1a16118dcfa4f3f9 — "תחליט עבורי... תבחן
+ * ותיישם"): T-566 measured the fleet as ONE strategy replicated 13× —
+ * identical ladders → correlated fills, zero variance, and the per-fill PnL
+ * router (T-564) had nothing to rank. DECISION: DIVERSIFY ACROSS HANDS while
+ * keeping the core discipline WITHIN each hand (וגם וגם — the strongest AND
+ * the most right):
+ *   · UNIFORM everywhere: epsBps=25 (anti-treadmill), ttlSec/orderTtlSec,
+ *     governor caps, two-phase commit, PnL sweep — the proven core laws.
+ *   · VARIED per hand (deterministic, reproducible, recorded): rung distance
+ *     (spacingBps), depth (levels), bid-tier depth (bidCeilingBps — rides the
+ *     W27 tier hook ALREADY inside planLadder, byte-identical at 0), ask
+ *     weight (askBudgetPct).
+ * Tiers: base = the proven eps-25 profile (CONTROL — the top earners
+ * hcsoldier4/israelnews stay here, the known-good baseline never stops);
+ * tight-flow = near rungs + deeper ladder (flow runners); wide-value = deep
+ * bid tier + wide rungs + lighter asks (patient value tranche — the biggest
+ * tank cashmachine leads it). All spacings ≥ eps 25 ⇒ zero dedup ambiguity.
+ * The verdict belongs to the PnL ledger + fuel router from now on. */
+export const HAND_LADDER_VARIANTS = {
+  hcsoldier4:  { tier: "base" },
+  israelnews:  { tier: "base" },
+  hcsoldier5:  { tier: "base" },
+  hcsoldier6:  { tier: "base" },
+  lsa:         { tier: "tight-flow", spacingBps: 30, levels: 4 },
+  tov:         { tier: "tight-flow", spacingBps: 30, levels: 4 },
+  haran:       { tier: "tight-flow", spacingBps: 30, levels: 4 },
+  cashmachine: { tier: "wide-value", bidCeilingBps: 30, spacingBps: 60, levels: 2, askBudgetPct: 0.4 },
+  macrame:     { tier: "wide-value", bidCeilingBps: 30, spacingBps: 60, levels: 2, askBudgetPct: 0.4 },
+  wic:         { tier: "wide-value", bidCeilingBps: 30, spacingBps: 60, levels: 2, askBudgetPct: 0.4 },
+  siq:         { tier: "wide-value", bidCeilingBps: 30, spacingBps: 60, levels: 2, askBudgetPct: 0.4 },
+  wog:         { tier: "wide-value", bidCeilingBps: 30, spacingBps: 60, levels: 2, askBudgetPct: 0.4 },
+  woq:         { tier: "wide-value", bidCeilingBps: 30, spacingBps: 60, levels: 2, askBudgetPct: 0.4 },
+};
+
 const G = globalThis;
 
 export function armyGridConf() {
@@ -148,6 +183,7 @@ export function armyGridState() {
       retired: isRetired,
       lastVerdict: st.lastVerdict ?? null,
       lastVerdictAt: st.lastVerdictAt ?? null,
+      variant: st.variant ?? HAND_LADDER_VARIANTS[a]?.tier ?? "base", /* T-571: ladder profile truth on the card */
       lastError: st.lastError ?? null,
       rcPct: st.rcPct ?? null,
       lastMaxRc: st.lastMaxRc ?? null,
@@ -288,6 +324,11 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
   const nowMs = now.getTime();
   const conf = armedConf();
   const ag = armyGridConf();
+  /* T-571: per-hand ladder variant (see HAND_LADDER_VARIANTS) — exactly three
+   * profile knobs ride the SAME governor/eps/ttl core; a hand missing from
+   * the table stays byte-identical base. */
+  const av = HAND_LADDER_VARIANTS[account] ?? null;
+  const agH = av ? { ...ag, levels: av.levels ?? ag.levels, spacingBps: av.spacingBps ?? ag.spacingBps, askBudgetPct: av.askBudgetPct ?? ag.askBudgetPct } : ag;
   const today = now.toISOString().slice(0, 10);
   const FILE = acctFile(account);
   const OPS_FILE = path.join(AG_DIR, `${account}-ops.json`);
@@ -309,7 +350,7 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
   if (opsDay.day !== today) { opsDay.day = today; opsDay.opsToday = 0; opsDay.chainTail = null; }
 
   const finish = (patch) => {
-    writeJson(FILE, { ...st, ...patch, lastTickAt: now.toISOString() });
+    writeJson(FILE, { ...st, variant: av?.tier ?? "base", ...patch, lastTickAt: now.toISOString() });
     if (patch.lastVerdict) journalVerdict(account, patch.lastVerdict);
   };
 
@@ -353,7 +394,7 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
     ? st.balances
     : await readBalances(account);
   const spendableSteem = Math.max(0, bal.steem - ag.steemReserve);
-  const askBudget = Math.max(0, Math.min(spendableSteem * ag.askBudgetPct, spendableSteem - 0.001));
+  const askBudget = Math.max(0, Math.min(spendableSteem * agH.askBudgetPct, spendableSteem - 0.001));
   const bidBudget = bal.sbd > ag.bidMinSbd ? Math.max(0, bal.sbd - ag.bidReserveSbd) : 0;
   if (bal.steem < ag.minLiquidSteem && bidBudget <= 0) {
     return finish(withCarry({ lastVerdict: "NO-LIQUID", lastVerdictAt: now.toISOString(), rcPct: rc.pct, balances: bal, balancesAt: nowMs, lastMaxRc: rc.max }));
@@ -363,7 +404,8 @@ async function tickAccount(account, book, parity, feedAnchor, rosterLen) {
     parity, askBudgetSteem: 0, bidBudgetSbd: 0,
     bestAsk: book.bestAsk, bestBid: book.bestBid, feedAnchor: feedAnchor > 0 ? feedAnchor : null,
     flowAskBudgetSteem: askBudget, flowBidBudgetSbd: bidBudget,
-    flowLevels: ag.levels, flowSpacingBps: ag.spacingBps,
+    flowLevels: agH.levels, flowSpacingBps: agH.spacingBps,
+    bidCeilingBps: av?.bidCeilingBps ?? 0, /* T-571: per-hand bid-tier depth (W27 hook) */
     now: now.toISOString(),
   });
   const planned = [...(plan.flowAsks ?? []), ...(plan.flowBids ?? [])];
