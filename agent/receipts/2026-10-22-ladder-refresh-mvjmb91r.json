@@ -1,0 +1,192 @@
+{
+  "receipt": "ladder-refresh",
+  "task": "16-b — ladder-refresh executor run (≤3 cancel+replace pairs, ±2% band, floor-anchored, no fresh capital)",
+  "at": "2026-10-22T14:09:56.365Z",
+  "node": "https://api.steemit.com",
+  "account": "headcorner",
+  "market": {
+    "bestBid": 0.10262726,
+    "bestAsk": 0.10280516,
+    "mid": 0.10271621,
+    "spreadPct": 0.17,
+    "depthBids": 20,
+    "depthAsks": 20,
+    "headBlock": 110660109
+  },
+  "ladderShape": {
+    "openOrders": 13,
+    "sells": 7,
+    "buys": 6,
+    "steemOfferedSellSide": 24.391,
+    "steemSoughtBuySide": 294.765,
+    "oldestOrderHours": 0.46,
+    "orders": [
+      {
+        "orderid": 12747055,
+        "side": "buy-steem",
+        "price": 0.10244852,
+        "baseAmount": 5,
+        "steemVolume": 48.805,
+        "vsMidPct": -0.26,
+        "ageHours": 0.09,
+        "expiration": "2026-11-18T14:04:28"
+      },
+      {
+        "orderid": 12747056,
+        "side": "buy-steem",
+        "price": 0.10218053,
+        "baseAmount": 5,
+        "steemVolume": 48.933,
+        "vsMidPct": -0.52,
+        "ageHours": 0.09,
+        "expiration": "2026-11-18T14:04:28"
+      },
+      {
+        "orderid": 12747057,
+        "side": "buy-steem",
+        "price": 0.10191187,
+        "baseAmount": 5,
+        "steemVolume": 49.062,
+        "vsMidPct": -0.78,
+        "ageHours": 0.09,
+        "expiration": "2026-11-18T14:04:29"
+      },
+      {
+        "orderid": 12747058,
+        "side": "buy-steem",
+        "price": 0.10164461,
+        "baseAmount": 5,
+        "steemVolume": 49.191,
+        "vsMidPct": -1.04,
+        "ageHours": 0.09,
+        "expiration": "2026-11-18T14:04:29"
+      },
+      {
+        "orderid": 12747059,
+        "side": "buy-steem",
+        "price": 0.10137464,
+        "baseAmount": 5,
+        "steemVolume": 49.322,
+        "vsMidPct": -1.31,
+        "ageHours": 0.09,
+        "expiration": "2026-11-18T14:04:30"
+      },
+      {
+        "orderid": 12747060,
+        "side": "buy-steem",
+        "price": 0.10110815,
+        "baseAmount": 5,
+        "steemVolume": 49.452,
+        "vsMidPct": -1.57,
+        "ageHours": 0.09,
+        "expiration": "2026-11-18T14:04:30"
+      },
+      {
+        "orderid": 12746998,
+        "side": "sell-steem",
+        "price": 0.10283688,
+        "baseAmount": 5.076,
+        "steemVolume": 5.076,
+        "vsMidPct": 0.12,
+        "ageHours": 0.46,
+        "expiration": "2026-10-23T13:42:06"
+      },
+      {
+        "orderid": 12747000,
+        "side": "sell-steem",
+        "price": 0.10303388,
+        "baseAmount": 5.076,
+        "steemVolume": 5.076,
+        "vsMidPct": 0.31,
+        "ageHours": 0.46,
+        "expiration": "2026-10-23T13:42:06"
+      },
+      {
+        "orderid": 12747003,
+        "side": "sell-steem",
+        "price": 0.10286044,
+        "baseAmount": 3.461,
+        "steemVolume": 3.461,
+        "vsMidPct": 0.14,
+        "ageHours": 0.45,
+        "expiration": "2026-10-23T13:42:51"
+      },
+      {
+        "orderid": 12747004,
+        "side": "sell-steem",
+        "price": 0.10286044,
+        "baseAmount": 3.461,
+        "steemVolume": 3.461,
+        "vsMidPct": 0.14,
+        "ageHours": 0.45,
+        "expiration": "2026-10-23T13:42:51"
+      },
+      {
+        "orderid": 12747005,
+        "side": "sell-steem",
+        "price": 0.10314938,
+        "baseAmount": 3.461,
+        "steemVolume": 3.461,
+        "vsMidPct": 0.42,
+        "ageHours": 0.45,
+        "expiration": "2026-10-23T13:42:51"
+      },
+      {
+        "orderid": 12747006,
+        "side": "sell-steem",
+        "price": 0.10316494,
+        "baseAmount": 3.286,
+        "steemVolume": 3.286,
+        "vsMidPct": 0.44,
+        "ageHours": 0.45,
+        "expiration": "2026-10-23T13:42:51"
+      },
+      {
+        "orderid": 12747065,
+        "side": "sell-steem",
+        "price": 0.10526316,
+        "baseAmount": 0.57,
+        "steemVolume": 0.57,
+        "vsMidPct": 2.48,
+        "ageHours": 0,
+        "expiration": "2026-10-22T15:09:42"
+      }
+    ]
+  },
+  "churn": {
+    "marketOpsInLast100AcctOps": 93,
+    "spanFirstLastSeconds": 1917,
+    "verdict": "HIGH-FREQUENCY CONCURRENT MANAGER OBSERVED — another process is actively churning this ladder; this executor stays cap-limited and staleness-gated inside that reality"
+  },
+  "caps": {
+    "maxPairsPerRun": 3,
+    "staleMinAgeHours": 168,
+    "staleDistPct": 2,
+    "replaceBandPct": 2,
+    "targetOffsetPct": 1.5,
+    "floorLowestAsks": 2,
+    "floorHighestBids": 2,
+    "standingMinAfter": 4,
+    "bookMinDepthLevels": 3,
+    "bookAnomalySpreadPct": 15,
+    "orderLifetimeHours": 24,
+    "accountLock": "headcorner",
+    "neverTouch": [
+      "^ynet",
+      "^tov-hive"
+    ]
+  },
+  "gates": {
+    "liveGate28b": false,
+    "ladderArm": false,
+    "executorDisabled": false,
+    "dryForced": false
+  },
+  "dryRunPlanPrint": [],
+  "drops": [],
+  "anomaly": null,
+  "status": "plan-only-ladder-healthy-no-ops",
+  "ops": [],
+  "executed": [],
+  "reason": "no order qualifies stale (>7d AND >2% from mid) — nothing to refresh by design; run was plan-only (unarmed)"
+}
