@@ -269,8 +269,13 @@ async function portAlive(port: number): Promise<boolean> {
 }
 
 function respawn(svc: string): boolean {
-  const dir = path.join(MY_MINI, svc);
-  if (!fs.existsSync(path.join(dir, "index.ts"))) { log(`RESPAWN-SKIP ${svc}: no index.ts (mirror absent)`); return false; }
+  /* W37: saos-engine imports repo-relative '../../scripts/…' — it can only
+   * run from the GIT HOME layout; a my-project mirror copy crashes on the
+   * missing sibling (measured 02:30Z "Cannot find module
+   * '../../scripts/sovereign-selfcustody.mjs'"). Per-service run-dir law. */
+  const GIT_HOME_ONLY = new Set(["saos-engine"]);
+  const dir = GIT_HOME_ONLY.has(svc) ? path.join(GIT_MINI, svc) : path.join(MY_MINI, svc);
+  if (!fs.existsSync(path.join(dir, "index.ts"))) { log(`RESPAWN-SKIP ${svc}: no index.ts (dir absent)`); return false; }
   try {
     const out = fs.openSync(`/tmp/mini-service-${svc}.log`, "a");
     /* W37 single-source law: the LOCK NAME lives in each service's own
