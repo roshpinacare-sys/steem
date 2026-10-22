@@ -1,16 +1,16 @@
 {
-  "at": "2026-10-22T01:44:24.817Z",
-  "verdict": "1-FLAGGED",
+  "at": "2026-10-22T01:57:47.282Z",
+  "verdict": "3-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 30,
-      "signedPct": 70,
-      "signed": 21,
-      "unsigned": 9,
+      "scanned": 1,
+      "signedPct": 0,
+      "signed": 0,
+      "unsigned": 1,
       "invalid": 0,
       "untrusted": 0,
       "flagged": []
@@ -72,30 +72,47 @@
       "coverage": "MEASURED",
       "method": "git-native",
       "scanned": 10,
-      "signed": 1,
+      "signed": 0,
       "unsigned": 9,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 1,
       "unknown": 0,
-      "signedPct": 10,
-      "flagged": []
+      "signedPct": 0,
+      "flagged": [
+        {
+          "hash": "7354a69c",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T16:44:18Z",
+          "subject": "beat: דופק-יומי-עצמאי ל-exposure-gate (גל-116 · W121 אף-אחד-לא-בטל) — "
+        }
+      ]
     },
     {
       "repo": "saos-agents",
       "coverage": "MEASURED",
       "method": "git-native",
       "scanned": 10,
-      "signed": 1,
+      "signed": 0,
       "unsigned": 8,
-      "invalid": 0,
+      "invalid": 1,
       "untrusted": 1,
       "unknown": 0,
-      "signedPct": 10,
+      "signedPct": 0,
       "flagged": [
         {
-          "hash": "83555a78",
+          "hash": "ab97a1d5",
           "gq": "U",
           "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-21T16:44:20Z",
+          "subject": "beat: דופק-יומי-עצמאי ל-gitleaks+selftest-gate (גל-116 · W121 אף-אחד-ל"
+        },
+        {
+          "hash": "83555a78",
+          "gq": "E",
+          "sig": "INVALID",
           "author": "roshpinacare-sys",
           "at": "2026-10-14T05:25:57+03:00",
           "subject": "FLEET-COORDINATION/1: anti-overwrite protocol — merged by R41 (החוק-נע"
@@ -105,9 +122,27 @@
   ],
   "flagged": [
     {
-      "hash": "83555a78",
+      "hash": "7354a69c",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T16:44:18Z",
+      "subject": "beat: דופק-יומי-עצמאי ל-exposure-gate (גל-116 · W121 אף-אחד-לא-בטל) — ",
+      "repo": "TruthRail"
+    },
+    {
+      "hash": "ab97a1d5",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-21T16:44:20Z",
+      "subject": "beat: דופק-יומי-עצמאי ל-gitleaks+selftest-gate (גל-116 · W121 אף-אחד-ל",
+      "repo": "saos-agents"
+    },
+    {
+      "hash": "83555a78",
+      "gq": "E",
+      "sig": "INVALID",
       "author": "roshpinacare-sys",
       "at": "2026-10-14T05:25:57+03:00",
       "subject": "FLEET-COORDINATION/1: anti-overwrite protocol — merged by R41 (החוק-נע",
@@ -119,5 +154,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 6028
+  "ms": 24808
 }
