@@ -73,6 +73,20 @@ jobs:
           curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz gitleaks
           ./gitleaks version
 
+      # [wave 19.76 · G64] no-conflict-markers guard: merge 93e24a544 committed
+      # RAW merge conflicts into 91 state files (measured — gitleaks then reded
+      # 238 findings on top, and any cloud restore would parse broken JSON).
+      # The tree must never again carry conflict markers; fail-closed like T-53.
+      - name: No-conflict-markers guard (fail-closed)
+        run: |
+          HITS="$(grep -rIl "^<<<<<<< " --exclude-dir=.git . 2>/dev/null || true)"
+          if [ -n "$HITS" ]; then
+            echo "::error::unresolved merge-conflict markers committed to the tree:"
+            echo "$HITS"
+            exit 1
+          fi
+          echo "tree free of conflict markers"
+
       - name: HEAD-tree scan (T-53 first line — fail-closed)
         run: |
           # no-git mode = scan the tree at HEAD, exactly the law's letter. Reads the
