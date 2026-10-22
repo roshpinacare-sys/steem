@@ -1,134 +1,134 @@
 {
- "at": "2026-10-21T23:51:22.888Z",
- "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
- "verdict": "ROUTED",
- "capital": {
-  "headcornerEffectiveSp": 1645.11,
-  "armyEffectiveSp": 792.57,
-  "fleetEffectiveSp": 2437.68,
-  "delegatedOutSp": 2781.61,
-  "expiringSoon": [],
-  "liquidSteem": 0.282,
-  "liquidSbd": 0.111,
-  "unclaimedSp": 0,
-  "unclaimedSbd": 0,
-  "unclaimedSteem": 0
- },
- "landing": {
-  "source": "chain-live",
-  "queueSp": 2017.2,
-  "delegatedFieldSp": 2781.42,
-  "activeRowsSp": 764.22,
-  "activeRowsCount": 14,
-  "vestsPerSp": 1611.286357,
-  "deepProbeQueueSp": 2018.03,
-  "driftVsDeepProbeSp": -0.83,
-  "at": "2026-10-21T23:51:46.155Z"
- },
- "powerDown": {
-  "scheduled": true,
-  "nextWithdrawal": "2026-10-25T01:40:51",
-  "toWithdrawVests": 1611699,
-  "toWithdrawSp": 1000.26,
-  "withdrawnVests": 0,
-  "withdrawRateVests": "0.402925 VESTS",
-  "note": "raw chain fields — a vesting-withdraw schedule is active: start, size, progress; per-week semantics kept raw, never interpreted away"
- },
- "ladder": {
-  "stages": [
-   {
-    "id": "today",
-    "label": "as-measured now",
-    "spPerDay": 0.797766,
-    "usdPerDay": 0.083032,
-    "note": "curation-only lane, author dust, other lanes dormant",
-    "multiplierVsToday": 1
-   },
-   {
-    "id": "landing",
-    "label": "recall wave lands (expiring→effective)",
-    "spPerDay": 1.77597,
-    "usdPerDay": 0.184845,
-    "note": "2017.2 SP measured in the expiring queue",
-    "multiplierVsToday": 2.23
-   },
-   {
-    "id": "tags",
-    "label": "tag-ROI budget shift to measured top tags",
-    "spPerDay": 2.486357,
-    "usdPerDay": 0.258783,
-    "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
-    "multiplierVsToday": 3.12
-   },
-   {
-    "id": "fleet",
-    "label": "army battery deployed (regen-bounded slots × SP)",
-    "spPerDay": 2.555201,
-    "usdPerDay": 0.265948,
-    "note": "army adds 0.068844 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
-    "multiplierVsToday": 3.2
-   }
+  "at": "2026-10-22T00:46:05.596Z",
+  "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
+  "verdict": "ROUTED",
+  "capital": {
+    "headcornerEffectiveSp": 1890.93,
+    "armyEffectiveSp": 792.57,
+    "fleetEffectiveSp": 2683.5,
+    "delegatedOutSp": 2535.84,
+    "expiringSoon": [],
+    "liquidSteem": 142.286,
+    "liquidSbd": 1.108,
+    "unclaimedSp": 0,
+    "unclaimedSbd": 0,
+    "unclaimedSteem": 0
+  },
+  "landing": {
+    "source": "chain-live",
+    "queueSp": 1771.62,
+    "delegatedFieldSp": 2535.84,
+    "activeRowsSp": 764.23,
+    "activeRowsCount": 14,
+    "vestsPerSp": 1611.282253,
+    "deepProbeQueueSp": 1772.26,
+    "driftVsDeepProbeSp": -0.64,
+    "at": "2026-10-22T00:46:07.820Z"
+  },
+  "powerDown": {
+    "scheduled": true,
+    "nextWithdrawal": "2026-10-25T01:40:51",
+    "toWithdrawVests": 1611699,
+    "toWithdrawSp": 1000.26,
+    "withdrawnVests": 0,
+    "withdrawRateVests": "0.402925 VESTS",
+    "note": "raw chain fields — a vesting-withdraw schedule is active: start, size, progress; per-week semantics kept raw, never interpreted away"
+  },
+  "ladder": {
+    "stages": [
+      {
+        "id": "today",
+        "label": "as-measured now",
+        "spPerDay": 0.916972,
+        "usdPerDay": 0.095439,
+        "note": "curation-only lane, author dust, other lanes dormant",
+        "multiplierVsToday": 1
+      },
+      {
+        "id": "landing",
+        "label": "recall wave lands (expiring→effective)",
+        "spPerDay": 1.776086,
+        "usdPerDay": 0.184857,
+        "note": "1771.62 SP measured in the expiring queue",
+        "multiplierVsToday": 1.94
+      },
+      {
+        "id": "tags",
+        "label": "tag-ROI budget shift to measured top tags",
+        "spPerDay": 2.48652,
+        "usdPerDay": 0.2588,
+        "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
+        "multiplierVsToday": 2.71
+      },
+      {
+        "id": "fleet",
+        "label": "army battery deployed (regen-bounded slots × SP)",
+        "spPerDay": 2.555364,
+        "usdPerDay": 0.265965,
+        "note": "army adds 0.068844 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
+        "multiplierVsToday": 2.79
+      }
+    ],
+    "compoundAprPct": 49.33,
+    "armyDailySp": 0.068844,
+    "note": "curation rewards settle as VESTS — the battery itself compounds"
+  },
+  "actions": [
+    {
+      "id": "await-landing",
+      "class": "schedule",
+      "note": "1771.62 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
+      "expectedSpPerDay": 0,
+      "evidence": {
+        "delegOut": 2535.84,
+        "activeRowsVests": 1231384.06,
+        "source": "chain-live"
+      }
+    },
+    {
+      "id": "vp-pace-headcorner",
+      "class": "schedule",
+      "note": "headcorner VP 26.97% below floor 60% — rail lawfully paused; unlocks in ~39.64h at 20%/day regen; do NOT burn early",
+      "expectedSpPerDay": 0,
+      "evidence": {
+        "vpPct": 26.97,
+        "etaHours": 39.64
+      }
+    },
+    {
+      "id": "author-reach",
+      "class": "dormant-lane",
+      "note": "author rail measured $0.00 pending across 10 recent posts — content without external votes pays dust; route content INTO challenge/community formats where whale votes live (operator-gated whitelist change)",
+      "expectedSpPerDay": 0,
+      "evidence": {
+        "postsScanned": 10
+      }
+    },
+    {
+      "id": "sbd-route",
+      "class": "dormant-lane",
+      "note": "SBD routing: inventory 1.11 SBD below dust floor 2 — no route",
+      "expectedSpPerDay": 0,
+      "evidence": {
+        "verdict": "DUST-HOLD",
+        "note": "inventory 1.11 SBD below dust floor 2 — no route"
+      }
+    },
+    {
+      "id": "hbd-savings",
+      "class": "dormant-lane",
+      "note": "HBD savings interest measured 0% — the lane is closed on-chain today",
+      "expectedSpPerDay": 0,
+      "evidence": null
+    },
+    {
+      "id": "hive-blurt",
+      "class": "dormant-lane",
+      "note": "Hive 0 HP/0 HBD, Blurt dust — presence-only, honestly $0",
+      "expectedSpPerDay": 0,
+      "evidence": null
+    }
   ],
-  "compoundAprPct": 56.69,
-  "armyDailySp": 0.068844,
-  "note": "curation rewards settle as VESTS — the battery itself compounds"
- },
- "actions": [
-  {
-   "id": "await-landing",
-   "class": "schedule",
-   "note": "2017.2 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
-   "expectedSpPerDay": 0,
-   "evidence": {
-    "delegOut": 2781.61,
-    "activeRowsVests": 1231384.06,
-    "source": "chain-live"
-   }
-  },
-  {
-   "id": "vp-pace-headcorner",
-   "class": "schedule",
-   "note": "headcorner VP 11.13% below floor 60% — rail lawfully paused; unlocks in ~58.64h at 20%/day regen; do NOT burn early",
-   "expectedSpPerDay": 0,
-   "evidence": {
-    "vpPct": 11.13,
-    "etaHours": 58.64
-   }
-  },
-  {
-   "id": "author-reach",
-   "class": "dormant-lane",
-   "note": "author rail measured $0.00 pending across 10 recent posts — content without external votes pays dust; route content INTO challenge/community formats where whale votes live (operator-gated whitelist change)",
-   "expectedSpPerDay": 0,
-   "evidence": {
-    "postsScanned": 10
-   }
-  },
-  {
-   "id": "sbd-route",
-   "class": "dormant-lane",
-   "note": "SBD routing: inventory 0.11 SBD below dust floor 2 — no route",
-   "expectedSpPerDay": 0,
-   "evidence": {
-    "verdict": "DUST-HOLD",
-    "note": "inventory 0.11 SBD below dust floor 2 — no route"
-   }
-  },
-  {
-   "id": "hbd-savings",
-   "class": "dormant-lane",
-   "note": "HBD savings interest measured 0% — the lane is closed on-chain today",
-   "expectedSpPerDay": 0,
-   "evidence": null
-  },
-  {
-   "id": "hive-blurt",
-   "class": "dormant-lane",
-   "note": "Hive 0 HP/0 HBD, Blurt dust — presence-only, honestly $0",
-   "expectedSpPerDay": 0,
-   "evidence": null
-  }
- ],
- "armyBudget": 12,
- "calibration": null
+  "armyBudget": 12,
+  "calibration": null
 }
