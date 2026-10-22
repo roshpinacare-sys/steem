@@ -49,9 +49,27 @@ const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const SECRETS = path.join(DIR, "..", "..", ".secrets");
 const LOG_FILE = path.join(STATE, "exec-log.jsonl");
-/* estate-relative: engine at estate/steem/mini-services/saos-engine →
- * vault-home sits at estate/vault-home. Resilient to estate re-homes. */
-const GATE = path.join(DIR, "..", "..", "..", "vault-home", "supervise", "deploy-fleet-env.sh");
+/* ESTATE-REHOME LAW (T-570): the vault-home bundle is owner-provisioned
+ * (never in git) and the estate layout moves between sandboxes — the
+ * supervise gate is therefore PROBED at every known home, first existing
+ * wins, fail-closed when none does:
+ *   1. $SAOS_VAULT_HOME/supervise/deploy-fleet-env.sh (operator override)
+ *   2. DIR/../../../vault-home/…   (estate/steem/mini-services/saos-engine)
+ *   3. DIR/../../vault-home/…      (repo-root/vault-home)
+ *   4. /home/z/estate/vault-home/… (estate canonical, tools/vault-seed.sh)
+ *   5. ~/.secrets/vault-home/…     (secrets-home fallback) */
+function resolveGate() {
+  const rel = path.join("supervise", "deploy-fleet-env.sh");
+  const candidates = [
+    ...(process.env.SAOS_VAULT_HOME ? [path.join(process.env.SAOS_VAULT_HOME, rel)] : []),
+    path.join(DIR, "..", "..", "..", "vault-home", rel),
+    path.join(DIR, "..", "..", "vault-home", rel),
+    path.join("/home/z/estate", "vault-home", rel),
+    path.join(os.homedir(), ".secrets", "vault-home", rel),
+  ];
+  for (const c of candidates) if (fs.existsSync(c)) return { ok: true, gate: c, probed: candidates };
+  return { ok: false, probed: candidates };
+}
 const CUSTODY_DOC = path.join(STATE, "rot2-custody.json");
 const EVENTS = path.join(STATE, "events.jsonl");
 
@@ -64,7 +82,9 @@ const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }
  * { ok:false, reason } (verdict-only; the gate already ledger-logged it).
  */
 function gateOpen(tmpDir, purpose) {
-  if (!fs.existsSync(GATE)) return { ok: false, reason: `gate-missing (${GATE})` };
+  const resolved = resolveGate();
+  if (!resolved.ok) return { ok: false, reason: `gate-missing (probed: ${resolved.probed.join(" | ")})` };
+  const GATE = resolved.gate;
   let stdout = "";
   try {
     /* execFileSync, stdio piped — the gate's stdout carries verdict JSON
