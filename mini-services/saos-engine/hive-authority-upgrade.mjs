@@ -29,7 +29,7 @@
  * אפס-סודות-בפלט: שמות-חשבונות, pubs, גיבובים, ורדיקטים — בלבד.
  */
 import * as fs from "node:fs";
-import { wifDecode, pubkeyFromSeed, buildTx, HIVE_CHAIN_ID } from "./steemtx.mjs";
+import { wifDecode, pubkeyFromSeed, pubkeyBytes, buildTx, HIVE_CHAIN_ID } from "./steemtx.mjs";
 
 const VAULT = process.argv[2] ?? "/tmp/vault-open/opened/agent/keys/vault.json";
 const EXEC = process.argv.includes("--execute");
@@ -105,17 +105,34 @@ function additiveAuth(live, newPubs, weight) {
   const added = newPubs.filter((p) => !have.has(p));
   if (!added.length) return { auth: live, added: [] };
   const keyAuths = [...live.key_auths, ...added.map((p) => [p, weight])]
-    /* סדר-FC: ממוין-לפי-ה-pub (flat_map-חייב-ממוין — שער-ה-sort-של-ה-adoption) */
-    .sort((x, y) => (x[0] < y[0] ? -1 : x[0] > y[0] ? 1 : 0));
+    /* סדר-FC: flat_map ממוין-לפי-הבייטים-של-המפתח — לא-לפי-המחרוזת */
+    .sort((x, y) => Buffer.compare(pubkeyBytes(x[0]), pubkeyBytes(y[0])));
   return { auth: { weight_threshold: live.weight_threshold, account_auths: live.account_auths, key_auths: keyAuths }, added };
 }
 
+/* רמת-האימות של account_update2 — החוק-המדוד-חי (2026-10-22, פסק-הצומת):
+ * op-בלי-שדה-owner ⇒ נדרשת-חתימת-ACTIVE ("Missing Active Authority");
+ * op-עם-שדה-owner ⇒ נדרשת-חתימת-OWNER. ההרמה: לכלול-את-סמכות-ה-owner
+ * החיה **שלא-שונתה** (content-identical) — אפס-שינוי-תוכן, רק-רמת-אימות. */
+const ownerElevation = (liveOwner) => ({
+  weight_threshold: liveOwner.weight_threshold,
+  account_auths: liveOwner.account_auths,
+  key_auths: liveOwner.key_auths,
+});
+
 function judgeFinalOp(op, liveBefore) {
-  /* החוק-הסופי-על-ה-ops-הסריאליזבילי: תוספתי-בלבד. */
+  /* החוק-הסופי-על-ה-ops-הסריאליזבילי: תוספתי-בלבד. שדה-owner מותר-רק
+   * content-identical-לחי (הרמת-אימות, אפס-שינוי) — כל-שונות = fail. */
   const errs = [];
   if (op[0] !== "account_update2") errs.push("op-name");
   const v = op[1] ?? {};
-  if (v.owner) errs.push("owner-touched");
+  if (v.owner) {
+    const o = v.owner, live = liveBefore.owner;
+    const same = o.weight_threshold === live.weight_threshold &&
+      JSON.stringify(o.account_auths) === JSON.stringify(live.account_auths) &&
+      JSON.stringify(o.key_auths) === JSON.stringify(live.key_auths);
+    if (!same) errs.push("owner-content-changed");
+  }
   if (v.memo_key) errs.push("memo-touched");
   for (const role of ROLES) {
     const next = v[role];
@@ -192,6 +209,8 @@ for (const acc of vault.accounts ?? []) {
     const v = { account: name, json_metadata: "", posting_json_metadata: "" };
     if (plan.posting.added.length) v.posting = plan.posting.auth;
     if (plan.active.added.length) v.active = plan.active.auth;
+    /* הרמת-אימות: שדה-owner-בתוכן-החי-הבלתי-משונה ⇒ חתימת-owner-מספיקה */
+    v.owner = ownerElevation(live.owner);
     const op = ["account_update2", v];
 
     /* ── G4a שיפוט-סופי-על-ה-op ── */
@@ -210,7 +229,7 @@ for (const acc of vault.accounts ?? []) {
     }
     /* ── שידור + G4b אימות-בלתי-תלוי ── */
     await rpc("condenser_api.broadcast_transaction", [tx.json]);
-    await new Promise((res) => setTimeout(res, 3000));
+    await new Promise((res) => setTimeout(res, 8000)); /* בלוק-הייב=3ש' + פיזור-קריאה — 3ש' רדפו-את-הבלוק (נמדד) */
     const after = await liveAuth(name);
     const check = {};
     for (const role of ROLES) {
