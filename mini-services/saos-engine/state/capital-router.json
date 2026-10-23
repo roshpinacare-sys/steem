@@ -1,29 +1,29 @@
 {
-  "at": "2026-10-23T13:41:07.044Z",
+  "at": "2026-10-23T13:59:54.831Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
-    "headcornerEffectiveSp": 2196.5,
-    "armyEffectiveSp": 792.64,
-    "fleetEffectiveSp": 2989.14,
-    "delegatedOutSp": 2230.74,
+    "headcornerEffectiveSp": 2216.31,
+    "armyEffectiveSp": 792.72,
+    "fleetEffectiveSp": 3009.03,
+    "delegatedOutSp": 2211.6,
     "expiringSoon": [],
-    "liquidSteem": 119.508,
-    "liquidSbd": 0.535,
+    "liquidSteem": 18.149,
+    "liquidSbd": 2.018,
     "unclaimedSp": 0,
     "unclaimedSbd": 0,
     "unclaimedSteem": 0
   },
   "landing": {
     "source": "chain-live",
-    "queueSp": 1447.29,
+    "queueSp": 1447.3,
     "delegatedFieldSp": 2211.6,
     "activeRowsSp": 764.31,
     "activeRowsCount": 14,
-    "vestsPerSp": 1611.115068,
-    "deepProbeQueueSp": 1467.16,
-    "driftVsDeepProbeSp": -19.87,
-    "at": "2026-10-23T13:41:14.101Z"
+    "vestsPerSp": 1611.113656,
+    "deepProbeQueueSp": 1448.02,
+    "driftVsDeepProbeSp": -0.72,
+    "at": "2026-10-23T13:59:57.986Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -39,37 +39,37 @@
       {
         "id": "today",
         "label": "as-measured now",
-        "spPerDay": 1.065152,
-        "usdPerDay": 0.110862,
+        "spPerDay": 1.074759,
+        "usdPerDay": 0.111861,
         "note": "curation-only lane, author dust, other lanes dormant",
         "multiplierVsToday": 1
       },
       {
         "id": "landing",
         "label": "recall wave lands (expiring→effective)",
-        "spPerDay": 1.766989,
-        "usdPerDay": 0.18391,
-        "note": "1447.29 SP measured in the expiring queue",
-        "multiplierVsToday": 1.66
+        "spPerDay": 1.7766,
+        "usdPerDay": 0.184909,
+        "note": "1447.3 SP measured in the expiring queue",
+        "multiplierVsToday": 1.65
       },
       {
         "id": "tags",
         "label": "tag-ROI budget shift to measured top tags",
-        "spPerDay": 2.473784,
-        "usdPerDay": 0.257474,
+        "spPerDay": 2.48724,
+        "usdPerDay": 0.258872,
         "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
-        "multiplierVsToday": 2.32
+        "multiplierVsToday": 2.31
       },
       {
         "id": "fleet",
         "label": "army battery deployed (regen-bounded slots × SP)",
-        "spPerDay": 2.542628,
-        "usdPerDay": 0.264639,
+        "spPerDay": 2.556084,
+        "usdPerDay": 0.266037,
         "note": "army adds 0.068844 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
-        "multiplierVsToday": 2.39
+        "multiplierVsToday": 2.38
       }
     ],
-    "compoundAprPct": 42.25,
+    "compoundAprPct": 42.1,
     "armyDailySp": 0.068844,
     "note": "curation rewards settle as VESTS — the battery itself compounds"
   },
@@ -77,10 +77,10 @@
     {
       "id": "await-landing",
       "class": "schedule",
-      "note": "1447.29 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
+      "note": "1447.3 SP in the expiring queue (chain-live: delegated field − active rows, measured this run) — detector armed; retune rails the day it lands",
       "expectedSpPerDay": 0,
       "evidence": {
-        "delegOut": 2230.74,
+        "delegOut": 2211.6,
         "activeRowsVests": 1231384.06,
         "source": "chain-live"
       }
@@ -88,11 +88,11 @@
     {
       "id": "vp-pace-headcorner",
       "class": "schedule",
-      "note": "headcorner VP 34.26% below floor 60% — rail lawfully paused; unlocks in ~30.89h at 20%/day regen; do NOT burn early",
+      "note": "headcorner VP 34.73% below floor 60% — rail lawfully paused; unlocks in ~30.32h at 20%/day regen; do NOT burn early",
       "expectedSpPerDay": 0,
       "evidence": {
-        "vpPct": 34.26,
-        "etaHours": 30.89
+        "vpPct": 34.73,
+        "etaHours": 30.32
       }
     },
     {
@@ -107,11 +107,12 @@
     {
       "id": "sbd-route",
       "class": "dormant-lane",
-      "note": "SBD routing: inventory 0.54 SBD below dust floor 2 — no route",
+      "note": "SBD routing: book at/below feed value — conversion arb stays dormant",
       "expectedSpPerDay": 0,
       "evidence": {
-        "verdict": "DUST-HOLD",
-        "note": "inventory 0.54 SBD below dust floor 2 — no route"
+        "verdict": "HOLD",
+        "premiumPct": -2,
+        "note": "book at/below feed value — conversion arb stays dormant"
       }
     },
     {
