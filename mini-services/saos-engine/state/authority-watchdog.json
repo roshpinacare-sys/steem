@@ -1,19 +1,52 @@
 {
-  "at": "2026-10-23T13:57:44.595Z",
-  "verdict": "4-FLAGGED",
+  "at": "2026-10-23T14:13:06.242Z",
+  "verdict": "9-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 1,
+      "scanned": 8,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 1,
+      "unsigned": 4,
       "invalid": 0,
-      "untrusted": 0,
-      "flagged": []
+      "untrusted": 4,
+      "flagged": [
+        {
+          "hash": "9763a228",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-23T14:10:23Z",
+          "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות"
+        },
+        {
+          "hash": "b2b605ae",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-23T14:10:22Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
+        {
+          "hash": "8630afa5",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-23T14:00:01Z",
+          "subject": "vault-seal [seal-host]: re-seal 2 — החיים-נושמים-בין-סטפים (גל-105b)"
+        },
+        {
+          "hash": "14afc00e",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-23T14:00:01Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        }
+      ]
     },
     {
       "repo": "saos-runtime",
@@ -34,12 +67,21 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "418dd1d5",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "sandbox-voice",
+          "at": "2026-10-23T13:57:51Z",
+          "subject": "sandbox voice: ports 6/8 · engine down [skip ci]"
+        }
+      ]
     },
     {
       "repo": "Console",
@@ -131,6 +173,51 @@
   ],
   "flagged": [
     {
+      "hash": "9763a228",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-23T14:10:23Z",
+      "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "b2b605ae",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-23T14:10:22Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "8630afa5",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-23T14:00:01Z",
+      "subject": "vault-seal [seal-host]: re-seal 2 — החיים-נושמים-בין-סטפים (גל-105b)",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "14afc00e",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-23T14:00:01Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "418dd1d5",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "sandbox-voice",
+      "at": "2026-10-23T13:57:51Z",
+      "subject": "sandbox voice: ports 6/8 · engine down [skip ci]",
+      "repo": "FleetHQ"
+    },
+    {
       "hash": "39ac32aa",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -172,5 +259,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 21644
+  "ms": 10356
 }
