@@ -1,19 +1,35 @@
 {
-  "at": "2026-10-23T14:13:06.242Z",
-  "verdict": "9-FLAGGED",
+  "at": "2026-10-23T14:28:06.244Z",
+  "verdict": "11-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 8,
+      "scanned": 13,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 4,
+      "unsigned": 7,
       "invalid": 0,
-      "untrusted": 4,
+      "untrusted": 6,
       "flagged": [
+        {
+          "hash": "96362a08",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-23T14:20:41Z",
+          "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות"
+        },
+        {
+          "hash": "fda19ac2",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-23T14:20:40Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "9763a228",
           "gq": "U",
@@ -96,12 +112,12 @@
       "signedPct": 0,
       "flagged": [
         {
-          "hash": "39ac32aa",
+          "hash": "d784eee6",
           "gq": "U",
           "sig": "SIGNED-UNTRUSTED",
           "author": "Roshpina Care Sovereign",
-          "at": "2026-10-23T13:57:46Z",
-          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-23T13:57Z"
+          "at": "2026-10-23T14:27:24Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-23T14:27Z"
         }
       ]
     },
@@ -173,6 +189,24 @@
   ],
   "flagged": [
     {
+      "hash": "96362a08",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-23T14:20:41Z",
+      "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "fda19ac2",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-23T14:20:40Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "9763a228",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -218,12 +252,12 @@
       "repo": "FleetHQ"
     },
     {
-      "hash": "39ac32aa",
+      "hash": "d784eee6",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "Roshpina Care Sovereign",
-      "at": "2026-10-23T13:57:46Z",
-      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-23T13:57Z",
+      "at": "2026-10-23T14:27:24Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-23T14:27Z",
       "repo": "Console"
     },
     {
@@ -259,5 +293,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 10356
+  "ms": 6165
 }
