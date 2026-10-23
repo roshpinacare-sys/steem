@@ -1,6 +1,6 @@
 {
   "verdict": "RECRUITED",
-  "active": 5,
+  "active": 9,
   "total": 11,
   "ladderNote": "תפקיד נרשם רק כשהראיה שלו קיימת במדינת-המנוע — מדוד, לא מובטח; תפקיד-מת מתדרג ל-planned בכל מחזור",
   "roster": [
@@ -9,11 +9,11 @@
       "role": "אנליסט-שוק",
       "lane": "measurement",
       "capability": "marketPulse 24h — fills/volume/spread/depth of the whole venue",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
-      "recruitedAt": null,
-      "evidence": null,
+      "recruitedAt": "2026-10-23T15:39:08.641Z",
+      "evidence": "state/market.json: 311 trades/24h measured (vol 11480.396 STEEM)",
       "priorStatus": "planned"
     },
     {
@@ -26,30 +26,30 @@
       "truthContract": "costs measured by live manabar deltas (rc-probe), never invented",
       "recruitedAt": "2026-10-23T15:04:22.323Z",
       "evidence": null,
-      "priorStatus": "active"
+      "priorStatus": "planned"
     },
     {
       "id": "fill-auditor",
       "role": "מבקר-עסקאות",
       "lane": "truth",
       "capability": "chain-truth fill/op counters over account history (max(state, chain-truth))",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-23T15:04:22.323Z",
-      "evidence": null,
-      "priorStatus": "active"
+      "evidence": "state/observe.json: 187 chain-truth fills counted (last 2026-10-23T15:37:39.000Z)",
+      "priorStatus": "planned"
     },
     {
       "id": "treasury-sentinel",
       "role": "שומר-אוצר",
       "lane": "arbitrage",
       "capability": "convert-arb edge monitor — SBD print path held honest (dust-or-capped)",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
-      "recruitedAt": null,
-      "evidence": null,
+      "recruitedAt": "2026-10-23T15:39:08.641Z",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 0bps)",
       "priorStatus": "planned"
     },
     {
@@ -69,11 +69,11 @@
       "role": "מושל-קיורציה",
       "lane": "fuel",
       "capability": "doctrine vote rail — day-cap enforced on max(state, chain-truth)",
-      "status": "planned",
+      "status": "active",
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
-      "recruitedAt": null,
-      "evidence": null,
+      "recruitedAt": "2026-10-23T15:39:08.641Z",
+      "evidence": "state/curator.json: VP-FLOOR (budgetCounted ?, basis state)",
       "priorStatus": "planned"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-23T15:18:43.343Z",
+  "at": "2026-10-23T15:39:08.641Z",
   "pid": 10638
 }
