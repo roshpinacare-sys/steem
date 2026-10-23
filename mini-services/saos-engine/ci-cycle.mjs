@@ -596,6 +596,11 @@ async function main() {
     custody: `${report.steps.custody?.verified ?? "?"}/${report.steps.custody?.total ?? "?"}`,
     social: report.steps.social?.verdict ?? "STEP-FAIL",
     socialExecuted: report.steps.social?.executed ?? 0,
+    /* G69 · measured-refusal honesty: the flat canonical heartbeat
+     * (saos-runtime state/beat/ci-last-heartbeat.json) carries whatever this
+     * summary emits — without this field the watchdog's socialRefused fact
+     * measured permanent null (absence confused with zero). */
+    socialRefused: report.steps.social?.refused ?? 0,
     content: report.steps.content?.verdict ?? "STEP-FAIL",
     contentSource: report.steps.content?.source ?? null,
     conceptAlignMode: report.steps.content?.conceptAlignMode ?? null,
