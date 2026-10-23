@@ -1,11 +1,7 @@
 {
-<<<<<<< HEAD
-  "at": "2026-10-23T15:39:08.641Z",
-=======
-  "at": "2026-10-23T15:41:05.647Z",
->>>>>>> 96abf4f2333a3d641f27f0ce9dbdc0f8ce20e589
+  "at": "2026-10-23T15:58:19.975Z",
   "enabled": true,
-  "runsTotal": 1,
+  "runsTotal": 2,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -24,7 +20,7 @@
       "totalVotes": 0,
       "window": 0,
       "verdicts": {},
-      "vpEff": 33.7,
+      "vpEff": 33.1,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -32,7 +28,7 @@
     },
     "exec": {
       "window": 4,
-      "fails": 0,
+      "fails": 1,
       "lastError": null
     },
     "watchdog": null
@@ -44,12 +40,21 @@
       "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
       "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
       "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
+    },
+    {
+      "id": "broadcast-fails",
+      "severity": "low",
+      "resolved": true,
+      "evidence": "1/4 broadcasts failed in the window (last: ) · last fail 2026-10-23T15:58:57.605Z < last OK broadcast 2026-10-23T15:59:08.481Z (live posting-role ops succeed)",
+      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
+      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 1
+    "signing-cred-blocked": 2,
+    "broadcast-fails": 1
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
