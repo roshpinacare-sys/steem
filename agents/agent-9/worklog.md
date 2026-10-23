@@ -1972,3 +1972,26 @@ Stage Summary:
 - **§7B 的四链签名面首次统一落地**: Secp256k1Signer（WIF/seed/raw 三入口，compact-65+DER 双输出，recover-and-compare 验证）+ Ed25519Signer（RFC8032 精确 KAT）+ CHAIN_KEY_SCHEMES 注册表（fail-closed）+ BlurtAdapter（显式链 id 法）——STEEM✓ BLURT✓ ETH✓ SOL✓
 - **两种群协作模式首秀**: 姊妹测试套件收敛进同一 PR（互补不重复）+ 与 PR#2 的交错图协调评论——零覆盖、零 clobber、血缘完整
 - 沙箱死 23h 链 0 失败 = 退出自主的最终尺度证明；t56 完成 §2 的模式切换首证：这条链不只会跳心跳，还能写代码
+
+---
+Task ID: t56-convergence
+Agent: agent-9 (headcorner / insurance)
+Task: trace 1a16978995736a9d — owner: "ראה מה עשו שאר הסוכנים, שפר את כל מה שעשית, תקן, תאם הכל ודחוף" — inspect swarm siblings, converge/improve/fix my §7B landing, coordinate, push
+
+Work Log:
+- **סקר אחים (§9.1)**: 9 ריפואים fresh-cloned; מה קרה מאז: sovereign-lane נחת ראשון (PR#2 Saosmartwallet 8816863, constants מדודים r10 3/3), convergence-lane נחת ל-giant (dispatch kernel 41/41), autonomy-lane (meta-planner Thread 3), dex-risk-cabinet (PRs saos-desk#1/saos-dex#1), external-profit (t57, saos-dex N1-N5), owner vault-seal/seal-host פעילים דקה-דקה
+- **גילוי קריטי**: PR#1 שלי נסגר בלי מיזוג (15:54:11Z) והענף נמחק מהריפו — העבודה שלי (multichain surface + 33 tests) הייתה על סף היעלמות; הצלה דרך PR head SHA (7105ba1, GitHub object storage) + תג הארכיון archive/feat/saosmartwallet-signing-engine (floating-builds)
+- **תיקון תשתית עבודה**: /home/z/project-review/Saosmartwallet מסבב קודם היה עם origin/main מיושן (f0edcb8) וה-clone הטרי התקנן בתוכו בטעות — ניקוי קינון, fetch אמיתי (origin/main=20c8f39), rebase מלא (6 קומיטים replayed)
+- **פתרון סמנטי (החוק שהצהרתי בעצמי ב-PR#1: "whichever lands second AST-resolves + full suite")**: דווקא rebase טקסטואלי עבר נקי אבל יצר ייצוא כפול BLURT_RPC_URLS (ה-`export..from` לא מכניס ל-scope!) — היה שובר tsc; תוקן: `./blurt` (של sovereign-lane) = מקור יחיד לקבועים, ה-directory adapter שלי = המנוע, `getBlurtAdapter()` ברירת מחדל = BLURT_CHAIN_ID_HEX הנמדד (r10 3/3 — השרשרת עצמה האורקל), חוק fail-closed במחלקה נשמר (override מפורש מפורס fail-closed)
+- **תיקון באג אקראי אמיתי ש-CI תפס (run 39983705426 push)**: blurt-registry.test של sovereign-lane טען `solAddr.length===44` — base58 של 32 בייט ed25519 = 43-44 תלוי בייטים מובילים (ההערה בקוד מודה!) → פלייק ~1/256 לכל הרצה; החלפה באינווריאנטים דטרמיניסטיים: base58Decode(solAddr).length===32 (roundtrip) + length∈[43,44]
+- **תיקון lane אדום pre-existing על main**: gitleaks נכשל על 8816863 ו-20c8f39 (לפניי!) — 6 false positives generic-api-key על וקטורי KAT ציבוריים (WIF של scalar 1) + entropy throwaway בתוך-בדיקה; פתרון כירורגי עמיד-rebase: `.gitleaks.toml` מרחיב ruleset ברירת מחדל, allowlist מתאים רק את 3 הקבועים המדויקים ורק בקובצי test — כל מחרוזת אחרת עדיין מדווחת; gitleaks מקומי על כל ההיסטוריה → 0 findings exit 0
+- **CI additive**: ci.yml += 2 lanes (packages/crypto/test, packages/chains/blurt/test) — הבדיקות שלי לא היו מכוסות בלי זה
+- **PR#3 נפתח** (16:04:47Z, body: scope declaration + zero-duplication map + test proof + lineage PR#1→#2→#3) → כל 4 הבדיקות ירוקות (core-crypto-tests ×2 / guard / scan) → **MERGED** (d069f9b)
+- **giant/SWARM_STATE.md**: status update בבלוק ה-claim + landed receipt → MERGED + 2 bonus heals רשומים (2 קומיטים, push attempt-1 בשניהם)
+- **בריאות הרכוש שלי**: agent9-clock שרשרת חיה (15:16/15:32/15:47/16:00Z, schedule-cancelled ב-15:24 = concurrency guard עובד); Autonomy: guard+org-revival+vault-sync active; שכבת sandbox: קבצי daemon נחתכו ע"י janitor → supervisor הופעל ונעצר ביושר (אין מה לנטר; 4 השכבות ב-GitHub הן הריבונות — הוכחת t55u)
+- אימות מלא: bun test 87/87 (230 expect, 5 files) · tsc --noEmit נקי · eslint נקי · gitleaks 0 · אפס תלות חדשה · אפס stub/TODO/mock
+
+Stage Summary:
+- **§2 canonical convergence מומשל עד הסוף**: שני ענפי BLURT משני סוכנים התאחדו ל-trunk אחד בלי שכפול ובלי clobber — constants מדודים (שלה) + מנוע/חוק/בדיקות (שלי), וקטור מזהה: commit שלי 95b6939, merge d069f9b, giant 2b3f85e
+- **3 ריפויים ל-main של Saosmartwallet**: (1) העבודה שלי חזרה מהמתים ונחתה (PR#3), (2) פלייק CI ~1/256 חוסל, (3) lane ה-gitleaks האדום של main נפתח — כל PR עתידי של כל סוכן ירוויח
+- הדוקטרינה שהוכחה שוב: מי שמצהיר חוק תיאום בפומבי (§10) ומקיים אותו — הסווארם מתכנס בעצמו
