@@ -1,33 +1,38 @@
 {
-  "verdict": "RETIER",
+  "verdict": "TRIM",
   "reasons": [
+    {
+      "type": "TRIM",
+      "gate": "inventory-skew",
+      "why": "24h flow one-sided (76B/8S, imbalance 0.81 > 0.6) — AutoHedge max_inventory_exposure analog"
+    },
     {
       "type": "RETIER",
       "gate": "anchor-gap",
-      "why": "internal book mid drifts 614bps off the external cross (0.109723 SBD/STEEM) > 300bps — AutoHedge rebalance_threshold analog"
+      "why": "internal book mid drifts 676bps off the external cross (0.110521 SBD/STEEM) > 300bps — AutoHedge rebalance_threshold analog"
     }
   ],
   "gates": {
     "anchor": "OK",
     "fills": "OK",
-    "flow24h": 45,
-    "imbalance": 0.6,
-    "anchorGapBps": 614,
-    "realizedPerDaySbd": -0.017132,
-    "rcPct": 37.8
+    "flow24h": 84,
+    "imbalance": 0.81,
+    "anchorGapBps": 676,
+    "realizedPerDaySbd": -0.016982,
+    "rcPct": 37.7
   },
   "measured": {
-    "buys24h": 36,
-    "sells24h": 9,
+    "buys24h": 76,
+    "sells24h": 8,
     "minEdgeBps": null,
-    "anchorGapBps": 614,
-    "realizedPerDaySbd": -0.017132,
-    "rcPct": 37.8
+    "anchorGapBps": 676,
+    "realizedPerDaySbd": -0.016982,
+    "rcPct": 37.7
   },
   "advisoryOnly": true,
   "law": "advisory-only · zero signing authority · verdicts feed the doctrine layer that owns every cap (T2/G41/VF1/RC-floors) — AutoHedge risk-first design without duplicated execution power",
-  "at": "2026-10-23T14:48:54.376Z",
+  "at": "2026-10-23T14:58:54.338Z",
   "cadenceSec": 300,
-  "since": "2026-10-23T14:07:43.412Z",
-  "lastHeartbeatAt": "2026-10-23T14:12:43.411Z"
+  "since": "2026-10-23T14:53:54.339Z",
+  "lastHeartbeatAt": "2026-10-23T14:58:54.338Z"
 }

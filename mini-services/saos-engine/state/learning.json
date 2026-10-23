@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-23T14:20:19.586Z",
+  "at": "2026-10-23T14:50:56.791Z",
   "enabled": true,
-  "runsTotal": 24,
+  "runsTotal": 25,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,13 +23,9 @@
         "VOTED": 28,
         "BROADCAST-FAIL": 2
       },
-      "vpEff": 35.1,
-      "meanAgeMinutes": 112.3,
-      "tagsVoted": {
-        "steem": 1,
-        "crypto": 1,
-        "ai": 1
-      },
+      "vpEff": 34.4,
+      "meanAgeMinutes": null,
+      "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
@@ -52,7 +48,7 @@
       "id": "broadcast-fails",
       "severity": "low",
       "resolved": true,
-      "evidence": "1/2 broadcasts failed in the window (last: ) · last fail 2026-10-23T14:20:54.705Z < last OK broadcast 2026-10-23T14:21:55.887Z (live posting-role ops succeed)",
+      "evidence": "1/2 broadcasts failed in the window (last: ) · last fail 2026-10-23T14:51:31.094Z < last OK broadcast 2026-10-23T14:52:29.528Z (live posting-role ops succeed)",
       "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
       "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
@@ -60,8 +56,8 @@
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 24,
-    "broadcast-fails": 3
+    "signing-cred-blocked": 25,
+    "broadcast-fails": 4
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
