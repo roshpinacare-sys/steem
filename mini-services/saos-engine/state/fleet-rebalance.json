@@ -1,6 +1,10 @@
 {
   "schema": "fleet-rebalance-v1",
+<<<<<<< HEAD
+  "at": "2026-10-23T16:01:34.379Z",
+=======
   "at": "2026-10-23T15:58:19.975Z",
+>>>>>>> 5a3ff2e8a1423fd5fc766d573c4ddf92caa15f7e
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -98,6 +102,37 @@
     }
   ],
   "executed": [],
-  "refused": [],
+  "refused": [
+    {
+      "move": {
+        "kind": "liquidity-sweep",
+        "from": "cashmachine",
+        "to": "headcorner",
+        "asset": "STEEM",
+        "amount": 58.7,
+        "mode": "attempt",
+        "why": "master below floor (33.016 < 40) while cashmachine holds surplus"
+      },
+      "verdict": "THINK-GATE-REFUSED",
+      "txid": null,
+      "error": null,
+      "at": "2026-10-23T16:01:34.379Z"
+    },
+    {
+      "move": {
+        "kind": "liquidity-sweep",
+        "from": "haran",
+        "to": "headcorner",
+        "asset": "STEEM",
+        "amount": 25.009,
+        "mode": "attempt",
+        "why": "master below floor (33.016 < 40) while haran holds surplus"
+      },
+      "verdict": "THINK-GATE-REFUSED",
+      "txid": null,
+      "error": null,
+      "at": "2026-10-23T16:01:34.379Z"
+    }
+  ],
   "verdict": "PLANNED-AWAITING-POLICY"
 }
