@@ -1,25 +1,25 @@
 {
-  "at": "2026-10-23T00:46:29.495Z",
+  "at": "2026-10-23T03:32:40.696Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 31bps → dragK 1.0155",
+      "reason": "spread 22bps → dragK 1.011",
       "action": {
-        "spreadBpsRec": 31,
-        "bestAsk": 0.10183625336927224,
-        "bestBid": 0.10151691948658109
+        "spreadBpsRec": 22,
+        "bestAsk": 0.10173116089613035,
+        "bestBid": 0.10151253679829458
       },
-      "at": "2026-10-23T00:46:29.495Z"
+      "at": "2026-10-23T03:32:40.696Z"
     },
     {
       "kind": "parity-drift",
-      "decision": "monitor",
-      "reason": "internal feed deviates 398bps from external parity",
+      "decision": "arb-window",
+      "reason": "internal feed deviates 562bps from external parity",
       "action": {
-        "bps": 398
+        "bps": 562
       },
-      "at": "2026-10-23T00:46:29.495Z"
+      "at": "2026-10-23T03:32:40.696Z"
     },
     {
       "kind": "soldiers",
@@ -28,33 +28,46 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-10-23T00:46:29.495Z"
+      "at": "2026-10-23T03:32:40.696Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 114.427434 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 114.427434,
+        "any": true
+      },
+      "at": "2026-10-23T03:32:40.696Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 31.6%",
+      "reason": "RC at 33.5%",
       "action": {
-        "rcPct": 31.6
+        "rcPct": 33.5
       },
-      "at": "2026-10-23T00:46:29.495Z"
+      "at": "2026-10-23T03:32:40.696Z"
     },
     {
       "kind": "curation",
       "decision": "curator-live",
-      "reason": "voted 3 today (6 total) · VP 37.7% · txid 7d5ab714886b",
+      "reason": "voted 3 today (9 total) · VP 37.4% · txid ec2b6d598d8a",
       "action": {
-        "votesToday": 6,
-        "vpEff": 37.7,
+        "votesToday": 3,
+        "vpEff": 37.4,
         "verdict": "VOTED"
       },
-      "at": "2026-10-23T00:46:29.495Z"
+      "at": "2026-10-23T03:32:40.696Z"
     }
   ],
-  "spreadBpsRec": 31,
+  "spreadBpsRec": 22,
   "book": {
-    "bestAsk": 0.10183625336927224,
-    "bestBid": 0.10151691948658109,
-    "spreadBps": 31
+    "bestAsk": 0.10173116089613035,
+    "bestBid": 0.10151253679829458,
+    "spreadBps": 22
   }
 }
