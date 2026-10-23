@@ -1,87 +1,20 @@
 {
-  "verdict": "TRIM",
+  "verdict": "ABSTAIN",
   "reasons": [
     {
-      "type": "TRIM",
-      "gate": "inventory-skew",
-<<<<<<< HEAD
-      "why": "24h flow one-sided (76B/8S, imbalance 0.81 > 0.6) — AutoHedge max_inventory_exposure analog"
-=======
-      "why": "24h flow one-sided (74B/9S, imbalance 0.783 > 0.6) — AutoHedge max_inventory_exposure analog"
->>>>>>> 25e0ab12a7832268c79f755bb25575114920ba35
-    },
-    {
-      "type": "RETIER",
-      "gate": "anchor-gap",
-<<<<<<< HEAD
-      "why": "internal book mid drifts 677bps off the external cross (0.110539 SBD/STEEM) > 300bps — AutoHedge rebalance_threshold analog"
-=======
-      "why": "internal book mid drifts 668bps off the external cross (0.1104 SBD/STEEM) > 300bps — AutoHedge rebalance_threshold analog"
->>>>>>> 25e0ab12a7832268c79f755bb25575114920ba35
+      "type": "ABSTAIN",
+      "gate": "anchor",
+      "why": "no real-money implied unit (external quotes absent or zero)"
     }
   ],
   "gates": {
-    "anchor": "OK",
-    "fills": "OK",
-<<<<<<< HEAD
-    "flow24h": 84,
-    "imbalance": 0.81,
-    "anchorGapBps": 677,
-    "realizedPerDaySbd": -0.016982,
-    "rcPct": 36.8
-  },
-  "measured": {
-    "buys24h": 76,
-    "sells24h": 8,
-    "minEdgeBps": null,
-    "anchorGapBps": 677,
-    "realizedPerDaySbd": -0.016982,
-    "rcPct": 36.8
+    "anchor": "ABSENT",
+    "fills": "OK"
   },
   "advisoryOnly": true,
   "law": "advisory-only · zero signing authority · verdicts feed the doctrine layer that owns every cap (T2/G41/VF1/RC-floors) — AutoHedge risk-first design without duplicated execution power",
-  "at": "2026-10-23T15:03:54.338Z",
+  "at": "2026-10-23T15:13:54.339Z",
   "cadenceSec": 300,
-  "since": "2026-10-23T14:53:54.339Z",
-  "lastHeartbeatAt": "2026-10-23T14:58:54.338Z"
-=======
-<<<<<<< HEAD
-    "flow24h": 83,
-    "imbalance": 0.783,
-    "anchorGapBps": 668,
-    "realizedPerDaySbd": -0.017023,
-    "rcPct": 37.7
-=======
-    "flow24h": 45,
-    "imbalance": 0.6,
-    "anchorGapBps": 614,
-    "realizedPerDaySbd": -0.017132,
-    "rcPct": 37.8
->>>>>>> 7ba13429ebd4376d873af4bff5e9a7161bf56f1f
-  },
-  "measured": {
-    "buys24h": 74,
-    "sells24h": 9,
-    "minEdgeBps": null,
-<<<<<<< HEAD
-    "anchorGapBps": 668,
-    "realizedPerDaySbd": -0.017023,
-    "rcPct": 37.7
-  },
-  "advisoryOnly": true,
-  "law": "advisory-only · zero signing authority · verdicts feed the doctrine layer that owns every cap (T2/G41/VF1/RC-floors) — AutoHedge risk-first design without duplicated execution power",
-  "at": "2026-10-23T14:52:43.412Z",
-=======
-    "anchorGapBps": 614,
-    "realizedPerDaySbd": -0.017132,
-    "rcPct": 37.8
-  },
-  "advisoryOnly": true,
-  "law": "advisory-only · zero signing authority · verdicts feed the doctrine layer that owns every cap (T2/G41/VF1/RC-floors) — AutoHedge risk-first design without duplicated execution power",
-  "at": "2026-10-23T14:48:54.376Z",
->>>>>>> 7ba13429ebd4376d873af4bff5e9a7161bf56f1f
-  "cadenceSec": 300,
-  "since": "2026-10-23T14:42:43.412Z",
-  "lastHeartbeatAt": "2026-10-23T14:47:43.412Z"
->>>>>>> 25e0ab12a7832268c79f755bb25575114920ba35
+  "since": "2026-10-23T15:08:54.338Z",
+  "lastHeartbeatAt": "2026-10-23T15:13:54.339Z"
 }
