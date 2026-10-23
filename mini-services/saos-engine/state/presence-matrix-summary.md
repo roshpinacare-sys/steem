@@ -1,7 +1,7 @@
 # presence-matrix — multi-network display parity probe (read-only)
 
-- at: 2026-10-23T13:32:59.832Z
-- HEAD: 051f735894a418f10aeceafc458dfc89c4a2f00f
+- at: 2026-10-23T20:14:38.111Z
+- HEAD: 6c90593324063fb0a841918456063329961473c9
 - roster source: army-social.mjs:import · fleet 14 (master headcorner + 13 army) · controls steem/nasoe/marpa
 - chain layer: ok via condenser_api.get_accounts
 
@@ -33,7 +33,7 @@ CONTROLS 3: steemit.com=MIXED/DEGRADED (fleet FULL=0/14; controls: HTTP403,HTTP4
 | woq | fleet | 122p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
 | hcsoldier4 | fleet | 38p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
 | hcsoldier5 | fleet | 35p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
-| hcsoldier6 | fleet | 38p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
+| hcsoldier6 | fleet | 41p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
 | steem | control | 0p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
 | nasoe | control | 3350p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
 | marpa | control | 29554p | HTTP403 5.5KB | SPA-PARITY 59.5KB | SPA-PARITY 1.6KB | SPA-PARITY 1.0KB | SPA-PARITY 0.8KB |
