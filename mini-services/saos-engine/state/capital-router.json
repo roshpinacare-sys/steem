@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "at": "2026-10-23T15:39:08.641Z",
-=======
-  "at": "2026-10-23T15:41:05.647Z",
->>>>>>> 96abf4f2333a3d641f27f0ce9dbdc0f8ce20e589
+  "at": "2026-10-23T16:00:53.067Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
@@ -12,8 +8,8 @@
     "fleetEffectiveSp": 3009.12,
     "delegatedOutSp": 2211.61,
     "expiringSoon": [],
-    "liquidSteem": 55.377,
-    "liquidSbd": 1.897,
+    "liquidSteem": 51.356,
+    "liquidSbd": 3.931,
     "unclaimedSp": 0,
     "unclaimedSbd": 0,
     "unclaimedSteem": 0
@@ -24,17 +20,10 @@
     "delegatedFieldSp": 2211.61,
     "activeRowsSp": 764.31,
     "activeRowsCount": 14,
-<<<<<<< HEAD
-    "vestsPerSp": 1611.106142,
+    "vestsPerSp": 1611.104498,
     "deepProbeQueueSp": 1448.03,
     "driftVsDeepProbeSp": -0.73,
-    "at": "2026-10-23T15:39:12.611Z"
-=======
-    "vestsPerSp": 1611.105998,
-    "deepProbeQueueSp": 1448.03,
-    "driftVsDeepProbeSp": -0.73,
-    "at": "2026-10-23T15:41:07.857Z"
->>>>>>> 96abf4f2333a3d641f27f0ce9dbdc0f8ce20e589
+    "at": "2026-10-23T16:00:55.941Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -99,11 +88,11 @@
     {
       "id": "vp-pace-headcorner",
       "class": "schedule",
-      "note": "headcorner VP 33.67% below floor 60% — rail lawfully paused; unlocks in ~31.6h at 20%/day regen; do NOT burn early",
+      "note": "headcorner VP 32.77% below floor 60% — rail lawfully paused; unlocks in ~32.68h at 20%/day regen; do NOT burn early",
       "expectedSpPerDay": 0,
       "evidence": {
-        "vpPct": 33.67,
-        "etaHours": 31.6
+        "vpPct": 32.77,
+        "etaHours": 32.68
       }
     },
     {
@@ -118,11 +107,12 @@
     {
       "id": "sbd-route",
       "class": "dormant-lane",
-      "note": "SBD routing: inventory 1.9 SBD below dust floor 2 — no route",
+      "note": "SBD routing: book at/below feed value — conversion arb stays dormant",
       "expectedSpPerDay": 0,
       "evidence": {
-        "verdict": "DUST-HOLD",
-        "note": "inventory 1.9 SBD below dust floor 2 — no route"
+        "verdict": "HOLD",
+        "premiumPct": -2.18,
+        "note": "book at/below feed value — conversion arb stays dormant"
       }
     },
     {
