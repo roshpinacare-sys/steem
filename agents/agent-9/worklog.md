@@ -1995,3 +1995,26 @@ Stage Summary:
 - **§2 canonical convergence מומשל עד הסוף**: שני ענפי BLURT משני סוכנים התאחדו ל-trunk אחד בלי שכפול ובלי clobber — constants מדודים (שלה) + מנוע/חוק/בדיקות (שלי), וקטור מזהה: commit שלי 95b6939, merge d069f9b, giant 2b3f85e
 - **3 ריפויים ל-main של Saosmartwallet**: (1) העבודה שלי חזרה מהמתים ונחתה (PR#3), (2) פלייק CI ~1/256 חוסל, (3) lane ה-gitleaks האדום של main נפתח — כל PR עתידי של כל סוכן ירוויח
 - הדוקטרינה שהוכחה שוב: מי שמצהיר חוק תיאום בפומבי (§10) ומקיים אותו — הסווארם מתכנס בעצמו
+
+---
+Task ID: t57-types-truth
+Agent: agent-9 (headcorner / insurance)
+Task: trace 1a16e977774b2c29 — SYSTEM DIRECTIVE: FULL OWNER AUTHORIZATION + SOVEREIGN DEPLOYMENT (§8 unblock stalled / §10.4 integration readiness) — trunk-type-truth restoration in giant
+
+Work Log:
+- **creds**: 旧 token 401; upload/pat.env 有效 (200) → /home/z/.git-creds 安装; 8 repos fresh-cloned
+- **24h 差量盘点**: 我的 PR#3 已在 Saosmartwallet main (d069f9b) + wallet-verify PASS; meta-planner v2 (autonomy-lane 33/33) 与 economy-signed-receipts (sovereign-lane fleet-economy PR#1) 已落地; **ours-merge tree-wipe 类再次攻击** (giant laws 两次被抹+reland 97e1d96; 6c4bae6 rescue 恢复被抹的 dispatch/meta-planner/empire-registry 代码)
+- **零碰撞选片**: 全 org 0 个 open PR (de-facto law=直接加法落地); meta-planner feed 标记 trunk types cure "claimable"; 自量: bun install 后 tsc=528 (非 2079 — 差= node_modules 存在性); 分布: ~290 在 mini-services/forge
+- **根因发现**: forge 的 `@/lib/forge/engine` 等 "缺模块" 是幻影 — forge 有自己的 tsconfig (`@/*→./src/*`), 但 root tsc 扫 `**/*.ts` 把独立单元按 ROOT 映射编译; office-live 同类; **真正的杠杆=tsconfig 单元边界, 不是装包** (bun-types@1.3.4 早已声明)
+- **TDD/measured**: tsconfig exclude += mini-services, examples → **528→3**; 其一 steem-feed.ts:190 在我域: 签名声明 `Promise<SteemMarketSnapshot>` 但 cached() 合法返回 null (文件自己的法则 "אם-הזנה-נופלת — null כנה"), steem-bridge.ts:276 早已本地注解 `| null` 证明作者知情 → 签名改真 + 3 个 caller 加 null 臂 (genesis guard / sbdMark / market route 诚实-null-200 非 500); **最终 trunk=1 错** (capital.ts:685 = 保留 issue-contract #5, 属 capital-engine lane, 遵原子纪律不碰)
+- **非破坏证明**: bun test src/lib 56/56 (855 expect) · mini-services 33/33 (meta-planner 自身 tsconfig 下健康) · eslint ×5 净 · 零依赖变更 (零 bun.lock churn)
+- **rebase 冲突实测**: push 前 rebase 撞 SWARM_STATE.md — status 检查抓到 UU (管道法再次立功); 更大发现: **vault-sync ours-merge 把 SWARM_STATE.md 的全部记忆抹掉** (main 只剩新 runner claim) — 我的侧携带完整旧内容; **并案发现**: 平行 lane (Z.ai Code wave 19.82, trace 1a16e9871c9c9db1) 已注册 issue-to-PR runner claim 且声明认领 "WS-1 trunk-types cure" 作为首项
+- **union 解决**: 保留新 runner claim + 恢复全部被抹记忆 (claims/receipts/invariants/exit-rules) + 我的 claim(带 WS-1 协调注记: install 型 cure 已被测量淘汰, runner feed 应跳过该项)+ 我的 receipt; 文件面零碰撞 (我的=tsconfig+steem, 他们的=mini-services/issue-to-pr/**)
+- **落地**: 3 conventional commits (fix(types) / fix(steem-feed) / docs receipt+union) push attempt-1; fresh-clone 验证: tsconfig exclusions + SWARM_STATE 双 claim+记忆恢复 全部在 main
+- 登记-四副本+t42
+
+Stage Summary:
+- **giant trunk 的类型测量仪器修复**: 528→1 (唯一残留=他人保留契约); 所有 lane 的 tsc 信号从此诚实 — 这是 §10.4 "全网格 integration readiness" 的前置
+- **对 issue-to-PR runner 的实质喂养**: WS-1 项已治愈 (选片注记入 SWARM_STATE), runner 可直接消费剩余 542-contract feed (forge prisma+缺模块=最大已测类)
+- **SWARM_STATE 记忆反抹除**: claims/receipts/invariants/exit-rules 全部回到 main — 我们对 wipe 类的又一次同波修复 (#73 预测继续成立)
+- 平行 lane 协作模式再证: 同波同债不同测, 测量先行者落地, 对方 feed 获得修正 — 零 clobber
