@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-24T17:48:34.117Z",
+  "at": "2026-10-24T17:58:34.118Z",
   "policy": {
     "reservePct": 60,
     "fleetPct": 40,
@@ -18,17 +18,24 @@
   "perShare": 0,
   "plannedTotal": 0,
   "reserveSteem": 0,
-  "reserveSbd": 0,
+  "reserveSbd": 1.642,
   "transfers": [],
   "deferred": 0,
   "executed": [],
-  "verdict": "CUSTODY-FROZEN",
-  "custody": null,
+  "verdict": "BELOW-DUST",
+  "pool": {
+    "steem": 0,
+    "sbd": 1.642
+  },
   "law": "pool = liquid above the operating floor; custody gate first; dust rolls back; caps bound the run; execution only through executeAs with the think gate; verdicts and txids journaled, keys never",
   "executeRequested": false,
   "liquidMeasured": {
-    "steem": 64.607,
-    "sbd": 5.877
+    "steem": 46.138,
+    "sbd": 6.642
   },
-  "custodyAfter": null
+  "custody": "FLEET-CUSTODY-ALIVE",
+  "custodyAfter": {
+    "verified": 10,
+    "total": 10
+  }
 }
