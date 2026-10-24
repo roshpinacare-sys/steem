@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-24T15:35:57.122Z",
-  "verdict": "3-FLAGGED",
+  "at": "2026-10-24T15:49:01.528Z",
+  "verdict": "6-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -34,12 +34,21 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "88f7b950",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "sandbox-voice",
+          "at": "2026-10-24T15:36:01Z",
+          "subject": "sandbox voice: ports 6/8 · engine down [skip ci]"
+        }
+      ]
     },
     {
       "repo": "Console",
@@ -47,12 +56,29 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
+      "unsigned": 8,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 2,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "932d4b37",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-24T15:49:05Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-24T15:49Z"
+        },
+        {
+          "hash": "f85dec81",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-24T15:36:03Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-24T15:36Z"
+        }
+      ]
     },
     {
       "repo": "Domain",
@@ -122,6 +148,33 @@
   ],
   "flagged": [
     {
+      "hash": "88f7b950",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "sandbox-voice",
+      "at": "2026-10-24T15:36:01Z",
+      "subject": "sandbox voice: ports 6/8 · engine down [skip ci]",
+      "repo": "FleetHQ"
+    },
+    {
+      "hash": "932d4b37",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-24T15:49:05Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-24T15:49Z",
+      "repo": "Console"
+    },
+    {
+      "hash": "f85dec81",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-24T15:36:03Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-24T15:36Z",
+      "repo": "Console"
+    },
+    {
       "hash": "7354a69c",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -154,5 +207,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 15705
+  "ms": 20185
 }
