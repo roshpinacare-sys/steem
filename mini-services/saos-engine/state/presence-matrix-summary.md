@@ -1,7 +1,7 @@
 # presence-matrix — multi-network display parity probe (read-only)
 
-- at: 2026-10-24T09:15:55.288Z
-- HEAD: 1ad00cd98480081f7f4158922f77e475f3145ee1
+- at: 2026-10-24T09:41:06.363Z
+- HEAD: ab3bd79b7c27f049b0ee90a7b5b01479df74d88b
 - roster source: army-social.mjs:import · fleet 14 (master headcorner + 13 army) · controls steem/nasoe/marpa
 - chain layer: ok via condenser_api.get_accounts
 
