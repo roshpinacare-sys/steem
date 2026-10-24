@@ -3,23 +3,22 @@
     {
       "id": "market-making",
       "label": "מעשה-שוק · ספר-STEEM/SBD",
-      "measuredUsdPerDay": 0.009642,
+      "measuredUsdPerDay": null,
       "estUsdPerDay": null,
-      "confidence": "measured",
-      "note": "realized 0.022 SBD over 1.104178d (chain fills) — היסטורי, אינו תחזית",
+      "confidence": "blocked",
+      "note": "no fill window yet — measured once real fills accumulate",
       "meta": {
-        "realizedSbdTotal": 0.021756,
-        "fillsToday": 7
+        "realizedSbdTotal": null,
+        "fillsToday": 17
       }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.442147,
+      "estUsdPerDay": 0.439528,
       "confidence": "estimated",
-      "note": "~9.11 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
->>>>>>> 0b7083daadb5309b1e44ca2eae30109ee29e8b8d
+      "note": "~9.05 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
     {
       "id": "fuel",
@@ -35,7 +34,7 @@
       "measuredUsdPerDay": null,
       "estUsdPerDay": null,
       "confidence": "blocked",
-      "note": "HOLD honest (-472bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "note": "HOLD honest (-462bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
     },
     {
       "id": "promo",
@@ -57,18 +56,18 @@
       }
     }
   ],
-  "totalMeasuredUsdPerDay": 0.009642,
-  "totalEstUsdPerDay": 0.442147,
-  "measuredCount": 2,
+  "totalMeasuredUsdPerDay": 0,
+  "totalEstUsdPerDay": 0.439528,
+  "measuredCount": 1,
   "estimatedCount": 2,
-  "blockedCount": 2,
+  "blockedCount": 3,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.0991703311972798,
-  "asof": "2026-10-24T16:11:42.987Z",
+  "parity": 0.09926805644670217,
+  "asof": "2026-10-24T16:20:28.306Z",
   "context": {
     "venueFillsPerDay": 211,
     "venueVolSteem24h": 4912.602,
-    "ourFillsObservable": 7,
+    "ourFillsObservable": 17,
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": {
@@ -86,42 +85,39 @@
     "any": true
   },
   "x2": {
-    "currentUsdPerDay": 0.0096,
+    "currentUsdPerDay": 0.4395,
     "targetUsdPerDay": 1000,
     "currentSp": 2170,
-    "factor": 103713,
+    "factor": 2275.2,
     "rows": [
       {
         "mult": 1,
         "sp": 2170,
-        "usdPerDay": 0.01,
+        "usdPerDay": 0.44,
         "reachesTarget": false
       },
       {
         "mult": 10,
         "sp": 21697,
-        "usdPerDay": 0.1,
+        "usdPerDay": 4.4,
         "reachesTarget": false
       },
       {
         "mult": 40,
         "sp": 86788,
-        "usdPerDay": 0.39,
+        "usdPerDay": 17.58,
         "reachesTarget": false
       },
       {
         "mult": 100,
-<<<<<<< HEAD
-        "sp": 216969,
-=======
-        "sp": 216970,
-        "usdPerDay": 0.96,
+        "sp": 216971,
+        "usdPerDay": 43.95,
         "reachesTarget": false
       },
       {
-        "mult": 103713,
-        "sp": 225026547,
-        "usdPerDay": 1000,
+        "mult": 2276,
+        "sp": 4938249,
+        "usdPerDay": 1000.37,
         "reachesTarget": true
       }
     ],
@@ -144,17 +140,17 @@
     "plan": {
       "verdict": "REDEPLOY-PLAN",
       "reason": "doctrine-ratios",
-      "powerUpSteem": 23.128,
-      "excessSteem": 77.095,
+      "powerUpSteem": 16.155,
+      "excessSteem": 53.853,
       "pacing": {
         "minIntervalSec": 3600,
         "maxPerDay": 12,
         "powerUpsToday": 0,
         "lastPowerUpAt": "2026-10-20T11:34:56.486Z",
-        "sinceLastSec": 362215,
+        "sinceLastSec": 362736,
         "verdict": null
       },
-      "at": "2026-10-24T16:11:42.987Z"
+      "at": "2026-10-24T16:20:28.306Z"
     },
     "state": {
       "day": "2026-10-20",
@@ -163,5 +159,5 @@
     },
     "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
   },
-  "pid": 2098
+  "pid": 1690
 }
