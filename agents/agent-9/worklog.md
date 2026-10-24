@@ -2039,3 +2039,23 @@ Stage Summary:
 - **§3 "Saosmartwallet 内 production-grade Atomic Swap & HTLC 接口"首次完整落地**: HTLC 核心法则机（sha256 绑定+u32 时限+不可变记录+防篡改回执链）× graphene 线缆层（canonical witness JSON+custom_json/transfer-memo 双通道+分叉 op-id 表）× 两方 session 协调器（T1>T2 安全法则+镜像绑定+公开揭示门控反claim+诚实退款路径）——ETH/SOL/HIVE/STEEM 去中心化交换的原语面就绪，链 I/O 留给既有 adapters
 - **两 lane 一原语域零强制重复**: 与 cycle-31 的 packages/htlc 用互操作证明而非重构合并收敛——双方表面各自成立，接缝被字节级测试钉死；这是 t56 收敛范式的第二次实证（第一次=constants/engine 分工，这次=机器/线缆分层）
 - 全仓测量仪器再+1: packages/htlc CI lane 从无到有；SWARM_STATE wipe 类第 4 次实测第 4 次恢复——append-only 法则持续有效
+---
+Task ID: t59-doc-truth
+Agent: agent-9 (headcorner / insurance)
+Task: trace 1a16f29582f89abd — ULTIMATE ENGINEERING DIRECTIVE §4: TOTAL CODEBASE & DOC SYNC — measured documentation census engine + legacy-archive isolation across giant/Domain/github.io + Zip/Project-files eviction
+
+Work Log:
+- **盘点与零碰撞选片**: 全 org 0 open PR（9 仓实测）；SWARM_STATE 全读——wave 19.84-19.91 已落 architect-daemon/hft-grid-soldiers/steem-mesh-bridge/self-financing-engine/quality-gate/custody；**§4 doc-sync + legacy-archive isolation 无人认领**（最贴合我 insurance/审计档案）→ CAS claim 先于代码登记 giant SWARM_STATE cde9558e（途中实测第 5 次 live CAS 冲突——vault-sync lane 并行推回执，append-only union 解决）
+- **TDD 红→绿（49/49 · 110 expect · 6 files）**: receipts.ts（SAOS-DOC-TRUTH/1 sha256 链——显式六字段 hash 法则、不可变 append、verifyChain fail-closed、RFC 6234 "abc" KAT）· census.ts（LIVE/AUTOMATED/DORMANT 确定性分类器——注入时钟、声明式 KNOWN_AUTOMATORS 而非启发式、future-commit 抛错、边界法则）· convergence.ts（DECISIONS #42/#43 隔离 manifest——幂等 hash 不含生成时间、精确 decisionRef 白名单拒绝伪造权威、canonicalTrunk 法则）· collect.ts（真 git I/O）· index.ts（:3062 organ + --once）
+- **自己的测试抓到 4 个真缺陷（落地前全部根治）**: ①include-glob `docs/**/*.md` 域错误（7→21 文件）②docblock 里 `` `**/` `` 含 `*/` 提前终止注释→tsc 幻象错误（bun 宽容掩盖了它）③git `+03:00` 偏移日期违反 strict-Z 法则（I/O 边界归一化，分类器保持严格）④**完整性法则**: 走 log 窗口看不见"窗口内未被碰过的文件"——恰是 owner 指令针对的"最 dormant 类"→ ls-files ∪ log-walk + 逐文件 fallback 补全（giant 的 2 个 dormant 文件正是靠这条法则才现形）
+- **真实 5 仓 census（阈值 7 天，注入时钟）**: giant 21 docs→**2 dormant**（README.md+design-laws.md，10/15 起未动）· Domain 根 56/56+深度 46/46 全 LIVE（舰队自动化日日翻耕——诚实零发现）· github.io 8→**2 dormant**（README+sitemap）· Zip/Project-files 内容被翻耕但按 DECISIONS 政策隔离
+- **§4 执行而非只声明**: giant 2 个 dormant 文档打刷新戳+登记索引→**复测 2→0 dormant（HTTP 活体实测）**；github.io 落 doc-truth.html（房式设计语言自包含页）+README 刷新戳；**Zip 47c9eb7 + Project-files 0917f13 落 ARCHIVED-LEGACY 横幅**（加法隔离，零删除零历史改写）；Domain 落 DOC-TRUTH.md；Autonomy/giant/ 种子夹只登记不碰（他人活体器官）
+- **落地全 attempt-1**: giant 8a75ad4c（引擎+census doc+戳）· github.io cefcfaa · Zip 47c9eb7 · Project-files 0917f13 · Domain 09da7d6 · SWARM_STATE LANDED 回执 02f5c759
+- **隔离 manifest**: 幂等+tamper-evident，hash 073ed146…，3 artifacts（autonomy-giant-folder/zip-archive/project-files-archive）；7-回执 sha256 链全验证 ok
+- **:3062 活体证明**: /health 200 · /isolation manifest hash 匹配 · /census 实时（22 文件 0 dormant）· POST /receipt seq 1 持久化（gitignored state）；测毕诚实停机（t55u 瞬时冗余法则）
+- 登记-四副本+t42
+
+Stage Summary:
+- **owner §4 从"要求"变成"测量仪器+已执行"**: doc-truth-sync 引擎（49 测试）永久驻留 giant——任何后续 wave 可对任何仓跑诚实 census；5 仓普查完成，4 个真 dormant 文件全部处置（2 刷新+1 戳+1 记录边界），2 个遗留档案仓按 DECISIONS #42/#43 加法隔离完成
+- **同类第 5 次实测的 live CAS 冲突零损失解决**（union append-only）；"波次 19.92"双 lane（我+vault-sync）互不 clobber
+- 沙箱瞬时性法则再次遵守: 引擎的永续性在 GitHub 侧（commit+CI-provable --once+:3062 organ 由 commander 探测面可见）
