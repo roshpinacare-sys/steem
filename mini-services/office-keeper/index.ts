@@ -79,6 +79,9 @@ const PORTS: Record<number, string> = {
   3046: "dex-beat-service",/* W25/W34 hourly :53 keeper-driver       */
   3047: "state-witness",   /* R271 state-dir event watcher           */
   3048: "grid-backtest",   /* W45 sovereign backtester (advisory)    */
+  3049: "hft-loop",        /* W49-c HFT grid soldiers (saos-dex organ, symlinked) */
+  3050: "steem-mesh-bridge", /* W49-d Hive/Steem failover mesh gateway */
+  3051: "saos-architect-daemon", /* W49-a Chief Sovereign Architect (giant organ, symlinked) */
 };
 
 /* canonical git homes the office stands on (dir → repo) */
