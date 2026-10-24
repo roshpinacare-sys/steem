@@ -1,20 +1,32 @@
 {
-  "verdict": "ABSTAIN",
+  "verdict": "RETIER",
   "reasons": [
     {
-      "type": "ABSTAIN",
-      "gate": "anchor",
-      "why": "no real-money implied unit (external quotes absent or zero)"
+      "type": "RETIER",
+      "gate": "anchor-gap",
+      "why": "internal book mid drifts 383bps off the external cross (0.099203 SBD/STEEM) > 300bps — AutoHedge rebalance_threshold analog"
     }
   ],
   "gates": {
-    "anchor": "ABSENT",
-    "fills": "OK"
+    "anchor": "OK",
+    "fills": "OK",
+    "flow24h": 9,
+    "imbalance": 0.111,
+    "anchorGapBps": 383,
+    "realizedPerDaySbd": -0.001979,
+    "rcPct": 41.2
+  },
+  "measured": {
+    "buys24h": 4,
+    "sells24h": 5,
+    "minEdgeBps": null,
+    "anchorGapBps": 383,
+    "realizedPerDaySbd": -0.001979,
+    "rcPct": 41.2
   },
   "advisoryOnly": true,
   "law": "advisory-only · zero signing authority · verdicts feed the doctrine layer that owns every cap (T2/G41/VF1/RC-floors) — AutoHedge risk-first design without duplicated execution power",
-  "at": "2026-10-24T16:31:19.761Z",
+  "at": "2026-10-24T16:36:19.760Z",
   "cadenceSec": 300,
-  "since": "2026-10-24T16:16:19.760Z",
-  "lastHeartbeatAt": "2026-10-24T16:21:19.761Z"
+  "since": "2026-10-24T16:36:19.760Z"
 }
