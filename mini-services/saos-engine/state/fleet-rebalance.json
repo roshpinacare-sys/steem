@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-24T04:54:00.018Z",
+  "at": "2026-10-24T06:12:25.388Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -29,106 +29,75 @@
       "from": "headcorner",
       "to": "cashmachine",
       "sp": 60,
-      "setVests": 217636.81357300002,
+      "setVests": 217635.81357300002,
       "curSpEffective": 80.5,
       "curMasterDelegationVests": 120973.813573,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.12T vs master 3.7T; EFFECTIVE SP 80.5→140.5 (received 75.1); master delegation +60 SP (SET 217636.813573)"
+      "why": "RC bottleneck: tank 0.12T vs master 3.7T; EFFECTIVE SP 80.5→140.5 (received 75.1); master delegation +60 SP (SET 217635.813573)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "israelnews",
       "sp": 60,
-      "setVests": 161118.110102,
+      "setVests": 161117.110102,
       "curSpEffective": 60,
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.10T vs master 3.7T; EFFECTIVE SP 60→120 (received 58.6); master delegation +60 SP (SET 161118.110102)"
+      "why": "RC bottleneck: tank 0.10T vs master 3.7T; EFFECTIVE SP 60→120 (received 58.6); master delegation +60 SP (SET 161117.110102)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "lsa",
       "sp": 60,
-      "setVests": 161118.110102,
+      "setVests": 161117.110102,
       "curSpEffective": 45.8,
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.8→105.8 (received 41); master delegation +60 SP (SET 161118.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.8→105.8 (received 41); master delegation +60 SP (SET 161117.110102)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "macrame",
       "sp": 60,
-      "setVests": 161118.110102,
+      "setVests": 161117.110102,
       "curSpEffective": 42.1,
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 42.1→102.1 (received 40); master delegation +60 SP (SET 161118.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 42.1→102.1 (received 40); master delegation +60 SP (SET 161117.110102)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "siq",
       "sp": 60,
-      "setVests": 161118.110102,
+      "setVests": 161117.110102,
       "curSpEffective": 45.7,
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.7→105.7 (received 41); master delegation +60 SP (SET 161118.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.7→105.7 (received 41); master delegation +60 SP (SET 161117.110102)"
     },
     {
       "kind": "sp-ladder",
       "from": "headcorner",
       "to": "tov",
       "sp": 60,
-      "setVests": 161118.110102,
+      "setVests": 161117.110102,
       "curSpEffective": 45.8,
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.8→105.8 (received 41.1); master delegation +60 SP (SET 161118.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.8→105.8 (received 41.1); master delegation +60 SP (SET 161117.110102)"
     }
   ],
   "executed": [],
-  "refused": [
-    {
-      "move": {
-        "kind": "liquidity-sweep",
-        "from": "cashmachine",
-        "to": "headcorner",
-        "asset": "STEEM",
-        "amount": 76.585,
-        "mode": "attempt",
-        "why": "master below floor (0 < 40) while cashmachine holds surplus"
-      },
-      "verdict": "THINK-GATE-REFUSED",
-      "txid": null,
-      "error": null,
-      "at": "2026-10-24T04:54:00.018Z"
-    },
-    {
-      "move": {
-        "kind": "liquidity-sweep",
-        "from": "haran",
-        "to": "headcorner",
-        "asset": "STEEM",
-        "amount": 27.509,
-        "mode": "attempt",
-        "why": "master below floor (0 < 40) while haran holds surplus"
-      },
-      "verdict": "THINK-GATE-REFUSED",
-      "txid": null,
-      "error": null,
-      "at": "2026-10-24T04:54:00.018Z"
-    }
-  ],
+  "refused": [],
   "verdict": "PLANNED-AWAITING-POLICY"
 }
