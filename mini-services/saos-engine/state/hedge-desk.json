@@ -4,34 +4,34 @@
     {
       "type": "TRIM",
       "gate": "inventory-skew",
-      "why": "24h flow one-sided (153B/14S, imbalance 0.832 > 0.6) — AutoHedge max_inventory_exposure analog"
+      "why": "24h flow one-sided (133B/13S, imbalance 0.822 > 0.6) — AutoHedge max_inventory_exposure analog"
     },
     {
       "type": "RETIER",
       "gate": "anchor-gap",
-      "why": "internal book mid drifts 521bps off the external cross (0.098719 SBD/STEEM) > 300bps — AutoHedge rebalance_threshold analog"
+      "why": "internal book mid drifts 458bps off the external cross (0.099313 SBD/STEEM) > 300bps — AutoHedge rebalance_threshold analog"
     }
   ],
   "gates": {
     "anchor": "OK",
     "fills": "OK",
-    "flow24h": 167,
-    "imbalance": 0.832,
-    "anchorGapBps": 521,
-    "realizedPerDaySbd": 0.020131,
-    "rcPct": 45.9
+    "flow24h": 146,
+    "imbalance": 0.822,
+    "anchorGapBps": 458,
+    "realizedPerDaySbd": 0.019869,
+    "rcPct": 45.2
   },
   "measured": {
-    "buys24h": 153,
-    "sells24h": 14,
+    "buys24h": 133,
+    "sells24h": 13,
     "minEdgeBps": null,
-    "anchorGapBps": 521,
-    "realizedPerDaySbd": 0.020131,
-    "rcPct": 45.9
+    "anchorGapBps": 458,
+    "realizedPerDaySbd": 0.019869,
+    "rcPct": 45.2
   },
   "advisoryOnly": true,
   "law": "advisory-only · zero signing authority · verdicts feed the doctrine layer that owns every cap (T2/G41/VF1/RC-floors) — AutoHedge risk-first design without duplicated execution power",
-  "at": "2026-10-24T15:55:56.478Z",
+  "at": "2026-10-24T16:05:56.477Z",
   "cadenceSec": 300,
   "since": "2026-10-23T16:24:01.085Z",
   "lastHeartbeatAt": "2026-10-24T15:35:56.462Z"
