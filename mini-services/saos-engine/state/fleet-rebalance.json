@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-24T06:12:25.388Z",
+  "at": "2026-10-24T09:19:19.457Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -58,7 +58,7 @@
       "curMasterDelegationVests": 64455.110102,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.8→105.8 (received 41); master delegation +60 SP (SET 161117.110102)"
+      "why": "RC bottleneck: tank 0.07T vs master 3.7T; EFFECTIVE SP 45.8→105.8 (received 41.1); master delegation +60 SP (SET 161117.110102)"
     },
     {
       "kind": "sp-ladder",
@@ -98,6 +98,37 @@
     }
   ],
   "executed": [],
-  "refused": [],
+  "refused": [
+    {
+      "move": {
+        "kind": "liquidity-sweep",
+        "from": "cashmachine",
+        "to": "headcorner",
+        "asset": "STEEM",
+        "amount": 76.585,
+        "mode": "attempt",
+        "why": "master below floor (39.846 < 40) while cashmachine holds surplus"
+      },
+      "verdict": "THINK-GATE-REFUSED",
+      "txid": null,
+      "error": null,
+      "at": "2026-10-24T09:19:19.457Z"
+    },
+    {
+      "move": {
+        "kind": "liquidity-sweep",
+        "from": "haran",
+        "to": "headcorner",
+        "asset": "STEEM",
+        "amount": 27.509,
+        "mode": "attempt",
+        "why": "master below floor (39.846 < 40) while haran holds surplus"
+      },
+      "verdict": "THINK-GATE-REFUSED",
+      "txid": null,
+      "error": null,
+      "at": "2026-10-24T09:19:19.457Z"
+    }
+  ],
   "verdict": "PLANNED-AWAITING-POLICY"
 }
