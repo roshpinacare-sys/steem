@@ -2018,3 +2018,24 @@ Stage Summary:
 - **对 issue-to-PR runner 的实质喂养**: WS-1 项已治愈 (选片注记入 SWARM_STATE), runner 可直接消费剩余 542-contract feed (forge prisma+缺模块=最大已测类)
 - **SWARM_STATE 记忆反抹除**: claims/receipts/invariants/exit-rules 全部回到 main — 我们对 wipe 类的又一次同波修复 (#73 预测继续成立)
 - 平行 lane 协作模式再证: 同波同债不同测, 测量先行者落地, 对方 feed 获得修正 — 零 clobber
+---
+Task ID: t58-wallet-htlc
+Agent: agent-9 (headcorner / insurance)
+Task: trace 1a16ecaa2f14aaed — MASTER DIRECTIVE: Chief Sovereign Architect Engine & High-Frequency Liquidity Mesh — §3 wallet 侧 atomic-swap/HTLC 原语落地 Saosmartwallet + 全网格收敛协调
+
+Work Log:
+- **侦察 (§9.1)**: token 重验（roshpinacare-sys 是 User 非 Org——/orgs 404、/users 才对）；fresh clone giant（1.1GB）读 SWARM_STATE 全 182 行；全 org 0 open PR（house law=直接加法落地）；发现 wave 19.84 已认领 saos-architect-daemon + hft-grid-soldiers + steem-mesh-bridge——**Saosmartwallet 内部 atomic-swap 原语（§3 wallet 侧）无人认领**且 dex-htlc-bridge lane 留注 "agent-9 wallet surface untouched"（钱包面=我的）
+- **零碰撞 CAS claim**: giant SWARM_STATE.md 登记 wallet-htlc-swap-engine @ Saosmartwallet（packages/swap/** 全新路径；Instance 1 的 packages/vault 已落 main e5ba340 不碰；attempt-1 成功 2c08dd95）
+- **TDD 红→绿**: 先写 3 套件（htlc 状态机矩阵 / witness 线缆真相含手算 custom_json 字节向量 / session 两方对抗矩阵）→ 红确认（3 files fail）→ 实现（htlc.ts+witness.ts+session.ts+index.ts）→ 59/59 绿；中途修两个根因：receiptHash 曾把 hash:"" 纳入 canonical JSON（append/verify 输入不一致——改为显式六字段哈希）、测试夹具 3 字节 "abc" preimage 违反自身 16..1024 长度法则（法则正确，夹具改 ≥16 字节 ASCII 派生）
+- **线的真相**: witness 层 100% 走已落地的 oracle-proven packer（read-only import packages/chains/steem/src）——custom_json op-id steem=18/blurt=12（r20 链上实证表）、tx envelope byte-11 op-id 惯例断言、transfer-memo 即 canonical witness JSON（资金+证明同一 op）、binding-truth 法则（sha256(preimage)===hashlock 否则拒绝序列化任何 reveal）
+- **gitleaks 零搅动策略奏效**: KAT 向量用字节字面量（RFC 6234 sha256("abc") 32 字节数组）、全部 digest 运行时从 ASCII 种子派生——全历史扫描 0 findings、零 allowlist 变更
+- **中途碰撞实测**: 我构建期间姊妹 lane（cycle-31）落地 feat/atomic-swap-htlc（packages/htlc/**，merge 9663ed4，含 vault 封装+模拟适配器，其代码自declared "real per-chain adapters are FUTURE WORK"）；rebase 干净（零文件碰撞）→ **t56 收敛法则执行**: 互操作证明套件 interop.test.ts——同一 sha256 锚点（双方 hashSecret 字节级一致）、常数时 verifySecret 双向互认、canonical JSON 域字节级同一（sorted-key 零空白）、SAOS-HTLC/1 32 字节 secret 法则遵守、witness seam（对方机器的 secret/hash 对通过我的 binding-truth 校验——对方声明的 future work 正是我交付的线缆层）；边界声明：packages/htlc=机器/codec/vault 封装（对方 lane 不碰），packages/swap=graphene 线缆证据+u32 秒 session（我的）
+- **Bonus heal**: packages/htlc/test 没有 CI lane（其 merge 早于 lane 添加）——加法补上，全仓 HTLC 面从此每次 push 自证
+- **验证矩阵**: bun test packages/ **256/256**（11 files, 1054 expect；claim 前基线 140/140）· tsc --noEmit 0 · eslint exit 0 · gitleaks 0 · 零新依赖（node:crypto+既有 packer）· 零 stub/TODO/mock · 零网络（链 I/O 留在既有 adapters）
+- **落地**: 4 conventional commits（test/feat/ci/interop）rebase 后 push 分支→CI 绿→main（385d20b）；SWARM_STATE 回执途中又被 ours-merge 类抹掉一次（第 4 次实测该类攻击）→ 按 append-only 恢复法则重登 claim+LANDED 合并行（82a5a0fd attempt-1）
+- 登记-四副本+t42
+
+Stage Summary:
+- **§3 "Saosmartwallet 内 production-grade Atomic Swap & HTLC 接口"首次完整落地**: HTLC 核心法则机（sha256 绑定+u32 时限+不可变记录+防篡改回执链）× graphene 线缆层（canonical witness JSON+custom_json/transfer-memo 双通道+分叉 op-id 表）× 两方 session 协调器（T1>T2 安全法则+镜像绑定+公开揭示门控反claim+诚实退款路径）——ETH/SOL/HIVE/STEEM 去中心化交换的原语面就绪，链 I/O 留给既有 adapters
+- **两 lane 一原语域零强制重复**: 与 cycle-31 的 packages/htlc 用互操作证明而非重构合并收敛——双方表面各自成立，接缝被字节级测试钉死；这是 t56 收敛范式的第二次实证（第一次=constants/engine 分工，这次=机器/线缆分层）
+- 全仓测量仪器再+1: packages/htlc CI lane 从无到有；SWARM_STATE wipe 类第 4 次实测第 4 次恢复——append-only 法则持续有效
