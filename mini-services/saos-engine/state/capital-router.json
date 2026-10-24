@@ -1,19 +1,15 @@
 {
-<<<<<<< HEAD
-  "at": "2026-10-24T16:38:45.415Z",
-=======
-  "at": "2026-10-24T16:20:28.306Z",
->>>>>>> 3a982c96f7e16eb833c7ae003d0b5100901790f6
+  "at": "2026-10-24T16:44:28.384Z",
   "law": "slots×SP is the yield law; regen bounds the burn; age-curve picks the moment; landing is detected not assumed; external shells are recalled with evidence; dead lanes stay honest",
   "verdict": "ROUTED",
   "capital": {
-    "headcornerEffectiveSp": 2414.11,
+    "headcornerEffectiveSp": 2414.12,
     "armyEffectiveSp": 792.8,
-    "fleetEffectiveSp": 3206.91,
+    "fleetEffectiveSp": 3206.92,
     "delegatedOutSp": 2014.88,
     "expiringSoon": [],
-    "liquidSteem": 78.661,
-    "liquidSbd": 0.231,
+    "liquidSteem": 51.737,
+    "liquidSbd": 8.041,
     "unclaimedSp": 0,
     "unclaimedSbd": 0,
     "unclaimedSteem": 0
@@ -24,17 +20,10 @@
     "delegatedFieldSp": 2014.88,
     "activeRowsSp": 764.36,
     "activeRowsCount": 14,
-<<<<<<< HEAD
-    "vestsPerSp": 1610.99267,
+    "vestsPerSp": 1610.992239,
     "deepProbeQueueSp": 1251.3,
     "driftVsDeepProbeSp": -0.78,
-    "at": "2026-10-24T16:38:47.522Z"
-=======
-    "vestsPerSp": 1610.994058,
-    "deepProbeQueueSp": 1251.3,
-    "driftVsDeepProbeSp": -0.78,
-    "at": "2026-10-24T16:20:31.408Z"
->>>>>>> 3a982c96f7e16eb833c7ae003d0b5100901790f6
+    "at": "2026-10-24T16:44:30.554Z"
   },
   "powerDown": {
     "scheduled": true,
@@ -50,23 +39,23 @@
       {
         "id": "today",
         "label": "as-measured now",
-        "spPerDay": 1.170678,
-        "usdPerDay": 0.121843,
+        "spPerDay": 1.170683,
+        "usdPerDay": 0.121844,
         "note": "curation-only lane, author dust, other lanes dormant",
         "multiplierVsToday": 1
       },
       {
         "id": "landing",
         "label": "recall wave lands (expiring→effective)",
-        "spPerDay": 1.777095,
-        "usdPerDay": 0.184958,
+        "spPerDay": 1.777099,
+        "usdPerDay": 0.184959,
         "note": "1250.52 SP measured in the expiring queue",
         "multiplierVsToday": 1.52
       },
       {
         "id": "tags",
         "label": "tag-ROI budget shift to measured top tags",
-        "spPerDay": 2.487932,
+        "spPerDay": 2.487939,
         "usdPerDay": 0.258942,
         "note": "+40% on vote yield (s34challenge-wk6a 0.121 vs fleet-avg ~0.05 SP/op measured; conservative fraction of the measured ×2.4 spread)",
         "multiplierVsToday": 2.13
@@ -74,8 +63,8 @@
       {
         "id": "fleet",
         "label": "army battery deployed (regen-bounded slots × SP)",
-        "spPerDay": 2.556788,
-        "usdPerDay": 0.266108,
+        "spPerDay": 2.556795,
+        "usdPerDay": 0.266109,
         "note": "army adds 0.068856 SP/day from measured slots×SP (regen-bounded budget, early-curve)",
         "multiplierVsToday": 2.18
       }
@@ -117,12 +106,13 @@
     },
     {
       "id": "sbd-route",
-      "class": "dormant-lane",
-      "note": "SBD routing: inventory 0.23 SBD below dust floor 2 — no route",
+      "class": "execute-now",
+      "note": "SBD routing: book bid buys STEEM 1.92% below feed — sell SBD into the bid, power up the STEEM",
       "expectedSpPerDay": 0,
       "evidence": {
-        "verdict": "DUST-HOLD",
-        "note": "inventory 0.23 SBD below dust floor 2 — no route"
+        "verdict": "ROUTE-VIA-BOOK",
+        "discountPct": 1.92,
+        "note": "book bid buys STEEM 1.92% below feed — sell SBD into the bid, power up the STEEM"
       }
     },
     {
