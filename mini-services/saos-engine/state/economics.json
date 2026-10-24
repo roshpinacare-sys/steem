@@ -3,22 +3,23 @@
     {
       "id": "market-making",
       "label": "מעשה-שוק · ספר-STEEM/SBD",
-      "measuredUsdPerDay": 0.009269,
+      "measuredUsdPerDay": 0.009642,
       "estUsdPerDay": null,
       "confidence": "measured",
-      "note": "realized 0.022 SBD over 1.094952d (chain fills) — היסטורי, אינו תחזית",
+      "note": "realized 0.022 SBD over 1.104178d (chain fills) — היסטורי, אינו תחזית",
       "meta": {
         "realizedSbdTotal": 0.021756,
-        "fillsToday": 3
+        "fillsToday": 7
       }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.442315,
+      "estUsdPerDay": 0.442147,
       "confidence": "estimated",
       "note": "~9.11 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+>>>>>>> 0b7083daadb5309b1e44ca2eae30109ee29e8b8d
     },
     {
       "id": "fuel",
@@ -34,7 +35,7 @@
       "measuredUsdPerDay": null,
       "estUsdPerDay": null,
       "confidence": "blocked",
-      "note": "HOLD honest (0bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "note": "HOLD honest (-472bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
     },
     {
       "id": "promo",
@@ -56,18 +57,18 @@
       }
     }
   ],
-  "totalMeasuredUsdPerDay": 0.009269,
-  "totalEstUsdPerDay": 0.442315,
+  "totalMeasuredUsdPerDay": 0.009642,
+  "totalEstUsdPerDay": 0.442147,
   "measuredCount": 2,
   "estimatedCount": 2,
   "blockedCount": 2,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.10407895427921747,
-  "asof": "2026-10-24T15:58:25.878Z",
+  "parity": 0.0991703311972798,
+  "asof": "2026-10-24T16:11:42.987Z",
   "context": {
-    "venueFillsPerDay": 262,
-    "venueVolSteem24h": 5901.028,
-    "ourFillsObservable": 3,
+    "venueFillsPerDay": 211,
+    "venueVolSteem24h": 4912.602,
+    "ourFillsObservable": 7,
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": {
@@ -85,10 +86,10 @@
     "any": true
   },
   "x2": {
-    "currentUsdPerDay": 0.0093,
+    "currentUsdPerDay": 0.0096,
     "targetUsdPerDay": 1000,
     "currentSp": 2170,
-    "factor": 107886.6,
+    "factor": 103713,
     "rows": [
       {
         "mult": 1,
@@ -99,24 +100,27 @@
       {
         "mult": 10,
         "sp": 21697,
-        "usdPerDay": 0.09,
+        "usdPerDay": 0.1,
         "reachesTarget": false
       },
       {
         "mult": 40,
         "sp": 86788,
-        "usdPerDay": 0.37,
+        "usdPerDay": 0.39,
         "reachesTarget": false
       },
       {
         "mult": 100,
+<<<<<<< HEAD
+        "sp": 216969,
+=======
         "sp": 216970,
-        "usdPerDay": 0.93,
+        "usdPerDay": 0.96,
         "reachesTarget": false
       },
       {
-        "mult": 107887,
-        "sp": 234081886,
+        "mult": 103713,
+        "sp": 225026547,
         "usdPerDay": 1000,
         "reachesTarget": true
       }
@@ -140,17 +144,17 @@
     "plan": {
       "verdict": "REDEPLOY-PLAN",
       "reason": "doctrine-ratios",
-      "powerUpSteem": 28.311,
-      "excessSteem": 94.372,
+      "powerUpSteem": 23.128,
+      "excessSteem": 77.095,
       "pacing": {
         "minIntervalSec": 3600,
         "maxPerDay": 12,
         "powerUpsToday": 0,
         "lastPowerUpAt": "2026-10-20T11:34:56.486Z",
-        "sinceLastSec": 361415,
+        "sinceLastSec": 362215,
         "verdict": null
       },
-      "at": "2026-10-24T15:58:25.878Z"
+      "at": "2026-10-24T16:11:42.987Z"
     },
     "state": {
       "day": "2026-10-20",
@@ -159,5 +163,5 @@
     },
     "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
   },
-  "pid": 1690
+  "pid": 2098
 }
