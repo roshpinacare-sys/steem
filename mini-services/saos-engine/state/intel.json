@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-24T18:59:13.118Z",
+  "at": "2026-10-24T19:14:08.209Z",
   "decisions": [
     {
       "kind": "book-depth",
@@ -10,7 +10,7 @@
         "bestAsk": 0.1034875297526648,
         "bestBid": 0.10206804536357572
       },
-      "at": "2026-10-24T18:59:13.118Z"
+      "at": "2026-10-24T19:14:08.209Z"
     },
     {
       "kind": "parity-drift",
@@ -19,32 +19,36 @@
       "action": {
         "bps": -360
       },
-      "at": "2026-10-24T18:59:13.118Z"
+      "at": "2026-10-24T19:14:08.209Z"
     },
     {
       "kind": "soldiers",
-      "decision": "grids-live",
-      "reason": "3 soldiers holding lanes alongside master",
+      "decision": "deploy-needed",
+      "reason": "fleet not yet on the book (planned: master-funded micro-grids)",
       "action": {
-        "deployed": true
+        "deployed": false
       },
-      "at": "2026-10-24T18:59:13.118Z"
+      "at": "2026-10-24T19:14:08.209Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 28%",
+      "reason": "RC at 28.2%",
       "action": {
-        "rcPct": 28
+        "rcPct": 28.2
       },
-      "at": "2026-10-24T18:59:13.118Z"
+      "at": "2026-10-24T19:14:08.209Z"
     },
     {
       "kind": "curation",
-      "decision": "dormant-noted",
-      "reason": "no reward ops in window — fuel rail dormant (content/curation is a manual-judgment rail; engine reports, operator decides policy)",
-      "action": null,
-      "at": "2026-10-24T18:59:13.118Z"
+      "decision": "curator-armed",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 34.1%) — gates hold until candidates pass",
+      "action": {
+        "votesToday": 0,
+        "vpEff": 34.1,
+        "verdict": "VP-FLOOR"
+      },
+      "at": "2026-10-24T19:14:08.209Z"
     }
   ],
   "spreadBpsRec": 138,
