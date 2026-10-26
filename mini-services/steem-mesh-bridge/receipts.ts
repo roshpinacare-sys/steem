@@ -23,7 +23,18 @@ export type ReceiptKind =
   | "breaker"
   | "broadcast_refused"
   | "broadcast_forward"
-  | "all_nodes_failed";
+  | "all_nodes_failed"
+  // G76-i — soldier voting mesh (per-soldier parallel scheduler receipts;
+  // payloads carry soldier names, txids, verdicts and sanitized errors ONLY —
+  // never key material).
+  | "soldier_mesh_start"
+  | "soldier_wound_skip"
+  | "soldier_skipped"
+  | "soldier_ok"
+  | "soldier_fail"
+  | "soldier_timeout"
+  | "soldier_breaker"
+  | "soldier_mesh_done";
 
 export interface Receipt {
   seq: number;
