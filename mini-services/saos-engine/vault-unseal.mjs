@@ -45,7 +45,20 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { envPassFor } from "../../scripts/actions-custody.mjs";
+/* G77-g wipe-wound law (2026-10-26): scripts/actions-custody.mjs was measured
+ * ABSENT from every branch after the 2026-10-24 sandbox wipe. envPassFor degrades
+ * to a fail-closed stub returning null — a missing pass-source NEVER fakes a
+ * secret (VAULT-PASS-ABSENT is the honest verdict path at line ~112). The module
+ * graph must LOAD so non-custody engine paths stay alive; the wound is recorded
+ * once per process, loud. Owner-recoverable: restore the module or wire VAULT_PASS_*. */
+let envPassFor = () => null;
+try {
+  ({ envPassFor } = await import("../../scripts/actions-custody.mjs"));
+} catch (e) {
+  const absent = e && (e.code === "ERR_MODULE_NOT_FOUND" || /Cannot find module/.test(String(e?.message)));
+  if (!absent) throw e; // real defects in the custody module must stay loud
+  console.error("[vault-unseal] WIPE-WOUND: scripts/actions-custody.mjs absent from every branch — envPassFor degraded fail-closed (null); unseal classes without meta-pass report VAULT-PASS-ABSENT honestly");
+}
 
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
 const fp = (t) => (t ? `${t.slice(0, 6)}…${t.slice(-4)}(${t.length})` : "null");
