@@ -1,0 +1,62 @@
+{
+  "schema": "security-register-v1",
+  "at": "2026-10-19T17:30:00Z",
+  "entries": [
+    {
+      "id": "SEC-2026-10-19-1",
+      "kind": "secret-material-in-git-history",
+      "at": "2026-10-19T16:2xZ (detected by W14 wave)",
+      "what": "sibling agent-2 committed .secrets/htx.txt (HTX access+secret, plaintext) in a pushed commit",
+      "containment": "forward-fixed same-wave: git rm --cached, .gitignore verified (G2), incident logged; the plaintext BLOBS REMAIN in git history (FF-only doctrine forbids history rewrite)",
+      "residualRisk": "bounded — the keys control HTX spot account 73986225 which measured ZERO balances; trade leg is region-blocked (RAIL-BLOCKED-BY-VENUE-REGION, W14) so even a thief cannot trade from our network class; withdraw permission on the key is UNVERIFIED (deposit-address endpoint 500s — likely absent)",
+      "ownerAction": "key rotation via the HTX web console (API cannot create keys) — requested in the W14 report",
+      "status": "OPEN-AWAITING-OWNER-ROTATION"
+    },
+    {
+      "id": "SEC-2026-10-19-2",
+      "kind": "re-delivery-verification",
+      "at": "2026-10-19T17:1xZ (W15 wave, IM trace 1a155217160a6429)",
+      "what": "owner re-sent upload/htx.txt with the order 'זה חדש וודא שלא יחשף' — measured against the sealed truth",
+      "finding": "FINGERPRINTS IDENTICAL to the W13 seal (access=98e420…e6c9(34), secret=a33946…8a20(32)) — this is the SAME pair, NOT a rotation; seal-exchange-w13.mjs honestly SKIPped (no churn, no duplicate class)",
+      "consequence": "SEC-2026-10-19-1 stays OPEN; the exposure register keeps asking for the console rotation",
+      "status": "MEASURED-IDENTICAL"
+    },
+    {
+      "id": "SEC-2026-10-19-3",
+      "kind": "exposure-guard-hardening",
+      "at": "2026-10-19T17:3xZ (W15 wave)",
+      "what": "selftest section 56 now carries the standing EXPOSURE GUARD: (a) no git-tracked file contains the raw access or secret tokens, (b) .secrets/ + upload/ are untracked and ignored, (c) every self-contained vault class's outer pin verifies against its meta — tamper evidence on every test run",
+      "status": "ENFORCED-BY-SELFTEST"
+    },
+    {
+      "id": "SEC-2026-10-19-4",
+      "kind": "leaked-key-neutered-by-measurement",
+      "at": "2026-10-19T17:28:15.619Z",
+      "what": "the history-exposed HTX pair (98e420…e6c9) measured DEAD server-side (api-code-3011 Incorrect Access key, two signed endpoints, server-time OK) — consistent with a console rotation on the owner side",
+      "consequence": "SEC-2026-10-19-1 residual risk collapses to ~zero: the leaked pair can no longer read account 73986225 even though the plaintext blob stays in git history",
+      "ownerAction": "send the NEW keypair drop (the console-created one) — the vault re-seal + ongoing-activity ladder are proven ready (rung-3 unseal verified this wave)",
+      "status": "CONTAINED-MEASURED"
+    },
+    {
+      "id": "SEC-2026-10-19-5",
+      "kind": "secret-material-in-source-comment",
+      "at": "2026-10-19T17:31:28.189Z",
+      "what": "scripts/seal-exchange-w13.mjs header comment embedded the REAL HTX tokens as shape examples since W13 (in-tree AND in history) — caught by the new 57.8b exposure guard on its FIRST run (the guard proved itself immediately)",
+      "containment": "redacted in-tree this wave (generic aaaa-bbbb placeholders + REDACTION NOTE); history keeps the blob (FF-only law)",
+      "residualRisk": "zero-effective — the pair is measured DEAD server-side (SEC-2026-10-19-4, api-code-3011); tokens exposed in comments and in the agent-2 plaintext commit are the same inert pair",
+      "status": "REDACTED-INERT"
+    },
+    {
+      "id": "SEC-6",
+      "at": "2026-10-20T04:07:45Z",
+      "kind": "git-cred-death",
+      "measured": "the 93-char fine-grained PAT (pat.env + sealed GIT-CRED) authenticated OK at 03:42Z (Autonomy push 512f4f0..3e14d7d) and answered 401 everywhere from 03:49Z — dead within minutes, consistent with server-side revocation (watchdog containment class) or a short-expiry landing. Classic sealed token = the same 93-char blob (revival overwrote pat.env from the seal).",
+      "impact": "ALL local git writes to the org are blocked (steem AND Autonomy). W18 (2fab46df) sits local, ahead-1, doctrine-audit PASS. The Autonomy carrier lane (steem-relay workflow + W18 bundle) is built and staged in the local Autonomy clone — one valid token publishes it and CI relays W18 automatically.",
+      "containment": "zero secret material exposed (the token never entered any commit — probed); organism unaffected (CI keeps its own auth; chains keep signing); local office runs the W18 truth live",
+      "unblock": "ONE GitHub-account act: a fresh PAT (any, with contents:write on roshpinacare-sys/*) dropped into upload/pat.env (or Actions secrets via an authorized console) → revive + sovereign-push + carrier relay is automatic. This is the ONE credential class with no vault self-mint path — GitHub issues tokens only to the account session.",
+      "residualRisk": "bounded — W18 pending push carries the arming dual-key (remote key ALREADY published @3e14d7d before the death) and the widened executor; the local office executes both in the interim"
+    }
+  ],
+  "law": "the register is append-only in spirit: entries are amended only with a measured finding, never erased",
+  "updatedAt": "2026-10-20T04:07:45Z"
+}

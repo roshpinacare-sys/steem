@@ -1,41 +1,57 @@
 {
-  "at": "2026-10-24T19:14:08.209Z",
+  "at": "2026-10-24T18:59:13.118Z",
   "enabled": true,
   "runsTotal": 1,
-  "verdict": "NO-NEW-LESSONS",
+  "verdict": "LEARNED",
   "metrics": {
     "cycles": {
-      "window": 0,
-      "oks": 0,
+      "window": 65,
+      "oks": 58,
       "fails": 0,
-      "blocked": 0,
-      "okRate": null,
-      "blockedRate": null,
+      "blocked": 7,
+      "okRate": 89.2,
+      "blockedRate": 10.8,
       "failReasons": {},
-      "msP50": null,
-      "msP90": null
+      "msP50": 102568,
+      "msP90": 116850
     },
     "curator": {
       "present": true,
-      "totalVotes": 0,
-      "window": 0,
-      "verdicts": {},
-      "vpEff": 34.1,
-      "meanAgeMinutes": null,
-      "tagsVoted": {},
+      "totalVotes": 3,
+      "window": 4,
+      "verdicts": {
+        "VOTED": 4
+      },
+      "vpEff": 35.2,
+      "meanAgeMinutes": 102.3,
+      "tagsVoted": {
+        "steem": 2,
+        "crypto": 1
+      },
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
     "exec": {
-      "window": 0,
+      "window": 3,
       "fails": 0,
       "lastError": null
     },
     "watchdog": null
   },
-  "lessons": [],
+  "lessons": [
+    {
+      "id": "signing-cred-blocked",
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+    }
+  ],
   "tunings": {},
   "tuningsApplied": [],
-  "lessonsTotal": {},
+  "lessonsTotal": {
+    "signing-cred-blocked": 1
+  },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }

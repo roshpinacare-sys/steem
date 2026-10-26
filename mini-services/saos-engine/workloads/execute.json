@@ -1,0 +1,15 @@
+{
+  "apiVersion": "saos.io/v1alpha1",
+  "kind": "Workload",
+  "metadata": { "name": "execute", "labels": { "rail": "signing", "step": "execute" } },
+  "spec": {
+    "goal": "the one signing mouth: every broadcast op passes guards before the key touches it",
+    "stepId": "execute",
+    "stateFile": "exec-log.jsonl",
+    "opClass": "irreversible",
+    "cadenceMinutes": 10,
+    "maxSpendPerDayUsd": 0,
+    "budgetNote": "transfers are TRANSFER-GATED behind the operator node (lib.opDestructiveness); order ops spend only pre-planned inventory",
+    "guard": "opDestructiveness classify + guardOps fail-closed + preflightAuth verify-then-sign (T-26/T-27) + doctrine caps (signer.mjs)"
+  }
+}

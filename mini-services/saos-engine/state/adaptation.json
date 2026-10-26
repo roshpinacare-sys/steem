@@ -1,0 +1,43 @@
+{
+  "adaptationId": "ADAPT-claim-role-posting-R209",
+  "ruleVersion": 1,
+  "rule": {
+    "op": "claim_reward_balance",
+    "roleFrom": "active",
+    "roleTo": "posting"
+  },
+  "bodyFix": {
+    "opIdFrom": 33,
+    "opIdTo": 39,
+    "where": "steemtx.mjs OP_IDS (single source)"
+  },
+  "status": "VERIFIED",
+  "confidence": 0.9,
+  "source": {
+    "kind": "historical-failures",
+    "count": 19,
+    "fingerprint": "c056922c",
+    "lastTxid": "78d23e71a0efbcf184d065cb2ad10cd901a9506d",
+    "lastAt": "2026-10-04T20:24:51.578Z",
+    "error": "missing required posting authority:Missing Posting Authority headcorner"
+  },
+  "rootCause": {
+    "role": "executeOps default role=active reached claim_reward_balance",
+    "serialization": "op-id 33 hardcoded; chain-judged canonical op-id = 39 (OBSERVED via get_transaction_hex 2026-10-05, control vote=0, delegate=40)"
+  },
+  "falsifier": "valid pending rewards + canonical serialization (chain hex op-id 39) + broadcast rejection citing posting authority",
+  "belief": {
+    "before": "claim_reward_balance executes under active authority with op-id 33",
+    "evidence": "19 consecutive chain rejections (fingerprint c056922c); chain itself serializes claim as op-id 39 (OBSERVED)",
+    "after": "claim_reward_balance executes under posting authority with canonical op-id 39",
+    "why": "the chain is the only judge: get_required authority for claim is posting; canonical bytes observed from the chain's own serializer"
+  },
+  "supersededBy": null,
+  "createdAt": "2026-10-24T16:16:18.847Z",
+  "updatedAt": "2026-10-24T18:51:50.251Z",
+  "bootCount": 4,
+  "lastBootAt": "2026-10-24T18:51:50.251Z",
+  "consumptionCount": 0,
+  "lastConsumedAt": null,
+  "evalHistory": []
+}

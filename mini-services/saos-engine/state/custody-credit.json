@@ -1,0 +1,42 @@
+{
+  "schema": "custody-credit-v1",
+  "at": "2026-10-20T05:15:00Z",
+  "source": "T27 live measurement (LOCKS · T27 · the live book custody block: CSTEEM custody-deficit 528.097 owed vs 61.452 STEEM in vault) + BACKING-FLOOR-SPEC.md (T29, owner-approved ״כן תתקין״) — the W17 lane seeds the canonical gate state from the measured truth",
+  "outstanding": {
+    "CSTEEM": 0,
+    "CSBD": 0
+  },
+  "law": "per-asset 1:1 backing floor — a custody sale of an anchor asset (STEEM/SBD) may broadcast only if measured[asset] − sale ≥ outstanding[credit]; the single override lane is an explicit owner order ref recorded in the verdict; unreadable state = REFUSE (fail-closed, the MONEYGATE family)",
+  "provenance": {
+    "CSTEEM": "0 — reconciled 2026-10-20: all 500 minted credits belonged to a retired keyless body + a synthetic test; both revoked with refs above",
+    "CSBD": "0 — T27 measured the SBD side in SURPLUS (over-covered); no deficit measured"
+  },
+  "refreshLaw": "the live book's custody block supersedes on refresh — the writer is the lane tooling that measures the credit (T27-class census); this file is the gate's ONLY outstanding source (fail-closed when absent)",
+  "gateWiring": "daily.mjs (ladder asks/bids) · dexflow.mjs (trip legs + completions) · hypergrid.mjs (grid creates) — all custody sell broadcasts pass backingFloorGate()",
+  "selftest": "scripts/w17-backingfloor-verify.mjs — 2×pass · 2×refuse vectors + the live refusal simulation (spec §4 acceptance)",
+  "reconciliation": {
+    "law": "dead-body allowance revocation (T-80: keyless accounts hold no credit) + live-holder census 2026-10-20",
+    "measured": {
+      "dexDepositsCredits": 0,
+      "ledgerMintedSupply": 500,
+      "mintedTo": [
+        "hcsoldier-1 (retired keyless body)",
+        "batchtest-1 (synthetic test, no chain custody)"
+      ],
+      "liveHolders": 0
+    },
+    "revoked": [
+      {
+        "ref": "agent-allowance:hcsoldier-1",
+        "amount": 250,
+        "law": "T-80 dead-body"
+      },
+      {
+        "ref": "agent-allowance:batchtest-1",
+        "amount": 250,
+        "law": "synthetic-test revocation, never chain-custodied"
+      }
+    ],
+    "note": "prior outstanding.CSTEEM=528.097 was a stale T27 cross-module artifact (three books disagreed: 528/500/0). Honest state: minted 500, revoked 500, live outstanding 0."
+  }
+}

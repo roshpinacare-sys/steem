@@ -1,0 +1,37 @@
+{
+  "schema": "token-arm-v1",
+  "at": "2026-10-19T17:26:29.928Z",
+  "verdict": "ARMED-NOT-FIRED",
+  "contract": "contracts/SAOS-TRC20.sol",
+  "standard": "TRC-20 (TRON mainnet)",
+  "symbol": "HCT (chain incarnation of the HCT-1 book-law token)",
+  "deployer": "TFKfK7AQRPZSKKU9MHoLFmWeL4gEvXzdHi",
+  "preconditions": [
+    {
+      "id": "P1-deployer-wallet-sealed",
+      "pass": true,
+      "measured": "TFKfK7AQRPZSKKU9MHoLFmWeL4gEvXzdHi",
+      "note": "treasury:hct-1 in WALLETS-SEAL + ledger"
+    },
+    {
+      "id": "P2-deployer-funded-≥30TRX",
+      "pass": false,
+      "measured": "UNFUNDED-UNVERIFIED (wallet just minted; zero inbound transfers observed)",
+      "note": "measured at fire time from a TRON RPC; never assumed"
+    },
+    {
+      "id": "P3-fresh-owner-grant",
+      "pass": false,
+      "measured": "NOT-REQUESTED (fire-time precondition — T3 lane law)",
+      "note": "a static flag is never enough; the grant must be fresh at the moment of deployment"
+    },
+    {
+      "id": "P4-book-chain-mirror-plan",
+      "pass": true,
+      "measured": "1 HCT chain = 1 HCT book; deploy mints genesis to treasury:hct-1 mirroring the book position",
+      "note": "contracts/SAOS-TRC20.sol constructor encodes the mirror"
+    }
+  ],
+  "losses": 0,
+  "law": "the source is committed; the fire is gated; the chain is the judge (R306-b) — no contract address is claimed until tronscan shows one"
+}
