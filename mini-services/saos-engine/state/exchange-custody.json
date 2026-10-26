@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-19T16:45:00Z",
+  "wave": "W14",
+  "rail": "htx",
+  "verdict": "RAIL-BLOCKED-BY-VENUE-REGION",
+  "measured": {
+    "auth": "SIGNED-PROOF-OK (keys live; spot account 73986225; read rails work: accounts/balance/fee-tier/currencies/market-data)",
+    "feeTier": {
+      "maker": 0.002,
+      "taker": 0.002,
+      "source": "signed /v2/reference/transact-fee-rate, our account, 2026-10-19"
+    },
+    "tradeLeg": {
+      "verdict": "BLOCKED-BY-REGION",
+      "proof": "zero-risk order probe (no balance, cannot fill) answered api-code:order-trade-forbidden — 'Dear user, the service is not available to your country or region'",
+      "consequence": "no order may be placed from this venue; the W14-EXCHANGE-ARM order stands RECORDED for a venue that accepts our region"
+    },
+    "depositLeg": {
+      "verdict": "BLOCKED-DEPOSIT-ADDRESS-ENDPOINT",
+      "proof": "/v2/account/deposit/address answered api-code-500 'server error' for steem/hive/trx/usdt (5 retries, 3s backoff; uppercase → 2002 invalid-field so the form is right); consistent with the withdraw-permission requirement of this endpoint on HTX",
+      "consequence": "ZERO chain money moved — the honesty law held (never send to a guessed address); owner action item: deposit-address needs the key's withdraw permission enabled in the HTX console, or a different venue"
+    }
+  },
+  "losses": 0,
+  "note": "the W13 report's deep-examination law did its job: the rail was measured BEFORE any value moved; the fleet's 30-STEEM tranche stays home until a lawful venue exists",
+  "w15Recheck": {
+    "at": "2026-10-19T17:28:15.618Z",
+    "verdict": "KEY-REJECTED-3011",
+    "measured": "two independent signed endpoints (/v2/reference/transact-fee-rate, /v1/account/accounts) answer Incorrect Access key after SIGNED-PROOF-OK at 16:45Z same day — server-side key state changed between the waves",
+    "reading": "consistent with the owner rotating the keypair in the console (the W14 ask) while re-attaching the STALE local htx.txt — the drop measured IDENTICAL to the W13 seal, yet the server rejects it",
+    "consequence": "the history-exposed keypair is INERT (residual risk of SEC-2026-10-19-1 ~zero); the rail awaits the NEW pair — one command re-seals (seal-exchange-w13.mjs) and the W15 vault ladder serves it everywhere",
+    "losses": 0
+  },
+  "w17Recheck": {
+    "at": "2026-10-19T18:52:41Z",
+    "verdict": "NEW-PAIR-LIVE",
+    "measured": {
+      "skewMs": 33,
+      "accountId": "73986225",
+      "balances": [],
+      "feeTier": {
+        "verdict": "MEASURED",
+        "ok": true,
+        "rows": [
+          {
+            "symbol": "sbdusdt",
+            "maker": 0.002,
+            "taker": 0.002
+          },
+          {
+            "symbol": "steemusdt",
+            "maker": 0.002,
+            "taker": 0.002
+          }
+        ]
+      },
+      "depositAddress": {
+        "steem": {
+          "ok": false,
+          "why": "api-code-500",
+          "errMsg": "server error"
+        },
+        "sbd": {
+          "ok": false,
+          "why": "api-code-500",
+          "errMsg": "server error"
+        }
+      },
+      "withdrawQuota": {
+        "steem": "PERMISSION-PRESENT",
+        "sbd": "PERMISSION-PRESENT"
+      },
+      "tradeLeg": {
+        "ok": false,
+        "verdict": "SKIP-no-price no-candle"
+      }
+    },
+    "noStrandingLaw": {
+      "depositLawful": false,
+      "reason": "deposit REFUSED: no measured return path (withdraw permission absent AND trade refused) — the fleet's money stays home (W14 custody law)"
+    },
+    "losses": 0,
+    "note": "operator rotation drop sealed (RESEAL-OK W17, EXCHANGE-SEAL-20261019T185046Z); this census measured the NEW pair against the live venue — every refusal recorded honestly; the STEEM/SBD-only transfer scope (trace 1a1556c780544431) governs all legs"
+  },
+  "w18Recheck": {
+    "at": "2026-10-20T03:46:06Z",
+    "verdict": "READ-LIVE·WRITE-LEG-BLOCKED-VENUE",
+    "measured": {
+      "auth": "vault-ladder OK (dbuqg6hk…, account 73986225)",
+      "read": "accounts/balance/openOrders/withdraw-quota PASS (quota 7.8M/day steem1)",
+      "depositAddress": "api-code-500 ×4 variants (v2 bare/v2+network=steem1/v1/sbd) — server-side, never guessed",
+      "orderPlace": "api-gateway-internal-error ×4 (zero-risk far-off-market buy-limit, empty balance ⇒ cannot fill) — NOT the W14 region-forbidden shape; write leg wall persists server-side",
+      "balances": "spot EMPTY — funding leg is the gap",
+      "wind": "sbdusdt 0.544 ×1.77M vol vs chain-convert ~$1.00 (the standing arb, both legs need the deposit wall lifted); steemusdt thin (2562/24h); hiveusdt dead (41); TRX deep 10.7M"
+    },
+    "note": "executor armed + multi-pair widening this wave; movement is automatic the moment the venue answers the write legs"
+  }
+}

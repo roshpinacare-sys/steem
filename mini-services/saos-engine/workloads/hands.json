@@ -1,0 +1,15 @@
+{
+  "apiVersion": "saos.io/v1alpha1",
+  "kind": "Workload",
+  "metadata": { "name": "hands", "labels": { "rail": "eyes", "step": "hands" } },
+  "spec": {
+    "goal": "computer-use self-inspection: open own cockpit + verify public posts render (CUA loop)",
+    "stepId": "hands",
+    "stateFile": "hands.json",
+    "opClass": "sense",
+    "cadenceMinutes": 360,
+    "maxSpendPerDayUsd": 0,
+    "budgetNote": "read-only browser session — zero broadcast, zero spend (T-33 leash)",
+    "guard": "HANDS_ALLOWLIST hosts only + read-only law + sense-class posture (hands.mjs)"
+  }
+}

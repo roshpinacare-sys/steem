@@ -1,0 +1,15 @@
+{
+  "apiVersion": "saos.io/v1alpha1",
+  "kind": "Workload",
+  "metadata": { "name": "webintel", "labels": { "rail": "sensor", "step": "webintel" } },
+  "spec": {
+    "goal": "cadence-gated network scan: web intel for RC-rental rates + growth options",
+    "stepId": "webintel",
+    "stateFile": "webintel.json",
+    "opClass": "sense",
+    "cadenceMinutes": 1440,
+    "maxSpendPerDayUsd": 0,
+    "budgetNote": "sensor — reads only; freshness law 26h (lib.webIntelFresh)",
+    "guard": "read-only scans + junk-guard parsers (T-30 substring-law) + 26h freshness"
+  }
+}

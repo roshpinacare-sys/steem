@@ -1,9 +1,66 @@
 {
  "gate": "ARMED",
- "at": "2026-10-24T19:14:24.302Z",
+ "at": "2026-10-20T16:06:19.943Z",
  "by": "dev-keeper gate-sync (R309 · KEY2 Autonomy SOCIAL-ARMING.json → KEY1 local, laws preserved)",
  "directiveRef": "W18-SOCIAL-OPEN-20261020",
  "armedAt": "2026-10-20T03:45:27Z",
  "note": "dual-key transfer per readiness-gate.mjs design — anti-flood laws unchanged",
- "laws": {}
+ "laws": {
+  "fleetWeightPct": 8,
+  "maxPostsPerDay": 1,
+  "maxFleetVotesPerDay": 0,
+  "maxFleetVotesPerPost": 2,
+  "jitterPct": 5,
+  "antiHerd": true,
+  "stealth": {
+   "enabled": true,
+   "publishWindow": [
+    11,
+    21
+   ],
+   "fleetSlotWindow": [
+    11,
+    21
+   ],
+   "maxPostsPerDay": 1,
+   "maxFleetVotesPerDay": 0,
+   "fleetWeightPct": 8,
+   "maxFleetVotesPerPost": 2,
+   "stealth": true,
+   "maxFleetPostsPerDay": 6,
+   "maxFleetCommentsPerDay": 1,
+   "fleetRepliesEnabled": true,
+   "maxRepliesPerDay": 1,
+   "voteAgeMinMinutes": 15,
+   "voteAgeMaxMinutes": 1200,
+   "minCommentChars": 15,
+   "maxReplyChars": 700,
+   "maxCommunityCommentsPerDay": 1,
+   "maxConversationDeepensPerDay": 1,
+   "minCommunityPostChars": 400,
+   "communityTags": [
+    "life",
+    "psychology",
+    "food",
+    "photography",
+    "writing",
+    "nature",
+    "health",
+    "travel"
+   ],
+   "communityBlockedAuthors": [
+    "steemit",
+    "steem",
+    "steemitblog",
+    "busy",
+    "steemcurator01",
+    "steemcurator02",
+    "upvu",
+    "cmp2020"
+   ],
+   "repeatSimilarityMax": 0.34
+  },
+  "measuredAt": "2026-10-20T15:55:56.545Z",
+  "source": "socialPolicy() live"
+ }
 }
