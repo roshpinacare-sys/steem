@@ -128,6 +128,40 @@ function resolveGen1MetaSpec() {
   throw new Error(`no-carrying-ref-for-gen1-meta (tried: ${candidates.map((c) => `${c.ref}:${c.metaRef}`).join(", ")})`);
 }
 
+/* T-588-R2 · MASTER-LOCAL GENERATION-FIRST (defect #3 cure, re-derived
+ * 2026-10-26 and live-proven): the fleet's LIVE authorities match the
+ * MASTER era (KEYS-ZIP-2026-10-12-MASTER — measured 14/14 posting AND
+ * active vs the live chain, fingerprint cross-check), but the cloud meta
+ * (origin/main) declares the STALE ROT2-2026-10-18 zip (0/13 chain-verified
+ * today). Ref-resolution by "first ref that carries the meta" picks the
+ * stale pointer and the whole army starves. LAW: the MASTER era is
+ * resolved EXPLICITLY — a ref whose meta declares a *MASTER* keysZipFile,
+ * local HEAD first ("אין מה לבקש מפתחות — הכל בכספת בגיט" + measured
+ * truth beats ref-order), then origin/main, then saos-cockpit, then a
+ * history scan. The CHAIN still judges every WIF at adoption — ordering
+ * only decides which material is OFFERED first. Fail-loud: no declaring
+ * meta ⇒ typed error, never invented material. */
+function resolveMasterMetaSpec() {
+  const candidates = GIT_REF_CANDIDATES.map((ref) => ({ ref, metaRef: META_REF }));
+  for (const c of candidates) {
+    try {
+      const meta = JSON.parse(gitShowBytes(c.ref, c.metaRef).toString("utf8"));
+      if (String(meta.keysZipFile ?? "").includes("MASTER")) return c;
+    } catch { /* try next */ }
+  }
+  /* history scan: some pre-refactor commit may carry the MASTER declaration */
+  try {
+    const log = execFileSync("git", ["log", "--all", "--format=%H", "--", META_REF], { encoding: "utf8", cwd: DIR, maxBuffer: 8 * 1024 * 1024 }).split("\n").filter(Boolean).slice(0, 60);
+    for (const c of log) {
+      try {
+        const meta = JSON.parse(gitShowBytes(c, META_REF).toString("utf8"));
+        if (String(meta.keysZipFile ?? "").includes("MASTER")) return { ref: c, metaRef: META_REF };
+      } catch { /* try next */ }
+    }
+  } catch { /* fall through to fail-loud */ }
+  throw new Error(`no-master-declaring-meta (tried: ${candidates.map((c) => c.ref).join(", ")} + history)`);
+}
+
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson0600 = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true, mode: 0o700 }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2), { mode: 0o600 }); fs.chmodSync(t, 0o600); fs.renameSync(t, p); }; /* R235: atomic, 0600 preserved */
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
@@ -186,6 +220,62 @@ function resolveGenerationPass(meta, eraRefs = [], metaRef = META_REF) {
   throw new Error(`no-unlock-pass-resolves (tried: ${tried.join(" | ") || "none"})`);
 }
 
+/* T-588-R2 · RECURSIVE ACCOUNT-CONTEXT HARVEST (re-derived 2026-10-26 from
+ * the measured T-588 four-defect cure, lost to the sandbox rotation):
+ * the vault generations carry DIFFERENT inner shapes —
+ *   GEN flat : accounts[] with username + keys[.steem].<role>.{wif,pub}
+ *   ROT2     : accounts.<chain>.<account>.<role>.{wif,pub}
+ * The harvest serves BOTH without guessing: shape A tried first, then a
+ * depth-capped walk that treats every roster-named key as an account
+ * context. CHAIN-AWARE: only material under the steem chain context is
+ * harvested — the ROT2 map also carries accounts.hive.* and the
+ * cross-chain pause stands (hive/blurt stay sealed, zero bleed). */
+export function harvestVaultAccounts(vault, names) {
+  const out = {};
+  const nameSet = new Set(names);
+  const CHAINS = new Set(["steem", "hive", "blurt"]);
+  const put = (name, role, wif, pub) => {
+    if (!nameSet.has(name) || typeof wif !== "string" || wif.length < 40) return;
+    const rec = out[name] ?? (out[name] = {});
+    if (role === "posting") { if (!rec.wif) { rec.wif = wif; rec.pub = typeof pub === "string" ? pub : null; } }
+    else if (role === "active") { if (!rec.activeWif) { rec.activeWif = wif; rec.activePub = typeof pub === "string" ? pub : null; } }
+    else if (role === "memo") { if (!rec.memoWif) { rec.memoWif = wif; rec.memoPub = typeof pub === "string" ? pub : null; } }
+  };
+  /* shape A: flat accounts[] (GEN-1/GEN-2-era vault.json) */
+  const flat = Array.isArray(vault?.accounts) ? vault.accounts : [];
+  for (const a of flat) {
+    const name = a?.username ?? a?.account ?? null;
+    if (!name || typeof name !== "string") continue;
+    const k = a?.keys ?? a;
+    put(name, "posting", k?.steem?.posting?.wif ?? k?.posting?.wif, k?.steem?.posting?.pub ?? k?.posting?.pub);
+    put(name, "active", k?.steem?.active?.wif ?? k?.active?.wif, k?.steem?.active?.pub ?? k?.active?.pub);
+    put(name, "memo", k?.steem?.memo?.wif ?? k?.memo?.wif, k?.steem?.memo?.pub ?? k?.memo?.pub);
+  }
+  if (Object.keys(out).length) return out;
+  /* shape B: accounts.<chain>.<account>.<role> — steem chain only */
+  const accountsRoot = vault?.accounts && typeof vault.accounts === "object" ? vault.accounts : null;
+  if (accountsRoot && !Array.isArray(accountsRoot)) {
+    /* chain-explicit fast path: harvest ONLY accounts.steem when present */
+    const steemRoot = accountsRoot.steem && typeof accountsRoot.steem === "object" ? accountsRoot.steem : null;
+    const contexts = steemRoot
+      ? Object.entries(steemRoot)
+      : Object.entries(accountsRoot).flatMap(([k, v]) => (CHAINS.has(k) || !v || typeof v !== "object") ? [] : [[k, v]]);
+    for (const [name, ctx] of contexts) {
+      if (!nameSet.has(name) || !ctx || typeof ctx !== "object") continue;
+      (function scan(n, d) {
+        if (!n || typeof n !== "object" || d > 6) return;
+        for (const [rk, rv] of Object.entries(n)) {
+          if (!rv || typeof rv !== "object") continue;
+          const wif = rv.wif ?? null;
+          if (typeof wif === "string") put(name, rk, wif, rv.pub ?? null);
+          else scan(rv, d + 1); /* keys.steem.<role> style nesting */
+        }
+      })(ctx, 0);
+    }
+  }
+  return out;
+}
+
 function unlockGeneration({ ref, zip, metaRef, genLabel, eraRefs }) {
   fs.rmSync(TMP, { recursive: true, force: true });
   fs.mkdirSync(TMP, { recursive: true, mode: 0o700 });
@@ -220,30 +310,22 @@ function unlockGeneration({ ref, zip, metaRef, genLabel, eraRefs }) {
     const innerSha = sha256(innerBuf);
     if (innerSha !== meta.keysZipInnerSha256) throw new Error(`vault-inner-sha-mismatch (${innerSha.slice(0, 8)})`);
     fs.writeFileSync(path.join(TMP, "inner.zip"), innerBuf, { mode: 0o600 });
-    execFileSync("unzip", ["-o", "-q", path.join(TMP, "inner.zip"), "agent/keys/vault.json", "-d", path.join(TMP, "opened")]);
-    const vault = JSON.parse(fs.readFileSync(path.join(TMP, "opened", "agent", "keys", "vault.json"), "utf8"));
-    const byName = new Map((vault.accounts ?? []).map((a) => [a.username, a]));
-    const out = {};
+    /* T-588-R2 · LAYOUT-PROOF EXTRACTION (defect #1 cure): the inner entry
+     * is located BY NAME across generations — GEN-era vaults carry
+     * agent/keys/vault.json, the ROT2/MASTER era carries rot2-keys.json —
+     * a hardcoded path died "filename not matched" and starved the whole
+     * organism (extraction 0). Entry names are layout, never material. */
+    const entryList = execFileSync("unzip", ["-Z1", path.join(TMP, "inner.zip")], { encoding: "utf8" })
+      .split("\n").map((s) => s.trim()).filter(Boolean);
+    const vaultEntry = entryList.find((e) => !e.includes("..") && !path.isAbsolute(e) && (e.endsWith("vault.json") || e.endsWith("rot2-keys.json")));
+    if (!vaultEntry) throw new Error(`vault-entry-not-found (${entryList.length} entries)`);
+    execFileSync("unzip", ["-o", "-q", path.join(TMP, "inner.zip"), vaultEntry, "-d", path.join(TMP, "opened")]);
+    const vault = JSON.parse(fs.readFileSync(path.join(TMP, "opened", vaultEntry), "utf8"));
     /* R273: the account of record joins every generation unlock — the master
      * WIFs travel the same sha-pinned memory-only path (never the cache). */
     const masterAcct = masterAccount();
     const names = [...new Set([...ARMY, masterAcct])];
-    for (const name of names) {
-      const a = byName.get(name);
-      const wif = a?.keys?.steem?.posting?.wif ?? a?.keys?.posting?.wif ?? null;
-      const pub = a?.keys?.steem?.posting?.pub ?? a?.keys?.posting?.pub ?? null;
-      const activeWif = a?.keys?.steem?.active?.wif ?? a?.keys?.active?.wif ?? null;
-      const activePub = a?.keys?.steem?.active?.pub ?? a?.keys?.active?.pub ?? null;
-      /* R310 · MEMO-CUSTODY EXTENSION (measured 2026-10-20: the chain-memo
-       * credential rail needs the receiver's memo WIF to decode owner memos;
-       * the vault carries FULL 4-role keys — only the extraction was
-       * posting+active). Additive STEEM-memo-only, chain-judged at use-time
-       * (derived pubkey MUST equal the LIVE chain memo_key before any decode;
-       * the 0600 cache dies with the sandbox exactly like the other roles). */
-      const memoWif = a?.keys?.steem?.memo?.wif ?? a?.keys?.memo?.wif ?? null;
-      const memoPub = a?.keys?.steem?.memo?.pub ?? a?.keys?.memo?.pub ?? null;
-      if (wif) out[name] = { wif, pub, activeWif, activePub, memoWif, memoPub };
-    }
+    const out = harvestVaultAccounts(vault, names);
     return { gen: genLabel, outerSha: outerSha.slice(0, 8), innerSha: innerSha.slice(0, 8), passVia, accounts: out };
   } finally {
     fs.rmSync(TMP, { recursive: true, force: true });
@@ -258,6 +340,8 @@ function pullArmyKeysFromVault() {
   const gens = [];
   const errors = [];
   for (const spec of [
+    /* T-588-R2: MASTER era FIRST — the live-authority match (measured 14/14) */
+    { gen: "MASTER", ...resolveMasterMetaSpec(), zip: null, eraRefs: [] },
     { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
     { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
   ]) {
@@ -299,7 +383,12 @@ async function adoptFromCache({ force = false } = {}) {
         if (r.ok) { done = { gen: g.gen, activeWif: g.activeWif }; results.push({ account: a.name, verdict: "VERIFIED-VS-CHAIN", gen: g.gen, pubkey: r.pubkey ?? null }); break; }
         results.push({ account: a.name, verdict: `${g.gen}-REFUSED:${r.reason}` });
       }
-      if (!done) continue;
+      /* T-588-R2 · ROLE-INDEPENDENT ADOPTION (defect #4 cure): the old
+       * `if (!done) continue` skipped ACTIVE whenever POSTING refused —
+       * but posting and active pubs differ BY ERA (measured live: a
+       * re-key rotates roles independently). Each role is judged on its
+       * own chain evidence; a posting refusal never blinds the active
+       * judge. Fail-closed unchanged: only a chain-verified WIF enters. */
     }
     /* R255 · ACTIVE adoption (fail-closed, same chain-judgment law): the
      * profile lane signs account_update2 with the active authority. */
@@ -412,6 +501,8 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       const gensM = [];
       const mErrors = [];
       for (const spec of [
+        /* T-588-R2: MASTER era FIRST (same law as the army pull above) */
+        { gen: "MASTER", ...resolveMasterMetaSpec(), zip: null, eraRefs: [] },
         { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
         { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
       ]) {
