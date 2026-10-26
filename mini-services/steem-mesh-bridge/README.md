@@ -66,11 +66,65 @@ gateway internal error (never crashes on a poisoned payload).
 | `UPSTREAM_TIMEOUT_MS` | `6000` | Per-attempt upstream timeout. |
 | `BREAKER_THRESHOLD` | `3` | Consecutive failures that trip the breaker. |
 | `BREAKER_COOLDOWN_MS` | `30000` | OPEN → HALF_OPEN cooldown. |
+| `NODE_CHAINS` | unset (hostname heuristic) | G76-i: explicit url→chain labels, `url=steem|hive|unknown,…`; invalid entries refuse to boot. |
+
+### Chain-pinned routing (G76-i, measured)
+
+A caller that knows its chain context sends **`x-mesh-chain: steem`** (or `hive`)
+with the JSON-RPC POST. When at least one eligible node serves that chain, nodes
+known to serve a *different* chain are excluded from the failover ranking —
+measured truth that motivated this: Hive nodes answer **STEEM-only accounts**
+(e.g. the replacement generation `hcsoldier4/5/6`, paid-created on STEEM) with a
+silent EMPTY `result: []` instead of an error, which a failover plane cannot
+judge. Unlabeled (`unknown`) nodes stay eligible as fallback; with no same-chain
+eligible node the full eligible set is used (never an invented empty pool).
+Absent header = the exact pre-G76 behavior.
+
+## Soldier voting mesh (G76-i) — `soldiers.ts` + `soldier-mesh-run.mjs`
+
+The multi-soldier parallel execution path for owner directive §3 ("the mesh runs
+continuously with ALL VALID soldiers"):
+
+- **`soldiers.ts`** — the parallel scheduler. Per-soldier loops run CONCURRENTLY
+  (FIFO-semaphore bounded, seeded mulberry32 jitter stagger); one soldier's RPC
+  failure/hang is fully isolated (honest FAIL/TIMEOUT verdict, never a run
+  rejection); a **per-soldier circuit breaker** (CLOSED → OPEN → HALF_OPEN
+  single-probe, same law as the node pool) quarantines a flapping soldier; the
+  **custody-wound registry** (`CUSTODY-WOUNDS.jsonl`, schema `custody-wound/1`)
+  is respected absolutely — an open wound is NEVER attempted (the heal is owner
+  key re-entry ONLY); every decision is a hash-linked receipt on the bridge
+  chain; clock and sleep are injected (deterministic tests, zero `Date.now`,
+  zero real timers in logic).
+- **`soldier-mesh-run.mjs`** — the composition root. Modes:
+  - `measure` (default): READ-ONLY chain truth per soldier **through the mesh**
+    (`condenser_api.get_accounts`, `x-mesh-chain: steem`) vs the custody-state
+    reference public keys. Zero keys, zero broadcast — the honest health beat
+    when the vault is not on this host.
+  - `broadcast`: real voting. **Pre-flight custody gate** — bridge reports
+    `BROADCAST_ENABLED=1` AND vault `army-keys.json` present AND vote tasks
+    provided, else `MESH-BLOCKED-CUSTODY` with zero attempts. A soldier's WIF is
+    adopted ONLY if its public key matches the LIVE chain posting authority
+    (chain-judged, GEN order preserved); the signing rail is the engine's
+    `steemtx.mjs` (`condenser_api.broadcast_transaction_synchronous` — the only
+    broadcast whose reply carries the chain txid; a txid-less accept is an honest
+    failure, never an invented receipt).
+
+```sh
+bun test .                    # 95 tests, 298 expects, zero network
+SAOS_MESH_MODE=measure bun soldier-mesh-run.mjs
+# registry-respecting beat (open wounds skipped, never attempted):
+SAOS_WOUNDS_INLINE='{"schema":"custody-wound/1","soldier":"haran"}' \
+  SAOS_MESH_MODE=measure bun soldier-mesh-run.mjs
+```
+
+State/receipts land in `state/soldier-mesh-last-run.json` +
+`state/soldier-mesh-receipts.jsonl` (gitignored). Verdicts only — zero key
+material ever leaves the vault.
 
 ## Run & test
 
 ```sh
-bun test .                    # 64 tests, 193 expects, zero network
+bun test .                    # 95 tests, 298 expects, zero network
 ./node_modules/.bin/tsc -p . --noEmit
 bun index.ts                  # boots on 127.0.0.1:3053 (default)
 curl -s 127.0.0.1:3053/health

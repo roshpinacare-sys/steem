@@ -8,6 +8,24 @@ import type { Clock } from "./receipts";
 
 export type BreakerState = "CLOSED" | "OPEN" | "HALF_OPEN";
 
+/** G76-i — which chain a public node actually serves (measured truth: Hive
+ * nodes answer STEEM-only accounts with an EMPTY result instead of an error —
+ * a silent divergence that must be routable away). */
+export type ChainLabel = "steem" | "hive" | "unknown";
+
+/** Default chain labels by hostname (measured 2026-10: anyx.io serves HIVE;
+ * api.steemit.com is the only STEEM node in the default set). */
+export function defaultChainLabel(url: string): ChainLabel {
+  try {
+    const host = new URL(url).hostname;
+    if (host.includes("steem")) return "steem";
+    if (host.includes("hive") || host.includes("anyx") || host.includes("openhive")) return "hive";
+    return "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
 /** Minimal response surface the pool needs from an upstream call. */
 export type FetchLike = (
   url: string,
@@ -31,11 +49,14 @@ export interface PoolOptions {
   breaker?: Partial<BreakerOptions>;
   /** upstream timeout (ms) — applied via AbortSignal by the caller-side wrapper */
   timeoutMs?: number;
+  /** G76-i — optional url→chain label overrides (else defaultChainLabel) */
+  chainLabels?: Record<string, ChainLabel>;
 }
 
 export interface NodeSnapshot {
   url: string;
   state: BreakerState;
+  chain: ChainLabel;
   health: number; // 0..100 deterministic score
   emaLatencyMs: number | null;
   successCount: number;
@@ -58,6 +79,7 @@ export interface BreakerTransition {
 interface NodeState {
   url: string;
   state: BreakerState;
+  chain: ChainLabel;
   emaLatencyMs: number | null;
   successCount: number;
   failureCount: number;
@@ -108,6 +130,7 @@ export class NodePool {
         this.nodes.set(url, {
           url,
           state: "CLOSED",
+          chain: opts.chainLabels?.[url] ?? defaultChainLabel(url),
           emaLatencyMs: null,
           successCount: 0,
           failureCount: 0,
@@ -180,8 +203,15 @@ export class NodePool {
    * Evaluates deterministic OPEN→HALF_OPEN transitions, then returns the
    * eligible nodes in failover order: CLOSED first, then HALF_OPEN probes,
    * health score descending, url ascending as the final tie-break.
+   *
+   * G76-i chain pinning: when a chain context is declared (preferChain) and at
+   * least one eligible node SERVES that chain, nodes known to serve a DIFFERENT
+   * chain are excluded — an empty-result from a wrong-chain node is silent
+   * divergence, not an error the failover plane can judge. Unlabeled (unknown)
+   * nodes stay eligible as fallback. With no same-chain eligible node the full
+   * eligible set is used (never an invented empty pool).
    */
-  rank(now: number = this.clock()): NodeState[] {
+  rank(now: number = this.clock(), preferChain?: ChainLabel): NodeState[] {
     for (const n of this.nodes.values()) {
       if (
         n.state === "OPEN" &&
@@ -194,8 +224,12 @@ export class NodePool {
     const eligible = [...this.nodes.values()].filter(
       (n) => n.state === "CLOSED" || (n.state === "HALF_OPEN" && !n.probeInFlight),
     );
+    const pool =
+      preferChain && eligible.some((n) => n.chain === preferChain)
+        ? eligible.filter((n) => n.chain === preferChain || n.chain === "unknown")
+        : eligible;
     const priority = (n: NodeState) => (n.state === "CLOSED" ? 0 : 1);
-    return eligible.sort((a, b) => {
+    return pool.sort((a, b) => {
       const p = priority(a) - priority(b);
       if (p !== 0) return p;
       const h = healthScore(b) - healthScore(a);
@@ -226,6 +260,7 @@ export class NodePool {
       .map((n) => ({
         url: n.url,
         state: n.state,
+        chain: n.chain,
         health: healthScore(n),
         emaLatencyMs: n.emaLatencyMs,
         successCount: n.successCount,

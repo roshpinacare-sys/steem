@@ -5,6 +5,7 @@ import { describe, expect, test } from "bun:test";
 import {
   DEFAULT_EMA_MS,
   NodePool,
+  defaultChainLabel,
   healthScore,
   type FetchLike,
 } from "./nodes";
@@ -242,5 +243,86 @@ describe("pool honesty", () => {
     pool.reportSuccess("https://ghost.test", 10);
     pool.reportFailure("https://ghost.test");
     expect(pool.snapshot()).toHaveLength(1);
+  });
+});
+
+/* ── G76-i — chain labels + chain-pinned routing ────────────────────────── */
+
+describe("chain labels (G76-i)", () => {
+  test("defaultChainLabel maps the measured public node truth", () => {
+    expect(defaultChainLabel("https://api.steemit.com")).toBe("steem");
+    expect(defaultChainLabel("https://api.hive.blog")).toBe("hive");
+    expect(defaultChainLabel("https://anyx.io")).toBe("hive");
+    expect(defaultChainLabel("https://api.openhive.network")).toBe("hive");
+    expect(defaultChainLabel("https://rpc.example.test")).toBe("unknown");
+    expect(defaultChainLabel("not-a-url")).toBe("unknown");
+  });
+
+  test("rank(preferChain) excludes known OTHER-chain nodes while any same-chain node is eligible", () => {
+    const pool = new NodePool({
+      nodes: ["https://api.steemit.com", "https://api.hive.blog", "https://anyx.io"],
+      fetch: async () => {
+        throw new Error("no network in unit tests");
+      },
+      clock: manualClock().fn,
+    });
+    const steemOnly = pool.rank(1_000_000, "steem").map((n) => n.url);
+    expect(steemOnly).toEqual(["https://api.steemit.com"]);
+    const hiveOnly = pool.rank(1_000_000, "hive").map((n) => n.url);
+    expect(hiveOnly).not.toContain("https://api.steemit.com");
+    expect(hiveOnly.length).toBe(2);
+  });
+
+  test("unknown-chain nodes stay eligible as fallback under a chain preference", () => {
+    const pool = new NodePool({
+      nodes: ["https://api.steemit.com", "https://rpc-unlabeled.test"],
+      fetch: async () => {
+        throw new Error("no network in unit tests");
+      },
+      clock: manualClock().fn,
+      chainLabels: { "https://rpc-unlabeled.test": "unknown" },
+    });
+    const ranked = pool.rank(1_000_000, "steem").map((n) => n.url);
+    expect(ranked).toEqual(["https://api.steemit.com", "https://rpc-unlabeled.test"]);
+  });
+
+  test("no same-chain eligible node ⇒ full eligible set (never an invented empty pool)", () => {
+    const pool = new NodePool({
+      nodes: ["https://api.hive.blog", "https://anyx.io"],
+      fetch: async () => {
+        throw new Error("no network in unit tests");
+      },
+      clock: manualClock().fn,
+    });
+    const ranked = pool.rank(1_000_000, "steem").map((n) => n.url);
+    expect(ranked.length).toBe(2); // preference degrades honestly to all eligible
+  });
+
+  test("chain preference never resurrects an OPEN breaker", () => {
+    const pool = new NodePool({
+      nodes: ["https://api.steemit.com", "https://api.hive.blog"],
+      fetch: async () => {
+        throw new Error("no network in unit tests");
+      },
+      clock: manualClock().fn,
+      breaker: { failureThreshold: 1, cooldownMs: 60_000 },
+    });
+    pool.reportFailure("https://api.steemit.com"); // steem node trips OPEN
+    const ranked = pool.rank(1_000_000, "steem").map((n) => n.url);
+    expect(ranked).toEqual(["https://api.hive.blog"]); // fallback beats silence
+    expect(ranked).not.toContain("https://api.steemit.com");
+  });
+
+  test("snapshot surfaces the chain label per node", () => {
+    const pool = new NodePool({
+      nodes: ["https://api.steemit.com", "https://api.hive.blog"],
+      fetch: async () => {
+        throw new Error("no network in unit tests");
+      },
+      clock: manualClock().fn,
+    });
+    const byUrl = Object.fromEntries(pool.snapshot().map((n) => [n.url, n.chain]));
+    expect(byUrl["https://api.steemit.com"]).toBe("steem");
+    expect(byUrl["https://api.hive.blog"]).toBe("hive");
   });
 });
