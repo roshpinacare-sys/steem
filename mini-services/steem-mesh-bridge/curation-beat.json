@@ -1,0 +1,24 @@
+{
+  "beat": "soldier-curation",
+  "recordedBy": "G77-h",
+  "directive": "MASTER DIRECTIVE §3.3 — fire ALL-SOLDIER PARALLEL EXECUTION for Steem/Hive curation: every custody-valid soldier runs the curation cycle continuously",
+  "enabled": true,
+  "mode": "curation",
+  "chain": "steem",
+  "rounds": 4,
+  "intervalMs": 900000,
+  "rosterSource": "vault-valid",
+  "policyOverrides": {},
+  "laws": {
+    "custody": "broadcast is custody-gated: a soldier's posting WIF signs ONLY when the vault pub equals the LIVE chain posting authority (chain-judged adoption); vault absent ⇒ fail-closed MESH-BLOCKED-CUSTODY with zero attempts — that is LAWFUL, not a limitation",
+    "wounds": "CUSTODY-WOUNDS.jsonl dual-tier: vault registry is owner truth per-soldier; repo-side fallback fills unmentioned soldiers; open wounds are NEVER attempted, never probed, never healed by code",
+    "readiness": "CI-runnable mode SAOS_MESH_MODE=readiness proves per-soldier curation readiness (reachable, authority-match, rc-above-floor, wound-clean) with honest verdicts and zero broadcast",
+    "rc": "RC regen law: min(max, stored+elapsed-regen)/max over a 5-day window; floor 8% (measured sovereign gate)",
+    "vp": "VP effective floor 35% (R289 measured); effective vests = own + received − delegated-out (T-85 meter truth)",
+    "weight": "steem units 0 < weight ≤ 10000 (u16 overflow downvote bug stays dead)",
+    "spacing": "≥3300ms between a soldier's votes (STEEM_MIN_VOTE_INTERVAL_SEC measured 3s + margin)",
+    "dayBudget": "max(state, chain) per soldier per UTC day (T-18 chain-truth law); cap 20/day (R290 measured step-up)",
+    "externalOnly": "the full roster is excluded as author — curation of the outside world; fleet-support stays army-social's law"
+  },
+  "notes": "policyOverrides {} ⇒ the tested module defaults (curation.ts soldierCuratorPolicy) govern. The cloud host with the real vault runs: SAOS_MESH_MODE=curation bun soldier-mesh-run.mjs — same runner, real votes. CI/sandbox runs SAOS_MESH_MODE=readiness for honest readiness verdicts."
+}
