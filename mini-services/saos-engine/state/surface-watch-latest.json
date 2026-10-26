@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-24T14:53:20.823Z",
-  "head": "6c8fe5dee4f1fbfb039bf0c5211de6150991b51c",
+  "at": "2026-10-26T19:05:01.604Z",
+  "head": "9d346654cd3f3efb1962d12554209fd7823e0059",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.2
+      "ageMinutes": 4.9
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.2
+      "ageMinutes": 4.9
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 2.4
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 294.7
     },
     {
       "id": "engine-heartbeat",
@@ -44,15 +44,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 24
+      "ageMinutes": 35
     },
     {
       "id": "engine-presence-digest",
       "kind": "statefile",
       "source": "local",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 3.9
+      "verdict": "STALE",
+      "reason": "age>720m",
+      "ageMinutes": 3107.8
     },
     {
       "id": "engine-selftest",
@@ -77,7 +77,24 @@
       "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
-  "repairsPlanned": [],
+  "repairsPlanned": [
+    {
+      "targetId": "pulse-domain-published",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "Domain",
+      "workflow": "published-ledger.yml",
+      "readbackRequired": true
+    },
+    {
+      "targetId": "engine-presence-digest",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "saos-runtime",
+      "workflow": "sovereign-runtime.yml",
+      "readbackRequired": true
+    }
+  ],
   "repairs": [],
-  "signature": "sig:37daef45"
+  "signature": "sig:fe5dcd71"
 }

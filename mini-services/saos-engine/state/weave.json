@@ -1,34 +1,34 @@
 {
   "protocol": "saos.weave.core.v1",
-  "observedAt": "2026-10-24T01:37:15.226Z",
+  "observedAt": "2026-10-26T19:05:01.604Z",
   "account": "headcorner",
-  "day": "2026-10-24",
+  "day": "2026-10-26",
   "ours": {
     "votesToday": 0,
-    "ordersLive": 5,
+    "ordersLive": 0,
     "fillsObserved": 0,
     "journal": "state/curator.json + state/our-orders.json"
   },
   "theirs": {
-    "votesToday": 0,
-    "lastVoteAt": null,
-    "intervalMinEst": null,
-    "ordersLive": 23,
+    "votesToday": 59,
+    "lastVoteAt": "2026-10-26T18:06:09.000Z",
+    "intervalMinEst": 0.1,
+    "ordersLive": 0,
     "fillsObserved": 0,
     "fingerprint": "saos.weave.core.v1 — חותם-חיצוני בעל-אישורי-גישה-זהים (T-17/T-18 measured)"
   },
   "arbitration": {
-    "combined": 0,
+    "combined": 59,
     "sharedDayCap": 30,
-    "capRemaining": 30,
+    "capRemaining": 0,
     "capBasis": "chain-truth-shared — התקרה סופרת את שני-הכותבים יחד (max(state, chain-truth))",
     "voteLanes": {
       "ours": 0,
-      "theirs": 0
+      "theirs": 59
     },
     "orderLanes": {
-      "ours": 5,
-      "theirs": 23
+      "ours": 0,
+      "theirs": 0
     },
     "partitionLaw": "order-id partition: מחזור ∈ [0, 2.1e9) · היפר ∈ [2.1e9, 4.29e9) · החותם-השני מתבקש לפרסם את הטווח שלו (handshake v1)",
     "collisionLaw": "already-voted = dedup תקציבי-כן (T-17) — הצבעה אף-פעם לא חוזרת, רק נספרת פעם-אחת",
@@ -37,11 +37,11 @@
   "handshake": {
     "status": "PUBLISHED",
     "revision": 1,
-    "publishAt": "2026-10-24T01:37:15.226Z",
+    "publishAt": "2026-10-26T19:05:01.604Z",
     "ourOffer": "המסלולים שלנו מפורסמים: תקרת-יום משותפת (chain-truth), הצבעות-דוקטרינה בלילה, מחזור-פקודות [0,2.1e9), היפר [2.1e9,4.29e9)",
     "request": "החותם-השני מתבקש לפרסם את טווח-ה-orderid שלו ואת חוק-המשקל שלו — ההתנגשות מונעת ב-contract, לא במזל",
     "craftAddendum": {
-      "at": "2026-10-24T01:37:15.226Z",
+      "at": "2026-10-26T19:05:01.604Z",
       "revision": 2,
       "demand": "the-weave/publisher posts from this account MUST obey the house laws: zero em/en dashes; ≥300 words or do not post; no internal codenames (protocol strings, roster names) in public bodies, titles, permlinks, or tags; titles crafted for readers, not logs",
       "evidence": "the-weave-2026-10-07-muy8f0e5: dash-in-title + codename-in-body + thin-body — measured by the R264 adversarial audit",
