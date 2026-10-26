@@ -109,8 +109,53 @@ continuously with ALL VALID soldiers"):
     broadcast whose reply carries the chain txid; a txid-less accept is an honest
     failure, never an invented receipt).
 
+### All-soldier curation beat (G77-h) — `curation.ts` + `curation-beat.json`
+
+Owner directive §3.3: every custody-valid soldier runs the CURATION cycle
+continuously. The deterministic judgment lives in **`curation.ts`** (zero
+network, zero keys, contract-tested):
+
+- **readiness prover (`curationGate`)** — per-soldier honest verdict from
+  measured chain facts, precedence `SKIP-UNREACHABLE → SKIP-WOUND (absolute) →
+  SKIP-AUTHORITY → SKIP-VAULT-ABSENT → SKIP-RC-FLOOR → SKIP-VP-FLOOR →
+  CURATION-READY`;
+- **topic selection** — port of the measured curator law (age window 10..240
+  min, external-content-only roster exclusion, per-author diversity, T-18
+  chain-truth day budget, T-35 crowded-pool cap, bandwagon/spam gates, seeded
+  shuffle — same seed ⇒ same plan ⇒ auditable);
+- **battery math** — RC regen law (`min(max, stored+regen)/max`, 5-day window,
+  8% measured floor), effective-vests meter truth (T-85), weight law in steem
+  units (`0 < w ≤ 10000` — the u16 overflow downvote bug stays dead).
+
+Runner modes (`soldier-mesh-run.mjs`):
+
+- `readiness` — **CI-runnable curation readiness prover**: per soldier through
+  the mesh (`get_accounts` + `rc_api.find_rc_accounts`), honest per-soldier
+  verdicts to `state/soldier-curation-readiness.json`, zero keys, zero
+  broadcast. Vault absent ⇒ `SKIP-VAULT-ABSENT` (honest, fail-closed); the seal
+  host with the real vault runs the same runner and gets full authority-match
+  proofs.
+- `curation` — the live beat. Pre-flight custody gate (bridge
+  `BROADCAST_ENABLED` AND vault present AND `curation-beat.json` enabled, else
+  `MESH-BLOCKED-CUSTODY` with zero attempts — LAWFUL), then rounds of: one
+  shared candidate fetch across the tag whitelist → per soldier: gate →
+  chain-truth day budget → seeded topic selection → custody-judged broadcast
+  (posting WIF signs only when the vault pub equals the live chain authority)
+  → incremental day state + receipts. Vote spacing ≥3300ms.
+
+**Wound registries (G77-h, dual-tier)**: the VAULT registry
+(`<vaultDir>/CUSTODY-WOUNDS.jsonl`) is owner truth per-soldier; the REPO-side
+fallback (`CUSTODY-WOUNDS.jsonl` in this directory — carries the inherited G75
+wounds `haran`/`lsa`/`siq` and the `saos-0004` owner-derivable wound) fills
+soldiers the vault registry does not mention. `mergeWoundRegistries` is
+contract-tested: vault verdict wins per-soldier (an owner-healed soldier is
+never re-wounded by a stale repo record), the resolved open set only ever adds
+wounds.
+
 ```sh
-bun test .                    # 95 tests, 298 expects, zero network
+bun test .                    # 154 tests, zero network
+SAOS_MESH_MODE=readiness bun soldier-mesh-run.mjs   # honest readiness verdicts (CI-safe)
+SAOS_MESH_MODE=curation bun soldier-mesh-run.mjs    # the live beat (seal host with vault)
 SAOS_MESH_MODE=measure bun soldier-mesh-run.mjs
 # registry-respecting beat (open wounds skipped, never attempted):
 SAOS_WOUNDS_INLINE='{"schema":"custody-wound/1","soldier":"haran"}' \
