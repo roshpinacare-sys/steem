@@ -345,3 +345,49 @@ describe("receipt chain integration (tamper-evident upstream decisions)", () => 
     expect(kinds).toContain("cache_hit");
   });
 });
+
+/* ── G76-i — chain-pinned routing (x-mesh-chain) ────────────────────────── */
+
+describe("x-mesh-chain routing (G76-i)", () => {
+  test("header pins account reads to same-chain nodes; absent header keeps legacy order", async () => {
+    const calls: RecordedCall[] = [];
+    const { app } = makeApp({
+      calls,
+      // both nodes healthy: legacy order is url-ascending (hive first)
+      routes: {
+        "https://hive-node.test": (_url, body) => ENVELOPE((JSON.parse(body) as { id: number }).id, []),
+        "https://steem-node.test": (_url, body) =>
+          ENVELOPE((JSON.parse(body) as { id: number }).id, [
+            { name: "hcsoldier4", posting: { key_auths: [["STM59test", 1]] } },
+          ]),
+      },
+      nodes: ["https://hive-node.test", "https://steem-node.test"],
+    });
+    // legacy (no header): hive node answers first (alphabetical, equal health)
+    const legacy = await app.fetch(new Request("http://mesh/rpc", { method: "POST", body: jsonReq("condenser_api.get_accounts", [["x"]]) }));
+    expect(calls[0]?.url).toBe("https://hive-node.test");
+    expect(((await legacy.json()) as { result?: unknown[] })?.result).toEqual([]);
+    // pinned steem: the STEEM-only account must come from the steem node
+    calls.length = 0;
+    const pinned = await app.fetch(
+      new Request("http://mesh/rpc", {
+        method: "POST",
+        headers: { "x-mesh-chain": "steem" },
+        body: jsonReq("condenser_api.get_accounts", [["hcsoldier4"]]),
+      }),
+    );
+    expect(calls.map((c) => c.url)).toEqual(["https://steem-node.test"]);
+    const body = (await pinned.json()) as { result?: Array<{ name?: string }> };
+    expect(body?.result?.[0]?.name).toBe("hcsoldier4");
+    // the chain-pinned steem answer must be cached per its own key, not leak [] from hive
+    calls.length = 0;
+    await app.fetch(
+      new Request("http://mesh/rpc", {
+        method: "POST",
+        headers: { "x-mesh-chain": "steem" },
+        body: jsonReq("condenser_api.get_accounts", [["hcsoldier4"]]),
+      }),
+    );
+    expect(calls).toHaveLength(0); // served from cache — same canonical key, same chain-pinned truth
+  });
+});

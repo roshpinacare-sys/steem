@@ -62,6 +62,8 @@ export interface GatewayConfig {
   maxEntries?: number;
   maxBodyBytes?: number;
   receiptsSink?: (line: string) => void;
+  /** G76-i — optional url→chain label overrides (else defaultChainLabel) */
+  chainLabels?: Record<string, import("./nodes").ChainLabel>;
 }
 
 export function parseNodes(envValue: string | undefined): string[] {
@@ -132,6 +134,7 @@ export function buildApp(cfg: GatewayConfig): BuiltApp {
     clock,
     breaker: cfg.breaker,
     timeoutMs: upstreamTimeoutMs,
+    chainLabels: cfg.chainLabels,
   });
   const cache = new RpcCache({ clock, ttls, maxEntries: cfg.maxEntries });
   const receipts = new ReceiptChain({ clock, sink: cfg.receiptsSink });
@@ -142,9 +145,9 @@ export function buildApp(cfg: GatewayConfig): BuiltApp {
     receipts.append("breaker", { url: t.url, from: t.from, to: t.to, kind: t.kind }),
   );
 
-  async function handleSingle(reqObj: RpcRequest): Promise<{ body: UpstreamEnvelope; headers: Record<string, string> }> {
+  async function handleSingle(reqObj: RpcRequest, preferChain?: import("./nodes").ChainLabel): Promise<{ body: UpstreamEnvelope; headers: Record<string, string> }> {
     try {
-      return await handleSingleInner(reqObj);
+      return await handleSingleInner(reqObj, preferChain);
     } catch (err) {
       // honest fail-closed: never crash the gateway on a poisoned payload
       const msg = err instanceof Error ? err.message : String(err);
@@ -156,7 +159,7 @@ export function buildApp(cfg: GatewayConfig): BuiltApp {
     }
   }
 
-  async function handleSingleInner(reqObj: RpcRequest): Promise<{ body: UpstreamEnvelope; headers: Record<string, string> }> {
+  async function handleSingleInner(reqObj: RpcRequest, preferChain?: import("./nodes").ChainLabel): Promise<{ body: UpstreamEnvelope; headers: Record<string, string> }> {
     const method = typeof reqObj.method === "string" ? reqObj.method : null;
     if (!method) {
       return { body: jsonError(JSONRPC_INVALID_REQUEST, "invalid request: method must be a string", reqObj.id ?? null), headers: { "x-mesh-cache": "error" } };
@@ -188,7 +191,7 @@ export function buildApp(cfg: GatewayConfig): BuiltApp {
     }
 
     const envelope = { jsonrpc: "2.0", method, params, id };
-    const ranked = pool.rank();
+    const ranked = pool.rank(clock(), preferChain);
     const errors: Array<{ url: string; error: string }> = [];
     let previousUrl: string | null = null;
 
@@ -246,6 +249,12 @@ export function buildApp(cfg: GatewayConfig): BuiltApp {
   }
 
   async function handlePost(req: Request): Promise<Response> {
+    // G76-i chain context: the CALLER knows the chain its accounts live on —
+    // `x-mesh-chain: steem|hive` pins routing to same-chain nodes (wrong-chain
+    // nodes answer account reads with silent empty results). Absent header =
+    // the exact pre-G76 behavior.
+    const chainHeader = req.headers.get("x-mesh-chain");
+    const preferChain = chainHeader === "steem" || chainHeader === "hive" ? (chainHeader as import("./nodes").ChainLabel) : undefined;
     const declaredLength = Number(req.headers.get("content-length") ?? "0");
     if (declaredLength > maxBodyBytes) {
       return new Response(JSON.stringify(jsonError(-32600, `body exceeds ${maxBodyBytes} bytes`)), {
@@ -284,14 +293,14 @@ export function buildApp(cfg: GatewayConfig): BuiltApp {
       const parts: UpstreamEnvelope[] = [];
       const cacheFlags = new Set<string>();
       for (const item of parsed) {
-        const out = await handleSingle((item ?? {}) as RpcRequest);
+        const out = await handleSingle((item ?? {}) as RpcRequest, preferChain);
         parts.push(out.body);
         cacheFlags.add(out.headers["x-mesh-cache"] ?? "error");
       }
       const flag = cacheFlags.size === 1 ? ([...cacheFlags][0] ?? "error") : "batch";
       return new Response(JSON.stringify(parts), { status: 200, headers: jsonHeaders({ "x-mesh-cache": flag }) });
     }
-    const out = await handleSingle((parsed ?? {}) as RpcRequest);
+    const out = await handleSingle((parsed ?? {}) as RpcRequest, preferChain);
     return new Response(JSON.stringify(out.body), { status: 200, headers: jsonHeaders(out.headers) });
   }
 
@@ -400,6 +409,21 @@ export function assertPortAllowed(port: number): void {
   }
 }
 
+/** G76-i — NODE_CHAINS env override: "url=steem|hive|unknown,..." — measured
+ * labels win over hostname heuristics; invalid entries are refused (fail-closed). */
+export function parseChainLabels(envValue: string | undefined): Record<string, import("./nodes").ChainLabel> | undefined {
+  if (!envValue) return undefined;
+  const out: Record<string, import("./nodes").ChainLabel> = {};
+  for (const pair of envValue.split(",")) {
+    const [url, chain] = pair.split("=");
+    if (!url || !url.startsWith("https://") || (chain !== "steem" && chain !== "hive" && chain !== "unknown")) {
+      throw new Error(`parseChainLabels: invalid entry ${JSON.stringify(pair)} (want https-url=steem|hive|unknown)`);
+    }
+    out[url] = chain;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
 function main(): void {
   const clock: Clock = () => Date.now(); // composition root — the only Date.now on this surface
   const envNodes = parseNodes(process.env.NODES);
@@ -424,6 +448,7 @@ function main(): void {
     clock,
     port,
     broadcastEnabled,
+    chainLabels: parseChainLabels(process.env.NODE_CHAINS),
     upstreamTimeoutMs: process.env.UPSTREAM_TIMEOUT_MS ? Number(process.env.UPSTREAM_TIMEOUT_MS) : 6_000,
     breaker: {
       failureThreshold: process.env.BREAKER_THRESHOLD ? Number(process.env.BREAKER_THRESHOLD) : 3,
