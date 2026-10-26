@@ -11,6 +11,7 @@
 // (fake clock advanced by the injected sleep; no awaits on wall time).
 import { describe, expect, test } from "bun:test";
 import {
+  mergeWoundRegistries,
   mulberry32,
   openWounds,
   parseWoundsJsonl,
@@ -516,5 +517,70 @@ describe("parseWoundsJsonl + openWounds", () => {
         { soldier: "lsa", status: "OPEN" },
       ]).map((w) => w.soldier),
     ).toEqual(["siq", "lsa"]); // case-insensitive status, healed excluded
+  });
+});
+
+/* ── G77-h — dual-tier wound registries (vault primary, repo fallback) ───── */
+
+describe("parseWoundsJsonl healedSoldiers (G77-h extension)", () => {
+  test("healed soldier NAMES are now visible (needed for per-soldier precedence)", () => {
+    const p = parseWoundsJsonl(
+      [
+        JSON.stringify({ soldier: "haran", status: "open" }),
+        JSON.stringify({ soldier: "old", status: "healed" }),
+        JSON.stringify({ soldier: "alsogone", status: "Healed" }), // case-insensitive
+      ].join("\n"),
+    );
+    expect(p.healedSoldiers.sort()).toEqual(["alsogone", "old"]);
+    expect(p.wounds.map((w) => w.soldier)).toEqual(["haran"]);
+  });
+});
+
+describe("mergeWoundRegistries — vault wins per-soldier, repo fills gaps", () => {
+  test("repo fallback entry is used only when the vault registry does not mention the soldier", () => {
+    const vault = parseWoundsJsonl(JSON.stringify({ soldier: "haran", status: "open", reason: "vault-law" }));
+    const repo = parseWoundsJsonl(JSON.stringify({ soldier: "saos-0004", status: "open", reason: "owner-derivable" }));
+    const m = mergeWoundRegistries(vault, repo);
+    expect(m.wounds.map((w) => w.soldier).sort()).toEqual(["haran", "saos-0004"]);
+    expect(m.sources).toEqual(["vault", "repo-fallback"]);
+  });
+
+  test("vault HEALED verdict outranks the repo fallback open entry (owner-only heal law)", () => {
+    const vault = parseWoundsJsonl([
+      JSON.stringify({ soldier: "haran", status: "open" }),
+      JSON.stringify({ soldier: "siq", status: "healed" }),
+    ].join("\n"));
+    const repo = parseWoundsJsonl([
+      JSON.stringify({ soldier: "siq", status: "open", reason: "stale repo record" }),
+      JSON.stringify({ soldier: "lsa", status: "open" }),
+    ].join("\n"));
+    const m = mergeWoundRegistries(vault, repo);
+    const by = Object.fromEntries(m.wounds.map((w) => [w.soldier, w]));
+    expect(by["haran"]).toBeDefined();
+    expect(by["lsa"]).toBeDefined();
+    expect(by["siq"]).toBeUndefined(); // owner healed it — the repo record must NOT re-wound
+    expect(m.healed).toBe(1);
+  });
+
+  test("union never deletes: a soldier open in either tier stays open unless the OWNER tier healed it", () => {
+    const vault = parseWoundsJsonl("");
+    const repo = parseWoundsJsonl([
+      JSON.stringify({ soldier: "saos-0004", status: "open" }),
+      JSON.stringify({ soldier: "newkid", status: "open" }),
+    ].join("\n"));
+    const m = mergeWoundRegistries(vault, repo);
+    expect(m.wounds.map((w) => w.soldier).sort()).toEqual(["newkid", "saos-0004"]);
+  });
+
+  test("malformed lines from both tiers are summed, never thrown", () => {
+    const vault = parseWoundsJsonl("{bad");
+    const repo = parseWoundsJsonl(["{also-bad", JSON.stringify({ soldier: "x" })].join("\n"));
+    const m = mergeWoundRegistries(vault, repo);
+    expect(m.malformed).toBe(2);
+    expect(m.wounds.map((w) => w.soldier)).toEqual(["x"]);
+  });
+
+  test("null tiers are tolerated (absent registries on a fresh host)", () => {
+    expect(mergeWoundRegistries(null, null)).toEqual({ wounds: [], healed: 0, malformed: 0, sources: [] });
   });
 });

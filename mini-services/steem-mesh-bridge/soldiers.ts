@@ -165,11 +165,13 @@ export interface ParsedWounds {
   wounds: WoundRecord[];
   healed: number;
   malformed: number;
+  /** G77-h: healed soldier NAMES — needed for per-soldier registry precedence */
+  healedSoldiers: string[];
 }
 
 /** Parses CUSTODY-WOUNDS.jsonl text. Malformed lines are counted, never thrown. */
 export function parseWoundsJsonl(text: string): ParsedWounds {
-  const out: ParsedWounds = { wounds: [], healed: 0, malformed: 0 };
+  const out: ParsedWounds = { wounds: [], healed: 0, malformed: 0, healedSoldiers: [] };
   for (const rawLine of text.split("\n")) {
     const line = rawLine.trim();
     if (!line) continue;
@@ -192,11 +194,66 @@ export function parseWoundsJsonl(text: string): ParsedWounds {
     const rec = obj as WoundRecord;
     if ((rec.status ?? "open").toLowerCase() === "healed") {
       out.healed++;
+      out.healedSoldiers.push(soldier);
       continue;
     }
     out.wounds.push({ soldier, status: rec.status ?? "open", schema: rec.schema, reason: rec.reason });
   }
   return out;
+}
+
+/* ── G77-h — dual-tier wound registries (vault primary, repo fallback) ────
+ * Two registries may feed the mesh: the VAULT registry (owner truth, written
+ * by the seal host) and a REPO-SIDE fallback (carries wounds to/from vault-less
+ * hosts — e.g. the saos-0004 owner-derivable wound). Precedence is PER-SOLDIER:
+ *   · a soldier mentioned in the VAULT registry takes the VAULT verdict
+ *     (open stays open; healed stays healed — owner re-entry is THE heal law,
+ *     and the repo fallback must never re-wound an owner-healed soldier);
+ *   · a soldier absent from the vault registry takes the fallback verdict;
+ *   · malformed lines from both tiers are summed, never thrown;
+ *   · the resolved open set can only ADD wounds, never delete them. */
+
+export interface MergedWounds {
+  wounds: WoundRecord[];
+  healed: number;
+  malformed: number;
+  sources: string[];
+}
+
+export function mergeWoundRegistries(
+  primary: ParsedWounds | null,
+  fallback: ParsedWounds | null,
+): MergedWounds {
+  const p = primary ?? { wounds: [], healed: 0, malformed: 0, healedSoldiers: [] };
+  const f = fallback ?? { wounds: [], healed: 0, malformed: 0, healedSoldiers: [] };
+  const primaryOpen = new Map<string, WoundRecord>();
+  for (const w of p.wounds) primaryOpen.set(w.soldier, w);
+  const primaryHealed = new Set(p.healedSoldiers);
+  const fallbackOpen = new Map<string, WoundRecord>();
+  for (const w of f.wounds) fallbackOpen.set(w.soldier, w);
+  const fallbackHealed = new Set(f.healedSoldiers);
+
+  const names = new Set<string>([
+    ...primaryOpen.keys(), ...primaryHealed, ...fallbackOpen.keys(), ...fallbackHealed,
+  ]);
+  const wounds: WoundRecord[] = [];
+  let healed = 0;
+  for (const name of names) {
+    if (primaryOpen.has(name) || primaryHealed.has(name)) {
+      // VAULT verdict wins (owner truth)
+      const w = primaryOpen.get(name);
+      if (w) wounds.push(w);
+      else healed++;
+    } else {
+      const w = fallbackOpen.get(name);
+      if (w) wounds.push(w);
+      else healed++;
+    }
+  }
+  const sources: string[] = [];
+  if (primary && (primary.wounds.length > 0 || primary.healed > 0 || primary.malformed > 0)) sources.push("vault");
+  if (fallback && (fallback.wounds.length > 0 || fallback.healed > 0 || fallback.malformed > 0)) sources.push("repo-fallback");
+  return { wounds, healed, malformed: p.malformed + f.malformed, sources };
 }
 
 /** Open (non-healed) wounds — the set the scheduler must never attempt. */
