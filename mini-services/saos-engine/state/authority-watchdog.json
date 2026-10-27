@@ -1,19 +1,27 @@
 {
-  "at": "2026-10-27T15:43:26.945Z",
-  "verdict": "6-FLAGGED",
+  "at": "2026-10-27T15:58:26.947Z",
+  "verdict": "7-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 2,
+      "scanned": 3,
       "signedPct": 0,
       "signed": 0,
       "unsigned": 1,
       "invalid": 0,
-      "untrusted": 1,
+      "untrusted": 2,
       "flagged": [
+        {
+          "hash": "8b792194",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-27T15:48:11Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "1f4b5f08",
           "gq": "U",
@@ -43,26 +51,18 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 8,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 2,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
       "flagged": [
         {
-          "hash": "cdfebda8",
+          "hash": "4c6b5f8d",
           "gq": "U",
           "sig": "SIGNED-UNTRUSTED",
           "author": "sandbox-voice",
-          "at": "2026-10-27T15:28:26Z",
-          "subject": "sandbox voice: ports 3/8 · engine down [skip ci]"
-        },
-        {
-          "hash": "d40ac4ad",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "sandbox-voice",
-          "at": "2026-10-27T15:20:27Z",
+          "at": "2026-10-27T15:50:52Z",
           "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]"
         }
       ]
@@ -73,12 +73,21 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "74c36fe1",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-27T15:58:03Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-27T15:58Z"
+        }
+      ]
     },
     {
       "repo": "Domain",
@@ -148,6 +157,15 @@
   ],
   "flagged": [
     {
+      "hash": "8b792194",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-27T15:48:11Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "1f4b5f08",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -157,22 +175,22 @@
       "repo": "steem.git(LOCAL)"
     },
     {
-      "hash": "cdfebda8",
+      "hash": "4c6b5f8d",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "sandbox-voice",
-      "at": "2026-10-27T15:28:26Z",
-      "subject": "sandbox voice: ports 3/8 · engine down [skip ci]",
+      "at": "2026-10-27T15:50:52Z",
+      "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]",
       "repo": "FleetHQ"
     },
     {
-      "hash": "d40ac4ad",
+      "hash": "74c36fe1",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
-      "author": "sandbox-voice",
-      "at": "2026-10-27T15:20:27Z",
-      "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]",
-      "repo": "FleetHQ"
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-27T15:58:03Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-27T15:58Z",
+      "repo": "Console"
     },
     {
       "hash": "7354a69c",
@@ -207,5 +225,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 7142
+  "ms": 5824
 }
