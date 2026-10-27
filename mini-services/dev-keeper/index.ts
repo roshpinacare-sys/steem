@@ -51,9 +51,8 @@ let last = { engine: null as boolean | null, cockpit: null as boolean | null, en
 const bootedAt = new Date().toISOString();
 
 function log(line: string): void {
-  const entry = `[keeper ${new Date().toISOString()}] ${line}`;
-  console.log(entry);
-  try { fs.appendFileSync(LOG_FILE, entry + "\n"); } catch { /* log never kills the pulse */ }
+  // single-writer law: stdout only — the launcher (nohup/engine-hatch) owns the file handle.
+  console.log(`[keeper ${new Date().toISOString()}] ${line}`);
 }
 
 function memAvailMb(): number {
