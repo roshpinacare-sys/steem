@@ -50,6 +50,7 @@ import { runWatchdog, watchdogState, runNodeHealth, nodeHealthState } from "./au
  * secondary fleet wallets (operator question #2) — both native, gated. */
 import { runFinanceDigest, financeDigestState } from "./finance-digest.mjs";
 import { runYieldDistribution, yieldState } from "./yield-distributor.mjs";
+import { runCurationYield } from "./curation-yield.mjs"; /* G78-c: curation yield → treasury-form stream + RC/VP telemetry */
 /* R292 · CAPITAL ROUTER: profit-maximization + routing matrix + pure-recall
  * executor (recall-shell only — zero-amount delegation cannot create exposure) */
 import { computeRouterReport, executeRouterActions, routerState } from "./capital-router.mjs";
@@ -629,6 +630,7 @@ try {
    * execution stays on the explicit POST /yield-run path). */
   intervals.push(setInterval(() => { Promise.resolve(runFinanceDigest()).catch(() => null); }, 30 * 60_000));
   intervals.push(setInterval(() => { Promise.resolve(runYieldDistribution({ execute: false })).catch(() => null); }, 10 * 60_000));
+  intervals.push(setInterval(() => { Promise.resolve(runCurationYield()).catch(() => null); }, 10 * 60_000)); /* G78-c: real reward-balance stream, reads-only */
   /* R290 · yieldmax probe cadence (3h, detached child — the walks are heavy
    * and must never hold the engine's event loop): refreshes state/yield-
    * levers.json (chain-sourced lever matrix the cockpit reads). Fire-and-
