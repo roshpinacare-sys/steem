@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-27T14:07:23.016Z",
-  "verdict": "3-FLAGGED",
+  "at": "2026-10-27T14:22:29.998Z",
+  "verdict": "5-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -34,12 +34,21 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "58d4ef0b",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "sandbox-voice",
+          "at": "2026-10-27T14:20:28Z",
+          "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]"
+        }
+      ]
     },
     {
       "repo": "Console",
@@ -47,12 +56,21 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "3b50dbb8",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "Roshpina Care Sovereign",
+          "at": "2026-10-27T14:19:32Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-27T14:19Z"
+        }
+      ]
     },
     {
       "repo": "Domain",
@@ -122,6 +140,24 @@
   ],
   "flagged": [
     {
+      "hash": "58d4ef0b",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "sandbox-voice",
+      "at": "2026-10-27T14:20:28Z",
+      "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]",
+      "repo": "FleetHQ"
+    },
+    {
+      "hash": "3b50dbb8",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "Roshpina Care Sovereign",
+      "at": "2026-10-27T14:19:32Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-27T14:19Z",
+      "repo": "Console"
+    },
+    {
       "hash": "7354a69c",
       "gq": "E",
       "sig": "INVALID",
@@ -154,5 +190,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 6978
+  "ms": 8243
 }
