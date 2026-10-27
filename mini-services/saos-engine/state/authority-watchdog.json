@@ -1,19 +1,27 @@
 {
-  "at": "2026-10-27T16:13:26.947Z",
-  "verdict": "10-FLAGGED",
+  "at": "2026-10-27T16:28:26.947Z",
+  "verdict": "11-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 10,
+      "scanned": 11,
       "signedPct": 0,
       "signed": 0,
       "unsigned": 5,
       "invalid": 0,
-      "untrusted": 5,
+      "untrusted": 6,
       "flagged": [
+        {
+          "hash": "fdaac5a9",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-27T16:19:27Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        },
         {
           "hash": "7a04796d",
           "gq": "U",
@@ -82,30 +90,17 @@
       "signedPct": 0,
       "flagged": [
         {
-          "hash": "bc62240c",
+          "hash": "4eaa5cc6",
           "gq": "U",
           "sig": "SIGNED-UNTRUSTED",
           "author": "sandbox-voice",
-          "at": "2026-10-27T15:59:00Z",
+          "at": "2026-10-27T16:20:52Z",
           "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]"
         }
       ]
     },
     {
       "repo": "Console",
-      "coverage": "MEASURED",
-      "method": "git-native",
-      "scanned": 10,
-      "signed": 0,
-      "unsigned": 10,
-      "invalid": 0,
-      "untrusted": 0,
-      "unknown": 0,
-      "signedPct": 0,
-      "flagged": []
-    },
-    {
-      "repo": "Domain",
       "coverage": "MEASURED",
       "method": "git-native",
       "scanned": 10,
@@ -117,14 +112,27 @@
       "signedPct": 0,
       "flagged": [
         {
-          "hash": "ae90cef5",
+          "hash": "8442c1d5",
           "gq": "U",
           "sig": "SIGNED-UNTRUSTED",
           "author": "Roshpina Care Sovereign",
-          "at": "2026-10-27T16:05:25Z",
-          "subject": "execution-ledger: wave-G105 renewal — drought-fountain cure measured ("
+          "at": "2026-10-27T16:28:05Z",
+          "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-27T16:28Z"
         }
       ]
+    },
+    {
+      "repo": "Domain",
+      "coverage": "MEASURED",
+      "method": "git-native",
+      "scanned": 10,
+      "signed": 0,
+      "unsigned": 10,
+      "invalid": 0,
+      "untrusted": 0,
+      "unknown": 0,
+      "signedPct": 0,
+      "flagged": []
     },
     {
       "repo": "TruthRail",
@@ -181,6 +189,15 @@
   ],
   "flagged": [
     {
+      "hash": "fdaac5a9",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-27T16:19:27Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "7a04796d",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -226,22 +243,22 @@
       "repo": "steem.git(LOCAL)"
     },
     {
-      "hash": "bc62240c",
+      "hash": "4eaa5cc6",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "sandbox-voice",
-      "at": "2026-10-27T15:59:00Z",
+      "at": "2026-10-27T16:20:52Z",
       "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]",
       "repo": "FleetHQ"
     },
     {
-      "hash": "ae90cef5",
+      "hash": "8442c1d5",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "Roshpina Care Sovereign",
-      "at": "2026-10-27T16:05:25Z",
-      "subject": "execution-ledger: wave-G105 renewal — drought-fountain cure measured (",
-      "repo": "Domain"
+      "at": "2026-10-27T16:28:05Z",
+      "subject": "local-gates [sovereign-machine]: G4+G7 measured — 2026-10-27T16:28Z",
+      "repo": "Console"
     },
     {
       "hash": "7354a69c",
@@ -276,5 +293,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 5916
+  "ms": 5877
 }
