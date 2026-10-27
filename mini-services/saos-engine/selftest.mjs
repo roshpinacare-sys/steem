@@ -443,7 +443,8 @@ eq("vpEff zero vests", vpEffPct(100, 0), null);
 eq("day key", dayKeyOf("2026-09-29T19:00:00.000Z"), "2026-09-29");
 
 /* ── 15b · R290 army-curation: the structural multiplier (pure vectors) ── */
-import { armyCuratorPolicy, armyVpSustainable, vpEligible } from "./army-curation.mjs";
+import { armyCuratorPolicy, armyVpSustainable, vpEligible, armedCuratePolicy, woundFilter, readCustodyWounds, VAULT_VALID_ROSTER } from "./army-curation.mjs";
+import { parseAsset, yieldRowsFromAccounts } from "./curation-yield.mjs";
 
 const AP = armyCuratorPolicy();
 ok("R290 army policy: external-only law inherited (17-account exclusion)", Array.isArray(AP.excludeAccounts) && AP.excludeAccounts.length >= 17 && AP.excludeAccounts.includes("headcorner") && AP.excludeAccounts.includes("woq"));
@@ -466,6 +467,50 @@ eq("R290 army deterministic", armyAgain.selected, planA.selected);
  * downvote on an innocent author) — this vector pins the law forever. */
 ok("R290 weight law: weightForAge(30) inside u16 band", weightForAge(30, AP) > 0 && weightForAge(30, AP) <= 10000);
 ok("R290 weight law: minWeight floor maps to ≤10000 too", weightForAge(100000, AP) === AP.minWeightPct * 100 && AP.minWeightPct * 100 <= 10000);
+
+/* ── 15b-G78c · armed curate law + vault-valid roster + yield streaming ── */
+ok("G78-c armed law accepted: exec-armed curate clamps, RC floor max(8,20)=20", (() => {
+  const r = armedCuratePolicy({ enabled: true, maxPerDay: 10, baseWeightPct: 50, minWeightPct: 20, minVpEffPct: 60 }, 20);
+  return r.ok === true && r.policy.maxPerDay === 10 && r.policy.baseWeightPct === 50 && r.policy.minWeightPct === 20 && r.policy.minVpEffPct === 60 && r.policy.minRcPct === 20;
+})());
+ok("G78-c armed law fail-closed: missing curate → no policy, no votes", armedCuratePolicy(null).ok === false && armedCuratePolicy(null).policy === null);
+ok("G78-c armed law fail-closed: invalid fields refused", (() => {
+  const r = armedCuratePolicy({ enabled: "yes", maxPerDay: 999, baseWeightPct: 50, minWeightPct: 60, minVpEffPct: 35 });
+  return r.ok === false && r.reasons.length >= 3;
+})());
+ok("G78-c armed law: minWeight above baseWeight refused", armedCuratePolicy({ enabled: true, maxPerDay: 10, baseWeightPct: 30, minWeightPct: 60, minVpEffPct: 35 }).ok === false);
+eq("G78-c roster law: 10 vault-valid soldiers", VAULT_VALID_ROSTER.length, 10);
+ok("G78-c roster law: hcsoldier4/5/6 in, custody-wounded haran/lsa/siq out", ["hcsoldier4", "hcsoldier5", "hcsoldier6"].every((a) => VAULT_VALID_ROSTER.includes(a)) && ["haran", "lsa", "siq"].every((a) => !VAULT_VALID_ROSTER.includes(a)));
+ok("G78-c wound filter: wounded split out, allowed preserved", (() => {
+  const { allowed, wounded } = woundFilter(VAULT_VALID_ROSTER, ["tov", "haran"]);
+  return allowed.length === 9 && !allowed.includes("tov") && wounded.join() === "tov";
+})());
+ok("G78-c wound read: absent wounds ledger = no invented wounds", readCustodyWounds("/nonexistent/wounds.jsonl").length === 0);
+eq("G78-c parseAsset: steem asset string", parseAsset("123.456 SBD").amount, 123.456);
+ok("G78-c parseAsset: garbage refused, never guessed", parseAsset("abc") === null && parseAsset(12) === null);
+ok("G78-c yield rows: treasury form, one row per currency, exact consumer shape", (() => {
+  const at = "2026-10-27T14:00:00.000Z";
+  const b = yieldRowsFromAccounts([
+    { name: "cashmachine", reward_sbd_balance: "1.500 SBD", reward_steem_balance: "2.000 STEEM", reward_vesting_steem: "10.000000 VESTS" },
+    { name: "hcsoldier4", reward_sbd_balance: "0.500 SBD", reward_steem_balance: "0.000 STEEM", reward_vesting_steem: "5.000000 VESTS" },
+  ], { at });
+  const shape = b.intake.every((r) => ["at", "stream", "amount", "currency", "proof-ref", "source"].every((k) => k in r));
+  const get = (c) => b.intake.find((r) => r.currency === c);
+  return b.counted === 2 && b.intake.length === 2 && shape && get("STEEM").amount === 2 && get("SBD").amount === 2 && get("VESTS").amount === 15 && b.totals.VESTS === 15;
+})());
+ok("G78-c yield rows: detail rows are sumCuration-law curation rows, usd honest 0", (() => {
+  const b = yieldRowsFromAccounts([{ name: "tov", reward_sbd_balance: "0.000 SBD", reward_steem_balance: "0.000 STEEM", reward_vesting_steem: "3.000000 VESTS" }], { at: "2026-10-27T14:00:00.000Z" });
+  const d = b.detail[0];
+  return d.kind === "curation" && d.opNature === "real-tx" && d.account === "tov" && d.vests === 3 && d.usd === 0 && String(d.proof).includes("tov");
+})());
+ok("G78-c yield rows: zero real bodies → ONE honest stream-empty zero row", (() => {
+  const b = yieldRowsFromAccounts([], { at: "2026-10-27T14:00:00.000Z" });
+  return b.counted === 0 && b.intake.length === 1 && b.intake[0].amount === 0 && String(b.intake[0]["proof-ref"]).startsWith("stream-empty:");
+})());
+ok("G78-c yield rows: malformed reward balances absent, never faked", (() => {
+  const b = yieldRowsFromAccounts([{ name: "woq", reward_sbd_balance: "junk", reward_steem_balance: "1.000 STEEM", reward_vesting_steem: "1.000000 VESTS" }], { at: "t" });
+  return b.counted === 0 && b.intake[0].amount === 0;
+})());
 
 /* ── 15c · R291 tag-ROI learning loop (pure vectors) ── */
 import { firstTagOf, aggregateTagRoi, orderTagsByRoi } from "./tag-roi.mjs";

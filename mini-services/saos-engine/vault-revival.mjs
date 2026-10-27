@@ -128,6 +128,18 @@ function resolveGen1MetaSpec() {
   throw new Error(`no-carrying-ref-for-gen1-meta (tried: ${candidates.map((c) => `${c.ref}:${c.metaRef}`).join(", ")})`);
 }
 
+/* G78-c · GEN-1 META DEGRADE LAW (measured 2026-10-27T13:11Z REVIVAL-FAIL:
+ * the GEN-1 era meta is absent on origin/saos-cockpit, origin/main AND HEAD —
+ * branch rewrites ate the carrier, and the un-caught throw inside the spec
+ * array literal killed the WHOLE custody census mid-run, overwriting a
+ * possibly-green army-custody.json with REVIVAL-FAIL and freezing the yield
+ * rail CUSTODY-FROZEN). Law: a missing GEN-1 carrier is a RECORDED wound —
+ * GEN-2 is judged first anyway; the census must always complete fail-honest. */
+function gen1SpecOrWound() {
+  try { return { spec: resolveGen1MetaSpec(), wound: null }; }
+  catch (e) { return { spec: null, wound: String(e?.message ?? e).slice(0, 200) }; }
+}
+
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson0600 = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true, mode: 0o700 }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2), { mode: 0o600 }); fs.chmodSync(t, 0o600); fs.renameSync(t, p); }; /* R235: atomic, 0600 preserved */
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
@@ -257,9 +269,11 @@ function unlockGeneration({ ref, zip, metaRef, genLabel, eraRefs }) {
 function pullArmyKeysFromVault() {
   const gens = [];
   const errors = [];
+  const gen1 = gen1SpecOrWound(); /* G78-c degrade: absent carrier = recorded wound, never a killed census */
+  if (!gen1.spec) errors.push(`GEN-1-meta:${gen1.wound}`);
   for (const spec of [
     { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
-    { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
+    ...(gen1.spec ? [{ gen: "GEN-1", ...gen1.spec, zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] }] : []),
   ]) {
     try { gens.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { errors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 160)}`); }
   }
@@ -355,8 +369,40 @@ export async function adoptAccountPostingWif(account = null) {
   }
 }
 
+/* G78-c · RESURRECTION RE-JUDGE (chain is the only judge, in BOTH directions):
+ * a T-80-retired body whose CURRENT vault WIF chain-verifies (posting) is a
+ * living body again — the 2026-10-27T12:19Z vault re-intake delivered new key
+ * material, so the stale 2026-10-20 record must not hold living bodies out of
+ * the custody census forever. Bodies with no current key material or no chain
+ * verification stay retired (fail-closed). Fingerprints only — never keys. */
+async function resurrectRetired(retired) {
+  const out = { resurrected: [], stillRetired: [...retired].sort(), wounds: [], law: "G78-c resurrection: chain-judged retirement re-judged against the CURRENT vault WIFs; verified bodies return to the living denominator" };
+  if (!retired || !retired.size) return out;
+  let cache = readJson(CACHE_FILE, null);
+  if (!cache?.accounts?.length) {
+    try { const p = pullArmyKeysFromVault(); if (p?.ok) cache = readJson(CACHE_FILE, null); }
+    catch (e) { out.wounds.push(`vault-pull:${String(e?.message ?? e).slice(0, 120)}`); }
+  }
+  for (const name of [...retired]) {
+    const a = (cache?.accounts ?? []).find((x) => x?.name === name);
+    if (!a) continue; /* no current key material → stays retired, fail-closed */
+    let alive = false;
+    for (const g of (a.gens ?? [])) {
+      if (!g?.wif) continue;
+      try { const r = await adoptVerifiedWifIdentity(name, g.wif, { role: "posting" }); if (r?.ok) { alive = true; break; } }
+      catch { /* next generation */ }
+    }
+    if (alive) {
+      out.resurrected.push(name);
+      out.stillRetired = out.stillRetired.filter((n) => n !== name);
+    }
+  }
+  return out;
+}
+
 export async function reviveArmyCustody({ now = new Date().toISOString() } = {}) {
   const t0 = Date.now();
+  let gen1Wound = null; /* G78-c: GEN-1 carrier wound rides the doc, never kills the run */
   const roster = [masterAccount(), ...ARMY];
   const before = armyCustodyState(roster);
   let pulled = null;
@@ -411,9 +457,11 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
     if (masterBefore !== "master-verified") {
       const gensM = [];
       const mErrors = [];
+      const gen1M = gen1SpecOrWound(); /* G78-c degrade law */
+      if (!gen1M.spec) { gen1Wound = gen1M.wound; mErrors.push(`GEN-1-meta:${gen1M.wound}`); }
       for (const spec of [
         { gen: "GEN-2", ref: resolveGitRef(), zip: resolveVaultZip(), metaRef: META_REF, eraRefs: ["gen2.keysZipUnlock", "recovery-3.keysZipUnlock"] },
-        { gen: "GEN-1", ...resolveGen1MetaSpec(), zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] },
+        ...(gen1M.spec ? [{ gen: "GEN-1", ...gen1M.spec, zip: GEN1_ZIP, eraRefs: ["gen1.keysZipUnlock"] }] : []),
       ]) {
         try { gensM.push(unlockGeneration({ ...spec, genLabel: spec.gen })); } catch (e) { mErrors.push(`${spec.gen}:${String(e?.message ?? e).slice(0, 160)}`); }
       }
@@ -452,6 +500,14 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       for (const r of (rr.retired ?? [])) if (r?.account) retired.add(String(r.account));
       retirementProvenance = rr.provenance ?? null;
     } catch { /* absent record = no exclusions — full-roster gate holds */ }
+    /* G78-c · RESURRECTION RE-JUDGE: the T-80 retirement is CHAIN-JUDGED — so
+     * it must be re-judged whenever key material changes. The vault re-intake
+     * of 2026-10-27T12:19Z delivered NEW WIFs; a retired body whose CURRENT
+     * vault WIF verifies against the live chain is a living body again (the
+     * chain is the only judge — the record's own law). Unverified bodies stay
+     * retired, fail-closed. */
+    const resurrection = await resurrectRetired(retired);
+    for (const n of resurrection.resurrected) retired.delete(n);
     const living = roster.filter((n) => !retired.has(n));
     const after = armyCustodyState(living);
     const fullCensus = armyCustodyState(roster);
@@ -460,6 +516,8 @@ export async function reviveArmyCustody({ now = new Date().toISOString() } = {})
       master: { roles: masterRoles, before: masterBefore, law: "chain-judged wif-direct, GEN-2 first" },
       before: { verified: before.verified }, after: { verified: after.verified, total: after.total },
       denominator: { law: "living-fleet (T-80 retirement, chain-judged)", living: living.length, retired: [...retired].sort(), retiredCount: retired.size, fullRosterVerified: fullCensus.verified, fullRosterTotal: fullCensus.total, provenance: retirementProvenance },
+      resurrection: { resurrected: resurrection.resurrected, stillRetired: resurrection.stillRetired, wounds: resurrection.wounds, law: resurrection.law }, /* G78-c */
+      gen1Wound, /* G78-c degrade law: recorded, never fatal */
       pulled: pulled ? { extracted: pulled.extracted, missing: pulled.missing, error: pulled.error ?? null } : null,
       adopted: adopted.results ?? null, law: "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
       ms: Date.now() - t0,

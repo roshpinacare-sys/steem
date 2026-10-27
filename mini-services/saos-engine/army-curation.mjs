@@ -35,23 +35,82 @@ const RECEIPTS = path.join(DIR, "receipts", "army-curation.jsonl");
 
 export const ARMY_ROSTER = ["cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq"];
 
+/* G78-c · VAULT-VALID CURATION ROSTER (armed law, wave G78-c-R2).
+ * exec-armed.json `curate` is LAW: enabled, maxPerDay 10, baseWeightPct 50,
+ * minWeightPct 20, minVpEffPct 60; RC floor = max(8, armed minRcPct) = 20
+ * (enforcement owned by the signer's executeAs RC guard).
+ * Roster law: only VAULT-VALID soldiers vote. haran/lsa/siq are custody
+ * wounds (CUSTODY-WOUNDS.jsonl, fingerprints-only evidence) — excluded even
+ * though they sit in the legacy ARMY_ROSTER; hcsoldier4/5/6 are vault-valid
+ * soldiers — included. The wound filter below re-checks at every run, so a
+ * fresh wound on any listed body auto-skips it without a code change. */
+export const VAULT_VALID_ROSTER = ["cashmachine", "israelnews", "macrame", "tov", "wic", "wog", "woq", "hcsoldier4", "hcsoldier5", "hcsoldier6"];
+const WOUNDS_FILE = process.env.STEEM_CUSTODY_WOUNDS || "/home/z/coord-work/vaults/steem-secrets/CUSTODY-WOUNDS.jsonl";
+
+/* fingerprints-only read of the custody-wound evidence; absent/unreadable
+ * file = NO exclusion evidence — never invent a wound (fail-open on absence,
+ * the signer's chain-judged think gate stays the hard guard). */
+export function readCustodyWounds(p = WOUNDS_FILE) {
+  const out = [];
+  try {
+    for (const line of fs.readFileSync(p, "utf8").split("\n")) {
+      const t = line.trim(); if (!t) continue;
+      try { const w = JSON.parse(t); if (Array.isArray(w?.soldiers)) for (const s of w.soldiers) if (s) out.push(String(s)); } catch { /* broken line: not evidence */ }
+    }
+  } catch { /* no file = no wounds on record */ }
+  return [...new Set(out)];
+}
+
+/* pure: split a roster into allowed vs custody-wounded bodies */
+export function woundFilter(roster, wounded = []) {
+  const skip = new Set((wounded ?? []).map(String));
+  const allowed = [], wounds = [];
+  for (const r of roster) (skip.has(r) ? wounds : allowed).push(r);
+  return { allowed, wounded: wounds };
+}
+
+/* pure: THE ARMED CURATE LAW, validated fail-closed. The rail votes ONLY
+ * inside the armed policy's bounds — missing/invalid law = no votes, ever. */
+export function armedCuratePolicy(curate, minRcPct = null) {
+  const c = curate && typeof curate === "object" ? curate : null;
+  if (!c) return { ok: false, reasons: ["armed-curate-missing"], policy: null };
+  const reasons = [];
+  const int = (v) => Number.isInteger(v);
+  if (typeof c.enabled !== "boolean") reasons.push("enabled-must-be-boolean");
+  if (!int(c.maxPerDay) || c.maxPerDay < 1 || c.maxPerDay > 40) reasons.push("maxPerDay-out-of-range");
+  if (!Number.isFinite(c.baseWeightPct) || c.baseWeightPct < 1 || c.baseWeightPct > 100) reasons.push("baseWeightPct-out-of-range");
+  if (!Number.isFinite(c.minWeightPct) || c.minWeightPct < 1 || c.minWeightPct > c.baseWeightPct) reasons.push("minWeightPct-out-of-range");
+  if (!Number.isFinite(c.minVpEffPct) || c.minVpEffPct < 0 || c.minVpEffPct > 100) reasons.push("minVpEffPct-out-of-range");
+  if (reasons.length) return { ok: false, reasons, policy: null };
+  return { ok: true, reasons: [], policy: { ...c, minRcPct: Math.max(8, Number(minRcPct ?? 20)) } };
+}
+
 const readJson = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
 const writeJson = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); const t = `${p}.tmp.${process.pid}`; fs.writeFileSync(t, JSON.stringify(v, null, 2)); fs.renameSync(t, p); };
 const appendLine = (p, v) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.appendFileSync(p, JSON.stringify(v) + "\n"); };
 
 /* ── policy (pure) ─────────────────────────────────────────────────────── */
-export function armyCuratorPolicy() {
+export function armyCuratorPolicy(curateLaw = null) {
   const base = curatorPolicy();
-  return {
+  const p = {
     ...base,
-    maxPerDay: 20,         // T-36 STEP-UP (measured): 12/day burned 7.2%/day vs 20% regen while soldiers sat at VP 87-89% (t36-rails.json) — regen spilled to the floor. 20 × ~60% = 12%/day < 20% regen; the "step-up after a measured day" this comment promised is now measured & taken
+    maxPerDay: 20,         // R290 fallback — the RUN path always passes the validated armed law, which overrides these
     baseWeightPct: 80,     // heavy early votes — curation share ∝ rshares × timing, not spread
     minWeightPct: 40,
     maxVotesPerCycle: 4,   // spread RC across the day's cycle runs
-    fetchLimit: 30,        // bigger shared candidate pool: 10 accounts × 20 votes/day needs it (T-36 step-up)
+    fetchLimit: 30,        // bigger shared candidate pool for a 10-body roster
     tags: [...base.tags, "life", "photography"], // +2 measured-active community tags
-    note: "R290 structural multiplier: Σ SPᵢ × regen deployed on the same external candidates; excludeAccounts inherited = external-only law; VP floor 35 governs",
+    minRcPct: 20,          // G78-c RC floor = max(8, armed 20); enforcement owned by executeAs
+    note: "G78-c armed-law governed: run-path clamps maxPerDay/baseWeightPct/minWeightPct/minVpEffPct/enabled from exec-armed.json curate (validated fail-closed); R290 pacing fields govern rails-internal spread only; excludeAccounts inherited = external-only law",
   };
+  if (curateLaw && typeof curateLaw === "object" && curateLaw.ok === true && curateLaw.policy) {
+    Object.assign(p, curateLaw.policy);
+    p.armedLawApplied = true;
+  } else if (curateLaw) {
+    p.enabled = false; // armed law refused → the rail is disabled, never self-governed
+    p.armedLawRefused = curateLaw.reasons ?? true;
+  }
+  return p;
 }
 
 /* pure VP-budget check — selftestable (curator measured-law: burn%/day = Σ weight%/100) */
@@ -72,7 +131,10 @@ export function armyCurationState() { return readJson(AC_FILE, null); }
 /* ── runner ────────────────────────────────────────────────────────────── */
 export async function runArmyCuration({ now = new Date().toISOString() } = {}) {
   const conf = armedConf();
-  const p = armyCuratorPolicy();
+  /* G78-c: the armed curate law governs — validated fail-closed (no law, no votes). */
+  const law = armedCuratePolicy(conf?.curate ?? null, conf?.minRcPct ?? null);
+  if (!law.ok) return { enabled: conf?.curate?.enabled ?? null, at: now, day: dayKeyOf(now), rail: "army-curation", verdict: "ARMED-POLICY-INVALID", reasons: law.reasons };
+  const p = armyCuratorPolicy(law);
   /* R291 · measured tag-ROI ordering: the whitelist stays the universe, only
    * the ORDER follows what actually paid us (falls back to policy order when
    * data-thin — the tag-roi law). */
@@ -93,8 +155,15 @@ export async function runArmyCuration({ now = new Date().toISOString() } = {}) {
   const prev = readJson(AC_FILE, { day: null, perAccount: {} });
   const carried = prev.day === day ? prev : { day, perAccount: {} };
 
-  /* ONE batched chain read for the whole roster: VP + existence */
-  const accR = await rpcCall("condenser_api.get_accounts", [ARMY_ROSTER]);
+  /* G78-c: VAULT-VALID roster only, minus any body currently on the wound
+   * ledger (fingerprints-only). Wounded bodies are recorded, never voted. */
+  const { allowed, wounded } = woundFilter(VAULT_VALID_ROSTER, readCustodyWounds());
+  const results = wounded.map((account) => ({ account, verdict: "CUSTODY-WOUND" }));
+  let totalVotes = 0;
+  if (!allowed.length) return { ...base, verdict: "NO-ALLOWED-BODIES", accounts: results, totalVotes };
+
+  /* ONE batched chain read for the whole (vault-valid) roster: VP + existence */
+  const accR = await rpcCall("condenser_api.get_accounts", [allowed]);
   if (!accR.ok || !Array.isArray(accR.result)) return { ...base, verdict: "NO-ROSTER-READ", error: accR.error ?? "read failed" };
   const vpByAccount = {};
   for (const a of accR.result) {
@@ -103,12 +172,10 @@ export async function runArmyCuration({ now = new Date().toISOString() } = {}) {
   }
 
   /* ONE shared candidate fetch for the whole roster (network-economical) */
-  const { posts, ok: streamOk } = await fetchCandidates(p, ARMY_ROSTER[0], nowMs);
+  const { posts, ok: streamOk } = await fetchCandidates(p, allowed[0], nowMs);
   if (!streamOk) return { ...base, verdict: "NO-CANDIDATE-STREAM" };
 
-  const results = [];
-  let totalVotes = 0;
-  for (const account of ARMY_ROSTER) {
+  for (const account of allowed) {
     const st = carried.perAccount[account] ?? { votesToday: [], authorsToday: {} };
     const votedPermlinks = (st.votesToday ?? []).map((v) => `${v.author}/${v.permlink}`);
 
