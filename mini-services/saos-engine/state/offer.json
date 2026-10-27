@@ -1,30 +1,39 @@
 {
-  "verdict": "OFFER-EMPTY",
-  "parityBps": 297,
+  "verdict": "OFFER-READY",
+  "parityBps": 0,
   "blocker": null,
   "plan": {
     "asks": [],
     "bids": [],
-    "flowAsks": [],
+    "flowAsks": [
+      {
+        "side": "ask",
+        "amountSteem": 0.5,
+        "unit": 0.106,
+        "sbdOut3": 0.053,
+        "at": "2026-10-27T16:56:27.010Z",
+        "tranche": "flow"
+      }
+    ],
     "flowBids": []
   },
   "flow": {
     "bestAsk": 0.102362,
-    "bestBid": 0.10144,
+    "bestBid": 0.1014,
     "spacingBps": 15,
     "levels": 4,
-    "askBudgetSteem": 0.30516,
+    "askBudgetSteem": 0.80376,
     "bidBudgetSbd": 0,
     "feedAnchor": 0.104078,
-    "flowAsks": 0,
+    "flowAsks": 1,
     "flowBids": 0
   },
   "book": {
     "bestAsk": 0.10236220472440945,
-    "bestBid": 0.10144045445323595,
-    "askDepthSteem": 11295.842,
-    "bidDepthSbd": 2071.71,
-    "at": "2026-10-27T16:34:27.009Z"
+    "bestBid": 0.10140004269133908,
+    "askDepthSteem": 11329,
+    "bidDepthSbd": 2068.91,
+    "at": "2026-10-27T16:56:27.010Z"
   },
   "market": {
     "at": "2026-10-27T16:34:32.888Z",
@@ -47,56 +56,39 @@
     }
   },
   "marks": {
-    "paritySbdPerSteem": 0.107173,
-    "source": "coingecko",
-    "lowConfidence": false,
+    "paritySbdPerSteem": 0.104078,
+    "source": "internal-feed-fallback+derived-sbd",
+    "lowConfidence": true,
     "internalFeed": 0.104078,
-    "dragK": 1.045,
+    "dragK": 1.047,
     "floor": 0.102465,
-    "ceiling": 0.106958,
-    "spreadBpsFed": 90
+    "ceiling": 0.103869,
+    "spreadBpsFed": 94
   },
   "skew": {
-    "skew": 0.202316,
-    "askMult": 1.202316,
-    "bidMult": 0.797684,
+    "skew": 0.16059,
+    "askMult": 1.16059,
+    "bidMult": 0.83941,
     "reason": "hummingbot-inventory-skew"
   },
   "stale": {
-    "count": 22,
+    "count": 5,
     "orderids": [
       1793114925,
       1793114926,
       1793114927,
       1793114928,
-      1793114929,
-      2100001285,
-      2100001286,
-      2100001287,
-      2100001288,
-      2100001289,
-      2100001290,
-      2344925105,
-      2344925106,
-      2344925131,
-      2344932257,
-      2344932282,
-      2344932307,
-      2344939569,
-      2344939578,
-      2344939603,
-      2344946857,
-      2344946874
+      1793114929
     ]
   },
   "liquidity": {
-    "deployedAsks": 200.773,
-    "deployedBids": 11.588,
+    "deployedAsks": 196.618,
+    "deployedBids": 11.43,
     "askBudget": 0,
     "bidBudget": 0,
     "bidBudgetUncapped": 0,
     "buyBookCapSbd": 0,
     "deployCap": 0.6
   },
-  "publishedAt": "2026-10-27T16:34:27.009Z"
+  "publishedAt": "2026-10-27T16:56:27.010Z"
 }
