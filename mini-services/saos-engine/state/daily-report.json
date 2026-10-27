@@ -1,31 +1,31 @@
 {
-  "startedAt": "2026-10-27T17:18:27.010Z",
+  "startedAt": "2026-10-27T17:48:09.895Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 1881,
+      "ms": 1313,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.04865,
-        "sbdUsd": 0.452099,
-        "parity": 0.10760917409682393,
+        "steemUsd": 0.04867514,
+        "sbdUsd": 0.452172,
+        "parity": 0.10764739966207548,
         "source": "coingecko"
       },
       "feed": 0.10407810983021878,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": 339
+        "bps": 343
       },
-      "steemUsd": 0.04865,
-      "sbdUsd": 0.452099,
+      "steemUsd": 0.04867514,
+      "sbdUsd": 0.452172,
       "inventory": {
         "steem": 6.698,
         "sbd": 0.211,
-        "spOwn": 3411.0033245985433,
-        "rcPct": 87.4
+        "spOwn": 3411.0080648940943,
+        "rcPct": 87.8
       },
       "ordersOk": true,
       "orders": [
@@ -317,7 +317,7 @@
         "authorVestsPerDay": 0,
         "curationOps": 0,
         "authorOps": 0,
-        "windowSpanDays": 0.08,
+        "windowSpanDays": 0.1,
         "windowOps": 1001,
         "measured": true,
         "fuelUsdPerDay": 0,
@@ -327,12 +327,12 @@
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
       "ledgerAdded": 0,
-      "summary": "parity 0.10760917409682393 (coingecko) · fills 36 · fuel 0$"
+      "summary": "parity 0.10764739966207548 (coingecko) · fills 36 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1350,
+      "ms": 1245,
       "verdict": "DECISIONS:5",
       "decisions": [
         "book-depth:hold-shape",
@@ -352,11 +352,11 @@
       "name": "tick",
       "ok": true,
       "ms": 1,
-      "runCount": 118,
+      "runCount": 119,
       "signals": 4,
       "retiredFills": 0,
       "arbSignal": {
-        "gapBps": 339,
+        "gapBps": 343,
         "dir": "sell-external"
       },
       "layers": "measured (see state.json.grids)"
@@ -364,20 +364,20 @@
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 1402,
+      "ms": 663,
       "verdict": "OFFER-READY",
       "asks": 0,
       "bids": 0,
       "flowAsks": 1,
       "flowBids": 0,
       "staleCount": 17,
-      "skew": 0.164129,
+      "skew": 0.164166,
       "book": {
         "bestAsk": 0.10236220472440945,
         "bestBid": 0.10140004269133908,
-        "askDepthSteem": 11297.119,
-        "bidDepthSbd": 2071.552,
-        "at": "2026-10-27T17:18:27.010Z"
+        "askDepthSteem": 11329,
+        "bidDepthSbd": 2068.91,
+        "at": "2026-10-27T17:48:09.895Z"
       },
       "market": {
         "tradesPerDay": 158,
@@ -397,18 +397,18 @@
     "convert": {
       "name": "convert",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": 339,
-      "marketSbdUsd": 0.452099,
-      "impliedSbdUsd": 0.467437,
+      "edgeBps": 343,
+      "marketSbdUsd": 0.452172,
+      "impliedSbdUsd": 0.467679,
       "marketSourceNote": "external-measured"
     },
     "redeploy": {
       "name": "redeploy",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "REDEPLOY-HOLD",
       "reason": "below-min-powerup",
       "powerUpSteem": 0.509,
@@ -423,23 +423,41 @@
     },
     "curate": {
       "name": "curate",
-      "ok": false,
-      "ms": 2,
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). OPERATOR LAW 2026-10-06 (\"אין מה לבקש מפתחות — הכל בכספת בגיט\"): the operator is NEVER asked for se"
+      "ok": true,
+      "ms": 8990,
+      "verdict": "VOTED",
+      "votes": 1,
+      "txid": "b85ea3bf20b7b5f9b121bda2a5e2ea4c73b5e086",
+      "vpEff": 54.1,
+      "votesToday": 13,
+      "error": null
     },
     "army-curate": {
       "name": "army-curate",
       "ok": true,
-      "ms": 1,
-      "verdict": "CREDENTIAL-MISSING",
-      "totalVotes": 0,
-      "accounts": [],
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). OPERATOR LAW 2026-10-06 (\"אין מה לבקש מפתחות — הכל בכספת בגיט\"): the operator is NEVER asked for secrets. Self-revival is automatic: reviveArmyCustody (cycle step 1) pulls the git vault, chain-verifies the master WIF, and writes this marker itself — no operator action exists or is required. Seeing this message means the custody step did not run first — an engine sequencing bug, never an operator task."
+      "ms": 45542,
+      "verdict": "VOTED",
+      "totalVotes": 5,
+      "accounts": [
+        "cashmachine:VOTE-FAIL",
+        "israelnews:VOTE-FAIL",
+        "macrame:VOTE-FAIL",
+        "tov:VOTE-FAIL",
+        "wic:VOTE-FAIL",
+        "wog:VOTE-FAIL",
+        "woq:VOTE-FAIL",
+        "hcsoldier4:VOTE-FAIL",
+        "hcsoldier4:VOTED",
+        "hcsoldier5:VOTE-FAIL",
+        "hcsoldier5:VOTED",
+        "hcsoldier6:DAY-CAP"
+      ],
+      "error": null
     },
     "tag-roi": {
       "name": "tag-roi",
       "ok": true,
-      "ms": 0,
+      "ms": 9,
       "verdict": "DAY-ALREADY-WALKED",
       "tagsRanked": 25,
       "resolved": 0,
@@ -448,15 +466,21 @@
     },
     "capital-route": {
       "name": "capital-route",
-      "ok": false,
-      "ms": 2024,
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). OPERATOR LAW 2026-10-06 (\"אין מה לבקש מפתחות — הכל בכספת בגיט\"): the operator is NEVER asked for se"
+      "ok": true,
+      "ms": 2635,
+      "verdict": "ROUTED",
+      "actions": 5,
+      "ladderTop": 1.707819,
+      "executed": []
     },
     "execute": {
       "name": "execute",
-      "ok": false,
-      "ms": 1,
-      "error": "CREDENTIAL-MISSING: .secrets/headcorner.key not found (sandbox cold-reset wipes gitignored secrets). OPERATOR LAW 2026-10-06 (\"אין מה לבקש מפתחות — הכל בכספת בגיט\"): the operator is NEVER asked for se"
+      "ok": true,
+      "ms": 1374,
+      "verdict": "NO-OPS",
+      "ops": 0,
+      "opsToday": 5,
+      "opsDayCap": 1500
     },
     "soldiers": {
       "name": "soldiers",
@@ -467,7 +491,7 @@
     "fleetMatrix": {
       "name": "fleet-matrix",
       "ok": true,
-      "ms": 21490,
+      "ms": 18117,
       "verdict": "ACTIVATION-100pct",
       "activation": {
         "rate": 1,
@@ -476,8 +500,8 @@
         "total": 14
       },
       "totals": {
-        "orders24h": 459,
-        "votes24h": 218,
+        "orders24h": 458,
+        "votes24h": 221,
         "fills24h": 10,
         "steem": 406.226,
         "sbd": 13.987
@@ -487,17 +511,17 @@
     "fleetFills": {
       "name": "fleet-fills",
       "ok": true,
-      "ms": 16792,
+      "ms": 11369,
       "verdict": "SWEPT-13",
       "added": 0,
       "errs": 0,
-      "windowDays": 4.150521,
+      "windowDays": 4.171156,
       "perDayReady": true
     },
     "fleetRebalance": {
       "name": "fleet-rebalance",
       "ok": true,
-      "ms": 4,
+      "ms": 8,
       "verdict": "PLANNED-AWAITING-POLICY",
       "planned": 6,
       "executed": 0,
@@ -522,7 +546,7 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 741,
+      "ms": 907,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked"
@@ -559,14 +583,14 @@
       "ms": null,
       "verdict": "PART-GATED",
       "executed": 0,
-      "refused": 14,
-      "due": 0
+      "refused": 10,
+      "due": 17
     },
     "streamer": {
       "name": "streamer",
       "ok": true,
       "ms": null,
-      "verdict": "LIVE-REFUSED-NOT-ARMED",
+      "verdict": "NOTHING-NEW",
       "mode": null,
       "account": null,
       "txid": null,
@@ -575,7 +599,7 @@
       "txids": [],
       "staged": 0,
       "stagedRevenue": 0,
-      "revenuePublished": 0,
+      "revenuePublished": 4,
       "drafts": 24
     },
     "organic": {
@@ -589,7 +613,7 @@
     "shellWatch": {
       "name": "shell-watch",
       "ok": true,
-      "ms": 420,
+      "ms": 1461,
       "verdict": "CANNOT-JUDGE",
       "shelled": 0,
       "rendered": 0,
@@ -599,7 +623,7 @@
     "visibility": {
       "name": "visibility",
       "ok": true,
-      "ms": 9560,
+      "ms": 5941,
       "verdict": "PARTIAL",
       "chain": "ALL-EXISTS",
       "nodes": 2,
@@ -623,16 +647,16 @@
     "profiles": {
       "name": "profiles",
       "ok": true,
-      "ms": 39,
+      "ms": 2385,
       "verdict": "CUSTODY-DEFERRED",
       "updated": 0,
-      "skipped": 0,
-      "deferred": 14
+      "skipped": 4,
+      "deferred": 10
     },
     "hive": {
       "name": "hive",
       "ok": true,
-      "ms": 7,
+      "ms": 15,
       "verdict": "HIVE-NO-CUSTODY",
       "executed": 0,
       "custody": null,
@@ -651,7 +675,7 @@
     "hiveProfiles": {
       "name": "hiveProfiles",
       "ok": true,
-      "ms": 6,
+      "ms": 15,
       "verdict": "HIVE-NO-CUSTODY",
       "updated": 0,
       "skipped": 0,
@@ -660,7 +684,7 @@
     "rcPool": {
       "name": "rcPool",
       "ok": true,
-      "ms": 5,
+      "ms": 14,
       "verdict": "HIVE-NO-CUSTODY",
       "lifts": 0,
       "measured": {},
@@ -669,7 +693,7 @@
     "hiveSocial": {
       "name": "hiveSocial",
       "ok": true,
-      "ms": 5,
+      "ms": 14,
       "verdict": "HIVE-NO-CUSTODY",
       "executed": 0,
       "custody": {
@@ -680,10 +704,10 @@
     "bus": {
       "name": "bus",
       "ok": true,
-      "ms": 5278,
-      "verdict": "BUS-GATED:REFUSED",
+      "ms": 4284,
+      "verdict": "BUS-LIVE",
       "delivered": 0,
-      "published": 0
+      "published": 1
     },
     "rctank": {
       "name": "rctank",
@@ -708,7 +732,7 @@
     "income": {
       "name": "income",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "MEASURED",
       "day": "2026-10-27",
       "usdPerDay7d": -0.001903,
@@ -718,7 +742,7 @@
     "soldierClaims": {
       "name": "soldierClaims",
       "ok": true,
-      "ms": 692,
+      "ms": 1196,
       "verdict": "FAILED",
       "scanned": 10,
       "rosterSize": 10,
@@ -740,18 +764,18 @@
     "selftest": {
       "name": "selftest",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "CADENCE-GATED",
       "pass": 1982,
       "fail": 0,
-      "at": "2026-10-27T14:46:52.767Z"
+      "at": "2026-10-27T17:48:15.014Z"
     },
     "economics": {
       "name": "economics",
       "ok": true,
       "ms": 1,
-      "totalMeasuredUsdPerDay": 0.017977,
-      "totalEstUsdPerDay": 0.441465,
+      "totalMeasuredUsdPerDay": 0.017891,
+      "totalEstUsdPerDay": 0.442097,
       "rails": 6,
       "measuredCount": 1,
       "estimatedCount": 2,
@@ -760,7 +784,7 @@
     "recruit": {
       "name": "recruit",
       "ok": true,
-      "ms": 1,
+      "ms": 2,
       "verdict": "RECRUITED",
       "active": 9,
       "total": 11
@@ -768,7 +792,7 @@
     "council": {
       "name": "council",
       "ok": true,
-      "ms": 1,
+      "ms": 3,
       "verdict": "MESH-DARK",
       "organs": [
         "custodian:DOWN",
@@ -785,7 +809,7 @@
     "report": {
       "name": "report",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "realizedSbd": -0.01204,
       "positionSteem": 314.948,
       "positionAvgCost": 0.101836,
@@ -808,19 +832,11 @@
     "measuredTotalUsdPerDay": 0,
     "honesty": "unbased ≠ profit · signing doctrine-capped · all numbers measured this cycle"
   },
-  "ok": false,
-  "health": "blocked",
+  "ok": true,
+  "health": "ok",
   "failures": {
-    "failedSteps": [
-      "curate",
-      "capital-route",
-      "execute"
-    ],
-    "blockedSteps": [
-      "curate",
-      "capital-route",
-      "execute"
-    ]
+    "failedSteps": [],
+    "blockedSteps": []
   },
   "blockages": [
     {
@@ -836,5 +852,5 @@
       "reason": "below-min-powerup"
     }
   ],
-  "finishedAt": "2026-10-27T17:19:27.431Z"
+  "finishedAt": "2026-10-27T17:50:47.506Z"
 }
