@@ -1,19 +1,36 @@
 {
-  "at": "2026-10-27T12:34:21.231Z",
-  "verdict": "5-FLAGGED",
+  "at": "2026-10-27T12:49:28.066Z",
+  "verdict": "6-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 1,
+      "scanned": 5,
       "signedPct": 0,
       "signed": 0,
-      "unsigned": 1,
+      "unsigned": 3,
       "invalid": 0,
-      "untrusted": 0,
-      "flagged": []
+      "untrusted": 2,
+      "flagged": [
+        {
+          "hash": "9d423359",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-27T12:40:58Z",
+          "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות"
+        },
+        {
+          "hash": "e1df188a",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-27T12:40:56Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        }
+      ]
     },
     {
       "repo": "saos-runtime",
@@ -34,9 +51,9 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 8,
+      "unsigned": 9,
       "invalid": 0,
-      "untrusted": 2,
+      "untrusted": 1,
       "unknown": 0,
       "signedPct": 0,
       "flagged": [
@@ -46,14 +63,6 @@
           "sig": "SIGNED-UNTRUSTED",
           "author": "sandbox-voice",
           "at": "2026-10-27T12:20:13Z",
-          "subject": "sandbox voice: ports 3/8 · engine down [skip ci]"
-        },
-        {
-          "hash": "f810685d",
-          "gq": "U",
-          "sig": "SIGNED-UNTRUSTED",
-          "author": "sandbox-voice",
-          "at": "2026-10-27T12:19:49Z",
           "subject": "sandbox voice: ports 3/8 · engine down [skip ci]"
         }
       ]
@@ -131,20 +140,29 @@
   ],
   "flagged": [
     {
+      "hash": "9d423359",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-27T12:40:58Z",
+      "subject": "vault-sync [seal-host]: union-resolved — איחוד-ללא-מחיקות",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "e1df188a",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-27T12:40:56Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
       "hash": "9ae66e2c",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
       "author": "sandbox-voice",
       "at": "2026-10-27T12:20:13Z",
-      "subject": "sandbox voice: ports 3/8 · engine down [skip ci]",
-      "repo": "FleetHQ"
-    },
-    {
-      "hash": "f810685d",
-      "gq": "U",
-      "sig": "SIGNED-UNTRUSTED",
-      "author": "sandbox-voice",
-      "at": "2026-10-27T12:19:49Z",
       "subject": "sandbox voice: ports 3/8 · engine down [skip ci]",
       "repo": "FleetHQ"
     },
@@ -181,5 +199,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 6831
+  "ms": 7234
 }
