@@ -496,7 +496,7 @@ ok("G78-c yield rows: treasury form, one row per currency, exact consumer shape"
   ], { at });
   const shape = b.intake.every((r) => ["at", "stream", "amount", "currency", "proof-ref", "source"].every((k) => k in r));
   const get = (c) => b.intake.find((r) => r.currency === c);
-  return b.counted === 2 && b.intake.length === 2 && shape && get("STEEM").amount === 2 && get("SBD").amount === 2 && get("VESTS").amount === 15 && b.totals.VESTS === 15;
+  return b.counted === 2 && b.intake.length === 3 && shape && get("STEEM").amount === 2 && get("SBD").amount === 2 && get("VESTS").amount === 15 && b.totals.VESTS === 15;
 })());
 ok("G78-c yield rows: detail rows are sumCuration-law curation rows, usd honest 0", (() => {
   const b = yieldRowsFromAccounts([{ name: "tov", reward_sbd_balance: "0.000 SBD", reward_steem_balance: "0.000 STEEM", reward_vesting_steem: "3.000000 VESTS" }], { at: "2026-10-27T14:00:00.000Z" });

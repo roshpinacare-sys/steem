@@ -130,14 +130,16 @@ export async function runCurationYield({ now = new Date().toISOString() } = {}) 
   /* per-soldier RC/VP telemetry — fail-isolated, never blocks the yield stream */
   let telemetry = null, telemetryVerdict = "SKIPPED";
   try {
-    let rc = await rpcCall("rc_api.find_rc_accounts", { accounts: allowed });
-    let rcRows = rc?.ok ? rc.result?.rc_accounts ?? [] : [];
-    if (!rcRows.length) {
-      /* the primary node serves ok-but-empty when the rc_api plugin is off —
-       * fall back to api.steemit.com (measured: rc_api present there) */
+    /* api.steemit.com first for RC (measured 2026-10-27: its rc_api plugin is
+     * live; the primary node serves ok-but-empty rows for some bodies) */
+    let rcRows = [];
+    try {
       const res = await fetch("https://api.steemit.com", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method: "rc_api.find_rc_accounts", params: { accounts: allowed }, id: 1 }), signal: AbortSignal.timeout(15000) });
-      const j = await res.json().catch(() => null);
-      rcRows = j?.result?.rc_accounts ?? [];
+      rcRows = (await res.json().catch(() => null))?.result?.rc_accounts ?? [];
+    } catch { /* fall through to primary node */ }
+    if (!rcRows.length) {
+      const rc = await rpcCall("rc_api.find_rc_accounts", { accounts: allowed });
+      rcRows = rc?.ok ? rc.result?.rc_accounts ?? [] : [];
     }
     telemetry = soldierTelemetry(r.result, rcRows, { at: now });
     telemetryVerdict = rcRows.length ? "MEASURED" : "RC-UNAVAILABLE";
