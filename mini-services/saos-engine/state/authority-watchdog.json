@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-27T13:40:03.680Z",
-  "verdict": "3-FLAGGED",
+  "at": "2026-10-27T13:55:10.032Z",
+  "verdict": "5-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
@@ -34,12 +34,29 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 10,
+      "unsigned": 8,
       "invalid": 0,
-      "untrusted": 0,
+      "untrusted": 2,
       "unknown": 0,
       "signedPct": 0,
-      "flagged": []
+      "flagged": [
+        {
+          "hash": "32c819b0",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "sandbox-voice",
+          "at": "2026-10-27T13:50:52Z",
+          "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]"
+        },
+        {
+          "hash": "4f62b746",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "sandbox-voice",
+          "at": "2026-10-27T13:50:28Z",
+          "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]"
+        }
+      ]
     },
     {
       "repo": "Console",
@@ -122,6 +139,24 @@
   ],
   "flagged": [
     {
+      "hash": "32c819b0",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "sandbox-voice",
+      "at": "2026-10-27T13:50:52Z",
+      "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]",
+      "repo": "FleetHQ"
+    },
+    {
+      "hash": "4f62b746",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "sandbox-voice",
+      "at": "2026-10-27T13:50:28Z",
+      "subject": "sandbox voice: ports 5/8 · engine alive [skip ci]",
+      "repo": "FleetHQ"
+    },
+    {
       "hash": "7354a69c",
       "gq": "E",
       "sig": "INVALID",
@@ -154,5 +189,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 6349
+  "ms": 7982
 }
