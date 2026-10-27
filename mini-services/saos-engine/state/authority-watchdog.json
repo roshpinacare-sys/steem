@@ -1,19 +1,28 @@
 {
-  "at": "2026-10-27T15:28:08.056Z",
-  "verdict": "4-FLAGGED",
+  "at": "2026-10-27T15:43:26.945Z",
+  "verdict": "6-FLAGGED",
   "repos": [
     {
       "repo": "steem.git(LOCAL)",
       "coverage": "MEASURED",
       "ok": true,
       "branch": "saos-cockpit",
-      "scanned": 1,
+      "scanned": 2,
       "signedPct": 0,
       "signed": 0,
       "unsigned": 1,
       "invalid": 0,
-      "untrusted": 0,
-      "flagged": []
+      "untrusted": 1,
+      "flagged": [
+        {
+          "hash": "1f4b5f08",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "agent-2-economy-core",
+          "at": "2026-10-27T15:28:45Z",
+          "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31"
+        }
+      ]
     },
     {
       "repo": "saos-runtime",
@@ -34,12 +43,20 @@
       "method": "git-native",
       "scanned": 10,
       "signed": 0,
-      "unsigned": 9,
+      "unsigned": 8,
       "invalid": 0,
-      "untrusted": 1,
+      "untrusted": 2,
       "unknown": 0,
       "signedPct": 0,
       "flagged": [
+        {
+          "hash": "cdfebda8",
+          "gq": "U",
+          "sig": "SIGNED-UNTRUSTED",
+          "author": "sandbox-voice",
+          "at": "2026-10-27T15:28:26Z",
+          "subject": "sandbox voice: ports 3/8 · engine down [skip ci]"
+        },
         {
           "hash": "d40ac4ad",
           "gq": "U",
@@ -131,6 +148,24 @@
   ],
   "flagged": [
     {
+      "hash": "1f4b5f08",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "agent-2-economy-core",
+      "at": "2026-10-27T15:28:45Z",
+      "subject": "vault-seal [seal-host]: 11 files — כלום לא מת עם הסנדבוקס (גל-98 · R31",
+      "repo": "steem.git(LOCAL)"
+    },
+    {
+      "hash": "cdfebda8",
+      "gq": "U",
+      "sig": "SIGNED-UNTRUSTED",
+      "author": "sandbox-voice",
+      "at": "2026-10-27T15:28:26Z",
+      "subject": "sandbox voice: ports 3/8 · engine down [skip ci]",
+      "repo": "FleetHQ"
+    },
+    {
       "hash": "d40ac4ad",
       "gq": "U",
       "sig": "SIGNED-UNTRUSTED",
@@ -172,5 +207,5 @@
     "total": 7
   },
   "law": "every non-G commit is a named flag; public repos read through the plain documented API (public data only, Law 24); the private lineage is measured git-natively",
-  "ms": 18887
+  "ms": 7142
 }

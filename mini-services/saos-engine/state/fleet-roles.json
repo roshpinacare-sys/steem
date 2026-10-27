@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/market.json: 118 trades/24h measured (vol 2845.859 STEEM)",
+      "evidence": "state/market.json: 134 trades/24h measured (vol 3116.8 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -37,7 +37,7 @@
       "cadence": "cycle+tail",
       "truthContract": "countDayFillsFromHistory / countDayOrderOpsFromHistory on real rows",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/observe.json: 22 chain-truth fills counted (last 2026-10-27T14:43:36.000Z)",
+      "evidence": "state/observe.json: 36 chain-truth fills counted (last 2026-10-27T15:26:00.000Z)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/convert-plan.json: CONVERT-PLAN (edge 337bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge 0bps)",
       "priorStatus": "active"
     },
     {
@@ -73,7 +73,7 @@
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/curator.json: DAY-CAP (budgetCounted 12, basis max(state, chain-truth))",
+      "evidence": "state/curator.json: VP-FLOOR (budgetCounted ?, basis state)",
       "priorStatus": "active"
     },
     {
@@ -137,6 +137,6 @@
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-27T14:52:03.809Z",
-  "pid": 10134
+  "at": "2026-10-27T15:29:57.015Z",
+  "pid": 1885
 }
