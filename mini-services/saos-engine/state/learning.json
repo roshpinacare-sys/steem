@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-27T14:46:52.826Z",
+  "at": "2026-10-27T14:52:03.809Z",
   "enabled": true,
-  "runsTotal": 2,
+  "runsTotal": 3,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,18 +23,15 @@
         "VOTED": 20,
         "BROADCAST-FAIL": 3
       },
-      "vpEff": 63.2,
-      "meanAgeMinutes": 47,
-      "tagsVoted": {
-        "ai": 1,
-        "crypto": 2
-      },
+      "vpEff": null,
+      "meanAgeMinutes": null,
+      "tagsVoted": {},
       "dayCapsInRow": 0,
-      "maxPerDay": 30
+      "maxPerDay": 10
     },
     "exec": {
-      "window": 3,
-      "fails": 1,
+      "window": 5,
+      "fails": 2,
       "lastError": null
     },
     "watchdog": null
@@ -51,7 +48,7 @@
     {
       "id": "broadcast-fails",
       "severity": "medium",
-      "evidence": "1/3 broadcasts failed · last: ",
+      "evidence": "2/5 broadcasts failed · last: ",
       "lesson": "broadcast failures burn RC and delay rails",
       "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
@@ -59,8 +56,8 @@
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 2,
-    "broadcast-fails": 1
+    "signing-cred-blocked": 3,
+    "broadcast-fails": 2
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
