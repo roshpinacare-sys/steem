@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-27T14:52:03.809Z",
+  "at": "2026-10-27T15:14:06.902Z",
   "enabled": true,
-  "runsTotal": 3,
+  "runsTotal": 4,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,15 +23,15 @@
         "VOTED": 20,
         "BROADCAST-FAIL": 3
       },
-      "vpEff": null,
+      "vpEff": 57.2,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 10
     },
     "exec": {
-      "window": 5,
-      "fails": 2,
+      "window": 3,
+      "fails": 0,
       "lastError": null
     },
     "watchdog": null
@@ -44,19 +44,12 @@
       "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
-    },
-    {
-      "id": "broadcast-fails",
-      "severity": "medium",
-      "evidence": "2/5 broadcasts failed · last: ",
-      "lesson": "broadcast failures burn RC and delay rails",
-      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 3,
+    "signing-cred-blocked": 4,
     "broadcast-fails": 2
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
