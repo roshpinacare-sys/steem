@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-27T17:48:09.895Z",
+  "at": "2026-10-27T20:50:48.871Z",
   "enabled": true,
-  "runsTotal": 11,
+  "runsTotal": 12,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,22 +17,23 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 16,
-      "window": 25,
+      "totalVotes": 19,
+      "window": 29,
       "verdicts": {
-        "VOTED": 22,
+        "VOTED": 26,
         "BROADCAST-FAIL": 3
       },
-      "vpEff": 54.1,
-      "meanAgeMinutes": 31,
+      "vpEff": 52.4,
+      "meanAgeMinutes": 66.7,
       "tagsVoted": {
+        "steem": 2,
         "crypto": 1
       },
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
     "exec": {
-      "window": 26,
+      "window": 0,
       "fails": 0,
       "lastError": null
     },
@@ -41,16 +42,17 @@
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 11,
+    "signing-cred-blocked": 12,
     "broadcast-fails": 2
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
