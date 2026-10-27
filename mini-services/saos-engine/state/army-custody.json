@@ -1,6 +1,63 @@
 {
-  "at": "2026-10-27T16:56:27.010Z",
-  "verdict": "REVIVAL-FAIL",
-  "error": "vault-had-no-army-posting-keys (GEN-1-meta:no-carrying-ref-for-gen1-meta (tried: origin/saos-cockpit:agent/vault/GEN-1-ERA-META.json, origin/main:agent/vault/GE",
-  "ms": 13
+  "at": "2026-10-27T17:16:30.247Z",
+  "verdict": "PARTIAL",
+  "master": {
+    "roles": [],
+    "before": "master-unverified",
+    "law": "chain-judged wif-direct, GEN-2 first"
+  },
+  "before": {
+    "verified": 0
+  },
+  "after": {
+    "verified": 3,
+    "total": 11
+  },
+  "denominator": {
+    "law": "living-fleet (T-80 retirement, chain-judged)",
+    "living": 11,
+    "retired": [
+      "siq",
+      "tov",
+      "wog"
+    ],
+    "retiredCount": 3,
+    "fullRosterVerified": 3,
+    "fullRosterTotal": 14,
+    "provenance": "W19-a THE RESURRECTION (commit b62e1c395): vault internally consistent BUT live chain authorities point elsewhere — the chain is the only judge, the bodies are dead, no key material exists to revive them; owner approved the yield decision 2026-10-20 (IM trace 1a157f3c9973fe45: 'כן מאשר תמשיך ודחוף')"
+  },
+  "resurrection": {
+    "resurrected": [
+      "hcsoldier5"
+    ],
+    "stillRetired": [
+      "siq",
+      "tov",
+      "wog"
+    ],
+    "wounds": [],
+    "law": "G78-c resurrection: chain-judged retirement re-judged against the CURRENT vault WIFs; verified bodies return to the living denominator"
+  },
+  "gen1Wound": "no-carrying-ref-for-gen1-meta (tried: origin/saos-cockpit:agent/vault/GEN-1-ERA-META.json, origin/main:agent/vault/GEN-1-ERA-META.json, HEAD:agent/vault/GEN-1-ERA-META.json, 1c9f00d0:agent/recovery-me",
+  "pulled": {
+    "extracted": 0,
+    "missing": [],
+    "error": "vault-had-no-army-posting-keys (GEN-1-meta:no-carrying-ref-for-gen1-meta (tried: origin/saos-cockpit:agent/vault/GEN-1-ERA-META.json, origin/main:agent/vault/GEN-1-ERA-META.json, HEAD:agent/vault/GEN-"
+  },
+  "adopted": [
+    {
+      "account": "hcsoldier4",
+      "verdict": "ALREADY-VERIFIED"
+    },
+    {
+      "account": "hcsoldier5",
+      "verdict": "ALREADY-VERIFIED"
+    },
+    {
+      "account": "hcsoldier6",
+      "verdict": "ALREADY-VERIFIED"
+    }
+  ],
+  "law": "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
+  "ms": 2345
 }
