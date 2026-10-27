@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-27T13:23:11.427Z",
+  "at": "2026-10-27T13:42:13.502Z",
   "enabled": true,
-  "runsTotal": 13,
+  "runsTotal": 1,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -29,8 +29,8 @@
       "maxPerDay": 10
     },
     "exec": {
-      "window": 1,
-      "fails": 0,
+      "window": 2,
+      "fails": 1,
       "lastError": null
     },
     "watchdog": null
@@ -43,12 +43,21 @@
       "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
       "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
       "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+    },
+    {
+      "id": "broadcast-fails",
+      "severity": "low",
+      "resolved": true,
+      "evidence": "1/2 broadcasts failed in the window (last: ) · last fail 2026-10-27T13:43:25.388Z < last OK broadcast 2026-10-27T13:44:18.305Z (live posting-role ops succeed)",
+      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
+      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 13
+    "signing-cred-blocked": 1,
+    "broadcast-fails": 1
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
