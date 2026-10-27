@@ -70,9 +70,9 @@ export function yieldRowsFromAccounts(accounts, { at, stream = YIELD_STREAM, sou
     totals.SBD += sbd.amount; totals.STEEM += steem.amount; totals.VESTS += vests.amount;
     detail.push({ kind: "curation", opNature: "real-tx", account: a.name, vests: r6(vests.amount), steem: r6(steem.amount), sbd: r6(sbd.amount), usd: 0, ts: at, proof: `${proofRef}#${a.name}` });
   }
-  const intake = counted > 0
-    ? Object.entries(totals).filter(([, v]) => v > 0).map(([currency, v]) => ({ at, stream, amount: r6(v), currency, "proof-ref": `${proofRef}#${counted}-bodies`, source }))
-    : [{ at, stream, amount: 0, currency: "n/a", "proof-ref": `stream-empty:0-bodies@${proofRef}`, source }];
+  const rows = Object.entries(totals).filter(([, v]) => v > 0).map(([currency, v]) => ({ at, stream, amount: r6(v), currency, "proof-ref": `${proofRef}#${counted}-bodies`, source }));
+  const intake = rows.length > 0 ? rows
+    : [{ at, stream, amount: 0, currency: "n/a", "proof-ref": `stream-empty:${counted}-bodies-all-zero@${proofRef}`, source }]; /* fleet-economy law: empty/all-zero stream = ONE honest zero row, never an invented number */
   return { detail, intake, counted, totals: { STEEM: r6(totals.STEEM), SBD: r6(totals.SBD), VESTS: r6(totals.VESTS) } };
 }
 
@@ -80,7 +80,9 @@ export function yieldRowsFromAccounts(accounts, { at, stream = YIELD_STREAM, sou
 export function soldierTelemetry(accounts, rcAccounts, { at } = {}) {
   const rcBy = {};
   for (const rc of Array.isArray(rcAccounts) ? rcAccounts : []) {
-    if (rc?.account) rcBy[rc.account] = Math.round(rcAvailable(rc) * 100) / 100;
+    if (!rc?.account) continue;
+    const a = rcAvailable(rc);
+    rcBy[rc.account] = a.max > 0 ? Math.round((a.available / a.max) * 10000) / 100 : null; /* regen-adjusted RC% (R262 measured semantics) */
   }
   const per = {};
   for (const a of Array.isArray(accounts) ? accounts : []) {
@@ -128,9 +130,17 @@ export async function runCurationYield({ now = new Date().toISOString() } = {}) 
   /* per-soldier RC/VP telemetry — fail-isolated, never blocks the yield stream */
   let telemetry = null, telemetryVerdict = "SKIPPED";
   try {
-    const rc = await rpcCall("rc_api.find_rc_accounts", { accounts: allowed });
-    telemetry = soldierTelemetry(r.result, rc?.ok ? rc.result?.rc_accounts ?? [] : [], { at: now });
-    telemetryVerdict = "MEASURED";
+    let rc = await rpcCall("rc_api.find_rc_accounts", { accounts: allowed });
+    let rcRows = rc?.ok ? rc.result?.rc_accounts ?? [] : [];
+    if (!rcRows.length) {
+      /* the primary node serves ok-but-empty when the rc_api plugin is off —
+       * fall back to api.steemit.com (measured: rc_api present there) */
+      const res = await fetch("https://api.steemit.com", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method: "rc_api.find_rc_accounts", params: { accounts: allowed }, id: 1 }), signal: AbortSignal.timeout(15000) });
+      const j = await res.json().catch(() => null);
+      rcRows = j?.result?.rc_accounts ?? [];
+    }
+    telemetry = soldierTelemetry(r.result, rcRows, { at: now });
+    telemetryVerdict = rcRows.length ? "MEASURED" : "RC-UNAVAILABLE";
     const t = `${TELEMETRY}.tmp.${process.pid}`;
     fs.writeFileSync(t, JSON.stringify(telemetry, null, 2));
     fs.renameSync(t, TELEMETRY);

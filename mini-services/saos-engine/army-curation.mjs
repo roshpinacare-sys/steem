@@ -22,7 +22,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { rpcCall } from "./measure.mjs";
-import { executeAs, armedConf, execPaused, loadCredential } from "./signer.mjs";
+import { executeAs, armedConf, execPaused, loadCredential, custodyOf } from "./signer.mjs";
+import { adoptAccountPostingWif } from "./vault-revival.mjs";
 import { curatorPolicy, filterCandidates, normalizePost, fetchCandidates,
   effectiveVests, vpEffPct, weightForAge, hashSeed, dayKeyOf } from "./curator.mjs";
 import { countDayVotesFromHistory } from "./lib.mjs";
@@ -174,6 +175,16 @@ export async function runArmyCuration({ now = new Date().toISOString() } = {}) {
   /* ONE shared candidate fetch for the whole roster (network-economical) */
   const { posts, ok: streamOk } = await fetchCandidates(p, allowed[0], nowMs);
   if (!streamOk) return { ...base, verdict: "NO-CANDIDATE-STREAM" };
+
+  /* G78-c · SELF-ADOPTION LAW: custody is memory-first (R312) — a fresh
+   * process re-adopts each roster body from the 0600 local cache BEFORE any
+   * signature, chain-judged per WIF (the chain stays the only judge). A body
+   * that cannot chain-verify is refused by the think gate and recorded —
+   * nothing here ever bypasses the signer's gate. */
+  for (const account of allowed) {
+    if (custodyOf(account) === "verified") continue;
+    try { await adoptAccountPostingWif(account); } catch { /* think gate stays the guard */ }
+  }
 
   for (const account of allowed) {
     const st = carried.perAccount[account] ?? { votesToday: [], authorsToday: {} };
