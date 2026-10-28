@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-28T21:50:56.910Z",
-  "head": "f248ba8824995b7d915345896d321e9b6bbb5c66",
-  "verdict": "SURFACES-OK",
+  "at": "2026-10-28T21:55:29.198Z",
+  "head": "eb28a1531d27bbfacb30acac27fb56a886430324",
+  "verdict": "SURFACES-DEGRADED",
   "repairMode": "observe",
   "actArmed": false,
   "prevVerdict": "SURFACES-OK",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 20.8
+      "ageMinutes": 25.4
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 20.8
+      "ageMinutes": 25.4
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 270.3
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 2.5
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 4.9
+      "ageMinutes": 4.5
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 6153.8
+      "ageMinutes": 6158.3
     },
     {
       "id": "engine-selftest",
@@ -66,8 +66,8 @@
       "id": "artery-workflow",
       "kind": "workflow",
       "source": "api",
-      "verdict": "OK",
-      "reason": "run-active (artery alive right now)"
+      "verdict": "DEGRADED",
+      "reason": "probe-error:api-http-403"
     },
     {
       "id": "steem-rpc",
@@ -79,22 +79,20 @@
   ],
   "repairsPlanned": [
     {
-      "targetId": "pulse-domain-published",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Domain",
-      "workflow": "published-ledger.yml",
-      "readbackRequired": true
-    },
-    {
       "targetId": "engine-presence-digest",
       "verdict": "STALE",
       "action": "regen-state",
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
       "readbackRequired": true
+    },
+    {
+      "targetId": "artery-workflow",
+      "verdict": "DEGRADED",
+      "action": "escalate",
+      "readbackRequired": true
     }
   ],
   "repairs": [],
-  "signature": "sig:ac630544"
+  "signature": "sig:64d6131c"
 }
