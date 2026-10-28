@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "at": "2026-10-28T01:09:00.646Z",
+  "at": "2026-10-28T01:30:45.715Z",
   "day": "2026-10-28",
   "roster": [
     "headcorner",
@@ -31,10 +31,10 @@
   "gate": {
     "mode": "ARMED",
     "verdict": "dual-key live verdict passed (exec29 a-d)",
-    "at": "2026-10-28T01:09:00.646Z"
+    "at": "2026-10-28T01:30:45.715Z"
   },
-  "custodyVerdict": "PARTIAL",
-  "custodyVerified": 3,
+  "custodyVerdict": "REVIVAL-FAIL",
+  "custodyVerified": null,
   "accounts": {
     "headcorner": {
       "done": {
@@ -52,9 +52,67 @@
       "said": [],
       "deepened": [],
       "community": [],
-      "verdict": "CI-MASTER-PARKED",
-      "custody": "master-unverified",
-      "note": "master signing is machine-local by law; soldiers converse from CI"
+      "verdict": "SOCIAL-LIVE",
+      "custody": "master-verified",
+      "note": "master signing is machine-local by law; soldiers converse from CI",
+      "saidDay": "2026-10-28",
+      "paused": null,
+      "schedule": [
+        {
+          "kind": "publish",
+          "minute": 684
+        },
+        {
+          "kind": "fleet-vote",
+          "minute": 1064
+        },
+        {
+          "kind": "fleet-vote",
+          "minute": 677
+        },
+        {
+          "kind": "fleet-vote",
+          "minute": 1269
+        },
+        {
+          "kind": "fleet-comment",
+          "minute": 772
+        },
+        {
+          "kind": "fleet-comment",
+          "minute": 1035
+        },
+        {
+          "kind": "reply",
+          "minute": 989
+        },
+        {
+          "kind": "reply",
+          "minute": 1330
+        },
+        {
+          "kind": "reply",
+          "minute": 1121
+        },
+        {
+          "kind": "community-comment",
+          "minute": 605
+        },
+        {
+          "kind": "community-comment",
+          "minute": 1099
+        },
+        {
+          "kind": "deepen",
+          "minute": 1290
+        },
+        {
+          "kind": "deepen",
+          "minute": 751
+        }
+      ],
+      "seeds": 3580465756,
+      "stealthPublish": "due"
     },
     "cashmachine": {
       "done": {
@@ -282,10 +340,10 @@
       "said": [],
       "deepened": [],
       "community": [],
-      "verdict": "SOCIAL-LIVE",
+      "verdict": "REFUSED-NO-CUSTODY",
       "saidDay": "2026-10-28",
       "paused": null,
-      "custody": "verified",
+      "custody": "no-custody",
       "schedule": [
         {
           "kind": "publish",
@@ -341,7 +399,8 @@
         }
       ],
       "seeds": 2335293096,
-      "stealthPublish": "due"
+      "stealthPublish": "due",
+      "note": "no chain-verified credential — the git-vault revival (state/army-custody.json) is the lawful path; nothing is ever fabricated"
     },
     "hcsoldier5": {
       "done": {
@@ -359,10 +418,10 @@
       "said": [],
       "deepened": [],
       "community": [],
-      "verdict": "SOCIAL-LIVE",
+      "verdict": "REFUSED-NO-CUSTODY",
       "saidDay": "2026-10-28",
       "paused": null,
-      "custody": "verified",
+      "custody": "no-custody",
       "schedule": [
         {
           "kind": "publish",
@@ -418,7 +477,8 @@
         }
       ],
       "seeds": 4030167771,
-      "stealthPublish": "rotation-park"
+      "stealthPublish": "rotation-park",
+      "note": "no chain-verified credential — the git-vault revival (state/army-custody.json) is the lawful path; nothing is ever fabricated"
     },
     "hcsoldier6": {
       "done": {
@@ -436,10 +496,10 @@
       "said": [],
       "deepened": [],
       "community": [],
-      "verdict": "SOCIAL-LIVE",
+      "verdict": "REFUSED-NO-CUSTODY",
       "saidDay": "2026-10-28",
       "paused": null,
-      "custody": "verified",
+      "custody": "no-custody",
       "schedule": [
         {
           "kind": "publish",
@@ -495,16 +555,18 @@
         }
       ],
       "seeds": 2743928462,
-      "stealthPublish": "due"
+      "stealthPublish": "due",
+      "note": "no chain-verified credential — the git-vault revival (state/army-custody.json) is the lawful path; nothing is ever fabricated"
     }
   },
   "seeds": {
     "hcsoldier4": 2335293096,
     "hcsoldier5": 4030167771,
-    "hcsoldier6": 2743928462
+    "hcsoldier6": 2743928462,
+    "headcorner": 3580465756
   },
   "executed": 0,
-  "refused": 10,
+  "refused": 13,
   "due": 0,
-  "ms": 760
+  "ms": 140
 }
