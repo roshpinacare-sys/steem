@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-28T01:30:45.715Z",
+  "at": "2026-10-28T03:22:33.541Z",
   "enabled": true,
-  "runsTotal": 15,
+  "runsTotal": 16,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,17 +17,16 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 25,
+      "totalVotes": 28,
       "window": 30,
       "verdicts": {
         "VOTED": 27,
         "BROADCAST-FAIL": 3
       },
-      "vpEff": 51.4,
-      "meanAgeMinutes": 125.3,
+      "vpEff": 50,
+      "meanAgeMinutes": 79.7,
       "tagsVoted": {
-        "crypto": 2,
-        "steem": 1
+        "steem": 3
       },
       "dayCapsInRow": 0,
       "maxPerDay": 30
@@ -42,17 +41,16 @@
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+      "severity": "high",
+      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 15,
+    "signing-cred-blocked": 16,
     "broadcast-fails": 2
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
