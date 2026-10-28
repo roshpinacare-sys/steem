@@ -1,10 +1,10 @@
 {
-  "at": "2026-10-28T22:00:13.926Z",
-  "head": "7c7c9b73b435b14b0836618288ac5c4c7d6dc6a9",
+  "at": "2026-10-28T22:04:55.285Z",
+  "head": "d423eef43ca4d4aa9af5fb9d897a8a6c59d8998e",
   "verdict": "SURFACES-OK",
-  "repairMode": "act",
-  "actArmed": true,
-  "prevVerdict": "SURFACES-DEGRADED",
+  "repairMode": "observe",
+  "actArmed": false,
+  "prevVerdict": "SURFACES-OK",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 30.1
+      "ageMinutes": 4.8
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 30.1
+      "ageMinutes": 4.8
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 7.2
+      "ageMinutes": 11.9
     },
     {
       "id": "engine-heartbeat",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 6163
+      "ageMinutes": 6167.7
     },
     {
       "id": "engine-selftest",
@@ -88,16 +88,5 @@
     }
   ],
   "repairs": [],
-  "triageGate": [
-    {
-      "id": "engine-presence-digest",
-      "verdict": "STALE",
-      "class": "AMBIGUOUS",
-      "confidence": "low",
-      "basis": "verdict STALE without a stronger signature (rule 6)",
-      "advisedAction": "observe-then-escalate",
-      "gate": "observe-only (no auto-retry this beat)"
-    }
-  ],
-  "signature": "sig:a8696d17"
+  "signature": "sig:61f76fa5"
 }
