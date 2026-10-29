@@ -73,7 +73,7 @@ async function main() {
   const seen = new Set(); const cands = held.filter((h) => (seen.has(h.wif) ? false : (seen.add(h.wif), true)));
   console.log(`judge: ${cands.length} held WIF candidate(s) from ${files.length} vault file(s)`);
 
-  const ROSTER = ["headcorner","cashmachine","haran","israelnews","lsa","macrame","siq","tov","wic","wog","woq","hcsoldier1","hcsoldier2","hcsoldier3","hcsoldier4","hcsoldier5","hcsoldier6","hcsoldier7","saos-0001","saos-0002","saos-0003","saos-0004","saos-0005","saos-0006","saos-0007","saos-0008","saos-0009"];
+  const ROSTER = ["headcorner","cashmachine","haran","israelnews","lsa","macrame","siq","tov","wic","wog","woq","hcsoldier1","hcsoldier2","hcsoldier3","hcsoldier4","hcsoldier5","hcsoldier6","hcsoldier7","hcsoldier8","hcsoldier9","hcsoldier10","hcsoldier11","hcsoldier12","hcsoldier13","hcsoldier14","hcsoldier15","hcsoldier16","saos-0001","saos-0002","saos-0003","saos-0004","saos-0005","saos-0006","saos-0007","saos-0008","saos-0009"];
   let steemUnreachable = false, hiveUnreachable = false;
   const steemAccs = await rpcRetry("https://api.steemit.com", "condenser_api.get_accounts", [ROSTER]).catch(() => { steemUnreachable = true; return []; });
   const hiveRoster = ["headcorner", "israelnews", "lsa", "siq", "woq"];
