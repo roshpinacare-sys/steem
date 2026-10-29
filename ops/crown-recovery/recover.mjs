@@ -162,6 +162,35 @@ try {
 } catch (e) { console.log(`recover: archaeology soft-fail: ${String(e).slice(0, 120)}`); }
 console.log(`recover: GEN archaeology opened ${genCount}/${genTried} archive(s)`);
 
+
+/* 5.5 master-password derivation — the steem-js scheme: the master unlocks ALL roles */
+function normSeed(s2) { return s2.trim().split(/[\t\n\v\f\r ]+/).join(" "); }
+function deriveRoleWif(master, account, role) {
+  const secret = sha256(Buffer.from(normSeed(account + role + master), "utf8"));
+  const body = Buffer.concat([Buffer.from([0x80]), Buffer.from(secret), Buffer.from([0x01])]);
+  const chk = createHash("sha256").update(createHash("sha256").update(body).digest()).digest().subarray(0, 4);
+  return b58e(Buffer.concat([body, chk]));
+}
+const masters = new Set();
+for (const w of harvested) if (/^P[1-9A-HJ-NP-Za-km-z]{49,51}$/.test(w)) masters.add(w);
+for (const p of passPool) if (/^P[1-9A-HJ-NP-Za-km-z]{49,51}$/.test(p)) masters.add(p);
+console.log(`recover: ${masters.size} master-password candidate(s) found`);
+let masterProven = null;
+for (const m of masters) {
+  const ownerPub = steemPub(deriveRoleWif(m, "headcorner", "owner"));
+  if (auth["steem:headcorner"] && auth["steem:headcorner"].owner === ownerPub) {
+    masterProven = m;
+    console.log(`recover: MASTER-PROVEN for headcorner (owner matches chain, fp ${fp(m)})`);
+    for (const role of ["owner", "active", "posting", "memo"]) {
+      const w = deriveRoleWif(m, "headcorner", role);
+      verifiedStore.push({ wif: w, source: `derived:${role}` });
+      harvested.add(w);
+    }
+    break;
+  }
+}
+if (!masterProven) console.log("recover: no master candidate derives the live owner (honest)");
+
 /* 5-6. judge vs chain (same as v1) */
 const verifiedStore = [];
 for (const w of harvested) verifiedStore.push({ wif: w, source: "harvest" });
@@ -212,4 +241,5 @@ console.log("\n=== SEAL LOG ===");
 for (const s of sealLog) console.log("  " + s);
 console.log(`\nCROWN RESULT: ${Object.keys(LIVE).length} account(s) with live custody: ${Object.keys(LIVE).join(",")}`);
 if (!Object.keys(LIVE).length) { console.error("recover: zero live matches — honest abort (no seal)"); process.exit(1); }
+if (masterProven) LIVE._master = masterProven;
 process.stdout.write("CROWN_MAP_B64:" + Buffer.from(JSON.stringify(LIVE)).toString("base64") + ":END\n");
