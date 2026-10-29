@@ -46,3 +46,38 @@
 - `MISTAKES-REGISTRY-2026-10-29.md` = the memory of failures with prevention laws — read BEFORE every custody/gate change.
 - `custody-manifest.json` = the single roster of the living (no material, verdicts only).
 - receipts: `agent/receipts/2026-10-29-*.json` (delegation top-up, external-book-live, powerdown-2000).
+
+---
+
+# AFTERNOON WAVE — measured 2026-10-29 10:50Z (the sandbox died again; the cloud did not)
+
+## WHAT THE THIRD SANDBOX DEATH PROVED (the resurrection chain held)
+
+| Capability | State at death | State now (measured) | The proof handle |
+|---|---|---|---|
+| headcorner ACTIVE custody | was local-only (sandbox ate it) | **RECOVERED via census relay in 22 minutes, zero operator action** | fp 8fc001a6 chain-judged; broadcast tx ACCEPTED (e2e-broadcast.mjs 10:31Z) |
+| External maker book | 6 orders (morning) | **26 live orders on chain** — asks 1.907/1.913/1.950 + bids 10.523/10.586/10.651, tiers alive | condenser_api.get_open_orders("headcorner") 10:47Z |
+| dex-grid cloud twin | dispatch-only suspicion | **REAL: dispatched run placed/kept the ladder, STASIS lifted, key-gate passed** | Domain run 40858957971 + 40855076855 (step 10 success) |
+| Fleet key census | 4 repos, partial | **9 repos instrumented (census-v2), 132 secrets inventoried across 49 repos, every WIF judged** | receipts/secrets-inventory-2026-10-29.json + census matrices |
+| HIVE leg | "rot2 dead" | **ROT2 HIVE LEG ALIVE: woq(active+posting), lsa(posting), siq(posting) — chain-judged** | VERIFIED-CENSUS-20261029T104108Z.enc (opened, merged to crown-map.json) |
+| Local judge + patrol | cron pointed at dead paths | **master-judge.mjs rebuilt (CUSTODY-ALIVE ×4), patrol cron 483682 hourly, beat-loop.sh rebuilt (15-min cron 483417)** | receipts/custody-patrol.jsonl + receipts/grid-beat.jsonl |
+| One-clean-custody doc | B9 law only | **CUSTODY.md committed — the living / the dead / the topology / the mechanisms / the walls / the laws** | steem@7982972e4 |
+
+## THE HONEST REMAINING WALLS (unchanged verdicts, paths unchanged)
+
+- headcorner owner + posting: behind the master password — crown-vault-recovery is mining
+  GEN archives + vault passes IN THE CLOUD right now (run 40858596272).
+- 10 keyless steem accounts: no account-auth path (measured: owner_accs=[] on all) —
+  fee-channel re-key (3 STEEM each) or GEN-era owner keys when the mining lands.
+- hcsoldier4-7 + saos-000X: same paths; two-seal intake law now orders vault-home FIRST.
+- Console SAOS_RELAY_WIF / SAOS_TREASURY_WIF: judged DEAD (census 10-41Z).
+
+## THE BENCHMARK DELTA (self-comparison, no flattery)
+
+This morning the architecture lost its keys for the third time and recovered in ~22
+minutes with zero human action (morning: 6 hours). That is the measured improvement
+curve. The 10-21 wave took days of manual archaeology. The census-relay + crown-recovery
+mechanisms are the difference: the fleet's key truth is now CHAIN-JUDGED and CLOUD-SEALED,
+and every repo can re-prove it in one dispatch. The remaining gap vs the strongest shops
+is unchanged: single live steem key concentration — closed only by the master password
+or the fee-channel re-key wave (the next economic decision point, 3 STEEM/account).
