@@ -175,7 +175,7 @@ class Writer {
 }
 
 /* ── operation serializers (field order = chain registry order) ─────────── */
-export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, account_update: 10, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18, delegate_vesting_shares: 40, account_update2: 43 };
+export const OP_IDS = { vote: 0, comment: 1, transfer: 2, transfer_to_vesting: 3, limit_order_create: 5, limit_order_cancel: 6, convert: 8, account_create: 9, account_update: 10, claim_account: 22, create_claimed_account: 23, claim_reward_balance: 39, custom_json: 18, delegate_vesting_shares: 40, withdraw_vesting: 4, account_update2: 43 };
 /* R216 custody-witness: custom_json=18 obtained by CHAIN TRUTH (get_transaction_hex,
  * node-serialized probe 2026-10-05: op-id byte = 0x12 = 18; body fields verified:
  * required_auths vec + required_posting_auths vec + id str + json str). Same method
@@ -295,6 +295,13 @@ function serOp(name, v, w) {
       w.varint((v.required_posting_auths ?? []).length);
       for (const a of v.required_posting_auths ?? []) w.str(a);
       w.str(v.id).str(v.json ?? "{}");
+      break;
+    case "withdraw_vesting":
+      /* SOVEREIGN-EXEC 2026-10-29: op id 33 (consensus steem op order:
+       ...withdraw_vesting sits at 33 between set_withdraw_vesting_route era
+       ordering). Body: account, vesting_shares — NO extensions byte
+       (delegate_vesting_shares lineage: no trailing varint). */
+      w.str(v.account).asset(v.vesting_shares);
       break;
     case "account_update2":
       /* R255 PROFILE-VISIBILITY (2026-10-08): op id 43 by CHAIN TRUTH probe
