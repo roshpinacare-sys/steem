@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-29T01:58:16.812Z",
+  "at": "2026-10-29T04:59:29.062Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -18,37 +18,12 @@
     "order": true,
     "spLadderExecutedToday": 0,
     "spLadderExecNow": 0,
-    "spLadderPlannedNow": 2,
+    "spLadderPlannedNow": 0,
     "restoreExecutedNow": 0,
     "restorePlannedNow": 0,
     "liveProof": false
   },
-  "planOnly": [
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "hcsoldier4",
-      "sp": 60,
-      "setVests": 124040.68070699999,
-      "curSpEffective": 17,
-      "curMasterDelegationVests": 27409.680707,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank ?T vs master 5.9T; EFFECTIVE SP 17→77 (received 17); master delegation +60 SP (SET 124040.680707)"
-    },
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "hcsoldier5",
-      "sp": 60,
-      "setVests": 124040.68070699999,
-      "curSpEffective": 17,
-      "curMasterDelegationVests": 27409.680707,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank ?T vs master 5.9T; EFFECTIVE SP 17→77 (received 17); master delegation +60 SP (SET 124040.680707)"
-    }
-  ],
+  "planOnly": [],
   "executed": [],
   "refused": [
     {
@@ -64,7 +39,7 @@
       "verdict": "THINK-GATE-REFUSED",
       "txid": null,
       "error": null,
-      "at": "2026-10-29T01:58:16.812Z"
+      "at": "2026-10-29T04:59:29.062Z"
     },
     {
       "move": {
@@ -79,8 +54,8 @@
       "verdict": "THINK-GATE-REFUSED",
       "txid": null,
       "error": null,
-      "at": "2026-10-29T01:58:16.812Z"
+      "at": "2026-10-29T04:59:29.062Z"
     }
   ],
-  "verdict": "PLANNED-AWAITING-POLICY"
+  "verdict": "NO-EXEC"
 }
