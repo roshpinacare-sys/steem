@@ -8,11 +8,11 @@
 | Capability | State | Proof |
 |---|---|---|
 | headcorner active control | RESTORED locally + 4 cloud repos | census fp 8fc001a6 == chain active STM5HhJD…; engine adoption VERIFIED-VS-CHAIN |
-| External market book (STEEM internal market) | **ARMED-LIVE — first time since 2026-10-13** | 6 orders on chain (asks 18.578×3 @ +0.3/0.6/0.9%, bids 1.066×3 @ −3.2/3.8/4.4%); cancel-wave tx 12fcbc94 |
+| External market book (STEEM internal market) | **ARMED-LIVE — first time since 2026-10-13, self-maintaining** | 18 live orders after autonomous beats; cancel-wave tx 12fcbc94; the keeper re-arms around the value line each beat |
 | Army trading grid (local, persistent daemon) | 5/5 hands verified (headcorner master + 4 soldiers) | /tmp/army-daemon.log custody verified:5; hcsoldier6 order in block 110851270 |
 | hcsoldier7 | CREATED + FUNDED + custody sealed | create tx 80a23e5f (3 STEEM fee); delegation tx 500a7b0b (300 SP); custody-vault/hcsoldier7.json 0600 |
-| Soldier funding (owner ≥300SP law) | 6/6 custody-having accounts funded | on-chain received: hcsoldier4/5/6/7 + cashmachine + haran = 300.0 each |
-| Power down (economy liquidity) | 2,000 SP over 4 weeks = 500 SP/week from 11-05 | withdraw tx a0e83697; chain rate 805,255.099 vests/week |
+| Soldier funding (owner ≥300SP law) | **9 accounts at ≥300 SP** — then capacity honestly exhausted | hcsoldier4/5/6/7 + cashmachine + haran + israelnews + lsa + macrame = 300+ each (siq/tov/wic/wog/woq wait for the weekly flow — governor completes later, measured wall: 6.2 SP buffer left) |
+| Power down (economy liquidity) | **the REST = 1,259.7 SP over 4 weeks = 315 SP/week from 11-05** (soldiers-first, remainder-down — the owner's literal sequence, completed by the keeper's sovereign-law-exec at 08:49) | to_withdraw 2,028,803,218,642 satoshi; rate = to_withdraw/4 measured; next payout 2026-11-05T08:49:48 |
 | STASIS capital brake | LIFTED (owner 10-29 verbatim order) | saos-dex@4ddd8fe3, active=false |
 | Cloud army-ladder | Unstuck (ENOENT fixed) + census-relay source wired | run 40835051266 log; resolve-keys v3 (c68356d9); LIVE_FLEET_KEYS in 4 repos (HTTP 201) |
 | Crown-custody census (the one judge) | Runs on Domain/saos-runtime/saos-dex/steem on demand | Domain run 40836402198: matrix, fingerprints only, seals to vault-home |
