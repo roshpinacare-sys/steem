@@ -1,6 +1,6 @@
-// recover.mjs — CROWN RECOVERY: open every vault, mine every generation,
-// judge everything against the chain. The one script that "finds ALL the keys".
-// Law: fingerprints in logs, WIFs only in the sealed map. The chain is the only judge.
+// recover.mjs — CROWN RECOVERY v2 (optimized archaeology)
+// v2 changes: targeted vault-era blob selection (agent/vault|custody paths), capped
+// blob count, pass pool ordered vault-passes-first, early-exit, byte-size guard.
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync, readdirSync } from "node:fs";
@@ -9,7 +9,6 @@ import * as secp from "@noble/secp256k1";
 const GH_PAT = process.env.GH_PAT || "";
 if (!GH_PAT) { console.error("recover: GH_PAT missing"); process.exit(1); }
 
-/* ── steem/hive crypto primitives ─────────────────────────────────────── */
 const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 function b58d(s) { let n = 0n; for (const c of s) { const i = B58.indexOf(c); if (i < 0) throw new Error("b58char"); n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = "0" + h; return Buffer.from(h, "hex"); }
 function b58e(buf) { let n = BigInt("0x" + buf.toString("hex") || "0"), out = ""; while (n > 0n) { out = B58[Number(n % 58n)] + out; n /= 58n; } for (const b of buf) { if (b === 0) out = "1" + out; else break; } return out; }
@@ -31,16 +30,15 @@ function steemPub(wif) {
 const fp = (s) => createHash("sha256").update(s).digest().toString("hex").slice(0, 8);
 const sha = (s) => createHash("sha256").update(s).digest();
 
-/* ── openssl helper (aes-256-cbc pbkdf2 — the vault standard) ─────────── */
 function tryOpen(file, pass, out, iter) {
   try {
-    execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", String(iter), "-in", file, "-out", out, "-pass", `pass:${pass}`], { stdio: "pipe", timeout: 60000 });
+    execFileSync("openssl", ["enc", "-d", "-aes-256-cbc", "-pbkdf2", "-iter", String(iter), "-in", file, "-out", out, "-pass", `pass:${pass}`], { stdio: "pipe", timeout: 30000 });
     return existsSync(out) && readFileSync(out).length > 0;
   } catch { try { rmSync(out, { force: true }); } catch {} return false; }
 }
 
-/* ── 1. credential candidates from every secret ───────────────────────── */
-const SECRET_ENVS = ["GH_PAT","MAIN_KEY","ZIP_PAT","ROT2_FLEET_KEYS","ROT_ROSTER","STEEM_VAULT_PASSES","VAULT_PASSES_R33","LIVE_FLEET_KEYS","NIM_API_KEY"];
+/* 1. candidates */
+const SECRET_ENVS = ["GH_PAT","MAIN_KEY","ZIP_PAT","ROT2_FLEET_KEYS","ROT_ROSTER","STEEM_VAULT_PASSES","VAULT_PASSES_R33","LIVE_FLEET_KEYS","NIM_API_KEY","VAULT_PASSPHRASE","HEADCORNER_SEAL_PASSPHRASE","WEAVE_SEAL_PASSPHRASE","ANCHOR_CRED","HEADCORNER_CRED","FLEET_ACCOUNT"];
 const candidates = new Set();
 for (const name of SECRET_ENVS) {
   const v = process.env[name];
@@ -49,13 +47,9 @@ for (const name of SECRET_ENVS) {
   try { (function walk(n, d) { if (!n || typeof n !== "object" || d > 8) return; for (const x of Object.values(n)) { if (typeof x === "string") candidates.add(x.trim()); else walk(x, d + 1); } })(JSON.parse(v), 0); } catch {}
   for (const line of v.split(/[\n;, ]+/)) { const t = line.trim(); if (t.length >= 16) candidates.add(t); }
 }
-for (const name of ["STEEM_VAULT_PASSES", "VAULT_PASSES_R33", "ROT_ROSTER"]) {
-  const v = process.env[name];
-  if (v) for (const line of v.split(/\r?\n/)) { const t = line.trim(); if (t.length >= 8) candidates.add(t); }
-}
 console.log(`recover: ${candidates.size} credential candidates from ${SECRET_ENVS.filter(n => process.env[n]).length} secrets`);
 
-/* ── 2. open vault-home (wraps → P, legacy fallback) ──────────────────── */
+/* 2. open vault-home */
 const VH = "/tmp/vh";
 rmSync(VH, { recursive: true, force: true });
 execFileSync("git", ["clone", "--depth", "1", `https://x-access-token:${GH_PAT}@github.com/roshpinacare-sys/vault-home.git`, VH], { stdio: "pipe" });
@@ -84,16 +78,19 @@ if (!P) {
 }
 if (!P) console.log("recover: vault P NOT recovered from cloud candidates (honest)");
 
-/* ── 3. harvest every file the pass pool can open ─────────────────────── */
-const passPool = new Set();
-if (P) passPool.add(P);
-for (const name of ["STEEM_VAULT_PASSES", "VAULT_PASSES_R33"]) {
+/* 3. pass pool — vault passes FIRST (the GEN archives know them) */
+const passPool = [];
+const push = (p) => { if (p && p.length >= 8 && !passPool.includes(p)) passPool.push(p); };
+for (const name of ["STEEM_VAULT_PASSES", "VAULT_PASSES_R33", "VAULT_PASSPHRASE", "HEADCORNER_SEAL_PASSPHRASE", "WEAVE_SEAL_PASSPHRASE"]) {
   const v = process.env[name];
   if (!v) continue;
-  passPool.add(v.trim());
-  for (const line of v.split(/\r?\n/)) { const t = line.trim(); if (t.length >= 8) passPool.add(t); }
+  push(v.trim());
+  for (const line of v.split(/\r?\n/)) push(line.trim());
+  try { (function walk(n, d) { if (!n || typeof n !== "object" || d > 6) return; for (const x of Object.values(n)) { if (typeof x === "string") push(x.trim()); else walk(x, d + 1); } })(JSON.parse(v), 0); } catch {}
 }
-for (const c of candidates) if (c.length >= 16) passPool.add(c);
+if (P) push(P);
+for (const c of candidates) if (c.length >= 16) push(c);
+console.log(`recover: pass pool ${passPool.length} (vault-passes first)`);
 
 const harvested = new Set();
 const sealLog = [];
@@ -101,60 +98,71 @@ function harvestText(text) {
   for (const m of text.match(/[5K][1-9A-HJ-NP-Za-km-z]{50,51}/g) || []) harvested.add(m);
   for (const m of text.match(/P[1-9A-HJ-NP-Za-km-z]{50,51}/g) || []) harvested.add(m);
 }
-function openSealed(file, iters = [200000, 300000]) {
+function openSealed(file, iters = [200000, 300000], maxTries = Infinity) {
   const out = "/tmp/_s.out";
-  for (const pass of passPool) for (const iter of iters) {
-    if (tryOpen(file, pass, out, iter)) {
-      const text = readFileSync(out, "utf8");
-      harvestText(text);
-      sealLog.push(`${file.split("/").pop()} OPEN (pass fp ${fp(pass)}, iter ${iter}, ${text.length}B)`);
-      rmSync(out, { force: true });
-      return true;
+  let tries = 0;
+  for (const pass of passPool) {
+    if (tries >= maxTries) break;
+    for (const iter of iters) {
+      tries++;
+      if (tryOpen(file, pass, out, iter)) {
+        const text = readFileSync(out, "utf8");
+        harvestText(text);
+        sealLog.push(`${file.split("/").pop()} OPEN (pass fp ${fp(pass)}, iter ${iter}, ${text.length}B)`);
+        rmSync(out, { force: true });
+        return true;
+      }
     }
   }
   rmSync(out, { force: true });
-  sealLog.push(`${file.split("/").pop()} SEALED (no pass in pool)`);
+  sealLog.push(`${file.split("/").pop()} SEALED (${tries} tries)`);
   return false;
 }
 
+/* vault-home seals */
 for (const f of ["keys.env.enc", "fleet-rot2.keys.enc", "ssh-keys.tar.enc"]) {
-  if (existsSync(`${VH}/${f}`)) openSealed(`${VH}/${f}`);
+  if (existsSync(`${VH}/${f}`)) openSealed(`${VH}/${f}`, [200000, 300000], 120);
 }
-for (const dir of ["intake", "custody-intake", "archive"]) {
+for (const dir of ["intake", "custody-intake"]) {
   const d = `${VH}/${dir}`;
   if (!existsSync(d)) continue;
-  for (const f of readdirSync(d)) if (f.endsWith(".enc")) openSealed(`${d}/${f}`);
+  for (const f of readdirSync(d).sort()) if (f.endsWith(".enc")) openSealed(`${d}/${f}`, [200000, 300000], 120);
 }
 
-/* ── 4. GEN archaeology — every vault generation in git history ───────── */
-let genCount = 0;
+/* 4. GEN archaeology — TARGETED: agent/vault|custody era blobs, size-capped */
+let genCount = 0, genTried = 0;
 try {
   const blobs = execFileSync("git", ["rev-list", "--objects", "--all"], { encoding: "utf8", maxBuffer: 1 << 26 });
   const seen = new Set();
-  const vaultBlobs = [];
+  const targets = [];
   for (const line of blobs.split("\n")) {
     const sp = line.indexOf(" ");
     const h = sp > 0 ? line.slice(0, sp) : line;
     const p = sp > 0 ? line.slice(sp + 1) : "";
     if (!h || h.length !== 40 || seen.has(h)) continue;
-    if (!p.includes("vault") || !p.endsWith(".enc")) continue;
+    if (!/\.(enc|zip)$/.test(p)) continue;
+    if (!/vault|custody|keys|GEN|seal|archive/i.test(p)) continue;
     seen.add(h);
-    vaultBlobs.push([h, p]);
+    // relevance order: vault-named dirs first
+    const score = /agent\/vault/i.test(p) ? 0 : /custody/i.test(p) ? 1 : /GEN/i.test(p) ? 2 : 3;
+    targets.push([score, h, p]);
   }
-  console.log(`recover: archaeology — ${vaultBlobs.length} vault-era .enc blobs in git history`);
+  targets.sort((a, b) => a[0] - b[0]);
+  console.log(`recover: archaeology — ${targets.length} targeted blobs (capped 100)`);
   mkdirSync("/tmp/gen", { recursive: true });
-  for (const [h, p] of vaultBlobs.slice(0, 300)) {
+  for (const [, h, p] of targets.slice(0, 100)) {
     let content;
-    try { content = execFileSync("git", ["cat-file", "-p", h], { stdio: "pipe", maxBuffer: 1 << 26 }); } catch { continue; }
-    if (!content || !content.length) continue;
+    try { content = execFileSync("git", ["cat-file", "-p", h], { stdio: "pipe", maxBuffer: 1 << 24 }); } catch { continue; }
+    if (!content || !content.length || content.length > 2_000_000) continue;
     const dst = `/tmp/gen/${h}.enc`;
     writeFileSync(dst, content);
-    if (openSealed(dst, [200000, 300000])) genCount++;
+    genTried++;
+    if (openSealed(dst, [200000, 300000], 40)) genCount++;
   }
 } catch (e) { console.log(`recover: archaeology soft-fail: ${String(e).slice(0, 120)}`); }
-console.log(`recover: GEN archaeology opened ${genCount} generation archive(s)`);
+console.log(`recover: GEN archaeology opened ${genCount}/${genTried} archive(s)`);
 
-/* ── 5. build the candidate WIF store (harvest + relay map) ───────────── */
+/* 5-6. judge vs chain (same as v1) */
 const verifiedStore = [];
 for (const w of harvested) verifiedStore.push({ wif: w, source: "harvest" });
 try {
@@ -162,7 +170,6 @@ try {
   if (lk?.live) for (const [acc, roles] of Object.entries(lk.live)) for (const [role, w] of Object.entries(roles)) verifiedStore.push({ wif: w, source: `relay:${acc}:${role}` });
 } catch {}
 
-/* ── 6. judge everything vs the chain ─────────────────────────────────── */
 async function rpc(url, method, params) {
   const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }), signal: AbortSignal.timeout(20000) });
   const j = await r.json(); if (j.error) throw new Error(String(j.error.message).slice(0, 80)); return j.result;
