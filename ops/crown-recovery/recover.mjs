@@ -163,6 +163,26 @@ try {
 console.log(`recover: GEN archaeology opened ${genCount}/${genTried} archive(s)`);
 
 
+/* 5-6. judge vs chain (same as v1) */
+const verifiedStore = [];
+for (const w of harvested) verifiedStore.push({ wif: w, source: "harvest" });
+try {
+  const lk = JSON.parse(process.env.LIVE_FLEET_KEYS || "null");
+  if (lk?.live) for (const [acc, roles] of Object.entries(lk.live)) for (const [role, w] of Object.entries(roles)) verifiedStore.push({ wif: w, source: `relay:${acc}:${role}` });
+} catch {}
+
+async function rpc(url, method, params) {
+  const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }), signal: AbortSignal.timeout(20000) });
+  const j = await r.json(); if (j.error) throw new Error(String(j.error.message).slice(0, 80)); return j.result;
+}
+const ROSTER = ["headcorner","cashmachine","haran","israelnews","lsa","macrame","siq","tov","wic","wog","woq","hcsoldier1","hcsoldier2","hcsoldier3","hcsoldier4","hcsoldier5","hcsoldier6","hcsoldier7","saos-0001","saos-0002","saos-0003","saos-0004","saos-0005","saos-0006","saos-0007","saos-0008","saos-0009"];
+const steemAccs = await rpc("https://api.steemit.com", "condenser_api.get_accounts", [ROSTER]).catch(() => []);
+const hiveRoster = ["headcorner", "israelnews", "lsa", "siq", "woq"];
+const hiveAccs = await rpc("https://api.hive.blog", "condenser_api.get_accounts", [hiveRoster]).catch(() => []);
+const auth = {};
+for (const a of steemAccs) auth["steem:" + a.name] = { active: a.active?.key_auths?.[0]?.[0], posting: a.posting?.key_auths?.[0]?.[0], memo: a.memo_key, owner: a.owner?.key_auths?.[0]?.[0] };
+for (const a of hiveAccs) auth["hive:" + a.name] = { active: a.active?.key_auths?.[0]?.[0], posting: a.posting?.key_auths?.[0]?.[0], memo: a.memo_key, owner: a.owner?.key_auths?.[0]?.[0] };
+
 /* 5.5 master-password derivation — the steem-js scheme: the master unlocks ALL roles */
 function normSeed(s2) { return s2.trim().split(/[\t\n\v\f\r ]+/).join(" "); }
 const sha256b = (buf) => createHash("sha256").update(buf).digest();
@@ -192,25 +212,7 @@ for (const m of masters) {
 }
 if (!masterProven) console.log("recover: no master candidate derives the live owner (honest)");
 
-/* 5-6. judge vs chain (same as v1) */
-const verifiedStore = [];
-for (const w of harvested) verifiedStore.push({ wif: w, source: "harvest" });
-try {
-  const lk = JSON.parse(process.env.LIVE_FLEET_KEYS || "null");
-  if (lk?.live) for (const [acc, roles] of Object.entries(lk.live)) for (const [role, w] of Object.entries(roles)) verifiedStore.push({ wif: w, source: `relay:${acc}:${role}` });
-} catch {}
 
-async function rpc(url, method, params) {
-  const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }), signal: AbortSignal.timeout(20000) });
-  const j = await r.json(); if (j.error) throw new Error(String(j.error.message).slice(0, 80)); return j.result;
-}
-const ROSTER = ["headcorner","cashmachine","haran","israelnews","lsa","macrame","siq","tov","wic","wog","woq","hcsoldier1","hcsoldier2","hcsoldier3","hcsoldier4","hcsoldier5","hcsoldier6","hcsoldier7","saos-0001","saos-0002","saos-0003","saos-0004","saos-0005","saos-0006","saos-0007","saos-0008","saos-0009"];
-const steemAccs = await rpc("https://api.steemit.com", "condenser_api.get_accounts", [ROSTER]).catch(() => []);
-const hiveRoster = ["headcorner", "israelnews", "lsa", "siq", "woq"];
-const hiveAccs = await rpc("https://api.hive.blog", "condenser_api.get_accounts", [hiveRoster]).catch(() => []);
-const auth = {};
-for (const a of steemAccs) auth["steem:" + a.name] = { active: a.active?.key_auths?.[0]?.[0], posting: a.posting?.key_auths?.[0]?.[0], memo: a.memo_key, owner: a.owner?.key_auths?.[0]?.[0] };
-for (const a of hiveAccs) auth["hive:" + a.name] = { active: a.active?.key_auths?.[0]?.[0], posting: a.posting?.key_auths?.[0]?.[0], memo: a.memo_key, owner: a.owner?.key_auths?.[0]?.[0] };
 
 const LIVE = {};
 const matrix = [];
