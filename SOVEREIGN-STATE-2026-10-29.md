@@ -72,6 +72,28 @@
 - hcsoldier4-7 + saos-000X: same paths; two-seal intake law now orders vault-home FIRST.
 - Console SAOS_RELAY_WIF / SAOS_TREASURY_WIF: judged DEAD (census 10-41Z).
 
+## EVENING WAVE — measured 2026-10-29 15:15Z (wipe #4 resurrection → RE-KEY WAVE COMPLETE)
+
+| Item | Was (morning verdict) | Is now (chain-measured) | Handle |
+|---|---|---|---|
+| 10 "keyless" steem accounts | owner-era keys unreachable; fee-channel was the only path | **FULLY KEYED: owner (census-mined) + fresh ACTIVE rotated on-chain, 10/10 chain-verified** | rekey-cashmachine.mjs (steem@saos-cockpit); seals CROWN-REKEY-*.enc in vault-home, each DURABLE (ls-remote==rev-parse) |
+| Fund pool operability | cashmachine 117.177 STEEM + 4.034 SBD locked behind foreign active key | **OPERABLE: cashmachine.active now derives from crown material (fp e39f42a3), chain-MATCH** | condenser get_accounts active_auths 15:11Z |
+| Dead-tier recovery (hcsoldier4-7, saos-0001..9) | "trustee recovery" untested | **MEASURED-BLOCKED: recover_account requires recent_owner_authority signature (old owner WIF, destroyed with sandbox). request_account_recovery for hcsoldier1 broadcast OK 15:18Z then correctly halted — no forged signatures** | recover-dead-accounts.mjs; request expires harmlessly |
+| Delegation recall | pending | **ALREADY DONE 13:15Z** (not this wave): 1,211.20 SP freed from 13 dead accounts | receipts/recall-dead-2026-10-29.json |
+| Sealed key material growth | 4 wraps + 2 intake seals | +12 seals: 10 CROWN-REKEY + 1 CROWN-RECOVER (vault-home custody-intake, iter 300000, crown-pass-v5) | vault-home@HEAD 15:19Z |
+
+Re-key wave roster (new active fps, all chain-verified): cashmachine e39f42a3, haran 0d80b712,
+israelnews 78350626, macrame e6cc4a2e, tov f3a0be04, wic 420c226d, wog ee112405, lsa b73798e6,
+siq b105992e, woq 5fcb5071. Additive law held: siq/woq pre-rekey actives archived in crown-map
+(active_pre_rekey), nothing deleted anywhere.
+
+**Single-key concentration verdict upgraded**: the fleet steering wheel is no longer
+headcorner + 4 soldiers — it is headcorner + 10 fully-keyed accounts (owner+active) + 2
+soldier posting keys. The fee channel remains open for a NEW soldier creation wave
+(cashmachine/headcorner can now fund it directly); the dead-tier liquid (~136 STEEM in
+hcsoldier1-7 + saos-000X) stays parked until GEN-era owner keys for THEM surface —
+hcsoldier1-3 remain owner-approved retired.
+
 ## THE BENCHMARK DELTA (self-comparison, no flattery)
 
 This morning the architecture lost its keys for the third time and recovered in ~22
