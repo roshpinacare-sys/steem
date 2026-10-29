@@ -41,6 +41,13 @@ async function rpc(url, method, params) {
   const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }), signal: AbortSignal.timeout(20000) });
   const j = await r.json(); if (j.error) throw new Error(String(j.error.message).slice(0, 100)); return j.result;
 }
+async function rpcRetry(url, method, params, tries = 3) {
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try { return await rpc(url, method, params); } catch (e) { lastErr = e; if (i < tries - 1) await new Promise((r) => setTimeout(r, 1500 * (i + 1))); }
+  }
+  throw lastErr;
+}
 
 const WIF_RE = /^[5K][1-9A-HJ-NP-Za-km-z]{50,51}$/;
 function collectWifs(node, out, path = "") {
@@ -67,9 +74,10 @@ async function main() {
   console.log(`judge: ${cands.length} held WIF candidate(s) from ${files.length} vault file(s)`);
 
   const ROSTER = ["headcorner","cashmachine","haran","israelnews","lsa","macrame","siq","tov","wic","wog","woq","hcsoldier1","hcsoldier2","hcsoldier3","hcsoldier4","hcsoldier5","hcsoldier6","hcsoldier7","saos-0001","saos-0002","saos-0003","saos-0004","saos-0005","saos-0006","saos-0007","saos-0008","saos-0009"];
-  const steemAccs = await rpc("https://api.steemit.com", "condenser_api.get_accounts", [ROSTER]).catch(() => []);
+  let steemUnreachable = false, hiveUnreachable = false;
+  const steemAccs = await rpcRetry("https://api.steemit.com", "condenser_api.get_accounts", [ROSTER]).catch(() => { steemUnreachable = true; return []; });
   const hiveRoster = ["headcorner", "israelnews", "lsa", "siq", "woq"];
-  const hiveAccs = await rpc("https://api.hive.blog", "condenser_api.get_accounts", [hiveRoster]).catch(() => []);
+  const hiveAccs = await rpcRetry("https://api.hive.blog", "condenser_api.get_accounts", [hiveRoster]).catch(() => { hiveUnreachable = true; return []; });
   const auth = {};
   for (const a of steemAccs) auth["steem:" + a.name] = { active: a.active?.key_auths?.[0]?.[0], posting: a.posting?.key_auths?.[0]?.[0], memo: a.memo_key, owner: a.owner?.key_auths?.[0]?.[0] };
   for (const a of hiveAccs) auth["hive:" + a.name] = { active: a.active?.key_auths?.[0]?.[0], posting: a.posting?.key_auths?.[0]?.[0], memo: a.memo_key, owner: a.owner?.key_auths?.[0]?.[0] };
@@ -91,7 +99,10 @@ async function main() {
       if (!manifest.live[account][hit.role]) manifest.live[account][hit.role] = { fp: fp(c.wif), from: c.path, chain };
       manifest.matrix.push(`${c.path.padEnd(24)} ${fp(c.wif)} LIVE ${hit.key}:${hit.role}`);
     } else {
-      manifest.matrix.push(`${c.path.padEnd(24)} ${fp(c.wif)} dead-vs-chain`);
+      const reach = steemUnreachable || hiveUnreachable
+        ? `chain-unreachable(${steemUnreachable ? "steem" : ""}${steemUnreachable && hiveUnreachable ? "+" : ""}${hiveUnreachable ? "hive" : ""})`
+        : null;
+      manifest.matrix.push(`${c.path.padEnd(24)} ${fp(c.wif)} ${reach || "dead-vs-chain"}`);
     }
   }
   const nAcc = Object.keys(manifest.live).length;
