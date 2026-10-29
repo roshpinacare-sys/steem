@@ -206,7 +206,7 @@ function serOp(name, v, w) {
       w.str(v.parent_author ?? "").str(v.parent_permlink).str(v.author).str(v.permlink).str(v.title ?? "").str(v.body ?? "").str(v.json_metadata ?? "{}");
       break;
     case "limit_order_create":
-      w.str(v.owner).u32(v.orderid).asset(v.amount_to_sell).asset(v.min_to_receive).u8(v.fill_or_kill ? 1 : 0).i32(v.expiration);
+      w.str(v.owner).u32(v.orderid).asset(v.amount_to_sell).asset(v.min_to_receive).u8(v.fill_or_kill ? 1 : 0).i32(typeof v.expiration === "number" ? v.expiration : Math.floor(Date.parse(String(v.expiration).endsWith("Z") || String(v.expiration).includes("+") ? v.expiration : String(v.expiration) + "Z") / 1000));
       break;
     case "limit_order_cancel":
       w.str(v.owner).u32(v.orderid);
