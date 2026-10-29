@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-29T21:54:33.849Z",
-  "head": "0d35709fd59928d9b18d30c752e83a0443343d73",
-  "verdict": "SURFACES-OK",
+  "at": "2026-10-29T21:59:33.849Z",
+  "head": "d6976f676333f482a1484430004087f0f5aadf9d",
+  "verdict": "SURFACES-DEGRADED",
   "repairMode": "observe",
   "actArmed": false,
   "prevVerdict": "SURFACES-OK",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 24.3
+      "ageMinutes": 29.3
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 24.3
+      "ageMinutes": 29.3
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 82.4
+      "ageMinutes": 87.4
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5
+      "ageMinutes": 4.7
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 7597.4
+      "ageMinutes": 7602.4
     },
     {
       "id": "engine-selftest",
@@ -66,8 +66,8 @@
       "id": "artery-workflow",
       "kind": "workflow",
       "source": "api",
-      "verdict": "OK",
-      "reason": "run-active (artery alive right now)"
+      "verdict": "DEGRADED",
+      "reason": "probe-error:api-http-403"
     },
     {
       "id": "steem-rpc",
@@ -85,8 +85,14 @@
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
       "readbackRequired": true
+    },
+    {
+      "targetId": "artery-workflow",
+      "verdict": "DEGRADED",
+      "action": "escalate",
+      "readbackRequired": true
     }
   ],
   "repairs": [],
-  "signature": "sig:222f0f55"
+  "signature": "sig:d6773117"
 }
