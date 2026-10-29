@@ -132,3 +132,17 @@ reconcile-after, which is exactly what saved this one.
 - hcsoldier6 liquid (18.8 STEEM) still behind dead keys — twin mining (CROWN-RECOVER
   seals 15:1xZ); alive-wins law applies.
 - Book inventory ~5×: dex-grid twin re-arms the ladder each 15-min beat with HQ depth.
+
+## NIGHT WAVE — measured 2026-10-29 15:40Z (soldier birth + parallel-actor coordination)
+
+| Item | State | Handle |
+|---|---|---|
+| New soldier wave | **hcsoldier8-16 CREATED: 9 accounts × 4 keys (36 WIFs), each sealed FIRST (CROWN-NEW-*.enc, 9 durable pushes), fee 27 STEEM from headcorner, all chain-verified** | create-soldiers.mjs @ steem/scripts; seals in vault-home |
+| Delegation (≥300SP law) | **MEASURED-BLOCKED: headcorner available mana is NEGATIVE (-1,369,407 VESTS)** — the 1,211 SP recalled 13:15Z sit in the 7-day return pipeline + 2,028,803 VESTS to_withdraw reserved. First capacity lands ~Nov 5 (recall maturity + powerdown payout 315 SP/week) | delegate-sp.mjs ready; chain assert available_shares>=op.vesting_shares is the judge |
+| Treasury consolidation (parallel actor) | The heal session (job 483568) rotated cashmachine.active via account_update2 at 15:11:57 (9s after our rotation — no collision, last-writer-wins per chain) and consolidated **116.177 STEEM + 3.933 SBD → headcorner** for "HQ book inventory; saos-000X creation reserve". headcorner now 282.805 STEEM + 8.998 SBD, book 33 orders | cashmachine history 15:23:30 transfers; coordination verdict: FRIENDLY SOVEREIGN TWIN |
+| Durability gap closed | The heal actor's cashmachine key (0cdc7e67) existed ONLY in the local map (wipe-vulnerable) — **sealed as CROWN-REKEY-cashmachine-heal-*.enc, durable** | vault-home@HEAD 15:38Z |
+| Total sealed material | 10 CROWN-REKEY + 1 CROWN-REKEY-heal + 1 CROWN-RECOVER + 9 CROWN-NEW = **21 intake seals, all durable** | vault-home custody-intake |
+
+Fleet now: headcorner (owner+active+memo) + 10 accounts (4 roles each) + 2 old soldiers (posting)
++ 9 newborn soldiers (4 roles each, awaiting SP) = **22 accounts under crown custody, zero funds parked
+outside our signature reach except the dead tier (~136 STEEM, recent_owner_authority wall)**.
