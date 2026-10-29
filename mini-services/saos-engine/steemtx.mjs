@@ -261,19 +261,22 @@ function serOp(name, v, w) {
       /* R245 EMERGENCY KEY ROTATION: {account, owner?, active?, posting?,
        * memo_key, json_metadata} — fc optionals = varint(0/1) prefix.
        * Owner-signed; owner keys never broadcast ⇒ never constant-k exposed.
-       * 🔴 R255 BYTE-ORACLE REPAIR (2026-10-08, get_transaction_hex byte-diff,
-       * node-judged): this op HAS a trailing extensions varint — the R245
-       * canon claimed "every op" but THIS case never got it, so every
-       * rotation tx was ONE BYTE SHORT (digest mismatch ⇒ "missing required
-       * active authority") — the chain-judged proof explains why the R245-ROT2
-       * re-sealed keys never went live (the old army's authorities are still
-       * GEN-1 — measured live 2026-10-08). memo_key here is PLAIN (op-43's is
-       * optional-wrapped — the node's own bytes are the only truth). */
+       * 🔴 R255 (2026-10-08) claimed a trailing extensions varint via
+       * get_transaction_hex byte-diff — **R256 PHANTOM-BYTE LAW (2026-10-29,
+       * broadcast-judged, the oracle that lies)**: get_transaction_hex's op-10
+       * output carries ONE PHANTOM trailing byte the consensus digest does
+       * NOT. Hex-matching rotations were signed over phantom bytes ⇒
+       * "missing required owner/active authority" forever (why R245-ROT2
+       * keys never went live). Proof: steemtx-bytes-MINUS-trailing-0x00,
+       * active-signed idempotent control → ACCEPTED on api.steemit.com
+       * (2026-10-29T13:4xZ); with the byte → rejected on 3 nodes.
+       * Same disease account_create was cured of (see its case above).
+       * Consensus form: NO trailing extensions byte. */
       w.str(v.account);
       for (const role of ["owner", "active", "posting"]) {
         if (v[role]) { w.varint(1).authority(v[role]); } else { w.varint(0); }
       }
-      w.pubkey(v.memo_key).str(v.json_metadata ?? "{}").varint(0);
+      w.pubkey(v.memo_key).str(v.json_metadata ?? "{}");
       break;
     case "vote":
       w.str(v.voter).str(v.author).str(v.permlink).i16(v.weight);
