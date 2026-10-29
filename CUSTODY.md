@@ -71,3 +71,20 @@ market (dex-grid Domain run 40858957971, STEEM_ACTIVE_WIF lane).
 6. Cron survives sessions (cloud schedules + sandbox crons). The architecture runs alone.
 7. This registry is the ONLY roster of the living. New keys land here + in custody-vault
    in the same breath.
+
+## 7. THE LIVING (restored 2026-10-29 19:2xZ, wipe-#5 resurrection — chain-judged via master-judge)
+
+| Account (chain) | Roles live | Source seal |
+|---|---|---|
+| headcorner (steem) | owner 9b10ce9d + active 8fc001a6 + memo 2509f6e4 | VERIFIED-CENSUS-20261029T190545Z |
+| cashmachine/haran/israelnews/macrame/tov/wic/wog (steem) | owner+active+posting+memo | REKEY-W1 + CROWN-GEN-EXPANSION |
+| lsa/siq (steem) | owner+active+posting+memo | REKEY-W1 (steem legs chain-matched 19:22Z) |
+| woq (steem) | owner+active+posting+memo | REKEY-W1 (steem legs chain-matched 19:22Z) |
+| woq (hive) | active a5d044f1 + posting 941035e5 | VERIFIED-CENSUS (census relay) |
+| lsa/siq (hive) | posting | VERIFIED-CENSUS (census relay) |
+| hcsoldier8..16 (steem) | owner+active+posting+memo ×9 | CROWN-NEW-* (P-opened) |
+| hcsoldier4/5 (steem) | posting | CROWN-GEN-EXPANSION |
+
+Material: /home/z/fleet/vault-home/.secrets/custody-vault/crown-map.json (0600, steem:*/hive:*
+namespaced) + seals in roshpinacare-sys/vault-home custody-intake. hcsoldier1-3 retired;
+hcsoldier6 dead-tier (no live wif); engine custody 13/14.
