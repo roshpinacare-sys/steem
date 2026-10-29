@@ -146,3 +146,36 @@ reconcile-after, which is exactly what saved this one.
 Fleet now: headcorner (owner+active+memo) + 10 accounts (4 roles each) + 2 old soldiers (posting)
 + 9 newborn soldiers (4 roles each, awaiting SP) = **22 accounts under crown custody, zero funds parked
 outside our signature reach except the dead tier (~136 STEEM, recent_owner_authority wall)**.
+
+## WIPE-#5 RESURRECTION — measured 2026-10-29 19:26Z (the fifth death; the chain held again)
+
+| Capability | State at detection (19:04Z) | State now (chain-judged) | The proof handle |
+|---|---|---|---|
+| Fleet home /home/z/fleet | ABSENT (beat DISARMED, cron 483417 fired into a dead box) | REBUILT from fleet-restore/vault-home (project) + saos-dex re-cloned (the canonical beat-loop.sh came back WITH the repo) | /home/z/fleet/{vault-home,saos-dex,steem-work} |
+| Engine :3040 | dark | LIVE, custody **13/14** (headcorner master-verified + 12 army verified; hcsoldier6 honest dead-tier) | GET :3040/health armyCustody |
+| Local custody | 0 accounts | **22 accounts in crown-map.json (0600)**: headcorner owner+active+memo; 10 rekeyed (4 roles); hcsoldier8-16 (4 roles each); hcsoldier4/5 posting | master-judge: 81 WIFs, 22 accounts LIVE |
+| The book | cloud-twin maintained ALL ALONG (dex-grid runs 824/825/826 success, 15-min cadence — the takeover law held: zero parallel dispatch) | ARMED-LIVE ×3 on the beat receipts | receipts/grid-beat.jsonl 19:04→19:25Z |
+| Census relay | dispatched 19:05:34Z (steem@saos-cockpit, run #2 SUCCESS) | seal VERIFIED-CENSUS-20261029T190545Z.enc opened, merged | vault-home custody-intake + ledger sha 12b582cc |
+| Crown wraps | P recovered from token-wrap 26ec3f65 (iter-200000 wrap law — NOT 300000) | opened the whole crown layer: REKEY-W1 + CROWN-NEW-hcsoldier8..16 + CROWN-GEN-EXPANSION | wrap sha256(cred) law; -pass file: byte-exact |
+
+### THE THREE LESSONS OF THIS RESURRECTION (logged for the registry)
+1. **False-positive probe class**: an openssl decrypt piped into `[ -n "$P" ]` "succeeds" on
+   32 GARBAGE bytes (nulls stripped → len 29). The first "WRAP-OPEN: OK" and one "SEAL-OPEN OK"
+   were both fake — caught only when the SAME pass failed in a second channel. LAW: a key
+   claim needs a ROUNDTRIP handle (open → parse JSON → derive → match a fingerprint), never a
+   non-empty pipe. This is the claims-vs-reality law applied to our own probes.
+2. **iter-200000 vs 300000**: wraps (vaultlib) seal with iter 200000; crown seals (crown-redo/
+   rekey/create-soldiers) with 300000. One number, two worlds — the morning was lost to trying
+   300000 on wraps.
+3. **Cross-chain namespace collision**: lsa/siq/woq exist on BOTH steem and hive. The census
+   map (keyed by bare account name) put HIVE-live wifs in the slots; the additive law then
+   SKIPPED the steem legs of REKEY-W1. The engine's steem adoption honestly refused (9/14).
+   Fix: chain-precise re-judge per namespace (steem:* recorded additively; army cache rebuilt
+   ONLY from wifs whose derived pubkey matches the LIVE steem authority) → 12/13 army verified.
+   LAW: custody maps are namespaced by chain. A bare account name is a rumor.
+
+### THE HONEST WALLS (unchanged)
+- hcsoldier6 liquid: still dead-tier (no live wif) — alive-wins law stands.
+- 3 CROWN-RECOVERY seals (110136/113045/121126) open under no held pass — content superseded
+  by CROWN-GEN-EXPANSION (owner keys all live); noted, not blocking.
+- headcorner posting: still behind the master password (owner+active+memo live is enough to steer).
