@@ -165,8 +165,9 @@ console.log(`recover: GEN archaeology opened ${genCount}/${genTried} archive(s)`
 
 /* 5.5 master-password derivation — the steem-js scheme: the master unlocks ALL roles */
 function normSeed(s2) { return s2.trim().split(/[\t\n\v\f\r ]+/).join(" "); }
+const sha256b = (buf) => createHash("sha256").update(buf).digest();
 function deriveRoleWif(master, account, role) {
-  const secret = sha256(Buffer.from(normSeed(account + role + master), "utf8"));
+  const secret = sha256b(Buffer.from(normSeed(account + role + master), "utf8"));
   const body = Buffer.concat([Buffer.from([0x80]), Buffer.from(secret), Buffer.from([0x01])]);
   const chk = createHash("sha256").update(createHash("sha256").update(body).digest()).digest().subarray(0, 4);
   return b58e(Buffer.concat([body, chk]));
