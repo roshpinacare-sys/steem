@@ -1,0 +1,70 @@
+# CROWN-VAULT-RECOVERY — "find ALL the keys" in one run (owner law 2026-10-29)
+#
+# Chain of the run:
+#   1. Gather EVERY credential candidate in this repo's secrets (+ sub-values).
+#   2. Open vault-home wraps (sha256(C)-keyed) → master passphrase P.
+#      Fallback: legacy seal (C as P) → adopt.
+#   3. With P: decrypt keys.env.enc + intake/* + custody-intake/* + fleet-rot2 + ssh-keys.tar.
+#   4. GEN archaeology: pull every agent/vault/*.enc blob from THIS repo's git
+#      history; try every pass we hold (vault-pass secrets, P, derived).
+#   5. Census-judge EVERY WIF found vs the LIVE steem+hive authorities.
+#   6. Seal the verified map (real WIFs) → vault-home custody-intake/CROWN-<ts>.enc
+#      + relay as LIVE_FLEET_KEYS to the 4 runtimes.
+#   7. Log the matrix (sha256 fingerprints only — never WIFs).
+name: crown-vault-recovery
+on:
+  workflow_dispatch:
+    inputs:
+      seal_pass:
+        description: "Transport pass for the CROWN-<ts>.enc seal (rotate after local open)"
+        required: true
+  schedule:
+    - cron: "19 5 * * *"   # daily honest audit; without seal input it prints the matrix only
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crown-vault-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      MAIN_KEY: ${{ secrets.MAIN_KEY }}
+      ZIP_PAT: ${{ secrets.ZIP_PAT }}
+      ROT2_FLEET_KEYS: ${{ secrets.ROT2_FLEET_KEYS }}
+      ROT_ROSTER: ${{ secrets.ROT_ROSTER }}
+      STEEM_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
+      VAULT_PASSES_R33: ${{ secrets.VAULT_PASSES_R33 }}
+      LIVE_FLEET_KEYS: ${{ secrets.LIVE_FLEET_KEYS }}
+      NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
+      SEAL_PASS: ${{ inputs.seal_pass }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0   # full history — GEN archaeology needs the blobs
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Install crypto deps (pinned)
+        run: npm i --no-save --silent @noble/hashes@1.8.0 @noble/secp256k1@2.2.3
+      - name: Crown recovery — open the vault, mine the history, judge the chain
+        run: |
+          set -Euo pipefail
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node ops/crown-recovery/recover.mjs 2>&1 | tee /tmp/recovery.out
+          CODE=${PIPESTATUS[0]}
+          grep -v "CROWN_MAP_B64" /tmp/recovery.out || true
+          grep "CROWN_MAP_B64" /tmp/recovery.out > /tmp/crown_map.b64 || true
+          exit $CODE
+      - name: Seal verified custody → vault-home + relay LIVE_FLEET_KEYS
+        if: env.SEAL_PASS != ''
+        run: |
+          set -Euo pipefail
+          if [ ! -s /tmp/crown_map.b64 ]; then echo "no verified map — honest skip"; exit 0; fi
+          node ops/crown-recovery/seal-crown.mjs
+      - name: Cleanup
+        if: always()
+        run: rm -f /tmp/crown_map.b64 /tmp/recovery.out /tmp/verified.json /tmp/vh -R
