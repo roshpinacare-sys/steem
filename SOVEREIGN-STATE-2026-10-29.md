@@ -103,3 +103,32 @@ mechanisms are the difference: the fleet's key truth is now CHAIN-JUDGED and CLO
 and every repo can re-prove it in one dispatch. The remaining gap vs the strongest shops
 is unchanged: single live steem key concentration — closed only by the master password
 or the fee-channel re-key wave (the next economic decision point, 3 STEEM/account).
+
+---
+
+## EVENING WAVE — measured 2026-10-29 15:25Z (the single-key gap: CLOSED)
+
+| Capability | State at 10:50Z | State now (chain-judged) | Proof |
+|---|---|---|---|
+| The 10 "keyless" accounts | no account-auth path | **owner+active+posting+memo ALL LIVE, chain-verified ×10** | judge matrix 15:2xZ; wave txids in rekey-wave1-final.jsonl |
+| Single-key concentration (the one honest gap) | headcorner + 4 soldiers | **CLOSED: 13 accounts live, 10 with full 4-role control** | master-judge.mjs full matrix |
+| headcorner owner | behind the master password | owner 9b10ce9d LIVE (GEN archaeology landed) | judge |
+| Army treasury | 344 STEEM + 12.8 SBD scattered across 11 wallets | **334.03 STEEM + 11.76 SBD consolidated at HQ** (1.0 STEEM dust/soldier) | treasury-sweep.jsonl 10×ACCEPTED |
+| Judge truth | missed L-prefixed 38B WIFs (silent role gaps) | WIF_RE patched, committed 589c35c0c DURABLE | saos-cockpit |
+
+### THE COLLISION LESSON (dual-agent re-key, logged for the registry)
+Two sovereign agents ran the same re-key wave concurrently (the owner's order fans out).
+Both honored the two-seal law — so when they raced on the SAME chain authorities, the
+loser's keys were still sealed and zero custody was lost. Chain truth won: twin holds
+actives (CROWN-REKEY-*), wave-1 holds posting+memo (REKEY-W1), reconciled additively
+(reconcile-rekey.mjs, 30 WIFs restored from seals, nothing deleted). LAW: before any
+authority-wave, CHECK for a live twin (ps + custody-intake mtime) — or seal-first and
+reconcile-after, which is exactly what saved this one.
+
+### NOW OPEN (paths the wave unlocked)
+- saos-000X replacement wave: create_claimed_account ×9 at HQ (3 STEEM each, reserve swept).
+- Frozen-SP audit: delegations are delegator-controlled; siq/tov/wic/wog/woq at ~40 SP
+  each top up to the 300-law on the 11-05 payout (governor completes).
+- hcsoldier6 liquid (18.8 STEEM) still behind dead keys — twin mining (CROWN-RECOVER
+  seals 15:1xZ); alive-wins law applies.
+- Book inventory ~5×: dex-grid twin re-arms the ladder each 15-min beat with HQ depth.
