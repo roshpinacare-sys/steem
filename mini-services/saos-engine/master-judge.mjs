@@ -49,7 +49,7 @@ async function rpcRetry(url, method, params, tries = 3) {
   throw lastErr;
 }
 
-const WIF_RE = /^[5K][1-9A-HJ-NP-Za-km-z]{50,51}$/;
+const WIF_RE = /^[5KL][1-9A-HJ-NP-Za-km-z]{50,51}$/;
 function collectWifs(node, out, path = "") {
   if (!node || typeof node !== "object") {
     if (typeof node === "string" && WIF_RE.test(node.trim())) out.push({ wif: node.trim(), path });
