@@ -1,0 +1,47 @@
+# MISTAKES REGISTRY — 2026-10-29 (owner law: learn from every failure, never repeat)
+
+> Owner directive: "שתמיד תלמד מתקלות עבר ושלא נחזור עליהם" + "לראות מי טעה ואיך מתקנים הכל".
+> Every row: WHO erred → WHAT broke → ROOT CAUSE → FIX (done) → PREVENTION LAW (permanent).
+
+## A. TODAY'S SESSION ERRORS (agent, 2026-10-29)
+
+| # | Error | Root cause | Fix | Prevention law |
+|---|---|---|---|---|
+| A1 | Judge reported 0/14 custody matches (twice) | `Buffer.from(pubkeyFromSeed(...))` — the function already returns the final "STM…" STRING; double-encoding garbage | Use `pubkeyFromSeed(wifDecode(wif))` directly | Before calling a helper, READ its return type in the source; never wrap a function's output on assumption |
+| A2 | Judge matrix showed steem keys "matching" hive authorities | manifest keyed by account NAME only; steem+hive loops wrote the same entry | Key by `chain:name` | Identity = (chain, account, role) — never account alone |
+| A3 | Overwrote army-keys-verified.json with a buggy judge's empty result | wrote output before validating the judge itself | Restored via the proven judge; then fixed the new one | Never overwrite the LAST-KNOWN-GOOD key cache with a first-run tool's output; write to a temp file, diff, then swap |
+| A4 | Delegation wave broadcast 8 failing txs (required=4.19M vests) | didn't notice the engine's exec-log truncates node errors at 120 chars; accepted "Assert Exc…" | Direct probe printed the FULL assert; found available=−402.9SP | Never trust truncated error strings; fetch the raw node response when a verdict matters |
+| A5 | Sent `3221020397854.000000 VESTS` (satoshi value as vests) | copy-paste unit slip between raw satoshis and display units | Corrected to `3221020.397854 VESTS` | Units are part of the value. A number without its unit-name in context is an unverified claim |
+| A6 | Daemon restarted twice (killed by own pkill; adopted 5 hands fine in foreground) | process management impatience | Single clean restart; 5/5 verified | Restart → VERIFY the process is alive + the expected log line, before moving on |
+
+## B. THE ARCHITECTURE'S HISTORICAL ERRORS (found + fixed today)
+
+| # | Who/what erred | What broke | Root cause | Fix (2026-10-29) | Prevention law |
+|---|---|---|---|---|---|
+| B1 | **The 10-21 wave** ("SOVEREIGN WAVE") | Claimed 5/13 accounts funded + "345.9 SP headroom" — but the on-chain evaluator saw available = **−402.9 SP**; 8 working accounts left at 40 SP, below the owner's ≥300 law | Powered down 2,000 SP BEFORE funding soldiers + a stale old power-down (~748.8 SP) was never cancelled — owner's sequence inverted ("soldiers first, THE REST power down") | Cancelled ALL withdraws (tx 354849aa) → funded hcsoldier7 300SP (tx 500a7b0b) → re-power-down the remainder (tx a0e83697, 500SP/wk × 4) | Capital sequencing follows the owner's sentence order, literally. Before any SP plan: measure `vests − to_withdraw − delegated` ON-CHAIN (the evaluator, not the condenser cache) |
+| B2 | **hcsoldier7 "created" (morning claim)** | The account NEVER existed on chain (`get_accounts` → empty) — a false success receipt existed for hours | A create op failed downstream and the receipt was written as ok | Fee-channel creation DONE (tx 80a23e5f, 3 STEEM — fee dropped from 30) + custody sealed 0600 in custody-vault/ + 300SP (tx 500a7b0b) | Every "created/funded/minted" claim must carry a txid that `get_transaction` (or `get_accounts`) can prove — the chain is the only judge |
+| B3 | **The seal commits (10-28)** | All `agent/vault/*.enc` deleted from public repo → resolve-keys ENOENT → 30+ hours of KEYLESS-STASIS across the whole cloud army | Sealing EXPOSURE deleted CUSTODY (the pass lived beside the archive; removal killed both) | resolve-keys v2/v3 recovers every archive from git HISTORY + clones the default branch; census-relay relayed the one live key | Never delete the last copy of anything in one atomic commit. Exposure fixes rotate material FIRST, remove archives SECOND |
+| B4 | **resolve-keys.cjs** | Cloned `--branch main depth 1` of a repo whose default branch is `saos-cockpit` → recovery-meta ENOENT → permanent stasis | Hardcoded branch against a renamed default | Default-branch clone + history recovery (v2); census-relay source (v3) | Read the repo's `default_branch` from the API; never hardcode branch names |
+| B5 | **The merge corruption** | `state/army-custody.json` had unresolved conflict markers → JSON parse crash → custody reads silently failed | A CI heartbeat commit merged over a dirty tree | Rebuilt the file from the chain-judge truth | State files are rebuilt from measured truth, never hand-repaired; a corrupt state file must FAIL LOUDLY, not silently empty |
+| B6 | **exec-armed.json policy drift** | `allowDelegation:false` (W118, 10-21) survived 8 days PAST the owner's explicit authorization; the morning wave's policy update was lost with the old repo path | Policy lived in a movable dir with no sync path | Policy re-armed with the owner's verbatim quote + trace | Every policy row carries the owner quote + IM trace that justifies it; a policy without provenance is a bug |
+| B7 | **operatorOrders path mismatch** | Gate read `policy.operatorOrders`, the file had it top-level → 3 wasted broadcast attempts | Schema drift between writer and reader | Moved under `policy.` (the reader's path) + registered in this registry | One schema per config file — the writer and reader import the SAME constant |
+| B8 | **The dex-grid 16-day wait** | Book stuck ARMED-WAITING since 10-13 while headcorner's key sat in Domain secrets ALL ALONG | "Refuse honestly while the active key awaits the operator" gate + STASIS staged + nobody re-checked the premise | Census proved the key LIVE → STASIS lifted (owner 10-29 order) → cancel-wave 28 stale → fresh ladder → **ARMED-LIVE** (6 orders on chain) | A "waiting for the operator" gate must re-verify its own premise each run: if the thing it waits for EXISTS, the gate is the bug. Waiting-gates self-check or self-delete |
+| B9 | **The many-vaults chaos** (owner's core complaint) | 9+ vault generations, passes beside archives, write-only secrets nobody can read, /tmp caches that die with sandboxes, keys lost on repo moves | Custody accreted by generation without a registry | **ONE canonical custody**: `.secrets/custody-vault/` (0600, local) + `.secrets/custody-manifest.json` (chain-judged, no material) + census-relay (secrets ↔ vault-home) + crown-census workflow on 4 repos | Key custody = manifest (verdicts) + one sealed dir (material) + one relay mechanism (secrets). Anything else gets merged or retired |
+| B10 | **Wave receipt arithmetic** | "153.85 SP/week over 13 weeks" — on-chain truth: `vesting_withdraw_rate` = 500 SP/week × 4 weeks | Receipts written from intent, not from post-broadcast chain readback | Measured + corrected in this registry | Every receipt re-reads the chain AFTER the tx lands and stores the measured numbers |
+
+## C. VERDICTS THAT STAND (re-proven, do not re-litigate)
+
+- **hcsoldier1/2/3 = LOST-NO-CUSTODY forever** (three independent ~7,000-derivation scans, 0 matches). Owner law: keyless = never funded. They stay retired; the canonical anchor is hcsoldier4/5/6/7.
+- **ROT2_FLEET_KEYS (46 WIFs) = dead vs all 13** (measured 2026-10-29 twice: local judge + runner census).
+- **The only live fleet-adjacent key outside soldiers = headcorner active** (fp 8fc001a6, now in: Domain/saos-runtime/saos-dex/steem secrets as LIVE_FLEET_KEYS + STEEM_ACTIVE_WIF, local custody-vault + engine adoption).
+- **HIVE custody live**: woq (active+posting), lsa+siq (posting) — from rot2-1018, chain-judged.
+
+## D. THE ANTI-SELF-DESTRUCTION LAWS (owner demand: no more self-deletion, no key amnesia)
+
+1. **No key material in /tmp, ever** — /tmp dies with the sandbox (it ate the morning's headcorner.key + new-soldiers.json). Canonical: `steem/.secrets/custody-vault/` (0600) + cloud secrets + vault-home ciphertext.
+2. **No single-atomic-commit deletions of custody** — rotate first, delete later (B3).
+3. **Every claim carries a proof handle** (txid / block / API endpoint) — a receipt without a handle is a rumor (B2, B10).
+4. **The chain is the only judge** — for keys (authority match), for balances (get_accounts), for orders (get_open_orders), for every "success" claim.
+5. **Waiting-gates self-check** — if the awaited resource exists, the gate arms instead of halting (B8).
+6. **Cron survives sessions** — grid-beat 15min (job 483417) + custody patrol hourly (job 483418) run outside any agent session.
+7. **Registry of the living** — custody-manifest.json is the ONLY roster; new keys land there + in custody-vault/ in the same breath (two-seal intake law).
