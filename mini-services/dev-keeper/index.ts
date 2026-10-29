@@ -35,8 +35,8 @@ const PORT = 3044;
 const ENGINE = "http://127.0.0.1:3040/health";
 const COCKPIT = "http://127.0.0.1:3000/__keeper_probe";
 const ENGINE_HOST = "http://127.0.0.1:3050/health";
-const ENGINE_DIR = "/home/z/audit/repos/steem/mini-services/saos-engine";
-const HOST_HEARTBEAT = "/home/z/audit/saos-engine-host-heartbeat.json";
+const ENGINE_DIR = process.env.KEEPER_ENGINE_DIR || "/home/z/fleet/vault-home/mini-services/saos-engine";
+const HOST_HEARTBEAT = process.env.KEEPER_HOST_HB || "/home/z/fleet/saos-engine-host-heartbeat.json";
 const BUN = ["/usr/local/bin/bun", "/home/z/.bun/bin/bun", "/usr/bin/bun"].find((p) => {
   try { fs.accessSync(p, fs.constants.X_OK); return true; } catch { return false; }
 }) ?? "bun";
