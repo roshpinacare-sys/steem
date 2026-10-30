@@ -1,7 +1,7 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-10-30T08:26:06.675Z",
-  "why": "planned",
+  "at": "2026-10-30T11:29:58.810Z",
+  "why": "balanced-no-moves",
   "railVersion": "W12-c",
   "policy": {
     "masterSpOwnFloor": 1372,
@@ -25,37 +25,6 @@
   },
   "planOnly": [],
   "executed": [],
-  "refused": [
-    {
-      "move": {
-        "kind": "liquidity-sweep",
-        "from": "hcsoldier4",
-        "to": "headcorner",
-        "asset": "STEEM",
-        "amount": 4.18,
-        "mode": "attempt",
-        "why": "master below floor (6.488 < 40) while hcsoldier4 holds surplus"
-      },
-      "verdict": "THINK-GATE-REFUSED",
-      "txid": null,
-      "error": null,
-      "at": "2026-10-30T08:26:06.675Z"
-    },
-    {
-      "move": {
-        "kind": "liquidity-sweep",
-        "from": "hcsoldier5",
-        "to": "headcorner",
-        "asset": "STEEM",
-        "amount": 18.17,
-        "mode": "attempt",
-        "why": "master below floor (6.488 < 40) while hcsoldier5 holds surplus"
-      },
-      "verdict": "THINK-GATE-REFUSED",
-      "txid": null,
-      "error": null,
-      "at": "2026-10-30T08:26:06.675Z"
-    }
-  ],
-  "verdict": "NO-EXEC"
+  "refused": [],
+  "verdict": "BALANCED"
 }
