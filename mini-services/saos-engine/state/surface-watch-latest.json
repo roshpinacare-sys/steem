@@ -1,10 +1,10 @@
 {
-  "at": "2026-10-30T20:55:58.203Z",
-  "head": "af5f92d452b543949ab1b56426d8af5a692527dd",
-  "verdict": "SURFACES-DEGRADED",
-  "repairMode": "observe",
-  "actArmed": false,
-  "prevVerdict": "SURFACES-OK",
+  "at": "2026-10-30T21:02:17.737Z",
+  "head": "4d27e269915a42a2f3a52b9357b44f46d479b3f3",
+  "verdict": "SURFACES-OK",
+  "repairMode": "act",
+  "actArmed": true,
+  "prevVerdict": "SURFACES-DEGRADED",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 25.8
+      "ageMinutes": 32.1
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 25.8
+      "ageMinutes": 2.1
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 127
+      "ageMinutes": 133.3
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 2.8
+      "ageMinutes": 9.2
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 8978.8
+      "ageMinutes": 8985.1
     },
     {
       "id": "engine-selftest",
@@ -66,8 +66,8 @@
       "id": "artery-workflow",
       "kind": "workflow",
       "source": "api",
-      "verdict": "DEGRADED",
-      "reason": "probe-error:api-http-403"
+      "verdict": "OK",
+      "reason": "run-active (artery alive right now)"
     },
     {
       "id": "steem-rpc",
@@ -93,14 +93,28 @@
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
       "readbackRequired": true
-    },
-    {
-      "targetId": "artery-workflow",
-      "verdict": "DEGRADED",
-      "action": "escalate",
-      "readbackRequired": true
     }
   ],
   "repairs": [],
-  "signature": "sig:7cc8b67c"
+  "triageGate": [
+    {
+      "id": "pulse-domain-published",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
+    },
+    {
+      "id": "engine-presence-digest",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
+    }
+  ],
+  "signature": "sig:31208618"
 }
