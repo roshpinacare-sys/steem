@@ -1,10 +1,10 @@
 {
-  "at": "2026-10-31T20:05:07.596Z",
-  "head": "265f66e932c70c389592017d187bb0a5bf4ea51d",
+  "at": "2026-10-31T20:10:04.786Z",
+  "head": "e4f7aecc3b7b1c6bb49a9d9f60b0929ad922663c",
   "verdict": "SURFACES-OK",
-  "repairMode": "act",
-  "actArmed": true,
-  "prevVerdict": "SURFACES-DEGRADED",
+  "repairMode": "observe",
+  "actArmed": false,
+  "prevVerdict": "SURFACES-OK",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5
+      "ageMinutes": 9.9
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5
+      "ageMinutes": 9.9
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 31.7
+      "ageMinutes": 36.7
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 4.8
+      "ageMinutes": 5
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 10367.9
+      "ageMinutes": 10372.9
     },
     {
       "id": "engine-selftest",
@@ -88,16 +88,5 @@
     }
   ],
   "repairs": [],
-  "triageGate": [
-    {
-      "id": "engine-presence-digest",
-      "verdict": "STALE",
-      "class": "AMBIGUOUS",
-      "confidence": "low",
-      "basis": "verdict STALE without a stronger signature (rule 6)",
-      "advisedAction": "observe-then-escalate",
-      "gate": "observe-only (no auto-retry this beat)"
-    }
-  ],
-  "signature": "sig:3f3337ce"
+  "signature": "sig:50662478"
 }
