@@ -13,7 +13,7 @@
       "cadence": "cycle",
       "truthContract": "numbers only from market_history_api reads, labeled measured",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/market.json: 61 trades/24h measured (vol 1048.895 STEEM)",
+      "evidence": "state/market.json: 67 trades/24h measured (vol 1216.044 STEEM)",
       "priorStatus": "active"
     },
     {
@@ -49,7 +49,7 @@
       "cadence": "cycle",
       "truthContract": "edge in bps from measured market vs implied, HOLD verdict honest",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -41bps)",
+      "evidence": "state/convert-plan.json: CONVERT-HOLD (edge -72bps)",
       "priorStatus": "active"
     },
     {
@@ -73,7 +73,7 @@
       "cadence": "cycle",
       "truthContract": "budgetCounted basis journaled on every verdict",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/curator.json: VP-FLOOR (budgetCounted ?, basis state)",
+      "evidence": "state/curator.json: DAY-CAP (budgetCounted 60, basis max(state, chain-truth))",
       "priorStatus": "active"
     },
     {
@@ -85,7 +85,7 @@
       "cadence": "daily (T-22 standing)",
       "truthContract": "PASS required before any deploy; failures block",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/selftest-last-run.json: 1982/1982 PASS at 2026-10-31T21:01:41.470Z",
+      "evidence": "state/selftest-last-run.json: 1982/1982 PASS at 2026-10-31T23:32:48.045Z",
       "priorStatus": "active"
     },
     {
@@ -133,10 +133,10 @@
       "cadence": "daily",
       "truthContract": "their votes counted from chain history minus our journal, never from our own logs",
       "recruitedAt": "2026-10-27T14:29:59.072Z",
-      "evidence": "state/weave.json: saos.weave.core.v1 published, age 18h — second-writer votes today 0 — החוזה-האחד פומבי",
+      "evidence": "state/weave.json: saos.weave.core.v1 published, age 21h — second-writer votes today 0 — החוזה-האחד פומבי",
       "priorStatus": "active"
     }
   ],
-  "at": "2026-10-31T21:01:38.684Z",
-  "pid": 2597
+  "at": "2026-10-31T23:32:48.112Z",
+  "pid": 2330
 }
