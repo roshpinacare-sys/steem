@@ -136,7 +136,11 @@ export async function runDelegationRail({ now = new Date().toISOString() } = {})
   /* 2 · DAILY gate */
   const day = String(now).slice(0, 10);
   const last = readJson(path.join(S, "delegation-last.json"), null);
-  if (last?.day === day) {
+  /* R315: a FAILED prior run does NOT consume the day — 0 ops landed, retry is
+   * idempotent (ops SET totals; at-floor rows are named SKIPs). A successful or
+   * legitimate no-op run (DELEGATED / NO-OPS) still consumes the day. */
+  const RETRYABLE_VERDICTS = new Set(["BROADCAST-FAILED", "RPC-FAILED", "SIGNATURE-VERIFY-FAILED", "ADOPT-ERROR", "ADOPT-REFUSED"]);
+  if (last?.day === day && !RETRYABLE_VERDICTS.has(String(last?.verdict ?? ""))) {
     const out = { ...base, verdict: "ALREADY-TODAY", day, priorVerdict: last.verdict ?? null };
     writeJson(path.join(S, "delegation-last.json"), out);
     return out;
