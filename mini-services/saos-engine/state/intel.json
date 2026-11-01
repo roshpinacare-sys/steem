@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T06:09:25.723Z",
+  "at": "2026-11-01T06:32:46.157Z",
   "decisions": [
     {
       "kind": "book-depth",
@@ -10,16 +10,16 @@
         "bestAsk": 0.11568123393316196,
         "bestBid": 0.10146901093230151
       },
-      "at": "2026-11-01T06:09:25.723Z"
+      "at": "2026-11-01T06:32:46.157Z"
     },
     {
       "kind": "parity-drift",
       "decision": "monitor",
-      "reason": "internal feed deviates 360bps from external parity",
+      "reason": "internal feed deviates 273bps from external parity",
       "action": {
-        "bps": 360
+        "bps": 273
       },
-      "at": "2026-11-01T06:09:25.723Z"
+      "at": "2026-11-01T06:32:46.157Z"
     },
     {
       "kind": "soldiers",
@@ -28,27 +28,40 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-11-01T06:09:25.723Z"
+      "at": "2026-11-01T06:32:46.157Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 3.221315 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 3.221315,
+        "any": true
+      },
+      "at": "2026-11-01T06:32:46.157Z"
     },
     {
       "kind": "rc-health",
       "decision": "healthy",
-      "reason": "RC at 99.9%",
+      "reason": "RC at 100%",
       "action": {
-        "rcPct": 99.9
+        "rcPct": 100
       },
-      "at": "2026-11-01T06:09:25.723Z"
+      "at": "2026-11-01T06:32:46.157Z"
     },
     {
       "kind": "curation",
-      "decision": "curator-live",
-      "reason": "voted 3 today (43 total) · VP 36% · txid bc59b5b78fcb",
+      "decision": "curator-armed",
+      "reason": "rail armed, verdict VP-FLOOR today (VP 34.8%) — gates hold until candidates pass",
       "action": {
-        "votesToday": 6,
-        "vpEff": 36,
-        "verdict": "VOTED"
+        "votesToday": 9,
+        "vpEff": 34.8,
+        "verdict": "VP-FLOOR"
       },
-      "at": "2026-11-01T06:09:25.723Z"
+      "at": "2026-11-01T06:32:46.157Z"
     }
   ],
   "spreadBpsRec": 1309,
