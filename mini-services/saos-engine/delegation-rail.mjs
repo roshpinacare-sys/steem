@@ -50,7 +50,15 @@ export const DELEGATION_LAW = {
   soldiers: ["hcsoldier4", "hcsoldier5", "hcsoldier6"],
   floorSp: { publisher: 100, soldier: 20 },
   maxRunSp: 1200,        /* hard ceiling per run */
-  treasuryKeepSp: 2800,  /* headcorner must retain ≥ this net SP after the run */
+  /* 2026-11-01T18:10Z REVISIT-R314c (measured, operator standing order 2026-10-11
+   * "אני רוצה להאציל sp לכלל החשבונות" unchanged): the 2800 keep predates the
+   * deliberate 2000-SP power-down (receipt 2026-10-29-powerdown-2000) which
+   * permanently lowered treasury net to 1511.7 SP (measured 2026-11-01T18:05Z) —
+   * at 2800 the rail was DEAD CODE that could never fire while workers starved
+   * (hcsoldier4/5 net 0.0 SP, siq/woq/tov/wic/wog ~41 vs floor 100). New keep:
+   * 1000 SP — treasury still top-RC + top-vote weight; trajectory vs power-down
+   * is tracked in receipts/fleet-effectiveness.jsonl + revisit ledger. */
+  treasuryKeepSp: 1000,  /* headcorner must retain ≥ this net SP after the run */
   minDeltaSp: 5,         /* dust refusal — no pointless 0.1 SP ops */
 };
 
@@ -85,6 +93,13 @@ export function vestsFromSp(sp, spm) {
 
 /* ── pure (selftest-locked): the plan — floors, caps, skips, budget ──────── */
 export function planDelegation({ masterNetSp, targets, maxRunSp = DELEGATION_LAW.maxRunSp, treasuryKeepSp = DELEGATION_LAW.treasuryKeepSp, minDeltaSp = DELEGATION_LAW.minDeltaSp, spm }) {
+  /* 2026-11-01T18:35Z REVISIT-R314e (measured live, tx d0fe3807): the op
+   * delegate_vesting_shares SETS the total master→delegatee amount — it does
+   * NOT add. The old plan broadcast `floor − netSp` as the SET amount, which
+   * silently OVERWROTE larger prior delegations the moment a re-run measured
+   * a smaller deficit (publishers 58.8→40 SP measured tonight). Fix: every
+   * target carries currentMasterSp (the live master→delegatee amount); the op
+   * carries current+delta; the budget only consumes the delta. */
   const ops = [], skipped = [];
   if (!Number.isFinite(masterNetSp) || !Number.isFinite(spm) || spm <= 0) return { ops, skipped: [{ account: "*", reason: "MEASUREMENT-REFUSED" }], totalSp: 0 };
   let budget = Math.min(maxRunSp, masterNetSp - treasuryKeepSp);
@@ -93,13 +108,15 @@ export function planDelegation({ masterNetSp, targets, maxRunSp = DELEGATION_LAW
   /* biggest deficit first — the starving accounts eat before the full ones */
   const ordered = [...targets].sort((a, b) => (b.floor - b.netSp) - (a.floor - a.netSp));
   for (const t of ordered) {
+    const current = Number(t.currentMasterSp ?? 0);
     const delta = t.floor - t.netSp;
     if (delta < minDeltaSp) { skipped.push({ account: t.account, reason: "AT-OR-ABOVE-FLOOR" }); continue; }
     const give = Math.min(delta, budget);
     if (give < minDeltaSp) { skipped.push({ account: t.account, reason: "BUDGET-EXHAUSTED" }); continue; }
     budget -= give;
     totalSp += give;
-    ops.push({ account: t.account, sp: give, vests: vestsFromSp(give, spm) });
+    const setSp = current + give;
+    ops.push({ account: t.account, sp: give, setSp, vests: vestsFromSp(setSp, spm) });
   }
   return { ops, skipped, totalSp: Math.round(totalSp * 1000) / 1000 };
 }
@@ -187,10 +204,13 @@ export async function runDelegationRail({ now = new Date().toISOString() } = {})
   }
   const byName = new Map(accs.result.map((a) => [String(a.name), a]));
   const masterNet = netSpOf(byName.get(master), spm);
+  /* R314e: measure the live master→delegatee amounts — the op SETS totals */
+  const dg = await rpcCall("condenser_api.get_vesting_delegations", [master, "", 100]);
+  const currentMaster = new Map((dg?.result ?? []).map((d) => [String(d.delegatee), spFromVests(d.vesting_shares, spm) ?? 0]));
   const targets = names.map((n) => {
     const a = byName.get(n);
     const floor = DELEGATION_LAW.soldiers.includes(n) ? DELEGATION_LAW.floorSp.soldier : DELEGATION_LAW.floorSp.publisher;
-    return { account: n, netSp: a ? (netSpOf(a, spm) ?? -Infinity) : -Infinity, floor };
+    return { account: n, netSp: a ? (netSpOf(a, spm) ?? -Infinity) : -Infinity, floor, currentMasterSp: currentMaster.get(n) ?? 0 };
   });
   const plan = planDelegation({ masterNetSp: masterNet, targets, spm });
   /* 6 · CAPPED — nothing to do is a verdict */
