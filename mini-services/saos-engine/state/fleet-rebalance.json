@@ -1,7 +1,7 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-11-01T15:21:40.780Z",
-  "why": "balanced-no-moves",
+  "at": "2026-11-01T20:40:36.642Z",
+  "why": "planned",
   "railVersion": "W12-c",
   "policy": {
     "masterSpOwnFloor": 1372,
@@ -23,8 +23,19 @@
     "restorePlannedNow": 0,
     "liveProof": false
   },
-  "planOnly": [],
+  "planOnly": [
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "32202.296004 VESTS",
+      "frozenHolder": "hcsoldier6",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    }
+  ],
   "executed": [],
   "refused": [],
-  "verdict": "BALANCED"
+  "verdict": "PLANNED-AWAITING-POLICY"
 }
