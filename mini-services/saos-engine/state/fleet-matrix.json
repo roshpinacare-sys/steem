@@ -1,15 +1,15 @@
 {
   "schema": "fleet-matrix-v1",
-  "at": "2026-11-02T09:03:59.488Z",
+  "at": "2026-11-02T09:44:02.802Z",
   "estate": 14,
   "activation": {
     "rate": 0.36,
     "active": 5,
-    "grid": 5,
+    "grid": 4,
     "total": 14
   },
   "custody": {
-    "at": "2026-11-02T09:03:59.488Z",
+    "at": "2026-11-02T09:38:33.023Z",
     "verified": null,
     "total": null
   },
@@ -89,16 +89,16 @@
     }
   ],
   "totals": {
-    "orders24h": 54,
-    "votes24h": 20,
-    "fills24h": 14,
+    "orders24h": 51,
+    "votes24h": 21,
+    "fills24h": 11,
     "steem": 203.34,
     "sbd": 35.704
   },
   "rows": [
     {
       "name": "headcorner",
-      "class": "GRID-ACTIVE",
+      "class": "CURATE-ONLY",
       "custody": "master-verified",
       "steem": 163.35,
       "sbd": 32.402,
@@ -106,12 +106,12 @@
       "spOwn": 827,
       "spReceived": 244.6,
       "spEffective": 4434,
-      "rcMax": 1663599146110,
+      "rcMax": 1663602367181,
       "rcPct": 100,
-      "orders24h": 3,
-      "votes24h": 20,
-      "fills24h": 14,
-      "lastActivityAt": "2026-11-02T05:57:54"
+      "orders24h": 0,
+      "votes24h": 21,
+      "fills24h": 11,
+      "lastActivityAt": "2026-11-02T09:37:54"
     },
     {
       "name": "cashmachine",
@@ -336,6 +336,11 @@
     }
   ],
   "gaps": [
+    {
+      "name": "headcorner",
+      "class": "CURATE-ONLY",
+      "gap": "votes but zero 24h orders — grid lane idle (RC/liquidity or policy); rebalance ladder targets this"
+    },
     {
       "name": "cashmachine",
       "class": "DORMANT",
