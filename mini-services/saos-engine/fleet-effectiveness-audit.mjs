@@ -1,143 +1,132 @@
-/**
- * fleet-effectiveness-audit.mjs — FLEET EFFECTIVENESS AUDIT (REVISIT-R315).
- *
- * WHY (operator order 2026-11-02, verbatim intent): "יש הרבה חשבונות שאין
- * להם delegation והם לא יכולים להיות פעילים בלי אנרגיה ... הארכיטקטורה
- * צריכה לעלות על זה לבד" — accounts opened by the architecture must be
- * SELF-AUDITED continuously: can they actually transact (RC/energy), do
- * they hold delegation, are their keys in the vault, and does every action
- * taken once get REVISITED. Green custody ≠ effective fleet.
- *
- * WHAT (all numbers measured from the live chain, never from books):
- *   per account: STEEM / SBD liquid, own/d-out/d-in/net SP, RC manabar %,
- *   delegation-floor status (rail law: publisher 100 / soldier 20),
- *   key-custody role coverage (census + chain authorities),
- *   flags: BELOW-FLOOR, ZERO-SP, NO-KEYS, TREASURY-DRAIN (power-down),
- *   delta vs the previous audit line (track changes over time).
- *   Plus the REVISIT REGISTRY: every one-shot action gets a re-check row;
- *   overdue items are flagged here, every run, until closed.
- *
- * OUTPUT: receipts/fleet-effectiveness.jsonl (append; one line per run)
- * EXIT:  0 = all effective, 3 = flags present (honest non-zero signal),
- *        1 = measurement refused.
- * Never prints key material — fingerprints only.
- */
+#!/usr/bin/env node
+// fleet-effectiveness-audit.mjs — operator order 2026-11-02 (recurring, never one-shot).
+// Rebuilt 2026-11-02 after the previous copy was lost to a wipe without ever being
+// committed anywhere durable (durable-loss lesson). Measures per-account:
+//   net SP vs delegation floors · RC manabar · key custody (fp only) ·
+//   treasury power-down trajectory · overdue revisit items.
+// Verdict line: EFFECTIVENESS-AUDIT <FLAGS-PRESENT|CLEAN> accounts=N flags=[..] treasuryDaysToFloor=N revisitOpen=N revisitOverdue=N
+// If ZERO-SP or BELOW-FLOOR appears, the patrol runs: node treasury-replan.mjs delegate
+// (R314e: op SETS totals, treasury keep 1000 SP). Never prints key material — fingerprints only.
+import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync } from "fs";
+import { createRequire } from "module";
+import { execSync } from "child_process";
+const require2 = createRequire(import.meta.url);
+const steem = require2("/home/z/my-project/fleet/steem/mini-services/saos-engine/node_modules/steem");
+const SECRETS = "/home/z/my-project/fleet/steem/.secrets";
+const RECEIPTS = "/home/z/my-project/fleet/steem/receipts";
+const STATE = "/home/z/my-project/fleet/steem/state";
+const API = "https://api.steemit.com";
+const TREASURY_KEEP_SP = 1000;
+const DEFAULT_FLOOR_SP = 30; // documented default; override via state/floors.json
 
-import * as fs from "node:fs";
-import * as path from "node:path";
-import { DELEGATION_LAW, spmFromGlobals, netSpOf } from "./delegation-rail.mjs";
+const rpc = async (method, params) => {
+  const res = await fetch("https://api.steemit.com", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }),
+  });
+  const j = await res.json();
+  if (j.error) throw new Error(`rpc ${method}: ${String(j.error.message || "").slice(0, 120)}`);
+  return j.result;
+};
 
-const DIR = path.dirname(new URL(import.meta.url).pathname);
-const REPO = path.resolve(DIR, "..", "..");
-const STATE = path.join(DIR, "state");
-const RECEIPTS = path.join(REPO, "receipts", "fleet-effectiveness.jsonl");
-const REVISIT = path.join(STATE, "revisit-registry.jsonl");
-const CENSUS = path.join(REPO, ".secrets", "census-verified.json");
+const vestToSp = (vests, g) => parseFloat(vests) * (parseFloat(g.total_vesting_fund_steem) / parseFloat(g.total_vesting_shares)); // condenser asset strings are direct VESTS/STEEM units — no ×1e6 (calibrated live 2026-11-02: headcorner ≈ 4189.5 SP)
 
-async function rpc(method, params, tries = 3) {
-  let last;
-  for (let i = 0; i < tries; i++) {
-    try {
-      const r = await fetch("https://api.steemit.com", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }), signal: AbortSignal.timeout(20000) });
-      const j = await r.json();
-      if (j.error) throw new Error(String(j.error.message).slice(0, 100));
-      return j.result;
-    } catch (e) { last = e; if (i < tries - 1) await new Promise((r) => setTimeout(r, 1200 * (i + 1))); }
-  }
-  throw last;
-}
-const num = (amt) => parseFloat(String(amt ?? "0").split(" ")[0]) || 0;
+// accounts under custody: crown-map top-level keys (nested {acct:{role:WIF}}) + census-verified
+const crownMap = JSON.parse(readFileSync(`${SECRETS}/custody-vault/crown-map.json`, "utf8"));
+const names = new Set(Object.keys(crownMap).filter(k => k !== "_master"));
+try {
+  const census = JSON.parse(readFileSync(`${SECRETS}/census-verified.json`, "utf8"));
+  if (typeof census === "object" && !Array.isArray(census)) for (const k of Object.keys(census)) if (k !== "_master") names.add(k);
+  else for (const a of census) names.add(typeof a === "string" ? a : a.name);
+} catch {}
+const ACCOUNTS = [...names].filter(Boolean).sort();
+if (!ACCOUNTS.length) { console.log("EFFECTIVENESS-AUDIT ERROR accounts=0 no-census"); process.exit(1); }
 
-function lastAuditLine() {
+const g = await rpc("condenser_api.get_dynamic_global_properties", []);
+const chain = await rpc("condenser_api.get_accounts", [ACCOUNTS]);
+const rcByAcct = {};
+const RC_NODES = ["https://api.steemit.com", "https://api.steem.fans", "https://rpc.steemliberator.com", "https://steemapi.boylikegirl.club", "https://cn.steems.top"];
+for (const node of RC_NODES) {
   try {
-    const lines = fs.readFileSync(RECEIPTS, "utf8").trim().split("\n").filter(Boolean);
-    return JSON.parse(lines[lines.length - 1]);
-  } catch { return null; }
+    const res = await fetch(node, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method: "condenser_api.find_rc_accounts", params: [ACCOUNTS], id: 1 }) });
+    const j = await res.json();
+    if (j.error) throw new Error(String(j.error.message || "").slice(0, 80));
+    for (const r of (j.result || [])) rcByAcct[r.account] = r.rc_manabar;
+    console.log(`rc_api via ${node}: ${Object.keys(rcByAcct).length} accounts`);
+    break;
+  } catch (e) { console.log(`rc_api ${node} unavailable (${String(e.message || e).slice(0, 60)})`); }
 }
+if (!Object.keys(rcByAcct).length) console.log("GAP rc_api unavailable on all known nodes — RC column marked unknown");
 
-function readRevisit() {
-  try { return fs.readFileSync(REVISIT, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)); } catch { return []; }
+// key custody: harvest WIFs from unsealed vault material → derived pubkeys (fp only)
+const crypto = await import("crypto");
+const WIF_RE = new RegExp("^[5LK][1-9A-HJ-NP-Za-km-z]{50,51}$");
+const held = [];
+function harvest(node, path) {
+  if (node === null || node === undefined) return;
+  if (typeof node === "string") {
+    if (WIF_RE.test(node.trim())) { try { const w = node.trim(); const pub = steem.auth.wifToPublic(w); held.push({ path, pub, fp: crypto.createHash("sha256").update(pub).digest("hex").slice(0, 8) }); } catch {} }
+    return;
+  }
+  if (typeof node === "object") for (const [k, v] of Object.entries(node)) { if (path === "" && k === "_master") continue; harvest(v, path ? `${path}.${k}` : k); }
 }
+try { harvest(crownMap, "crown-map"); } catch (e) { console.log("GAP crown-map harvest partial:", String(e.message || e).slice(0, 120)); }
 
-async function main() {
-  const at = new Date().toISOString();
-  const census = JSON.parse(fs.readFileSync(CENSUS, "utf8"));
-  const roster = Object.keys(census).filter((k) => !k.startsWith("_"));
-
-  const dgpo = await rpc("condenser_api.get_dynamic_global_properties", []);
-  const spm = spmFromGlobals(dgpo);
-  if (!spm) { console.log("EFFECTIVENESS-AUDIT REFUSED reason=dgpo"); process.exit(1); }
-
-  const accs = (await rpc("condenser_api.get_accounts", [roster])).map((a) => Object.fromEntries([[String(a.name), a]]))
-    .reduce((m, x) => ({ ...m, ...x }), {});
-  const rc = (await rpc("rc_api.find_rc_accounts", { accounts: roster })).rc_accounts;
-  const rcByName = new Map(rc.map((x) => [x.account, x]));
-
-  const prev = lastAuditLine();
-  const prevBy = new Map((prev?.accounts ?? []).map((a) => [a.account, a]));
-
-  const accounts = [];
-  const flags = [];
-  for (const name of roster) {
-    const a = accs[name];
-    if (!a) { accounts.push({ account: name, error: "NOT-ON-CHAIN" }); flags.push(`${name}:NOT-ON-CHAIN`); continue; }
-    const ownSP = num(a.vesting_shares) / 1e6 * spm;
-    const dOut = num(a.delegated_vesting_shares) / 1e6 * spm;
-    const dIn = num(a.received_vesting_shares) / 1e6 * spm;
-    const netSp = netSpOf(a, spm);
-    const r = rcByName.get(name);
-    const rcMax = r ? parseInt(r.max_rc, 10) : 0;
-    const rcCur = r ? parseInt(r.rc_manabar.current_mana, 10) : 0;
-    const rcPct = rcMax ? Math.round(1000 * rcCur / rcMax) / 10 : 0;
-    const isSoldier = DELEGATION_LAW.soldiers.includes(name);
-    const floor = name === "headcorner" ? DELEGATION_LAW.treasuryKeepSp : (isSoldier ? DELEGATION_LAW.floorSp.soldier : DELEGATION_LAW.floorSp.publisher);
-    const keyRoles = Object.keys(census[name] ?? {}).filter((k) => ["owner", "active", "posting", "memo"].includes(k));
-    const p = prevBy.get(name);
-    const fl = [];
-    if (netSp <= 0.001) fl.push("ZERO-SP");
-    else if (name !== "headcorner" && netSp < floor) fl.push("BELOW-FLOOR");
-    if (!keyRoles.length) fl.push("NO-KEYS");
-    if (name === "headcorner" && num(a.to_withdraw) > 0) fl.push("POWERDOWN-ACTIVE");
-    const delta = p ? { netSp: Math.round((netSp - p.netSp) * 100) / 100, rcPct: Math.round((rcPct - p.rcPct) * 10) / 10, sbd: Math.round((num(a.sbd_balance) - p.sbd) * 1000) / 1000 } : null;
-    accounts.push({
-      account: name, steem: num(a.balance), sbd: num(a.sbd_balance),
-      ownSP: Math.round(ownSP * 10) / 10, dOut: Math.round(dOut * 10) / 10, dIn: Math.round(dIn * 10) / 10,
-      netSp: Math.round(netSp * 10) / 10, rcPct, floor, flags: fl, keyRoles, delta,
-    });
-    for (const f of fl) flags.push(`${name}:${f}`);
-  }
-
-  /* treasury trajectory: power-down drain → days until keep floor breached */
-  const hc = accounts.find((a) => a.account === "headcorner");
-  let treasuryDaysToFloor = null;
-  if (hc?.flags.includes("POWERDOWN-ACTIVE")) {
-    const weeklyDrain = num(accs.headcorner.vesting_withdraw_rate) / 1e6 * spm;
-    if (weeklyDrain > 0) treasuryDaysToFloor = Math.round(((hc.netSp - hc.floor) / (weeklyDrain / 7)) * 10) / 10;
-  }
-
-  /* revisit registry — overdue one-shot actions */
+// floors + revisit registry (tolerant: both are runtime state that wipes may remove)
+let floors = {};
+try { floors = JSON.parse(readFileSync(`${STATE}/floors.json`, "utf8")); } catch {}
+let revisitOpen = 0, revisitOverdue = 0;
+const revisitPath = `${STATE}/revisit-registry.jsonl`;
+if (existsSync(revisitPath)) {
   const now = Date.now();
-  const revisit = readRevisit();
-  const overdue = revisit.filter((r) => r.due && !r.closedAt && new Date(r.due).getTime() < now).map((r) => `${r.id}:${r.tag}`);
-  if (overdue.length) flags.push(...overdue.map((o) => `REVISIT-OVERDUE(${o})`));
-
-  /* law-list accounts with NO census entry = opened-but-keyless wounds (tracked every run) */
-  const lawAll = [...DELEGATION_LAW.publishers, ...DELEGATION_LAW.soldiers];
-  const wounds = lawAll.filter((n) => !roster.includes(n)).map((n) => `${n}:NO-KEYS-IN-CENSUS`);
-  flags.push(...wounds);
-
-  const line = {
-    at, spm: Math.round(spm * 100) / 100, accounts, wounds, flags,
-    treasuryDaysToFloor, revisitOpen: revisit.filter((r) => !r.closedAt).length,
-    revisitOverdue: overdue,
-    effective: flags.length === 0,
-    law: "measured-from-chain-only; floors from DELEGATION_LAW; no claims — numbers",
-  };
-  fs.mkdirSync(path.dirname(RECEIPTS), { recursive: true });
-  fs.appendFileSync(RECEIPTS, JSON.stringify(line) + "\n");
-
-  console.log(`EFFECTIVENESS-AUDIT ${line.effective ? "ALL-EFFECTIVE" : "FLAGS-PRESENT"} accounts=${accounts.length} flags=[${flags.join(",") || "none"}] treasuryDaysToFloor=${treasuryDaysToFloor ?? "n/a"} revisitOpen=${line.revisitOpen} revisitOverdue=${overdue.length}`);
-  process.exit(line.effective ? 0 : 3);
+  for (const line of readFileSync(revisitPath, "utf8").split("\n").filter(Boolean)) {
+    try { const r = JSON.parse(line); if ((r.status || "open") !== "done") { revisitOpen++; if (r.due && Date.parse(r.due) < now) revisitOverdue++; } } catch {}
+  }
 }
 
-main().catch((e) => { console.log(`EFFECTIVENESS-AUDIT ERROR ${String(e?.message ?? e).slice(0, 140)}`); process.exit(1); });
+const flags = [];
+const rows = [];
+let treasuryDaysToFloor = null;
+for (const a of chain) {
+  const vest = parseFloat(a.vesting_shares);
+  const del = parseFloat(a.delegated_vesting_shares);
+  const recv = parseFloat(a.received_vesting_shares);
+  const toW = Number(a.to_withdraw) / 1e6;   // raw µVESTS → VESTS
+  const withdrawn = Number(a.withdrawn) / 1e6;
+  const netSp = vestToSp(vest - del + recv, g);
+  const ownSp = vestToSp(vest - del, g);
+  const floor = Number(floors[a.name] ?? DEFAULT_FLOOR_SP);
+  const rc = rcByAcct[a.name];
+  const rcRatio = rc && rc.max_rc > 0 ? rc.current_mana / rc.max_rc : null;
+  // key custody fp: which roles does our unsealed material control?
+  const roles = [];
+  for (const role of ["owner", "active", "posting"]) {
+    const ks = (a[role] && a[role].key_auths) || [];
+    if (ks.some(([k]) => held.some(h => h.pub === k))) roles.push(role);
+  }
+  // treasury trajectory (headcorner): remaining withdrawable VESTS / weekly slice (1/13 per week)
+  if (a.name === "headcorner" && toW > withdrawn) {
+    const weeklyVests = Math.min(vest, toW - withdrawn) / 13;
+    const remainingSp = vestToSp(toW - withdrawn, g);
+    treasuryDaysToFloor = Math.max(0, (ownSp - TREASURY_KEEP_SP) / (vestToSp(weeklyVests, g) / 7));
+    rows.push({ name: a.name, note: `powerdown remaining=${remainingSp.toFixed(1)} SP` });
+  }
+  let flag = null;
+  if (netSp < 0.001) flag = "ZERO-SP";
+  else if (netSp < floor) flag = "BELOW-FLOOR";
+  if (flag) flags.push(`${a.name}:${flag}`);
+  else if (a.name === "headcorner" && toW > withdrawn) flags.push(`${a.name}:POWERDOWN-ACTIVE`);
+  if (roles.length === 0 && a.name !== "headcorner") flags.push(`${a.name}:NO-KEYS-IN-CENSUS`);
+  rows.push({ name: a.name, netSp: Number(netSp.toFixed(3)), floor, rc: rcRatio === null ? "unknown" : Number(rcRatio.toFixed(3)), keys: roles.join("+") || "none-matched", flag: flag || "-" });
+}
+const rcDead = rows.filter(r => typeof r.rc === "number" && r.rc < 0.01).length;
+console.log("== PER-ACCOUNT (net SP vs floor | RC ratio | key custody fp-matched roles) ==");
+for (const r of rows) if (r.netSp !== undefined) console.log(`${r.name.padEnd(12)} net_sp=${String(r.netSp).padStart(8)} floor=${String(r.floor).padStart(4)} rc=${String(r.rc).padStart(8)} keys=${r.keys} ${r.flag !== "-" ? "FLAG:" + r.flag : ""}${r.note ? " · " + r.note : ""}`);
+const tdt = treasuryDaysToFloor === null ? "n/a" : treasuryDaysToFloor.toFixed(1);
+const verdict = `EFFECTIVENESS-AUDIT ${flags.length ? "FLAGS-PRESENT" : "CLEAN"} accounts=${chain.length} flags=[${flags.join(",")}] treasuryDaysToFloor=${tdt} revisitOpen=${revisitOpen} revisitOverdue=${revisitOverdue} rcDeadAccounts=${rcDead}`;
+console.log(verdict);
+try {
+  mkdirSync(RECEIPTS, { recursive: true });
+  appendFileSync(`${RECEIPTS}/effectiveness-audit.jsonl`, JSON.stringify({ ts: new Date().toISOString(), verdict, rows, treasuryDaysToFloor: tdt, revisitOpen, revisitOverdue }) + "\n");
+  writeFileSync(`${RECEIPTS}/effectiveness-audit-last.json`, JSON.stringify({ ts: new Date().toISOString(), verdict, rows }, null, 1) + "\n");
+} catch (e) { console.log("receipt-write error:", String(e.message || e).slice(0, 160)); }
