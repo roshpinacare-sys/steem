@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-11-03T12:10:05.957Z",
+  "at": "2026-11-03T19:41:35.572Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -18,12 +18,36 @@
     "order": true,
     "spLadderExecutedToday": 0,
     "spLadderExecNow": 0,
-    "spLadderPlannedNow": 0,
+    "spLadderPlannedNow": 2,
     "restoreExecutedNow": 0,
     "restorePlannedNow": 0,
     "liveProof": false
   },
   "planOnly": [
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "wic",
+      "sp": 60,
+      "setVests": 253212.116012,
+      "curSpEffective": 102.4,
+      "curMasterDelegationVests": 156619.116012,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.16T vs master 3.6T; EFFECTIVE SP 102.4→162.4 (received 99.8); master delegation +60 SP (SET 253212.116012)"
+    },
+    {
+      "kind": "sp-ladder",
+      "from": "headcorner",
+      "to": "wog",
+      "sp": 60,
+      "setVests": 255681.840881,
+      "curSpEffective": 104.6,
+      "curMasterDelegationVests": 159088.840881,
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegation=true",
+      "why": "RC bottleneck: tank 0.16T vs master 3.6T; EFFECTIVE SP 104.6→164.6 (received 99.9); master delegation +60 SP (SET 255681.840881)"
+    },
     {
       "kind": "sp-recall",
       "from": "headcorner",
