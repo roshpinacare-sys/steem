@@ -21,6 +21,21 @@ if [ ! -f "$PERSISTENT/steem/mini-services/saos-engine/master-judge.mjs" ]; then
   GIT_ASKPASS="$ASKPASS" GIT_TERMINAL_PROMPT=0 \
     git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$PERSISTENT/steem" 2>&1 | tail -1
 fi
+# 1b) R362 · OFFLINE FALLBACK (2026-11-05, owner execution order): if the
+# network clone fails but a local vault clone of the same branch survives
+# (fleet-restore/vault-home), materialize the tree from it — additive copy,
+# origin remains the source of truth once the network returns.
+if [ ! -f "$PERSISTENT/steem/mini-services/saos-engine/master-judge.mjs" ]; then
+  VAULT_TREE="/home/z/my-project/fleet-restore/vault-home"
+  if [ -f "$VAULT_TREE/mini-services/saos-engine/master-judge.mjs" ]; then
+    ( cd "$VAULT_TREE" && timeout 45 git fetch -q origin "$BRANCH" 2>/dev/null; \
+      timeout 20 git -c advice.detachedHead=false checkout -q "$BRANCH" 2>/dev/null ) || true
+    mkdir -p "$PERSISTENT/steem"
+    cp -r "$VAULT_TREE/." "$PERSISTENT/steem/" 2>/dev/null || true
+    rm -rf "$PERSISTENT/steem/.git" 2>/dev/null || true
+    echo "boot-fleet: steem tree materialized from local vault clone (offline fallback)"
+  fi
+fi
 if [ ! -f "$PERSISTENT/steem/mini-services/saos-engine/master-judge.mjs" ]; then
   echo "boot-fleet: STEEM-TREE-UNAVAILABLE (clone failed; check token/network)"
   exit 1
