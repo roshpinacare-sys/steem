@@ -472,7 +472,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       now,
       liquidSteem: inv.steem ?? 0, liquidSbd: inv.sbd ?? 0,
       buyBookPct: rd.buyBookPct ?? 0.5, powerUpPct: rd.powerUpPct ?? 0.3, reservePct: rd.reservePct ?? 0.2,
-      liquidSteemFloor: rd.liquidSteemFloor ?? 5, liquidSbdFloor: rd.liquidSbdFloor ?? 0.5,
+      liquidSteemFloor: rd.liquidSteemFloor ?? 3000, liquidSbdFloor: rd.liquidSbdFloor ?? 0.5,
       minPowerUpSteem: rd.minPowerUpSteem ?? 5,
     });
     /* pacing state — honest counter, seeded by the operator or the machine.
@@ -505,7 +505,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       intel = redeployIntel({
         planned: plan.powerUpSteem,
         liquidSteem: inv.steem ?? 0,
-        floorSteem: rd.liquidSteemFloor ?? 5,
+        floorSteem: rd.liquidSteemFloor ?? 3000,
         askNeed,
         rcPct: obs.ok ? obs.inventory?.rcPct ?? null : null,
       });
@@ -757,7 +757,7 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       } else {
         try {
           const accRd = await accountState(ACCOUNT);
-          const floorSteem = conf.redeploy?.liquidSteemFloor ?? 5;
+          const floorSteem = conf.redeploy?.liquidSteemFloor ?? 3000;
           const steemLockedThisBatch = createdIds
             .filter((c) => c.side === "ask")
             .reduce((s, c) => s + (c.amountSteem ?? 0), 0);
