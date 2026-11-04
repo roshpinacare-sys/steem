@@ -66,9 +66,24 @@ async function main() {
 
   report.steps.custody = await stepWrap("custody", async () => {
     const r = await reviveArmyCustody({ now });
+    /* R361 · VAULT-OF-RECORD FALLBACK (2026-11-05, owner execution order):
+     * the git-vault carriers (GEN-1/GEN-2) are measured dead on every reachable
+     * ref — on hosts that hold the vault of record (.secrets/custody-vault,
+     * chain-judged by master-judge) the cycle now adopts through the SAME
+     * fail-closed law instead of dying with the dead carriers. Where the
+     * vault is absent (plain CI clone) the adopt honestly refuses — recorded,
+     * never faked. Chain remains the only judge either way. */
+    let adopt = null;
+    try {
+      const { runAdopt } = await import("./crown-vault-adopt.mjs");
+      const ad = await runAdopt();
+      adopt = { verdict: ad.verdict ?? null, verified: ad.verified ?? 0, total: ad.total ?? 0, reason: ad.reason ?? null };
+    } catch (e) {
+      adopt = { verdict: "ADOPT-ERROR", reason: String(e?.message ?? e).slice(0, 120) };
+    }
     /* R245: full roster — 10 old army + the replacement generation (4/5/6) */
     const st = armyCustodyState([masterAccount(), "cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq", "hcsoldier4", "hcsoldier5", "hcsoldier6"]);
-    return { verdict: r?.verdict ?? null, verified: st?.verified ?? null, total: st?.total ?? null };
+    return { reviveVerdict: r?.verdict ?? null, adoptVerdict: adopt?.verdict ?? null, adoptVerified: adopt?.verified ?? null, verified: st?.verified ?? null, total: st?.total ?? null };
   });
 
   /* ── P0-FAILCLOSE (2026-10-17 · operator-approved Phase-0) ────────────────

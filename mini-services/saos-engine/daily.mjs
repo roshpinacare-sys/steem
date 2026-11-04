@@ -169,6 +169,23 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
   } catch (e) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "crown-vault.adopt-error", at: now, error: String(e).slice(0, 120) });
   }
+  /* R360 · STALE-MARKER HONEST RECLAIM (2026-11-05, owner execution order):
+   * a dead process leaves cycle-run.json running:true forever — audits then
+   * read a phantom in-flight cycle. In-memory guard below is per-process and
+   * stays law; this only clears the CROSS-PROCESS marker when its pid is
+   * provably gone, and journals the reclaim typed — never silent. */
+  try {
+    const markerFilePath = path.join(STATE, "cycle-run.json");
+    const prev = readJson(markerFilePath, null);
+    if (prev?.running && prev?.pid && !cycleInFlight) {
+      let alive = true;
+      try { process.kill(prev.pid, 0); } catch (e) { alive = /EPERM/.test(String(e?.code ?? e)) ? true : false; }
+      const ageMs = Date.now() - Date.parse(prev.startedAt ?? now);
+      if (!alive && ageMs > 30 * 60 * 1000) {
+        appendLine(path.join(STATE, "events.jsonl"), { type: "cycle-marker.stale-reclaimed", at: now, stalePid: prev.pid, staleSince: prev.startedAt, ageMinutes: Math.round(ageMs / 60000) });
+      }
+    }
+  } catch { /* marker audit is best-effort; never blocks the cycle */ }
   if (cycleInFlight) {
     /* typed, pollable, and honest — the sovereign journals this as a skip,
      * never as a fail: nothing malfunctioned, a cycle is already running. */
