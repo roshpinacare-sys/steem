@@ -78,3 +78,22 @@ else
   echo "ARMED-WAITING (dispatch HTTP $HTTP)"
   exit 2
 fi
+
+# R366 · RECEIPTS PERIODIC PUSH (2026-11-05, owner execution order): receipts
+# lived only in the sandbox — a wipe erased the audit trail. Push at most once
+# per hour (guard file), FF-only, receipts/state only, never key material.
+GUARD=/tmp/.receipts-last-push
+NOWS=$(date +%s); LASTS=$(cat "$GUARD" 2>/dev/null || echo 0)
+if [ $((NOWS - LASTS)) -ge 3600 ]; then
+  date +%s > "$GUARD"
+  cd "$STEEM" || exit 0
+  if ! git diff --quiet -- receipts/ mini-services/saos-engine/receipts/ mini-services/saos-engine/state/ 2>/dev/null || [ -n "$(git status --porcelain receipts/ mini-services/saos-engine/receipts/ mini-services/saos-engine/state/ 2>/dev/null)" ]; then
+    git add receipts/ mini-services/saos-engine/receipts/ mini-services/saos-engine/state/ 2>/dev/null
+    git -c user.email=sovereign@fleet -c user.name=sovereign-patrol \
+      commit -q -m "patrol receipts sync (R366, hourly) [skip ci]" 2>/dev/null && \
+    git push -q "https://x-access-token:$TOKEN@github.com/roshpinacare-sys/steem.git" saos-cockpit 2>/dev/null \
+      && echo "receipts=PUSHED" || echo "receipts=COMMITTED-PUSH-DEFERRED"
+  else
+    echo "receipts=CLEAN"
+  fi
+fi
