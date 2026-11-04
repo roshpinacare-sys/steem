@@ -155,6 +155,20 @@ export async function runCycle({ now = new Date().toISOString(), persist = true 
       appendLine(path.join(STATE, "events.jsonl"), { type: "runner-wif.error", at: now, role, error: String(e).slice(0, 100) });
     }
   }
+  /* R243b · VAULT-OF-RECORD ADOPTION (T-594, 2026-11-04, owner activation
+   * order): the GEN-1 git carriers are dead on origin (measured: no
+   * agent/vault/GEN-1-ERA-META.json on any reachable ref) while the vault
+   * of record .secrets/custody-vault/ is chain-verified 13/13 LIVE by the
+   * judge on every patrol. Same lawful path (adoptVerifiedWifIdentity,
+   * R255 identity merge, multi-role: active AND posting), fail-closed,
+   * key material never printed. Absent vault = zero change. */
+  try {
+    const { runAdopt } = await import("./crown-vault-adopt.mjs");
+    const ad = await runAdopt();
+    appendLine(path.join(STATE, "events.jsonl"), { type: "crown-vault.adopted", at: now, verdict: ad.verdict ?? (ad.ok ? "ADOPTED" : "REFUSED"), verified: ad.verified, total: ad.total, reason: ad.reason ?? null });
+  } catch (e) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "crown-vault.adopt-error", at: now, error: String(e).slice(0, 120) });
+  }
   if (cycleInFlight) {
     /* typed, pollable, and honest — the sovereign journals this as a skip,
      * never as a fail: nothing malfunctioned, a cycle is already running. */

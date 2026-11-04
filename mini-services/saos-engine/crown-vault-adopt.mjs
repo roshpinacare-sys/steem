@@ -134,7 +134,13 @@ export async function runAdopt({ verifyOnly = false } = {}) {
       owner: String(acc.owner?.key_auths?.[0]?.[0] ?? ""),
       memo: String(acc.memo_key ?? ""),
     };
-    let done = null;
+    /* T-594 MULTI-ROLE ADOPTION (2026-11-04, owner activation order): the old
+     * first-match break adopted ONE role per account (posting first) — MM
+     * hands then fail-closed on every limit_order_create (active role never
+     * adopted). R255 identity merge makes multi-role adoption safe (each
+     * adopt ADDS a role to the same identity), so adopt EVERY chain-matched
+     * role the vault holds. The chain remains the only judge. */
+    const adoptedRoles = [];
     for (const role of ROLES) {
       const want = auths[role];
       if (!want) continue;
@@ -142,14 +148,13 @@ export async function runAdopt({ verifyOnly = false } = {}) {
         let pub;
         try { pub = steemPub(c.wif); } catch { continue; }
         if (pub !== want) continue;
-        if (verifyOnly) { done = { role, fp: fp(c.wif) }; break; }
+        if (verifyOnly) { adoptedRoles.push({ role, fp: fp(c.wif) }); break; }
         const r = await adoptVerifiedWifIdentity(name, c.wif, { role });
-        if (r?.ok) { done = { role, fp: fp(c.wif) }; break; }
+        if (r?.ok) { adoptedRoles.push({ role, fp: fp(c.wif) }); break; }
       }
-      if (done) break;
     }
-    results.push(done
-      ? { account: name, verdict: "VERIFIED-VS-CHAIN", role: done.role, fp: done.fp }
+    results.push(adoptedRoles.length
+      ? { account: name, verdict: "VERIFIED-VS-CHAIN", roles: adoptedRoles.map((x) => x.role), fp: adoptedRoles[0].fp }
       : { account: name, verdict: "NO-CHAIN-MATCH", tried: uniq.length });
   }
 
