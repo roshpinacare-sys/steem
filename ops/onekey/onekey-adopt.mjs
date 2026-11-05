@@ -152,7 +152,10 @@ rmSync("/tmp/_onekey.out", { force: true });
  * is the only judge), then sealed with MAIN_KEY. The old map is marked
  * superseded WITH a pointer — nothing lost, nothing fabricated. */
 let rebuilt = null;
-const primaryMapEntry = entries.find((e) => e.family === "crown-recovery-map" && e.status === "primary" && e.seal !== "MAIN_KEY");
+/* idempotence law: if a MAIN_KEY-sealed crown map already exists, NEVER rebuild */
+const existingOneKeyMap = entries.find((e) => e.family === "crown-recovery-map" && e.seal === "MAIN_KEY");
+const primaryMapEntry = existingOneKeyMap ? null : entries.find((e) => e.family === "crown-recovery-map" && e.status === "primary" && e.seal !== "MAIN_KEY");
+if (existingOneKeyMap) console.log(`onekey-adopt: custody map already one-key-sealed (${existingOneKeyMap.path}) — rebuild skipped (idempotent)`);
 if (primaryMapEntry && process.env.LIVE_FLEET_KEYS) {
   try {
     const relay = JSON.parse(process.env.LIVE_FLEET_KEYS);

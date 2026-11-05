@@ -226,8 +226,8 @@ export function buildPassPool(env) {
 export function classify(relPath) {
   const p = relPath.toLowerCase();
   if (p.startsWith("wraps/")) return { family: "wrap-infrastructure", primary: false, note: "wraps stay keyed by sha256(C) by design — infrastructure, not re-sealed" };
-  const crownRecovery = relPath.match(/^custody-intake\/CROWN-RECOVERY-(\d{8}T\d{6}Z)\.enc$/);
-  if (crownRecovery) return { family: "crown-recovery-map", ts: crownRecovery[1], primary: "latest-wins", note: "full chain-verified custody map (seal-crown.mjs protocol)" };
+  const crownRecovery = relPath.match(/^custody-intake\/(CROWN-RECOVERY|CROWN-ONEKEY)-(\d{8}T\d{6}Z)\.enc$/);
+  if (crownRecovery) return { family: "crown-recovery-map", ts: crownRecovery[2], primary: "latest-wins", note: crownRecovery[1] === "CROWN-ONEKEY" ? "מפת-המשמורת-החיה — one-key rebuild (chain-judged)" : "full chain-verified custody map (seal-crown.mjs protocol)" };
   if (/^custody-intake\/CROWN-(NEW|RECOVER|REKEY6?|GEN-EXPANSION)-/.test(relPath) || /^custody-intake\/REKEY-/.test(relPath)) {
     return { family: "crown-intake-history", primary: false, note: "ערך-היסטורי-מתועד — נשמר-בארכיון, אינו-חוסם-שגרה (superseded by the latest CROWN-RECOVERY map)" };
   }
