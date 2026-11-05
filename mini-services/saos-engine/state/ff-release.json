@@ -1,0 +1,13 @@
+{
+  "status": "RELEASED",
+  "at": "2026-11-05T12:20:00Z",
+  "ownerOrder": "owner word 2026-11-05 (trace 1a1ab989d8db0a91): \"Fixedfloat בנתיים לא עובד בוא נשחרר את זה ונמצא דרכים שאתה יכול ליישם דרך הבלוקצ'יין שלנו לשם זה במקום\"",
+  "law": "while this file stands the ff-gate NEVER probes ff.io and NEVER reads any credential stratum (zero egress, fail-closed release); re-arm = delete this file and the W120 status machine resumes on its own cadence",
+  "custody": "the fixedfloat key pair stays SEALED in vault-home custody-intake/fixedfloat.enc (one-key seal = MAIN_KEY since the one-key adoption) — nothing is lost, nothing is deleted",
+  "replacement": "chain-native rails only: steem internal market (limit_order_create via the verified active hands) + saos-dex sovereign-quote (get_order_book + witness median) + treasury ledger — all measured on our own chain",
+  "measuredBeforeRelease": {
+    "gateStatus": "KEY-MISSING since 2026-10-27T14:37Z (16 honest attempts, no pair in any stratum)",
+    "saosDexClient": "READ-ONLY ccies+price, order creation never wired (money-movement gate)",
+    "evidence": "state/ff-gate.json + events.jsonl"
+  }
+}

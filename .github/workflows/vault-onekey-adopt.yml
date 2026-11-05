@@ -1,0 +1,41 @@
+# vault-onekey-adopt — W-ONEKEY (owner order 2026-11-05, trace 1a1ab989d8db0a91)
+# "המפתח שלי יפתח הכול" — MAIN_KEY becomes the single live seal of every
+# primary custody artifact in vault-home. Old/irrelevant values are documented
+# as superseded in INDEX.json (never blocking routine work). Ciphertext-only
+# commit; fingerprints only; NOT key rotation (no WIF, no authority change).
+name: vault-onekey-adopt
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vault-onekey-adopt
+  cancel-in-progress: false
+
+jobs:
+  adopt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      MAIN_KEY: ${{ secrets.MAIN_KEY }}
+      ROT2_FLEET_KEYS: ${{ secrets.ROT2_FLEET_KEYS }}
+      ROT_ROSTER: ${{ secrets.ROT_ROSTER }}
+      STEEM_VAULT_PASSES: ${{ secrets.STEEM_VAULT_PASSES }}
+      VAULT_PASSES_R33: ${{ secrets.VAULT_PASSES_R33 }}
+      LIVE_FLEET_KEYS: ${{ secrets.LIVE_FLEET_KEYS }}
+      NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
+      ZIP_PAT: ${{ secrets.ZIP_PAT }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: One-key adoption over vault-home
+        run: |
+          set -Euo pipefail
+          node ops/onekey/onekey-adopt.mjs

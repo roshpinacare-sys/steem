@@ -42,6 +42,21 @@ const DIR = path.dirname(new URL(import.meta.url).pathname);
 const STATE = path.join(DIR, "state");
 const GATE_FILE = path.join(STATE, "ff-gate.json");
 const EVENTS_FILE = path.join(STATE, "events.jsonl");
+const RELEASE_FILE = path.join(STATE, "ff-release.json");
+
+/* W-FRELEASE (2026-11-05, owner word trace 1a1ab989d8db0a91: "Fixedfloat בנתיים לא
+ * עובד בוא נשחרר את זה ונמצא דרכים שאתה יכול ליישם דרך הבלוקציין שלנו"): while
+ * state/ff-release.json stands with status=="RELEASED", this gate NEVER probes
+ * ff.io — zero egress, zero retries, zero credential reads (the strata readers
+ * are not even consulted). Chain-native rails (steem internal market + treasury
+ * ledger; saos-dex sovereign-quote) replace the provider. Re-arm = delete the
+ * release file; the gate resumes the W120 status machine on its own cadence. */
+function readRelease() {
+  try {
+    const r = JSON.parse(fs.readFileSync(RELEASE_FILE, "utf8"));
+    return r?.status === "RELEASED" ? r : null;
+  } catch { return null; }
+}
 
 /* vault strata — the ONLY secret sources (R322), first hit wins */
 const HOST_VAULT = "/home/z/.secrets/fixedfloat.env";
@@ -169,6 +184,32 @@ async function probe() {
 }
 
 export async function tickGate() {
+  /* W-FRELEASE — released gate: write the honest RELEASED state, touch nothing,
+   * read no credentials, send no packets. The event log records the transition
+   * exactly once per state change. */
+  const rel = readRelease();
+  const prev0 = ffGateState();
+  if (rel) {
+    const at = new Date().toISOString();
+    const st = {
+      status: "RELEASED",
+      at,
+      attempts: prev0.attempts ?? 0,
+      lastCode: prev0.lastCode ?? null,
+      lastMsg: prev0.lastMsg ?? null,
+      data: null,
+      promotedBy: null,
+      note: String(rel.note || "released by owner order — no ff.io egress (fail-closed release)"),
+      since: prev0.status === "RELEASED" ? (prev0.since ?? at) : at,
+      law: "W-FRELEASE owner word 2026-11-05: FF released בנתיים — chain-native rails replace it; re-arm = delete state/ff-release.json",
+      keySource: "n/a — released (no strata read)",
+    };
+    if (prev0.status !== "RELEASED") {
+      appendLine(EVENTS_FILE, { type: "ff-gate.status", at, from: prev0.status ?? null, to: "RELEASED", order: rel.ownerOrder ?? "owner word 2026-11-05" });
+    }
+    writeJson(GATE_FILE, st);
+    return st;
+  }
   const prev = ffGateState();
   const r = await probe();
   const st = {
@@ -192,6 +233,11 @@ export async function tickGate() {
 }
 
 export function startFfGate() {
+  /* W-FRELEASE — while the release file stands, no timer is armed at all */
+  if (readRelease()) {
+    void tickGate();
+    return { started: false, released: true, releasedAt: new Date().toISOString(), note: "ff-gate RELEASED by owner order — no ff.io probing (delete state/ff-release.json to re-arm)" };
+  }
   const G = globalThis;
   if (G.__saosFfGateTimer) clearInterval(G.__saosFfGateTimer);
   G.__saosFfGateTimer = setInterval(() => { void tickGate(); }, FF_GATE_DEFAULTS.cadenceSec * 1000);
