@@ -44,13 +44,14 @@ for (const dir of ["intake", "custody-intake"]) {
   if (!existsSync(d)) continue;
   for (const f of readdirSync(d).sort()) if (f.endsWith(".enc")) artifacts.push(`${dir}/${f}`);
 }
-/* latest CROWN-RECOVERY wins (primary); all older siblings become superseded */
+/* latest custody map wins (RECOVERY-era or ONEKEY-era alike) */
 const recoveryTs = artifacts
-  .map((a) => (a.match(/^custody-intake\/CROWN-RECOVERY-(\d{8}T\d{6}Z)\.enc$/) || [])[1])
+  .map((a) => (a.match(/^custody-intake\/(?:CROWN-RECOVERY|CROWN-ONEKEY)-(\d{8}T\d{6}Z)\.enc$/) || [])[1])
   .filter(Boolean)
   .sort();
 const primaryRecoveryTs = recoveryTs.length ? recoveryTs[recoveryTs.length - 1] : null;
-console.log(`onekey-adopt: ${artifacts.length} sealed artifact(s) · primary CROWN-RECOVERY ${primaryRecoveryTs ?? "NONE (honest)"}`);
+const isPrimaryMapPath = (rel) => primaryRecoveryTs !== null && rel.endsWith(`-${primaryRecoveryTs}.enc`);
+console.log(`onekey-adopt: ${artifacts.length} sealed artifact(s) · primary custody map ts ${primaryRecoveryTs ?? "NONE (honest)"}`);
 
 /* ── adopt loop ── */
 const entries = [];
@@ -59,7 +60,7 @@ let adopted = 0, alreadyOneKey = 0, unopened = 0;
 
 for (const rel of artifacts) {
   const cls = classify(rel);
-  const isPrimary = cls.primary === true || (cls.primary === "latest-wins" && rel.endsWith(`CROWN-RECOVERY-${primaryRecoveryTs}.enc`));
+  const isPrimary = cls.primary === true || (cls.primary === "latest-wins" && isPrimaryMapPath(rel));
   const file = `${VH}/${rel}`;
   const stat = statSync(file);
   const entry = {
@@ -122,10 +123,14 @@ for (const rel of artifacts) {
   entries.push(entry);
 }
 
-/* custody coverage from the primary recovery map — re-open once, read names/roles */
+/* custody coverage from the PRIMARY recovery map — re-open once, read names/roles */
 let custody = null;
-if (primaryRecoveryTs) {
-  const f = `${VH}/custody-intake/CROWN-RECOVERY-${primaryRecoveryTs}.enc`;
+const primaryMapPath = (() => {
+  const e = entries.find((x) => x.family === "crown-recovery-map" && x.status === "primary");
+  return e ? e.path : null;
+})();
+if (primaryMapPath) {
+  const f = `${VH}/${primaryMapPath}`;
   const hit = openAny(f, [MAIN_KEY], { iters: [ITER_STANDARD] });
   const legacyHit = hit ? null : openAny(f, pool, { iters: LEGACY_ITERS, cap: 400 });
   const src = hit || legacyHit;
@@ -136,7 +141,7 @@ if (primaryRecoveryTs) {
       const accounts = Object.entries(live)
         .filter(([k]) => !k.startsWith("_"))
         .map(([acc, roles]) => ({ account: acc, roles: Object.keys(roles ?? {}).sort() }));
-      custody = { artifact: `custody-intake/CROWN-RECOVERY-${primaryRecoveryTs}.enc`, accounts, masterPresent: Boolean(map?._master) };
+      custody = { artifact: primaryMapPath, accounts, masterPresent: Boolean(map?._master) };
       rmSync(src.outFile, { force: true });
     } catch { /* honest skip */ }
     rmSync("/tmp/_onekey.out", { force: true });
@@ -152,8 +157,9 @@ rmSync("/tmp/_onekey.out", { force: true });
  * is the only judge), then sealed with MAIN_KEY. The old map is marked
  * superseded WITH a pointer — nothing lost, nothing fabricated. */
 let rebuilt = null;
-/* idempotence law: if a MAIN_KEY-sealed crown map already exists, NEVER rebuild */
-const existingOneKeyMap = entries.find((e) => e.family === "crown-recovery-map" && e.seal === "MAIN_KEY");
+/* idempotence law: if a PRIMARY custody map is already MAIN_KEY-sealed, NEVER rebuild.
+ * (A superseded one-key map alone does NOT satisfy the law — the primary must be it.) */
+const existingOneKeyMap = entries.find((e) => e.family === "crown-recovery-map" && e.status === "primary" && e.seal === "MAIN_KEY");
 const primaryMapEntry = existingOneKeyMap ? null : entries.find((e) => e.family === "crown-recovery-map" && e.status === "primary" && e.seal !== "MAIN_KEY");
 if (existingOneKeyMap) console.log(`onekey-adopt: custody map already one-key-sealed (${existingOneKeyMap.path}) — rebuild skipped (idempotent)`);
 if (primaryMapEntry && process.env.LIVE_FLEET_KEYS) {
