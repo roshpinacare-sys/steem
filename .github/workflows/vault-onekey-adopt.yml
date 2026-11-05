@@ -35,6 +35,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Install crypto deps (pinned — same as crown-vault-recovery)
+        run: npm i --no-save --silent @noble/hashes@1.8.0 @noble/secp256k1@2.2.3
       - name: One-key adoption over vault-home
         run: |
           set -Euo pipefail

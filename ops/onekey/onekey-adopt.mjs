@@ -15,7 +15,7 @@
 
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, renameSync, rmSync } from "node:fs";
-import { buildPassPool, classify, openAny, sealWithMain, tryOpen, fp, sha256hex, ITER_STANDARD, LEGACY_ITERS } from "./onekey-lib.mjs";
+import { buildPassPool, classify, openAny, sealWithMain, tryOpen, fp, sha256hex, ITER_STANDARD, LEGACY_ITERS, chainJudgeCustody } from "./onekey-lib.mjs";
 
 const GH_PAT = process.env.GH_PAT || "";
 const MAIN_KEY = (process.env.MAIN_KEY || "").trim();
@@ -105,6 +105,7 @@ for (const rel of artifacts) {
       renameSync(dest, file);
       entry.seal = "MAIN_KEY";
       entry.adoptedFrom = hit.passFp;
+      entry.iter = ITER_STANDARD;
       entry.sha256 = sha256hex(readFileSync(file));
       entry.bytes = statSync(file).size;
       entry.adoptedAt = now();
@@ -143,6 +144,58 @@ if (primaryRecoveryTs) {
 }
 if (custody) console.log(`onekey-adopt: custody map covers ${custody.accounts.length} account(s): ${custody.accounts.map((a) => a.account + "[" + a.roles.join("+") + "]").join(" · ")}`);
 rmSync("/tmp/_onekey.out", { force: true });
+
+/* ── custody-rebuild (W-ONEKEY §2 — owner order 2026-11-05): if the primary
+ * custody map cannot open (lost transport pass — measured 20261104T205522Z)
+ * but the fleet relay (LIVE_FLEET_KEYS) holds the map, REBUILD it: every WIF
+ * is re-judged LIVE against steem+hive authorities (fail-closed — the chain
+ * is the only judge), then sealed with MAIN_KEY. The old map is marked
+ * superseded WITH a pointer — nothing lost, nothing fabricated. */
+let rebuilt = null;
+const primaryMapEntry = entries.find((e) => e.family === "crown-recovery-map" && e.status === "primary" && e.seal !== "MAIN_KEY");
+if (primaryMapEntry && process.env.LIVE_FLEET_KEYS) {
+  try {
+    const relay = JSON.parse(process.env.LIVE_FLEET_KEYS);
+    const live = relay?.live ?? null;
+    const relayAccounts = live ? Object.keys(live).filter((k) => !k.startsWith("_")) : [];
+    if (relayAccounts.length) {
+      const { judged, dropped } = await chainJudgeCustody(live);
+      const nAcc = Object.keys(judged).length;
+      console.log(`onekey-adopt: custody-rebuild — relay ${relayAccounts.length} account(s), chain-judged live: ${nAcc} verified, ${dropped.length} dropped (fail-closed)`);
+      if (nAcc > 0) {
+        const ts = new Date().toISOString().replace(/[-:]/g, "").replace(/\..+/, "Z");
+        const mapPath = `/tmp/_crown-onekey-${ts}.json`;
+        writeFileSync(mapPath, JSON.stringify({ live: judged, source: "onekey-rebuild: LIVE_FLEET_KEYS relay re-judged LIVE vs steem+hive authorities (fail-closed)", rebuiltAt: new Date().toISOString() }, null, 1), { mode: 0o600 });
+        const relNew = `custody-intake/CROWN-ONEKEY-${ts}.enc`;
+        if (sealWithMain(mapPath, `${VH}/${relNew}`, MAIN_KEY) && tryOpen(`${VH}/${relNew}`, MAIN_KEY, ITER_STANDARD, "/tmp/_onekey.v2")) {
+          rmSync("/tmp/_onekey.v2", { force: true });
+          entries.push({
+            path: relNew, family: "crown-recovery-map", status: "primary", seal: "MAIN_KEY",
+            adoptedFrom: null, iter: ITER_STANDARD,
+            sha256: sha256hex(readFileSync(`${VH}/${relNew}`)), bytes: statSync(`${VH}/${relNew}`).size,
+            adoptedAt: now(),
+            note: "מפת-המשמורת-החיה — rebuilt מ-LIVE_FLEET_KEYS, שיפוט-חי-כפול מול-השרשרת, חתום-במפתח-הבעלים",
+          });
+          primaryMapEntry.status = "superseded";
+          primaryMapEntry.note = (primaryMapEntry.note || "") + ` · superseded by ${relNew} (transport pass lost — honest) — התוכן-החי קיים-במפה-החדשה`;
+          rebuilt = relNew;
+          custody = { artifact: relNew, accounts: Object.entries(judged).map(([acc, roles]) => ({ account: acc, roles: Object.keys(roles ?? {}).sort() })), masterPresent: false };
+          /* the old map's unopened wound is RESOLVED by the rebuilt map */
+          const wi = wounds.findIndex((w) => w.startsWith(primaryMapEntry.path + ":UNOPENED"));
+          if (wi >= 0) { wounds.splice(wi, 1); unopened = Math.max(0, unopened - 1); }
+          sh(["git", "-C", VH, "add", relNew]);
+          console.log(`onekey-adopt: custody-rebuild SEALED ${relNew} — MAIN_KEY-only, self-verified`);
+        } else {
+          rmSync(`${VH}/custody-intake/CROWN-ONEKEY-${ts}.enc`, { force: true });
+          console.log("onekey-adopt: custody-rebuild seal/verify failed — honest wound, original preserved");
+        }
+        rmSync(mapPath, { force: true });
+      }
+    }
+  } catch (e) {
+    console.log(`onekey-adopt: custody-rebuild honest-fail ${String(e).slice(0, 140)}`);
+  }
+}
 
 /* ── wraps index (infrastructure — listed, not re-sealed) ── */
 if (existsSync(`${VH}/wraps`)) {
@@ -184,7 +237,7 @@ const index = {
   law: "W-ONEKEY owner order 2026-11-05: MAIN_KEY is the single live seal of every primary artifact; superseded values documented (never blocking); wraps stay sha256(C)-keyed by design",
   algorithm: { cipher: "aes-256-cbc", kdf: "pbkdf2", iter: ITER_STANDARD, seal: "MAIN_KEY (owner key — never logged)" },
   mainKeyFp: fp(MAIN_KEY),
-  counts: { artifacts: artifacts.length, adopted, alreadyOneKey, unopened, superseded: entries.filter((e) => e.status === "superseded").length, wraps: entries.filter((e) => e.status === "wrap").length },
+  counts: { artifacts: artifacts.length, adopted, alreadyOneKey, unopened, superseded: entries.filter((e) => e.status === "superseded").length, wraps: entries.filter((e) => e.status === "wrap").length, rebuilt: rebuilt ? 1 : 0 },
   custody,
   entries,
   wounds,

@@ -22,6 +22,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, rmSync } from "node:fs";
+import * as secp from "@noble/secp256k1";
 
 export const ITER_STANDARD = 300000; // seal-crown.mjs protocol — the strong tier
 export const LEGACY_ITERS = [200000, 300000]; // measured legacy tiers
@@ -29,6 +30,78 @@ export const CIPHER = ["enc", "-aes-256-cbc", "-pbkdf2"];
 
 export const fp = (s) => createHash("sha256").update(String(s)).digest("hex").slice(0, 8);
 export const sha256hex = (buf) => createHash("sha256").update(buf).digest("hex");
+
+/* ── WIF → public key (same math as crown-vault-adopt.mjs — one proven path) ── */
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function b58d(s) { let n = 0n; for (const c of s) { const i = B58.indexOf(c); if (i < 0) throw new Error("b58char"); n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = "0" + h; return Buffer.from(h, "hex"); }
+export function wifSeed(wif) {
+  const d = b58d(wif);
+  let body, chk;
+  if (d.length === 38) { body = d.subarray(0, 34); chk = d.subarray(34); if (body[0] !== 0x80 || body[33] !== 0x01) throw new Error("wif-format"); }
+  else if (d.length === 37) { body = d.subarray(0, 33); chk = d.subarray(33); if (body[0] !== 0x80) throw new Error("wif-format"); }
+  else throw new Error("wif-length");
+  const c = createHash("sha256").update(createHash("sha256").update(body).digest()).digest().subarray(0, 4);
+  if (!c.equals(chk)) throw new Error("wif-checksum");
+  return Buffer.from(body.subarray(1, 33));
+}
+export function steemPub(wif) {
+  const pub = Buffer.from(secp.getPublicKey(wifSeed(wif), true));
+  const chk = createHash("ripemd160").update(pub).digest().subarray(0, 4);
+  return "STM" + (() => { let n = BigInt("0x" + Buffer.concat([pub, chk]).toString("hex")), o = ""; while (n > 0n) { o = B58[Number(n % 58n)] + o; n /= 58n; } return o; })();
+}
+
+async function rpc(url, method, params, tries = 3) {
+  let last;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }), signal: AbortSignal.timeout(20000) });
+      const j = await r.json();
+      if (j.error) throw new Error(String(j.error.message).slice(0, 100));
+      return j.result;
+    } catch (e) { last = e; if (i < tries - 1) await new Promise((r) => setTimeout(r, 1200 * (i + 1))); }
+  }
+  throw last;
+}
+
+/** chainJudgeCustody — the chain is the ONLY judge (fail-closed): every WIF
+ * from the relay map is re-verified against the LIVE steem+hive authorities.
+ * Returns { judged: {acc:{role:wif}}, dropped: ["acc:role:reason"] }. */
+export async function chainJudgeCustody(live) {
+  const accounts = [...new Set(Object.keys(live).filter((k) => !k.startsWith("_")))];
+  const chains = { steem: "https://api.steemit.com", hive: "https://api.hive.blog" };
+  const auth = {};
+  for (const [chain, url] of Object.entries(chains)) {
+    try {
+      const accs = await rpc(url, "condenser_api.get_accounts", [accounts]);
+      for (const a of accs) {
+        auth[chain + ":" + String(a.name)] = {
+          active: String(a.active?.key_auths?.[0]?.[0] ?? ""),
+          posting: String(a.posting?.key_auths?.[0]?.[0] ?? ""),
+          owner: String(a.owner?.key_auths?.[0]?.[0] ?? ""),
+          memo: String(a.memo_key ?? ""),
+        };
+      }
+    } catch { /* chain down — honest skip; judged stays fail-closed */ }
+  }
+  const judged = {};
+  const dropped = [];
+  for (const [acc, roles] of Object.entries(live)) {
+    if (acc.startsWith("_")) continue;
+    for (const [role, wif] of Object.entries(roles ?? {})) {
+      let pub;
+      try { pub = steemPub(wif); } catch { dropped.push(`${acc}:${role}:unparseable`); continue; }
+      let matched = null;
+      for (const [key, a] of Object.entries(auth)) {
+        if (a?.[role] && a[role] === pub) { matched = key; break; }
+      }
+      if (matched) {
+        judged[acc] = judged[acc] || {};
+        judged[acc][role] = wif;
+      } else dropped.push(`${acc}:${role}:no-chain-match`);
+    }
+  }
+  return { judged, dropped };
+}
 
 export function openssl(args, timeout = 30000) {
   try {
