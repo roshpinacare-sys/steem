@@ -266,4 +266,9 @@ sh(["git", "-C", VH, "push"]);
 const head = sh(["git", "-C", VH, "rev-parse", "HEAD"]).trim();
 console.log(`onekey-adopt: PUSHED vault-home ${head.slice(0, 10)} — ${msg}`);
 console.log(`onekey-adopt: DONE adopted=${adopted} alreadyOneKey=${alreadyOneKey} unopened=${unopened} wounds=${wounds.length}`);
-process.exit(wounds.length ? 2 : 0);
+/* W-ONEKEY exit law (owner order "ערכים ישנים... שלא יתקע אותנו ואת הסוכנים
+ * בעבודת שגרה"): superseded-history wounds are REPORTED, never failing.
+ * Only a blocked PRIMARY (or a self-verify failure — already exit 1) is red. */
+const primaryBlocked = entries.filter((e) => e.status === "primary" && e.seal !== "MAIN_KEY").length;
+console.log(`onekey-adopt: PRIMARY-LAW ${primaryBlocked === 0 ? "ALL-PRIMARY-SEALS-ONE-KEY ✓" : primaryBlocked + " primary seal(s) NOT on MAIN_KEY"}`);
+process.exit(primaryBlocked === 0 ? 0 : 2);
