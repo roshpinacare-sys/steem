@@ -1,6 +1,6 @@
 {
  "armed": true,
- "note": "OWNER-LIQUIDITY-DOCTRINE 2026-11-05 (trace 1a1a8e391687a121): 'זה הכסף שיש לא ינעל בסטימיט אנחנו מנסים להתרחב וזה הכסף היחיד שיש לנו כרגע … שלא יהיה עוד' — נזילות היא ריבונית; power-up מוקפא עד שרצפת-האוצר (3000 STEEM) תשוקם; מבטל (supersedes) את W118 powerUpPct ואת היפוך-השער 2026-11-04T17:03:42Z",
+ "note": "OWNER-LIQUIDITY-DOCTRINE 2026-11-05 (trace 1a1a8e391687a121): '\u05d6\u05d4 \u05d4\u05db\u05e1\u05e3 \u05e9\u05d9\u05e9 \u05dc\u05d0 \u05d9\u05e0\u05e2\u05dc \u05d1\u05e1\u05d8\u05d9\u05de\u05d9\u05d8 \u05d0\u05e0\u05d7\u05e0\u05d5 \u05de\u05e0\u05e1\u05d9\u05dd \u05dc\u05d4\u05ea\u05e8\u05d7\u05d1 \u05d5\u05d6\u05d4 \u05d4\u05db\u05e1\u05e3 \u05d4\u05d9\u05d7\u05d9\u05d3 \u05e9\u05d9\u05e9 \u05dc\u05e0\u05d5 \u05db\u05e8\u05d2\u05e2 \u2026 \u05e9\u05dc\u05d0 \u05d9\u05d4\u05d9\u05d4 \u05e2\u05d5\u05d3' \u2014 \u05e0\u05d6\u05d9\u05dc\u05d5\u05ea \u05d4\u05d9\u05d0 \u05e8\u05d9\u05d1\u05d5\u05e0\u05d9\u05ea; power-up \u05de\u05d5\u05e7\u05e4\u05d0 \u05e2\u05d3 \u05e9\u05e8\u05e6\u05e4\u05ea-\u05d4\u05d0\u05d5\u05e6\u05e8 (3000 STEEM) \u05ea\u05e9\u05d5\u05e7\u05dd; \u05de\u05d1\u05d8\u05dc (supersedes) \u05d0\u05ea W118 powerUpPct \u05d5\u05d0\u05ea \u05d4\u05d9\u05e4\u05d5\u05da-\u05d4\u05e9\u05e2\u05e8 2026-11-04T17:03:42Z",
  "maxOpsPerCycle": 40,
  "maxAskSteemPerCycle": 200,
  "maxBidSbdPerCycle": 60,
@@ -17,7 +17,7 @@
  },
  "redeploy": {
   "buyBookPct": 0.5,
-  "powerUpPct": 0,
+  "powerUpPct": 0.0,
   "reservePct": 0.2,
   "liquidSteemFloor": 3000,
   "liquidSbdFloor": 0.5,
@@ -51,7 +51,7 @@
   "minVpEffPct": 35
  },
  "hyperGrid": {
-  "enabled": true,
+  "enabled": false,
   "tickMs": 3000,
   "levels": 10,
   "spacingBps": 15,
@@ -65,5 +65,27 @@
   "opsDayCap": 32000,
   "chainTailSec": 60
  },
- "recorded-at": "2026-11-04T15:39:46Z"
+ "recorded-at": "2026-11-05T04:05:00Z",
+ "ownerOrders": {
+  "noMorePowerUp": {
+   "law": "OWNER 2026-11-05: no more power-ups. allowPowerUp=false, powerUpPct=0.0. think-gate must reject every transfer_to_vesting until owner explicitly re-arms.",
+   "setAt": "2026-11-04T23:30:00Z"
+  },
+  "stopSelfWash": {
+   "law": "OWNER 2026-11-05: stop self-wash. hyperGrid disabled - one ledger must not self-match (~35 STEEM/day fee burn measured).",
+   "setAt": "2026-11-04T23:30:00Z"
+  },
+  "liquidityStaysLiquid": {
+   "law": "OWNER 2026-11-05: liquidity stays liquid - never lock the only money in unproductive places.",
+   "setAt": "2026-11-04T23:30:00Z"
+  },
+  "sovereigntyIsTheCenter": {
+   "law": "OWNER 2026-11-05: sovereignty-is-the-center - autonomous sovereignty and our network are the architecture center; reflected in everything.",
+   "setAt": "2026-11-04T23:30:00Z"
+  },
+  "rearmedAfterWipe": {
+   "law": "owner laws baked into BOTH Gate-1 state-patch sources (root + fleet-boot) at 2026-11-05T04:05Z so every wipe-heal carries them; apply_state_patch does not merge ownerOrders (code-level gap, flagged)",
+   "setAt": "2026-11-05T04:05:00Z"
+  }
+ }
 }
