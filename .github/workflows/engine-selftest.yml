@@ -1,0 +1,31 @@
+# engine-selftest — the T-22 gate made real (Sovereign Engineering Blueprint P0)
+# Owner-approved 2026-11-06: "PASS required before any deploy" stops being a
+# comment and becomes the machine that blocks. Zero deps: the selftests are
+# deterministic offline vectors (1982 core + 20 moneygate) — they run on a
+# bare checkout with honest SKIPs where seal-side files are absent.
+name: engine-selftest
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Core selftest (deterministic offline vectors)
+        run: node mini-services/saos-engine/selftest.mjs
+
+      - name: Moneygate selftest (green is the only key that opens money)
+        run: node mini-services/saos-engine/selftest-moneygate.mjs
