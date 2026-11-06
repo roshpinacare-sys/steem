@@ -805,6 +805,26 @@ export async function executeAs(account, ops, { tag = "cycle", role = "active", 
   const conf = armedConf();
   if (!conf.armed) return { ok: false, verdict: "DISARMED", reason: "standing-order-off" };
   if (execPaused()) return { ok: false, verdict: "OPERATOR-PAUSED", reason: "kill-switch" };
+
+  /* era-3 E3 (owner law ×2 2026-11-06): אין-גיבוי-דו-אתרי-מאושר = אין-דלק.
+   * דינמי-ומוגן: כשל-תשתית-שער חוסם-רק-דלק (fail-closed) · פעולות-שוק/הצבעה ממשיכות. */
+  let era3 = null, era3GateErr = null;
+  try {
+    const { era3FuelGate } = await import("./era3-fuel-gate.mjs");
+    era3 = await era3FuelGate({ account, ops, tag });
+  } catch (e) {
+    era3GateErr = e;
+    const fuelOps = ["transfer", "transfer_to_vesting", "delegate_vesting_shares", "create_claimed_account", "account_create", "transfer_to_savings"];
+    if ((ops || []).some(([n]) => fuelOps.includes(String(n)))) {
+      appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: "ERA3-NO-FUEL", code: "ERA3-GATE-INFRA-FAIL", reason: String(e?.message ?? e).slice(0, 120) });
+      return { ok: false, verdict: "ERA3-NO-FUEL", reason: "ERA3-GATE-INFRA-FAIL", remediation: String(e?.message ?? e).slice(0, 140) };
+    }
+    /* לא-דלק: זמינות קודמת — ממשיכים בכנות */
+  }
+  if (era3 && !era3.ok) {
+    appendLine(LOG_FILE, { at: new Date().toISOString(), tag, account, ok: false, verdict: era3.verdict, code: era3.code, reason: String(era3.reason ?? "").slice(0, 120) });
+    return { ok: false, verdict: era3.verdict, reason: era3.code, remediation: era3.remediation };
+  }
   if (!ops.length) return { ok: true, verdict: "NO-OPS", ops: 0 };
   if (ops.length > conf.maxOpsPerCycle) ops = ops.slice(0, conf.maxOpsPerCycle);
 
