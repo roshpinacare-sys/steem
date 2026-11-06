@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-06T01:33:01.617Z",
+  "at": "2026-11-06T02:32:45.827Z",
   "decisions": [
     {
       "kind": "book-depth",
@@ -10,7 +10,16 @@
         "bestAsk": 0.10366826156299841,
         "bestBid": 0.10220684495979053
       },
-      "at": "2026-11-06T01:33:01.617Z"
+      "at": "2026-11-06T02:32:45.827Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -131bps from external parity",
+      "action": {
+        "bps": -131
+      },
+      "at": "2026-11-06T02:32:45.827Z"
     },
     {
       "kind": "soldiers",
@@ -19,7 +28,7 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-11-06T01:33:01.617Z"
+      "at": "2026-11-06T02:32:45.827Z"
     },
     {
       "kind": "rc-health",
@@ -28,18 +37,18 @@
       "action": {
         "rcPct": 100
       },
-      "at": "2026-11-06T01:33:01.617Z"
+      "at": "2026-11-06T02:32:45.827Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict DAY-CAP today (VP ?%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict BROADCAST-FAIL today (VP 42.2%) — gates hold until candidates pass",
       "action": {
         "votesToday": 0,
-        "vpEff": null,
-        "verdict": "DAY-CAP"
+        "vpEff": 42.2,
+        "verdict": "BROADCAST-FAIL"
       },
-      "at": "2026-11-06T01:33:01.617Z"
+      "at": "2026-11-06T02:32:45.827Z"
     }
   ],
   "spreadBpsRec": 142,
