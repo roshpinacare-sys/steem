@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-06T06:03:46.370Z",
+  "at": "2026-11-06T07:06:30.392Z",
   "enabled": true,
-  "runsTotal": 101,
+  "runsTotal": 102,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,7 +23,7 @@
         "VOTED": 23,
         "BROADCAST-FAIL": 7
       },
-      "vpEff": 37.6,
+      "vpEff": 33.8,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -39,10 +39,11 @@
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "high",
-      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
-      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
-      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
+      "severity": "low",
+      "resolved": true,
+      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
+      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
+      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
     },
     {
       "id": "broadcast-fails",
@@ -55,8 +56,8 @@
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 101,
-    "broadcast-fails": 23
+    "signing-cred-blocked": 102,
+    "broadcast-fails": 24
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }

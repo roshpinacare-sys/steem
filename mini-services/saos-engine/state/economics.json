@@ -3,22 +3,22 @@
     {
       "id": "market-making",
       "label": "מעשה-שוק · ספר-STEEM/SBD",
-      "measuredUsdPerDay": 0.017553,
+      "measuredUsdPerDay": 0.01747,
       "estUsdPerDay": null,
       "confidence": "measured",
-      "note": "realized 0.525 SBD over 13.681995d (chain fills) — היסטורי, אינו תחזית",
+      "note": "realized 0.525 SBD over 13.72556d (chain fills) — היסטורי, אינו תחזית",
       "meta": {
         "realizedSbdTotal": 0.525009,
-        "fillsToday": 177
+        "fillsToday": 226
       }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.438187,
+      "estUsdPerDay": 0.439863,
       "confidence": "estimated",
-      "note": "~9.23 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+      "note": "~9.26 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
     {
       "id": "fuel",
@@ -34,7 +34,7 @@
       "measuredUsdPerDay": null,
       "estUsdPerDay": null,
       "confidence": "blocked",
-      "note": "HOLD honest (-33bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "note": "HOLD honest (-5bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
     },
     {
       "id": "promo",
@@ -56,18 +56,18 @@
       }
     }
   ],
-  "totalMeasuredUsdPerDay": 0.017553,
-  "totalEstUsdPerDay": 0.438187,
+  "totalMeasuredUsdPerDay": 0.01747,
+  "totalEstUsdPerDay": 0.439863,
   "measuredCount": 1,
   "estimatedCount": 2,
   "blockedCount": 3,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.10373058467323226,
-  "asof": "2026-11-06T06:03:46.370Z",
+  "parity": 0.10401618454586058,
+  "asof": "2026-11-06T07:06:30.392Z",
   "context": {
-    "venueFillsPerDay": 172,
-    "venueVolSteem24h": 1479.551,
-    "ourFillsObservable": 177,
+    "venueFillsPerDay": 249,
+    "venueVolSteem24h": 1715.71,
+    "ourFillsObservable": 226,
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": {
@@ -85,10 +85,10 @@
     "any": false
   },
   "x2": {
-    "currentUsdPerDay": 0.0176,
+    "currentUsdPerDay": 0.0175,
     "targetUsdPerDay": 1000,
     "currentSp": 2131,
-    "factor": 56970.4,
+    "factor": 57241,
     "rows": [
       {
         "mult": 1,
@@ -99,7 +99,7 @@
       {
         "mult": 10,
         "sp": 21313,
-        "usdPerDay": 0.18,
+        "usdPerDay": 0.17,
         "reachesTarget": false
       },
       {
@@ -110,14 +110,14 @@
       },
       {
         "mult": 100,
-        "sp": 213125,
-        "usdPerDay": 1.76,
+        "sp": 213126,
+        "usdPerDay": 1.75,
         "reachesTarget": false
       },
       {
-        "mult": 56971,
-        "sp": 121419689,
-        "usdPerDay": 1000.01,
+        "mult": 57241,
+        "sp": 121995483,
+        "usdPerDay": 1000,
         "reachesTarget": true
       }
     ],
@@ -126,11 +126,11 @@
   "redeployDoctrine": {
     "ratios": {
       "buyBookPct": 0.5,
-      "powerUpPct": 0,
+      "powerUpPct": 0.3,
       "reservePct": 0.2
     },
     "floors": {
-      "liquidSteemFloor": 3000,
+      "liquidSteemFloor": 5,
       "liquidSbdFloor": 0.5
     },
     "minPowerUpSteem": 5,
@@ -138,19 +138,19 @@
     "maxPerDay": 12,
     "executionArmed": false,
     "plan": {
-      "verdict": "REDEPLOY-BLOCKED",
-      "reason": "ratios-invalid",
-      "powerUpSteem": null,
-      "excessSteem": null,
+      "verdict": "REDEPLOY-HOLD",
+      "reason": "at-or-below-floor",
+      "powerUpSteem": 0,
+      "excessSteem": 0,
       "pacing": {
         "minIntervalSec": 3600,
         "maxPerDay": 12,
         "powerUpsToday": 0,
         "lastPowerUpAt": "2026-10-20T11:34:56.486Z",
-        "sinceLastSec": 1448969,
+        "sinceLastSec": 1452700,
         "verdict": null
       },
-      "at": "2026-11-06T06:03:46.370Z"
+      "at": "2026-11-06T07:06:30.392Z"
     },
     "state": {
       "day": "2026-10-20",
@@ -159,5 +159,5 @@
     },
     "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
   },
-  "pid": 1678
+  "pid": 2194
 }
