@@ -1,0 +1,37 @@
+# engine-ci.yml — blueprint P0: the engine finally has a gate.
+# Runs on every push/PR touching the engine: syntax-check ALL service files,
+# then run the real test suite (node:test, zero deps).
+name: engine-ci
+
+on:
+  push:
+    branches: [main, saos-cockpit, craft-v2]
+    paths: ['mini-services/saos-engine/**', 'ops/**', '.github/workflows/engine-ci.yml']
+  pull_request:
+    paths: ['mini-services/saos-engine/**', 'ops/**']
+  workflow_dispatch:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax gate (every engine + ops module must parse)
+        run: |
+          fail=0
+          for f in mini-services/saos-engine/*.mjs ops/*.mjs; do
+            node --check "$f" || { echo "SYNTAX-FAIL: $f"; fail=1; }
+          done
+          exit $fail
+
+      - name: Test gate (scoring core + laws)
+        run: node --test ops/engine.test.mjs
+
+      - name: KPI smoke (compute, print-only, must not throw)
+        run: node ops/sovereign-kpi.mjs --print-only > /dev/null && echo KPI-SMOKE-OK
