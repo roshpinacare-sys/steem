@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-11-06T18:16:50.179Z",
+  "at": "2026-11-06T21:21:09.121Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -34,7 +34,7 @@
       "curMasterDelegationVests": 159085.429165,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 3.8T; EFFECTIVE SP 104.6→164.6 (received 99.9); master delegation +60 SP (SET 255659.429165)"
+      "why": "RC bottleneck: tank 0.16T vs master 3.9T; EFFECTIVE SP 104.6→164.6 (received 99.9); master delegation +60 SP (SET 255659.429165)"
     },
     {
       "kind": "sp-ladder",
@@ -46,7 +46,7 @@
       "curMasterDelegationVests": 156619.116012,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 3.8T; EFFECTIVE SP 102.5→162.5 (received 99.8); master delegation +60 SP (SET 253193.116012)"
+      "why": "RC bottleneck: tank 0.16T vs master 3.9T; EFFECTIVE SP 102.5→162.5 (received 99.8); master delegation +60 SP (SET 253193.116012)"
     },
     {
       "kind": "sp-ladder",
@@ -58,7 +58,7 @@
       "curMasterDelegationVests": 32202.296004,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank ?T vs master 3.8T; EFFECTIVE SP 31.2→91.2 (received 20); master delegation +60 SP (SET 128776.296004)"
+      "why": "RC bottleneck: tank ?T vs master 3.9T; EFFECTIVE SP 31.2→91.2 (received 20); master delegation +60 SP (SET 128776.296004)"
     },
     {
       "kind": "sp-ladder",
@@ -70,7 +70,17 @@
       "curMasterDelegationVests": 32202.296004,
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank ?T vs master 3.8T; EFFECTIVE SP 45.2→105.2 (received 20); master delegation +60 SP (SET 128776.296004)"
+      "why": "RC bottleneck: tank ?T vs master 3.9T; EFFECTIVE SP 45.2→105.2 (received 20); master delegation +60 SP (SET 128776.296004)"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "2000.000000 VESTS",
+      "frozenHolder": "hcsoldier6",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
     }
   ],
   "executed": [],
