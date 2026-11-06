@@ -47,6 +47,27 @@ say "trade-window: boot (TRADE_MS=240000)"
 TRADE_MS=240000 timeout 300 node actions-trade-batch.mjs 2>/dev/null | grep -E "crown-adopt|custody:|dexflow|final" | head -6
 say "trade-window: done"
 
+
+# --- 2.5 custody-era3: soldiers off-runner seal (G-M6-era3 · owner-approved 2026-11-06) ---
+# THE LAW: soldier keys hostage on this disk must leave encrypted to vault-home.
+# No two-location encrypted backup = no fuel. Reads state/custody-era3.json
+# (one-time transport pass) -> judge vs live chain -> seal VERIFIED-SOLDIERS-<ts>.enc.
+# fail-closed: no pass = honest judge-only attempt; no key material ever printed.
+if [ -f ops/soldier-era-export.mjs ]; then
+  say "custody-era3: attempt"
+  ERA3_PASS="$(python3 -c "import json;print(json.load(open('state/custody-era3.json')).get('sealPass',''))" 2>/dev/null || true)"
+  if [ -z "$GH_PAT" ]; then
+    ORIGIN_URL="$(git remote get-url origin 2>/dev/null || true)"
+    case "$ORIGIN_URL" in
+      https://*@github.com/*) export GH_PAT="$(printf '%s' "$ORIGIN_URL" | sed -E 's#https://[^:]+:([^@]+)@github.com/.*#\1#')" ;;
+    esac
+  fi
+  ERA3_OUT="$(timeout 180 env MAIN_KEY="$ERA3_PASS" node ops/soldier-era-export.mjs 2>/dev/null | tail -3)"
+  if [ -n "$ERA3_OUT" ]; then say "custody-era3: $ERA3_OUT"; else say "custody-era3: no-output (honest)"; fi
+else
+  say "custody-era3: tool missing (repo not pulled?)"
+fi
+
 # --- 3. power-up lane --------------------------------------------------------
 PU=$(timeout 120 node powerup-now.mjs 2>/dev/null | grep -E "broadcast|vest " | head -2)
 if [ -n "$PU" ]; then say "powerup: $PU"; else say "powerup: no fresh plan or pacing-capped (honest skip)"; fi
