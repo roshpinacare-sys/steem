@@ -1,19 +1,19 @@
 {
   "schema": "fleet-matrix-v1",
-  "at": "2026-11-07T06:05:05.728Z",
+  "at": "2026-11-07T09:03:54.192Z",
   "estate": 14,
   "activation": {
     "rate": 0.5,
     "active": 7,
-    "grid": 4,
+    "grid": 3,
     "total": 14
   },
   "custody": {
-    "at": "2026-11-07T06:05:37.254Z",
-    "verified": 13,
-    "total": 13
+    "at": "2026-11-07T06:05:05.728Z",
+    "verified": 11,
+    "total": 12
   },
-  "vestsPerSp": 1609.52,
+  "vestsPerSp": 1609.5,
   "delegationsOutCount": 18,
   "delegationsOutVests": 3295515.51815,
   "delegationsOutRows": [
@@ -112,7 +112,7 @@
     "orders24h": 4,
     "votes24h": 203,
     "fills24h": 0,
-    "steem": 90.228,
+    "steem": 75.626,
     "sbd": 3.495
   },
   "rows": [
@@ -120,7 +120,7 @@
       "name": "headcorner",
       "class": "GRID-ACTIVE",
       "custody": "master-verified",
-      "steem": 52.038,
+      "steem": 37.436,
       "sbd": 0.001,
       "sp": 4334,
       "spOwn": 2247,
@@ -128,15 +128,15 @@
       "spEffective": 4578.9,
       "rcMax": 3947716582606,
       "rcPct": 100,
-      "orders24h": 1,
+      "orders24h": 2,
       "votes24h": 53,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-07T05:19:48"
+      "lastActivityAt": "2026-11-07T08:33:42"
     },
     {
       "name": "cashmachine",
       "class": "GRID-ACTIVE",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 0.101,
       "sbd": 0.101,
       "sp": 5,
@@ -153,7 +153,7 @@
     {
       "name": "haran",
       "class": "DORMANT",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.197,
       "sp": 238,
@@ -170,7 +170,7 @@
     {
       "name": "israelnews",
       "class": "GRID-ACTIVE",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 0.101,
       "sbd": 0.1,
       "sp": 1,
@@ -187,7 +187,7 @@
     {
       "name": "lsa",
       "class": "DORMANT",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.197,
       "sp": 5,
@@ -204,7 +204,7 @@
     {
       "name": "macrame",
       "class": "DORMANT",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.197,
       "sp": 2,
@@ -221,7 +221,7 @@
     {
       "name": "siq",
       "class": "DORMANT",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 1.001,
       "sbd": 0.1,
       "sp": 5,
@@ -238,7 +238,7 @@
     {
       "name": "tov",
       "class": "CURATE-ONLY",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 0.101,
       "sbd": 0.195,
       "sp": 5,
@@ -254,8 +254,8 @@
     },
     {
       "name": "wic",
-      "class": "GRID-ACTIVE",
-      "custody": "verified",
+      "class": "CURATE-ONLY",
+      "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.1,
       "sp": 3,
@@ -264,7 +264,7 @@
       "spEffective": 102.5,
       "rcMax": 163043400158,
       "rcPct": 99.9,
-      "orders24h": 1,
+      "orders24h": 0,
       "votes24h": 30,
       "fills24h": 0,
       "lastActivityAt": "2026-11-07T05:34:39"
@@ -272,7 +272,7 @@
     {
       "name": "wog",
       "class": "DORMANT",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.1,
       "sp": 5,
@@ -289,13 +289,13 @@
     {
       "name": "woq",
       "class": "DORMANT",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 1.001,
       "sbd": 0.1,
       "sp": 2,
       "spOwn": 0,
       "spReceived": 99.9,
-      "spEffective": 101.5,
+      "spEffective": 101.6,
       "rcMax": 163032126861,
       "rcPct": 100,
       "orders24h": 0,
@@ -306,7 +306,7 @@
     {
       "name": "hcsoldier4",
       "class": "CURATE-ONLY",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 1,
       "sbd": 0.934,
       "sp": 11,
@@ -323,7 +323,7 @@
     {
       "name": "hcsoldier5",
       "class": "CURATE-ONLY",
-      "custody": "verified",
+      "custody": "era-verified",
       "steem": 1,
       "sbd": 0.688,
       "sp": 25,
@@ -378,6 +378,11 @@
     },
     {
       "name": "tov",
+      "class": "CURATE-ONLY",
+      "gap": "votes but zero 24h orders — grid lane idle (RC/liquidity or policy); rebalance ladder targets this"
+    },
+    {
+      "name": "wic",
       "class": "CURATE-ONLY",
       "gap": "votes but zero 24h orders — grid lane idle (RC/liquidity or policy); rebalance ladder targets this"
     },
