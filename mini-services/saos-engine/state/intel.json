@@ -1,16 +1,25 @@
 {
-  "at": "2026-11-08T01:38:20.326Z",
+  "at": "2026-11-08T16:44:41.725Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 103bps → dragK 1.0515",
+      "reason": "spread 69bps → dragK 1.0345",
       "action": {
-        "spreadBpsRec": 103,
-        "bestAsk": 0.10358056265984655,
-        "bestBid": 0.10251450676982592
+        "spreadBpsRec": 69,
+        "bestAsk": 0.10299387354063114,
+        "bestBid": 0.10228839261097325
       },
-      "at": "2026-11-08T01:38:20.326Z"
+      "at": "2026-11-08T16:44:41.725Z"
+    },
+    {
+      "kind": "parity-drift",
+      "decision": "monitor",
+      "reason": "internal feed deviates -138bps from external parity",
+      "action": {
+        "bps": -138
+      },
+      "at": "2026-11-08T16:44:41.725Z"
     },
     {
       "kind": "soldiers",
@@ -19,20 +28,7 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-11-08T01:38:20.326Z"
-    },
-    {
-      "kind": "rewards",
-      "decision": "claim",
-      "reason": "unclaimed: 0 STEEM + 0 SBD + 9.659528 VESTS — free fuel, claim now",
-      "action": {
-        "ok": true,
-        "steem": 0,
-        "sbd": 0,
-        "vests": 9.659528,
-        "any": true
-      },
-      "at": "2026-11-08T01:38:20.326Z"
+      "at": "2026-11-08T16:44:41.725Z"
     },
     {
       "kind": "rc-health",
@@ -41,24 +37,24 @@
       "action": {
         "rcPct": 100
       },
-      "at": "2026-11-08T01:38:20.326Z"
+      "at": "2026-11-08T16:44:41.725Z"
     },
     {
       "kind": "curation",
       "decision": "curator-armed",
-      "reason": "rail armed, verdict VP-FLOOR today (VP 34.5%) — gates hold until candidates pass",
+      "reason": "rail armed, verdict DAY-CAP today (VP ?%) — gates hold until candidates pass",
       "action": {
         "votesToday": 0,
-        "vpEff": 34.5,
-        "verdict": "VP-FLOOR"
+        "vpEff": null,
+        "verdict": "DAY-CAP"
       },
-      "at": "2026-11-08T01:38:20.326Z"
+      "at": "2026-11-08T16:44:41.725Z"
     }
   ],
-  "spreadBpsRec": 103,
+  "spreadBpsRec": 69,
   "book": {
-    "bestAsk": 0.10358056265984655,
-    "bestBid": 0.10251450676982592,
-    "spreadBps": 103
+    "bestAsk": 0.10299387354063114,
+    "bestBid": 0.10228839261097325,
+    "spreadBps": 69
   }
 }
