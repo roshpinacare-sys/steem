@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-09T15:50:24.883Z",
+  "at": "2026-11-09T18:34:43.476Z",
   "enabled": true,
-  "runsTotal": 125,
+  "runsTotal": 126,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -20,10 +20,10 @@
       "totalVotes": 63,
       "window": 30,
       "verdicts": {
-        "VOTED": 20,
-        "BROADCAST-FAIL": 10
+        "BROADCAST-FAIL": 11,
+        "VOTED": 19
       },
-      "vpEff": null,
+      "vpEff": 39.6,
       "meanAgeMinutes": null,
       "tagsVoted": {},
       "dayCapsInRow": 0,
@@ -46,18 +46,17 @@
     },
     {
       "id": "broadcast-fails",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "1/1 broadcasts failed in the window (last: unknown key:unknown key: ) · last fail 2026-11-09T01:38:09.829Z < last OK broadcast 2026-11-09T10:00:32.134Z (live posting-role ops succeed)",
-      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
-      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
+      "severity": "medium",
+      "evidence": "1/1 broadcasts failed · last: unknown key:unknown key: ",
+      "lesson": "broadcast failures burn RC and delay rails",
+      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 125,
-    "broadcast-fails": 39
+    "signing-cred-blocked": 126,
+    "broadcast-fails": 40
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
