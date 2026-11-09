@@ -1,19 +1,19 @@
 {
   "schema": "fleet-matrix-v1",
-  "at": "2026-11-09T01:47:59.469Z",
+  "at": "2026-11-09T09:59:31.378Z",
   "estate": 14,
   "activation": {
-    "rate": 0.5,
-    "active": 7,
-    "grid": 2,
+    "rate": 0.43,
+    "active": 6,
+    "grid": 1,
     "total": 14
   },
   "custody": {
-    "at": "2026-11-09T01:34:27.498Z",
-    "verified": 11,
-    "total": 12
+    "at": "2026-11-09T01:47:59.469Z",
+    "verified": null,
+    "total": null
   },
-  "vestsPerSp": 1609.32,
+  "vestsPerSp": 1609.28,
   "delegationsOutCount": 18,
   "delegationsOutVests": 3295515.51815,
   "delegationsOutRows": [
@@ -109,29 +109,29 @@
     }
   ],
   "totals": {
-    "orders24h": 62,
-    "votes24h": 153,
-    "fills24h": 27,
-    "steem": 98.19,
-    "sbd": 8.353
+    "orders24h": 65,
+    "votes24h": 151,
+    "fills24h": 26,
+    "steem": 81.332,
+    "sbd": 3.963
   },
   "rows": [
     {
       "name": "headcorner",
       "class": "GRID-ACTIVE",
       "custody": "master-verified",
-      "steem": 60,
-      "sbd": 4.859,
+      "steem": 43.142,
+      "sbd": 0.469,
       "sp": 4404,
       "spOwn": 2317,
       "spReceived": 244.7,
-      "spEffective": 4649,
+      "spEffective": 4649.1,
       "rcMax": 4059560767980,
-      "rcPct": 99.6,
-      "orders24h": 61,
-      "votes24h": 3,
-      "fills24h": 27,
-      "lastActivityAt": "2026-11-09T01:42:27"
+      "rcPct": 100,
+      "orders24h": 65,
+      "votes24h": 1,
+      "fills24h": 26,
+      "lastActivityAt": "2026-11-09T08:58:21"
     },
     {
       "name": "cashmachine",
@@ -144,11 +144,11 @@
       "spReceived": 300.2,
       "spEffective": 305.7,
       "rcMax": 485787726546,
-      "rcPct": 99.9,
+      "rcPct": 100,
       "orders24h": 0,
       "votes24h": 30,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-09T01:35:21"
+      "lastActivityAt": "2026-11-09T04:05:36"
     },
     {
       "name": "haran",
@@ -227,7 +227,7 @@
       "sp": 5,
       "spOwn": 0,
       "spReceived": 99.9,
-      "spEffective": 104.6,
+      "spEffective": 104.7,
       "rcMax": 163032126861,
       "rcPct": 100,
       "orders24h": 0,
@@ -246,11 +246,11 @@
       "spReceived": 99.9,
       "spEffective": 104.6,
       "rcMax": 163033737379,
-      "rcPct": 99.8,
+      "rcPct": 99,
       "orders24h": 0,
       "votes24h": 30,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-09T01:35:39"
+      "lastActivityAt": "2026-11-09T04:05:48"
     },
     {
       "name": "wic",
@@ -263,15 +263,15 @@
       "spReceived": 99.9,
       "spEffective": 102.5,
       "rcMax": 163043400158,
-      "rcPct": 99.8,
+      "rcPct": 99.9,
       "orders24h": 0,
       "votes24h": 30,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-09T01:35:57"
+      "lastActivityAt": "2026-11-09T04:06:03"
     },
     {
       "name": "wog",
-      "class": "GRID-ACTIVE",
+      "class": "DORMANT",
       "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.1,
@@ -281,10 +281,10 @@
       "spEffective": 104.7,
       "rcMax": 163032126861,
       "rcPct": 99.8,
-      "orders24h": 1,
+      "orders24h": 0,
       "votes24h": 0,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-08T03:29:42"
+      "lastActivityAt": null
     },
     {
       "name": "woq",
@@ -318,7 +318,7 @@
       "orders24h": 0,
       "votes24h": 30,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-09T01:36:18"
+      "lastActivityAt": "2026-11-09T04:06:18"
     },
     {
       "name": "hcsoldier5",
@@ -335,7 +335,7 @@
       "orders24h": 0,
       "votes24h": 30,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-09T01:36:39"
+      "lastActivityAt": "2026-11-09T04:06:30"
     },
     {
       "name": "hcsoldier6",
@@ -395,6 +395,11 @@
       "name": "wic",
       "class": "CURATE-ONLY",
       "gap": "votes but zero 24h orders — grid lane idle (RC/liquidity or policy); rebalance ladder targets this"
+    },
+    {
+      "name": "wog",
+      "class": "DORMANT",
+      "gap": "no 24h activity — check custody freshness + RC tank + liquidity"
     },
     {
       "name": "woq",
