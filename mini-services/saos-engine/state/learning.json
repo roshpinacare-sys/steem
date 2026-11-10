@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-09T20:54:46.264Z",
+  "at": "2026-11-10T03:36:19.185Z",
   "enabled": true,
-  "runsTotal": 127,
+  "runsTotal": 128,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -23,45 +23,40 @@
         "BROADCAST-FAIL": 7,
         "VOTED": 23
       },
-      "vpEff": 40,
-      "meanAgeMinutes": 49,
-      "tagsVoted": {
-        "steem": 2,
-        "trading": 1
-      },
+      "vpEff": 34,
+      "meanAgeMinutes": null,
+      "tagsVoted": {},
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
     "exec": {
       "window": 1,
       "fails": 1,
-      "lastError": "unknown key:unknown key: "
+      "lastError": null
     },
     "watchdog": null
   },
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+      "severity": "high",
+      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
     },
     {
       "id": "broadcast-fails",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "1/1 broadcasts failed in the window (last: unknown key:unknown key: ) · last fail 2026-11-09T18:35:35.187Z < last OK broadcast 2026-11-09T20:55:04.381Z (live posting-role ops succeed)",
-      "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
-      "action": "none — resolved by R209; watch for any NEW failure class in the live window"
+      "severity": "medium",
+      "evidence": "1/1 broadcasts failed · last: ",
+      "lesson": "broadcast failures burn RC and delay rails",
+      "action": "fail-closed stop already holds; vote-interval retry added T-14"
     }
   ],
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 127,
-    "broadcast-fails": 41
+    "signing-cred-blocked": 128,
+    "broadcast-fails": 42
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
