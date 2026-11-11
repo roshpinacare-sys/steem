@@ -1,6 +1,6 @@
 {
-  "at": "2026-11-11T20:15:39.292Z",
-  "head": "852c71a3bf00c52b7be43f737dbc96c43842c5f1",
+  "at": "2026-11-11T22:50:45.149Z",
+  "head": "574f16327da2caee86b816172aeceb76517eed49",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -18,17 +18,17 @@
       "id": "pulse-network",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 15.5
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 170.6
     },
     {
       "id": "pulse-mirror-lanes",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 15.5
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 170.6
     },
     {
       "id": "pulse-domain-published",
@@ -36,15 +36,15 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 97.1
+      "ageMinutes": 252.2
     },
     {
       "id": "engine-heartbeat",
       "kind": "statefile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 4.7
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 155.1
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 26218.5
+      "ageMinutes": 26373.6
     },
     {
       "id": "engine-selftest",
@@ -79,11 +79,35 @@
   ],
   "repairsPlanned": [
     {
+      "targetId": "pulse-network",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "Pulse",
+      "workflow": "heartbeat.yml",
+      "readbackRequired": true
+    },
+    {
+      "targetId": "pulse-mirror-lanes",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "Pulse",
+      "workflow": "heartbeat.yml",
+      "readbackRequired": true
+    },
+    {
       "targetId": "pulse-domain-published",
       "verdict": "STALE",
       "action": "regen-state",
       "repo": "Domain",
       "workflow": "published-ledger.yml",
+      "readbackRequired": true
+    },
+    {
+      "targetId": "engine-heartbeat",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "saos-runtime",
+      "workflow": "sovereign-runtime.yml",
       "readbackRequired": true
     },
     {
@@ -96,5 +120,5 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:e051205e"
+  "signature": "sig:c2886e48"
 }
