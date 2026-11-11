@@ -1,11 +1,28 @@
 {
-  "verdict": "OFFER-EMPTY",
-  "parityBps": -167,
+  "verdict": "OFFER-READY",
+  "parityBps": -209,
   "blocker": null,
   "plan": {
     "asks": [],
     "bids": [],
-    "flowAsks": [],
+    "flowAsks": [
+      {
+        "side": "ask",
+        "amountSteem": 0.61677,
+        "unit": 0.105349,
+        "sbdOut3": 0.065,
+        "at": "2026-11-11T17:57:53.787Z",
+        "tranche": "flow"
+      },
+      {
+        "side": "ask",
+        "amountSteem": 0.61677,
+        "unit": 0.10697,
+        "sbdOut3": 0.066,
+        "at": "2026-11-11T17:57:53.787Z",
+        "tranche": "flow"
+      }
+    ],
     "flowBids": []
   },
   "flow": {
@@ -13,21 +30,21 @@
     "bestBid": 0.103175,
     "spacingBps": 15,
     "levels": 4,
-    "askBudgetSteem": 0.40428,
-    "bidBudgetSbd": 0.13032,
+    "askBudgetSteem": 2.46708,
+    "bidBudgetSbd": 0.15216,
     "feedAnchor": 0.104069,
-    "flowAsks": 0,
+    "flowAsks": 2,
     "flowBids": 0
   },
   "book": {
     "bestAsk": 0.10366624525916561,
     "bestBid": 0.10317497537869906,
     "askDepthSteem": 12293.278,
-    "bidDepthSbd": 2183.642,
-    "at": "2026-11-11T17:24:37.644Z"
+    "bidDepthSbd": 2183.46,
+    "at": "2026-11-11T17:57:53.787Z"
   },
   "market": {
-    "at": "2026-11-11T17:24:47.094Z",
+    "at": "2026-11-11T17:57:58.751Z",
     "windowHours": 24,
     "class": "measured",
     "trades": 4,
@@ -43,37 +60,40 @@
       "bestBid": 0.10317497537869906,
       "spreadBps": 47.62,
       "askDepthSteem": 12293.278,
-      "bidDepthSbd": 2183.642
+      "bidDepthSbd": 2183.46
     }
   },
   "marks": {
-    "paritySbdPerSteem": 0.102329,
+    "paritySbdPerSteem": 0.101893,
     "source": "coingecko",
     "lowConfidence": false,
     "internalFeed": 0.104069,
     "dragK": 1.024,
-    "floor": 0.102535,
-    "ceiling": 0.102124,
+    "floor": 0.102097,
+    "ceiling": 0.101689,
     "spreadBpsFed": 48
   },
   "skew": {
-    "skew": -0.192866,
-    "askMult": 0.807134,
-    "bidMult": 1.192866,
+    "skew": 0.025382,
+    "askMult": 1.025382,
+    "bidMult": 0.974618,
     "reason": "hummingbot-inventory-skew"
   },
   "stale": {
-    "count": 0,
-    "orderids": []
+    "count": 2,
+    "orderids": [
+      2355339140,
+      2355353172
+    ]
   },
   "liquidity": {
     "deployedAsks": 273.465,
-    "deployedBids": 19.014,
+    "deployedBids": 18.832,
     "askBudget": 0,
     "bidBudget": 0,
     "bidBudgetUncapped": 0,
-    "buyBookCapSbd": 0.543,
+    "buyBookCapSbd": 0.634,
     "deployCap": 0.6
   },
-  "publishedAt": "2026-11-11T17:24:37.644Z"
+  "publishedAt": "2026-11-11T17:57:53.787Z"
 }
