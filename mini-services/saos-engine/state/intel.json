@@ -1,25 +1,25 @@
 {
-  "at": "2026-11-13T06:59:59.357Z",
+  "at": "2026-11-13T15:21:51.534Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 33bps → dragK 1.0165",
+      "reason": "spread 14bps → dragK 1.007",
       "action": {
-        "spreadBpsRec": 33,
-        "bestAsk": 0.10266315681515162,
-        "bestBid": 0.102326
+        "spreadBpsRec": 14,
+        "bestAsk": 0.10712094757208249,
+        "bestBid": 0.10696778711484593
       },
-      "at": "2026-11-13T06:59:59.357Z"
+      "at": "2026-11-13T15:21:51.534Z"
     },
     {
       "kind": "parity-drift",
-      "decision": "monitor",
-      "reason": "internal feed deviates -416bps from external parity",
+      "decision": "arb-window",
+      "reason": "internal feed deviates 599bps from external parity",
       "action": {
-        "bps": -416
+        "bps": 599
       },
-      "at": "2026-11-13T06:59:59.357Z"
+      "at": "2026-11-13T15:21:51.534Z"
     },
     {
       "kind": "soldiers",
@@ -28,7 +28,20 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-11-13T06:59:59.357Z"
+      "at": "2026-11-13T15:21:51.534Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 1.609318 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 1.609318,
+        "any": true
+      },
+      "at": "2026-11-13T15:21:51.534Z"
     },
     {
       "kind": "rc-health",
@@ -37,7 +50,7 @@
       "action": {
         "rcPct": 100
       },
-      "at": "2026-11-13T06:59:59.357Z"
+      "at": "2026-11-13T15:21:51.534Z"
     },
     {
       "kind": "curation",
@@ -48,13 +61,13 @@
         "vpEff": null,
         "verdict": "DAY-CAP"
       },
-      "at": "2026-11-13T06:59:59.357Z"
+      "at": "2026-11-13T15:21:51.534Z"
     }
   ],
-  "spreadBpsRec": 33,
+  "spreadBpsRec": 14,
   "book": {
-    "bestAsk": 0.10266315681515162,
-    "bestBid": 0.102326,
-    "spreadBps": 33
+    "bestAsk": 0.10712094757208249,
+    "bestBid": 0.10696778711484593,
+    "spreadBps": 14
   }
 }

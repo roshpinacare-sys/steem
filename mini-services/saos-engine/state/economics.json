@@ -3,22 +3,22 @@
     {
       "id": "market-making",
       "label": "מעשה-שוק · ספר-STEEM/SBD",
-      "measuredUsdPerDay": 0.01314,
+      "measuredUsdPerDay": 0.012239,
       "estUsdPerDay": null,
       "confidence": "measured",
-      "note": "realized 0.594 SBD over 20.721034d (chain fills) — היסטורי, אינו תחזית",
+      "note": "realized 0.61 SBD over 21.069555d (chain fills) — היסטורי, אינו תחזית",
       "meta": {
-        "realizedSbdTotal": 0.594086,
-        "fillsToday": 8
+        "realizedSbdTotal": 0.610294,
+        "fillsToday": 24
       }
     },
     {
       "id": "curation",
       "label": "קיורציה · מסילת-דלק",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": 0.437268,
+      "estUsdPerDay": 0.449798,
       "confidence": "estimated",
-      "note": "~9.57 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
+      "note": "~9.65 STEEM/יום — ESTIMATED (payout clock ~7d, first verification T-18c)"
     },
     {
       "id": "fuel",
@@ -32,9 +32,9 @@
       "id": "convert-arb",
       "label": "ארביטרז'-המרה · SBD print path",
       "measuredUsdPerDay": null,
-      "estUsdPerDay": null,
-      "confidence": "blocked",
-      "note": "HOLD honest (-416bps edge, dust-or-capped) — the rail is armed-in-doctrine, not burning"
+      "estUsdPerDay": 0.253104,
+      "confidence": "estimated",
+      "note": "edge 599bps on 10 SBD"
     },
     {
       "id": "promo",
@@ -56,18 +56,18 @@
       }
     }
   ],
-  "totalMeasuredUsdPerDay": 0.01314,
-  "totalEstUsdPerDay": 0.437268,
+  "totalMeasuredUsdPerDay": 0.012239,
+  "totalEstUsdPerDay": 0.702902,
   "measuredCount": 2,
-  "estimatedCount": 2,
-  "blockedCount": 2,
+  "estimatedCount": 3,
+  "blockedCount": 1,
   "law": "סכום-מדוד וסכום-מוערך לעולם לא מתמזגים — שתי שורות-אמת נפרדות",
-  "parity": 0.09973810645929883,
-  "asof": "2026-11-13T06:59:59.357Z",
+  "parity": 0.11029826479609225,
+  "asof": "2026-11-13T15:21:51.534Z",
   "context": {
-    "venueFillsPerDay": 4,
-    "venueVolSteem24h": 14.529,
-    "ourFillsObservable": 8,
+    "venueFillsPerDay": 75,
+    "venueVolSteem24h": 1434.673,
+    "ourFillsObservable": 24,
     "scalingLaw": "ops/day ∝ RC ∝ SP — ההון-החכם מכפיל את התקרה, לא את הקוד"
   },
   "payoutClock": {
@@ -85,10 +85,10 @@
     "any": false
   },
   "x2": {
-    "currentUsdPerDay": 0.0131,
+    "currentUsdPerDay": 0.0122,
     "targetUsdPerDay": 1000,
     "currentSp": 2359,
-    "factor": 76103.6,
+    "factor": 81706.1,
     "rows": [
       {
         "mult": 1,
@@ -98,25 +98,25 @@
       },
       {
         "mult": 10,
-        "sp": 23588,
-        "usdPerDay": 0.13,
+        "sp": 23589,
+        "usdPerDay": 0.12,
         "reachesTarget": false
       },
       {
         "mult": 40,
-        "sp": 94351,
-        "usdPerDay": 0.53,
+        "sp": 94355,
+        "usdPerDay": 0.49,
         "reachesTarget": false
       },
       {
         "mult": 100,
-        "sp": 235878,
-        "usdPerDay": 1.31,
+        "sp": 235888,
+        "usdPerDay": 1.22,
         "reachesTarget": false
       },
       {
-        "mult": 76104,
-        "sp": 179512513,
+        "mult": 81707,
+        "sp": 192736860,
         "usdPerDay": 1000.01,
         "reachesTarget": true
       }
@@ -139,18 +139,18 @@
     "executionArmed": false,
     "plan": {
       "verdict": "REDEPLOY-HOLD",
-      "reason": "below-min-powerup",
-      "powerUpSteem": 3.899,
-      "excessSteem": 12.998,
+      "reason": "at-or-below-floor",
+      "powerUpSteem": 0,
+      "excessSteem": 0,
       "pacing": {
         "minIntervalSec": 3600,
         "maxPerDay": 12,
         "powerUpsToday": 0,
         "lastPowerUpAt": "2026-10-20T11:34:56.486Z",
-        "sinceLastSec": 2057111,
+        "sinceLastSec": 2087228,
         "verdict": null
       },
-      "at": "2026-11-13T06:59:59.357Z"
+      "at": "2026-11-13T15:21:51.534Z"
     },
     "state": {
       "day": "2026-10-20",
@@ -159,5 +159,5 @@
     },
     "law": "מימוש אף-פעם לא עוצר את האוטונומיה — הערך שממומש זורם חזרה למכונה לפי היחסים (ספר-קנייה / power-up / עתודה), מעל רצפות-ההפעלה בלבד"
   },
-  "pid": 2661
+  "pid": 2405
 }
