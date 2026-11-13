@@ -1,6 +1,6 @@
 {
-  "at": "2026-11-11T22:57:36.080Z",
-  "head": "b860f9b8e35ff4065a16cc4efb7244b3e92b6796",
+  "at": "2026-11-13T02:21:15.272Z",
+  "head": "aba44a6aa524e7049bffd4627229f45370f5993e",
   "verdict": "SURFACES-OK",
   "repairMode": "observe",
   "actArmed": false,
@@ -18,17 +18,17 @@
       "id": "pulse-network",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 177.4
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 21.1
     },
     {
       "id": "pulse-mirror-lanes",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 177.4
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 21.1
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 259
+      "ageMinutes": 219.5
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5.5
+      "ageMinutes": 21.8
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 26380.4
+      "ageMinutes": 28024.1
     },
     {
       "id": "engine-selftest",
@@ -79,22 +79,6 @@
   ],
   "repairsPlanned": [
     {
-      "targetId": "pulse-network",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Pulse",
-      "workflow": "heartbeat.yml",
-      "readbackRequired": true
-    },
-    {
-      "targetId": "pulse-mirror-lanes",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Pulse",
-      "workflow": "heartbeat.yml",
-      "readbackRequired": true
-    },
-    {
       "targetId": "pulse-domain-published",
       "verdict": "STALE",
       "action": "regen-state",
@@ -112,5 +96,5 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:8aff3e73"
+  "signature": "sig:045b8960"
 }
