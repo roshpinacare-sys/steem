@@ -1,6 +1,6 @@
 {
   "schema": "fleet-rebalance-v1",
-  "at": "2026-11-13T02:21:15.272Z",
+  "at": "2026-11-13T06:59:59.357Z",
   "why": "planned",
   "railVersion": "W12-c",
   "policy": {
@@ -18,71 +18,51 @@
     "order": true,
     "spLadderExecutedToday": 0,
     "spLadderExecNow": 0,
-    "spLadderPlannedNow": 5,
+    "spLadderPlannedNow": 0,
     "restoreExecutedNow": 0,
     "restorePlannedNow": 0,
     "liveProof": false
   },
   "planOnly": [
     {
-      "kind": "sp-ladder",
+      "kind": "sp-recall",
       "from": "headcorner",
-      "to": "tov",
-      "sp": 60,
-      "setVests": 255618.429165,
-      "curSpEffective": 104.7,
-      "curMasterDelegationVests": 159085.429165,
+      "to": "headcorner",
+      "vests": "483153.130222 VESTS",
+      "frozenHolder": "cashmachine",
       "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 4.1T; EFFECTIVE SP 104.7→164.7 (received 99.9); master delegation +60 SP (SET 255618.429165)"
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
     },
     {
-      "kind": "sp-ladder",
+      "kind": "sp-recall",
       "from": "headcorner",
-      "to": "wic",
-      "sp": 60,
-      "setVests": 253152.116012,
-      "curSpEffective": 102.5,
-      "curMasterDelegationVests": 156619.116012,
+      "to": "headcorner",
+      "vests": "483153.130222 VESTS",
+      "frozenHolder": "haran",
       "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 4.1T; EFFECTIVE SP 102.5→162.5 (received 99.9); master delegation +60 SP (SET 253152.116012)"
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
     },
     {
-      "kind": "sp-ladder",
+      "kind": "sp-recall",
       "from": "headcorner",
-      "to": "wog",
-      "sp": 60,
-      "setVests": 255621.840881,
-      "curSpEffective": 104.7,
-      "curMasterDelegationVests": 159088.840881,
+      "to": "headcorner",
+      "vests": "32202.296004 VESTS",
+      "frozenHolder": "hcsoldier4",
       "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank 0.16T vs master 4.1T; EFFECTIVE SP 104.7→164.7 (received 100); master delegation +60 SP (SET 255621.840881)"
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
     },
     {
-      "kind": "sp-ladder",
+      "kind": "sp-recall",
       "from": "headcorner",
-      "to": "hcsoldier4",
-      "sp": 60,
-      "setVests": 128735.296004,
-      "curSpEffective": 31.2,
-      "curMasterDelegationVests": 32202.296004,
+      "to": "headcorner",
+      "vests": "32202.296004 VESTS",
+      "frozenHolder": "hcsoldier5",
       "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank ?T vs master 4.1T; EFFECTIVE SP 31.2→91.2 (received 20); master delegation +60 SP (SET 128735.296004)"
-    },
-    {
-      "kind": "sp-ladder",
-      "from": "headcorner",
-      "to": "hcsoldier5",
-      "sp": 60,
-      "setVests": 128735.296004,
-      "curSpEffective": 45.2,
-      "curMasterDelegationVests": 32202.296004,
-      "mode": "PLAN-ONLY",
-      "requiredFlag": "policy.allowDelegation=true",
-      "why": "RC bottleneck: tank ?T vs master 4.1T; EFFECTIVE SP 45.2→105.2 (received 20); master delegation +60 SP (SET 128735.296004)"
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
     },
     {
       "kind": "sp-recall",
@@ -90,6 +70,86 @@
       "to": "headcorner",
       "vests": "2000.000000 VESTS",
       "frozenHolder": "hcsoldier6",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "483153.130222 VESTS",
+      "frozenHolder": "israelnews",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "483153.130222 VESTS",
+      "frozenHolder": "lsa",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "483153.130222 VESTS",
+      "frozenHolder": "macrame",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "159156.315523 VESTS",
+      "frozenHolder": "siq",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "159085.429165 VESTS",
+      "frozenHolder": "tov",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "156619.116012 VESTS",
+      "frozenHolder": "wic",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "159088.840881 VESTS",
+      "frozenHolder": "wog",
+      "mode": "PLAN-ONLY",
+      "requiredFlag": "policy.allowDelegationRecall=true",
+      "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
+    },
+    {
+      "kind": "sp-recall",
+      "from": "headcorner",
+      "to": "headcorner",
+      "vests": "155263.818643 VESTS",
+      "frozenHolder": "woq",
       "mode": "PLAN-ONLY",
       "requiredFlag": "policy.allowDelegationRecall=true",
       "why": "idle SP parked on a keyless body (T-80) — recall recycles it to the master grid after the 7-day return"
