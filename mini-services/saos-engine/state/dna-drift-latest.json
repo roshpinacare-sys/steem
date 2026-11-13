@@ -1,16 +1,174 @@
 {
-  "verdict": "DNA-DRIFT-DEGRADED",
+  "verdict": "DNA-DRIFT-DETECTED",
   "observe": true,
-  "samples": 0,
-  "degraded": true,
-  "pillars": [],
-  "driftPhrases": [],
+  "samples": 5,
+  "degraded": false,
+  "pillars": [
+    {
+      "pillar": "measured truth",
+      "score": 0.27999999999999997,
+      "exhibited": true
+    },
+    {
+      "pillar": "plain checklists",
+      "score": 0,
+      "exhibited": false
+    },
+    {
+      "pillar": "human register",
+      "score": 0.08933333333333333,
+      "exhibited": false
+    },
+    {
+      "pillar": "numbers over adjectives",
+      "score": 1,
+      "exhibited": true
+    }
+  ],
+  "driftPhrases": [
+    {
+      "phrase": "0 0000 day measured",
+      "hits": 10,
+      "posts": 5
+    },
+    {
+      "phrase": "0 0000 day measured not",
+      "hits": 10,
+      "posts": 5
+    },
+    {
+      "phrase": "0000 day measured",
+      "hits": 10,
+      "posts": 5
+    },
+    {
+      "phrase": "0000 day measured not",
+      "hits": 10,
+      "posts": 5
+    },
+    {
+      "phrase": "0000 day measured not estimated",
+      "hits": 10,
+      "posts": 5
+    },
+    {
+      "phrase": "day measured not",
+      "hits": 10,
+      "posts": 5
+    },
+    {
+      "phrase": "day measured not estimated",
+      "hits": 10,
+      "posts": 5
+    },
+    {
+      "phrase": "fuel 0 0000 day",
+      "hits": 10,
+      "posts": 5
+    }
+  ],
   "forbiddenHits": [],
-  "register": null,
-  "proposal": null,
-  "ticsEvidence": [],
-  "ticsObserved": null,
-  "reason": "no observed posts (books empty + chain read yielded nothing)",
-  "at": "2026-11-13T17:40:37.836Z",
-  "signature": "sig:22c5dac7"
+  "register": {
+    "meanSentenceLen": 16,
+    "longRatio": 0.22,
+    "listPostRatio": 0,
+    "digitsPer1k": 27.83,
+    "measuredPer1k": 0.84,
+    "personalPer1k": 1.34
+  },
+  "proposal": {
+    "addLexicon": [
+      "0 0000 day measured",
+      "0 0000 day measured not",
+      "0000 day measured",
+      "0000 day measured not",
+      "0000 day measured not estimated",
+      "day measured not",
+      "day measured not estimated",
+      "fuel 0 0000 day"
+    ],
+    "pillarGaps": [
+      "plain checklists",
+      "human register"
+    ],
+    "forbidden": [],
+    "refreshOf": {
+      "fromSig": "sig:67a390a5",
+      "at": null,
+      "trace": "1a13a2e1be234775"
+    },
+    "rationale": "recurring phrases not in the lexicon — the corpus is growing its own slop",
+    "ownerGated": true
+  },
+  "ticsEvidence": [
+    {
+      "phrase": "difference is in",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "difference is in the",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "drawer of replies",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "i measure it",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "i measure it against",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "i measure it against the",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "of replies you",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "the difference is",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "the difference is in",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "the drawer of",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "the loop the",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "the post that",
+      "hits": 0,
+      "posts": 0
+    },
+    {
+      "phrase": "the real work",
+      "hits": 0,
+      "posts": 0
+    }
+  ],
+  "ticsObserved": 0,
+  "reason": null,
+  "at": "2026-11-13T17:45:25.255Z",
+  "signature": "sig:4718ea35"
 }
