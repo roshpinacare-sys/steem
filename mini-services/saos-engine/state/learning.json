@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-14T00:48:19.014Z",
+  "at": "2026-11-14T03:48:57.403Z",
   "enabled": true,
-  "runsTotal": 148,
+  "runsTotal": 149,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,22 +17,23 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 78,
+      "totalVotes": 81,
       "window": 30,
       "verdicts": {
-        "VOTED": 27,
-        "BROADCAST-FAIL": 3
+        "BROADCAST-FAIL": 2,
+        "VOTED": 28
       },
-      "vpEff": 52.1,
-      "meanAgeMinutes": 159.3,
+      "vpEff": 51.5,
+      "meanAgeMinutes": 159,
       "tagsVoted": {
-        "steem": 3
+        "ai": 1,
+        "steem": 2
       },
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
     "exec": {
-      "window": 12,
+      "window": 13,
       "fails": 2,
       "lastError": null
     },
@@ -50,7 +51,7 @@
       "id": "broadcast-fails",
       "severity": "low",
       "resolved": true,
-      "evidence": "2/12 broadcasts failed in the window (last: ) · last fail 2026-11-13T18:24:29.936Z < last OK broadcast 2026-11-14T00:48:50.762Z (live posting-role ops succeed)",
+      "evidence": "2/13 broadcasts failed in the window (last: ) · last fail 2026-11-13T18:24:29.936Z < last OK broadcast 2026-11-14T03:49:34.650Z (live posting-role ops succeed)",
       "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
       "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
@@ -58,8 +59,8 @@
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 148,
-    "broadcast-fails": 56
+    "signing-cred-blocked": 149,
+    "broadcast-fails": 57
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
