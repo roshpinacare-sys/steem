@@ -1,0 +1,47 @@
+# rekey4-harvest.yml — §㊽ · הקציר-החוקי של מפתחות-REKEY4 → הערת-הצי-הרדום
+# ═══════════════════════════════════════════════════════════════════════════
+# הבעיה-הנמדדת (2026-11-15 22:4xZ): army-ladder (saos-runtime · כל-:11/:41) ישן
+# KEY-STASIS ×7 — מפתחות-ה-active של cashmachine/israelnews/siq/woq הוסבבו-על-
+# השרשרת ב-6-7.11 ונחתמו-במעטפות-CROWN-REKEY4 (vault-home) שרק-MAIN_KEY פותח.
+# הפתרון-החוקי: פתיחה-כאן → שיפוט-שרשרת (השופט-היחיד) → מיזוג-לתוך-LIVE_FLEET_KEYS
+# → PUT מסונכרן-ל-4-הריפויים → ה-army-הבא מוצא-את-המפתחות-ומתעורר.
+#
+# חוקים: זו-שליחת-מפתח-קיים-חי, לא-רוטציה (אף-רשות-לא-משתנה) · אפס-WIF-בלוג
+# (טביעות-8-הקס-בלבד) · fail-closed בכל-שלב · קריאה-אחרי-כתיבה.
+name: rekey4-harvest
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: rekey4-harvest
+  cancel-in-progress: false
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      MAIN_KEY: ${{ secrets.MAIN_KEY }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      LIVE_FLEET_KEYS: ${{ secrets.LIVE_FLEET_KEYS }}
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: Install crypto deps (pinned — same as onekey tools)
+        run: npm i --no-save --silent @noble/secp256k1@2.2.3 libsodium-wrappers@0.7.15
+      - name: Harvest REKEY4 actives → judge on chain → push merged LIVE_FLEET_KEYS
+        run: |
+          set -Euo pipefail
+          mkdir -p receipts/rekey4-harvest
+          node ops/onekey/rekey4-harvest.mjs
+      - name: Commit receipt (rebase-first, honest push)
+        run: |
+          set -Euo pipefail
+          git config user.name sovereign-crown
+          git config user.email crown@fleet.local
+          git add receipts/rekey4-harvest/latest.json 2>/dev/null || true
+          git diff --cached --quiet && { echo "receipt quiet"; exit 0; }
+          git commit -q -m "rekey4-harvest: $(date -u +%FT%TZ) [skip ci]"
+          for i in 1 2 3; do git pull --rebase -X theirs --autostash origin HEAD && git push origin HEAD && break || { sleep $((i*5)); git rebase --abort 2>/dev/null || true; }; done
