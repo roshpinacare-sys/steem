@@ -157,6 +157,7 @@ async function main() {
     // ⑤ PUT מסונכרן-ל-4-הריפויים (libsodium sealed-box — פרוטוקול-GitHub)
     const sodium = await import("libsodium-wrappers");
     await sodium.ready;
+    // תיקון-§㊽-ב: base64_variants לא-נחשף ב-interop-ה-ESM — base64 מקומי (Buffer) בלבד
     const H = { Authorization: `token ${pat}`, Accept: "application/vnd.github+json", "User-Agent": "rekey4-harvest" };
     const results = {};
     for (const repo of TARGET_REPOS) {
@@ -164,11 +165,12 @@ async function main() {
         const pkR = await fetch(`https://api.github.com/repos/roshpinacare-sys/${repo}/actions/secrets/public-key`, { headers: H });
         if (pkR.status !== 200) { results[repo] = `public-key ${pkR.status}`; continue; }
         const pk = await pkR.json();
-        const binKey = sodium.from_base64(pk.key, sodium.base64_variants.ORIGINAL);
-        const encBytes = sodium.crypto_box_seal(sodium.from_string(merged), binKey);
+        const binKey = Uint8Array.from(Buffer.from(pk.key, "base64"));
+        const encBytes = sodium.crypto_box_seal(Uint8Array.from(Buffer.from(merged, "utf8")), binKey);
+        const encB64 = Buffer.from(encBytes).toString("base64");
         const put = await fetch(`https://api.github.com/repos/roshpinacare-sys/${repo}/actions/secrets/LIVE_FLEET_KEYS`, {
           method: "PUT", headers: { ...H, "Content-Type": "application/json" },
-          body: JSON.stringify({ encrypted_value: sodium.to_base64(encBytes, sodium.base64_variants.ORIGINAL), key_id: pk.key_id }),
+          body: JSON.stringify({ encrypted_value: encB64, key_id: pk.key_id }),
         });
         results[repo] = put.status === 201 || put.status === 204 ? "OK" : `PUT ${put.status}`;
       } catch (e) { results[repo] = `ERR ${String(e && e.message || e).slice(0, 60)}`; }
