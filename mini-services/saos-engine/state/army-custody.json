@@ -1,44 +1,43 @@
 {
-  "at": "2026-11-15T13:13:45.538Z",
+  "at": "2026-11-15T15:19:55.838Z",
   "verdict": "PARTIAL",
   "master": {
     "roles": [],
-    "before": "master-unverified",
+    "before": "master-verified",
     "law": "chain-judged wif-direct, GEN-2 first"
   },
   "before": {
     "verified": 0
   },
   "after": {
-    "verified": 0,
-    "total": 10
+    "verified": 6,
+    "total": 12
   },
   "denominator": {
     "law": "living-fleet (T-80 retirement, chain-judged)",
-    "living": 10,
+    "living": 12,
     "retired": [
-      "hcsoldier5",
       "siq",
-      "tov",
       "wog"
     ],
-    "retiredCount": 4,
-    "fullRosterVerified": 0,
+    "retiredCount": 2,
+    "fullRosterVerified": 6,
     "fullRosterTotal": 14,
     "provenance": "W19-a THE RESURRECTION (commit b62e1c395): vault internally consistent BUT live chain authorities point elsewhere — the chain is the only judge, the bodies are dead, no key material exists to revive them; owner approved the yield decision 2026-10-20 (IM trace 1a157f3c9973fe45: 'כן מאשר תמשיך ודחוף')"
   },
   "resurrection": {
-    "resurrected": [],
-    "stillRetired": [
-      "hcsoldier5",
-      "siq",
+    "resurrected": [
       "tov",
+      "hcsoldier5"
+    ],
+    "stillRetired": [
+      "siq",
       "wog"
     ],
     "wounds": [],
     "law": "G78-c resurrection: chain-judged retirement re-judged against the CURRENT vault WIFs; verified bodies return to the living denominator"
   },
-  "gen1Wound": "no-carrying-ref-for-gen1-meta (tried: origin/saos-cockpit:agent/vault/GEN-1-ERA-META.json, origin/main:agent/vault/GEN-1-ERA-META.json, HEAD:agent/vault/GEN-1-ERA-META.json, 1c9f00d0:agent/recovery-me",
+  "gen1Wound": null,
   "pulled": {
     "extracted": 0,
     "missing": [],
@@ -46,134 +45,47 @@
   },
   "adopted": [
     {
-      "account": "haran",
-      "verdict": "GEN-2-REFUSED:bad-base58"
-    },
-    {
-      "account": "haran",
-      "verdict": "ROT2-REFUSED:bad-base58"
+      "account": "headcorner",
+      "verdict": "VERIFIED-VS-CHAIN",
+      "gen": "HELD",
+      "pubkey": "STM8m3rBLd8CA2KkY764fkFBnYGoCaK1ktDjn825HUbq25i52N9cw"
     },
     {
       "account": "headcorner",
-      "verdict": "GEN-2-REFUSED:bad-base58"
+      "verdict": "ACTIVE-VERIFIED",
+      "gen": "HELD"
     },
     {
-      "account": "headcorner",
-      "verdict": "ROT2-REFUSED:bad-base58"
-    },
-    {
-      "account": "lsa",
-      "verdict": "GEN-2-REFUSED:bad-base58"
-    },
-    {
-      "account": "lsa",
-      "verdict": "ROT2-REFUSED:bad-base58"
-    },
-    {
-      "account": "macrame",
-      "verdict": "GEN-2-REFUSED:bad-base58"
-    },
-    {
-      "account": "macrame",
-      "verdict": "ROT2-REFUSED:bad-base58"
+      "account": "cashmachine",
+      "verdict": "ALREADY-VERIFIED"
     },
     {
       "account": "tov",
-      "verdict": "GEN-2-REFUSED:bad-base58"
+      "verdict": "ALREADY-VERIFIED"
     },
     {
       "account": "tov",
-      "verdict": "ROT2-REFUSED:bad-base58"
+      "verdict": "ACTIVE-VERIFIED",
+      "gen": "HELD"
     },
     {
       "account": "wic",
-      "verdict": "GEN-2-REFUSED:bad-base58"
+      "verdict": "ALREADY-VERIFIED"
     },
     {
       "account": "wic",
-      "verdict": "ROT2-REFUSED:bad-base58"
+      "verdict": "ACTIVE-VERIFIED",
+      "gen": "HELD"
     },
     {
-      "account": "wog",
-      "verdict": "GEN-2-REFUSED:bad-base58"
-    },
-    {
-      "account": "wog",
-      "verdict": "ROT2-REFUSED:bad-base58"
-    },
-    {
-      "account": "hcsoldier12",
+      "account": "hcsoldier4",
       "verdict": "ALREADY-VERIFIED"
     },
     {
-      "account": "hcsoldier12",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
-    },
-    {
-      "account": "hcsoldier14",
+      "account": "hcsoldier5",
       "verdict": "ALREADY-VERIFIED"
-    },
-    {
-      "account": "hcsoldier14",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
-    },
-    {
-      "account": "hcsoldier8",
-      "verdict": "ALREADY-VERIFIED"
-    },
-    {
-      "account": "hcsoldier8",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
-    },
-    {
-      "account": "hcsoldier13",
-      "verdict": "ALREADY-VERIFIED"
-    },
-    {
-      "account": "hcsoldier13",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
-    },
-    {
-      "account": "hcsoldier15",
-      "verdict": "ALREADY-VERIFIED"
-    },
-    {
-      "account": "hcsoldier15",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
-    },
-    {
-      "account": "hcsoldier16",
-      "verdict": "ALREADY-VERIFIED"
-    },
-    {
-      "account": "hcsoldier16",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
-    },
-    {
-      "account": "hcsoldier10",
-      "verdict": "ALREADY-VERIFIED"
-    },
-    {
-      "account": "hcsoldier10",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
-    },
-    {
-      "account": "hcsoldier11",
-      "verdict": "ALREADY-VERIFIED"
-    },
-    {
-      "account": "hcsoldier11",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "ROT2"
     }
   ],
   "law": "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
-  "ms": 30737
+  "ms": 17629
 }
