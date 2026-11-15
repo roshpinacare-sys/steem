@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-15T02:00:20.011Z",
+  "at": "2026-11-15T04:07:40.162Z",
   "enabled": true,
-  "runsTotal": 154,
+  "runsTotal": 155,
   "verdict": "LEARNED",
   "metrics": {
     "cycles": {
@@ -17,24 +17,24 @@
     },
     "curator": {
       "present": true,
-      "totalVotes": 87,
+      "totalVotes": 90,
       "window": 30,
       "verdicts": {
         "VOTED": 30
       },
-      "vpEff": 53.1,
-      "meanAgeMinutes": 124.7,
+      "vpEff": 46,
+      "meanAgeMinutes": 77.3,
       "tagsVoted": {
-        "trading": 1,
+        "crypto": 1,
         "steem": 1,
-        "technology": 1
+        "ai": 1
       },
       "dayCapsInRow": 0,
       "maxPerDay": 30
     },
     "exec": {
-      "window": 13,
-      "fails": 2,
+      "window": 12,
+      "fails": 1,
       "lastError": null
     },
     "watchdog": null
@@ -42,17 +42,16 @@
   "lessons": [
     {
       "id": "signing-cred-blocked",
-      "severity": "low",
-      "resolved": true,
-      "evidence": "cycle-blocked ×7/65 in the counted window (HISTORICAL) · credential present & chain-verified NOW — the blocks describe the past, not the present",
-      "lesson": "historical: those blocks were lawful then; the credential is now adopted and chain-verified (VERIFIED) — signing rails are LIVE, the counting window still carries the old blocked cycles",
-      "action": "none — resolved; the lesson self-clears once the event window rotates past the historical blocked cycles"
+      "severity": "high",
+      "evidence": "cycle-blocked ×7/65 — ONLY credential-gated steps failing (blockedSteps journaled per event); every non-signing step green",
+      "lesson": "signing rails lawfully parked — the machine is NOT sick, but VP regen above the 100% cap burns unused and every vote/order/op the doctrine would place is foregone",
+      "action": "SELF-REVIVAL (operator law 2026-10-06 — never ask the operator): the engine revives from the git vault automatically (cycle step 1). Pasting a credential in the cockpit banner remains an OPTIONAL channel only"
     },
     {
       "id": "broadcast-fails",
       "severity": "low",
       "resolved": true,
-      "evidence": "2/13 broadcasts failed in the window (last: ) · last fail 2026-11-13T18:24:29.936Z < last OK broadcast 2026-11-15T02:00:46.340Z (live posting-role ops succeed)",
+      "evidence": "1/12 broadcasts failed in the window (last: ) · last fail 2026-11-13T18:24:29.936Z < last OK broadcast 2026-11-15T04:08:03.870Z (live posting-role ops succeed)",
       "lesson": "historical: the missing-posting-authority failure class was fixed by ADAPT-claim-role-posting-R209 (claim executor switched to posting role) — live broadcasts now succeed",
       "action": "none — resolved by R209; watch for any NEW failure class in the live window"
     }
@@ -60,8 +59,8 @@
   "tunings": {},
   "tuningsApplied": [],
   "lessonsTotal": {
-    "signing-cred-blocked": 154,
-    "broadcast-fails": 62
+    "signing-cred-blocked": 155,
+    "broadcast-fails": 63
   },
   "honesty": "learning reads recorded history only · tunings hard-clamped (LEARN_CLAMP) · doctrine laws untouchable"
 }
