@@ -16,8 +16,8 @@ on:
   workflow_dispatch:
     inputs:
       seal_pass:
-        description: "Transport pass for the CROWN-<ts>.enc seal (rotate after local open)"
-        required: true
+        description: "DEPRECATED 2026-11-15 (exposure fix): dispatch inputs are NOT masked in public run logs — measured: the 2026-11-15 run printed the transport pass verbatim in the env header. The pass now comes from the SEAL_PASS secret; this input is ignored (kept only so old dispatch callers don't 404)."
+        required: false
   schedule:
     - cron: "19 5 * * *"   # daily honest audit; without seal input it prints the matrix only
 
@@ -42,7 +42,10 @@ jobs:
       VAULT_PASSES_R33: ${{ secrets.VAULT_PASSES_R33 }}
       LIVE_FLEET_KEYS: ${{ secrets.LIVE_FLEET_KEYS }}
       NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
-      SEAL_PASS: ${{ inputs.seal_pass }}
+      # R363 EXPOSURE FIX (2026-11-15): workflow_dispatch inputs print in cleartext
+      # in public Actions logs (measured: run 43713515988 header). The transport pass
+      # now travels ONLY as the SEAL_PASS secret — never an input, never printed.
+      SEAL_PASS: ${{ secrets.SEAL_PASS }}
     steps:
       - uses: actions/checkout@v5
         with:
