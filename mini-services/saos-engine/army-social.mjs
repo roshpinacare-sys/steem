@@ -901,7 +901,7 @@ async function doPublish(account, st, p, now, day) {
   {
     let verdict297 = null;
     try {
-      const ledger = await loadFleetLedger([master, ...ARMY_ROSTER], { stateDir: STATE, now });
+      const ledger = await loadFleetLedger([masterAccount(), ...ARMY_ROSTER], { stateDir: STATE, now });
       verdict297 = fleetUniqueness(ledger, { account, title: draft.title, body: draft.body });
     } catch (e) {
       appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-uniqueness-ledger-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
@@ -1004,7 +1004,7 @@ async function doPublish(account, st, p, now, day) {
   /* R297: the broadcast is now chain-truth — record it so every later tick
    * (this sandbox or any other) vetoes against the live post, not a memory. */
   try {
-    const led = await loadFleetLedger([master, ...ARMY_ROSTER], { stateDir: STATE, now });
+    const led = await loadFleetLedger([masterAccount(), ...ARMY_ROSTER], { stateDir: STATE, now });
     saveFleetLedgerFile(STATE, noteFleetLedgerPublished(led, { account, permlink, title: draft.title, body, created: now }));
   } catch (e) {
     appendLine(path.join(STATE, "events.jsonl"), { type: "social.chain-uniqueness-note-error", at: now, account, error: String(e?.message ?? e).slice(0, 120) });
