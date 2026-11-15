@@ -423,7 +423,12 @@ export async function runContent({ now = new Date().toISOString(), force = false
       const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topics, voices, personas, publishersToday, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
+        /* R367 · THE FULL SHIELD RIDES: spentTitles (vetoed ∪ refused ∪ queued,
+         * the R299 memory) joins the payload — the writer must see EVERY title
+         * the dedupe gate will judge against (measured 2026-11-15T20:30Z: the
+         * model never saw them, regurgitated near-dupes, and the drops were
+         * silent — a blind refusal, illegal under R308). */
+        body: JSON.stringify({ topics, voices, personas, publishersToday, recentTitles, spentTitles: spentTitles.slice(0, 60), findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
         /* R-timeout 2026-11-15: the bridge route runs ONE measured-feedback
          * retry on undershoot (live-measured 100-180s total); the old 120s
          * killed every retried round at the caller while the route worked. */
@@ -502,6 +507,13 @@ export async function runContent({ now = new Date().toISOString(), force = false
     appendLine(path.join(STATE, "events.jsonl"), { type: "content.sanitize-rejected", at: now, blocked: exposureBlocked, reasons: sanitizeReasons });
   }
   const { kept, dropped } = dedupeTitles(sanitized, [...new Set([...recentTitles, ...spentTitles])]);
+  /* R308 · REJECTION-DIAGNOSIS COMPLIANCE (2026-11-15T20:30Z measured wound:
+   * dedupe drops were SILENT — NO-DRAFTS with zero events, a blind refusal).
+   * Every blocked draft is reason-coded into events; the exposure gate stays
+   * fail-closed, only the silence dies. */
+  if (dropped.length > 0) {
+    appendLine(path.join(STATE, "events.jsonl"), { type: "content.dedupe-dropped", at: now, dropped: dropped.length, titles: dropped.slice(0, 5).map((t) => String(t).slice(0, 80)) });
+  }
   /* honest count: how many of the drops were caused by the spent memory
    * (a re-served spent title blocked BEFORE it could waste a spamgate run) */
   const spentBlocked = dropped.filter((t) => spentTitles.some((s) => titleSimilarity(t, s) >= 0.55)).length;
