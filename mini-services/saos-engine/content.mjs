@@ -424,7 +424,10 @@ export async function runContent({ now = new Date().toISOString(), force = false
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topics, voices, personas, publishersToday, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
-        signal: AbortSignal.timeout(120_000),
+        /* R-timeout 2026-11-15: the bridge route runs ONE measured-feedback
+         * retry on undershoot (live-measured 100-180s total); the old 120s
+         * killed every retried round at the caller while the route worked. */
+        signal: AbortSignal.timeout(280_000),
       });
       if (!r.ok) throw new Error(`bridge ${r.status}`);
       return r.json();
