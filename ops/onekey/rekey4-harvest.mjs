@@ -155,7 +155,8 @@ async function main() {
     console.log(`[rekey4] מוזג: ${activeAccounts.length} חשבונות → rekey4_harvest (גודל-סוד ${merged.length}B)`);
 
     // ⑤ PUT מסונכרן-ל-4-הריפויים (libsodium sealed-box — פרוטוקול-GitHub)
-    const sodium = await import("libsodium-wrappers");
+    const mod = await import("libsodium-wrappers");
+    const sodium = mod.default ?? mod; // §㊽-ג: interop-ESM — הפונקציות תחת .default
     await sodium.ready;
     // תיקון-§㊽-ב: base64_variants לא-נחשף ב-interop-ה-ESM — base64 מקומי (Buffer) בלבד
     const H = { Authorization: `token ${pat}`, Accept: "application/vnd.github+json", "User-Agent": "rekey4-harvest" };
