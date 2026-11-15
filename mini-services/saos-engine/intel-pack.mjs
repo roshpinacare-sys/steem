@@ -313,7 +313,19 @@ export function mentionsAny(text, names) {
     return new RegExp(`(^|[^a-z0-9])${name}([^a-z0-9]|$)`).test(low);
   });
 }
-function legalBody(body) {
+/* R-floor 2026-11-15 · the pack must meet the door it faces.
+ * Measured stall: the offline floor drafts 180-199 char bodies while the
+ * spamgate floors are 200 (steem) / 260 (hive) / 300 (blurt) NORMALIZED
+ * chars — every offline draft died at the door (spamgate.refused
+ * body-too-thin(194<200), 56+ due slots, 0 executed, the whole social rail
+ * at SOCIAL-IDLE for weeks). The pack floor rises to a target that clears
+ * ALL THREE chains with headroom, and a legal-but-short draft gets ONE
+ * enrichment sentence (a second module insight, same voice, no filler)
+ * before any refusal. The gate law itself is untouched — the writer rises
+ * to the law, the law never bows to the writer. */
+const COMMENT_FLOOR_RAW = 340; // raw ≈ 340+ normalizes ≈ 300+, over every chain floor
+
+function legalBody(body, minChars = 120) {
   /* R283 · THE SYMBOL LAW — the fallback pack's own frames carry dashes and
    * colons in their literals; every frame rides the normalizer first and a
    * survivor that still carries a banned glyph is rejected. Returns the
@@ -321,13 +333,22 @@ function legalBody(body) {
   const normalized = enforceSymbolLaw(body);
   if (normalized === null) return null;
   const t = normalized.trim().replace(/\s+/g, " ");
-  if (t.length < 120 || t.length > 650) return null;
+  if (t.length < minChars || t.length > 650) return null;
   const low = t.toLowerCase();
   const head = low.slice(0, 90);
   if (BANNED_OPENERS.some((b) => head.includes(b))) return null;
   const bannedWords = ["headcorner", "cashmachine", "haran", "israelnews", "lsa", "macrame", "siq", "tov", "wic", "wog", "woq", "saos", "hcsoldier", "guaranteed", "price target", "financial advice"];
   if (mentionsAny(low, bannedWords)) return null;
   if (low.includes("http://") || low.includes("https://")) return null;
+  /* R-floor 2026-11-15 · SELF-DUPLICATION LAW (exact mirror of the spamgate's
+   * dupSentenceRatio, measured kills at the door): an exact-duplicate
+   * sentence in the same body = the frame is refused HERE, the next frame
+   * is tried — the door never has to rescue us. */
+  const sents = t.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+  const seen = new Set();
+  let dup = 0;
+  for (const s of sents) { if (seen.has(s)) dup++; else seen.add(s); }
+  if (sents.length >= 2 && dup / sents.length > 0.1) return null;
   return t;
 }
 
@@ -335,6 +356,17 @@ function legalBody(body) {
  * ends a reply must START capitalized (measured: every frame shipped a
  * lowercase question before this) */
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+/* R-floor 2026-11-15 · pickDistinct — two picks from the same pool must
+ * never collide (measured: insight2 === insight minted an exact-duplicate
+ * sentence and the spamgate killed the body at self-duplication(0.20)). */
+function pickDistinct(pool, rand, not) {
+  for (let i = 0; i < 6; i++) {
+    const v = pick(pool, rand);
+    if (v !== not) return v;
+  }
+  return not;
+}
 
 /* ── pure: synthesizeComment — join a post's thread ──────────────────────────
  * Frame laws: (1) open by anchoring the parent's own material, (2) add ONE
@@ -347,6 +379,8 @@ export function synthesizeComment({ postTitle, postExcerpt, seed = 1 } = {}) {
   const anchors = anchorPhrases(postTitle, postExcerpt, { n: 2 });
   const insight = pick(m.insights, rand);
   const question = cap(pick(m.questions, rand));
+  const insight2 = pickDistinct(m.insights, rand, insight);
+  const question2 = cap(pickDistinct(m.questions, rand, question.toLowerCase()));
   const a0 = anchors[0] ?? "", a1 = anchors[1] ?? "";
   const frames = [
     () => `The ${a0 ? `whole ${a0} angle` : "detail part"} is what pulls me in here. ${cap(insight)}, and posts like this are where that actually shows. ${question}`,
@@ -359,8 +393,13 @@ export function synthesizeComment({ postTitle, postExcerpt, seed = 1 } = {}) {
     () => `You put words on something I have seen but never named${a0 ? `, that ${a0} thread` : ""}. ${cap(insight)}. ${question}`,
   ];
   for (let i = 0; i < frames.length + 2; i++) {
-    const body = legalBody(pick(frames, rand)());
-    if (body) return body;
+    const base = legalBody(pick(frames, rand)());
+    if (!base) continue;
+    if (base.length >= COMMENT_FLOOR_RAW) return base;
+    /* R-floor · ONE enrichment sentence — a second module insight, same
+     * voice, no filler — before the frame is abandoned for length. */
+    const enriched = legalBody(`${base} ${cap(insight2)}, and that part tends to get missed. ${question2}`, COMMENT_FLOOR_RAW);
+    if (enriched) return enriched;
   }
   return null;
 }
@@ -425,6 +464,8 @@ export function synthesizeReply({ postTitle, commentBody, myPrior = "", seed = 1
   const anchors = anchorPhrases(commentBody, myPrior, { n: 2 });
   const insight = pick(m.insights, rand);
   const question = cap(pick(m.questions, rand));
+  const insight2 = pickDistinct(m.insights, rand, insight);
+  const question2 = cap(pickDistinct(m.questions, rand, question.toLowerCase()));
   const a0 = anchors[0] ?? "", a1 = anchors[1] ?? "";
   const frames = [
     () => `You went straight at the ${a0 ? `the ${a0} part` : "core"}, so here is the rest of that thought. ${cap(insight)}, and that is the piece I would add to your point. ${question}`,
@@ -435,8 +476,12 @@ export function synthesizeReply({ postTitle, commentBody, myPrior = "", seed = 1
     () => `Taking your ${a0 ?? "point"} seriously leads somewhere interesting. ${cap(insight)}, and that is where the real discussion starts. ${question}`,
   ];
   for (let i = 0; i < frames.length + 2; i++) {
-    const body = legalBody(pick(frames, rand)());
-    if (body) return body;
+    const base = legalBody(pick(frames, rand)());
+    if (!base) continue;
+    if (base.length >= COMMENT_FLOOR_RAW) return base;
+    /* R-floor · same enrichment law as the comment writer. */
+    const enriched = legalBody(`${base} ${cap(insight2)}, and that part tends to get missed. ${question2}`, COMMENT_FLOOR_RAW);
+    if (enriched) return enriched;
   }
   return null;
 }
