@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-15T20:39:01.100Z",
-  "head": "a65789a3beeb161fb2ac6a694c65408ad4709b94",
-  "verdict": "SURFACES-DEGRADED",
+  "at": "2026-11-15T20:49:38.426Z",
+  "head": "bce3e4e90b1923165d92b55821ff31fefac3faa6",
+  "verdict": "SURFACES-OK",
   "repairMode": "act",
   "actArmed": true,
   "prevVerdict": "SURFACES-DEGRADED",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 8.3
+      "ageMinutes": 18.9
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 8.3
+      "ageMinutes": 18.9
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 218.7
+      "ageMinutes": 229.3
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 10.2
+      "ageMinutes": 10.6
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 32001.8
+      "ageMinutes": 32012.4
     },
     {
       "id": "engine-selftest",
@@ -66,8 +66,8 @@
       "id": "artery-workflow",
       "kind": "workflow",
       "source": "api",
-      "verdict": "DEGRADED",
-      "reason": "probe-error:api-http-403"
+      "verdict": "OK",
+      "reason": "run-active (artery alive right now)"
     },
     {
       "id": "steem-rpc",
@@ -93,12 +93,6 @@
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
       "readbackRequired": true
-    },
-    {
-      "targetId": "artery-workflow",
-      "verdict": "DEGRADED",
-      "action": "escalate",
-      "readbackRequired": true
     }
   ],
   "repairs": [],
@@ -120,16 +114,7 @@
       "basis": "verdict STALE without a stronger signature (rule 6)",
       "advisedAction": "observe-then-escalate",
       "gate": "observe-only (no auto-retry this beat)"
-    },
-    {
-      "id": "artery-workflow",
-      "verdict": "DEGRADED",
-      "class": "ENVIRONMENT",
-      "confidence": "high",
-      "basis": "http-4xx-api 403 (rule 4) — remote gate refused, not a code bug",
-      "advisedAction": "escalate",
-      "gate": "escalation-blocked (no auto-repair this beat)"
     }
   ],
-  "signature": "sig:7ba26e1a"
+  "signature": "sig:f9ee8a38"
 }
