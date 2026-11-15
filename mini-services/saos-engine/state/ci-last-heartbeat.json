@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-15T19:46:02.591Z",
+  "at": "2026-11-15T19:49:42.729Z",
   "custody": "0/14",
   "social": "PART-GATED",
   "socialExecuted": 0,
   "socialRefused": 13,
-  "content": "DRAFTS-QUEUED",
+  "content": "QUEUED",
   "contentSource": null,
   "conceptAlignMode": "observe",
   "conceptAlignAvailable": true,
@@ -17,8 +17,8 @@
   "dexReason": "engine-alive",
   "digest": "COOLDOWN",
   "digestTitle": null,
-  "blurt": "BLURT-RPC-UNREACHABLE",
-  "blurtLive": 0,
+  "blurt": "BLURT-BODIES-LIVE",
+  "blurtLive": 12,
   "shellWatch": "CANNOT-JUDGE",
   "shelled": 0,
   "visibility": "PARTIAL",
@@ -60,10 +60,10 @@
   },
   "spawnManifest": {
     "verdict": "SPAWN-MANIFEST-OK",
-    "selfManifestId": "spawn-887ab34b",
+    "selfManifestId": "spawn-d76f166a",
     "selfManifestValid": true,
     "lifecycleStatus": "frozen",
-    "scanned": 2283,
+    "scanned": 2285,
     "invalidCount": 0
   },
   "surfaceWatch": "SURFACES-DEGRADED",
@@ -73,7 +73,7 @@
   "surfaceDown": 0,
   "surfaceRepairs": 0,
   "surfaceRepairMode": "act",
-  "surfaceSig": "sig:d2e0a507",
+  "surfaceSig": "sig:c5c29ac1",
   "portfolioSnapshot": "SNAPSHOT-FAIL",
   "portfolioSig": null,
   "portfolioAssets": null,
@@ -92,7 +92,7 @@
   "selftestLeaseHolder": null,
   "selftestLeaseExit": 0,
   "contentEngagement": {
-    "at": "2026-11-15T19:46:02.591Z",
+    "at": "2026-11-15T19:49:42.729Z",
     "measured": 5,
     "medianVotes": 1,
     "topTag": "economics",
@@ -100,7 +100,7 @@
   },
   "report": {
     "heartbeat": "saos.ci.v1",
-    "at": "2026-11-15T19:46:02.591Z",
+    "at": "2026-11-15T19:49:42.729Z",
     "master": "headcorner",
     "steps": {
       "custody": {
@@ -116,11 +116,11 @@
       "selftestLease": {
         "name": "selftest-lease",
         "ok": true,
-        "ms": 2716,
+        "ms": 3117,
         "verdict": "SELFTEST-RAN-GREEN",
         "purpose": "ci-selftest",
         "exitCode": 0,
-        "durationMs": 2712,
+        "durationMs": 3115,
         "tail": "SELFTEST 1982/1982 PASS",
         "detail": null,
         "leaseDir": "state/lease",
@@ -129,15 +129,15 @@
       "dex": {
         "name": "dex-takeover",
         "ok": true,
-        "ms": 0,
+        "ms": 1,
         "verdict": "STANDBY",
         "reason": "engine-alive",
-        "anchorAgeMs": 1237991
+        "anchorAgeMs": 1458531
       },
       "social": {
         "name": "social",
         "ok": true,
-        "ms": 97,
+        "ms": 417,
         "verdict": "PART-GATED",
         "executed": 0,
         "refused": 13,
@@ -146,9 +146,9 @@
       "content": {
         "name": "content",
         "ok": true,
-        "ms": 31841,
-        "verdict": "DRAFTS-QUEUED",
-        "draftsQueued": 3,
+        "ms": 35246,
+        "verdict": "QUEUED",
+        "draftsQueued": 0,
         "exposureBlocked": 0,
         "source": null,
         "conceptAlignMode": "observe",
@@ -178,9 +178,9 @@
       "blurt": {
         "name": "blurt-custody",
         "ok": true,
-        "ms": 346,
-        "verdict": "BLURT-RPC-UNREACHABLE",
-        "live": 0,
+        "ms": 712,
+        "verdict": "BLURT-BODIES-LIVE",
+        "live": 12,
         "total": 12,
         "spendGate": "R254-PAUSE-STANDS"
       },
@@ -202,17 +202,17 @@
         "rendered": 0,
         "challenged": 14,
         "fresh": false,
-        "ageMin": 37
+        "ageMin": 41
       },
       "visibility": {
         "name": "visibility",
         "ok": true,
-        "ms": 1,
+        "ms": 0,
         "verdict": "PARTIAL",
         "chain": "ALL-EXISTS",
         "altRenderedAccounts": 14,
         "fresh": false,
-        "ageMin": 148
+        "ageMin": 152
       },
       "contentMemory": {
         "name": "content-memory",
@@ -229,7 +229,7 @@
       "contentConcepts": {
         "name": "content-concepts",
         "ok": true,
-        "ms": 5,
+        "ms": 6,
         "verdict": "CONCEPTS-OK",
         "generated": 49,
         "kept": 49,
@@ -245,21 +245,21 @@
       "contentSourcing": {
         "name": "content-sourcing",
         "ok": true,
-        "ms": 1,
+        "ms": 0,
         "verdict": "SOURCING-OK",
         "at": "2026-11-15T16:13:59.603Z",
         "scanned": 338,
         "kept": 12,
         "topScore": 2.1,
         "fresh": false,
-        "ageMin": 213
+        "ageMin": 216
       },
       "contentEngagement": {
         "name": "content-engagement",
         "ok": true,
-        "ms": 34635,
+        "ms": 13819,
         "verdict": "ENGAGEMENT-OK",
-        "at": "2026-11-15T19:46:02.591Z",
+        "at": "2026-11-15T19:49:42.729Z",
         "measured": 5,
         "medianVotes": 1,
         "topTag": "economics",
@@ -269,35 +269,35 @@
       "spawnManifest": {
         "name": "spawn-manifest",
         "ok": true,
-        "ms": 59,
+        "ms": 58,
         "verdict": "SPAWN-MANIFEST-OK",
-        "at": "2026-11-15T19:46:02.591Z",
-        "selfManifestId": "spawn-887ab34b",
+        "at": "2026-11-15T19:49:42.729Z",
+        "selfManifestId": "spawn-d76f166a",
         "selfManifestValid": true,
         "lifecycleStatus": "frozen",
-        "scanned": 2283,
+        "scanned": 2285,
         "invalidCount": 0,
         "observe": true
       },
       "surfaceWatch": {
         "name": "surface-watch",
         "ok": 8,
-        "ms": 437,
+        "ms": 440,
         "verdict": "SURFACES-DEGRADED",
-        "at": "2026-11-15T19:46:02.591Z",
+        "at": "2026-11-15T19:49:42.729Z",
         "targets": 9,
         "degraded": 1,
         "down": 0,
         "repairs": 0,
         "repairMode": "act",
-        "sig": "sig:d2e0a507",
+        "sig": "sig:c5c29ac1",
         "triaged": 3,
         "observe": false
       },
       "contentDrift": {
         "name": "content-drift",
         "ok": true,
-        "ms": 2355,
+        "ms": 2327,
         "verdict": "DNA-DRIFT-DETECTED",
         "samples": 5,
         "source": "chain",
@@ -312,7 +312,7 @@
       "formatLint": {
         "name": "format-lint",
         "ok": true,
-        "ms": 10,
+        "ms": 8,
         "verdict": "FORMAT-LINT-OK",
         "drafts": 27,
         "checked": 54,
@@ -325,7 +325,7 @@
       "contentSwarm": {
         "name": "content-swarm",
         "ok": true,
-        "ms": 5,
+        "ms": 4,
         "verdict": "SWARM-PLANNED",
         "sig": "sig:de39c2e1",
         "drafts": 3,
@@ -345,7 +345,7 @@
       "portfolioSnapshot": {
         "name": "portfolio-snapshot",
         "ok": true,
-        "ms": 1,
+        "ms": 2,
         "verdict": "SNAPSHOT-FAIL",
         "stage": "read",
         "error": "saos-dex-state-missing",
