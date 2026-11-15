@@ -34,6 +34,14 @@ const WIF_RE = /^[5KL][1-9A-HJ-NP-Za-km-z]{50,51}$/;
 const fp = (s) => createHash("sha256").update(String(s)).digest("hex").slice(0, 8);
 const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 function b58d(s) { let n = 0n; for (const c of s) { const i = B58.indexOf(c); if (i < 0) throw new Error("b58char"); n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = "0" + h; return Buffer.from(h, "hex"); }
+function b58e(buf) { let n = BigInt("0x" + buf.toString("hex")), o = ""; while (n > 0n) { o = B58[Number(n % 58n)] + o; n /= 58n; } for (const b of buf) { if (b === 0) o = B58[0] + o; else break; } return o; }
+/** §㊽-ד · נירמול-WIF: כל-צורה (דחוס K/L-52 או רגיל 5-51) → הצורה-הקנונית 5-51 (אותו-seed · אותו-מפתח) */
+function wifCanonical(wif) {
+  const seed = wifSeed(wif);
+  const body = Buffer.concat([Buffer.from([0x80]), seed]);
+  const chk = createHash("sha256").update(createHash("sha256").update(body).digest()).digest().subarray(0, 4);
+  return b58e(Buffer.concat([body, chk]));
+}
 function wifSeed(wif) {
   const d = b58d(wif);
   let body, chk;
@@ -138,7 +146,7 @@ async function main() {
           if (pubs.includes(pub)) {
             liveRoles[acct] = liveRoles[acct] || {};
             // עדיפות: רשות-חיה = קנונית; אם-כבר-יש active — לא-דורסים
-            if (!liveRoles[acct][role]) { liveRoles[acct][role] = wif; console.log(`[rekey4] חי-בשרשרת: ${acct}/${role} (fp=${fp(wif)})`); }
+            if (!liveRoles[acct][role]) { liveRoles[acct][role] = wifCanonical(wif); console.log(`[rekey4] חי-בשרשרת: ${acct}/${role} (fp=${fp(wif)} → קנוני-51)`); }
           }
         }
       }
