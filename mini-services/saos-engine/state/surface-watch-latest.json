@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-15T09:54:30.966Z",
-  "head": "8c2a20bdfcf67c05b79cb65886eed1949c20c0fe",
+  "at": "2026-11-15T09:59:25.019Z",
+  "head": "bf085d5c9c5b0748b82af391603122ca6c3720d7",
   "verdict": "SURFACES-DEGRADED",
-  "repairMode": "observe",
-  "actArmed": false,
-  "prevVerdict": "SURFACES-OK",
+  "repairMode": "act",
+  "actArmed": true,
+  "prevVerdict": "SURFACES-DEGRADED",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 24.4
+      "ageMinutes": 29.3
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 24.4
+      "ageMinutes": 29.3
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 2.9
+      "ageMinutes": 7.8
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 4.6
+      "ageMinutes": 4.9
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 31357.3
+      "ageMinutes": 31362.2
     },
     {
       "id": "engine-selftest",
@@ -94,5 +94,25 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:58e91251"
+  "triageGate": [
+    {
+      "id": "engine-presence-digest",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
+    },
+    {
+      "id": "artery-workflow",
+      "verdict": "DEGRADED",
+      "class": "ENVIRONMENT",
+      "confidence": "high",
+      "basis": "http-4xx-api 403 (rule 4) — remote gate refused, not a code bug",
+      "advisedAction": "escalate",
+      "gate": "escalation-blocked (no auto-repair this beat)"
+    }
+  ],
+  "signature": "sig:de9e9b98"
 }
