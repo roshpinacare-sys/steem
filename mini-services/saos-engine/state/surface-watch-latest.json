@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-15T11:28:18.639Z",
-  "head": "fc39e4c13c672334f6d28a18cfcb643aad786c32",
+  "at": "2026-11-15T11:32:53.580Z",
+  "head": "bb393642bd5c28ee37abc13fcee6545dc7a75a6f",
   "verdict": "SURFACES-OK",
-  "repairMode": "act",
-  "actArmed": true,
-  "prevVerdict": "SURFACES-DEGRADED",
+  "repairMode": "observe",
+  "actArmed": false,
+  "prevVerdict": "SURFACES-OK",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 28.1
+      "ageMinutes": 32.7
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 28.1
+      "ageMinutes": 32.7
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 96.7
+      "ageMinutes": 101.2
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 4.4
+      "ageMinutes": 4.6
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 31451.1
+      "ageMinutes": 31455.7
     },
     {
       "id": "engine-selftest",
@@ -96,25 +96,5 @@
     }
   ],
   "repairs": [],
-  "triageGate": [
-    {
-      "id": "pulse-domain-published",
-      "verdict": "STALE",
-      "class": "AMBIGUOUS",
-      "confidence": "low",
-      "basis": "verdict STALE without a stronger signature (rule 6)",
-      "advisedAction": "observe-then-escalate",
-      "gate": "observe-only (no auto-retry this beat)"
-    },
-    {
-      "id": "engine-presence-digest",
-      "verdict": "STALE",
-      "class": "AMBIGUOUS",
-      "confidence": "low",
-      "basis": "verdict STALE without a stronger signature (rule 6)",
-      "advisedAction": "observe-then-escalate",
-      "gate": "observe-only (no auto-retry this beat)"
-    }
-  ],
-  "signature": "sig:39fed9ee"
+  "signature": "sig:fd1ef5c3"
 }
