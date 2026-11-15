@@ -825,8 +825,10 @@ async function doPublish(account, st, p, now, day) {
   const queue = Array.isArray(c?.queue) ? c.queue : [];
   /* retire pre-R240 stock once, in the shared queue */
   let retired = 0;
+  const STALE_DRAFT_MS = 14 * 24 * 3600 * 1000; /* R-stale 2026-11-15: a drafted post that never aired in 14 days is dead stock — the world moved (measured: 2 drafts from 10-24 for out-of-rotation personas sat drafted forever) */
   for (const d of queue) {
     if (d?.status === "drafted" && (d.draftedAt ?? "") < PUBLISH_ELIGIBLE_SINCE) { d.status = "retired-old-stock"; d.retiredAt = now; retired++; }
+    else if (d?.status === "drafted" && d.draftedAt && Date.parse(now) - Date.parse(d.draftedAt) > STALE_DRAFT_MS) { d.status = "retired-stale-14d"; d.retiredAt = now; retired++; }
   }
   const draft = (() => {
     /* R255 · THE PERSONA MATCH: an account prefers drafts written BY its own

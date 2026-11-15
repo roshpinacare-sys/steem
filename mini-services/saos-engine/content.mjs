@@ -25,6 +25,7 @@ import { loadDNA } from "./content-judge.mjs";
 import { loadMemory } from "./content-memory.mjs";
 import { illustrateDraft } from "./illustrate.mjs";
 import { PERSONAS, PERSONA_IDS, assignPersonas, personaBrief, personaOf } from "./personas.mjs";
+import { socialPolicy, stealthPublishers } from "./army-social.mjs"; /* R-publishers 2026-11-15: the writers' room writes for WHO CAN PUBLISH TODAY */
 import { bridgeOpen, noteBridgeFailure, noteBridgeSuccess } from "./bridge-guard.mjs";
 import { broadcastTitles } from "./social-streamer.mjs"; /* R311: the FULL anti-twin shield — every title that ever breathed on-chain blocks its twins */
 
@@ -367,6 +368,19 @@ export async function runContent({ now = new Date().toISOString(), force = false
   const personas = PERSONA_IDS
     .map((id) => ({ account: id, brief: personaBrief(id, lifetimeOf(id)), owns: PERSONAS[id].owns }))
     .filter((p) => p.brief);
+  /* R-publishers 2026-11-15 · measured publish starvation: the room drafted for
+   * ALL personas while the stealth rotation publishes only a day-subset
+   * (measured: 2 queued drafts for siq+hcsoldier5, neither in today's subset,
+   * post=NOTHING-NEW for weeks). The room now rides today's publishers into
+   * the payload — the bridge writes FOR them (draft.persona = account), the
+   * corpus floor stays untouched. Fail-soft: policy failure = no hint. */
+  let publishersToday = null;
+  try {
+    const pol = socialPolicy();
+    const roster = ["headcorner", ...Object.keys(PERSONAS)];
+    const cap = pol.stealth ? (Number.isFinite(pol.maxFleetPostsPerDay) ? pol.maxFleetPostsPerDay : 6) : roster.length;
+    publishersToday = stealthPublishers(String(now).slice(0, 10), roster, cap);
+  } catch { publishersToday = null; }
   const recentTitles = [
     ...new Set([
       ...recentPublishedTitles(prev?.queue, 60),
@@ -409,7 +423,7 @@ export async function runContent({ now = new Date().toISOString(), force = false
       const r = await fetch(`${BRIDGE}/api/saos/ai/content`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topics, voices, personas, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
+        body: JSON.stringify({ topics, voices, personas, publishersToday, recentTitles, findings, exposureLaw: EXPOSURE_LAW, styleLaw: STYLE_LAW, formatLaw: FORMAT_LAW }),
         signal: AbortSignal.timeout(120_000),
       });
       if (!r.ok) throw new Error(`bridge ${r.status}`);
