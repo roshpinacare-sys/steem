@@ -1,0 +1,28 @@
+name: bridge-rail-probe
+# §52 · EXTERNAL-DOLLAR-RAIL — measuring the exchange bridges from the GitHub runner
+# Iron rule: zero secrets in output. Pure HTTP measurement + rates + minimums + receipt.
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: bridge-rail-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: probe
+        run: node ops/bridge-rail/probe.mjs
+      - name: commit receipt
+        if: always()
+        run: |
+          git config user.name "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add receipts/bridge-rail/ 2>/dev/null || true
+          git diff --cached --quiet && echo "no-receipt" || git commit -m "bridge-rail probe receipt [skip ci]" && git push
