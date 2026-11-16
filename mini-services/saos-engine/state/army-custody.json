@@ -1,16 +1,16 @@
 {
-  "at": "2026-11-16T21:47:16.307Z",
+  "at": "2026-11-16T21:59:27.136Z",
   "verdict": "PARTIAL",
   "master": {
     "roles": [],
-    "before": "master-verified",
+    "before": "master-unverified",
     "law": "chain-judged wif-direct, GEN-2 first"
   },
   "before": {
     "verified": 0
   },
   "after": {
-    "verified": 6,
+    "verified": 5,
     "total": 12
   },
   "denominator": {
@@ -21,7 +21,7 @@
       "wog"
     ],
     "retiredCount": 2,
-    "fullRosterVerified": 6,
+    "fullRosterVerified": 5,
     "fullRosterTotal": 14,
     "provenance": "W19-a THE RESURRECTION (commit b62e1c395): vault internally consistent BUT live chain authorities point elsewhere — the chain is the only judge, the bodies are dead, no key material exists to revive them; owner approved the yield decision 2026-10-20 (IM trace 1a157f3c9973fe45: 'כן מאשר תמשיך ודחוף')"
   },
@@ -37,24 +37,13 @@
     "wounds": [],
     "law": "G78-c resurrection: chain-judged retirement re-judged against the CURRENT vault WIFs; verified bodies return to the living denominator"
   },
-  "gen1Wound": null,
+  "gen1Wound": "no-carrying-ref-for-gen1-meta (tried: origin/saos-cockpit:agent/vault/GEN-1-ERA-META.json, origin/main:agent/vault/GEN-1-ERA-META.json, HEAD:agent/vault/GEN-1-ERA-META.json, 1c9f00d0:agent/recovery-me",
   "pulled": {
     "extracted": 0,
     "missing": [],
     "error": "vault-had-no-army-posting-keys (GEN-1-meta:no-carrying-ref-for-gen1-meta (tried: origin/saos-cockpit:agent/vault/GEN-1-ERA-META.json, origin/main:agent/vault/GEN-1-ERA-META.json, HEAD:agent/vault/GEN-"
   },
   "adopted": [
-    {
-      "account": "headcorner",
-      "verdict": "VERIFIED-VS-CHAIN",
-      "gen": "HELD",
-      "pubkey": "STM8m3rBLd8CA2KkY764fkFBnYGoCaK1ktDjn825HUbq25i52N9cw"
-    },
-    {
-      "account": "headcorner",
-      "verdict": "ACTIVE-VERIFIED",
-      "gen": "HELD"
-    },
     {
       "account": "cashmachine",
       "verdict": "ALREADY-VERIFIED"
@@ -102,5 +91,5 @@
     }
   ],
   "law": "git-vault → sha-pin → fail-closed chain-verified WIF adoption · posting-only · hive/blurt untouched",
-  "ms": 17951
+  "ms": 11298
 }
