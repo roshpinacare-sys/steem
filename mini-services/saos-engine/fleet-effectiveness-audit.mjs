@@ -31,13 +31,9 @@ const rpc = async (method, params) => {
 
 const vestToSp = (vests, g) => parseFloat(vests) * (parseFloat(g.total_vesting_fund_steem) / parseFloat(g.total_vesting_shares)); // condenser asset strings are direct VESTS/STEEM units — no ×1e6 (calibrated live 2026-11-02: headcorner ≈ 4189.5 SP)
 
-// accounts under custody: crown-map/1 nests accounts under `accounts` (R365 fix: the old
-// top-level scan treated metadata keys format/at/source/chainJudgedAtMaterialize as accounts,
-// which manufactured fake ZERO-SP flags). census-verified roster is unioned in.
+// accounts under custody: crown-map top-level keys (nested {acct:{role:WIF}}) + census-verified
 const crownMap = JSON.parse(readFileSync(`${SECRETS}/custody-vault/crown-map.json`, "utf8"));
-const MAP_META = new Set(["format", "at", "source", "chainJudgedAtMaterialize", "_master"]);
-const acctRoot = crownMap && crownMap.accounts && typeof crownMap.accounts === "object" ? crownMap.accounts : crownMap;
-const names = new Set(Object.keys(acctRoot).filter(k => !MAP_META.has(k)));
+const names = new Set(Object.keys(crownMap).filter(k => k !== "_master"));
 try {
   const census = JSON.parse(readFileSync(`${SECRETS}/census-verified.json`, "utf8"));
   if (typeof census === "object" && !Array.isArray(census)) for (const k of Object.keys(census)) if (k !== "_master") names.add(k);
@@ -49,17 +45,13 @@ if (!ACCOUNTS.length) { console.log("EFFECTIVENESS-AUDIT ERROR accounts=0 no-cen
 const g = await rpc("condenser_api.get_dynamic_global_properties", []);
 const chain = await rpc("condenser_api.get_accounts", [ACCOUNTS]);
 const rcByAcct = {};
-// R365 fix (2026-11-15): condenser_api.find_rc_accounts is dead on every probed node
-// (10 nodes probed 2026-11-15: -32002 assert / 5xx). rc_api.find_rc_accounts still serves
-// on api.steemit.com et al. — params as {accounts:[...]} and result.rc_accounts.
-const RC_NODES = ["https://api.steemit.com", "https://api.justyy.com", "https://steemapi.boylikegirl.club", "https://api.steem.fans"];
+const RC_NODES = ["https://api.steemit.com", "https://api.steem.fans", "https://rpc.steemliberator.com", "https://steemapi.boylikegirl.club", "https://cn.steems.top"];
 for (const node of RC_NODES) {
   try {
-    const res = await fetch(node, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method: "rc_api.find_rc_accounts", params: { accounts: ACCOUNTS }, id: 1 }) });
+    const res = await fetch(node, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method: "condenser_api.find_rc_accounts", params: [ACCOUNTS], id: 1 }) });
     const j = await res.json();
     if (j.error) throw new Error(String(j.error.message || "").slice(0, 80));
-    // rc_api puts max_rc as a SIBLING of rc_manabar (measured) — merge it or the ratio is null
-    for (const r of ((j.result && j.result.rc_accounts) || [])) rcByAcct[r.account] = { ...r.rc_manabar, max_rc: r.max_rc };
+    for (const r of (j.result || [])) rcByAcct[r.account] = r.rc_manabar;
     console.log(`rc_api via ${node}: ${Object.keys(rcByAcct).length} accounts`);
     break;
   } catch (e) { console.log(`rc_api ${node} unavailable (${String(e.message || e).slice(0, 60)})`); }
@@ -67,40 +59,38 @@ for (const node of RC_NODES) {
 if (!Object.keys(rcByAcct).length) console.log("GAP rc_api unavailable on all known nodes — RC column marked unknown");
 
 // key custody: harvest WIFs from unsealed vault material → derived pubkeys (fp only)
-// R365 fix (2026-11-15): steem-js wifToPublic fails on compressed WIFs ("Expecting 32 bytes,
-// instead got 33") → soldier keys were falsely reported none-matched. Same noble derivation
-// as master-judge.mjs — single source of truth for WIF→pub.
+// R364-patrol fix (2026-11-17): steem lib rejects 37-byte (uncompressed) WIFs
+// ("Expecting 32 bytes, instead got 33") → hcsoldier4/5 posting showed NO-KEYS-IN-CENSUS
+// while master-judge.mjs verified them LIVE. Dual-path derivation (compressed 38-byte
+// via steem lib; uncompressed 37-byte via @noble), same as the judge. Fingerprints only.
 const crypto = await import("crypto");
-const secp = await import("@noble/secp256k1");
-const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-function b58d(s) { let n = 0n; for (const c of s) { const i = B58.indexOf(c); if (i < 0) throw new Error("b58char"); n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = "0" + h; return Buffer.from(h, "hex"); }
-function b58e(buf) { let n = BigInt("0x" + buf.toString("hex") || "0"), out = ""; while (n > 0n) { out = B58[Number(n % 58n)] + out; n /= 58n; } for (const b of buf) { if (b === 0) out = "1" + out; else break; } return out; }
-function wifSeed(wif) {
-  const d = b58d(wif);
-  let body, chk;
-  if (d.length === 38) { body = d.subarray(0, 34); chk = d.subarray(34); if (body[0] !== 0x80 || body[33] !== 0x01) throw new Error("wif-format"); }
-  else if (d.length === 37) { body = d.subarray(0, 33); chk = d.subarray(33); if (body[0] !== 0x80) throw new Error("wif-format"); }
-  else throw new Error("wif-length");
-  const c = crypto.createHash("sha256").update(crypto.createHash("sha256").update(body).digest()).digest().subarray(0, 4);
-  if (!c.equals(chk)) throw new Error("wif-checksum");
-  return Buffer.from(body.subarray(1, 33));
-}
-function steemPub(wif) {
-  const pub = Buffer.from(secp.getPublicKey(wifSeed(wif), true));
-  const chk = crypto.createHash("ripemd160").update(pub).digest().subarray(0, 4);
-  return "STM" + b58e(Buffer.concat([pub, chk]));
-}
 const WIF_RE = new RegExp("^[5LK][1-9A-HJ-NP-Za-km-z]{50,51}$");
 const held = [];
+const heldPending = [];
+function b58d(s) { let n = 0n; for (const c of s) { const i = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".indexOf(c); if (i < 0) throw new Error("b58char"); n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = "0" + h; return Buffer.from(h, "hex"); }
+function wifSeed(w) { const d = b58d(w); let body, chk; if (d.length === 38) { body = d.subarray(0, 34); chk = d.subarray(34); } else if (d.length === 37) { body = d.subarray(0, 33); chk = d.subarray(33); } else throw new Error("wif-length"); const c = crypto.createHash("sha256").update(crypto.createHash("sha256").update(body).digest()).digest().subarray(0, 4); if (!c.equals(chk)) throw new Error("wif-checksum"); return Buffer.from(body.subarray(1, 33)); }
+async function noblePub(w) {
+  const secp = await import("@noble/secp256k1");
+  const { createHash } = await import("crypto");
+  const pub = Buffer.from(secp.getPublicKey(wifSeed(w), true));
+  const ripemd = createHash("ripemd160").update(pub).digest();
+  const chk = ripemd.subarray(0, 4);
+  const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  const buf = Buffer.concat([pub, chk]); let n = BigInt("0x" + buf.toString("hex")), out = "";
+  while (n > 0n) { out = B58[Number(n % 58n)] + out; n /= 58n; }
+  for (const b of buf) { if (b === 0) out = "1" + out; else break; }
+  return "STM" + out;
+}
 function harvest(node, path) {
   if (node === null || node === undefined) return;
   if (typeof node === "string") {
-    if (WIF_RE.test(node.trim())) { try { const w = node.trim(); const pub = steemPub(w); held.push({ path, pub, fp: crypto.createHash("sha256").update(pub).digest("hex").slice(0, 8) }); } catch {} }
+    if (WIF_RE.test(node.trim())) { heldPending.push(noblePub(node.trim()).then((pub) => held.push({ path, pub, fp: crypto.createHash("sha256").update(pub).digest("hex").slice(0, 8) })).catch(() => { try { const pub = steem.auth.wifToPublic(node.trim()); held.push({ path, pub, fp: crypto.createHash("sha256").update(pub).digest("hex").slice(0, 8) }); } catch {} })); }
     return;
   }
   if (typeof node === "object") for (const [k, v] of Object.entries(node)) { if (path === "" && k === "_master") continue; harvest(v, path ? `${path}.${k}` : k); }
 }
 try { harvest(crownMap, "crown-map"); } catch (e) { console.log("GAP crown-map harvest partial:", String(e.message || e).slice(0, 120)); }
+await Promise.all(heldPending);
 
 // floors + revisit registry (tolerant: both are runtime state that wipes may remove)
 let floors = {};
@@ -135,15 +125,11 @@ for (const a of chain) {
     if (ks.some(([k]) => held.some(h => h.pub === k))) roles.push(role);
   }
   // treasury trajectory (headcorner): remaining withdrawable VESTS / weekly slice (1/13 per week)
-  // R365 fix (2026-11-15): the note used to be pushed as a SECOND same-name row without netSp,
-  // which made treasury-replan's rows.find() pick it and fail with "no treasury measurement".
-  // The note now rides on the one real row.
-  let note = null;
   if (a.name === "headcorner" && toW > withdrawn) {
     const weeklyVests = Math.min(vest, toW - withdrawn) / 13;
     const remainingSp = vestToSp(toW - withdrawn, g);
     treasuryDaysToFloor = Math.max(0, (ownSp - TREASURY_KEEP_SP) / (vestToSp(weeklyVests, g) / 7));
-    note = `powerdown remaining=${remainingSp.toFixed(1)} SP`;
+    rows.push({ name: a.name, note: `powerdown remaining=${remainingSp.toFixed(1)} SP` });
   }
   let flag = null;
   if (netSp < 0.001) flag = "ZERO-SP";
@@ -151,7 +137,7 @@ for (const a of chain) {
   if (flag) flags.push(`${a.name}:${flag}`);
   else if (a.name === "headcorner" && toW > withdrawn) flags.push(`${a.name}:POWERDOWN-ACTIVE`);
   if (roles.length === 0 && a.name !== "headcorner") flags.push(`${a.name}:NO-KEYS-IN-CENSUS`);
-  rows.push({ name: a.name, netSp: Number(netSp.toFixed(3)), floor, rc: rcRatio === null ? "unknown" : Number(rcRatio.toFixed(3)), keys: roles.join("+") || "none-matched", flag: flag || "-", note });
+  rows.push({ name: a.name, netSp: Number(netSp.toFixed(3)), floor, rc: rcRatio === null ? "unknown" : Number(rcRatio.toFixed(3)), keys: roles.join("+") || "none-matched", flag: flag || "-" });
 }
 const rcDead = rows.filter(r => typeof r.rc === "number" && r.rc < 0.01).length;
 console.log("== PER-ACCOUNT (net SP vs floor | RC ratio | key custody fp-matched roles) ==");
