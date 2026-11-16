@@ -1,0 +1,35 @@
+name: army-revive-harvest
+# §㊾ · פקודת-בעלים «הכל-בגיט · אל-תעצור» — קציר-8-מעטפות-ARMY-ACTIVE-REVIVE (2026-11-16)
+# פותח (MAIN_KEY/SEAL_PASS) → שיפוט-שרשרת → מיזוג-LIVE_FLEET_KEYS → PUT ל-4-ריפויים.
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: army-revive-harvest
+  cancel-in-progress: false
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      MAIN_KEY: ${{ secrets.MAIN_KEY }}
+      SEAL_PASS: ${{ secrets.SEAL_PASS }}
+      LIVE_FLEET_KEYS: ${{ secrets.LIVE_FLEET_KEYS }}
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - name: deps
+        run: npm i --no-save --silent @noble/secp256k1@2.2.3 libsodium-wrappers@0.7.15
+      - name: harvest
+        run: NODE_PATH="$GITHUB_WORKSPACE/node_modules" node ops/onekey/army-revive-harvest.mjs
+      - name: commit receipt
+        if: always()
+        run: |
+          git config user.name "roshpinacare-sys"
+          git config user.email "326012154+roshpinacare-sys@users.noreply.github.com"
+          git add receipts/army-revive-harvest/ 2>/dev/null || true
+          git diff --cached --quiet && echo "אין-קבלה-להגיש" || git commit -m "army-revive-harvest receipt [skip ci]" && git push
