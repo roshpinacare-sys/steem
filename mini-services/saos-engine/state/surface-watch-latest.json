@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-16T08:44:55.670Z",
-  "head": "611ec84a3bb95eeaed88a71127f1acc731cc07dc",
+  "at": "2026-11-16T08:52:01.959Z",
+  "head": "9eee0d5c44a3698f4f6405e76bac5f0e7d99bc02",
   "verdict": "SURFACES-OK",
-  "repairMode": "act",
-  "actArmed": true,
-  "prevVerdict": "SURFACES-DEGRADED",
+  "repairMode": "observe",
+  "actArmed": false,
+  "prevVerdict": "SURFACES-OK",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 14.6
+      "ageMinutes": 21.7
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 14.6
+      "ageMinutes": 21.7
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 12.1
+      "ageMinutes": 19.2
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 7
+      "ageMinutes": 7.1
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 32727.7
+      "ageMinutes": 32734.8
     },
     {
       "id": "engine-selftest",
@@ -88,16 +88,5 @@
     }
   ],
   "repairs": [],
-  "triageGate": [
-    {
-      "id": "engine-presence-digest",
-      "verdict": "STALE",
-      "class": "AMBIGUOUS",
-      "confidence": "low",
-      "basis": "verdict STALE without a stronger signature (rule 6)",
-      "advisedAction": "observe-then-escalate",
-      "gate": "observe-only (no auto-retry this beat)"
-    }
-  ],
-  "signature": "sig:6572fc9f"
+  "signature": "sig:40253f92"
 }
