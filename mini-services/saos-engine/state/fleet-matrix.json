@@ -1,19 +1,19 @@
 {
   "schema": "fleet-matrix-v1",
-  "at": "2026-11-17T21:12:16.870Z",
+  "at": "2026-11-17T22:31:07.960Z",
   "estate": 14,
   "activation": {
-    "rate": 0.57,
-    "active": 8,
-    "grid": 5,
+    "rate": 0.21,
+    "active": 3,
+    "grid": 3,
     "total": 14
   },
   "custody": {
-    "at": "2026-11-17T21:12:16.870Z",
+    "at": "2026-11-17T22:26:01.685Z",
     "verified": 0,
     "total": 10
   },
-  "vestsPerSp": 1608.37,
+  "vestsPerSp": 1608.36,
   "delegationsOutCount": 18,
   "delegationsOutVests": 3351425.2832049998,
   "delegationsOutRows": [
@@ -109,10 +109,10 @@
     }
   ],
   "totals": {
-    "orders24h": 70,
-    "votes24h": 21,
+    "orders24h": 65,
+    "votes24h": 1,
     "fills24h": 2,
-    "steem": 23.372,
+    "steem": 38.003,
     "sbd": 5.539
   },
   "rows": [
@@ -120,13 +120,13 @@
       "name": "headcorner",
       "class": "GRID-ACTIVE",
       "custody": "master-verified",
-      "steem": 6.783,
+      "steem": 21.414,
       "sbd": 2.53,
       "sp": 4370,
       "spOwn": 2246,
       "spReceived": 244.8,
-      "spEffective": 4614.9,
-      "rcMax": 3944366933409,
+      "spEffective": 4615,
+      "rcMax": 3944371759972,
       "rcPct": 100,
       "orders24h": 39,
       "votes24h": 1,
@@ -135,7 +135,7 @@
     },
     {
       "name": "cashmachine",
-      "class": "CURATE-ONLY",
+      "class": "DORMANT",
       "custody": "era-verified",
       "steem": 1.601,
       "sbd": 0.101,
@@ -146,9 +146,9 @@
       "rcMax": 486264100369,
       "rcPct": 100,
       "orders24h": 0,
-      "votes24h": 4,
+      "votes24h": 0,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-16T21:32:48"
+      "lastActivityAt": null
     },
     {
       "name": "haran",
@@ -186,7 +186,7 @@
     },
     {
       "name": "lsa",
-      "class": "GRID-ACTIVE",
+      "class": "DORMANT",
       "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.077,
@@ -196,10 +196,10 @@
       "spEffective": 306.3,
       "rcMax": 493083080465,
       "rcPct": 99.9,
-      "orders24h": 1,
+      "orders24h": 0,
       "votes24h": 0,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-16T22:23:36"
+      "lastActivityAt": null
     },
     {
       "name": "macrame",
@@ -237,7 +237,7 @@
     },
     {
       "name": "tov",
-      "class": "CURATE-ONLY",
+      "class": "DORMANT",
       "custody": "era-verified",
       "steem": 0.101,
       "sbd": 0.195,
@@ -248,13 +248,13 @@
       "rcMax": 163077190512,
       "rcPct": 98.9,
       "orders24h": 0,
-      "votes24h": 4,
+      "votes24h": 0,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-16T21:33:06"
+      "lastActivityAt": null
     },
     {
       "name": "wic",
-      "class": "CURATE-ONLY",
+      "class": "DORMANT",
       "custody": "era-verified",
       "steem": 1.6,
       "sbd": 0.1,
@@ -265,13 +265,13 @@
       "rcMax": 163043400158,
       "rcPct": 100,
       "orders24h": 0,
-      "votes24h": 4,
+      "votes24h": 0,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-16T21:33:21"
+      "lastActivityAt": null
     },
     {
       "name": "wog",
-      "class": "GRID-ACTIVE",
+      "class": "DORMANT",
       "custody": "era-verified",
       "steem": 0.1,
       "sbd": 0.1,
@@ -281,10 +281,10 @@
       "spEffective": 104.7,
       "rcMax": 163032126861,
       "rcPct": 99.8,
-      "orders24h": 1,
+      "orders24h": 0,
       "votes24h": 0,
       "fills24h": 0,
-      "lastActivityAt": "2026-11-16T21:53:06"
+      "lastActivityAt": null
     },
     {
       "name": "woq",
@@ -315,8 +315,8 @@
       "spEffective": 31.2,
       "rcMax": null,
       "rcPct": null,
-      "orders24h": 11,
-      "votes24h": 4,
+      "orders24h": 10,
+      "votes24h": 0,
       "fills24h": 0,
       "lastActivityAt": "2026-11-17T13:50:39"
     },
@@ -332,8 +332,8 @@
       "spEffective": 45.2,
       "rcMax": null,
       "rcPct": null,
-      "orders24h": 18,
-      "votes24h": 4,
+      "orders24h": 16,
+      "votes24h": 0,
       "fills24h": 0,
       "lastActivityAt": "2026-11-17T14:21:39"
     },
@@ -358,8 +358,8 @@
   "gaps": [
     {
       "name": "cashmachine",
-      "class": "CURATE-ONLY",
-      "gap": "votes but zero 24h orders — grid lane idle (RC/liquidity or policy); rebalance ladder targets this"
+      "class": "DORMANT",
+      "gap": "no 24h activity — check custody freshness + RC tank + liquidity"
     },
     {
       "name": "haran",
@@ -368,6 +368,11 @@
     },
     {
       "name": "israelnews",
+      "class": "DORMANT",
+      "gap": "no 24h activity — check custody freshness + RC tank + liquidity"
+    },
+    {
+      "name": "lsa",
       "class": "DORMANT",
       "gap": "no 24h activity — check custody freshness + RC tank + liquidity"
     },
@@ -383,13 +388,18 @@
     },
     {
       "name": "tov",
-      "class": "CURATE-ONLY",
-      "gap": "votes but zero 24h orders — grid lane idle (RC/liquidity or policy); rebalance ladder targets this"
+      "class": "DORMANT",
+      "gap": "no 24h activity — check custody freshness + RC tank + liquidity"
     },
     {
       "name": "wic",
-      "class": "CURATE-ONLY",
-      "gap": "votes but zero 24h orders — grid lane idle (RC/liquidity or policy); rebalance ladder targets this"
+      "class": "DORMANT",
+      "gap": "no 24h activity — check custody freshness + RC tank + liquidity"
+    },
+    {
+      "name": "wog",
+      "class": "DORMANT",
+      "gap": "no 24h activity — check custody freshness + RC tank + liquidity"
     },
     {
       "name": "woq",
