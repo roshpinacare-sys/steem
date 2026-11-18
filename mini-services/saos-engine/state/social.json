@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "at": "2026-11-18T07:41:56.663Z",
+  "at": "2026-11-18T07:47:26.461Z",
   "day": "2026-11-18",
   "roster": [
     "headcorner",
@@ -31,10 +31,10 @@
   "gate": {
     "mode": "ARMED",
     "verdict": "dual-key live verdict passed (exec29 a-d)",
-    "at": "2026-11-18T07:41:56.663Z"
+    "at": "2026-11-18T07:47:26.461Z"
   },
-  "custodyVerdict": "PARTIAL",
-  "custodyVerified": 0,
+  "custodyVerdict": "REVIVAL-FAIL",
+  "custodyVerified": null,
   "accounts": {
     "headcorner": {
       "done": {
@@ -52,9 +52,71 @@
       "said": [],
       "deepened": [],
       "community": [],
-      "verdict": "CI-MASTER-PARKED",
-      "custody": "master-unverified",
-      "note": "master signing is machine-local by law; soldiers converse from CI"
+      "verdict": "SOCIAL-LIVE",
+      "custody": "master-verified",
+      "note": "master signing is machine-local by law; soldiers converse from CI",
+      "saidDay": "2026-11-18",
+      "paused": null,
+      "rc": {
+        "day": "2026-11-18",
+        "rcPct": 100
+      },
+      "schedule": [
+        {
+          "kind": "publish",
+          "minute": 683
+        },
+        {
+          "kind": "fleet-vote",
+          "minute": 761
+        },
+        {
+          "kind": "fleet-vote",
+          "minute": 771
+        },
+        {
+          "kind": "fleet-vote",
+          "minute": 1096
+        },
+        {
+          "kind": "fleet-comment",
+          "minute": 422
+        },
+        {
+          "kind": "fleet-comment",
+          "minute": 1261
+        },
+        {
+          "kind": "reply",
+          "minute": 1360
+        },
+        {
+          "kind": "reply",
+          "minute": 736
+        },
+        {
+          "kind": "reply",
+          "minute": 1180
+        },
+        {
+          "kind": "community-comment",
+          "minute": 978
+        },
+        {
+          "kind": "community-comment",
+          "minute": 1165
+        },
+        {
+          "kind": "deepen",
+          "minute": 643
+        },
+        {
+          "kind": "deepen",
+          "minute": 1038
+        }
+      ],
+      "seeds": 225629562,
+      "stealthPublish": "due"
     },
     "cashmachine": {
       "done": {
@@ -330,9 +392,11 @@
       "note": "no chain-verified credential — the git-vault revival (state/army-custody.json) is the lawful path; nothing is ever fabricated"
     }
   },
-  "seeds": {},
+  "seeds": {
+    "headcorner": 225629562
+  },
   "executed": 0,
   "refused": 13,
-  "due": 0,
-  "ms": 161
+  "due": 1,
+  "ms": 12664
 }
