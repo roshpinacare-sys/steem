@@ -1,6 +1,6 @@
 {
-  "at": "2026-11-18T19:00:31.122Z",
-  "head": "9eb18e342f913801f1eac94b22b5135fea1356fb",
+  "at": "2026-11-18T19:05:26.107Z",
+  "head": "0d4836b1326a0f97b0939c730a4514058e67e983",
   "verdict": "SURFACES-DOWN",
   "repairMode": "act",
   "actArmed": true,
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 0.4
+      "ageMinutes": 5.3
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 0.4
+      "ageMinutes": 5.3
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 500.8
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 3.9
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5.4
+      "ageMinutes": 4.9
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 36223.3
+      "ageMinutes": 36228.2
     },
     {
       "id": "engine-selftest",
@@ -79,14 +79,6 @@
   ],
   "repairsPlanned": [
     {
-      "targetId": "pulse-domain-published",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Domain",
-      "workflow": "published-ledger.yml",
-      "readbackRequired": true
-    },
-    {
       "targetId": "engine-presence-digest",
       "verdict": "STALE",
       "action": "regen-state",
@@ -103,15 +95,6 @@
   ],
   "repairs": [],
   "triageGate": [
-    {
-      "id": "pulse-domain-published",
-      "verdict": "STALE",
-      "class": "AMBIGUOUS",
-      "confidence": "low",
-      "basis": "verdict STALE without a stronger signature (rule 6)",
-      "advisedAction": "observe-then-escalate",
-      "gate": "observe-only (no auto-retry this beat)"
-    },
     {
       "id": "engine-presence-digest",
       "verdict": "STALE",
@@ -131,5 +114,5 @@
       "gate": "escalation-blocked (no auto-repair this beat)"
     }
   ],
-  "signature": "sig:28e2fb31"
+  "signature": "sig:5c232478"
 }
