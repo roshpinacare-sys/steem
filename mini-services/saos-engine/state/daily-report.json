@@ -1,34 +1,58 @@
 {
-  "startedAt": "2026-11-18T15:43:19.498Z",
+  "startedAt": "2026-11-18T17:24:24.556Z",
   "account": "headcorner",
   "steps": {
     "observe": {
       "name": "observe",
       "ok": true,
-      "ms": 2002,
+      "ms": 1297,
       "account": "headcorner",
       "parity": {
-        "steemUsd": 0.04180764,
-        "sbdUsd": 0.445401,
-        "parity": 0.09386516869068548,
+        "steemUsd": 0.0415681,
+        "sbdUsd": 0.443969,
+        "parity": 0.0936283839637452,
         "source": "coingecko"
       },
-      "feed": 0.1040643534982324,
+      "feed": 0.10406434216889365,
       "band": {
         "ok": true,
         "reason": "band-ok",
-        "bps": -980
+        "bps": -1003
       },
-      "steemUsd": 0.04180764,
-      "sbdUsd": 0.445401,
+      "steemUsd": 0.0415681,
+      "sbdUsd": 0.443969,
       "inventory": {
         "steem": 1.581,
-        "sbd": 37.581,
-        "spOwn": 2246.69400910219,
+        "sbd": 0.439,
+        "spOwn": 2246.7046284498424,
         "rcPct": 100
       },
       "ordersOk": true,
       "orders": [
+        {
+          "orderid": 1795016634,
+          "side": "bid",
+          "base": "4.606 SBD",
+          "quote": "49.222 STEEM",
+          "unit": 0.093576,
+          "created": "2026-11-18T15:43:57"
+        },
+        {
+          "orderid": 1795016635,
+          "side": "bid",
+          "base": "4.606 SBD",
+          "quote": "49.272 STEEM",
+          "unit": 0.093481,
+          "created": "2026-11-18T15:43:57"
+        },
+        {
+          "orderid": 1795016636,
+          "side": "bid",
+          "base": "3.930 SBD",
+          "quote": "42.080 STEEM",
+          "unit": 0.093394,
+          "created": "2026-11-18T15:43:57"
+        },
         {
           "orderid": 2359867825,
           "side": "ask",
@@ -62,14 +86,6 @@
           "created": "2026-11-18T06:46:21"
         },
         {
-          "orderid": 2360129812,
-          "side": "bid",
-          "base": "4.000 SBD",
-          "quote": "42.341 STEEM",
-          "unit": 0.094471,
-          "created": "2026-11-18T15:37:06"
-        },
-        {
           "orderid": 2360129837,
           "side": "bid",
           "base": "4.000 SBD",
@@ -84,6 +100,62 @@
           "quote": "43.205 STEEM",
           "unit": 0.092582,
           "created": "2026-11-18T15:37:12"
+        },
+        {
+          "orderid": 2360136941,
+          "side": "bid",
+          "base": "4.000 SBD",
+          "quote": "42.944 STEEM",
+          "unit": 0.093145,
+          "created": "2026-11-18T15:51:57"
+        },
+        {
+          "orderid": 2360136966,
+          "side": "bid",
+          "base": "4.000 SBD",
+          "quote": "43.382 STEEM",
+          "unit": 0.092204,
+          "created": "2026-11-18T15:52:00"
+        },
+        {
+          "orderid": 2360144069,
+          "side": "bid",
+          "base": "4.000 SBD",
+          "quote": "42.800 STEEM",
+          "unit": 0.093458,
+          "created": "2026-11-18T16:06:48"
+        },
+        {
+          "orderid": 2360151453,
+          "side": "bid",
+          "base": "4.000 SBD",
+          "quote": "43.030 STEEM",
+          "unit": 0.092958,
+          "created": "2026-11-18T16:22:12"
+        },
+        {
+          "orderid": 2360165668,
+          "side": "bid",
+          "base": "4.000 SBD",
+          "quote": "42.737 STEEM",
+          "unit": 0.093596,
+          "created": "2026-11-18T16:51:48"
+        },
+        {
+          "orderid": 2360165685,
+          "side": "bid",
+          "base": "4.000 SBD",
+          "quote": "43.169 STEEM",
+          "unit": 0.092659,
+          "created": "2026-11-18T16:51:51"
+        },
+        {
+          "orderid": 2360165718,
+          "side": "bid",
+          "base": "4.000 SBD",
+          "quote": "43.610 STEEM",
+          "unit": 0.091722,
+          "created": "2026-11-18T16:51:54"
         }
       ],
       "fills": 12,
@@ -109,7 +181,7 @@
         "authorVestsPerDay": 0,
         "curationOps": 0,
         "authorOps": 0,
-        "windowSpanDays": 2.6,
+        "windowSpanDays": 2.63,
         "windowOps": 1001,
         "measured": true,
         "fuelUsdPerDay": 0,
@@ -119,36 +191,37 @@
         "windowNote": "no reward ops inside the measured window — rails dormant, not a parse failure (deep-scan documented separately)"
       },
       "ledgerAdded": 0,
-      "summary": "parity 0.09386516869068548 (coingecko) · fills 12 · fuel 0$"
+      "summary": "parity 0.0936283839637452 (coingecko) · fills 12 · fuel 0$"
     },
     "intel": {
       "name": "intel",
       "ok": true,
-      "ms": 1238,
-      "verdict": "DECISIONS:5",
+      "ms": 1201,
+      "verdict": "DECISIONS:6",
       "decisions": [
         "book-depth:hold-shape",
         "parity-drift:arb-window",
         "soldiers:grids-live",
+        "rewards:claim",
         "rc-health:healthy",
         "curation:curator-live"
       ],
-      "spreadBpsRec": 40,
+      "spreadBpsRec": 116,
       "book": {
         "bestAsk": 0.10400300978179082,
-        "bestBid": 0.10358499917396333,
-        "spreadBps": 40
+        "bestBid": 0.102803738317757,
+        "spreadBps": 116
       }
     },
     "tick": {
       "name": "tick",
       "ok": true,
       "ms": 1,
-      "runCount": 290,
+      "runCount": 291,
       "signals": 4,
       "retiredFills": 2,
       "arbSignal": {
-        "gapBps": 980,
+        "gapBps": 1003,
         "dir": "buy-external"
       },
       "layers": "measured (see state.json.grids)"
@@ -156,32 +229,32 @@
     "peg": {
       "name": "peg",
       "ok": true,
-      "ms": 1968,
-      "verdict": "OFFER-READY",
+      "ms": 1309,
+      "verdict": "OFFER-EMPTY",
       "asks": 0,
-      "bids": 4,
+      "bids": 0,
       "flowAsks": 0,
-      "flowBids": 4,
-      "staleCount": 1,
-      "skew": -0.29764,
+      "flowBids": 0,
+      "staleCount": 2,
+      "skew": -0.148702,
       "book": {
         "bestAsk": 0.10400300978179082,
-        "bestBid": 0.10358499917396333,
+        "bestBid": 0.102803738317757,
         "askDepthSteem": 2789.829,
-        "bidDepthSbd": 2207.405,
-        "at": "2026-11-18T15:43:19.498Z"
+        "bidDepthSbd": 2242.042,
+        "at": "2026-11-18T17:24:24.556Z"
       },
       "market": {
-        "tradesPerDay": 29,
-        "spreadBps": 40.35
+        "tradesPerDay": 32,
+        "spreadBps": 116.66
       },
       "liquidity": {
         "deployedAsks": 76.628,
-        "deployedBids": 12,
+        "deployedBids": 49.142,
         "askBudget": 0,
-        "bidBudget": 17.749,
-        "bidBudgetUncapped": 17.749,
-        "buyBookCapSbd": 18.5405,
+        "bidBudget": 0,
+        "bidBudgetUncapped": 0,
+        "buyBookCapSbd": 0,
         "deployCap": 0.6,
         "bidBudgetCapped": true
       }
@@ -192,9 +265,9 @@
       "ms": 1,
       "verdict": "CONVERT-HOLD",
       "amountSbd": 0,
-      "edgeBps": -980,
-      "marketSbdUsd": 0.445401,
-      "impliedSbdUsd": 0.401748,
+      "edgeBps": -1003,
+      "marketSbdUsd": 0.443969,
+      "impliedSbdUsd": 0.399446,
       "marketSourceNote": "external-measured"
     },
     "redeploy": {
@@ -216,18 +289,18 @@
     "curate": {
       "name": "curate",
       "ok": true,
-      "ms": 22235,
+      "ms": 18767,
       "verdict": "VOTED",
       "votes": 3,
-      "txid": "b383141b46c1bb0e1d3e06936324d6c4f5594909",
-      "vpEff": 67.9,
-      "votesToday": 21,
+      "txid": "8f91cc64d648d3b8c1122f615bbc02b608ff1834",
+      "vpEff": 68.8,
+      "votesToday": 24,
       "error": null
     },
     "army-curate": {
       "name": "army-curate",
       "ok": true,
-      "ms": 26430,
+      "ms": 23167,
       "verdict": "IDLE",
       "totalVotes": 0,
       "accounts": [
@@ -247,7 +320,7 @@
     "tag-roi": {
       "name": "tag-roi",
       "ok": true,
-      "ms": 12,
+      "ms": 4,
       "verdict": "DAY-ALREADY-WALKED",
       "tagsRanked": 0,
       "resolved": 0,
@@ -257,7 +330,7 @@
     "capital-route": {
       "name": "capital-route",
       "ok": true,
-      "ms": 3897,
+      "ms": 1879,
       "verdict": "ROUTED",
       "actions": 6,
       "ladderTop": 1.734982,
@@ -266,26 +339,23 @@
     "execute": {
       "name": "execute",
       "ok": true,
-      "ms": 8770,
-      "verdict": "BROADCAST",
-      "txid": "a104b78b98b55118016a7ceeb44566507ed887b6",
-      "ops": 4,
+      "ms": 6289,
+      "verdict": "BROADCAST-SPLIT",
+      "txid": "4581b27747ce6bdfea2cb7c10690a7aa66348289",
+      "ops": 2,
       "opNames": [
-        "limit_order_create",
-        "limit_order_create",
-        "limit_order_create",
-        "limit_order_create"
+        "limit_order_cancel"
       ],
-      "node": "https://steemapi.boylikegirl.club",
+      "node": null,
       "error": null,
       "promo": {
         "verdict": "ALREADY-POSTED",
         "permlink": "daily-ledger-20261118"
       },
-      "opsToday": 18,
+      "opsToday": 20,
       "opsDayCap": 1500,
-      "cancels": 0,
-      "created": 4,
+      "cancels": 1,
+      "created": 0,
       "hyperLayer": "hypergrid-owns-flow",
       "selfCrossGuard": null
     },
@@ -298,7 +368,7 @@
     "fleetMatrix": {
       "name": "fleet-matrix",
       "ok": true,
-      "ms": 34801,
+      "ms": 23676,
       "verdict": "ACTIVATION-43pct",
       "activation": {
         "rate": 0.43,
@@ -307,11 +377,11 @@
         "total": 14
       },
       "totals": {
-        "orders24h": 43,
-        "votes24h": 7,
+        "orders24h": 47,
+        "votes24h": 8,
         "fills24h": 1,
         "steem": 13.67,
-        "sbd": 22.936
+        "sbd": 8.148
       },
       "gaps": [
         "cashmachine:DORMANT",
@@ -327,17 +397,17 @@
     "fleetFills": {
       "name": "fleet-fills",
       "ok": true,
-      "ms": 8495,
+      "ms": 4726,
       "verdict": "SWEPT-5",
       "added": 7,
       "errs": 0,
-      "windowDays": 22.067066,
+      "windowDays": 22.137263,
       "perDayReady": true
     },
     "fleetRebalance": {
       "name": "fleet-rebalance",
       "ok": true,
-      "ms": 7,
+      "ms": 6,
       "verdict": "PLANNED-AWAITING-POLICY",
       "planned": 2,
       "executed": 0,
@@ -360,7 +430,7 @@
     "learn": {
       "name": "learn",
       "ok": true,
-      "ms": 1824,
+      "ms": 673,
       "verdict": "LEARNED",
       "lessons": [
         "signing-cred-blocked"
@@ -376,11 +446,11 @@
     "webintel": {
       "name": "webintel",
       "ok": true,
-      "ms": 3,
-      "verdict": "BRIDGE-DOWN",
-      "totalFindings": 0,
-      "failedScans": 4,
-      "lastAt": null
+      "ms": null,
+      "verdict": "CADENCE-GATED",
+      "totalFindings": null,
+      "failedScans": null,
+      "lastAt": "2026-11-18T15:43:19.498Z"
     },
     "content": {
       "name": "content",
@@ -395,16 +465,16 @@
       "name": "social",
       "ok": true,
       "ms": null,
-      "verdict": "PART-GATED",
-      "executed": 0,
+      "verdict": "SOCIAL-EXECUTED",
+      "executed": 1,
       "refused": 13,
-      "due": 0
+      "due": 6
     },
     "streamer": {
       "name": "streamer",
       "ok": true,
       "ms": null,
-      "verdict": "NOTHING-NEW",
+      "verdict": "LIVE-REFUSED-NOT-ARMED",
       "mode": null,
       "account": null,
       "txid": null,
@@ -427,7 +497,7 @@
     "shellWatch": {
       "name": "shell-watch",
       "ok": true,
-      "ms": 522,
+      "ms": 289,
       "verdict": "CANNOT-JUDGE",
       "shelled": 0,
       "rendered": 0,
@@ -437,7 +507,7 @@
     "visibility": {
       "name": "visibility",
       "ok": true,
-      "ms": 3859,
+      "ms": 3968,
       "verdict": "PARTIAL",
       "chain": "ALL-EXISTS",
       "nodes": 1,
@@ -461,7 +531,7 @@
     "profiles": {
       "name": "profiles",
       "ok": true,
-      "ms": 601,
+      "ms": 674,
       "verdict": "CUSTODY-DEFERRED",
       "updated": 0,
       "skipped": 1,
@@ -470,7 +540,7 @@
     "hive": {
       "name": "hive",
       "ok": true,
-      "ms": 29,
+      "ms": 9,
       "verdict": "HIVE-NO-CUSTODY",
       "executed": 0,
       "custody": null,
@@ -489,7 +559,7 @@
     "hiveProfiles": {
       "name": "hiveProfiles",
       "ok": true,
-      "ms": 30,
+      "ms": 7,
       "verdict": "HIVE-NO-CUSTODY",
       "updated": 0,
       "skipped": 0,
@@ -498,7 +568,7 @@
     "rcPool": {
       "name": "rcPool",
       "ok": true,
-      "ms": 26,
+      "ms": 6,
       "verdict": "HIVE-NO-CUSTODY",
       "lifts": 0,
       "measured": {},
@@ -507,7 +577,7 @@
     "hiveSocial": {
       "name": "hiveSocial",
       "ok": true,
-      "ms": 26,
+      "ms": 6,
       "verdict": "HIVE-NO-CUSTODY",
       "executed": 0,
       "custody": {
@@ -518,7 +588,7 @@
     "bus": {
       "name": "bus",
       "ok": true,
-      "ms": 9685,
+      "ms": 8863,
       "verdict": "BUS-LIVE",
       "delivered": 0,
       "published": 1
@@ -526,7 +596,7 @@
     "rctank": {
       "name": "rctank",
       "ok": true,
-      "ms": 0,
+      "ms": 1,
       "verdict": "MEASURED",
       "maxRc": 3944457028845,
       "opsPerDayEquilibrium": 20616,
@@ -536,7 +606,7 @@
     "payouts": {
       "name": "payouts",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "MEASURED",
       "day": "2026-11-18",
       "pendingVests": 0,
@@ -556,7 +626,7 @@
     "soldierClaims": {
       "name": "soldierClaims",
       "ok": true,
-      "ms": 672,
+      "ms": 604,
       "verdict": "FAILED",
       "scanned": 10,
       "rosterSize": 10,
@@ -568,7 +638,7 @@
     "weave": {
       "name": "weave",
       "ok": true,
-      "ms": 1,
+      "ms": 0,
       "verdict": "PUBLISHED",
       "day": "2026-11-18",
       "theirVotesToday": 0,
@@ -580,16 +650,16 @@
       "ok": true,
       "ms": 0,
       "verdict": "CADENCE-GATED",
-      "pass": 1985,
+      "pass": 1982,
       "fail": 0,
-      "at": "2026-11-18T15:43:22.387Z"
+      "at": "2026-11-18T17:24:24.488Z"
     },
     "economics": {
       "name": "economics",
       "ok": true,
       "ms": 2,
-      "totalMeasuredUsdPerDay": 0.009073,
-      "totalEstUsdPerDay": 0.395137,
+      "totalMeasuredUsdPerDay": 0.009015,
+      "totalEstUsdPerDay": 0.38744,
       "rails": 6,
       "measuredCount": 2,
       "estimatedCount": 2,
@@ -606,7 +676,7 @@
     "council": {
       "name": "council",
       "ok": true,
-      "ms": 4,
+      "ms": 2,
       "verdict": "MESH-DARK",
       "organs": [
         "custodian:DOWN",
@@ -666,5 +736,5 @@
       "reason": "at-or-below-floor"
     }
   ],
-  "finishedAt": "2026-11-18T15:45:01.550Z"
+  "finishedAt": "2026-11-18T17:25:56.806Z"
 }
