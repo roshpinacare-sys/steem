@@ -56,7 +56,7 @@ console.log(`onekey-adopt: ${artifacts.length} sealed artifact(s) · primary cus
 /* ── adopt loop ── */
 const entries = [];
 const wounds = [];
-let adopted = 0, alreadyOneKey = 0, unopened = 0;
+let adopted = 0, alreadyOneKey = 0, unopened = 0, junked = 0;
 
 for (const rel of artifacts) {
   const cls = classify(rel);
@@ -74,7 +74,23 @@ for (const rel of artifacts) {
   };
   if (cls.primary === "latest-wins" && !isPrimary) entry.note += " · ערך-ישן-מתועד (superseded by the latest map) — לא-חוסם-שגרה";
 
-  const cap = isPrimary ? 400 : 60; // honest caps: primaries get the full pool
+  /* intake-transfer junk law (measured 2026-11-18): two ARMY envelopes are HTTP 503
+     Varnish error pages persisted as .enc by a failed transfer wave — zero secret
+     material. Real ciphertext is never a uniformly-printable-ASCII payload. */
+  const headBytes = readFileSync(file).subarray(0, 64);
+  const allPrintable = headBytes.length > 0 && [...headBytes].every((b) => (b >= 0x09 && b <= 0x0d) || (b >= 0x20 && b <= 0x7e));
+  if (allPrintable) {
+    entry.family = "intake-transfer-junk";
+    entry.status = "superseded";
+    entry.seal = "none";
+    entry.note = "non-encrypted payload persisted by a transfer wave (measured: no Salted__ header, plain-text body) — zero secret material · documented superseded, stays in git, never blocking";
+    entries.push(entry);
+    junked++;
+    console.log(`onekey-adopt:   ${rel} JUNK (plain-text payload, not ciphertext) — documented superseded`);
+    continue;
+  }
+
+    const cap = isPrimary ? 400 : 60; // honest caps: primaries get the full pool
   const hit = openAny(file, pool, { iters: LEGACY_ITERS, cap });
   if (!hit) {
     entry.seal = "unopened";
@@ -246,7 +262,7 @@ const index = {
   law: "W-ONEKEY owner order 2026-11-05: MAIN_KEY is the single live seal of every primary artifact; superseded values documented (never blocking); wraps stay sha256(C)-keyed by design",
   algorithm: { cipher: "aes-256-cbc", kdf: "pbkdf2", iter: ITER_STANDARD, seal: "MAIN_KEY (owner key — never logged)" },
   mainKeyFp: fp(MAIN_KEY),
-  counts: { artifacts: artifacts.length, adopted, alreadyOneKey, unopened, superseded: entries.filter((e) => e.status === "superseded").length, wraps: entries.filter((e) => e.status === "wrap").length, rebuilt: rebuilt ? 1 : 0 },
+  counts: { artifacts: artifacts.length, adopted, alreadyOneKey, unopened, junked, superseded: entries.filter((e) => e.status === "superseded").length, wraps: entries.filter((e) => e.status === "wrap").length, rebuilt: rebuilt ? 1 : 0 },
   custody,
   entries,
   wounds,
@@ -274,7 +290,7 @@ try {
 sh(["git", "-C", VH, "push"]);
 const head = sh(["git", "-C", VH, "rev-parse", "HEAD"]).trim();
 console.log(`onekey-adopt: PUSHED vault-home ${head.slice(0, 10)} — ${msg}`);
-console.log(`onekey-adopt: DONE adopted=${adopted} alreadyOneKey=${alreadyOneKey} unopened=${unopened} wounds=${wounds.length}`);
+console.log(`onekey-adopt: DONE adopted=${adopted} alreadyOneKey=${alreadyOneKey} unopened=${unopened} junked=${junked} wounds=${wounds.length}`);
 /* W-ONEKEY exit law (owner order "ערכים ישנים... שלא יתקע אותנו ואת הסוכנים
  * בעבודת שגרה"): superseded-history wounds are REPORTED, never failing.
  * Only a blocked PRIMARY (or a self-verify failure — already exit 1) is red. */
