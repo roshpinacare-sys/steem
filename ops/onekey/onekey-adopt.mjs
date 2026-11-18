@@ -50,8 +50,15 @@ const recoveryTs = artifacts
   .filter(Boolean)
   .sort();
 const primaryRecoveryTs = recoveryTs.length ? recoveryTs[recoveryTs.length - 1] : null;
-const isPrimaryMapPath = (rel) => primaryRecoveryTs !== null && rel.endsWith(`-${primaryRecoveryTs}.enc`);
-console.log(`onekey-adopt: ${artifacts.length} sealed artifact(s) · primary custody map ts ${primaryRecoveryTs ?? "NONE (honest)"}`);
+const armyTs = artifacts
+  .map((a) => (a.match(/^custody-intake\/ARMY-ACTIVE-REVIVE-(\d{8}T\d{6}Z)\.enc$/) || [])[1])
+  .filter(Boolean)
+  .sort();
+const primaryArmyTs = armyTs.length ? armyTs[armyTs.length - 1] : null;
+const isPrimaryMapPath = (rel) =>
+  (primaryRecoveryTs !== null && rel.endsWith(`-${primaryRecoveryTs}.enc`)) ||
+  (primaryArmyTs !== null && rel.endsWith(`-${primaryArmyTs}.enc`));
+console.log(`onekey-adopt: ${artifacts.length} sealed artifact(s) · primary custody map ts ${primaryRecoveryTs ?? "NONE (honest)"} · primary army-revive ts ${primaryArmyTs ?? "NONE (honest)"}`);
 
 /* ── adopt loop ── */
 const entries = [];
