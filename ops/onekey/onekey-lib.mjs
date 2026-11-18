@@ -25,7 +25,7 @@ import { existsSync, readFileSync, rmSync } from "node:fs";
 import * as secp from "@noble/secp256k1";
 
 export const ITER_STANDARD = 300000; // seal-crown.mjs protocol — the strong tier
-export const LEGACY_ITERS = [200000, 300000]; // measured legacy tiers
+export const LEGACY_ITERS = [100000, 200000, 300000, 600000]; // measured legacy tiers (W-ONEKEY healing 2026-11-18: +100k/+600k — army-revive-harvest.mjs fingerprints these on the ARMY sealing side; adopt never tried them)
 export const CIPHER = ["enc", "-aes-256-cbc", "-pbkdf2"];
 
 export const fp = (s) => createHash("sha256").update(String(s)).digest("hex").slice(0, 8);
@@ -231,8 +231,8 @@ export function classify(relPath) {
   if (p.startsWith("wraps/")) return { family: "wrap-infrastructure", primary: false, note: "wraps stay keyed by sha256(C) by design — infrastructure, not re-sealed" };
   const crownRecovery = relPath.match(/^custody-intake\/(CROWN-RECOVERY|CROWN-ONEKEY)-(\d{8}T\d{6}Z)\.enc$/);
   if (crownRecovery) return { family: "crown-recovery-map", ts: crownRecovery[2], primary: "latest-wins", note: crownRecovery[1] === "CROWN-ONEKEY" ? "מפת-המשמורת-החיה — one-key rebuild (chain-judged)" : "full chain-verified custody map (seal-crown.mjs protocol)" };
-  if (/^custody-intake\/CROWN-(NEW|RECOVER|REKEY6?|GEN-EXPANSION)-/.test(relPath) || /^custody-intake\/REKEY-/.test(relPath)) {
-    return { family: "crown-intake-history", primary: false, note: "ערך-היסטורי-מתועד — נשמר-בארכיון, אינו-חוסם-שגרה (superseded by the latest CROWN-RECOVERY map)" };
+  if (/^custody-intake\/CROWN-(NEW|RECOVER|REKEY6?|GEN-EXPANSION)-/.test(relPath) || /^custody-intake\/REKEY-/.test(relPath) || /^custody-intake\/REKEY5[BC]-CROWNMAP-/.test(relPath)) {
+    return { family: "crown-intake-history", primary: false, note: "ערך-היסטורי-מתועד — נשמר-בארכיון, אינו-חוסם-שגרה (latest-wins: earlier map generation; the live CROWN-ONEKEY map opens with MAIN_KEY and is chain-verified)" };
   }
   if (/^custody-intake\/VERIFIED-CENSUS-/.test(relPath)) return { family: "verified-census-history", primary: false, note: "census-דור-קודם — מתועד, לא-חוסם" };
   if (/^custody-intake\/(main-key|weave-seal-passphrase)\.enc$/.test(p)) return { family: "owner-seal", primary: true, note: "the owner's key itself + the live weave seal passphrase" };
