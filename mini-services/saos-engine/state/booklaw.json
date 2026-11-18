@@ -1,8 +1,8 @@
 {
-  "at": "2026-11-18T08:18:55.482Z",
-  "verdict": "COVERED",
+  "at": "2026-11-18T08:23:51.599Z",
+  "verdict": "REPAIRED",
   "lanes": {
-    "hyper": 14,
+    "hyper": 16,
     "cancelableAsks": 0,
     "cancelableBids": 3,
     "orphans": 0
@@ -12,12 +12,45 @@
     "askCap": 1.50195,
     "askOver": 0,
     "bidSum": 1.5,
-    "bidCap": 7.20195,
-    "bidOver": 0
+    "bidCap": 0,
+    "bidOver": 1.5
   },
-  "cancelIds": [],
-  "cancelWhy": [],
-  "broadcast": null,
+  "cancelIds": [
+    1794988079,
+    1794988080,
+    1794988081
+  ],
+  "cancelWhy": [
+    {
+      "id": 1794988079,
+      "side": "bid",
+      "amt": 0.5,
+      "unit": 0.095566,
+      "freed": 0.5,
+      "orphan": false
+    },
+    {
+      "id": 1794988080,
+      "side": "bid",
+      "amt": 0.5,
+      "unit": 0.095475,
+      "freed": 0.5,
+      "orphan": false
+    },
+    {
+      "id": 1794988081,
+      "side": "bid",
+      "amt": 0.5,
+      "unit": 0.095365,
+      "freed": 0.5,
+      "orphan": false
+    }
+  ],
+  "broadcast": {
+    "ok": false,
+    "pending": true,
+    "note": "CANCEL-PENDING — אין משדר-פעיל במחזור זה"
+  },
   "laws": [
     "הספר לעולם לא מבטיח יותר מהיתרה — כיסוי נמדד כל מחזור (asks ≤ יתרת STEEM × 0.95, bids ≤ (יתרת SBD − 0.5 רזרבה) × 0.95)",
     "פס-ההיפר-גריד נגע-בלבד: ids ‎[2.1e9, 4.29e9]‎ נמדדים אך לעולם לא מבוטלים כאן",
