@@ -207,7 +207,10 @@ export function buildPassPool(env) {
   addCandidate(env.MAIN_KEY);
 
   // 2 · every vault-era secret this repo legitimately holds (honest presence)
-  for (const name of ["WEAVE_SEAL_PASSPHRASE", "STEEM_VAULT_PASSES", "VAULT_PASSES_R33", "VAULT_PASSPHRASE", "HEADCORNER_SEAL_PASSPHRASE", "ROT2_FLEET_KEYS", "ROT_ROSTER", "LIVE_FLEET_KEYS", "NIM_API_KEY"]) {
+  // W-ONEKEY healing 2026-11-18: SEAL_PASS added — ARMY-ACTIVE-REVIVE envelopes
+  // are sealed with it (army-revive-harvest.mjs) but it was absent from the pool,
+  // leaving them honest wounds. Verify stays owner-key-only (env-level).
+  for (const name of ["WEAVE_SEAL_PASSPHRASE", "STEEM_VAULT_PASSES", "VAULT_PASSES_R33", "VAULT_PASSPHRASE", "HEADCORNER_SEAL_PASSPHRASE", "ROT2_FLEET_KEYS", "ROT_ROSTER", "LIVE_FLEET_KEYS", "NIM_API_KEY", "SEAL_PASS"]) {
     if (env[name]) addCandidate(env[name]);
   }
 
