@@ -238,6 +238,8 @@ export function classify(relPath) {
   if (/^custody-intake\/(main-key|weave-seal-passphrase)\.enc$/.test(p)) return { family: "owner-seal", primary: true, note: "the owner's key itself + the live weave seal passphrase" };
   if (/^custody-intake\/fixedfloat\.enc$/.test(p)) return { family: "fixedfloat-slot", primary: true, note: "FF key pair — RELEASED for operations 2026-11-05, key stays sealed for the future" };
   if (/^custody-intake\/vault-transfer-priv\.enc$/.test(p)) return { family: "vault-transfer-escrow", primary: true, note: "ECDH escrow private key (vault-transfer rail)" };
+  const armyRevive = relPath.match(/^custody-intake\/ARMY-ACTIVE-REVIVE-(\d{8}T\d{6}Z)\.enc$/);
+  if (armyRevive) return { family: "army-revive-history", ts: armyRevive[1], primary: "latest-wins", note: "army-revive session snapshot — latest-wins: the session's final-state envelope opens with MAIN_KEY; intermediate snapshots are documented history, never blocking (measured 2026-11-18 §63: session 06:16–06:59Z, final 065935Z MAIN_KEY-sealed, 2 intermediates SEALED-UNOPENED fail-closed fingerprints preserved)" };
   if (/^custody-intake\//.test(p)) return { family: "custody-intake", primary: true, note: "durable custody slot (SLOT law)" };
   if (/^(keys\.env|rails\.env|fleet-rot2\.keys|ssh-keys\.tar)\.enc$/.test(p)) return { family: "core-infrastructure", primary: true, note: "core repo seal (keys / rails / fleet-rot / ssh anchors)" };
   if (/^intake\//.test(p)) return { family: "intake-history", primary: false, note: "intake-גל-קודם — מתועד, לא-חוסם-שגרה" };
