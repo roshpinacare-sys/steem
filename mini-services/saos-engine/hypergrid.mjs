@@ -359,6 +359,17 @@ async function tickInner() {
   const res = await executeOps(ops, { tag: "hyper-grid", rcPct: rc.pct });
   if (!(res.ok ?? res.verdict === "BROADCAST")) {
     const err = String(res.error ?? res.verdict);
+    /* §73 honesty law (measured 2026-11-19): a typed guard verdict never
+     * reached the wire (no exec-log row, error:null) — THINK-GATE-REFUSED
+     * masqueraded as BROADCAST-FAIL and fed the «unknown» red storm. A typed
+     * guard keeps ITS OWN name in the state file — the digest and the owner
+     * deserve the true verdict, not a borrowed label. Only a real wire
+     * failure keeps BROADCAST-FAIL. */
+    const GUARD_VERDICTS = new Set(["OPERATOR-PAUSED", "DISARMED", "ERA3-NO-FUEL", "HIERARCHY-DENIED", "THINK-GATE-REFUSED", "KEY-UNVERIFIED", "ROLE-KEY-ABSENT", "RC-FLOOR", "CREDENTIAL-MISMATCH", "NO-DGPO"]);
+    const typed = String(res.verdict ?? "");
+    if (GUARD_VERDICTS.has(typed)) {
+      return finish(withCarry({ lastVerdict: typed, lastVerdictAt: now.toISOString(), rcPct: rc.pct, lastError: String(res.reason ?? res.error ?? typed).slice(0, 160), governor: g }));
+    }
     /* RACE-HONESTY LAW (proven live): cancel-of-already-gone = "unknown key"
      * (the probe proved the error signature; the multi-instance storm made
      * it common — the winner cancelled, the loser failed). A race loss on a
