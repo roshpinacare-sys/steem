@@ -120,9 +120,20 @@ if (delta >= 1) {
     });
     out("booklaw: " + JSON.stringify({ verdict: law.verdict, coverage: law.coverage, cancelIds: law.cancelIds, cancelWhy: law.cancelWhy, broadcast: law.broadcast }));
     if (law.broadcast && law.broadcast.ok === false && !law.broadcast.pending) {
-      /* a REFUSED broadcast with credentials present = real defect — loud red */
-      out("booklaw RED: repair broadcast failed (" + law.verdict + ") — " + String(law.broadcast.error ?? "unknown"));
-      process.exitCode = 1;
+      const gv = String(law.broadcast.verdict ?? "");
+      if (gv === "OPERATOR-PAUSED" || gv === "DISARMED") {
+        /* §71 (2026-11-19) honest guard-skip — the Zip 69db1024 law applied to
+         * the booklaw repair lane: the owner's standing pause/disarm is an
+         * ALLOCATION guard, not an execution defect. Measured root: broadcast
+         * {ok:false, error:null} = guard verdict from executeAs, not a node or
+         * key failure. Nothing is silenced: the verdict stays journaled
+         * (booklaw.done event) and printed here every cycle. Re-arm remains
+         * owner-only. Real broadcast defects keep the loud red below. */
+        out("booklaw GUARD-SKIPPED: owner standing guard (" + gv + (law.broadcast.reason ? ":" + law.broadcast.reason : "") + ") — verdict journaled, honest-green exit, re-arm owner-only");
+      } else {
+        out("booklaw RED: repair broadcast failed (" + law.verdict + ") — " + String(law.broadcast.error ?? "unknown"));
+        process.exitCode = 1;
+      }
     } else if (law.broadcast?.pending) {
       /* 27-a: the lawful unarmed state (measured, journaled, CANCEL-PENDING) —
        * honest amber, never a dead run. The overflow stays visible in the

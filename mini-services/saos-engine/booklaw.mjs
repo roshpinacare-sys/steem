@@ -135,7 +135,7 @@ export async function runBooklaw({ observe = null, persist = true, now = new Dat
       const ops = plan.cancelIds.slice(0, 20).map((orderid) => ["limit_order_cancel", { owner, orderid }]);
       try {
         const res = await exec(ops, "booklaw");
-        out.broadcast = { ok: !!res?.ok, txid: res?.txid ?? null, error: res?.error ?? null, count: ops.length };
+        out.broadcast = { ok: !!res?.ok, txid: res?.txid ?? null, error: res?.error ?? null, verdict: res?.verdict ?? null, reason: res?.reason ?? null, count: ops.length }; // §71: נושאים-את-ה-verdict — guard של-הבעלים (DISARMED/OPERATOR-PAUSED) חייב-להיות-ניתן-לסיווג, לא-«unknown» (נמדד 2026-11-19: error=null = verdict-guard, לא-כשל-צומת)
         if (!res?.ok) out.verdict = "CANCEL-FAILED";
       } catch (e) {
         out.broadcast = { ok: false, error: String(e?.message ?? e).slice(0, 140) };
