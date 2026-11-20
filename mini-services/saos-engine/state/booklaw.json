@@ -1,8 +1,8 @@
 {
-  "at": "2026-11-20T05:14:19.582Z",
-  "verdict": "REPAIRED",
+  "at": "2026-11-20T05:20:10.465Z",
+  "verdict": "CANCEL-FAILED",
   "lanes": {
-    "hyper": 10,
+    "hyper": 12,
     "cancelableAsks": 1,
     "cancelableBids": 4,
     "orphans": 1
@@ -12,14 +12,15 @@
     "askCap": 3.1521,
     "askOver": 0.1509,
     "bidSum": 19.289,
-    "bidCap": 7.942,
-    "bidOver": 11.347
+    "bidCap": 1.35945,
+    "bidOver": 17.92955
   },
   "cancelIds": [
     2026111951,
     1795150254,
     1795150255,
-    1795150256
+    1795150256,
+    1795150257
   ],
   "cancelWhy": [
     {
@@ -53,12 +54,23 @@
       "unit": 0.089861,
       "freed": 4.998,
       "orphan": false
+    },
+    {
+      "id": 1795150257,
+      "side": "bid",
+      "amt": 4.295,
+      "unit": 0.089771,
+      "freed": 4.295,
+      "orphan": false
     }
   ],
   "broadcast": {
     "ok": false,
-    "pending": true,
-    "note": "CANCEL-PENDING — אין משדר-פעיל במחזור זה"
+    "txid": null,
+    "error": null,
+    "verdict": "THINK-GATE-REFUSED",
+    "reason": null,
+    "count": 5
   },
   "laws": [
     "הספר לעולם לא מבטיח יותר מהיתרה — כיסוי נמדד כל מחזור (asks ≤ יתרת STEEM × 0.95, bids ≤ (יתרת SBD − 0.5 רזרבה) × 0.95)",
