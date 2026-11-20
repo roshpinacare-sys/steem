@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-20T19:49:49.717Z",
-  "head": "395d807777ce68cb47edd6bc56265508b26e4258",
-  "verdict": "SURFACES-DOWN",
+  "at": "2026-11-20T19:54:49.189Z",
+  "head": "347f72e9619fde9909dd033ee2c292567ecbad6f",
+  "verdict": "SURFACES-OK",
   "repairMode": "act",
   "actArmed": true,
   "prevVerdict": "SURFACES-DOWN",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 19.7
+      "ageMinutes": 24.7
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 19.7
+      "ageMinutes": 24.7
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 225.9
+      "ageMinutes": 230.9
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 4.8
+      "ageMinutes": 5
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 39152.6
+      "ageMinutes": 39157.6
     },
     {
       "id": "engine-selftest",
@@ -73,8 +73,8 @@
       "id": "steem-rpc",
       "kind": "rpc",
       "source": "rpc",
-      "verdict": "DOWN",
-      "reason": "rpc-node-unreachable:http-403"
+      "verdict": "OK",
+      "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
   "repairsPlanned": [
@@ -92,12 +92,6 @@
       "action": "regen-state",
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
-      "readbackRequired": true
-    },
-    {
-      "targetId": "steem-rpc",
-      "verdict": "DOWN",
-      "action": "failover-node",
       "readbackRequired": true
     }
   ],
@@ -120,16 +114,7 @@
       "basis": "verdict STALE without a stronger signature (rule 6)",
       "advisedAction": "observe-then-escalate",
       "gate": "observe-only (no auto-retry this beat)"
-    },
-    {
-      "id": "steem-rpc",
-      "verdict": "DOWN",
-      "class": "ENVIRONMENT",
-      "confidence": "high",
-      "basis": "network/DNS signature in reason (rule 3) — infrastructure",
-      "advisedAction": "escalate",
-      "gate": "escalation-blocked (no auto-repair this beat)"
     }
   ],
-  "signature": "sig:10f261fa"
+  "signature": "sig:200f8fbe"
 }
