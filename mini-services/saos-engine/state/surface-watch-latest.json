@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-20T17:35:30.398Z",
-  "head": "c1bd5aa4656f1b7056473e9f892e04f05d52f0d3",
-  "verdict": "SURFACES-DOWN",
+  "at": "2026-11-20T17:40:16.678Z",
+  "head": "74d1603ec9894a64447ea598a274f7ff4795ca0a",
+  "verdict": "SURFACES-DEGRADED",
   "repairMode": "act",
   "actArmed": true,
   "prevVerdict": "SURFACES-DOWN",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5.3
+      "ageMinutes": 10.1
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5.3
+      "ageMinutes": 10.1
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 91.6
+      "ageMinutes": 96.4
     },
     {
       "id": "engine-heartbeat",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 39018.3
+      "ageMinutes": 39023.1
     },
     {
       "id": "engine-selftest",
@@ -66,15 +66,15 @@
       "id": "artery-workflow",
       "kind": "workflow",
       "source": "api",
-      "verdict": "OK",
-      "reason": "run-active (artery alive right now)"
+      "verdict": "DEGRADED",
+      "reason": "probe-error:api-http-403"
     },
     {
       "id": "steem-rpc",
       "kind": "rpc",
       "source": "rpc",
-      "verdict": "DOWN",
-      "reason": "rpc-node-unreachable:http-403"
+      "verdict": "OK",
+      "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
   "repairsPlanned": [
@@ -95,9 +95,9 @@
       "readbackRequired": true
     },
     {
-      "targetId": "steem-rpc",
-      "verdict": "DOWN",
-      "action": "failover-node",
+      "targetId": "artery-workflow",
+      "verdict": "DEGRADED",
+      "action": "escalate",
       "readbackRequired": true
     }
   ],
@@ -122,14 +122,14 @@
       "gate": "observe-only (no auto-retry this beat)"
     },
     {
-      "id": "steem-rpc",
-      "verdict": "DOWN",
+      "id": "artery-workflow",
+      "verdict": "DEGRADED",
       "class": "ENVIRONMENT",
       "confidence": "high",
-      "basis": "network/DNS signature in reason (rule 3) — infrastructure",
+      "basis": "http-4xx-api 403 (rule 4) — remote gate refused, not a code bug",
       "advisedAction": "escalate",
       "gate": "escalation-blocked (no auto-repair this beat)"
     }
   ],
-  "signature": "sig:badf9b42"
+  "signature": "sig:d67fa2ad"
 }
