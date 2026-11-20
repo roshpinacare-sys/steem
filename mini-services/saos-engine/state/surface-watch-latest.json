@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-20T13:30:56.062Z",
-  "head": "12253b911f2957630f1420a3b8f84bd0d21fe971",
-  "verdict": "SURFACES-DOWN",
+  "at": "2026-11-20T13:35:56.385Z",
+  "head": "9ef4c56cdda289dabeff180944491309347d39c9",
+  "verdict": "SURFACES-OK",
   "repairMode": "act",
   "actArmed": true,
   "prevVerdict": "SURFACES-DOWN",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 0.7
+      "ageMinutes": 5.7
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 0.7
+      "ageMinutes": 5.7
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 389.1
+      "ageMinutes": 394.1
     },
     {
       "id": "engine-heartbeat",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 38773.7
+      "ageMinutes": 38778.7
     },
     {
       "id": "engine-selftest",
@@ -73,8 +73,8 @@
       "id": "steem-rpc",
       "kind": "rpc",
       "source": "rpc",
-      "verdict": "DOWN",
-      "reason": "rpc-node-unreachable:http-403"
+      "verdict": "OK",
+      "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
   "repairsPlanned": [
@@ -92,12 +92,6 @@
       "action": "regen-state",
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
-      "readbackRequired": true
-    },
-    {
-      "targetId": "steem-rpc",
-      "verdict": "DOWN",
-      "action": "failover-node",
       "readbackRequired": true
     }
   ],
@@ -120,16 +114,7 @@
       "basis": "verdict STALE without a stronger signature (rule 6)",
       "advisedAction": "observe-then-escalate",
       "gate": "observe-only (no auto-retry this beat)"
-    },
-    {
-      "id": "steem-rpc",
-      "verdict": "DOWN",
-      "class": "ENVIRONMENT",
-      "confidence": "high",
-      "basis": "network/DNS signature in reason (rule 3) — infrastructure",
-      "advisedAction": "escalate",
-      "gate": "escalation-blocked (no auto-repair this beat)"
     }
   ],
-  "signature": "sig:efb813cf"
+  "signature": "sig:8d24fa55"
 }
