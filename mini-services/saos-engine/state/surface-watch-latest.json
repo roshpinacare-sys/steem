@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-20T05:23:43.642Z",
-  "head": "55f47794ce1cc40e0f4758d84bafff77c5836b2b",
-  "verdict": "SURFACES-DOWN",
+  "at": "2026-11-20T05:29:36.914Z",
+  "head": "354540e491bce332cb216963ed15a9852f28695b",
+  "verdict": "SURFACES-OK",
   "repairMode": "act",
   "actArmed": true,
-  "prevVerdict": "SURFACES-DEGRADED",
+  "prevVerdict": "SURFACES-DOWN",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.6
+      "ageMinutes": 29.5
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.6
+      "ageMinutes": 29.5
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "STALE",
       "reason": "age>90m",
-      "ageMinutes": 337.3
+      "ageMinutes": 343.2
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 6.5
+      "ageMinutes": 5.9
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 38286.5
+      "ageMinutes": 38292.4
     },
     {
       "id": "engine-selftest",
@@ -73,8 +73,8 @@
       "id": "steem-rpc",
       "kind": "rpc",
       "source": "rpc",
-      "verdict": "DOWN",
-      "reason": "rpc-node-unreachable:http-403"
+      "verdict": "OK",
+      "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
   "repairsPlanned": [
@@ -92,12 +92,6 @@
       "action": "regen-state",
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
-      "readbackRequired": true
-    },
-    {
-      "targetId": "steem-rpc",
-      "verdict": "DOWN",
-      "action": "failover-node",
       "readbackRequired": true
     }
   ],
@@ -120,16 +114,7 @@
       "basis": "verdict STALE without a stronger signature (rule 6)",
       "advisedAction": "observe-then-escalate",
       "gate": "observe-only (no auto-retry this beat)"
-    },
-    {
-      "id": "steem-rpc",
-      "verdict": "DOWN",
-      "class": "ENVIRONMENT",
-      "confidence": "high",
-      "basis": "network/DNS signature in reason (rule 3) — infrastructure",
-      "advisedAction": "escalate",
-      "gate": "escalation-blocked (no auto-repair this beat)"
     }
   ],
-  "signature": "sig:9891d81d"
+  "signature": "sig:12ce185e"
 }
