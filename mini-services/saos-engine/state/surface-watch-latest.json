@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-21T04:53:43.706Z",
-  "head": "0c220c04b62cc822369316419c4a5b215ebe155f",
-  "verdict": "SURFACES-DOWN",
+  "at": "2026-11-21T04:58:55.956Z",
+  "head": "ed07399ad3f63fe616741a99e4146753caabd254",
+  "verdict": "SURFACES-OK",
   "repairMode": "act",
   "actArmed": true,
   "prevVerdict": "SURFACES-DOWN",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.6
+      "ageMinutes": 28.8
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.6
+      "ageMinutes": 28.8
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "OK",
-      "reason": "fresh",
-      "ageMinutes": 87
+      "verdict": "STALE",
+      "reason": "age>90m",
+      "ageMinutes": 92.2
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 4.7
+      "ageMinutes": 5.2
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 39696.5
+      "ageMinutes": 39701.7
     },
     {
       "id": "engine-selftest",
@@ -73,11 +73,19 @@
       "id": "steem-rpc",
       "kind": "rpc",
       "source": "rpc",
-      "verdict": "DOWN",
-      "reason": "rpc-node-unreachable:http-403"
+      "verdict": "OK",
+      "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
   "repairsPlanned": [
+    {
+      "targetId": "pulse-domain-published",
+      "verdict": "STALE",
+      "action": "regen-state",
+      "repo": "Domain",
+      "workflow": "published-ledger.yml",
+      "readbackRequired": true
+    },
     {
       "targetId": "engine-presence-digest",
       "verdict": "STALE",
@@ -85,18 +93,12 @@
       "repo": "saos-runtime",
       "workflow": "sovereign-runtime.yml",
       "readbackRequired": true
-    },
-    {
-      "targetId": "steem-rpc",
-      "verdict": "DOWN",
-      "action": "failover-node",
-      "readbackRequired": true
     }
   ],
   "repairs": [],
   "triageGate": [
     {
-      "id": "engine-presence-digest",
+      "id": "pulse-domain-published",
       "verdict": "STALE",
       "class": "AMBIGUOUS",
       "confidence": "low",
@@ -105,14 +107,14 @@
       "gate": "observe-only (no auto-retry this beat)"
     },
     {
-      "id": "steem-rpc",
-      "verdict": "DOWN",
-      "class": "ENVIRONMENT",
-      "confidence": "high",
-      "basis": "network/DNS signature in reason (rule 3) — infrastructure",
-      "advisedAction": "escalate",
-      "gate": "escalation-blocked (no auto-repair this beat)"
+      "id": "engine-presence-digest",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
     }
   ],
-  "signature": "sig:fad31b8e"
+  "signature": "sig:474abf9c"
 }
