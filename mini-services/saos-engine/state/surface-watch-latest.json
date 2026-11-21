@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-21T11:39:34.892Z",
-  "head": "f10882aff7a292a9021b65030c03557642834a31",
-  "verdict": "SURFACES-DOWN",
+  "at": "2026-11-21T11:44:26.166Z",
+  "head": "878caef2005c3322600dbc68248bb95b70be35de",
+  "verdict": "SURFACES-DEGRADED",
   "repairMode": "act",
   "actArmed": true,
   "prevVerdict": "SURFACES-DOWN",
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 9.1
+      "ageMinutes": 13.9
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,15 +28,15 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 9.1
+      "ageMinutes": 13.9
     },
     {
       "id": "pulse-domain-published",
       "kind": "datafile",
       "source": "raw",
-      "verdict": "STALE",
-      "reason": "age>90m",
-      "ageMinutes": 492.9
+      "verdict": "OK",
+      "reason": "fresh",
+      "ageMinutes": 1.7
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5
+      "ageMinutes": 4.9
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 40102.4
+      "ageMinutes": 40107.2
     },
     {
       "id": "engine-selftest",
@@ -66,26 +66,18 @@
       "id": "artery-workflow",
       "kind": "workflow",
       "source": "api",
-      "verdict": "OK",
-      "reason": "run-active (artery alive right now)"
+      "verdict": "DEGRADED",
+      "reason": "probe-error:api-http-403"
     },
     {
       "id": "steem-rpc",
       "kind": "rpc",
       "source": "rpc",
-      "verdict": "DOWN",
-      "reason": "rpc-node-unreachable:http-403"
+      "verdict": "OK",
+      "reason": "alive-via-get-accounts (dgpo-blocked-on-node)"
     }
   ],
   "repairsPlanned": [
-    {
-      "targetId": "pulse-domain-published",
-      "verdict": "STALE",
-      "action": "regen-state",
-      "repo": "Domain",
-      "workflow": "published-ledger.yml",
-      "readbackRequired": true
-    },
     {
       "targetId": "engine-presence-digest",
       "verdict": "STALE",
@@ -95,23 +87,14 @@
       "readbackRequired": true
     },
     {
-      "targetId": "steem-rpc",
-      "verdict": "DOWN",
-      "action": "failover-node",
+      "targetId": "artery-workflow",
+      "verdict": "DEGRADED",
+      "action": "escalate",
       "readbackRequired": true
     }
   ],
   "repairs": [],
   "triageGate": [
-    {
-      "id": "pulse-domain-published",
-      "verdict": "STALE",
-      "class": "AMBIGUOUS",
-      "confidence": "low",
-      "basis": "verdict STALE without a stronger signature (rule 6)",
-      "advisedAction": "observe-then-escalate",
-      "gate": "observe-only (no auto-retry this beat)"
-    },
     {
       "id": "engine-presence-digest",
       "verdict": "STALE",
@@ -122,14 +105,14 @@
       "gate": "observe-only (no auto-retry this beat)"
     },
     {
-      "id": "steem-rpc",
-      "verdict": "DOWN",
+      "id": "artery-workflow",
+      "verdict": "DEGRADED",
       "class": "ENVIRONMENT",
       "confidence": "high",
-      "basis": "network/DNS signature in reason (rule 3) — infrastructure",
+      "basis": "http-4xx-api 403 (rule 4) — remote gate refused, not a code bug",
       "advisedAction": "escalate",
       "gate": "escalation-blocked (no auto-repair this beat)"
     }
   ],
-  "signature": "sig:a2b9dfc9"
+  "signature": "sig:1f5ca872"
 }
