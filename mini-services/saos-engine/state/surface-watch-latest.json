@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-21T03:50:32.613Z",
-  "head": "bbffff4d8f404ee7c48b0a329abfd0199d69cdba",
+  "at": "2026-11-21T03:55:10.866Z",
+  "head": "9743d385ddc432121c44c9c10d76e71af0237a34",
   "verdict": "SURFACES-DOWN",
-  "repairMode": "observe",
-  "actArmed": false,
-  "prevVerdict": "SURFACES-OK",
+  "repairMode": "act",
+  "actArmed": true,
+  "prevVerdict": "SURFACES-DOWN",
   "lawSource": "exec33 owner directive: sovereignty self-verifies and self-repairs WITHOUT owner arming; repairs are infrastructure/state-only — zero chain broadcasts, zero keys, zero value moves (R330/R333 untouched, standby untouched)",
   "targets": [
     {
@@ -20,7 +20,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 20.4
+      "ageMinutes": 25
     },
     {
       "id": "pulse-mirror-lanes",
@@ -28,7 +28,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 20.4
+      "ageMinutes": 25
     },
     {
       "id": "pulse-domain-published",
@@ -36,7 +36,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 23.8
+      "ageMinutes": 28.5
     },
     {
       "id": "engine-heartbeat",
@@ -44,7 +44,7 @@
       "source": "raw",
       "verdict": "OK",
       "reason": "fresh",
-      "ageMinutes": 5.6
+      "ageMinutes": 4.6
     },
     {
       "id": "engine-presence-digest",
@@ -52,7 +52,7 @@
       "source": "local",
       "verdict": "STALE",
       "reason": "age>720m",
-      "ageMinutes": 39633.3
+      "ageMinutes": 39638
     },
     {
       "id": "engine-selftest",
@@ -94,5 +94,25 @@
     }
   ],
   "repairs": [],
-  "signature": "sig:d7ead1ac"
+  "triageGate": [
+    {
+      "id": "engine-presence-digest",
+      "verdict": "STALE",
+      "class": "AMBIGUOUS",
+      "confidence": "low",
+      "basis": "verdict STALE without a stronger signature (rule 6)",
+      "advisedAction": "observe-then-escalate",
+      "gate": "observe-only (no auto-retry this beat)"
+    },
+    {
+      "id": "steem-rpc",
+      "verdict": "DOWN",
+      "class": "ENVIRONMENT",
+      "confidence": "high",
+      "basis": "network/DNS signature in reason (rule 3) — infrastructure",
+      "advisedAction": "escalate",
+      "gate": "escalation-blocked (no auto-repair this beat)"
+    }
+  ],
+  "signature": "sig:2eceb51f"
 }
