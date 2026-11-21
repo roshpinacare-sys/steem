@@ -1,25 +1,25 @@
 {
-  "at": "2026-11-21T02:10:02.309Z",
+  "at": "2026-11-21T03:19:08.169Z",
   "decisions": [
     {
       "kind": "book-depth",
       "decision": "hold-shape",
-      "reason": "spread 14bps → dragK 1.007",
+      "reason": "spread 13bps → dragK 1.0065",
       "action": {
-        "spreadBpsRec": 14,
+        "spreadBpsRec": 13,
         "bestAsk": 0.10290183165260341,
-        "bestBid": 0.10275775260327269
+        "bestBid": 0.10276442307692307
       },
-      "at": "2026-11-21T02:10:02.309Z"
+      "at": "2026-11-21T03:19:08.169Z"
     },
     {
       "kind": "parity-drift",
       "decision": "arb-window",
-      "reason": "internal feed deviates -1445bps from external parity",
+      "reason": "internal feed deviates -1572bps from external parity",
       "action": {
-        "bps": -1445
+        "bps": -1572
       },
-      "at": "2026-11-21T02:10:02.309Z"
+      "at": "2026-11-21T03:19:08.169Z"
     },
     {
       "kind": "soldiers",
@@ -28,7 +28,20 @@
       "action": {
         "deployed": true
       },
-      "at": "2026-11-21T02:10:02.309Z"
+      "at": "2026-11-21T03:19:08.169Z"
+    },
+    {
+      "kind": "rewards",
+      "decision": "claim",
+      "reason": "unclaimed: 0 STEEM + 0 SBD + 1.608507 VESTS — free fuel, claim now",
+      "action": {
+        "ok": true,
+        "steem": 0,
+        "sbd": 0,
+        "vests": 1.608507,
+        "any": true
+      },
+      "at": "2026-11-21T03:19:08.169Z"
     },
     {
       "kind": "rc-health",
@@ -37,24 +50,24 @@
       "action": {
         "rcPct": 100
       },
-      "at": "2026-11-21T02:10:02.309Z"
+      "at": "2026-11-21T03:19:08.169Z"
     },
     {
       "kind": "curation",
-      "decision": "curator-armed",
-      "reason": "rail armed, verdict DAY-CAP today (VP ?%) — gates hold until candidates pass",
+      "decision": "curator-live",
+      "reason": "voted 3 today (156 total) · VP 66.4% · txid aab54dc478e4",
       "action": {
-        "votesToday": 9,
-        "vpEff": null,
-        "verdict": "DAY-CAP"
+        "votesToday": 3,
+        "vpEff": 66.4,
+        "verdict": "VOTED"
       },
-      "at": "2026-11-21T02:10:02.309Z"
+      "at": "2026-11-21T03:19:08.169Z"
     }
   ],
-  "spreadBpsRec": 14,
+  "spreadBpsRec": 13,
   "book": {
     "bestAsk": 0.10290183165260341,
-    "bestBid": 0.10275775260327269,
-    "spreadBps": 14
+    "bestBid": 0.10276442307692307,
+    "spreadBps": 13
   }
 }
